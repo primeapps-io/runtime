@@ -71,7 +71,7 @@ namespace PrimeApps.App.Bpm.Steps
 
 
                     using (var _platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))//, cacheHelper))
-					using (var _analyticRepository = new AnalyticRepository(databaseContext, _configuration))
+                    using (var _analyticRepository = new AnalyticRepository(databaseContext, _configuration))
                     {
                         _platformWarehouseRepository.CurrentUser = _analyticRepository.CurrentUser = _currentUser;
 
@@ -119,17 +119,17 @@ namespace PrimeApps.App.Bpm.Steps
                                         {
                                             case "{:app:}":
                                                 client.DefaultRequestHeaders.TryAddWithoutValidation(key, appUser.AppId.ToString());
-                                                break;  
+                                                break;
                                             case "{:tenant:}":
-                                                client.DefaultRequestHeaders.TryAddWithoutValidation(key, appUser.TenantId.ToString()); 
+                                                client.DefaultRequestHeaders.TryAddWithoutValidation(key, appUser.TenantId.ToString());
                                                 break;
                                             case "{:user:}":
-                                                client.DefaultRequestHeaders.TryAddWithoutValidation(key, appUser.Id.ToString()); 
+                                                client.DefaultRequestHeaders.TryAddWithoutValidation(key, appUser.Id.ToString());
                                                 break;
                                             default:
                                                 client.DefaultRequestHeaders.TryAddWithoutValidation(key, value);
                                                 break;
-                                        } 
+                                        }
                                     }
                                 }
                             }
@@ -159,6 +159,9 @@ namespace PrimeApps.App.Bpm.Steps
                                 foreach (var dataString in parameters)
                                 {
                                     //var dataObject = dataString.Split('|');
+                                    if (dataString["parameterName"].IsNullOrEmpty() || dataString["selectedModule"].IsNullOrEmpty() || dataString["selectedField"].IsNullOrEmpty())
+                                        continue;
+
                                     var parameterName = dataString["parameterName"].Value<string>();
                                     var moduleName = dataString["selectedModule"]["name"].Value<string>();
                                     var fieldName = dataString["selectedField"]["name"].Value<string>();
@@ -177,7 +180,7 @@ namespace PrimeApps.App.Bpm.Steps
                                     }
                                 }
                             }
-                             
+
                             var methodType = webHook["methodType"].ToObject<BpmHttpMethod>();
                             switch (methodType)
                             {
@@ -186,7 +189,7 @@ namespace PrimeApps.App.Bpm.Steps
                                     {
                                         //fire and forget
                                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                                         
+
                                         var dataAsString = JsonConvert.SerializeObject(jsonData);
                                         var contentResetPasswordBindingModel = new StringContent(dataAsString);
                                         await client.PostAsync(webHook["callbackUrl"].Value<string>(), contentResetPasswordBindingModel);
