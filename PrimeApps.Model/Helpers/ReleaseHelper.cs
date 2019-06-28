@@ -571,7 +571,7 @@ namespace PrimeApps.Model.Helpers
 
                 connection.Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
@@ -698,7 +698,7 @@ namespace PrimeApps.Model.Helpers
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
@@ -722,7 +722,7 @@ namespace PrimeApps.Model.Helpers
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
@@ -767,7 +767,7 @@ namespace PrimeApps.Model.Helpers
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
@@ -789,7 +789,7 @@ namespace PrimeApps.Model.Helpers
 
                 return dump.DumpText;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return null;
             }
@@ -812,7 +812,7 @@ namespace PrimeApps.Model.Helpers
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
@@ -844,7 +844,7 @@ namespace PrimeApps.Model.Helpers
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }

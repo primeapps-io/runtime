@@ -55,10 +55,13 @@ namespace PrimeApps.Model.Repositories
 
             result = await DbContext.Releases.LastOrDefaultAsync(x => x.AppId == appId);
 
-            var settings = JObject.Parse(result.Settings);
+            if (result != null)
+            {
+                var settings = JObject.Parse(result.Settings);
 
-            if (settings["type"].ToString() == "publish" && !result.Published)
-                return result;
+                if (settings["type"].ToString() == "publish" && !result.Published)
+                    return result;
+            }
 
             return null;
         }
