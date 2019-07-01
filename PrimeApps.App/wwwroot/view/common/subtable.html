@@ -1,86 +1,86 @@
 <div style="margin-bottom: 10px;" class="pull-right" ng-init="scriptRunning = {}; webhookRequesting = {};">
     <div style="display: inline-block"
-        ng-repeat="custombutton in $parent.relationActionButtons | filter:{module_id:module.id} track by custombutton.id">
+         ng-repeat="custombutton in $parent.relationActionButtons | filter:{module_id:module.id} track by custombutton.id">
         <button class="{{custombutton.css_class}}" type="button" custom-scripting="{{custombutton.template}}"
-            data-spinner-color="#666" 
-            ladda="scriptRunning[custombutton.id]"
-            ng-if="custombutton.action_type === 'Scripting' && custombutton.isShown && $parent.$parent.hasActionButtonDisplayPermission(custombutton)"
-            style="margin-left: 10px">
+                data-spinner-color="#666"
+                ladda="scriptRunning[custombutton.id]"
+                ng-if="custombutton.action_type === 'Scripting' && custombutton.isShown && $parent.$parent.hasActionButtonDisplayPermission(custombutton)"
+                style="margin-left: 10px">
             <i ng-class="custombutton.icon"></i> {{custombutton.name}}
         </button>
         <button class="{{custombutton.css_class}} ladda-button" type="button" data-spinner-color="#666"
-            ladda="webhookRequesting[custombutton.id]" ng-click="webhookRequest(custombutton)"
-            ng-if="custombutton.action_type === 'Webhook' && custombutton.isShown && $parent.$parent.hasActionButtonDisplayPermission(custombutton)"
-            style="margin-left: 10px">
+                ladda="webhookRequesting[custombutton.id]" ng-click="$parent.$parent.$parent.$parent.webhookRequest(custombutton)"
+                ng-if="custombutton.action_type === 'Webhook' && custombutton.isShown && $parent.$parent.hasActionButtonDisplayPermission(custombutton)"
+                style="margin-left: 10px">
             <i ng-class="custombutton.icon"></i> {{custombutton.name}}
         </button>
         <button class="{{custombutton.css_class}}" type="button" ng-click="showModuleFrameModal(custombutton.url)"
-            ng-if="custombutton.action_type === 'ModalFrame' && custombutton.isShown && $parent.$parent.hasActionButtonDisplayPermission(custombutton)"
-            style="margin-left: 10px">
+                ng-if="custombutton.action_type === 'ModalFrame' && custombutton.isShown && $parent.$parent.hasActionButtonDisplayPermission(custombutton)"
+                style="margin-left: 10px">
             <i ng-class="custombutton.icon"></i> {{custombutton.name}}
         </button>
     </div>
     <a href
-        ng-click="$parent.showFilterSubModules[$parent.type][relatedModule.related_module] = $parent.getCurrentTime()"
-        class="btn btn-sm btn-custom">
+       ng-click="$parent.showFilterSubModules[$parent.type][relatedModule.related_module] = $parent.getCurrentTime()"
+       class="btn btn-sm btn-custom">
         <i class="fa fa-filter"></i> {{'Common.Filter' | translate}}
     </a>
     <a ng-if="$root.user.profile.export_data" id="{{relatedModule.related_module}}"
-        ng-click="export(relatedModule,tableParams)" class="btn btn-sm btn-custom"
-        ng-show="$parent.hasPermission($parent.type, $parent.operations.read)" data-spinner-color="#666"
-        ladda="exporting">
+       ng-click="export(relatedModule,tableParams)" class="btn btn-sm btn-custom"
+       ng-show="$parent.hasPermission($parent.type, $parent.operations.read)" data-spinner-color="#666"
+       ladda="exporting">
         <i class="fa fa-upload"></i> {{'Module.Export' | translate }}
     </a>
     <a href="#/app/moduleForm/{{relatedModule.related_module}}?ptype={{relatedModule.relation_field}}&pid={{ $parent.$parent.record.id }}&rtab={{ relatedModule.detail_view_type != 'flat' ?  relatedModule.id :''}}"
-        class="btn btn-sm btn-custom"
-        ng-show="$parent.hasPermission(relatedModule.related_module, $parent.operations.write)  && parentModule != 'calisanlar'"
-        ng-if="relatedModule.related_module != 'activities' && relatedModule.related_module != 'mails' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly && relatedModule.related_module != 'current_accounts' && !(parentType === 'katilimci' && parentModule ==='calisanlar') && !$parent.$parent.$parent.record.freeze">
+       class="btn btn-sm btn-custom"
+       ng-show="$parent.hasPermission(relatedModule.related_module, $parent.operations.write)  && parentModule != 'calisanlar'"
+       ng-if="relatedModule.related_module != 'activities' && relatedModule.related_module != 'mails' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly && relatedModule.related_module != 'current_accounts' && !(parentType === 'katilimci' && parentModule ==='calisanlar') && !$parent.$parent.$parent.record.freeze">
         <i class="fa fa-plus"></i> {{'Module.New' |
         translate:{title:relatedModule['label_' + language + '_singular']} }}
     </a>
     <a href="#/app/moduleForm/{{relatedModule.related_module}}?stype={{$parent.activityType.system_code}}&ptype={{$parent.$parent.$parent.$parent.type}}&pid={{$parent.$parent.$parent.$parent.record.id}}&rtab={{ relatedModule.detail_view_type != 'flat' ?  relatedModule.id :''}}"
-        class="btn btn-sm btn-custom" ng-show="$parent.hasPermission(relatedModule.related_module, operations.write)"
-        ng-repeat="activityType in $parent.picklistsModule.activity_type | filter:{hidden:'!true'}"
-        ng-if="relatedModule.related_module === 'activities' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly && !$parent.$parent.$parent.$parent.activityTypeCustom && !$parent.$parent.$parent.record.freeze">
+       class="btn btn-sm btn-custom" ng-show="$parent.hasPermission(relatedModule.related_module, operations.write)"
+       ng-repeat="activityType in $parent.picklistsModule.activity_type | filter:{hidden:'!true'}"
+       ng-if="relatedModule.related_module === 'activities' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly && !$parent.$parent.$parent.$parent.activityTypeCustom && !$parent.$parent.$parent.record.freeze">
         <i class="fa fa-plus"></i> {{'Module.New' |
         translate:{title:$parent.activityType.label[language]} }}
     </a>
     <a href="#/app/moduleForm/{{relatedModule.related_module}}?stype={{$parent.$root.activityTypeCustom.value}}&ptype={{$parent.$parent.$parent.$parent.type}}&pid={{$parent.$parent.$parent.$parent.record.id}}&rtab={{ relatedModule.detail_view_type != 'flat' ?  relatedModule.id :''}}"
-        class="btn btn-sm btn-custom"
-        ng-show="$parent.hasPermission(relatedModule.related_module, $parent.operations.write)"
-        ng-if="relatedModule.related_module === 'activities' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly && $parent.$parent.$parent.$parent.activityTypeCustom && !$parent.$parent.$parent.record.freeze">
+       class="btn btn-sm btn-custom"
+       ng-show="$parent.hasPermission(relatedModule.related_module, $parent.operations.write)"
+       ng-if="relatedModule.related_module === 'activities' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly && $parent.$parent.$parent.$parent.activityTypeCustom && !$parent.$parent.$parent.record.freeze">
         <i class="fa fa-plus"></i> {{'Module.New' |
         translate:{title:($parent.$root.tasksNameSingular ? $parent.$root.tasksNameSingular.value :
         $parent.activityType.label[language])} }}
     </a>
     <a href class="btn btn-sm btn-custom" ng-click="$parent.$parent.openAddModal(relatedModule)"
-        ng-show="$parent.hasPermission($parent.type, $parent.operations.modify)"
-        ng-if="$parent.relatedModule.relation_type === 'many_to_many' && !relatedModule.readonly && !$parent.$parent.$parent.record.freeze">
+       ng-show="$parent.hasPermission($parent.type, $parent.operations.modify)"
+       ng-if="$parent.relatedModule.relation_type === 'many_to_many' && !relatedModule.readonly && !$parent.$parent.$parent.record.freeze">
         <i class="fa fa-plus"></i> {{'Module.Add' |
         translate:{title:$parent.relatedModule['label_' + language + '_singular']} }}
     </a>
     <a href="#/app/moduleForm/{{relatedModule.related_module}}?stype={{$parent.transactionType.system_code}}&ptype={{$parent.$parent.$parent.$parent.type}}&pid={{$parent.$parent.$parent.$parent.id}}&rtab={{ relatedModule.detail_view_type != 'flat' ?  relatedModule.id :''}}"
-        class="btn btn-sm btn-custom" ng-show="$parent.hasPermission(relatedModule.related_module, operations.write)"
-        ng-repeat="transactionType in $parent.$parent.picklistsModule.transaction_type | filter:{show:true}"
-        ng-if="relatedModule.related_module === 'current_accounts' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly && !$parent.$parent.$parent.record.freeze">
+       class="btn btn-sm btn-custom" ng-show="$parent.hasPermission(relatedModule.related_module, operations.write)"
+       ng-repeat="transactionType in $parent.$parent.picklistsModule.transaction_type | filter:{show:true}"
+       ng-if="relatedModule.related_module === 'current_accounts' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly && !$parent.$parent.$parent.record.freeze">
         <i class="fa fa-plus"></i> {{'Module.New' |
         translate:{title:transactionType.label[language]} }}
     </a>
     <a href="#/app/moduleForm/{{relatedModule.related_module}}?ptype={{$parent.$parent.type}}&pid={{$parent.$parent.record.id}}&rtab={{ relatedModule.detail_view_type != 'flat' ?  relatedModule.id :''}}"
-        class="btn btn-sm btn-custom"
-        ng-show="$parent.hasPermission(relatedModule.related_module,$parent. operations.write)"
-        ng-if="relatedModule.related_module === 'mails' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly && !$parent.$parent.$parent.record.freeze">
+       class="btn btn-sm btn-custom"
+       ng-show="$parent.hasPermission(relatedModule.related_module,$parent. operations.write)"
+       ng-if="relatedModule.related_module === 'mails' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly && !$parent.$parent.$parent.record.freeze">
         <i class="fa fa-plus"></i> {{'Module.Add' |
         translate:{title:relatedModule['label_' + language + '_singular']} }}
     </a>
     <a href ng-click="$parent.refreshSubModules[$parent.type][relatedModule.related_module] = $parent.getCurrentTime()"
-        class="btn btn-sm btn-custom" title="{{'Common.Refresh' | translate}}">
+       class="btn btn-sm btn-custom" title="{{'Common.Refresh' | translate}}">
         <i class="fa fa-refresh"></i>
     </a>
     <span class="dropdown list-dropdown-menu"
-        ng-if="relatedModule.relation_type != 'many_to_many' && $parent.hasPermission(relatedModule.related_module, $parent.operations.remove) && relatedModule.related_module !== 'current_accounts' && relatedModule.related_module !== 'masraf_kalemleri' && relatedModule.related_module !== 'kasa_hareketleri' && relatedModule.related_module !== 'banka_hareketleri' && !$parent.$parent.$parent.record.freeze">
+          ng-if="relatedModule.relation_type != 'many_to_many' && $parent.hasPermission(relatedModule.related_module, $parent.operations.remove) && relatedModule.related_module !== 'current_accounts' && relatedModule.related_module !== 'masraf_kalemleri' && relatedModule.related_module !== 'kasa_hareketleri' && relatedModule.related_module !== 'banka_hareketleri' && !$parent.$parent.$parent.record.freeze">
         <button id="moreButton" type="button" class="btn btn-sm btn-custom dropdown-toggle" bs-dropdown
-            data-placement="bottom-right" ng-disabled="loading"><i class="fa fa-ellipsis-h"></i></button>
+                data-placement="bottom-right" ng-disabled="loading"><i class="fa fa-ellipsis-h"></i></button>
         <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="moreButton">
             <li>
                 <a href ng-click="deleteSelectedsSubTable()">
@@ -99,12 +99,12 @@
 <div class="table-list-custom table-responsive" ng-show="!isEmpty && !loading">
     <div class="clearfix" block-ui="{{'tableBlockUISubTable' + cacheKey}}">
         <table template-header="view/common/tableheader.html" template-pagination="view/common/pagination.html"
-            ng-table="tableParams" class="table table-hover">
+               ng-table="tableParams" class="table table-hover">
             <tbody>
                 <tr ng-repeat="record in $data">
                     <td ng-if="params.isSelectable && !isManyToMany">
                         <input type="checkbox" ng-click="selectRow($event,record)"
-                            ng-checked="isRowSelected(record.id) || isAllSelectedModal" />
+                               ng-checked="isRowSelected(record.id) || isAllSelectedModal" />
                     </td>
                     <td></td>
                     <td ng-repeat="(key, field) in record.fields | orderBy:'order' track by $index"
@@ -114,34 +114,34 @@
                     <td class="text-right">
                         <span style="display:block; width: 40px"></span>
                         <span class="action-buttons"
-                            ng-if="!readonly && !$parent.$parent.$parent.$parent.record.freeze && (!record.isProcessItem || isAdmin) && (salesInvoiceModule ?  module.name != 'current_accounts' : true )"
-                            ng-hide="(module.name == 'kasa_hareketleri' && (record.fields | filter:{name:'ilgili_cari_hareket'})[0].value) || (module.name == 'banka_hareketleri' && (record.fields | filter:{name:'ilgili_cari_hareket'})[0].value) || (module.name == 'stock_transactions' && (record.fields | filter:{name:'sales_order'})[0].value) || (module.name == 'stock_transactions' && (record.fields | filter:{name:'purchase_order'})[0].value)">
+                              ng-if="!readonly && !$parent.$parent.$parent.$parent.record.freeze && (!record.isProcessItem || isAdmin) && (salesInvoiceModule ?  module.name != 'current_accounts' : true )"
+                              ng-hide="(module.name == 'kasa_hareketleri' && (record.fields | filter:{name:'ilgili_cari_hareket'})[0].value) || (module.name == 'banka_hareketleri' && (record.fields | filter:{name:'ilgili_cari_hareket'})[0].value) || (module.name == 'stock_transactions' && (record.fields | filter:{name:'sales_order'})[0].value) || (module.name == 'stock_transactions' && (record.fields | filter:{name:'purchase_order'})[0].value)">
                             <a href="#/app/moduleForm/{{type}}{{'?id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) +  (relatedModule.detail_view_type != 'flat' ?  '&rtab=' + relatedModule.id : '')  + (previousParentId ? ('&pptype=' + previousParentType + '&ppid=' + previousParentId + '&prtab=' + previousReturnTab) : '') : '')}}"
-                                class="action-icon" title="{{'Common.Edit' | translate}}"
-                                ng-show="hasPermission(type, operations.modify)"><i class="flaticon-pencil124"></i></a>
+                               class="action-icon" title="{{'Common.Edit' | translate}}"
+                               ng-show="hasPermission(type, operations.modify)"><i class="flaticon-pencil124"></i></a>
                             <i class="action-icon flaticon-bin9" confirm-click action="delete(record.id)"
-                                placement="left" confirm-message="{{'Common.AreYouSure' | translate}}"
-                                confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}"
-                                title="{{'Common.Delete' | translate}}" ng-show="hasPermission(type, operations.remove)"
-                                ng-if="!isManyToMany"></i>
+                               placement="left" confirm-message="{{'Common.AreYouSure' | translate}}"
+                               confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}"
+                               title="{{'Common.Delete' | translate}}" ng-show="hasPermission(type, operations.remove)"
+                               ng-if="!isManyToMany"></i>
                             <i class="action-icon flaticon-minus" confirm-click action="deleteRelation(record.id)"
-                                placement="left" confirm-message="{{'Common.AreYouSure' | translate}}"
-                                confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}"
-                                title="{{'Module.RemoveRelation' | translate}}"
-                                ng-show="hasPermission(type, operations.remove)" ng-if="isManyToMany"></i>
+                               placement="left" confirm-message="{{'Common.AreYouSure' | translate}}"
+                               confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}"
+                               title="{{'Module.RemoveRelation' | translate}}"
+                               ng-show="hasPermission(type, operations.remove)" ng-if="isManyToMany"></i>
                         </span>
                         <span ng-show="record.isProcessItem && !isAdmin">
                             <i ng-if="record['process.process_requests.process_status'] == 1"
-                                class="fa fa-hourglass-half" aria-hidden="true" style="color:darkorange"
-                                data-placement="left" bs-tooltip
-                                data-title="{{'Setup.Workflow.ApprovelProcess.Waiting' | translate}}"></i>
+                               class="fa fa-hourglass-half" aria-hidden="true" style="color:darkorange"
+                               data-placement="left" bs-tooltip
+                               data-title="{{'Setup.Workflow.ApprovelProcess.Waiting' | translate}}"></i>
                             <i ng-if="record['process.process_requests.process_status'] == 2"
-                                class="fa fa-check-circle-o" aria-hidden="true" style="color:green"
-                                data-placement="left" bs-tooltip
-                                data-title="{{'Setup.Workflow.ApprovelProcess.Approved' | translate}}"></i>
+                               class="fa fa-check-circle-o" aria-hidden="true" style="color:green"
+                               data-placement="left" bs-tooltip
+                               data-title="{{'Setup.Workflow.ApprovelProcess.Approved' | translate}}"></i>
                             <i ng-if="record['process.process_requests.process_status'] == 3"
-                                class="fa fa-times-circle-o" aria-hidden="true" style="color:red" data-placement="left"
-                                bs-tooltip data-title="{{'Setup.Workflow.ApprovelProcess.Rejected' | translate}}"></i>
+                               class="fa fa-times-circle-o" aria-hidden="true" style="color:red" data-placement="left"
+                               bs-tooltip data-title="{{'Setup.Workflow.ApprovelProcess.Rejected' | translate}}"></i>
                         </span>
                     </td>
 
