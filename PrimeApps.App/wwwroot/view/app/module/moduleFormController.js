@@ -62,7 +62,6 @@ angular.module('primeapps')
             $scope.module = $filter('filter')($rootScope.modules, { name: $scope.type }, true)[0];
 
 
-
             components.run('BeforeFormLoaded', 'script', $scope);
             $scope.currentSectionComponentsTemplate = currentSectionComponentsTemplate;
 
@@ -504,7 +503,6 @@ angular.module('primeapps')
                             ModuleService.setDisplayDependency($scope.module, record);
 
 
-
                             //encrypted fields
                             for (var f = 0; f < $scope.module.fields.length; f++) {
                                 var field = $scope.module.fields[f];
@@ -717,14 +715,14 @@ angular.module('primeapps')
             $scope.addUser = function (record) {
                 $scope.openCreateUserModal = function () {
                     $scope.userCreateModal = $scope.userCreateModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/module/createUserModal.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false,
-                        tag: 'createModal',
-                        keyboard: false
-                    });
+                            scope: $scope,
+                            templateUrl: 'view/app/module/createUserModal.html',
+                            animation: '',
+                            backdrop: 'static',
+                            show: false,
+                            tag: 'createModal',
+                            keyboard: false
+                        });
 
                     $scope.userCreateModal.$promise.then($scope.userCreateModal.show);
                 };
@@ -859,8 +857,8 @@ angular.module('primeapps')
                                         profileId = $scope.record.profile.id;
                                         createUser(roleId, profileId, record);
                                     }).catch(function (error) {
-                                        $scope.submitting = false;
-                                    });
+                                    $scope.submitting = false;
+                                });
                             } else {
                                 createUser(roleId, profileId, record);
                             }
@@ -1401,12 +1399,12 @@ angular.module('primeapps')
                 $scope.primaryValueModal = str;
 
                 $scope.formModal = $scope.formModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/module/moduleFormModal.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/module/moduleFormModal.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.formModal.$promise.then($scope.formModal.show);
             };
@@ -1414,7 +1412,7 @@ angular.module('primeapps')
             ModuleService.getActionButtons($scope.module.id)
                 .then(function (actionButtons) {
                     $scope.actionButtons = $filter('filter')(actionButtons, function (actionButton) {
-                        return actionButton.trigger !== 'Detail' && actionButton.trigger !== 'List';
+                        return actionButton.trigger !== 'Detail' && actionButton.trigger !== 'List' && actionButton.trigger !== 'Relation';
                     }, true);
                 });
 
@@ -1431,12 +1429,12 @@ angular.module('primeapps')
                 } else {
                     $scope.frameUrl = url;
                     $scope.frameModal = $scope.frameModal || $modal({
-                        scope: $scope,
-                        controller: 'ActionButtonFrameController',
-                        templateUrl: 'view/app/actionbutton/actionButtonFrameModal.html',
-                        backdrop: 'static',
-                        show: false
-                    });
+                            scope: $scope,
+                            controller: 'ActionButtonFrameController',
+                            templateUrl: 'view/app/actionbutton/actionButtonFrameModal.html',
+                            backdrop: 'static',
+                            show: false
+                        });
 
                     $scope.frameModal.$promise.then($scope.frameModal.show);
                 }
@@ -1446,12 +1444,12 @@ angular.module('primeapps')
             $scope.openLocationModal = function (filedName) {
                 $scope.filedName = filedName;
                 $scope.locationModal = $scope.frameModal || $modal({
-                    scope: $scope,
-                    controller: 'locationFormModalController',
-                    templateUrl: 'view/app/location/locationFormModal.html',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        controller: 'locationFormModalController',
+                        templateUrl: 'view/app/location/locationFormModal.html',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.locationModal.$promise.then($scope.locationModal.show);
             };
 
