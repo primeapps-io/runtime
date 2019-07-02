@@ -1,4 +1,5 @@
-﻿﻿'use strict';
+﻿﻿
+'use strict';
 
 angular.module('primeapps')
     .controller('ImportController', ['$rootScope', '$scope', '$stateParams', '$state', 'config', '$q', '$localStorage', '$filter', '$popover', 'helper', 'FileUploader', 'ngToast', '$modal', '$timeout', '$cache', 'emailRegex', 'ModuleService', 'ImportService', '$cookies', 'components',
@@ -111,6 +112,8 @@ angular.module('primeapps')
                 $timeout(function () {
                     if (!$scope.selectedMapping.name) {
                         $scope.fieldMap = {};
+                        $scope.fixedValue = {};
+                        $scope.fixedValueFormatted = {};
 
                         angular.forEach($scope.headerRow, function (value, key) {
                             var used = false;
@@ -134,6 +137,21 @@ angular.module('primeapps')
                                     if (field.label_tr.toLowerCase() === value.trim().toLowerCase()) {
                                         used = true;
                                         $scope.fieldMap[field.name] = key;
+                                    }
+                                    else {
+                                        if (field && field.default_value) {
+                                            if (field.data_type === 'picklist') {
+                                                $scope.fieldMap[field.name] = 'fixed';
+                                                var picklistValue = $filter('filter')($scope.picklistsModule[field.picklist_id], { id: field.default_value })[0];
+                                                $scope.fixedValue[field.name] = picklistValue;
+                                                $scope.fixedValueFormatted[field.name] = $rootScope.language === 'tr' ? picklistValue.label_tr : picklistValue.label_en;
+                                            }
+                                            else {
+                                                $scope.fieldMap[field.name] = 'fixed';
+                                                $scope.fixedValue[field.name] = field.default_value;
+                                                $scope.fixedValueFormatted[field.name] = field.default_value;
+                                            }
+                                        }
                                     }
                                 });
                             }
@@ -286,12 +304,12 @@ angular.module('primeapps')
                 $scope.fixedField = field;
 
                 $scope.fixedValueModal = $scope.fixedValueModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/data/fixedValue.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/data/fixedValue.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.fixedValueModal.$promise.then(function () {
                     $scope.fixedValueModal.show();
@@ -498,12 +516,12 @@ angular.module('primeapps')
                     return;
 
                 $scope.importMappingSaveModal = $scope.importMappingSaveModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/data/importMappingSave.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/data/importMappingSave.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.importMappingSaveModal.$promise.then(function () {
                     $scope.importMappingSaveModal.show();
@@ -921,7 +939,7 @@ angular.module('primeapps')
                     $scope.error = null;
 
                     for (var fieldMapKey in $scope.fieldMap) {
-                        if (fieldMapKey === 'fixed' || fieldMapKey === 'fixedFormat') //To added excel import mapping 
+                        if (fieldMapKey === 'fixed' || fieldMapKey === 'fixedFormat') //To added excel import mapping
                             continue;
 
                         if ($scope.fieldMap.hasOwnProperty(fieldMapKey)) {
