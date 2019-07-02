@@ -140,7 +140,6 @@ namespace PrimeApps.Studio.Controllers
                         {
                             ErrorHandler.LogMessage(ex.InnerException.Message, SentryLevel.Info);
                             throw ex;
-                            return BadRequest(ex);
                         }
 
                         if (string.IsNullOrEmpty(dump))
