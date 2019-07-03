@@ -1,15 +1,20 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Devart.Data.PostgreSql;
 using LibGit2Sharp;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json.Linq;
 using Npgsql;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
@@ -33,6 +38,7 @@ namespace PrimeApps.Studio.Controllers
         private IGiteaHelper _giteaHelper;
         private IPermissionHelper _permissionHelper;
         private IOrganizationHelper _organizationHelper;
+        private IHostingEnvironment _hostingEnvironment;
 
         public DumpController(IBackgroundTaskQueue queue,
             IConfiguration configuration,
@@ -47,7 +53,8 @@ namespace PrimeApps.Studio.Controllers
             IServiceScopeFactory serviceScopeFactory,
             IPermissionHelper permissionHelper,
             IOrganizationHelper organizationHelper,
-            IGiteaHelper giteaHelper)
+            IGiteaHelper giteaHelper,
+            IHostingEnvironment hostingEnvironment)
         {
             Queue = queue;
             _organizationRepository = organizationRepository;
@@ -64,6 +71,7 @@ namespace PrimeApps.Studio.Controllers
             _giteaHelper = giteaHelper;
             _permissionHelper = permissionHelper;
             _organizationHelper = organizationHelper;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -98,6 +106,8 @@ namespace PrimeApps.Studio.Controllers
             if (repoInfo == null)
                 return BadRequest(model["repo_name"] + " not found.");
 
+            var localPath = _giteaHelper.CloneRepository(repoInfo["clone_url"].ToString(), repoInfo["name"].ToString());
+
             foreach (var id in model["app_ids"])
             {
                 var result = int.TryParse(id.ToString(), out var parsedId);
@@ -112,7 +122,9 @@ namespace PrimeApps.Studio.Controllers
 
                 var connectionString = _configuration.GetConnectionString("StudioDBConnection");
                 var npgsqlConnection = new NpgsqlConnectionStringBuilder(connectionString);
-                var connString = $"host={npgsqlConnection.Host};port={npgsqlConnection.Port};user id={npgsqlConnection.Username};password={npgsqlConnection.Password};database=app{id};";
+                var licenseKeyPath = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/devart.key";
+
+                var connString = $"host={npgsqlConnection.Host};port={npgsqlConnection.Port};user id={npgsqlConnection.Username};password={npgsqlConnection.Password};database=app{id};license key=trial:" + licenseKeyPath;
                 var connection = new PgSqlConnection(connString);
 
                 connection.Open();
@@ -122,12 +134,12 @@ namespace PrimeApps.Studio.Controllers
                 connection.Close();
 
                 var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
-                var localFolder = giteaDirectory + repoInfo["name"] + "\\" + "database";
+                var localFolder = giteaDirectory + repoInfo["name"] + Path.DirectorySeparatorChar + "database";
 
                 if (string.IsNullOrEmpty(dump))
                     return BadRequest("Dump string can not be null.");
 
-                using (var fs = System.IO.File.Create($"{localFolder}\\app{id}.sql"))
+                using (var fs = System.IO.File.Create($"{localFolder}{Path.DirectorySeparatorChar}app{id}.sql"))
                 {
                     var info = new UTF8Encoding(true).GetBytes(dump);
                     // Add some information to the file.
@@ -135,8 +147,6 @@ namespace PrimeApps.Studio.Controllers
                     //System.IO.File.WriteAllText (@"D:\path.txt", contents, Encoding.UTF8);
                 }
             }
-
-            var localPath = _giteaHelper.CloneRepository(repoInfo["clone_url"].ToString(), repoInfo["name"].ToString());
 
             using (var repo = new Repository(localPath))
             {
@@ -160,6 +170,13 @@ namespace PrimeApps.Studio.Controllers
 
                 repo.Dispose();
                 _giteaHelper.DeleteDirectory(localPath);
+            }
+
+            if (!model["notification_email"].IsNullOrEmpty())
+            {
+                var notification = new Email(_configuration, null, "Database Dump Ready", "Database dump is ready!");
+                notification.AddRecipient(model["email"].ToString());
+                notification.AddToQueue("notifications@primeapps.io", "PrimeApps", null, null, "Database Dump Ready", "Database Dump Ready");
             }
 
             return Ok();
