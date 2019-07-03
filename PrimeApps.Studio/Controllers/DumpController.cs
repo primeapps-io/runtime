@@ -90,7 +90,7 @@ namespace PrimeApps.Studio.Controllers
             if (string.IsNullOrEmpty(model["repo_name"].ToString()))
                 return BadRequest("repo_name is required.");
 
-            if (((JArray)model["app_ids"]).Count > 0)
+            if (((JArray)model["app_ids"]).Count < 1)
                 return BadRequest("app_ids should not be empty.");
 
             var repoInfo = await _giteaHelper.GetRepositoryInfo(model["repo_name"].ToString(), OrganizationId);
