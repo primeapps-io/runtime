@@ -716,6 +716,9 @@ namespace PrimeApps.Model.Helpers
 				if (record["id"].IsNullOrEmpty() && string.IsNullOrWhiteSpace(value))
 					continue;
 
+				if (!record["id"].IsNullOrEmpty() && field.DataType == DataType.Checkbox && string.IsNullOrWhiteSpace(value))
+					value = "false";
+
 				switch (field.DataType)
 				{
 					case DataType.TextSingle:
