@@ -624,13 +624,13 @@ angular.module('primeapps')
                                 recordValue = recordValue.slice(0, -1) + '}';
                             break;
                         case 'multiselect':
-                            var values = '{';
+                            var values = '{{';
 
                             angular.forEach(fixedValue[key], function (picklistItem) {
                                 values += '"' + picklistItem['label_' + $rootScope.user.tenant_language] + '",';
                             });
 
-                            fixedValue[key] = values.slice(0, -1) + '}';
+                            fixedValue[key] = values.slice(0, -1) + '}}';
                             break;
                         case 'lookup':
                             fixedValue[key] = fixedValue[key].id;
