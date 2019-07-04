@@ -42,6 +42,8 @@ namespace PrimeApps.Studio.Helpers
         Task CreateRepository(int organizationId, string appName, UserItem appUser);
         Task<string> GetSHAToken(string email, string password);
         void DeleteDirectory(string targetDir);
+        string GetToken();
+        string SetToken(string giteaToken = null);
     }
 
     public class GiteaHelper : IGiteaHelper
@@ -137,7 +139,7 @@ namespace PrimeApps.Studio.Helpers
                     var currentGiteaUsers = await GetRepositoryCollaborators(ownerName, app.Name);
 
                     using (var platformUserRepository = new PlatformUserRepository(platformDbContext, _configuration))//, cacheHelper))
-					{
+                    {
                         foreach (var id in userIds)
                         {
                             var user = await platformUserRepository.Get(id);
@@ -159,6 +161,7 @@ namespace PrimeApps.Studio.Helpers
                                         await httpClient.PutAsync(requestUrl, new StringContent(JsonConvert.SerializeObject(new JObject()), Encoding.UTF8, "application/json"));
                                         break;
                                     }
+
                                     case "delete":
                                     {
                                         var requestUrl = $"{giteaUrl}/api/v1/repos/{repo["owner"]["username"]}/{app.Name}/collaborators/{userName}";
@@ -166,6 +169,7 @@ namespace PrimeApps.Studio.Helpers
                                         await httpClient.DeleteAsync(requestUrl);
                                         break;
                                     }
+
                                     default:
                                         break;
                                 }
@@ -214,7 +218,7 @@ namespace PrimeApps.Studio.Helpers
                             }
                         }*/
 
-                        names.Add(new JObject() {["path"] = e.Path});
+                        names.Add(new JObject() { ["path"] = e.Path });
                     }
                 }
 
@@ -581,7 +585,7 @@ namespace PrimeApps.Studio.Helpers
 
         protected dynamic GetOptions(string type)
         {
-            var credential = new UsernamePasswordCredentials() {Username = Token, Password = String.Empty};
+            var credential = new UsernamePasswordCredentials() { Username = Token, Password = String.Empty };
             switch (type)
             {
                 case "fetch":
@@ -659,10 +663,10 @@ namespace PrimeApps.Studio.Helpers
             return string.Join("", (email.Replace("@", string.Empty)).Split("."));
         }
 
-        public string SetToken()
+        public string GetToken()
         {
-            if (!string.IsNullOrEmpty(AccessToken))
-                return AccessToken;
+            if (_context.HttpContext == null)
+                return null;
 
             if (!string.IsNullOrEmpty(_context.HttpContext.Request.Cookies["gitea_token"]))
             {
@@ -672,6 +676,7 @@ namespace PrimeApps.Studio.Helpers
             }
 
             var authorization = _context.HttpContext.Request.Headers["Authorization"];
+
             if (!string.IsNullOrEmpty(authorization))
             {
                 var token = authorization[0].Remove(0, "Bearer ".Length);
@@ -687,6 +692,20 @@ namespace PrimeApps.Studio.Helpers
             }
 
             return null;
+        }
+
+        public string SetToken(string giteaToken = null)
+        {
+            if (!string.IsNullOrEmpty(giteaToken))
+            {
+                AccessToken = giteaToken;
+                return giteaToken;
+            }
+
+            if (!string.IsNullOrEmpty(AccessToken))
+                return AccessToken;
+
+            return GetToken();
         }
     }
 }

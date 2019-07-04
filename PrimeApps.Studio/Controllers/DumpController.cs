@@ -1,22 +1,16 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Devart.Data.PostgreSql;
-using LibGit2Sharp;
+﻿using System.Threading.Tasks;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json.Linq;
-using Npgsql;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
+using PrimeApps.Studio.Jobs;
 using PrimeApps.Studio.Services;
 
 namespace PrimeApps.Studio.Controllers
@@ -103,10 +97,8 @@ namespace PrimeApps.Studio.Controllers
 
             var repoInfo = await _giteaHelper.GetRepositoryInfo(model["repo_name"].ToString(), OrganizationId);
 
-            if (repoInfo == null)
+            if (repoInfo.IsNullOrEmpty())
                 return BadRequest(model["repo_name"] + " not found.");
-
-            var localPath = _giteaHelper.CloneRepository(repoInfo["clone_url"].ToString(), repoInfo["name"].ToString());
 
             foreach (var id in model["app_ids"])
             {
@@ -119,65 +111,11 @@ namespace PrimeApps.Studio.Controllers
 
                 if (app.OrganizationId != OrganizationId)
                     return BadRequest("App " + id + " is not belong your organization.");
-
-                var connectionString = _configuration.GetConnectionString("StudioDBConnection");
-                var npgsqlConnection = new NpgsqlConnectionStringBuilder(connectionString);
-                var licenseKeyPath = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) + "/devart.key";
-
-                var connString = $"host={npgsqlConnection.Host};port={npgsqlConnection.Port};user id={npgsqlConnection.Username};password={npgsqlConnection.Password};database=app{id};license key=trial:" + licenseKeyPath;
-                var connection = new PgSqlConnection(connString);
-
-                connection.Open();
-                var dumpConnection = new PgSqlDump { Connection = connection, Schema = "public", IncludeDrop = false };
-                dumpConnection.Backup();
-                var dump = dumpConnection.DumpText;
-                connection.Close();
-
-                var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
-                var localFolder = giteaDirectory + repoInfo["name"] + Path.DirectorySeparatorChar + "database";
-
-                if (string.IsNullOrEmpty(dump))
-                    return BadRequest("Dump string can not be null.");
-
-                using (var fs = System.IO.File.Create($"{localFolder}{Path.DirectorySeparatorChar}app{id}.sql"))
-                {
-                    var info = new UTF8Encoding(true).GetBytes(dump);
-                    // Add some information to the file.
-                    fs.Write(info, 0, info.Length);
-                    //System.IO.File.WriteAllText (@"D:\path.txt", contents, Encoding.UTF8);
-                }
             }
 
-            using (var repo = new Repository(localPath))
-            {
-                //System.IO.File.WriteAllText(localPath, sample);
-                Commands.Stage(repo, "*");
+            var giteaToken = _giteaHelper.GetToken();
 
-                var signature = new Signature(
-                    new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
-
-                var status = repo.RetrieveStatus();
-
-                if (!status.IsDirty)
-                {
-                    _giteaHelper.DeleteDirectory(localPath);
-                    return BadRequest("Unhandled exception. Repo status is dirty.");
-                }
-
-                // Commit to the repository
-                var commit = repo.Commit("Database dump", signature, signature);
-                _giteaHelper.Push(repo);
-
-                repo.Dispose();
-                _giteaHelper.DeleteDirectory(localPath);
-            }
-
-            if (!model["notification_email"].IsNullOrEmpty())
-            {
-                var notification = new Email(_configuration, null, "Database Dump Ready", "Database dump is ready!");
-                notification.AddRecipient(model["email"].ToString());
-                notification.AddToQueue("notifications@primeapps.io", "PrimeApps", null, null, "Database Dump Ready", "Database Dump Ready");
-            }
+            BackgroundJob.Enqueue<Dump>(dump => dump.Run(model, repoInfo, giteaToken));
 
             return Ok();
         }
