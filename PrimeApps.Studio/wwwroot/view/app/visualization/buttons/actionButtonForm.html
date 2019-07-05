@@ -224,6 +224,34 @@
                            ng-model="currentActionButton.css_class"> 
                 </div>
 
+                <div>
+                    <a href class="advanced-options-link" style="margin-top: 25px;" ng-click="$parent.$parent.showPermissions = !$parent.$parent.showPermissions">
+                        {{'Setup.Modules.Permissions' | translate}}
+                        <i class="fa fa-caret-right" ng-if="!$parent.showPermissions"></i>
+                        <i class="fa fa-caret-down" ng-if="$parent.showPermissions"></i>
+                    </a>
+                    <div class="advanced-options" style="margin-bottom: 20px;" ng-show="$parent.$parent.showPermissions">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>{{'Setup.Modules.Profile' | translate}}</th>
+                                    <th class="text-center">{{'Setup.Modules.PermissionShow' | translate}}</th>
+                                    <!--<th class="text-center">{{'Setup.Modules.PermissionReadOnly' | translate}}</th>-->
+                                    <th class="text-center">{{'Setup.Modules.PermissionNone' | translate}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="permission in currentActionButton.permissions | orderBy:'profile_id'">
+                                    <td>{{permission.profile_name}}</td>
+                                    <td class="text-center"><label class="newinput radio-inline"><input type="radio" ng-model="permission.type" value="full" /><span></span></label></td>
+                                    <!--<td class="text-center user-not-select"><input type="radio" ng-model="permission.type" value="read_only" ng-disabled="permission.profile_is_admin" title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : ''}}" /></td>-->
+                                    <td class="text-center"><label class="newinput radio-inline"><input type="radio" ng-model="permission.type" value="none" ng-disabled="permission.profile_is_admin" title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : ''}}" /><span></span></label></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!--<div class="form-group" ng-show="actionButtonForm.$submitted && actionButtonForm.$invalid">
                     <div class="col-sm-12">
                         <div class="callout callout-danger">

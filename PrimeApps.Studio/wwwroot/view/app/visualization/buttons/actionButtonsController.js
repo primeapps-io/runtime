@@ -130,12 +130,12 @@ angular.module('primeapps')
                 ];
 
                 $scope.formModal = $scope.formModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/visualization/buttons/actionButtonForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/visualization/buttons/actionButtonForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.formModal.$promise.then(function () {
                     $scope.formModal.show();
@@ -144,6 +144,51 @@ angular.module('primeapps')
                 if ($scope.id) {
                     var module = $filter('filter')($rootScope.appModules, { id: parseInt($scope.id) }, true)[0];
                     $scope.currentActionButton.module = module;
+                }
+
+                var addNewPermissions = function (actionButton) {
+                    $scope.actionButtonPermission = [];
+                    if (actionButton.isNew)
+                        actionButton.permissions = [];
+
+                    angular.forEach($rootScope.appProfiles, function (profile) {
+                        if (profile.deleted)
+                            return;
+
+                        if (profile.is_persistent && profile.has_admin_rights)
+                            profile.name = $filter('translate')('Setup.Profiles.Administrator');
+
+                        if (profile.is_persistent && !profile.has_admin_rights)
+                            profile.name = $filter('translate')('Setup.Profiles.Standard');
+
+                        $scope.actionButtonPermission.push({ profile_id: profile.id, profile_name: profile.name, type: 'full', profile_is_admin: profile.has_admin_rights });
+                    });
+                };
+
+                if (!actionButton.isNew) {
+                    addNewPermissions(actionButton);
+                    if ($scope.actionButtonPermission.length != actionButton.permissions.length) {
+                        for (var i = actionButton.permissions.length; i < $scope.actionButtonPermission.length; i++) {
+                            actionButton.permissions.push($scope.actionButtonPermission[i]);
+                        }
+                    }
+                }
+
+                if (actionButton.isNew) {
+                    addNewPermissions(actionButton);
+                    actionButton.permissions = $scope.actionButtonPermission;
+                }
+                else {
+                    if (actionButton.permissions && actionButton.permissions.length > 0) {
+                        angular.forEach(actionButton.permissions, function (permission) {
+                            var profile = $filter('filter')($rootScope.appProfiles, { id: permission.profile_id }, true)[0];
+                            permission.profile_name = profile.name;
+                            permission.profile_is_admin = profile.has_admin_rights;
+                        });
+                    }
+                    else {
+                        addNewPermissions(actionButton);
+                    }
                 }
             };
 
@@ -241,13 +286,13 @@ angular.module('primeapps')
 
 
                         }).catch(function () {
-                            $scope.actionButtons = $scope.actionbuttonState;
+                        $scope.actionButtons = $scope.actionbuttonState;
 
-                            if ($scope.formModal) {
-                                $scope.formModal.hide();
-                                $scope.saving = false;
-                            }
-                        });
+                        if ($scope.formModal) {
+                            $scope.formModal.hide();
+                            $scope.saving = false;
+                        }
+                    });
                 } else {
                     ModuleService.updateActionButton(actionButton)
                         .then(function (response) {
@@ -257,13 +302,13 @@ angular.module('primeapps')
                             toastr.success($filter('translate')('Setup.Modules.ActionButtonSaveSuccess'));
 
                         }).catch(function () {
-                            $scope.actionButtons = $scope.actionbuttonState;
+                        $scope.actionButtons = $scope.actionbuttonState;
 
-                            if ($scope.formModal) {
-                                $scope.formModal.hide();
-                                $scope.saving = false;
-                            }
-                        });
+                        if ($scope.formModal) {
+                            $scope.formModal.hide();
+                            $scope.saving = false;
+                        }
+                    });
                 }
             };
 

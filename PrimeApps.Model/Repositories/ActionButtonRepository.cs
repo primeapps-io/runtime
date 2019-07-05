@@ -120,6 +120,7 @@ namespace PrimeApps.Model.Repositories
         {
             var actionButtons = DbContext.ActionButtons
                 .Where(x => !x.Deleted)
+                .Include(x => x.Permissions)
                 .OrderByDescending(x => x.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit);
