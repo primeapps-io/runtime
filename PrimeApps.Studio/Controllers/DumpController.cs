@@ -109,8 +109,9 @@ namespace PrimeApps.Studio.Controllers
 
                 var app = await _appDraftRepository.Get(parsedId);
 
-                if (app.OrganizationId != OrganizationId)
-                    return BadRequest("App " + id + " is not belong your organization.");
+                //TODO: Perapole organization (perapole) and git account (adminsecurifycom) problem must be solved.
+                //if (app.OrganizationId != OrganizationId)
+                //    return BadRequest("App " + id + " does not belong to your organization.");
             }
 
             var giteaToken = _giteaHelper.GetToken();
