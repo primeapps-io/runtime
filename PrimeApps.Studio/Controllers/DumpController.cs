@@ -116,9 +116,9 @@ namespace PrimeApps.Studio.Controllers
 
             var giteaToken = _giteaHelper.GetToken();
 
-            BackgroundJob.Enqueue<Dump>(dump => dump.Run(model, repoInfo, giteaToken));
+            var jobId = BackgroundJob.Enqueue<Dump>(dump => dump.Run(model, repoInfo, giteaToken));
 
-            return Ok();
+            return Ok("Database dump process has been started. You'll be notified when finished. Job: " + jobId);
         }
     }
 }
