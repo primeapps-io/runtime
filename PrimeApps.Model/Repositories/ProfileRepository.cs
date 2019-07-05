@@ -276,7 +276,7 @@ namespace PrimeApps.Model.Repositories
                     UserIDs = x.Users.Select(z => z.Id).ToList(),
                     Permissions = x.Permissions.Select(y => new ProfilePermissionLightDTO()
                     {
-                        Type = (int)y.Type,
+                        Type = (int) y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,
@@ -327,7 +327,7 @@ namespace PrimeApps.Model.Repositories
                     {
                         ID = x.Id,
                         ModuleId = y.ModuleId,
-                        Type = (int)y.Type,
+                        Type = (int) y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,
@@ -344,7 +344,9 @@ namespace PrimeApps.Model.Repositories
         /// <returns></returns>
         public async Task<IEnumerable<Profile>> GetAll()
         {
-            return await DbContext.Profiles.OrderBy(x => x.CreatedAt).ToListAsync();
+            return await DbContext.Profiles
+                .Where(x => !x.Deleted)
+                .OrderBy(x => x.CreatedAt).ToListAsync();
         }
 
         /// <summary>
@@ -484,7 +486,7 @@ namespace PrimeApps.Model.Repositories
                     {
                         ID = x.Id,
                         ModuleId = y.ModuleId,
-                        Type = (int)y.Type,
+                        Type = (int) y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,
