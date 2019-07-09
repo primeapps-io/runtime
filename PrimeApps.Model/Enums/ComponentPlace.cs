@@ -85,6 +85,9 @@ namespace PrimeApps.Model.Enums
         [EnumMember(Value = "sub_list_loaded")]
         SubListLoaded = 28,
 
+        [EnumMember(Value = "before_import")]
+        BeforeImport = 29,
+
         /*
          * Global Config
          */

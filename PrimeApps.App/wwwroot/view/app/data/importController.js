@@ -1084,6 +1084,8 @@ angular.module('primeapps')
                         .then(function (lookupIds) {
                             $scope.lookupIds = lookupIds;
                             $scope.records = $scope.prepareRecords();
+
+                            components.run('BeforeImport', 'Script', $scope);
                         });
                 }, 200);
             };
