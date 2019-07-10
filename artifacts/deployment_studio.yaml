@@ -1,0 +1,14 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: primeapps-studio
+  namespace: primeapps
+spec:
+  selector:
+    matchLabels:
+      k8s-app: primeapps-studio
+  template:
+    spec:
+      containers:
+        - name: primeapps-studio
+          image: primeappsadmin/primeapps-studio:IMAGE_TAG
