@@ -792,7 +792,7 @@ angular.module('primeapps')
                             break;
                         case 'multiselect':
                             var picklistItems = recordValue.split('|');
-                            recordValue = '{';
+                            recordValue = '{{';
 
                             for (var i = 0; i < picklistItems.length; i++) {
                                 var picklistItemLabel = picklistItems[i];
@@ -808,7 +808,7 @@ angular.module('primeapps')
                             }
 
                             if (recordValue)
-                                recordValue = recordValue.slice(0, -1) + '}';
+                                recordValue = recordValue.slice(0, -1) + '}}';
                             break;
                         case 'lookup':
                             if (field.lookup_type === 'relation')
@@ -1084,6 +1084,8 @@ angular.module('primeapps')
                         .then(function (lookupIds) {
                             $scope.lookupIds = lookupIds;
                             $scope.records = $scope.prepareRecords();
+
+                            components.run('BeforeImport', 'Script', $scope);
                         });
                 }, 200);
             };

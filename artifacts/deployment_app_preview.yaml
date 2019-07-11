@@ -1,0 +1,14 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: primeapps-app-preview
+  namespace: primeapps
+spec:
+  selector:
+    matchLabels:
+      k8s-app: primeapps-app-preview
+  template:
+    spec:
+      containers:
+        - name: primeapps-app-preview
+          image: primeapps/primeapps-app:IMAGE_TAG-debian

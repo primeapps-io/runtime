@@ -858,7 +858,7 @@ namespace PrimeApps.App.Helpers
                     if (component.Deleted || component.Type != ComponentType.Script || component.Place == ComponentPlace.GlobalConfig || string.IsNullOrEmpty(component.Content))
                         continue;
 
-                    if (component.Content.Contains('{') && appConfigs.IsNullOrEmpty())
+                    if (component.Content.StartsWith("{appConfigs") && appConfigs.IsNullOrEmpty())
                     {
                         component.Content = "console.error('Dynamic values not replaced. Because appConfigs is null.');";
                         continue;
