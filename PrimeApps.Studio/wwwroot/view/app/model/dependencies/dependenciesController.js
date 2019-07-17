@@ -103,11 +103,11 @@ angular.module('primeapps')
                         return;
 
                     var existDisplayDependency = $filter('filter')($scope.dependencies, {
-                        child_field: {name: field.name},
+                        child_field: { name: field.name },
                         dependency_type: 'display'
                     }, true)[0];
                     var existValueDependency = $filter('filter')($scope.dependencies, {
-                        child_field: {name: field.name},
+                        child_field: { name: field.name },
                         dependency_type: 'value'
                     }, true)[0];
 
@@ -161,9 +161,14 @@ angular.module('primeapps')
                 dependencyTypeValueChange.value = 'value';
                 dependencyTypeValueChange.label = $filter('translate')('Setup.Modules.DependencyTypeValueChange');
 
+                var dependencyTypeFreeze = {};
+                dependencyTypeFreeze.value = 'freeze';
+                dependencyTypeFreeze.label = $filter('translate')('Setup.Modules.DependencyTypeFreeze');
+
                 $scope.dependencyTypes = [];
                 $scope.dependencyTypes.push(dependencyTypeDisplay);
                 $scope.dependencyTypes.push(dependencyTypeValueChange);
+                $scope.dependencyTypes.push(dependencyTypeFreeze);
             };
             getDependencyTypes();
 
@@ -212,6 +217,9 @@ angular.module('primeapps')
                     switch ($scope.currentDependency.dependencyType) {
                         case 'display':
                             return $scope.parentDisplayFields;
+                        case 'freeze':
+                            return $scope.parentDisplayFields;
+                            break;
                         case 'value':
                             if ($scope.currentDependency.type === 'list_value')
                                 return $scope.picklistFields;
@@ -233,7 +241,17 @@ angular.module('primeapps')
                             });
 
                             return $scope.childDisplayFields;
+                        case 'freeze':
+                            angular.forEach($scope.childDisplayFields, function (field) {
+                                delete field.hidden;
 
+                                //Silinen alanlar alan bagimliklarinda gelmeye devam ediyordu.
+                                if (field.name === $scope.currentDependency.parent_field || field.deleted)
+                                    field.hidden = true;
+                            });
+
+                            return $scope.childDisplayFields;
+                            break;
                         case 'value':
                             if ($scope.currentDependency.type === 'list_text') {
                                 angular.forEach($scope.childValueTextFields, function (field) {
@@ -258,18 +276,18 @@ angular.module('primeapps')
             };
 
             $scope.getMappingOptions = function () {
-                var parentField = $filter('filter')($scope.module.fields, {name: $scope.currentDependency.parent_field}, true)[0];
-                var childField = $filter('filter')($scope.module.fields, {name: $scope.currentDependency.child_field}, true)[0];
-                var childSection = $filter('filter')($scope.module.sections, {name: $scope.currentDependency.child_section}, true)[0];
+                var parentField = $filter('filter')($scope.module.fields, { name: $scope.currentDependency.parent_field }, true)[0];
+                var childField = $filter('filter')($scope.module.fields, { name: $scope.currentDependency.child_field }, true)[0];
+                var childSection = $filter('filter')($scope.module.sections, { name: $scope.currentDependency.child_section }, true)[0];
                 $scope.parentPicklist = [];
                 if (parentField.picklist_id) {
                     DependenciesService.getPicklist(parentField.picklist_id).then(function (picklists) {
                             var copyPicklist = angular.copy(picklists.data.items);
-                            $scope.parentPicklist = $filter('filter')(copyPicklist, {inactive: '!true'});
+                            $scope.parentPicklist = $filter('filter')(copyPicklist, { inactive: '!true' });
                             if (childField.picklist_id) {
                                 DependenciesService.getPicklist(childField.picklist_id).then(function (picklists) {
                                     var copyPicklist = angular.copy(picklists.data.items);
-                                    var childPicklist = $filter('filter')(copyPicklist, {inactive: '!true'});
+                                    var childPicklist = $filter('filter')(copyPicklist, { inactive: '!true' });
                                     angular.forEach($scope.parentPicklist, function (picklistItem) {
                                         picklistItem.childPicklist = childPicklist;
                                     });
@@ -315,12 +333,12 @@ angular.module('primeapps')
                 }
 
                 $scope.addNewDependencyModal = $scope.addNewDependencyModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/model/dependencies/dependencyForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/model/dependencies/dependencyForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.addNewDependencyModal.$promise.then(function () {
                     $scope.addNewDependencyModal.show();
@@ -328,7 +346,7 @@ angular.module('primeapps')
             };
 
             $scope.save = function (dependencyForm) {
-                
+
                 if (!dependencyForm.$valid) {
                     if (dependencyForm.$error.required)
                         toastr.error($filter('translate')('Setup.Modules.RequiredError'));
@@ -431,11 +449,11 @@ angular.module('primeapps')
 
             $scope.getPicklist = function () {
                 $scope.picklist = [];
-                var parentField = $filter('filter')($scope.module.fields, {name: $scope.currentDependency.parent_field}, true)[0];
+                var parentField = $filter('filter')($scope.module.fields, { name: $scope.currentDependency.parent_field }, true)[0];
                 if (parentField.picklist_id) {
                     DependenciesService.getPicklist(parentField.picklist_id).then(function (picklists) {
                         var copyPicklist = angular.copy(picklists.data.items);
-                        $scope.picklist = $filter('filter')(copyPicklist, {inactive: '!true'});
+                        $scope.picklist = $filter('filter')(copyPicklist, { inactive: '!true' });
                     }).finally(function () {
                         $scope.modalLoading = false;
                     });
@@ -448,19 +466,19 @@ angular.module('primeapps')
                 getValueChangeTypes();
                 var dependency = $scope.currentDependency;
                 if (!dependency.isNew) {
-                    var childField = $filter('filter')($scope.module.fields, {name: dependency.child_field}, true)[0];
-                    var sectionField = $filter('filter')($scope.module.sections, {name: dependency.child_section}, true)[0];
+                    var childField = $filter('filter')($scope.module.fields, { name: dependency.child_field }, true)[0];
+                    var sectionField = $filter('filter')($scope.module.sections, { name: dependency.child_section }, true)[0];
                     $scope.affectedAreaType = dependency.child_section ? 'section' : 'field';
 
-                    var childValueListFieldsExist = $filter('filter')($scope.childValueListFields, {name: childField.name}, true)[0];
+                    var childValueListFieldsExist = $filter('filter')($scope.childValueListFields, { name: childField.name }, true)[0];
                     if (!childValueListFieldsExist)
                         $scope.childValueListFields.push(childField);
 
-                    var childValueTextFieldsExist = $filter('filter')($scope.childValueTextFields, {name: childField.name}, true)[0];
+                    var childValueTextFieldsExist = $filter('filter')($scope.childValueTextFields, { name: childField.name }, true)[0];
                     if (!childValueTextFieldsExist)
                         $scope.childValueTextFields.push(childField);
 
-                    var childDisplayFieldExist = $filter('filter')($scope.childDisplayFields, {name: childField.name}, true)[0];
+                    var childDisplayFieldExist = $filter('filter')($scope.childDisplayFields, { name: childField.name }, true)[0];
                     if (!childDisplayFieldExist)
                         $scope.childDisplayFields.push(childField);
 
