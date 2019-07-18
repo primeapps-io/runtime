@@ -59,7 +59,7 @@ data:
   MongoDBServer: mongodb.trudesk.svc.cluster.local
   MongoDBPort: "27017"
   MongoDBUsername: primeapps
-  MongoDBPassword: "pr!m€Appsi0d"
+  MongoDBPassword: "pr!meAppsi0d"
   MongoDBDatabase: primeapps
 ---
 kind: Deployment
