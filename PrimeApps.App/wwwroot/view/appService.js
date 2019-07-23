@@ -508,7 +508,9 @@ angular.module('primeapps')
                                     $rootScope.personalConvertShow = $rootScope.personalConvertShow ? $rootScope.personalConvertShow.value : false;
                                     $rootScope.permissionsReport = $filter('filter')($rootScope.user.profile.permissions, {type: 2}, true)[0];
                                     $rootScope.permissionsNewsfeed = $filter('filter')($rootScope.user.profile.permissions, {type: 3}, true)[0];
-
+                                    $rootScope.deleteAllHiddenModules = $filter('filter')($rootScope.moduleSettings, {key: 'delete_all_hidden_modules'}, true)[0];
+                                    $rootScope.deleteAllHiddenModules = $rootScope.deleteAllHiddenModules ? $rootScope.deleteAllHiddenModules.value.split(',') : [];
+                                    
                                     that.setCustomActivityTypes(activityTypes);
 
                                     helper.hideLoader();
