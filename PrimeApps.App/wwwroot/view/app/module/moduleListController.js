@@ -17,29 +17,14 @@ angular.module('primeapps')
             $scope.searchingDocuments = false;
             $scope.isAdmin = $rootScope.user.profile.has_admin_rights;
             $scope.hasActionButtonDisplayPermission = ModuleService.hasActionButtonDisplayPermission;
-            $scope.showDeleteAll = true;
+            $scope.hideDeleteAll = $filter('filter')($rootScope.deleteAllHiddenModules, {name: $scope.type}, true)[0];
 
             if (!$scope.module) {
                 ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
                 $state.go('app.dashboard');
                 return;
             }
-
-            //Type-> 5 module
-            $http.get(config.apiUrl + "settings/get_by_key/5/show_delete_all").then(function (response) {
-                if (response.data && response.data.value) {
-                    var obj = angular.fromJson(response.data.value);
-                    if (obj.modules && !obj.show_delete_all) {
-                        var moduleList = obj.modules.split(';');
-                        for (var o = 0; o < moduleList.length; o++) {
-                            if (moduleList[o] !== "" && moduleList[o] === $scope.type) {
-                                $scope.showDeleteAll = false;
-                            }
-                        }
-                    }
-                }
-            });
-
+            
             var salesInvoiceModule = $filter('filter')($scope.modules, {name: 'sales_invoices'}, true);
             if (salesInvoiceModule.length < 1)
                 $scope.salesInvoiceModule = false;
