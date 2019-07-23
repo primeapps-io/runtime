@@ -10,21 +10,37 @@ angular.module('primeapps')
             $scope.activityTypes = activityTypes;
             $scope.transactionTypes = transactionTypes;
             $scope.loading = true;
-            $scope.module = $filter('filter')($rootScope.modules, { name: $scope.type }, true)[0];
+            $scope.module = $filter('filter')($rootScope.modules, {name: $scope.type}, true)[0];
             $scope.lookupUser = helper.lookupUser;
             $scope.lookupProfile = helper.lookupProfile;
             $scope.lookupRole = helper.lookupRole;
             $scope.searchingDocuments = false;
             $scope.isAdmin = $rootScope.user.profile.has_admin_rights;
             $scope.hasActionButtonDisplayPermission = ModuleService.hasActionButtonDisplayPermission;
+            $scope.isShowCollectiveDeleted = true;
 
             if (!$scope.module) {
-                ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
+                ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
                 $state.go('app.dashboard');
                 return;
             }
 
-            var salesInvoiceModule = $filter('filter')($scope.modules, { name: 'sales_invoices' }, true);
+            //Type-> 5 module
+            $http.get(config.apiUrl + "settings/get_by_key/5/show_collective_deleted").then(function (response) {
+                if (response.data && response.data.value) {
+                    var obj = angular.fromJson(response.data.value);
+                    if (obj.modules && !obj.is_show_collective_deleted) {
+                        var moduleList = obj.modules.split(';');
+                        for (var o = 0; o < moduleList.length; o++) {
+                            if (moduleList[o] !== "" && moduleList[o] === $scope.type) {
+                                $scope.isShowCollectiveDeleted = false;
+                            }
+                        }
+                    }
+                }
+            });
+
+            var salesInvoiceModule = $filter('filter')($scope.modules, {name: 'sales_invoices'}, true);
             if (salesInvoiceModule.length < 1)
                 $scope.salesInvoiceModule = false;
             else
@@ -34,7 +50,7 @@ angular.module('primeapps')
             $scope.filter = {};
 
             if (!$scope.hasPermission($scope.type, $scope.operations.read)) {
-                ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
+                ngToast.create({content: $filter('translate')('Common.Forbidden'), className: 'warning'});
                 $state.go('app.dashboard');
                 return;
             }
@@ -72,7 +88,7 @@ angular.module('primeapps')
             }
 
             if ($scope.module.name === 'activities') {
-                var activityTypesActive = $filter('filter')(activityTypes, { hidden: '!true' });
+                var activityTypesActive = $filter('filter')(activityTypes, {hidden: '!true'});
 
                 if (activityTypesActive && activityTypesActive.length === 1)
                     $scope.activityTypeActive = activityTypesActive[0];
@@ -95,24 +111,33 @@ angular.module('primeapps')
             //Sets holidays to business days
             var setHolidays = function () {
                 if ($scope.module.name === 'leaves' || $scope.module.name === 'izinler') {
-                    var holidaysModule = $filter('filter')($rootScope.modules, { name: 'holidays' }, true)[0];
+                    var holidaysModule = $filter('filter')($rootScope.modules, {name: 'holidays'}, true)[0];
 
                     if (holidaysModule) {
-                        var countryField = $filter('filter')(holidaysModule.fields, { name: 'country' }, true)[0];
+                        var countryField = $filter('filter')(holidaysModule.fields, {name: 'country'}, true)[0];
 
                         helper.getPicklists([countryField.picklist_id])
                             .then(function (picklists) {
                                 var countryPicklist = picklists[countryField.picklist_id];
-                                var countryPicklistItemTr = $filter('filter')(countryPicklist, { value: 'tr' }, true)[0];
-                                var countryPicklistItemEn = $filter('filter')(countryPicklist, { value: 'en' }, true)[0];
+                                var countryPicklistItemTr = $filter('filter')(countryPicklist, {value: 'tr'}, true)[0];
+                                var countryPicklistItemEn = $filter('filter')(countryPicklist, {value: 'en'}, true)[0];
                                 var language = window.localStorage['NG_TRANSLATE_LANG_KEY'] || 'tr';
                                 var request = {};
                                 request.limit = 1000;
 
                                 if ($rootScope.language === 'tr')
-                                    request.filters = [{ field: 'country', operator: 'equals', value: countryPicklistItemTr.labelStr, no: 1 }];
+                                    request.filters = [{
+                                        field: 'country',
+                                        operator: 'equals',
+                                        value: countryPicklistItemTr.labelStr,
+                                        no: 1
+                                    }];
                                 else
-                                    request.filters = [{ field: 'country', operator: 'is', value: countryPicklistItemEn.labelStr }];
+                                    request.filters = [{
+                                        field: 'country',
+                                        operator: 'is',
+                                        value: countryPicklistItemEn.labelStr
+                                    }];
 
                                 ModuleService.findRecords('holidays', request)
                                     .then(function (response) {
@@ -126,14 +151,14 @@ angular.module('primeapps')
                                         }
                                         var workingWeekdays = [1, 2, 3, 4, 5];
 
-                                        var workSaturdays = $filter('filter')($rootScope.moduleSettings, { key: 'work_saturdays' }, true);
+                                        var workSaturdays = $filter('filter')($rootScope.moduleSettings, {key: 'work_saturdays'}, true);
                                         if (workSaturdays.length > 0 && workSaturdays[0].value === 't') {
                                             workingWeekdays.push(6);
                                         }
                                         $rootScope.holidaysData = data;
 
                                         moment.locale(language, {
-                                            week: { dow: 1 }, // Monday is the first day of the week.
+                                            week: {dow: 1}, // Monday is the first day of the week.
                                             workingWeekdays: workingWeekdays, // Set working weekdays.
                                             holidays: holidays,
                                             holidayFormat: 'DD-MM-YYYY'
@@ -169,8 +194,7 @@ angular.module('primeapps')
                     var top = (screen.height / 2) - (h / 2);
                     window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
 
-                }
-                else {
+                } else {
                     $scope.frameUrl = url;
                     $scope.frameModal = $scope.frameModal || $modal({
                         scope: $scope,
@@ -194,7 +218,7 @@ angular.module('primeapps')
                 var jsonData = {};
                 var params = action.parameters.split(',');
                 var headers = action.headers.split(',');
-                var headersData = { 'Content-Type': 'application/json' };
+                var headersData = {'Content-Type': 'application/json'};
                 $scope.webhookRequesting = {};
 
                 $scope.webhookRequesting[action.id] = true;
@@ -222,8 +246,7 @@ angular.module('primeapps')
                         //             jsonData[parameterName] = response.data[fieldName];
                         //         })
                         // }
-                    }
-                    else {
+                    } else {
                         if ($scope.record[fieldName])
                             jsonData[parameterName] = $scope.record[fieldName];
                         else
@@ -282,7 +305,7 @@ angular.module('primeapps')
 
                 if (action.method_type === 'post') {
 
-                    $http.post(action.url, jsonData, { headers: headersData })
+                    $http.post(action.url, jsonData, {headers: headersData})
                         .then(function () {
                             ngToast.create({
                                 content: $filter('translate')('Module.ActionButtonWebhookSuccess'),
@@ -298,8 +321,7 @@ angular.module('primeapps')
                             $scope.webhookRequesting[action.id] = false;
                         });
 
-                }
-                else if (action.method_type === 'get') {
+                } else if (action.method_type === 'get') {
 
                     var query = "";
 
@@ -333,7 +355,7 @@ angular.module('primeapps')
                 ModuleService.getRecord($scope.module.name, id)
                     .then(function (recordData) {
                         if (!helper.hasPermission($scope.type, operations.modify, recordData.data)) {
-                            ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
+                            ngToast.create({content: $filter('translate')('Common.Forbidden'), className: 'warning'});
                             return;
                         }
 
@@ -406,7 +428,7 @@ angular.module('primeapps')
             $scope.deleteView = function (id) {
                 ModuleService.deleteView(id)
                     .then(function () {
-                        $scope.view = $filter('filter')($scope.views, { active: true })[0];
+                        $scope.view = $filter('filter')($scope.views, {active: true})[0];
                         $scope.changeView();
                     });
             };
@@ -546,7 +568,7 @@ angular.module('primeapps')
 
             $scope.deleteSelecteds = function () {
                 if (!$scope.selectedRows || !$scope.selectedRows.length) {
-                    ngToast.create({ content: $filter('translate')('Module.NoRecordSelected'), className: 'warning' });
+                    ngToast.create({content: $filter('translate')('Module.NoRecordSelected'), className: 'warning'});
                     return;
                 }
                 ModuleService.deleteRecordBulk($scope.module.name, $scope.selectedRows)
@@ -554,7 +576,10 @@ angular.module('primeapps')
                         $cache.remove(cacheKey);
                         $scope.tableParams.reloading = true;
                         $scope.tableParams.reload();
-                        ngToast.create({ content: $filter('translate')('Silme işleminiz başarıyla gerçekleşti. '), className: 'success' });
+                        ngToast.create({
+                            content: $filter('translate')('Silme işleminiz başarıyla gerçekleşti. '),
+                            className: 'success'
+                        });
                         $scope.selectedRows = [];
                         $scope.isAllSelected = false;
                     });
@@ -567,12 +592,12 @@ angular.module('primeapps')
 
             $scope.showEMailModal = function () {
                 if (!$rootScope.system.messaging.SystemEMail && !$rootScope.system.messaging.PersonalEMail) {
-                    ngToast.create({ content: $filter('translate')('EMail.NoProvider'), className: 'warning' });
+                    ngToast.create({content: $filter('translate')('EMail.NoProvider'), className: 'warning'});
                     return;
                 }
 
                 if ($scope.selectedRows.length == 0 && !$scope.isAllSelected) {
-                    ngToast.create({ content: $filter('translate')('Module.NoRecordSelected'), className: 'warning' });
+                    ngToast.create({content: $filter('translate')('Module.NoRecordSelected'), className: 'warning'});
                     return;
                 }
                 /*Generates and displays modal form for the mail*/
@@ -588,12 +613,12 @@ angular.module('primeapps')
 
             $scope.showSMSModal = function () {
                 if (!$rootScope.system.messaging.SMS) {
-                    ngToast.create({ content: $filter('translate')('SMS.NoProvider'), className: 'warning' });
+                    ngToast.create({content: $filter('translate')('SMS.NoProvider'), className: 'warning'});
                     return;
                 }
 
                 if ($scope.selectedRows.length == 0 && !$scope.isAllSelected) {
-                    ngToast.create({ content: $filter('translate')('Module.NoRecordSelected'), className: 'warning' });
+                    ngToast.create({content: $filter('translate')('Module.NoRecordSelected'), className: 'warning'});
                     return;
                 }
 
@@ -613,7 +638,7 @@ angular.module('primeapps')
                 $scope.loading = true;
                 var arrayApprove = [];
                 angular.forEach($scope.selectedRows, function (value) {
-                    var record = $filter('filter')($scope.tableParams.data, { id: value }, true)[0];
+                    var record = $filter('filter')($scope.tableParams.data, {id: value}, true)[0];
                     if (!angular.isUndefined(record))
                         if (record['process.process_requests.process_status'] != 2)
                             arrayApprove.push(record.id)
@@ -649,9 +674,8 @@ angular.module('primeapps')
                         tag: 'createModal'
                     });
                     $scope.collectiveApprovalModal.$promise.then($scope.collectiveApprovalModal.show);
-                }
-                else
-                    ngToast.create({ content: $filter('translate')('Module.NoRecordSelected'), className: 'warning' });
+                } else
+                    ngToast.create({content: $filter('translate')('Module.NoRecordSelected'), className: 'warning'});
             };
 
             $scope.dropdownHide = function () {
@@ -672,7 +696,7 @@ angular.module('primeapps')
 
 
             //bulkUpdate
-            var field = $filter('filter')($scope.module.fields, { name: name }, true)[0];
+            var field = $filter('filter')($scope.module.fields, {name: name}, true)[0];
 
             $scope.setCurrentLookupField = function (field) {
                 $scope.currentLookupField = field;
@@ -721,7 +745,10 @@ angular.module('primeapps')
                     .then(function () {
                         $scope.updateModal.hide();
                         $scope.submittingModal = false;
-                        ngToast.create({ content: $filter('translate')('Güncelleme işleminiz başarıyla gerçekleşti. '), className: 'success' });
+                        ngToast.create({
+                            content: $filter('translate')('Güncelleme işleminiz başarıyla gerçekleşti. '),
+                            className: 'success'
+                        });
                         $cache.remove(cacheKey);
                         $scope.tableParams.reloading = true;
                         $scope.tableParams.reload();
@@ -755,19 +782,24 @@ angular.module('primeapps')
                     .then(function (templateResponse) {
                         if (templateResponse.data.length == 0) {
                             if (!$rootScope.preview)
-                                ngToast.create({ content: $filter('translate')('Setup.Templates.TemplateNotFound'), className: 'warning' });
+                                ngToast.create({
+                                    content: $filter('translate')('Setup.Templates.TemplateNotFound'),
+                                    className: 'warning'
+                                });
                             else
-                                ngToast.create({ content: $filter('translate')('Setup.Templates.TemplateDefined'), className: 'warning' });
+                                ngToast.create({
+                                    content: $filter('translate')('Setup.Templates.TemplateDefined'),
+                                    className: 'warning'
+                                });
 
                             $scope.excelCreating = false;
-                        }
-                        else {
+                        } else {
                             var templateExcel = templateResponse.data;
-                            $scope.quoteTemplates = $filter('filter')(templateExcel, { active: true }, true);
+                            $scope.quoteTemplates = $filter('filter')(templateExcel, {active: true}, true);
                             $scope.isShownWarning = true;
                             for (var i = 0; i < $scope.quoteTemplates.length; i++) {
                                 var quoteTemplate = $scope.quoteTemplates[i];
-                                var currentQuoteTemplate = $filter('filter')(quoteTemplate.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
+                                var currentQuoteTemplate = $filter('filter')(quoteTemplate.permissions, {profile_id: $rootScope.user.profile.id}, true)[0];
                                 if (currentQuoteTemplate.type === 'none') {
                                     quoteTemplate.isShown = false;
                                 } else {
@@ -834,14 +866,14 @@ angular.module('primeapps')
 
                     switch (field.data_type) {
                         case 'picklist':
-                            fieldValue = $filter('filter')($scope.modulePicklists[field.picklist_id], { labelStr: value }, true)[0];
+                            fieldValue = $filter('filter')($scope.modulePicklists[field.picklist_id], {labelStr: value}, true)[0];
                             break;
                         case 'multiselect':
                             fieldValue = [];
                             var multiselectValue = value.split('|');
 
                             angular.forEach(multiselectValue, function (picklistLabel) {
-                                var picklist = $filter('filter')($scope.modulePicklists[field.picklist_id], { labelStr: picklistLabel }, true)[0];
+                                var picklist = $filter('filter')($scope.modulePicklists[field.picklist_id], {labelStr: picklistLabel}, true)[0];
 
                                 if (picklist)
                                     fieldValue.push(picklist);
@@ -855,9 +887,8 @@ angular.module('primeapps')
                                     user.id = 0;
                                     user.email = '[me]';
                                     user.full_name = $filter('translate')('Common.LoggedInUser');
-                                }
-                                else {
-                                    var userItem = $filter('filter')($rootScope.users, { id: parseInt(value) }, true)[0];
+                                } else {
+                                    var userItem = $filter('filter')($rootScope.users, {id: parseInt(value)}, true)[0];
                                     user.id = userItem.id;
                                     user.email = userItem.Email;
                                     user.full_name = userItem.FullName;
@@ -870,8 +901,7 @@ angular.module('primeapps')
                                 }
 
                                 fieldValue = [user];
-                            }
-                            else {
+                            } else {
                                 fieldValue = value;
                             }
                             break;
@@ -881,7 +911,7 @@ angular.module('primeapps')
                             fieldValue = new Date(value);
                             break;
                         case 'checkbox':
-                            fieldValue = $filter('filter')($scope.modulePicklists.yes_no, { system_code: value }, true)[0];
+                            fieldValue = $filter('filter')($scope.modulePicklists.yes_no, {system_code: value}, true)[0];
                             break;
                         default:
                             fieldValue = value;
@@ -905,11 +935,11 @@ angular.module('primeapps')
 
             $scope.showUpdateModal = function () {
                 if (!$scope.selectedRows || !$scope.selectedRows.length) {
-                    ngToast.create({ content: $filter('translate')('Module.NoRecordSelected'), className: 'warning' });
+                    ngToast.create({content: $filter('translate')('Module.NoRecordSelected'), className: 'warning'});
                     return;
                 }
                 if ($scope.selectedRows.length > 100) {
-                    ngToast.create({ content: $filter('translate')('Module.RecordLimit'), className: 'warning' });
+                    ngToast.create({content: $filter('translate')('Module.RecordLimit'), className: 'warning'});
                     return;
                 }
                 $scope.selected = $scope.selectedRows.length;
@@ -1001,13 +1031,13 @@ angular.module('primeapps')
                             if (record.process_status === 1) {
                                 processOrderParam = record.process_status_order;
                                 if (record.process_status_order === 1) {
-                                    currentApprover = $filter('filter')($rootScope.users, { email: record.custom_approver }, true)[0].full_name;
+                                    currentApprover = $filter('filter')($rootScope.users, {email: record.custom_approver}, true)[0].full_name;
                                 } else {
-                                    currentApprover = $filter('filter')($rootScope.users, { email: record['custom_approver_' + record.process_status_order] }, true)[0].full_name;
-                                    var firstApprover = $filter('filter')($rootScope.users, { email: record.custom_approver }, true)[0].full_name;
+                                    currentApprover = $filter('filter')($rootScope.users, {email: record['custom_approver_' + record.process_status_order]}, true)[0].full_name;
+                                    var firstApprover = $filter('filter')($rootScope.users, {email: record.custom_approver}, true)[0].full_name;
                                     previousApprovers.push(firstApprover)
                                     for (var i = 2; i < record.process_status_order; i++) {
-                                        previousApprovers.push($filter('filter')($rootScope.users, { email: record['custom_approver_' + i] }, true)[0].full_name);
+                                        previousApprovers.push($filter('filter')($rootScope.users, {email: record['custom_approver_' + i]}, true)[0].full_name);
                                     }
                                     $scope.previousApprovers = previousApprovers;
                                 }
@@ -1015,16 +1045,16 @@ angular.module('primeapps')
                                 $scope.currentApprover = currentApprover;
                             } else if (record.process_status === 2) {
                                 updateTime = record["process_request_updated_at"];
-                                var firstApprover = $filter('filter')($rootScope.users, { email: record.custom_approver }, true)[0].full_name;
+                                var firstApprover = $filter('filter')($rootScope.users, {email: record.custom_approver}, true)[0].full_name;
                                 previousApprovers.push(firstApprover)
                                 for (var i = 2; i < record.process_status_order + 1; i++) {
-                                    previousApprovers.push($filter('filter')($rootScope.users, { email: record['custom_approver_' + i] }, true)[0].full_name);
+                                    previousApprovers.push($filter('filter')($rootScope.users, {email: record['custom_approver_' + i]}, true)[0].full_name);
                                 }
                                 $scope.previousApprovers = previousApprovers;
                                 $scope.updateTime = moment(updateTime).utc().format("DD-MM-YYYY HH:mm");
                             } else if (record.process_status === 3) {
                                 updateTime = record["process_request_updated_at"];
-                                rejectApprover = $filter('filter')($rootScope.users, { id: record["process_request_updated_by"] }, true)[0].full_name;
+                                rejectApprover = $filter('filter')($rootScope.users, {id: record["process_request_updated_by"]}, true)[0].full_name;
                                 $scope.rejectApprover = rejectApprover;
                                 $scope.updateTime = moment(updateTime).utc().format("DD-MM-YYYY HH:mm");
                             }
