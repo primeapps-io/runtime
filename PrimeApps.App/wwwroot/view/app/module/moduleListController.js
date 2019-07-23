@@ -17,7 +17,7 @@ angular.module('primeapps')
             $scope.searchingDocuments = false;
             $scope.isAdmin = $rootScope.user.profile.has_admin_rights;
             $scope.hasActionButtonDisplayPermission = ModuleService.hasActionButtonDisplayPermission;
-            $scope.isShowCollectiveDeleted = true;
+            $scope.showDeleteAll = true;
 
             if (!$scope.module) {
                 ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
@@ -29,11 +29,11 @@ angular.module('primeapps')
             $http.get(config.apiUrl + "settings/get_by_key/5/show_collective_deleted").then(function (response) {
                 if (response.data && response.data.value) {
                     var obj = angular.fromJson(response.data.value);
-                    if (obj.modules && !obj.is_show_collective_deleted) {
+                    if (obj.modules && !obj.show_delete_all) {
                         var moduleList = obj.modules.split(';');
                         for (var o = 0; o < moduleList.length; o++) {
                             if (moduleList[o] !== "" && moduleList[o] === $scope.type) {
-                                $scope.isShowCollectiveDeleted = false;
+                                $scope.showDeleteAll = false;
                             }
                         }
                     }
