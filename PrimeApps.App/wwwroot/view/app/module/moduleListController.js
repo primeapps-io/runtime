@@ -26,7 +26,7 @@ angular.module('primeapps')
             }
 
             //Type-> 5 module
-            $http.get(config.apiUrl + "settings/get_by_key/5/show_collective_deleted").then(function (response) {
+            $http.get(config.apiUrl + "settings/get_by_key/5/show_delete_all").then(function (response) {
                 if (response.data && response.data.value) {
                     var obj = angular.fromJson(response.data.value);
                     if (obj.modules && !obj.show_delete_all) {
