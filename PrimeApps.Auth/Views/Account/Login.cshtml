@@ -9,14 +9,13 @@
     var multiLanguage = Model.ApplicationInfo.MultiLanguage;
     var otherLang = Model.ApplicationInfo.Language == "tr" ? "en" : "tr";
     var preview = Model.ApplicationInfo.Preview;
+    var headLine = Model.ApplicationInfo.Theme["headLine"]["en"].ToString();
 }
 <div class="col-md-4 login-sec">
     <img class="logo-img" src="@Model.ApplicationInfo.Logo"/>
     @if (!preview) //(!customDomain)
     {
-        <span class="free-info-header">
-            @Html.Raw(string.Format(Localizer["LoginRegisterInfo"].Value, "<a href=" + @Url.Action("Register", "Account", new {ReturnUrl = Model.ReturnUrl}) + ">" + Localizer["LoginRegisterInfoLink"].Value + "</a>"))
-        </span>
+            @Html.Raw(headLine)
     }
 
     <form asp-route="Login" class="login-form" role="form" id="login-form">

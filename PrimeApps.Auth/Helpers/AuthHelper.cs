@@ -115,6 +115,23 @@ namespace PrimeApps.Auth.UI
 				theme["banner"][0]["image"] = defaultTheme["banner"][0]["image"];
 			}
 
+			if (!theme["headLine"].IsNullOrEmpty())
+			{
+				if (!theme["headLine"]["en"].IsNullOrEmpty())
+				{
+					theme["headLine"]["en"] = theme["headLine"]["en"].ToString()
+						.Replace("{auth_domain}", app.Setting.AuthDomain)
+						.Replace("{client_id}", clientId);
+				}
+
+				if (!theme["headLine"]["tr"].IsNullOrEmpty())
+				{
+					theme["headLine"]["tr"] = theme["headLine"]["tr"].ToString()
+						.Replace("{auth_domain}", app.Setting.AuthDomain)
+						.Replace("{client_id}", clientId);
+				}
+			}
+
 			var application = new ApplicationInfoViewModel
 			{
 				Id = app.Id,
@@ -137,7 +154,7 @@ namespace PrimeApps.Auth.UI
 					GoogleAnalytics = app.Setting.GoogleAnalyticsCode,
 					ExternalLogin = app.Setting.ExternalAuth,
 					RegistrationType = app.Setting.RegistrationType,
-					TenantOperationWebhook = app.Setting.TenantOperationWebhook,
+					TenantOperationWebhook = app.Setting.TenantOperationWebhook
 				},
 				Preview = preview,
 				Secret = app.Secret
