@@ -13,7 +13,7 @@
     </span>
     <span class="flex-between" data-nodrag ng-if="node.isEdit">
         <div data-nodrag class="menueditmode">
-            <input class="form-control" maxlength="50" ng-model="node.name"/>
+            <input placeholder="{{'Menu.NewCategory' | translate }}" class="form-control" maxlength="50" ng-model="node.name"/>
             <ui-select ng-model="node.icon">
                 <ui-select-match placeholder="Select an icon">
                     <div>
