@@ -354,6 +354,10 @@ angular.module('primeapps')
                         });
                     }
 
+                    if(workflowModel.approver_type === 'dynamicApprover' && !workflowModel.approvers){
+                        workflow.approvers = [];
+                    }
+                    
                     if (workflowModel.approvers) {
 
                         workflow.approvers = workflowModel.approvers;

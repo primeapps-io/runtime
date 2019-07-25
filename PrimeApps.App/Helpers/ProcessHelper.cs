@@ -287,6 +287,8 @@ namespace PrimeApps.App.Helpers
 							{
 								using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
 								{
+									picklistRepository.CurrentUser = _currentUser;
+
 									var processStatusPicklist = module.Fields.Single(x => x.Name == "process_status_list");
 									var processStatus = await picklistRepository.GetById(processStatusPicklist.PicklistId.Value);
 									record["process_status_list"] = appUser.TenantLanguage == "tr" ? processStatus.Items.Single(x => x.Value == "waiting_for_approval").LabelTr : processStatus.Items.Single(x => x.Value == "waiting_for_approval").LabelEn;
@@ -386,7 +388,8 @@ namespace PrimeApps.App.Helpers
 							if (hasProcessFields)
 							{
 								using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
-								{
+								{ 
+									picklistRepository.CurrentUser = _currentUser;
 									var processStatusPicklist = module.Fields.Single(x => x.Name == "process_status_list");
 									var processStatus = await picklistRepository.GetById(processStatusPicklist.PicklistId.Value);
 									record["process_status_list"] = appUser.TenantLanguage == "tr" ? processStatus.Items.Single(x => x.Value == "waiting_for_approval").LabelTr : processStatus.Items.Single(x => x.Value == "waiting_for_approval").LabelEn;
@@ -1011,6 +1014,7 @@ namespace PrimeApps.App.Helpers
 						{
 							using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
 							{
+								picklistRepository.CurrentUser = _currentUser;
 								var processStatusPicklist = process.Module.Fields.Single(x => x.Name == "process_status_list");
 								var processStatus = await picklistRepository.GetById(processStatusPicklist.PicklistId.Value);
 								record["approver"] = user.Id;
@@ -1333,6 +1337,8 @@ namespace PrimeApps.App.Helpers
 					{
 						using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
 						{
+							picklistRepository.CurrentUser = _currentUser;
+
 							var processStatusPicklist = process.Module.Fields.Single(x => x.Name == "process_status_list");
 							var processStatus = await picklistRepository.GetById(processStatusPicklist.PicklistId.Value);
 							record["process_status_list"] = appUser.TenantLanguage == "tr" ? processStatus.Items.Single(x => x.Value == "approved").LabelTr : processStatus.Items.Single(x => x.Value == "approved").LabelEn;
@@ -1361,12 +1367,13 @@ namespace PrimeApps.App.Helpers
 				using (var _userRepository = new UserRepository(databaseContext, _configuration))
 				using (var _settingRepository = new SettingRepository(databaseContext, _configuration))
 				{
+					_processRepository.CurrentUser = _recordRepository.CurrentUser = _userRepository.CurrentUser = _currentUser = _settingRepository.CurrentUser = _currentUser;
+
 					var oldExpense = false;
 
 					var oldExpenseSetting = await _settingRepository.GetByKeyAsync("old_expense");
 					oldExpense = oldExpenseSetting != null;
 
-					_processRepository.CurrentUser = _recordRepository.CurrentUser = _userRepository.CurrentUser = _currentUser = _settingRepository.CurrentUser = _currentUser;
 
 					var process = await _processRepository.GetById(request.ProcessId);
 					var record = _recordRepository.GetById(process.Module, request.RecordId);
@@ -1387,6 +1394,8 @@ namespace PrimeApps.App.Helpers
 					{
 						using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
 						{
+							picklistRepository.CurrentUser = _currentUser;
+
 							var processStatusPicklist = process.Module.Fields.Single(x => x.Name == "process_status_list");
 							var processStatus = await picklistRepository.GetById(processStatusPicklist.PicklistId.Value);
 							record["process_status_list"] = appUser.TenantLanguage == "tr" ? processStatus.Items.Single(x => x.Value == "rejected").LabelTr : processStatus.Items.Single(x => x.Value == "rejected").LabelEn;
@@ -1529,12 +1538,13 @@ namespace PrimeApps.App.Helpers
 				using (var _userRepository = new UserRepository(databaseContext, _configuration))
 				using (var _settingRepository = new SettingRepository(databaseContext, _configuration))
 				{
+					_moduleRepository.CurrentUser = _processRepository.CurrentUser = _recordRepository.CurrentUser = _userRepository.CurrentUser = _currentUser = _settingRepository.CurrentUser = _currentUser;
+
 					var oldExpense = false;
 
 					var oldExpenseSetting = await _settingRepository.GetByKeyAsync("old_expense");
 					oldExpense = oldExpenseSetting != null;
 
-					_moduleRepository.CurrentUser = _processRepository.CurrentUser = _recordRepository.CurrentUser = _userRepository.CurrentUser = _currentUser = _settingRepository.CurrentUser = _currentUser;
 					var process = await _processRepository.GetById(request.ProcessId);
 
 					request.ProcessStatusOrder++;
@@ -1591,6 +1601,8 @@ namespace PrimeApps.App.Helpers
 					{
 						using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
 						{
+							picklistRepository.CurrentUser = _currentUser;
+
 							var processStatusPicklist = process.Module.Fields.Single(x => x.Name == "process_status_list");
 							var processStatus = await picklistRepository.GetById(processStatusPicklist.PicklistId.Value);
 							record["process_status_list"] = appUser.TenantLanguage == "tr" ? processStatus.Items.Single(x => x.Value == "waiting_for_approval").LabelTr : processStatus.Items.Single(x => x.Value == "waiting_for_approval").LabelEn;
