@@ -703,6 +703,10 @@ namespace PrimeApps.App.Helpers
                                     var jsonData = new JObject();
                                     jsonData["id"] = recordId;
 
+                                    client.DefaultRequestHeaders.TryAddWithoutValidation("X-App-Id", appUser.AppId.ToString());
+                                    client.DefaultRequestHeaders.TryAddWithoutValidation("X-Tenant-Id", appUser.TenantId.ToString());
+                                    client.DefaultRequestHeaders.TryAddWithoutValidation("X-User-Id", appUser.Id.ToString());
+
                                     if (webHook.Parameters != null)
                                     {
                                         var data = webHook.Parameters.Split(',');
@@ -853,18 +857,18 @@ namespace PrimeApps.App.Helpers
                                     appDomain = "cagri";
                                     break;
                             }
-							var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
-							var subdomain = "";
-							if (!string.IsNullOrEmpty(testMode))
-							{
-								subdomain = testMode == "true" ? "test" : appDomain;
-							}
+                            var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
+                            var subdomain = "";
+                            if (!string.IsNullOrEmpty(testMode))
+                            {
+                                subdomain = testMode == "true" ? "test" : appDomain;
+                            }
                             domain = string.Format(domain, subdomain);
 
                             //domain = "http://localhost:5554/";
 
                             using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
-							{
+                            {
                                 var app = await _appRepository.Get(appUser.AppId);
                                 if (app != null)
                                 {
@@ -1204,7 +1208,7 @@ namespace PrimeApps.App.Helpers
                             workflow.SendNotification.CCArray = workflowModel.Actions.SendNotification.CC;
                         else
                         {
-                            string[] emptyCC = new string[] {""};
+                            string[] emptyCC = new string[] { "" };
                             workflow.SendNotification.CCArray = emptyCC;
                         }
 
@@ -1212,7 +1216,7 @@ namespace PrimeApps.App.Helpers
                             workflow.SendNotification.BccArray = workflowModel.Actions.SendNotification.Bcc;
                         else
                         {
-                            string[] emptyBcc = new string[] {""};
+                            string[] emptyBcc = new string[] { "" };
                             workflow.SendNotification.BccArray = emptyBcc;
                         }
 

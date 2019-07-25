@@ -338,11 +338,11 @@ angular.module('primeapps')
             $scope.addItem = function (module) {
                 if (!module) {
                     module = {
-                        label_tr_plural: "Yeni Kategori Adını Giriniz",
-                        label_en_plural: "Enter New Category Name",
+                       // label_tr_plural: "Yeni Kategori Adını Giriniz",
+                       // label_en_plural: "Enter New Category Name",
                         menu_icon: "fa fa-square",
-                        order: 0,
-                        display: true
+                        order: 0
+                       // display: true,/
                     };
                 }
 
@@ -360,7 +360,7 @@ angular.module('primeapps')
                 menuList.name = $scope.language === 'tr' ? module.label_tr_plural : module.label_en_plural;
                 menuList.menuName = module.name; //$scope.menu.moduleItem.name;
                 menuList.id = 0;
-                menuList.isDynamic = module.id ? true : false;
+                menuList.isDynamic = module.system_type === "system" ? true : false;//module.id ? true : false;
                 menuList.route = module.route ? module.route : '';
                 menuList.menuId = menuList.no;
                 menuList.icon = module.menu_icon ? module.menu_icon : 'fa fa-square';

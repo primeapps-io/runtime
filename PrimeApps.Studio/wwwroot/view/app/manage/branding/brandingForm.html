@@ -28,7 +28,7 @@
                         <div class="section public-page" ng-if="acitveTab=='login'" id="section1">
                             <div class="panel">
 
-                                <div class="form-group">
+                                <div class="form-group" ng-class="{'focused': focusPlace === '1'}">
                                     <label class="required-field">1-Favicon</label>
                                     <div class="newupload" ng-if="!authFavicon.image && !authTheme.favicon">
                                         <label class="uploadlink">
@@ -55,7 +55,8 @@
                                                 <div style="position: relative">
                                                     <img ng-src="{{authFavicon.image}}" class="resultimg"
                                                          style="height: 64px; max-width: 100%; "/>
-                                                    <img ng-src="{{authTheme.favicon}}" style="height: 64px; max-width: 100%" ng-show="!authFavicon">
+                                                    <img ng-src="{{authTheme.favicon}}"
+                                                         style="height: 64px; max-width: 100%" ng-show="!authFavicon">
                                                     <div class="action-buttons-block">
                                                         <button type="button" class="action-buttons-delete"
                                                                 ng-click="logoRemove('authFavicon');">
@@ -69,7 +70,7 @@
                                 </div>
 
                                 <div class="form-group" ng-class="{'focused': focusPlace === '2'}">
-                                    <label class="col-sm-4 required-field">
+                                    <label class="required-field">
                                         2- Title
                                     </label>
                                     <input type="text"
@@ -116,13 +117,32 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="form-group" ng-class="{'focused': focusPlace === '4'}">
-                                    <label class="required-field">4-Button Color</label>
+                                    <label class="required-field"> 4- Head Line</label>
+                                        <textarea focus="focusPlace === '4'" mentio-id="'tinyMceTextArea2'" mentio
+                                                  mentio-typed-text="typedTerm"
+                                                  mentio-require-leading-space="true" ui-tinymce="tinymceTemplateEdit"
+                                                  name="tinymce"
+                                                  ng-model="authTheme.headLineEn" ng-required="true"
+                                                  mentio-iframe-element="iframeElement['tinymceTemplateEdit']"></textarea>
+                                        <script type="text/ng-template" id="tag-mentions.tpl">
+                                            <ul class="ment-tags">
+                                                <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
+                                                    class="list-group-item clearfix"
+                                                    ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
+                                                    {{tag.label}}
+                                                </li>
+                                            </ul>
+                                        </script>
+                                </div>
+          
+                                <div class="form-group" ng-class="{'focused': focusPlace === '5'}">
+                                    <label class="required-field">5-Button Color</label>
                                     <div class="iconandcolor">
                                         <div>
                                             <div>
@@ -192,8 +212,8 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group" ng-class="{'focused': focusPlace === '5'}">
-                                    <label class="  required-field">5-Main Image</label>
+                                <div class="form-group" ng-class="{'focused': focusPlace === '6'}">
+                                    <label class="  required-field">6-Main Image</label>
                                     <div class="newupload" ng-if="!authBanner.image && !authTheme.banner">
                                         <label class="uploadlink">
                                             <div ng-show="uploader.isHTML5">
@@ -217,7 +237,8 @@
                                         <div class="iconandcolor">
                                             <div>
                                                 <div style="position: relative">
-                                                    <img ng-src="{{authBanner.image || authTheme.banner}}" class="resultimg"
+                                                    <img ng-src="{{authBanner.image || authTheme.banner}}"
+                                                         class="resultimg"
                                                          style="height: 64px; max-width: 100%; "/>
                                                     <div class="action-buttons-block">
                                                         <button type="button" class="action-buttons-delete"
@@ -237,8 +258,10 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group" ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid, 'focused': focusPlace === '6'}"<label class="col-sm-4 required-field">
-                                        6- Main Text
+                                <div class="form-group"
+                                     ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid, 'focused': focusPlace === '7'}">
+                                    <label class="col-sm-4 required-field">
+                                        7- Main Text
                                     </label>
                                     <input type="text"
                                            name="label"

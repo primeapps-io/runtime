@@ -332,7 +332,7 @@ namespace PrimeApps.App.Helpers
                 {
                     _userRepository.CurrentUser = _picklistRepository.CurrentUser = _BpmWorkflowRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
                     var bpmWorkflows = await _BpmWorkflowRepository.GetByModuleId(module.Id);
-                    bpmWorkflows = bpmWorkflows.Where(q => q.OperationsArray.Contains(operationType.ToString()) && q.Active).ToList();
+                    bpmWorkflows = bpmWorkflows.Where(q => q.OperationsArray.Contains(operationType.ToString()) && q.Active && !string.IsNullOrEmpty(q.DefinitionJson)).ToList();
                     var culture = CultureInfo.CreateSpecificCulture(appUser.Culture);
 
                     if (bpmWorkflows.Count < 1)
