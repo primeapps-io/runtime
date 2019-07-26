@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('SimpleWorkflowsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'operators', 'SimpleWorkflowsService', 'ModuleService', 'LayoutService', '$http', 'config', '$localStorage', '$cookies',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, operators, SimpleWorkflowsService, ModuleService, LayoutService, $http, config, $localStorage, $cookies) {
+    .controller('SimpleWorkflowsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'operators', 'SimpleWorkflowsService', 'ModuleService', 'LayoutService', '$http', 'config', '$localStorage', '$cookies', 'FileUploader',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, operators, SimpleWorkflowsService, ModuleService, LayoutService, $http, config, $localStorage, $cookies, FileUploader) {
             $scope.loading = true;
             $scope.$parent.loadingFilter = false;
             $scope.modalLoading = true;
@@ -1317,6 +1317,9 @@ angular.module('primeapps')
                 if ($scope.webHookIsNullOrEmpty())
                     delete $scope.workflowModel.webHook;
 
+                if (!$scope.updateFieldValue)
+                    $scope.updateFieldValue = $scope.workflowModel.field_update.value;
+
                 var workflow = SimpleWorkflowsService.prepareWorkflow($scope.workflowModel, $scope.filters, $scope.updateFieldValue);
 
                 var success = function () {
@@ -1434,9 +1437,15 @@ angular.module('primeapps')
             $scope.fileUploader = function (type) {
 
                 var url, fileFilterWarring, fileSizerWarring;
+                var headers = {
+                    'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
+                    'Accept': 'application/json', /// we have to set accept header to provide consistency between browsers. 
+                    'X-App-Id': $rootScope.currentAppId,
+                    'X-Organization-Id': $rootScope.currentOrgId
+                };
 
                 if (type === 'image') {
-                    url = 'document/upload_large';
+                    url = 'storage/record_file_upload';
                     fileFilterWarring = $filter('translate')('Setup.Settings.ImageError');
                     fileSizerWarring = $filter('translate')('Setup.Settings.SizeError');
                 } else {
@@ -1446,12 +1455,8 @@ angular.module('primeapps')
                 }
 
                 var uploader_image = $scope.uploader = new FileUploader({
-                    url: config.apiUrl + url,
-                    headers: {
-                        'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                        'Accept': 'application/json', /// we have to set accept header to provide consistency between browsers.
-                        'X-Tenant-Id': $cookies.get('tenant_id')
-                    },
+                    url: url,
+                    headers: headers,
                     autoUpload: true
 
                 });
@@ -1494,17 +1499,17 @@ angular.module('primeapps')
                 });
 
                 uploader_image.onSuccessItem = function (item, response) {
-                    $scope.workflowModel.field_update.value = response.UniqueName;
-                    if (type === 'image') {
-                        $http.post(config.apiUrl + 'Document/image_create', {
-                            UniqueFileName: response.UniqueName,
-                            MimeType: item.uploader.queue[0].Type,
-                            ChunkSize: 1,
-                            instanceId: $rootScope.workgroup.tenant_id
-                        }).then(function (res) {
-                            $scope.workflowModel.field_update.value = res.data;
-                        });
-                    }
+                    $scope.workflowModel.field_update.value = response.public_url;
+                    //if (type === 'image') {
+                    //    $http.post(config.apiUrl + 'Document/image_create', {
+                    //        UniqueFileName: response.UniqueName,
+                    //        MimeType: item.uploader.queue[0].Type,
+                    //        ChunkSize: 1,
+                    //        instanceId: $rootScope.workgroup.tenant_id
+                    //    }).then(function (res) {
+                    //        $scope.workflowModel.field_update.value = res.data;
+                    //    });
+                    //}
                     $scope.fileLoading = false;
                 };
 

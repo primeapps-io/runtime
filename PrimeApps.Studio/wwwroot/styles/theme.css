@@ -1,4 +1,4 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 #subdomaintwo {
   background: none;
   position: absolute;
@@ -1909,7 +1909,7 @@ button:focus, select:focus {
   width: 360px !important;
 }
 .primeapps .appicon:hover {
-  background: rgba(0, 0, 0, 0.75) !important;
+  background: rgba(0, 0, 0, 0.75);
 }
 .primeapps .appcolor:after {
   content: "";
