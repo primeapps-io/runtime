@@ -1,5 +1,6 @@
 ﻿@model LoginViewModel
 @using Microsoft.AspNetCore.Mvc.Localization
+@using PrimeApps.Model.Helpers
 @inject IViewLocalizer Localizer
 @{
     Layout = "~/Views/Shared/_LayoutAuth.cshtml";
@@ -9,13 +10,13 @@
     var multiLanguage = Model.ApplicationInfo.MultiLanguage;
     var otherLang = Model.ApplicationInfo.Language == "tr" ? "en" : "tr";
     var preview = Model.ApplicationInfo.Preview;
-    var headLine = Model.ApplicationInfo.Theme["headLine"]["en"].ToString();
+    var headLine = Model.ApplicationInfo.Theme["headLine"].IsNullOrEmpty() ? "" : Model.ApplicationInfo.Theme["headLine"]["en"].ToString();
 }
 <div class="col-md-4 login-sec">
     <img class="logo-img" src="@Model.ApplicationInfo.Logo"/>
     @if (!preview) //(!customDomain)
     {
-            @Html.Raw(headLine)
+        @Html.Raw(headLine)
     }
 
     <form asp-route="Login" class="login-form" role="form" id="login-form">
@@ -58,18 +59,18 @@
                 @if (!preview)
                 {
                     if (multiLanguage)
-                     {
-                         if (otherLang == "tr")
-                         {
-                             <a href="@Url.Action("ChangeLanguage", "Account", new {language = "tr", ReturnUrl = path})">@Localizer["TR"]</a>
-                             <span>|</span>
-                         }
-                         else if (otherLang == "en")
-                         {
-                             <a href="@Url.Action("ChangeLanguage", "Account", new {language = "en", ReturnUrl = path})">@Localizer["EN"]</a>
-                             <span>|</span>
-                         }
-                     }
+                    {
+                        if (otherLang == "tr")
+                        {
+                            <a href="@Url.Action("ChangeLanguage", "Account", new {language = "tr", ReturnUrl = path})">@Localizer["TR"]</a>
+                            <span>|</span>
+                        }
+                        else if (otherLang == "en")
+                        {
+                            <a href="@Url.Action("ChangeLanguage", "Account", new {language = "en", ReturnUrl = path})">@Localizer["EN"]</a>
+                            <span>|</span>
+                        }
+                    }
 
                     <a href="@Url.Action("ForgotPassword", "Account", new {ReturnUrl = Model.ReturnUrl, Email = Model != null ? Model.Username : ""})" class="">@Localizer["ForgotPassword"]</a>
                 }
