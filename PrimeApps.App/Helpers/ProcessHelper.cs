@@ -993,7 +993,7 @@ namespace PrimeApps.App.Helpers
 
 					record = _recordRepository.GetById(process.Module, request.RecordId, false, lookupModules);
 
-					if ((process.Approvers.Count != request.ProcessStatusOrder && process.ApproverType == ProcessApproverType.StaticApprover) || (process.ApproverType == ProcessApproverType.DynamicApprover && request.ProcessStatusOrder == 1 && process.ApproverField.Split(',').Length > 1))
+					if ((process.Approvers.Count != request.ProcessStatusOrder && process.ApproverType == ProcessApproverType.StaticApprover) || (process.ApproverType == ProcessApproverType.DynamicApprover && request.ProcessStatusOrder == 1 && process.ApproverField.Split(',').Length > 1 && !record["custom_approver_2"].IsNullOrEmpty()))
 					{
 						request.ProcessStatusOrder++;
 
