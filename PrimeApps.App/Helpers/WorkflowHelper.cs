@@ -21,6 +21,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -693,15 +694,12 @@ namespace PrimeApps.App.Helpers
 
                                 using (var client = new HttpClient())
                                 {
-                                    /*
-                                     * If the server only supports higher TLS version like TLS 1.2 only, it will still fail unless your client PC is configured to use higher TLS version by default. 
-                                     * To overcome this problem add the following in your code.
-                                     */
-                                    System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-
                                     var recordId = (int)record["id"];
                                     var jsonData = new JObject();
                                     jsonData["id"] = recordId;
+
+                                    if (webHook.CallbackUrl.StartsWith("https"))
+                                        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
                                     client.DefaultRequestHeaders.TryAddWithoutValidation("X-App-Id", appUser.AppId.ToString());
                                     client.DefaultRequestHeaders.TryAddWithoutValidation("X-Tenant-Id", appUser.TenantId.ToString());
@@ -756,19 +754,20 @@ namespace PrimeApps.App.Helpers
                                         }
                                     }
 
+
                                     switch (webHook.MethodType)
                                     {
                                         case WorkflowHttpMethod.Post:
                                             if (jsonData.HasValues)
                                             {
                                                 //fire and forget
-                                                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                                                client.DefaultRequestHeaders.Accept.Clear();
+                                                client.DefaultRequestHeaders.Add("Accept", "application/json");
 
                                                 var dataAsString = JsonConvert.SerializeObject(jsonData);
-                                                var contentResetPasswordBindingModel = new StringContent(dataAsString);
-                                                await client.PostAsync(webHook.CallbackUrl, contentResetPasswordBindingModel);
-
-                                                //await client.PostAsJsonAsync(webHook.CallbackUrl, jsonData);
+                                                var content = new StringContent(dataAsString, Encoding.UTF8, "application/json");
+                                                var response = await client.PostAsync(webHook.CallbackUrl, content);
+                                                var contentResponse = await response.Content.ReadAsStringAsync();
                                             }
                                             else
                                             {
@@ -857,12 +856,14 @@ namespace PrimeApps.App.Helpers
                                     appDomain = "cagri";
                                     break;
                             }
+
                             var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
                             var subdomain = "";
                             if (!string.IsNullOrEmpty(testMode))
                             {
                                 subdomain = testMode == "true" ? "test" : appDomain;
                             }
+
                             domain = string.Format(domain, subdomain);
 
                             //domain = "http://localhost:5554/";
