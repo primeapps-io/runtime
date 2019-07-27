@@ -12,7 +12,7 @@
  Target Server Version : 90611
  File Encoding         : 65001
 
- Date: 02/04/2019 11:01:56
+ Date: 27/07/2019 10:09:27
 */
 
 
@@ -128,6 +128,8 @@ ALTER TABLE "public"."_migration_history" OWNER TO "postgres";
 -- ----------------------------
 BEGIN;
 INSERT INTO "public"."_migration_history" VALUES ('20190217184904_Initial', '2.2.0-rtm-35687');
+INSERT INTO "public"."_migration_history" VALUES ('20190304143811_Task3227', '2.2.0-rtm-35687');
+INSERT INTO "public"."_migration_history" VALUES ('20190426065536_Task3232', '2.2.0-rtm-35687');
 COMMIT;
 
 -- ----------------------------
@@ -189,7 +191,9 @@ CREATE TABLE "public"."apps" (
   "organization_id" int4 NOT NULL,
   "templet_id" int4 NOT NULL,
   "use_tenant_settings" bool NOT NULL,
-  "status" int4 NOT NULL
+  "status" int4 NOT NULL,
+  "color" text COLLATE "pg_catalog"."default",
+  "icon" text COLLATE "pg_catalog"."default"
 )
 ;
 ALTER TABLE "public"."apps" OWNER TO "postgres";
@@ -370,28 +374,28 @@ COMMIT;
 -- ----------------------------
 ALTER SEQUENCE "public"."app_collaborators_id_seq"
 OWNED BY "public"."app_collaborators"."id";
-SELECT setval('"public"."app_collaborators_id_seq"', 3, false);
+SELECT setval('"public"."app_collaborators_id_seq"', 4, false);
 ALTER SEQUENCE "public"."apps_id_seq"
 OWNED BY "public"."apps"."id";
-SELECT setval('"public"."apps_id_seq"', 3, false);
+SELECT setval('"public"."apps_id_seq"', 4, false);
 ALTER SEQUENCE "public"."deployments_id_seq"
 OWNED BY "public"."deployments"."id";
-SELECT setval('"public"."deployments_id_seq"', 3, false);
+SELECT setval('"public"."deployments_id_seq"', 4, false);
 ALTER SEQUENCE "public"."organization_users_id_seq"
 OWNED BY "public"."organization_users"."id";
-SELECT setval('"public"."organization_users_id_seq"', 3, true);
+SELECT setval('"public"."organization_users_id_seq"', 4, true);
 ALTER SEQUENCE "public"."organizations_id_seq"
 OWNED BY "public"."organizations"."id";
-SELECT setval('"public"."organizations_id_seq"', 3, true);
+SELECT setval('"public"."organizations_id_seq"', 4, true);
 ALTER SEQUENCE "public"."teams_id_seq"
 OWNED BY "public"."teams"."id";
-SELECT setval('"public"."teams_id_seq"', 3, false);
+SELECT setval('"public"."teams_id_seq"', 4, false);
 ALTER SEQUENCE "public"."templet_categories_id_seq"
 OWNED BY "public"."templet_categories"."id";
-SELECT setval('"public"."templet_categories_id_seq"', 3, false);
+SELECT setval('"public"."templet_categories_id_seq"', 4, false);
 ALTER SEQUENCE "public"."templets_id_seq"
 OWNED BY "public"."templets"."id";
-SELECT setval('"public"."templets_id_seq"', 3, false);
+SELECT setval('"public"."templets_id_seq"', 4, false);
 
 -- ----------------------------
 -- Primary Key structure for table _migration_history
@@ -439,7 +443,7 @@ CREATE INDEX "IX_apps_created_by" ON "public"."apps" USING btree (
 CREATE INDEX "IX_apps_deleted" ON "public"."apps" USING btree (
   "deleted" "pg_catalog"."bool_ops" ASC NULLS LAST
 );
-CREATE INDEX "IX_apps_name" ON "public"."apps" USING btree (
+CREATE UNIQUE INDEX "IX_apps_name" ON "public"."apps" USING btree (
   "name" COLLATE "pg_catalog"."default" "pg_catalog"."text_ops" ASC NULLS LAST
 );
 CREATE INDEX "IX_apps_organization_id" ON "public"."apps" USING btree (
@@ -528,7 +532,7 @@ CREATE INDEX "IX_organizations_deleted" ON "public"."organizations" USING btree 
 CREATE INDEX "IX_organizations_label" ON "public"."organizations" USING btree (
   "label" COLLATE "pg_catalog"."default" "pg_catalog"."text_ops" ASC NULLS LAST
 );
-CREATE INDEX "IX_organizations_name" ON "public"."organizations" USING btree (
+CREATE UNIQUE INDEX "IX_organizations_name" ON "public"."organizations" USING btree (
   "name" COLLATE "pg_catalog"."default" "pg_catalog"."text_ops" ASC NULLS LAST
 );
 CREATE INDEX "IX_organizations_owner_id" ON "public"."organizations" USING btree (
