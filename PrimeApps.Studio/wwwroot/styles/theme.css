@@ -1,4 +1,4 @@
-﻿@charset "UTF-8";
+@charset "UTF-8";
 #subdomaintwo {
   background: none;
   position: absolute;
@@ -3719,11 +3719,10 @@ button:focus, select:focus {
 .primeapps .angular-ui-tree-drag .action-buttons-block {
   display: none;
 }
-
-.primeapps .copy-hover .copy-button{
-   visibility: hidden;
- }
-.primeapps .copy-hover:hover .copy-button{
+.primeapps .copy-hover .copy-button {
+  visibility: hidden;
+}
+.primeapps .copy-hover:hover .copy-button {
   visibility: visible;
 }
 
