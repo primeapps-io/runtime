@@ -242,20 +242,20 @@ angular.module('primeapps')
                         $scope.authTheme.descriptionTr = authTheme.banner[0].descriptions.tr;
                     }
                 }
-                if (authTheme && authTheme.headLine) {
+                if (authTheme && Object.keys(authTheme.headLine).length > 0) {
                     if (authTheme.headLine.en) {
                         $scope.authTheme.headLineEn = authTheme.headLine.en;
                     }
                     if (authTheme.headLine.tr) {
                         $scope.authTheme.headLineTr = authTheme.headLine.tr;
                     }
-                } else {
+                } /*else {
                     if ($scope.language === "en") {
-                        $scope.authTheme.headLineEn = '<span class="free-info-header"><a href="href="https://{auth_domain}/Account/Register?ReturnUrl=%3Fclient_id%3D{client_id}">Register for free</a> and start using your <br><strong>trial with full of features for 15 days.</strong></span>';
+                        $scope.authTheme.headLineEn = '<span class="free-info-header"><a href="href="https://{auth_domain}/Account/Register?ReturnUrl=%3Fclient_id%3D{client_id}">Register</a></span>';
                     } else {
-                        $scope.authTheme.headLineTr = '<span class="free-info-header">trong>Uygulamanızı tüm özellikleri ile 15 gün ücretsiz</strong> kullanmaya başlamak için <a href="https://{auth_domain}/Account/Register?ReturnUrl=%3Fclient_id%3D{client_id}">üye olmanız yeterli.</a></span>';
+                        $scope.authTheme.headLineTr = '<span class="free-info-header"><a href="https://{auth_domain}/Account/Register?ReturnUrl=%3Fclient_id%3D{client_id}">Kayıt Ol</a></span>';
                     }
-                }
+                }*/
 
                 $scope.authTheme.color = authTheme.color;
                 $scope.authTheme.title = authTheme.title;
@@ -316,6 +316,20 @@ angular.module('primeapps')
             $scope.tinymceOptions = function (scope) {
                 $scope[scope] = {
                     setup: function (editor) {
+                        editor.addButton('register', {
+                            type: 'button',
+                            text: 'Register',//$filter('translate')('EMail.AddParameter'),
+                            onclick: function () {
+                                var content = undefined;
+                                if ($scope.language === "en") {
+                                    content = '&lt;span class="free-info-header"&gt;&lt;a href="https://{auth_domain}/Account/Register?ReturnUrl=%3Fclient_id%3D{client_id}"&gt;Register&lt;/a&gt;&lt;/span&gt;';
+                               
+                                } else {
+                                    content = '&lt;span class="free-info-header"&gt;&lt;a href="https://{auth_domain}/Account/Register?ReturnUrl=%3Fclient_id%3D{client_id}"&gt;Kayıt Ol&lt;/a&gt;&lt;/span&gt;';
+                                }
+                                tinymce.activeEditor.execCommand('mceInsertContent', false, content);
+                            }
+                        });
                         editor.on('init', function () {
                             if ($scope.focusPlace === "4") {
                                 editor.focus();
@@ -333,7 +347,7 @@ angular.module('primeapps')
                         "insertdatetime table contextmenu paste imagetools wordcount textcolor colorpicker"
                     ],
                     imagetools_cors_hosts: ['crm.ofisim.com', 'test.ofisim.com', 'ofisimcomdev.blob.core.windows.net'],
-                    toolbar: " styleselect bold italic underline strikethrough  forecolor  backcolor alignleft aligncenter alignright alignjustify  link  undo redo | searchreplace  outdent indent  code preview ",
+                    toolbar: " register styleselect bold italic underline strikethrough  forecolor  backcolor alignleft aligncenter alignright alignjustify  link  | undo redo  searchreplace  outdent indent  code preview ",
                     menubar: 'false',
                     skin: 'lightgray',
                     theme: 'modern',
