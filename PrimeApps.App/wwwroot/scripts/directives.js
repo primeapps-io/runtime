@@ -56,8 +56,7 @@ angular.module('primeapps')
 
                         if (path.indexOf('/app/') > -1) {
                             return $element.addClass('app');
-                        }
-                        else if (path.indexOf('/auth/') > -1) {
+                        } else if (path.indexOf('/auth/') > -1) {
 
                             $scope.backgroundShow = false;
                             if (path.indexOf('/auth/register') > -1 || path.indexOf('/auth/verify') > -1) {
@@ -66,8 +65,7 @@ angular.module('primeapps')
                             }
 
                             return $element.addClass('auth');
-                        }
-                        else if (path.indexOf('/paymentform') > -1 || path.indexOf('/join') > -1) {
+                        } else if (path.indexOf('/paymentform') > -1 || path.indexOf('/join') > -1) {
                             return $element.addClass('self');
                         }
                     };
@@ -323,7 +321,7 @@ angular.module('primeapps')
                     function onLoadImage() {
                         var width = params.width || this.width / this.height * params.height;
                         var height = params.height || this.height / this.width * params.width;
-                        canvas.attr({ width: width, height: height });
+                        canvas.attr({width: width, height: height});
                         canvas[0].getContext('2d').drawImage(this, 0, 0, width, height);
                     }
                 }
@@ -441,8 +439,8 @@ angular.module('primeapps')
         };
     })
 
-    .directive('subTable', ['$rootScope', 'ngTableParams', 'ngToast', 'blockUI', '$filter', '$cache', 'helper', 'exportFile', 'operations', 'ModuleService', 'components',
-        function ($rootScope, ngTableParams, ngToast, blockUI, $filter, $cache, helper, exportFile, operations, ModuleService, components) {
+    .directive('subTable', ['$rootScope', 'ngTableParams', 'ngToast', 'blockUI', '$filter', '$cache', 'helper', 'exportFile', 'operations', 'ModuleService', 'components', '$stateParams',
+        function ($rootScope, ngTableParams, ngToast, blockUI, $filter, $cache, helper, exportFile, operations, ModuleService, components, $stateParams) {
             return {
                 restrict: 'EA',
                 scope: {
@@ -459,7 +457,7 @@ angular.module('primeapps')
                     function ($scope) {
                         $scope.loading = true;
                         $scope.relatedModule.loading = true;
-                        $scope.module = $filter('filter')($rootScope.modules, { name: $scope.relatedModule.related_module }, true)[0];
+                        $scope.module = $filter('filter')($rootScope.modules, {name: $scope.relatedModule.related_module}, true)[0];
                         $scope.type = $scope.relatedModule.related_module;
                         $scope.readonly = $scope.relatedModule.readonly || false;
                         $scope.parentType = $scope.relatedModule.relation_field;
@@ -473,8 +471,10 @@ angular.module('primeapps')
                         $scope.previousParentId = $scope.$parent.previousParentId;
                         $scope.previousReturnTab = $scope.$parent.previousReturnTab;
                         $scope.isAdmin = $rootScope.user.profile.has_admin_rights;
+                        var mainModule = $stateParams.type;
+                        $scope.hideDeleteAll = $filter('filter')($rootScope.deleteAllHiddenModules, mainModule + '|' + $scope.type, true)[0];
 
-                        var salesInvoiceModule = $filter('filter')($rootScope.modules, { name: 'sales_invoices' }, true);
+                        var salesInvoiceModule = $filter('filter')($rootScope.modules, {name: 'sales_invoices'}, true);
                         if (salesInvoiceModule.length < 1)
                             $scope.salesInvoiceModule = false;
                         else {
@@ -521,7 +521,7 @@ angular.module('primeapps')
                             });
 
                             if ($scope.parentType === 'related_to') {
-                                var parentModule = $filter('filter')($rootScope.modules, { name: $scope.parentModule }, true)[0];
+                                var parentModule = $filter('filter')($rootScope.modules, {name: $scope.parentModule}, true)[0];
                                 $scope.parentType = $scope.parentModule;
 
                                 filters.push({
@@ -661,8 +661,7 @@ angular.module('primeapps')
                                         });
                                     }
                                 });
-                            }
-                            else {
+                            } else {
                                 $scope.$parent['selectedRows' + $scope.type] = $scope.$parent['selectedRows' + $scope.type].filter(function (selectedItem) {
                                     return selectedItem.id != record.id;
                                 });
@@ -1131,8 +1130,7 @@ angular.module('primeapps')
                                 var customScript = attrs['customScripting'];
                                 eval(customScript);
                             });
-                        }
-                        catch (e) {
+                        } catch (e) {
                             scope.$parent.$parent.scriptRunning[scope.$parent.custombutton.id] = false;
                             return null;
                         }
@@ -1159,8 +1157,7 @@ angular.module('primeapps')
                                 if (inputvalue) {
                                     if (inputvalue.length > 0) {//object check
                                         data[value] = inputvalue;
-                                    }
-                                    else {
+                                    } else {
                                         data[value] = inputvalue['labelStr'];
                                     }
                                 }
@@ -1168,10 +1165,16 @@ angular.module('primeapps')
 
                             $http.post(actionDetails.url, data)
                                 .then(function (data) {
-                                    ngToast.create({ content: $filter('translate')('Common.ProcessTriggerSuccess'), className: 'success' });
+                                    ngToast.create({
+                                        content: $filter('translate')('Common.ProcessTriggerSuccess'),
+                                        className: 'success'
+                                    });
                                 })
                                 .error(function () {
-                                    ngToast.create({ content: $filter('translate')('Common.Error'), className: 'danger' });
+                                    ngToast.create({
+                                        content: $filter('translate')('Common.Error'),
+                                        className: 'danger'
+                                    });
                                     scope.loading = false;
                                 });
                         }
@@ -1231,11 +1234,31 @@ angular.module('primeapps')
                     style_formats: [
                         {
                             title: ($rootScope.language === 'tr' ? 'Yazı Boyutu' : 'Font Size'), items: [
-                                { title: ($rootScope.language === 'tr' ? 'Çok Büyük' : 'Very Big'), block: 'h2', styles: { fontWeight: 'normal' } },
-                                { title: ($rootScope.language === 'tr' ? 'Büyük' : 'Big'), block: 'h3', styles: { fontWeight: 'normal' } },
-                                { title: ($rootScope.language === 'tr' ? 'Normal' : 'Normal'), block: 'h4', styles: { fontWeight: 'normal' } },
-                                { title: ($rootScope.language === 'tr' ? 'Küçük' : 'Small'), block: 'h5', styles: { fontWeight: 'normal' } },
-                                { title: ($rootScope.language === 'tr' ? 'Çok Küçük' : 'Very Small'), block: 'h6', styles: { fontWeight: 'normal' } }
+                                {
+                                    title: ($rootScope.language === 'tr' ? 'Çok Büyük' : 'Very Big'),
+                                    block: 'h2',
+                                    styles: {fontWeight: 'normal'}
+                                },
+                                {
+                                    title: ($rootScope.language === 'tr' ? 'Büyük' : 'Big'),
+                                    block: 'h3',
+                                    styles: {fontWeight: 'normal'}
+                                },
+                                {
+                                    title: ($rootScope.language === 'tr' ? 'Normal' : 'Normal'),
+                                    block: 'h4',
+                                    styles: {fontWeight: 'normal'}
+                                },
+                                {
+                                    title: ($rootScope.language === 'tr' ? 'Küçük' : 'Small'),
+                                    block: 'h5',
+                                    styles: {fontWeight: 'normal'}
+                                },
+                                {
+                                    title: ($rootScope.language === 'tr' ? 'Çok Küçük' : 'Very Small'),
+                                    block: 'h6',
+                                    styles: {fontWeight: 'normal'}
+                                }
                             ]
                         }
                     ],
@@ -1308,7 +1331,7 @@ angular.module('primeapps')
 
                         if (scope.addres && !scope.location) {
                             var geocoder = new google.maps.Geocoder();
-                            geocoder.geocode({ 'address': scope.addres }, function (results, status) {
+                            geocoder.geocode({'address': scope.addres}, function (results, status) {
                                 $timeout(function () {
                                     if (status === 'OK') {
                                         conf.latitude = results[0].geometry.location.lat();
@@ -1335,7 +1358,7 @@ angular.module('primeapps')
                             conf.zoom = 17;
                         }
                         var defaultCoord = new google.maps.LatLng(conf.latitude, conf.longitude);
-                        var mapOptions = { center: defaultCoord, zoom: conf.zoom };
+                        var mapOptions = {center: defaultCoord, zoom: conf.zoom};
                         var map = new google.maps.Map(mapCanvas, mapOptions);
 
                         var marker = new google.maps.Marker({
@@ -1393,7 +1416,7 @@ angular.module('primeapps')
                             diff = Math.abs(Math.floor(diff));
                             $scope.day = 15 - Math.floor(diff / (24 * 60 * 60));
                             $scope.isPaid = $rootScope.user.is_paid_customer;
-                            $scope.trailMessage = $filter('translate')('Trial.DaysRemainingForYourTrial', { remaining: $scope.day });
+                            $scope.trailMessage = $filter('translate')('Trial.DaysRemainingForYourTrial', {remaining: $scope.day});
 
                             $scope.sector = [
                                 {
@@ -1613,9 +1636,9 @@ angular.module('primeapps')
                             $scope.startPage = JSON.parse($localStorage.read("startPage"));
                             if ($localStorage.read("routeShow")) {
                                 $scope.selectedCloseStartPage = JSON.parse($localStorage.read("routeShow"));
-                                var routeShowControl = $filter('filter')($scope.selectedCloseStartPage, { name: $scope.route })[0];
+                                var routeShowControl = $filter('filter')($scope.selectedCloseStartPage, {name: $scope.route})[0];
                             }
-                            var startPageFilter = $filter('filter')($scope.startPage, { name: $scope.route })[0];
+                            var startPageFilter = $filter('filter')($scope.startPage, {name: $scope.route})[0];
                             if (routeShowControl)
                                 $scope.selectedCloseModalForRoute = routeShowControl.value;
                             else if (startPageFilter) {
@@ -1625,7 +1648,7 @@ angular.module('primeapps')
 
                         if ($localStorage.read("moduleShow")) {
                             $scope.selectedCloseModal = JSON.parse($localStorage.read("moduleShow"));
-                            var showControl = $filter('filter')($scope.selectedCloseModal, { name: $scope.moduleId })[0];
+                            var showControl = $filter('filter')($scope.selectedCloseModal, {name: $scope.moduleId})[0];
                             if (showControl) {
                                 $scope.selectedCloseModalForModule = showControl.value;
                             }
@@ -1633,11 +1656,10 @@ angular.module('primeapps')
 
                         if ($localStorage.read("routeShow")) {
                             $scope.selectedCloseRoute = JSON.parse($localStorage.read("routeShow"));
-                            var routeShowControl = $filter('filter')($scope.selectedCloseRoute, { name: $scope.route })[0];
+                            var routeShowControl = $filter('filter')($scope.selectedCloseRoute, {name: $scope.route})[0];
                             if (routeShowControl) {
                                 $scope.selectedCloseModalForRoute = routeShowControl.value;
-                            }
-                            else {
+                            } else {
                                 $scope.selectedCloseModalForRoute = 2;
                             }
 
@@ -1661,13 +1683,12 @@ angular.module('primeapps')
                                                 name: $scope.moduleId,
                                                 value: false
                                             };
-                                            var sameModal = $filter('filter')($scope.modalModules, { name: $scope.modulShowArray.name })[0];
+                                            var sameModal = $filter('filter')($scope.modalModules, {name: $scope.modulShowArray.name})[0];
                                             if (!sameModal) {
                                                 $scope.modalModules.push($scope.modulShowArray);
                                                 $localStorage.write("moduleShow", JSON.stringify($scope.modalModules));
                                             }
-                                        }
-                                        else {
+                                        } else {
                                             $scope.modalModules = [];
                                             $scope.modulShowArray = {
                                                 name: $scope.moduleId,
@@ -1681,7 +1702,7 @@ angular.module('primeapps')
                                     if ($scope.route && $scope.selectedCloseModalForRoute === 1) {
                                         if ($localStorage.read("startPage")) {
                                             $scope.startPage = JSON.parse($localStorage.read("startPage"));
-                                            var startPageFilter = $filter('filter')($scope.startPage, { name: $scope.route })[0];
+                                            var startPageFilter = $filter('filter')($scope.startPage, {name: $scope.route})[0];
                                             if (startPageFilter && startPageFilter.value === 1) {
                                                 var routes = [];
                                                 var routeShow = {
@@ -1706,8 +1727,7 @@ angular.module('primeapps')
                                             $scope.routes.push($scope.routeShowArray);
                                             $localStorage.write("routeShow", JSON.stringify($scope.routes));
 
-                                        }
-                                        else {
+                                        } else {
                                             $scope.routes = [];
                                             $scope.routeShowArray = {
                                                 name: $scope.route,
@@ -1969,7 +1989,7 @@ angular.module('primeapps')
                 //Execute custom trigger function if there is one
                 if (attrs.onStarClick) {
                     try {
-                        scope.$parent.$eval(attrs.onStarClick, { $event: e });
+                        scope.$parent.$eval(attrs.onStarClick, {$event: e});
                     } catch (e) {
                         console.error(e)
                     }
