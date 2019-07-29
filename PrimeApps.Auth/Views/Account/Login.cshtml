@@ -1,4 +1,5 @@
 ﻿@model LoginViewModel
+@using System.Web
 @using Microsoft.AspNetCore.Mvc.Localization
 @using PrimeApps.Model.Helpers
 @inject IViewLocalizer Localizer
@@ -16,7 +17,7 @@
     <img class="logo-img" src="@Model.ApplicationInfo.Logo"/>
     @if (!preview) //(!customDomain)
     {
-        @Html.Raw(headLine)
+        @Html.Raw(HttpUtility.HtmlDecode(headLine))
     }
 
     <form asp-route="Login" class="login-form" role="form" id="login-form">
