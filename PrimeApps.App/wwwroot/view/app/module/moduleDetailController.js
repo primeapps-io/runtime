@@ -50,7 +50,7 @@ angular.module('primeapps')
             $scope.currentSectionComponentsTemplate = currentSectionComponentsTemplate;
             $scope.scriptRunning = {};
             $scope.pageBlockUI = blockUI.instances.get('pageBlockUI');
-            $scope.isDisabled = false;
+            $scope.actionButtonDisabled = false;
 
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });

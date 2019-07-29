@@ -39,7 +39,7 @@ angular.module('primeapps')
                 $scope.revise = parent.revise;
                 $scope.paramField = parent.field;
                 $scope.paramValue = parent.value;
-                $scope.isDisabled = false;
+                $scope.actionButtonDisabled = false;
 
             }
 

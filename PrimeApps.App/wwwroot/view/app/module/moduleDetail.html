@@ -226,7 +226,7 @@
                                             <button class="{{custombutton.css_class}}" type="button"
                                                     custom-scripting="{{custombutton.template}}" data-spinner-color="#666"
                                                     ladda="scriptRunning[custombutton.id]"
-                                                    ng-disabled="isDisabled"
+                                                    ng-disabled="actionButtonDisabled"
                                                     ng-repeat="custombutton in actionButtons"
                                                     ng-if="custombutton.action_type === 'Scripting' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
                                                     style="margin-left: 10px">
@@ -235,7 +235,7 @@
                                             <button class="{{custombutton.css_class}} ladda-button" type="button" data-spinner-color="#666"
                                                     ladda="webhookRequesting[custombutton.id]" ng-click="webhookRequest(custombutton)"
                                                     ng-repeat="custombutton in actionButtons"
-                                                    ng-disabled="isDisabled"
+                                                    ng-disabled="actionButtonDisabled"
                                                     ng-if="custombutton.action_type === 'Webhook' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
                                                     style="margin-left: 10px">
                                                 <i ng-class="custombutton.icon"></i> {{custombutton.name}}
@@ -243,7 +243,7 @@
                                             <button class="{{custombutton.css_class}}" type="button"
                                                     ng-click="showModuleFrameModal(custombutton.url)"
                                                     ng-repeat="custombutton in actionButtons"
-                                                    ng-disabled="isDisabled"
+                                                    ng-disabled="actionButtonDisabled"
                                                     ng-if="custombutton.action_type === 'ModalFrame' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
                                                     style="margin-left: 10px">
                                                 <i ng-class="custombutton.icon"></i> {{custombutton.name}}
@@ -543,7 +543,7 @@
                                                                                           xeditable="editLookup[field.name]"
                                                                                           create-new="openFormModal"
                                                                                           hide-create-new="hideCreateNew(field)"
-                                                                                          ng-show="editLookup[field.name]"/>
+                                                                                          ng-show="editLookup[field.name]" />
                                                                     </div>
                                                                     <a href="#/app/module/{{field.lookup_type != 'relation' ? field.lookup_type : record.related_module.value}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
                                                                        class="link"
@@ -576,7 +576,7 @@
                                                                            target="_blank">
                                                                             <img ng-style="field.image_size_detail >0 ? {'max-width':field.image_size_detail+'px'}  : {'max-width':'100%'}  "
                                                                                  class="img-responsive image-type"
-                                                                                 ng-src="{{config.imageUrl + record[field.name] }}"/>
+                                                                                 ng-src="{{config.imageUrl + record[field.name] }}" />
                                                                         </a>
                                                                     </div>
                                                                     <input-stars ng-if="field.data_type === 'rating'"
@@ -654,7 +654,7 @@
                                                                         <a ng-click="showLightBox(config.imageUrl+record[field.name])" target="_blank">
                                                                             <img ng-style="field.image_size_detail >0 ? {'max-width':field.image_size_detail+'px'}  : 'max-width: 100%' "
                                                                                  class="img-responsive image-type"
-                                                                                 ng-src="{{config.imageUrl + record[field.name] }}"/>
+                                                                                 ng-src="{{config.imageUrl + record[field.name] }}" />
                                                                         </a>
                                                                     </div>
                                                                     <input-stars ng-switch-when="rating"
@@ -669,7 +669,7 @@
                                                                                  ng-model="record[field.name]"></input-stars>
                                                                     <div class="location" ng-switch-when="location" ng-if="record[field.name]">
                                                                         <a href="http://www.google.com/maps/place/{{ record[field.name] }}" target="_blank">
-                                                                            <img ng-src="https://maps.googleapis.com/maps/api/staticmap?zoom=10&size=300x150&maptype=roadmap&markers=color:red|{{record[field.name] }}&key={{googleMapsApiKey}}"/>
+                                                                            <img ng-src="https://maps.googleapis.com/maps/api/staticmap?zoom=10&size=300x150&maptype=roadmap&markers=color:red|{{record[field.name] }}&key={{googleMapsApiKey}}" />
                                                                         </a>
                                                                     </div>
 
@@ -763,22 +763,22 @@
                                                     <div class="col-sm-12">
                                                         <table class="table">
                                                             <thead>
-                                                            <tr>
-                                                                <th>{{'Module.Subject' | translate}}</th>
-                                                                <th>{{'Module.Account' | translate}}</th>
-                                                                <th>{{'Module.Stage' | translate}}</th>
-                                                                <th>{{'Module.ValidTill' | translate}}</th>
-                                                                <th>{{'Module.Date' | translate}}</th>
-                                                            </tr>
+                                                                <tr>
+                                                                    <th>{{'Module.Subject' | translate}}</th>
+                                                                    <th>{{'Module.Account' | translate}}</th>
+                                                                    <th>{{'Module.Stage' | translate}}</th>
+                                                                    <th>{{'Module.ValidTill' | translate}}</th>
+                                                                    <th>{{'Module.Date' | translate}}</th>
+                                                                </tr>
                                                             </thead>
                                                             <tbody>
-                                                            <tr>
-                                                                <td><a href="#/app/module/quotes?id={{masterRecord.id}}&ptype=quotes&pid={{id}}">{{masterRecord.subject}}</a></td>
-                                                                <td>{{masterRecord.account.primary_value}}</td>
-                                                                <td>{{masterRecord.quote_stage.labelStr}}</td>
-                                                                <td>{{masterRecord.valid_till | date:'short'}}</td>
-                                                                <td>{{masterRecord.created_at | date:'short'}}</td>
-                                                            </tr>
+                                                                <tr>
+                                                                    <td><a href="#/app/module/quotes?id={{masterRecord.id}}&ptype=quotes&pid={{id}}">{{masterRecord.subject}}</a></td>
+                                                                    <td>{{masterRecord.account.primary_value}}</td>
+                                                                    <td>{{masterRecord.quote_stage.labelStr}}</td>
+                                                                    <td>{{masterRecord.valid_till | date:'short'}}</td>
+                                                                    <td>{{masterRecord.created_at | date:'short'}}</td>
+                                                                </tr>
                                                             </tbody>
                                                         </table>
                                                     </div>
@@ -883,7 +883,7 @@
                                 <a class="close-btn" id="close-lightbox" ng-click="closeLightBox()"><i class="fa fa-times-circle"></i></a>
                             </header>
                             <content ng-click="closeLightBox()">
-                                <img ng-src="{{ ImageUrl }}"/>
+                                <img ng-src="{{ ImageUrl }}" />
                             </content>
                             <footer>
                                 <a class="download-btn" href="{{ ImageUrl }}" target="_blank"><i class="fa fa-download"></i></a>

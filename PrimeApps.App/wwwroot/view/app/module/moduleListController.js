@@ -18,7 +18,7 @@ angular.module('primeapps')
             $scope.isAdmin = $rootScope.user.profile.has_admin_rights;
             $scope.hasActionButtonDisplayPermission = ModuleService.hasActionButtonDisplayPermission;
             $scope.hideDeleteAll = $filter('filter')($rootScope.deleteAllHiddenModules, $scope.type, true)[0];
-            $scope.isDisabled = false;
+            $scope.actionButtonDisabled = false;
             
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
