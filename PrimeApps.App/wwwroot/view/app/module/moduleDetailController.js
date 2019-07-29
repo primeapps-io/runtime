@@ -17,7 +17,7 @@ angular.module('primeapps')
             $scope.returnPreviousParentId = $location.search().rppid;
             $scope.returnPreviousReturnTab = $location.search().rprtab;
             $scope.back = $location.search().back;
-            $scope.module = $filter('filter')($rootScope.modules, {name: $scope.type}, true)[0];
+            $scope.module = $filter('filter')($rootScope.modules, { name: $scope.type }, true)[0];
             $scope.operations = operations;
             $scope.hasPermission = helper.hasPermission;
             $scope.hasDocumentsPermission = helper.hasDocumentsPermission;
@@ -50,15 +50,16 @@ angular.module('primeapps')
             $scope.currentSectionComponentsTemplate = currentSectionComponentsTemplate;
             $scope.scriptRunning = {};
             $scope.pageBlockUI = blockUI.instances.get('pageBlockUI');
+            $scope.isDisabled = false;
 
             if (!$scope.module) {
-                ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
+                ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
                 $state.go('app.dashboard');
                 return;
             }
 
             if (!$scope.id) {
-                ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
+                ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
                 $state.go('app.dashboard');
                 return;
             }
@@ -81,7 +82,7 @@ angular.module('primeapps')
                 return $sce.trustAsHtml(value);
             };
 
-            $scope.dropdownFields = $filter('filter')($scope.module.fields, {data_type: 'lookup', show_as_dropdown: true}, true);
+            $scope.dropdownFields = $filter('filter')($scope.module.fields, { data_type: 'lookup', show_as_dropdown: true }, true);
             $scope.dropdownFieldDatas = {};
             for (var i = 0; i < $scope.dropdownFields.length; i++) {
                 $scope.dropdownFieldDatas[$scope.dropdownFields[i].name] = [];
@@ -104,9 +105,9 @@ angular.module('primeapps')
 
             var setScrollHeight = function () {
                 if ($scope.tabconfig)
-                    $scope.scrollHeightTab = {height: ($window.innerHeight - 255) + 'px'};
+                    $scope.scrollHeightTab = { height: ($window.innerHeight - 255) + 'px' };
                 else
-                    $scope.scrollHeight = {height: ($window.innerHeight - 165) + 'px'};
+                    $scope.scrollHeight = { height: ($window.innerHeight - 165) + 'px' };
             };
 
             setScrollHeight();
@@ -117,20 +118,20 @@ angular.module('primeapps')
                 });
             });
 
-            $scope.primaryField = $filter('filter')($scope.module.fields, {primary: true})[0];
+            $scope.primaryField = $filter('filter')($scope.module.fields, { primary: true })[0];
             $scope.currentUser = ModuleService.processUser($rootScope.user);
             $scope.currentDayMin = helper.getCurrentDateMin().toISOString();
             $scope.currentDayMax = helper.getCurrentDateMax().toISOString();
             $scope.currentHour = helper.floorMinutes(new Date());
             $scope.entityTypes = entityTypes;
             $scope.guidEmpty = guidEmpty;
-            $scope.relatedToField = $filter('filter')($scope.module.fields, {name: 'related_to'}, true)[0];
+            $scope.relatedToField = $filter('filter')($scope.module.fields, { name: 'related_to' }, true)[0];
             $scope.record = {};
             $scope.allFields = [];
             $scope.showEditor = false;
             $scope.isAdmin = $rootScope.user.profile.has_admin_rights;
 
-            var salesInvoiceModule = $filter('filter')($scope.modules, {name: 'sales_invoices'}, true);
+            var salesInvoiceModule = $filter('filter')($scope.modules, { name: 'sales_invoices' }, true);
             if (salesInvoiceModule.length < 1)
                 $scope.salesInvoiceModule = false;
             else
@@ -162,14 +163,14 @@ angular.module('primeapps')
                 angular.forEach($scope.module.relations, function (relation) {
                     if (relation.deleted)
                         return;
-                    var relatedModule = $filter('filter')($rootScope.modules, {name: relation.related_module}, true)[0];
+                    var relatedModule = $filter('filter')($rootScope.modules, { name: relation.related_module }, true)[0];
                     var filterRequest = {};
                     //Get relation count for activities for one to many
                     if ((relation.related_module === 'activities' || relation.related_module === 'mails') && relation.relation_type !== 'many_to_many') {
                         filterRequest = {
                             fields: ['total_count()'],
                             filters: [
-                                {field: relation.relation_field, operator: 'equals', value: $scope.id, no: 1},
+                                { field: relation.relation_field, operator: 'equals', value: $scope.id, no: 1 },
                                 {
                                     field: 'related_module',
                                     operator: 'is',
@@ -182,11 +183,11 @@ angular.module('primeapps')
                     }
                     else if (relation.relation_type === 'many_to_many') {
                         if (!relatedModule) return;
-                        var fieldPrimaryManyToMany = $filter('filter')(relatedModule.fields, {primary: true}, true)[0];
+                        var fieldPrimaryManyToMany = $filter('filter')(relatedModule.fields, { primary: true }, true)[0];
                         var fieldNamePrimaryManyToMany = relation.related_module + '_id.' + relation.related_module + '.' + fieldPrimaryManyToMany.name;
                         filterRequest = {
                             fields: ['total_count()', fieldNamePrimaryManyToMany],
-                            filters: [{field: $scope.module.name + '_id', operator: 'equals', value: $scope.id, no: 1}],
+                            filters: [{ field: $scope.module.name + '_id', operator: 'equals', value: $scope.id, no: 1 }],
                             limit: 1,
                             offset: 0,
                             many_to_many: $scope.module.name
@@ -195,7 +196,7 @@ angular.module('primeapps')
                     else
                         filterRequest = {
                             fields: ['total_count()'],
-                            filters: [{field: relation.relation_field, operator: 'equals', value: $scope.id, no: 1}],
+                            filters: [{ field: relation.relation_field, operator: 'equals', value: $scope.id, no: 1 }],
                             limit: 1,
                             offset: 0
                         };
@@ -225,7 +226,7 @@ angular.module('primeapps')
                     $scope.parentModule = $scope.parentType;
                 }
                 else {
-                    var parentTypeField = $filter('filter')($scope.module.fields, {name: $scope.parentType}, true)[0];
+                    var parentTypeField = $filter('filter')($scope.module.fields, { name: $scope.parentType }, true)[0];
 
                     if (parentTypeField) {
                         $scope.parentModule = parentTypeField.lookup_type;
@@ -295,10 +296,10 @@ angular.module('primeapps')
                     var filterRequest = {
                         fields: ['hesaplanan_alinacak_toplam_izin', 'baslangic_tarihi', 'bitis_tarihi', 'izin_turu', 'process.process_requests.process_status', 'system_code'],
                         filters: [
-                            {field: 'calisan', operator: 'equals', value: $scope.record['calisan'].id, no: 1},
-                            {field: 'baslangic_tarihi', operator: 'greater_equal', value: startOf, no: 2},
-                            {field: 'deleted', operator: 'equals', value: false, no: 3},
-                            {field: 'process.process_requests.process_status', operator: 'not_equal', value: 3, no: 4}
+                            { field: 'calisan', operator: 'equals', value: $scope.record['calisan'].id, no: 1 },
+                            { field: 'baslangic_tarihi', operator: 'greater_equal', value: startOf, no: 2 },
+                            { field: 'deleted', operator: 'equals', value: false, no: 3 },
+                            { field: 'process.process_requests.process_status', operator: 'not_equal', value: 3, no: 4 }
                         ],
                         limit: 999999
                     };
@@ -330,7 +331,7 @@ angular.module('primeapps')
                         ModuleService.getRecord($scope.module.name, $scope.id)
                             .then(function (recordData) {
                                 if (Object.keys(recordData.data).length === 0) {
-                                    ngToast.create({content: $filter('translate')('Common.Forbidden'), className: 'warning'});
+                                    ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
                                     $state.go('app.dashboard');
                                 }
                                 if ($scope.module.name != 'activities') {
@@ -338,7 +339,7 @@ angular.module('primeapps')
                                     angular.forEach($scope.module.fields, function (field) {
                                         ModuleService.setDependency(field, $scope.module, $scope.record, $scope.picklistsModule);
                                         if (field.default_value && field.data_type == 'picklist') {
-                                            $scope.record[field.name] = $filter('filter')($scope.picklistsModule[field.picklist_id], {id: field.default_value})[0]
+                                            $scope.record[field.name] = $filter('filter')($scope.picklistsModule[field.picklist_id], { id: field.default_value })[0]
                                             $scope.fieldValueChange(field);
                                         }
                                     });
@@ -386,7 +387,7 @@ angular.module('primeapps')
                                             var approvers = response.data.approvers;
 
                                             if (approvers.length > 0) {
-                                                var currentApprover = $filter('filter')(approvers, {id: $scope.currentUser.id}, true)[0];
+                                                var currentApprover = $filter('filter')(approvers, { id: $scope.currentUser.id }, true)[0];
 
                                                 if (!currentApprover && record.process_status !== 3)
                                                     $scope.waitingForApproval = true;
@@ -464,9 +465,9 @@ angular.module('primeapps')
                                 }
 
                                 if ($scope.module.dependencies.length > 0) {
-                                    var freezeDependencies = $filter('filter')($scope.module.dependencies, {dependency_type: 'freeze'}, true);
+                                    var freezeDependencies = $filter('filter')($scope.module.dependencies, { dependency_type: 'freeze' }, true);
                                     angular.forEach(freezeDependencies, function (dependencie) {
-                                        var freezeFields = $filter('filter')($scope.module.fields, {name: dependencie.parent_field}, true);
+                                        var freezeFields = $filter('filter')($scope.module.fields, { name: dependencie.parent_field }, true);
                                         angular.forEach(freezeFields, function (field) {
                                             angular.forEach(dependencie.values_array, function (value) {
                                                 if (record[field.name] && (value == record[field.name] || value == record[field.name].id))
@@ -537,8 +538,8 @@ angular.module('primeapps')
                                     });
 
                                 if ($scope.relatedToField && record['related_to'] && record[$scope.relatedToField.lookup_relation]) {
-                                    var lookupModule = $filter('filter')($rootScope.modules, {id: record[$scope.relatedToField.lookup_relation].id - 900000}, true)[0];
-                                    var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
+                                    var lookupModule = $filter('filter')($rootScope.modules, { id: record[$scope.relatedToField.lookup_relation].id - 900000 }, true)[0];
+                                    var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
 
                                     ModuleService.getRecord(lookupModule.name, record['related_to'], true)
                                         .then(function (relatedRecord) {
@@ -629,14 +630,14 @@ angular.module('primeapps')
                         return $q.defer().promise;
                     }
 
-                    var relationModule = $filter('filter')($rootScope.modules, {name: $scope.record.related_module.value}, true)[0];
+                    var relationModule = $filter('filter')($rootScope.modules, { name: $scope.record.related_module.value }, true)[0];
 
                     if (!relationModule) {
                         $scope.$broadcast('angucomplete-alt:clearInput', $scope.currentLookupField.name);
                         return $q.defer().promise;
                     }
 
-                    $scope.currentLookupField.lookupModulePrimaryField = $filter('filter')(relationModule.fields, {primary: true}, true)[0];
+                    $scope.currentLookupField.lookupModulePrimaryField = $filter('filter')(relationModule.fields, { primary: true }, true)[0];
                 }
 
                 if (($scope.currentLookupField.lookupModulePrimaryField.data_type === 'number' || $scope.currentLookupField.lookupModulePrimaryField.data_type === 'number_auto') && isNaN(parseFloat(searchTerm))) {
@@ -751,7 +752,7 @@ angular.module('primeapps')
                         };
 
                         //if approval process exist for this module and crud condition
-                        var moduleProcesses = $filter('filter')($rootScope.approvalProcesses, {module_id: $scope.module.id}, true);
+                        var moduleProcesses = $filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true);
                         if (moduleProcesses) {
                             var isProcessUpdate = false;
                             for (var i = 0; i < moduleProcesses.length; i++) {
@@ -779,7 +780,7 @@ angular.module('primeapps')
                                                         var approvers = response.data.approvers;
 
                                                         if (approvers.length > 0) {
-                                                            var currentApprover = $filter('filter')(approvers, {id: $scope.currentUser.id}, true)[0];
+                                                            var currentApprover = $filter('filter')(approvers, { id: $scope.currentUser.id }, true)[0];
 
                                                             if (!currentApprover && record.process_status !== 3)
                                                                 $scope.waitingForApproval = true;
@@ -854,9 +855,9 @@ angular.module('primeapps')
                                             }
 
                                             if ($scope.module.dependencies.length > 0) {
-                                                var freezeDependencies = $filter('filter')($scope.module.dependencies, {dependency_type: 'freeze'}, true);
+                                                var freezeDependencies = $filter('filter')($scope.module.dependencies, { dependency_type: 'freeze' }, true);
                                                 angular.forEach(freezeDependencies, function (dependencie) {
-                                                    var freezeFields = $filter('filter')($scope.module.fields, {name: dependencie.parent_field}, true);
+                                                    var freezeFields = $filter('filter')($scope.module.fields, { name: dependencie.parent_field }, true);
                                                     angular.forEach(freezeFields, function (field) {
                                                         angular.forEach(dependencie.values_array, function (value) {
                                                             if (record[field.name] && (value == record[field.name] || value == record[field.name].id))
@@ -904,8 +905,8 @@ angular.module('primeapps')
                                             });
 
                                             if ($scope.relatedToField && record['related_to']) {
-                                                var lookupModule = $filter('filter')($rootScope.modules, {id: record[$scope.relatedToField.lookup_relation].id - 900000}, true)[0];
-                                                var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
+                                                var lookupModule = $filter('filter')($rootScope.modules, { id: record[$scope.relatedToField.lookup_relation].id - 900000 }, true)[0];
+                                                var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
 
                                                 ModuleService.getRecord(lookupModule.name, record['related_to'], true)
                                                     .then(function (relatedRecord) {
@@ -945,7 +946,7 @@ angular.module('primeapps')
                     })
                     .catch(function (data, status) {
                         if (status === 409) {
-                            ngToast.create({content: $filter('translate')('Module.UniqueError'), className: 'danger'});
+                            ngToast.create({ content: $filter('translate')('Module.UniqueError'), className: 'danger' });
                             $scope.record[data.field] = $scope.recordState[data.field];
                         }
                     });
@@ -964,11 +965,11 @@ angular.module('primeapps')
                         clearCache();
 
                         if ($scope.parentId) {
-                            $state.go('app.moduleDetail', {type: $scope.parentModule, id: $scope.parentId});
+                            $state.go('app.moduleDetail', { type: $scope.parentModule, id: $scope.parentId });
                             return;
                         }
 
-                        $state.go('app.moduleList', {type: $scope.type});
+                        $state.go('app.moduleList', { type: $scope.type });
                     });
             };
 
@@ -1025,13 +1026,13 @@ angular.module('primeapps')
                 $scope.formModalShown = true;
 
                 $scope.formModal = $scope.formModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/module/moduleFormModal.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false,
-                    tag: 'formModal'
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/module/moduleFormModal.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false,
+                        tag: 'formModal'
+                    });
 
                 $scope.formModal.$promise.then($scope.formModal.show);
             };
@@ -1531,22 +1532,22 @@ angular.module('primeapps')
 
             $scope.showActivityButtons = function () {
                 $scope.activityButtonsPopover = $scope.activityButtonsPopover || $popover(angular.element(document.getElementById('activityButtons')), {
-                    templateUrl: 'view/common/newactivity.html',
-                    placement: 'bottom',
-                    autoClose: true,
-                    scope: $scope,
-                    show: true
-                });
+                        templateUrl: 'view/common/newactivity.html',
+                        placement: 'bottom',
+                        autoClose: true,
+                        scope: $scope,
+                        show: true
+                    });
             };
 
             $scope.showTransactionButtons = function () {
                 $scope.transactionButtonsPopover = $scope.transactionButtonsPopover || $popover(angular.element(document.getElementById('transactionButtons')), {
-                    templateUrl: 'view/common/newtransaction.html',
-                    placement: 'bottom',
-                    autoClose: true,
-                    scope: $scope,
-                    show: true
-                });
+                        templateUrl: 'view/common/newtransaction.html',
+                        placement: 'bottom',
+                        autoClose: true,
+                        scope: $scope,
+                        show: true
+                    });
             };
 
             $scope.getCurrentTime = function () {
@@ -1559,12 +1560,12 @@ angular.module('primeapps')
 
                 var openPdfModal = function () {
                     $scope.PdfModal = $scope.PdfModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/module/modulePdfModal.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false
-                    });
+                            scope: $scope,
+                            templateUrl: 'view/app/module/modulePdfModal.html',
+                            animation: '',
+                            backdrop: 'static',
+                            show: false
+                        });
 
                     $scope.PdfModal.$promise.then($scope.PdfModal.show);
                 };
@@ -1578,20 +1579,20 @@ angular.module('primeapps')
                     .then(function (templateResponse) {
                         if (templateResponse.data.length == 0) {
                             if (!$rootScope.preview)
-                                ngToast.create({content: $filter('translate')('Setup.Templates.TemplateNotFound'), className: 'warning'});
+                                ngToast.create({ content: $filter('translate')('Setup.Templates.TemplateNotFound'), className: 'warning' });
                             else
-                                ngToast.create({content: $filter('translate')('Setup.Templates.TemplateDefined'), className: 'warning'});
+                                ngToast.create({ content: $filter('translate')('Setup.Templates.TemplateDefined'), className: 'warning' });
 
                             $scope.pdfCreating = false;
                         }
                         else {
                             var templateWord = templateResponse.data;
-                            $scope.quoteTemplates = $filter('filter')(templateWord, {active: true}, true);
+                            $scope.quoteTemplates = $filter('filter')(templateWord, { active: true }, true);
                             $scope.isShownWarning = true;
                             for (var i = 0; i < $scope.quoteTemplates.length; i++) {
                                 var quoteTemplate = $scope.quoteTemplates[i];
                                 if (quoteTemplate.permissions.length > 0) {
-                                    var currentQuoteTemplate = $filter('filter')(quoteTemplate.permissions, {profile_id: $rootScope.user.profile.id}, true)[0];
+                                    var currentQuoteTemplate = $filter('filter')(quoteTemplate.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
                                     if (currentQuoteTemplate.type === 'none') {
                                         quoteTemplate.isShown = false;
                                     }
@@ -1609,12 +1610,12 @@ angular.module('primeapps')
                             }
                             $scope.quoteTemplate = $scope.quoteTemplates[0];
                             $scope.PdfModal = $scope.PdfModal || $modal({
-                                scope: $scope,
-                                templateUrl: 'view/app/module/modulePdfModal.html',
-                                animation: '',
-                                backdrop: 'static',
-                                show: false
-                            });
+                                    scope: $scope,
+                                    templateUrl: 'view/app/module/modulePdfModal.html',
+                                    animation: '',
+                                    backdrop: 'static',
+                                    show: false
+                                });
 
                             openPdfModal();
                         }
@@ -1627,7 +1628,7 @@ angular.module('primeapps')
 
             $scope.getDownloadUrl = function (format) {
                 $window.open("/attach/export?module=" + $scope.type + "&id=" + $scope.id + "&templateId=" + $scope.quoteTemplate.id + "&access_token=" + $localStorage.read('access_token') + '&format=' + format + '&locale=' + $rootScope.locale + '&timezoneOffset=' + new Date().getTimezoneOffset() * -1, "_blank");
-                ngToast.create({content: $filter('translate')('Module.ExcelDesktop'), className: 'success'});
+                ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
             };
 
             // $scope.getDownloadUrl = function (format) {
@@ -1639,13 +1640,13 @@ angular.module('primeapps')
                 $scope.selectedRelatedModule = relatedModule;
                 $scope.selectedRelatedModule['relatedModuleInModal'] = true;
                 $scope.addModal = $scope.addModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/module/moduleAddModal.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false,
-                    tag: 'relatedModuleInModal'
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/module/moduleAddModal.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false,
+                        tag: 'relatedModuleInModal'
+                    });
 
                 $scope.addModal.$promise.then($scope.addModal.show);
             };
@@ -1661,11 +1662,11 @@ angular.module('primeapps')
 
                 /*Generates and displays modal form for the mail*/
                 $scope.mailModal = $scope.mailModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/email/singleEmailModal.html',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/email/singleEmailModal.html',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 if (!notShow)
                     $scope.mailModal.$promise.then($scope.mailModal.show);
@@ -1673,17 +1674,17 @@ angular.module('primeapps')
 
             $scope.showQuoteEMailModal = function (notShow, email) {
                 if (!$rootScope.system.messaging.SystemEMail && !$rootScope.system.messaging.PersonalEMail) {
-                    ngToast.create({content: $filter('translate')('EMail.NoProvider'), className: 'warning'});
+                    ngToast.create({ content: $filter('translate')('EMail.NoProvider'), className: 'warning' });
                     return;
                 }
 
                 /*Generates and displays modal form for the mail*/
                 $scope.mailModal = $scope.mailModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/email/singleEmailModal.html',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/email/singleEmailModal.html',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 if (!notShow)
                     $scope.mailModal.$promise.then($scope.mailModal.show);
@@ -1691,17 +1692,17 @@ angular.module('primeapps')
 
             $scope.showSingleSMSModal = function () {
                 if (!$rootScope.system.messaging.SMS) {
-                    ngToast.create({content: $filter('translate')('SMS.NoProvider'), className: 'warning'});
+                    ngToast.create({ content: $filter('translate')('SMS.NoProvider'), className: 'warning' });
                     return;
                 }
 
                 /*Generates and displays modal form for the mail*/
                 $scope.smsModal = $scope.smsModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/sms/singleSMSModal.html',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/sms/singleSMSModal.html',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.smsModal.$promise.then($scope.smsModal.show);
             };
@@ -1720,12 +1721,12 @@ angular.module('primeapps')
                 else {
                     $scope.frameUrl = url;
                     $scope.frameModal = $scope.frameModal || $modal({
-                        scope: $scope,
-                        controller: 'ActionButtonFrameController',
-                        templateUrl: 'view/app/actionbutton/actionButtonFrameModal.html',
-                        backdrop: 'static',
-                        show: false
-                    });
+                            scope: $scope,
+                            controller: 'ActionButtonFrameController',
+                            templateUrl: 'view/app/actionbutton/actionButtonFrameModal.html',
+                            backdrop: 'static',
+                            show: false
+                        });
 
                     $scope.frameModal.$promise.then($scope.frameModal.show);
                 }
@@ -1745,12 +1746,12 @@ angular.module('primeapps')
 
             $scope.showTransactionButtons = function () {
                 $scope.transactionButtonsPopover = $scope.transactionButtonsPopover || $popover(angular.element(document.getElementById('transactionButtons')), {
-                    templateUrl: 'view/common/newtransaction.html',
-                    placement: 'bottom',
-                    autoClose: true,
-                    scope: $scope,
-                    show: true
-                });
+                        templateUrl: 'view/common/newtransaction.html',
+                        placement: 'bottom',
+                        autoClose: true,
+                        scope: $scope,
+                        show: true
+                    });
             };
 
             $scope.getmoduledownloadurl = function (fileName, fieldName) {
@@ -1787,11 +1788,11 @@ angular.module('primeapps')
                             $rootScope.sipUser.activePhoneScreen = "connectingScreen";
                         }
                         else {
-                            ngToast.create({content: $filter('translate')('Phone.NoNumber'), className: 'warning'});
+                            ngToast.create({ content: $filter('translate')('Phone.NoNumber'), className: 'warning' });
                         }
                     }
                     else {
-                        ngToast.create({content: $filter('translate')('Phone.AlreadyInCall'), className: 'warning'});
+                        ngToast.create({ content: $filter('translate')('Phone.AlreadyInCall'), className: 'warning' });
                     }
                 }
 
@@ -1825,12 +1826,12 @@ angular.module('primeapps')
             $scope.openLocationModal = function (filedName) {
                 $scope.filedName = filedName;
                 $scope.locationModal = $scope.frameModal || $modal({
-                    scope: $scope,
-                    controller: 'locationFormModalController',
-                    templateUrl: 'view/app/location/locationFormModal.html',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        controller: 'locationFormModalController',
+                        templateUrl: 'view/app/location/locationFormModal.html',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.locationModal.$promise.then($scope.locationModal.show);
             };
             //webhook request func for action button
@@ -2068,13 +2069,13 @@ angular.module('primeapps')
 
             $scope.openRejectApprovalModal = function () {
                 $scope.rejectModal = $scope.rejectModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/module/rejectProcessModal.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false,
-                    tag: 'createModal'
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/module/rejectProcessModal.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false,
+                        tag: 'createModal'
+                    });
 
                 $scope.rejectModal.$promise.then($scope.rejectModal.show);
             };
@@ -2151,7 +2152,7 @@ angular.module('primeapps')
                     .then(function (converted) {
                         $scope.converted = converted.data;
                         $scope.convertDisable = true;
-                        ngToast.create({content: $filter('translate')('Convert.Success', {type: $scope.module['label_' + $rootScope.language + '_singular']}), className: 'success'});
+                        ngToast.create({ content: $filter('translate')('Convert.Success', { type: $scope.module['label_' + $rootScope.language + '_singular'] }), className: 'success' });
                         $window.location.href = '#/app/module/sales_invoices?id=' + converted.data['sales_invoice_id'] + '&back=sales_orders';
                     })
                     .catch(function (data) {
@@ -2173,7 +2174,7 @@ angular.module('primeapps')
                     .then(function (converted) {
                         $scope.converted = converted.data;
                         $scope.convertDisable = true;
-                        ngToast.create({content: $filter('translate')('Convert.Success', {type: $scope.module['label_' + $rootScope.language + '_singular']}), className: 'success'});
+                        ngToast.create({ content: $filter('translate')('Convert.Success', { type: $scope.module['label_' + $rootScope.language + '_singular'] }), className: 'success' });
                         $window.location.href = '#/app/module/purchase_invoices?id=' + converted.data['purchase_invoice_id'] + '&back=purchase_orders';
                     })
                     .catch(function (data) {
@@ -2188,7 +2189,7 @@ angular.module('primeapps')
 
             if ($scope.module.relations.length > 0) {
                 $scope.relationActionButtons = [];
-                var moduleRelation = $filter('filter')($scope.module.relations, {deleted: false}, true);
+                var moduleRelation = $filter('filter')($scope.module.relations, { deleted: false }, true);
 
                 var relationButtonIsShown = function (actionButton) {
                     actionButton.isShown = false;
@@ -2204,7 +2205,7 @@ angular.module('primeapps')
 
                 if (moduleRelation.length > 0) {
                     for (var i = 0; i < moduleRelation.length; i++) {
-                        var module = $filter('filter')($rootScope.modules, {name: moduleRelation[i].related_module}, true)[0];
+                        var module = $filter('filter')($rootScope.modules, { name: moduleRelation[i].related_module }, true)[0];
 
                         ModuleService.getActionButtons(module.id)
                             .then(function (actionButtons) {

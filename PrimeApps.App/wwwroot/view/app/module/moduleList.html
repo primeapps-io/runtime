@@ -143,6 +143,7 @@
 			<button class="{{custombutton.css_class}} ladda-button" type="button"
 					custom-scripting="{{custombutton.template}}" data-spinner-color="#666" ladda="running"
 					ng-repeat="custombutton in actionButtons"
+					ng-disabled="isDisabled"
 					ng-if="custombutton.action_type === 'Scripting' && hasActionButtonDisplayPermission(custombutton)"
 					style="margin-left: 10px">
 				<i ng-class="custombutton.icon"></i>
@@ -151,6 +152,7 @@
 			<button class="{{custombutton.css_class}} ladda-button" type="button" data-spinner-color="#666"
 					ladda="webhookRequesting[custombutton.id]" ng-click="webhookRequest(custombutton)"
 					ng-repeat="custombutton in actionButtons"
+					ng-disabled="isDisabled"
 					ng-if="custombutton.action_type === 'Webhook' && hasActionButtonDisplayPermission(custombutton)"
 					style="margin-left: 10px">
 				<i ng-class="custombutton.icon"></i> {{custombutton.name}}
@@ -158,6 +160,7 @@
 			<button class="{{custombutton.css_class}}" type="button"
 					ng-click="showModuleFrameModal(custombutton.url)"
 					ng-repeat="custombutton in actionButtons"
+					ng-disabled="isDisabled"
 					ng-if="custombutton.action_type === 'ModalFrame' && hasActionButtonDisplayPermission(custombutton)"
 					style="margin-left: 10px">
 				<i ng-class="custombutton.icon"></i>

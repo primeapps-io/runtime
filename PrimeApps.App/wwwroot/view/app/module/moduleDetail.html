@@ -226,6 +226,7 @@
                                             <button class="{{custombutton.css_class}}" type="button"
                                                     custom-scripting="{{custombutton.template}}" data-spinner-color="#666"
                                                     ladda="scriptRunning[custombutton.id]"
+                                                    ng-disabled="isDisabled"
                                                     ng-repeat="custombutton in actionButtons"
                                                     ng-if="custombutton.action_type === 'Scripting' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
                                                     style="margin-left: 10px">
@@ -234,6 +235,7 @@
                                             <button class="{{custombutton.css_class}} ladda-button" type="button" data-spinner-color="#666"
                                                     ladda="webhookRequesting[custombutton.id]" ng-click="webhookRequest(custombutton)"
                                                     ng-repeat="custombutton in actionButtons"
+                                                    ng-disabled="isDisabled"
                                                     ng-if="custombutton.action_type === 'Webhook' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
                                                     style="margin-left: 10px">
                                                 <i ng-class="custombutton.icon"></i> {{custombutton.name}}
@@ -241,6 +243,7 @@
                                             <button class="{{custombutton.css_class}}" type="button"
                                                     ng-click="showModuleFrameModal(custombutton.url)"
                                                     ng-repeat="custombutton in actionButtons"
+                                                    ng-disabled="isDisabled"
                                                     ng-if="custombutton.action_type === 'ModalFrame' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
                                                     style="margin-left: 10px">
                                                 <i ng-class="custombutton.icon"></i> {{custombutton.name}}

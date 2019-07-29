@@ -20,6 +20,7 @@ angular.module('primeapps')
                 $scope.revise = $location.search().revise;
                 $scope.paramField = $location.search().field;
                 $scope.paramValue = $location.search().value;
+                $scope.isDisabled = false;
             } else {
                 var parent = $scope.$parent.$parent;
                 $scope.formType = parent.formType;
@@ -38,6 +39,7 @@ angular.module('primeapps')
                 $scope.revise = parent.revise;
                 $scope.paramField = parent.field;
                 $scope.paramValue = parent.value;
+                $scope.isDisabled = false;
 
             }
 
