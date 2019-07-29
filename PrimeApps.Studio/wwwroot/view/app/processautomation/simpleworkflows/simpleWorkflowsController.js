@@ -1313,12 +1313,11 @@ angular.module('primeapps')
 
                 if ($scope.fieldUpdateIsNullOrEmpty())
                     delete $scope.workflowModel.field_update;
+                else if (!$scope.updateFieldValue)
+                    $scope.updateFieldValue = $scope.workflowModel.field_update.value;
 
                 if ($scope.webHookIsNullOrEmpty())
                     delete $scope.workflowModel.webHook;
-
-                if (!$scope.updateFieldValue)
-                    $scope.updateFieldValue = $scope.workflowModel.field_update.value;
 
                 var workflow = SimpleWorkflowsService.prepareWorkflow($scope.workflowModel, $scope.filters, $scope.updateFieldValue);
 
