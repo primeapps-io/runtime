@@ -242,7 +242,7 @@ angular.module('primeapps')
                         $scope.authTheme.descriptionTr = authTheme.banner[0].descriptions.tr;
                     }
                 }
-                if (authTheme && Object.keys(authTheme.headLine).length > 0) {
+                if (authTheme && authTheme.headLine) {
                     if (authTheme.headLine.en) {
                         $scope.authTheme.headLineEn = authTheme.headLine.en;
                     }
