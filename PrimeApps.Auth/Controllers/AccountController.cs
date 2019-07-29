@@ -806,8 +806,8 @@ namespace PrimeApps.Auth.UI
                     RedirectUri = Url.Action("ExternalLoginCallback"),
                     Items =
                     {
-                        {"returnUrl", returnUrl},
-                        {"scheme", provider},
+                        { "returnUrl", returnUrl },
+                        { "scheme", provider },
                     }
                 };
                 return Challenge(props, provider);
@@ -1231,7 +1231,7 @@ namespace PrimeApps.Auth.UI
                     ReturnUrl = returnUrl,
                     Username = context?.LoginHint,
                     ExternalProviders = new ExternalProvider[]
-                        {new ExternalProvider {AuthenticationScheme = context.IdP}},
+                        { new ExternalProvider { AuthenticationScheme = context.IdP } },
                     ApplicationInfo = applicationInfo,
                     Language = applicationInfo.Language,
                     Success = success,
@@ -1293,7 +1293,7 @@ namespace PrimeApps.Auth.UI
         private async Task<LogoutViewModel> BuildLogoutViewModelAsync(string logoutId, string returnUrl, string error = null)
         {
             var vm = new LogoutViewModel
-            { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt, Error = error };
+                { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt, Error = error };
 
             vm.ReturnUrl = returnUrl;
 
@@ -1369,8 +1369,8 @@ namespace PrimeApps.Auth.UI
                     RedirectUri = Url.Action("ExternalLoginCallback"),
                     Items =
                     {
-                        {"returnUrl", returnUrl},
-                        {"scheme", AccountOptions.WindowsAuthenticationSchemeName},
+                        { "returnUrl", returnUrl },
+                        { "scheme", AccountOptions.WindowsAuthenticationSchemeName },
                     }
                 };
 
@@ -1664,6 +1664,8 @@ namespace PrimeApps.Auth.UI
 
                 if (applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Tenant)
                 {
+                    var tenant1 = _platformRepository.GetTenant(1);
+                    
                     Tenant tenant = null;
                     //var tenantId = 2032;
                     try
@@ -1678,8 +1680,8 @@ namespace PrimeApps.Auth.UI
                             GuidId = Guid.NewGuid(),
                             License = new TenantLicense
                             {
-                                UserLicenseCount = 5,
-                                ModuleLicenseCount = 2
+                                UserLicenseCount = tenant1.License.UserLicenseCount,
+                                ModuleLicenseCount = tenant1.License.ModuleLicenseCount
                             },
                             Setting = new TenantSetting
                             {
@@ -1702,13 +1704,13 @@ namespace PrimeApps.Auth.UI
                             applicationInfo.Id);
 
                         _userRepository.CurrentUser = new CurrentUser
-                        { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                            { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
                         _profileRepository.CurrentUser = new CurrentUser
-                        { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                            { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
                         _roleRepository.CurrentUser = new CurrentUser
-                        { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                            { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
                         _recordRepository.CurrentUser = new CurrentUser
-                        { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                            { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
 
                         _profileRepository.TenantId = _roleRepository.TenantId =
                             _userRepository.TenantId = _recordRepository.TenantId = tenantId;

@@ -26,7 +26,7 @@ angular.module('primeapps')
                 return;
             }
 
-            var salesInvoiceModule = $filter('filter')($scope.modules, { name: 'sales_invoices' }, true);
+            var salesInvoiceModule = $filter('filter')($scope.modules, {name: 'sales_invoices'}, true);
             if (salesInvoiceModule.length < 1)
                 $scope.salesInvoiceModule = false;
             else
@@ -69,7 +69,8 @@ angular.module('primeapps')
             }
             if ($stateParams.viewid) {
                 $scope.viewid = $stateParams.viewid;
-            } else {
+            }
+            else {
                 $scope.viewid = null;
             }
 
@@ -180,7 +181,8 @@ angular.module('primeapps')
                     var top = (screen.height / 2) - (h / 2);
                     window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
 
-                } else {
+                }
+                else {
                     $scope.frameUrl = url;
                     $scope.frameModal = $scope.frameModal || $modal({
                             scope: $scope,
@@ -232,7 +234,8 @@ angular.module('primeapps')
                         //             jsonData[parameterName] = response.data[fieldName];
                         //         })
                         // }
-                    } else {
+                    }
+                    else {
                         if ($scope.record[fieldName])
                             jsonData[parameterName] = $scope.record[fieldName];
                         else
@@ -256,7 +259,8 @@ angular.module('primeapps')
                                     headersData[key] = $scope.record[moduleName][fieldName];
                                 else
                                     headersData[key] = null;
-                            } else {
+                            }
+                            else {
                                 if ($scope.record[fieldName])
                                     headersData[key] = $scope.record[fieldName];
                                 else
@@ -307,7 +311,8 @@ angular.module('primeapps')
                             $scope.webhookRequesting[action.id] = false;
                         });
 
-                } else if (action.method_type === 'get') {
+                }
+                else if (action.method_type === 'get') {
 
                     var query = "";
 
@@ -419,7 +424,6 @@ angular.module('primeapps')
                     });
             };
 
-
             $scope.export = function () {
                 if ($scope.tableParams.total() < 1)
                     return;
@@ -428,7 +432,8 @@ angular.module('primeapps')
 
                 try {
                     isFileSaverSupported = !!new Blob;
-                } catch (e) {
+                }
+                catch (e) {
                 }
 
                 if (!isFileSaverSupported) {
@@ -448,7 +453,6 @@ angular.module('primeapps')
                     });
                     return;
                 }
-
 
                 var fileName = $scope.module['label_' + $rootScope.language + '_plural'] + '-' + $filter('date')(new Date(), 'dd-MM-yyyy') + '.xls';
                 $scope.exporting = true;
@@ -512,7 +516,8 @@ angular.module('primeapps')
                             return;
                         }
                     });
-                } else {
+                }
+                else {
                     $scope.selectedRows = $scope.selectedRows.filter(function (selectedItem) {
                         return selectedItem != record.id;
                     });
@@ -536,7 +541,8 @@ angular.module('primeapps')
                 if ($scope.isAllSelected) {
                     $scope.isAllSelected = false;
                     $scope.selectedRecords = [];
-                } else {
+                }
+                else {
                     $scope.isAllSelected = true;
 
                     for (var i = 0; i < data.length; i++) {
@@ -660,8 +666,9 @@ angular.module('primeapps')
                             tag: 'createModal'
                         });
                     $scope.collectiveApprovalModal.$promise.then($scope.collectiveApprovalModal.show);
-                } else
-                    ngToast.create({ content: $filter('translate')('Module.NoRecordSelected'), className: 'warning' });
+                }
+                else
+                    ngToast.create({content: $filter('translate')('Module.NoRecordSelected'), className: 'warning'});
             };
 
             $scope.dropdownHide = function () {
@@ -680,7 +687,6 @@ angular.module('primeapps')
                 $scope.lightBox = false
             };
 
-
             //bulkUpdate
             var field = $filter('filter')($scope.module.fields, { name: name }, true)[0];
 
@@ -690,7 +696,6 @@ angular.module('primeapps')
 
             $scope.inputReset = function () {
                 $scope.bulkUpdate.value = null;
-
 
             };
 
@@ -725,7 +730,6 @@ angular.module('primeapps')
                 request.record = {};
                 request.record[fieldName] = $scope.bulkUpdate.value;
                 request.record = ModuleService.prepareRecord(request.record, $scope.module);
-
 
                 ModuleService.updateRecordBulk($scope.module.name, request)
                     .then(function () {
@@ -779,7 +783,8 @@ angular.module('primeapps')
                                 });
 
                             $scope.excelCreating = false;
-                        } else {
+                        }
+                        else {
                             var templateExcel = templateResponse.data;
                             $scope.quoteTemplates = $filter('filter')(templateExcel, { active: true }, true);
                             $scope.isShownWarning = true;
@@ -788,7 +793,8 @@ angular.module('primeapps')
                                 var currentQuoteTemplate = $filter('filter')(quoteTemplate.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
                                 if (currentQuoteTemplate.type === 'none') {
                                     quoteTemplate.isShown = false;
-                                } else {
+                                }
+                                else {
                                     quoteTemplate.isShown = true;
                                 }
                                 if (quoteTemplate.isShown == true) {
@@ -813,7 +819,6 @@ angular.module('primeapps')
                     });
             };
 
-
             $scope.UpdateMultiselect = function (searchTerm, field) {
                 var picklistItems = [];
 
@@ -831,7 +836,6 @@ angular.module('primeapps')
             ModuleService.getPicklists($scope.module, true)
                 .then(function (picklists) {
                     $scope.modulePicklists = picklists;
-
 
                     for (var i = 0; i < 5; i++) {
                         var filter = {};
@@ -873,8 +877,9 @@ angular.module('primeapps')
                                     user.id = 0;
                                     user.email = '[me]';
                                     user.full_name = $filter('translate')('Common.LoggedInUser');
-                                } else {
-                                    var userItem = $filter('filter')($rootScope.users, { id: parseInt(value) }, true)[0];
+                                }
+                                else {
+                                    var userItem = $filter('filter')($rootScope.users, {id: parseInt(value)}, true)[0];
                                     user.id = userItem.id;
                                     user.email = userItem.Email;
                                     user.full_name = userItem.FullName;
@@ -887,7 +892,8 @@ angular.module('primeapps')
                                 }
 
                                 fieldValue = [user];
-                            } else {
+                            }
+                            else {
                                 fieldValue = value;
                             }
                             break;
@@ -1017,10 +1023,11 @@ angular.module('primeapps')
                             if (record.process_status === 1) {
                                 processOrderParam = record.process_status_order;
                                 if (record.process_status_order === 1) {
-                                    currentApprover = $filter('filter')($rootScope.users, { email: record.custom_approver }, true)[0].full_name;
-                                } else {
-                                    currentApprover = $filter('filter')($rootScope.users, { email: record['custom_approver_' + record.process_status_order] }, true)[0].full_name;
-                                    var firstApprover = $filter('filter')($rootScope.users, { email: record.custom_approver }, true)[0].full_name;
+                                    currentApprover = $filter('filter')($rootScope.users, {email: record.custom_approver}, true)[0].full_name;
+                                }
+                                else {
+                                    currentApprover = $filter('filter')($rootScope.users, {email: record['custom_approver_' + record.process_status_order]}, true)[0].full_name;
+                                    var firstApprover = $filter('filter')($rootScope.users, {email: record.custom_approver}, true)[0].full_name;
                                     previousApprovers.push(firstApprover)
                                     for (var i = 2; i < record.process_status_order; i++) {
                                         previousApprovers.push($filter('filter')($rootScope.users, { email: record['custom_approver_' + i] }, true)[0].full_name);
@@ -1029,7 +1036,8 @@ angular.module('primeapps')
                                 }
                                 $scope.processOrderParam = processOrderParam;
                                 $scope.currentApprover = currentApprover;
-                            } else if (record.process_status === 2) {
+                            }
+                            else if (record.process_status === 2) {
                                 updateTime = record["process_request_updated_at"];
                                 var firstApprover = $filter('filter')($rootScope.users, { email: record.custom_approver }, true)[0].full_name;
                                 previousApprovers.push(firstApprover)
@@ -1038,7 +1046,8 @@ angular.module('primeapps')
                                 }
                                 $scope.previousApprovers = previousApprovers;
                                 $scope.updateTime = moment(updateTime).utc().format("DD-MM-YYYY HH:mm");
-                            } else if (record.process_status === 3) {
+                            }
+                            else if (record.process_status === 3) {
                                 updateTime = record["process_request_updated_at"];
                                 rejectApprover = $filter('filter')($rootScope.users, { id: record["process_request_updated_by"] }, true)[0].full_name;
                                 $scope.rejectApprover = rejectApprover;
