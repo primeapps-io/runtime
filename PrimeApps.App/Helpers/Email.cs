@@ -38,7 +38,7 @@ namespace PrimeApps.App.Helpers
 		/// <summary>
 		/// List of the recipients.
 		/// </summary>
-		private IList<string> toList = new List<string>();
+		public IList<string> toList = new List<string>();
 
 		/// <summary>
 		/// The regex helper for placeholders.

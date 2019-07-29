@@ -836,41 +836,11 @@ namespace PrimeApps.App.Helpers
                                 sendNotificationBCC = (string)record[sendNotification.Bcc];
                             }
 
-                            string domain;
+                            var domain = string.Empty;
 
-                            domain = "http://{0}.ofisim.com/";
-                            var appDomain = "crm";
-
-                            switch (appUser.AppId)
+                            using (var appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
                             {
-                                case 2:
-                                    appDomain = "kobi";
-                                    break;
-                                case 3:
-                                    appDomain = "asistan";
-                                    break;
-                                case 4:
-                                    appDomain = "ik";
-                                    break;
-                                case 5:
-                                    appDomain = "cagri";
-                                    break;
-                            }
-
-                            var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
-                            var subdomain = "";
-                            if (!string.IsNullOrEmpty(testMode))
-                            {
-                                subdomain = testMode == "true" ? "test" : appDomain;
-                            }
-
-                            domain = string.Format(domain, subdomain);
-
-                            //domain = "http://localhost:5554/";
-
-                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
-                            {
-                                var app = await _appRepository.Get(appUser.AppId);
+                                var app = await appRepository.Get(appUser.AppId);
                                 if (app != null)
                                 {
                                     domain = "http://" + app.Setting.AppDomain + "/";
@@ -916,13 +886,19 @@ namespace PrimeApps.App.Helpers
                                     }
                                 }
 
+                                if (string.IsNullOrWhiteSpace(recipient) || !recipient.Contains("@"))
+                                    continue;
+
                                 email.AddRecipient(recipient);
                             }
 
-                            if (sendNotification.Schedule.HasValue)
-                                email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
+                            if (email.toList.Count > 0)
+                            {
+                                if (sendNotification.Schedule.HasValue)
+                                    email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
 
-                            email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
+                                email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
+                            }
                         }
 
                         var workflowLog = new WorkflowLog
