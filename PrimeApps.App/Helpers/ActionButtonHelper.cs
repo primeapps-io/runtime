@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Helpers
 {
@@ -21,17 +22,22 @@ namespace PrimeApps.App.Helpers
 
     public class ActionButtonHelper : IActionButtonHelper
     {
+        private IConfiguration _configuration;
         private IModuleHelper _moduleHelper;
 
-        public ActionButtonHelper(IModuleHelper moduleHelper)
+        public ActionButtonHelper(IModuleHelper moduleHelper, IConfiguration configuration)
         {
             _moduleHelper = moduleHelper;
+            _configuration = configuration;
         }
 
         public async Task<bool> ProcessScriptFiles(ICollection<ActionButtonViewModel> actionButtons, IComponentRepository componentRepository)
         {
+            var environment = _configuration.GetValue("AppSettings:Environment", string.Empty) ?? "development";
+
             var globalConfig = await _moduleHelper.GetGlobalConfig(componentRepository);
-            var appConfigs = globalConfig != null && !globalConfig["configs"].IsNullOrEmpty() ? (JObject)globalConfig["configs"] : null;
+            
+            var appConfigs = globalConfig?[environment] != null && !globalConfig[environment]["configs"].IsNullOrEmpty() ? (JObject)globalConfig[environment]["configs"] : null;
 
             foreach (var actionButton in actionButtons)
             {

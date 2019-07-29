@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Models;
 using PrimeApps.App.Services;
@@ -43,12 +44,15 @@ namespace PrimeApps.App.Helpers
 
     public class ModuleHelper : IModuleHelper
     {
+        private IConfiguration _configuration;
         private IAuditLogHelper _auditLogHelper;
         public IBackgroundTaskQueue Queue { get; }
 
-        public ModuleHelper(IAuditLogHelper auditLogHelper, IBackgroundTaskQueue queue)
+
+        public ModuleHelper(IAuditLogHelper auditLogHelper, IBackgroundTaskQueue queue, IConfiguration configuration)
         {
             _auditLogHelper = auditLogHelper;
+            _configuration = configuration;
             Queue = queue;
         }
 
@@ -846,7 +850,8 @@ namespace PrimeApps.App.Helpers
         public async Task<bool> ProcessScriptFiles(ICollection<Module> modules, IComponentRepository componentRepository)
         {
             var globalConfig = await GetGlobalConfig(componentRepository);
-            var appConfigs = globalConfig != null && !globalConfig["configs"].IsNullOrEmpty() ? (JObject)globalConfig["configs"] : null;
+            var environment = _configuration.GetValue("AppSettings:Environment", string.Empty) ?? "development";
+            var appConfigs = globalConfig?[environment] != null && !globalConfig[environment]["configs"].IsNullOrEmpty() ? (JObject)globalConfig[environment]["configs"] : null;
 
             foreach (var module in modules)
             {
@@ -923,6 +928,9 @@ namespace PrimeApps.App.Helpers
 
         public string ReplaceDynamicValues(string value, JObject appConfigs)
         {
+            var environment = _configuration.GetValue("AppSettings:Environment", string.Empty) ?? "development";
+            appConfigs = appConfigs?[environment] != null && !appConfigs[environment]["configs"].IsNullOrEmpty() ? (JObject)appConfigs[environment]["configs"] : null;
+
             if (appConfigs == null)
                 return value;
 
