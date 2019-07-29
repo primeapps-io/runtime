@@ -411,7 +411,6 @@ angular.module('primeapps')
                         $scope.previousParentId = $scope.$parent.previousParentId;
                         $scope.previousReturnTab = $scope.$parent.previousReturnTab;
                         $scope.isAdmin = $rootScope.user.profile.has_admin_rights;
-                        $scope.hideDeleteAll = $filter('filter')($rootScope.deleteAllHiddenModules, $scope.parentType+'|'+$scope.type, true)[0];
 
                         var salesInvoiceModule = $filter('filter')($rootScope.modules, { name: 'sales_invoices' }, true);
                         if (salesInvoiceModule.length < 1)
