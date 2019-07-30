@@ -12,6 +12,8 @@ namespace PrimeApps.App.Models
         [Required, StringLength(50)]
         public string LabelTr { get; set; }
 
+        public string SystemCode { get; set; }
+
         [RequiredCollection]
         public List<PicklistItemBindingModel> Items { get; set; }
     }
@@ -34,6 +36,8 @@ namespace PrimeApps.App.Models
 
         [MaxLength(100)]
         public string Value3 { get; set; }
+            
+        public string SystemCode { get; set; }
 
         [Required]
         public short Order { get; set; }

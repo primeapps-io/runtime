@@ -70,6 +70,9 @@ namespace PrimeApps.App.Controllers
             var picklistEntity = PicklistHelper.CreateEntity(picklist);
             var result = await _picklistRepository.Create(picklistEntity);
 
+            if(result == 2)
+                return BadRequest("System Code already exist");
+
             if (result < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);

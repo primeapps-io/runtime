@@ -17,7 +17,7 @@ angular.module('primeapps')
             $scope.searchingDocuments = false;
             $scope.isAdmin = $rootScope.user.profile.has_admin_rights;
             $scope.hasActionButtonDisplayPermission = ModuleService.hasActionButtonDisplayPermission;
-            $scope.hideDeleteAll = $filter('filter')($rootScope.deleteAllHiddenModules, $scope.type, true)[0];
+            $scope.hideDeleteAll = $filter('filter')($rootScope.deleteAllHiddenModules, $scope.type + '|' +  $scope.type, true)[0];
             $scope.actionButtonDisabled = false;
             
             if (!$scope.module) {
