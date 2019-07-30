@@ -1,0 +1,24 @@
+rbac:
+  create: true
+cluster:
+ enabled: false
+ slaveCount: 0
+usePassword: true
+password: "pr!m€Appsi0r"
+master:
+  port: 6379
+  service:
+    type: ClusterIP
+    port: 6379
+  persistence:
+    enabled: true
+    path: /bitnami/redis/data
+    subPath: ""
+    storageClass: "gp2"
+    accessModes:
+    - ReadWriteOnce
+    size: 8Gi
+slave:
+  service:
+    ## Redis Slave Service type
+    type: ClusterIP

@@ -1,0 +1,204 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: primeapps-app-config-test
+  namespace: primeapps
+data:
+  TenantDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=test;command timeout=0;keepalive=30;"
+  PlatformDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+  RedisConnection: "cache-test-redis-master.cache:6379,password=pr!m€Appsi0r,defaultDatabase=1"
+  StorageUrl: "https://storage-test.primeapps.io"
+  StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
+  StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
+  EnableJobs: "true"
+  EnableBpm: "true"
+  EnableRequestLogging: "false"
+  EmailSMTPEnableSsl: "true"
+  EmailSMTPHost: "smtp.sendgrid.net"
+  EmailSMTPPort: "587"
+  EmailSMTPUser: "apikey"
+  EmailSMTPPassword: "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"
+  AuthenticationServerURL: "https://auth-test.primeapps.io"
+  ClientId: "primeapps_app"
+  ClientSecret: "secret"
+  ForwardHeaders: "true"
+  HttpsRedirection: "true"
+  TestMode: "true"
+  GoogleMapsApiKey: "AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o"
+  SentryDsn: "https://6689a455217f446994a756650c03014e:95a248958d7e4affba79aa3157e2c7b7@log.primeapps.io/13"
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: primeapps-app-test
+  namespace: primeapps
+  labels:
+    k8s-app: "primeapps-app-test"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: primeapps-app-test
+  template:
+    metadata:
+      labels:
+        k8s-app: primeapps-app-test
+    spec:
+      containers:
+        - name: primeapps-app-test
+          image: primeapps/primeapps-app:1.19.211.1
+          env:
+            - name: ConnectionStrings__TenantDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: TenantDBConnection
+            - name: ConnectionStrings__PlatformDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: PlatformDBConnection
+            - name: ConnectionStrings__RedisConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: RedisConnection
+            - name: AppSettings__StorageUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: StorageUrl
+            - name: AppSettings__StorageAccessKey
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: StorageAccessKey
+            - name: AppSettings__StorageSecretKey
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: StorageSecretKey
+            - name: AppSettings__EnableJobs
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: EnableJobs
+            - name: AppSettings__EnableBpm
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: EnableBpm
+            - name: AppSettings__EnableRequestLogging
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: EnableRequestLogging
+            - name: AppSettings__EmailSMTPEnableSsl
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: EmailSMTPEnableSsl
+            - name: AppSettings__EmailSMTPHost
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: EmailSMTPHost
+            - name: AppSettings__EmailSMTPPort
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: EmailSMTPPort
+            - name: AppSettings__EmailSMTPUser
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: EmailSMTPUser
+            - name: AppSettings__EmailSMTPPassword
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: EmailSMTPPassword
+            - name: AppSettings__UseCdn
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: UseCdn
+            - name: AppSettings__AuthenticationServerURL
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: AuthenticationServerURL
+            - name: AppSettings__ClientId
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: ClientId
+            - name: AppSettings__ClientSecret
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: ClientSecret
+            - name: AppSettings__ForwardHeaders
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: ForwardHeaders
+            - name: AppSettings__HttpsRedirection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: HttpsRedirection
+            - name: AppSettings__TestMode
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: TestMode
+            - name: AppSettings__GoogleMapsApiKey
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: GoogleMapsApiKey
+            - name: Sentry__Dsn
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config-test
+                  key: SentryDsn
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: primeapps-app-service-test
+  namespace: primeapps
+spec:
+  type: "ClusterIP"
+  selector:
+    k8s-app: primeapps-app-test
+  ports:
+    - name: "http"
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: primeapps-app-ingress-test
+  namespace: primeapps
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/server-snippet: |-
+      add_header X-Robots-Tag "noindex, nofollow"
+spec:
+  tls:
+    - hosts:
+        - "*.test.primeapps.app"
+      secretName: primeapps-app-wildcard-ssl
+  rules:
+    - host: "*.test.primeapps.app"
+      http:
+        paths:
+          - path: "/"
+            backend:
+              serviceName: primeapps-app-service-test
+              servicePort: 80
