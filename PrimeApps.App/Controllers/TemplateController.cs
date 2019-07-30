@@ -54,7 +54,7 @@ namespace PrimeApps.App.Controllers
         [Route("get_all"), HttpGet]
         public async Task<IActionResult> GetAll([FromQuery(Name = "type")]TemplateType type = TemplateType.NotSet, [FromQuery(Name = "moduleName")]string moduleName = "")
         {
-            var templates = await _templateRepostory.GetAll(type);
+            var templates = await _templateRepostory.GetAll(type, moduleName);
 
             return Ok(templates);
         }
@@ -90,7 +90,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> CreateExcel(TemplateBindingModel template)
         {
             if (!ModelState.IsValid)
-               return BadRequest(ModelState);
+                return BadRequest(ModelState);
 
             var templateEntity = TemplateHelper.CreateEntityExcel(template, _userRepository);
             var result = await _templateRepostory.Create(templateEntity);

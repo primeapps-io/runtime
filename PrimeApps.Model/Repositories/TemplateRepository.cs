@@ -15,10 +15,11 @@ namespace PrimeApps.Model.Repositories
     public class TemplateRepository : RepositoryBaseTenant, ITemplateRepository
     {
         public TemplateRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
-		
+
         public async Task<Template> GetById(int id)
         {
             var template = await DbContext.Templates.Include(x => x.Permissions).FirstOrDefaultAsync(x => x.Id == id);
+            template.Permissions = template.Permissions.Where(q => !q.Deleted).ToList();
 
             return template;
         }
@@ -26,7 +27,7 @@ namespace PrimeApps.Model.Repositories
         public Template GetByCode(string code, LanguageType language = LanguageType.Tr)
         {
             var template = DbContext.Templates.FirstOrDefault(x => x.Code == code && x.Language == language);
-
+             
             return template;
         }
 

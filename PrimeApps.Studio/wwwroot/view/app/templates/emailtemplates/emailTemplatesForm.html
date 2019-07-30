@@ -14,8 +14,11 @@
                         </li>
                         <li>
                             <button type="submit" ladda="saving" ng-disabled="saving"
-                                    class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>{{'Common.Save'
-                                | translate}}
+                                    class="btn add-button btn-radius btn-blue">
+                                <i class="fas fa-save"></i>{{
+'Common.Save'
+                                | translate
+                                }}
                             </button>
                         </li>
                     </ul>
@@ -30,8 +33,10 @@
                             <div class="panel">
                                 <div class="form-group"
                                      ng-class="{'has-error': uploadForm.$submitted && uploadForm.module.$invalid}">
-                                    <label>{{'Setup.Templates.Module' | translate}} <span style="color: #999"
-                                                                                          class="required-label">({{'Common.Required' | translate }})</span></label>
+                                    <label>
+                                        {{'Setup.Templates.Module' | translate}} <span style="color: #999"
+                                                                                       class="required-label">({{'Common.Required' | translate }})</span>
+                                    </label>
                                     <select class="form-control pull-left"
                                             ng-change="changeModule();"
                                             ng-required="true"
@@ -44,37 +49,41 @@
                                 </div>
                                 <div class="form-group"
                                      ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <label>{{'Template.TemplateName' | translate}} <span style="color: #999"
-                                                                                         class="required-label">({{'Common.Required' | translate }})</span></label>
+                                    <label>
+                                        {{'Template.TemplateName' | translate}} <span style="color: #999"
+                                                                                      class="required-label">({{'Common.Required' | translate }})</span>
+                                    </label>
                                     <input type="text" name="templateName" class="form-control" ng-required="true"
                                            maxlength="50" ng-model="newtemplate.template_name" />
                                 </div>
                                 <div class="form-group"
                                      ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateSubject.$invalid}">
-                                    <label>{{'Template.Subject' | translate}} <span style="color: #999"
-                                                                                    class="required-label">({{'Common.Required' | translate }})</span></label>
+                                    <label>
+                                        {{'Template.Subject' | translate}} <span style="color: #999"
+                                                                                 class="required-label">({{'Common.Required' | translate }})</span>
+                                    </label>
                                     <input type="text" name="templateSubject" class="form-control" ng-required="true"
                                            maxlength="200" ng-model="newtemplate.template_subject" />
                                 </div>
-                                <div class="form-group"
+                                <!--<div class="form-group"
                                      ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
-                                    <!--<div><label>{{'Template.Sharing' | translate}} </label></div>-->
-                                    <!--<label class="checkbox-inline newinput">-->
-                                    <!--<input type="radio" ng-model="newtemplate.sharing_type" value="me">-->
-                                    <!--{{'View.ShareMe' | translate}}-->
-                                    <!--<span></span>-->
-                                    <!--</label><br/>-->
-                                    <!--<label class="checkbox-inline newinput">-->
-                                    <!--<input type="radio" ng-model="newtemplate.sharing_type" value="everybody">-->
-                                    <!--{{'View.ShareEveryone' | translate}}-->
-                                    <!--<span></span>-->
-                                    <!--</label><br>-->
-                                    <!--<label class="checkbox-inline newinput">-->
-                                    <!--<input type="radio" ng-model="newtemplate.sharing_type" value="custom">-->
-                                    <!--{{'View.ShareCustom' | translate}}-->
-                                    <!--<span></span>-->
-                                    <!--</label>-->
-                                </div>
+                                    <div><label>{{'Template.Sharing' | translate}} </label></div>
+                                    <label class="checkbox-inline newinput">
+                                    <input type="radio" ng-model="newtemplate.sharing_type" value="me">
+                                    {{'View.ShareMe' | translate}}
+                                    <span></span>
+                                    </label><br/>
+                                    <label class="checkbox-inline newinput">
+                                    <input type="radio" ng-model="newtemplate.sharing_type" value="everybody">
+                                    {{'View.ShareEveryone' | translate}}
+                                    <span></span>
+                                    </label><br>
+                                    <label class="checkbox-inline newinput">
+                                    <input type="radio" ng-model="newtemplate.sharing_type" value="custom">
+                                    {{'View.ShareCustom' | translate}}
+                                    <span></span>
+                                    </label>
+                                </div>-->
                                 <div class="form-group"
                                      ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
                                     <div ng-if="newtemplate.sharing_type === 'custom'">
@@ -126,11 +135,30 @@
                                     <!--<input id="uploadFile" type="file" add-file="add-file" />-->
                                     <!--</div>-->
                                 </div>
-                                <!-- <div class="form-group" ng-show="uploadForm.$submitted && uploadForm.$invalid">
-                                     <div class="callout callout-danger">
-                                         <p ng-if="uploadForm.$error.required">{{'Module.RequiredError' | translate}}</p>
-                                     </div>
-                                 </div>-->
+                                <div class="form-group"
+                                     ng-class="{'has-error': uploadForm.$submitted && uploadForm.profiles.$invalid}">
+                                    <label class="control-label">
+                                        {{'Setup.Nav.Tabs.Profiles'|translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
+                                    </label>
+                                    <tags-input name="profiles"
+                                                tabindex="999"
+                                                class="form-control"
+                                                ng-model="newtemplate.permissions"
+                                                display-property="name"
+                                                key-property="id"
+                                                placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+                                                replace-spaces-with-dashes="false"
+                                                add-from-autocomplete-only="true"
+                                                min-length="1"
+                                                ng-required="true">
+                                        <auto-complete source="profiles"
+                                                       min-length="0"
+                                                       load-on-focus="true"
+                                                       load-on-empty="true"
+                                                       max-results-to-show="9999"></auto-complete>
+                                    </tags-input>
+
+                                </div>
                             </div>
                         </div>
                     </div>
