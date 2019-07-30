@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Tenant;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.Model.Repositories
@@ -87,7 +88,7 @@ namespace PrimeApps.Model.Repositories
                     LabelTr = module.LabelTrPlural,
                     MenuIcon = module.MenuIcon,
                     Order = (short) (menuItems.Count + 1),
-                    IsDynamic = true
+                    IsDynamic = module.SystemType == SystemType.Component ? false : true
                 };
 
                 DbContext.MenuItems.Add(menuItem);
