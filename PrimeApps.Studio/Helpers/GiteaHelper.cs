@@ -592,17 +592,20 @@ namespace PrimeApps.Studio.Helpers
                     return new FetchOptions
                     {
                         TagFetchMode = TagFetchMode.None,
-                        CredentialsProvider = new CredentialsHandler((url, usernameFromUrl, types) => credential)
+                        CredentialsProvider = new CredentialsHandler((url, usernameFromUrl, types) => credential),
+                        CertificateCheck = (certificate, valid, host) => true
                     };
                 case "clone":
                     return new CloneOptions
                     {
-                        CredentialsProvider = (_url, _user, _cred) => credential
+                        CredentialsProvider = (_url, _user, _cred) => credential,
+                        CertificateCheck = (certificate, valid, host) => true
                     };
                 case "push":
                     return new PushOptions
                     {
-                        CredentialsProvider = (_url, _user, _cred) => credential
+                        CredentialsProvider = (_url, _user, _cred) => credential,
+                        CertificateCheck = (certificate, valid, host) => true
                     };
                 default:
                     return null;
