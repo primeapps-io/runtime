@@ -16,6 +16,7 @@ namespace PrimeApps.App.Helpers
                 SystemType = SystemType.Custom,
                 LabelEn = picklistModel.LabelEn,
                 LabelTr = picklistModel.LabelTr,
+                SystemCode = picklistModel.SystemCode,
                 Items = new List<PicklistItem>()
             };
 
@@ -29,6 +30,7 @@ namespace PrimeApps.App.Helpers
                     Value2 = picklistItemModel.Value2,
                     Value3 = picklistItemModel.Value3,
                     Order = picklistItemModel.Order,
+                    SystemCode = picklistItemModel.SystemCode,
                     Inactive = false
                 };
 
@@ -42,6 +44,7 @@ namespace PrimeApps.App.Helpers
         {
             picklist.LabelEn = picklistModel.LabelEn;
             picklist.LabelTr = picklistModel.LabelTr;
+            picklist.SystemCode = picklistModel.SystemCode;
 
             foreach (var picklistItem in picklist.Items)
             {
@@ -56,6 +59,7 @@ namespace PrimeApps.App.Helpers
                 picklistItem.Value2 = picklistItemModel.Value2;
                 picklistItem.Value3 = picklistItemModel.Value3;
                 picklistItem.Order = picklistItemModel.Order;
+                picklistItem.SystemCode = picklistItemModel.SystemCode;
                 picklistItem.Inactive = picklistItemModel.Inactive;
             }
 
@@ -73,6 +77,7 @@ namespace PrimeApps.App.Helpers
                         Value2 = picklistItemModel.Value2,
                         Value3 = picklistItemModel.Value3,
                         Order = picklistItemModel.Order,
+                        SystemCode = picklistItemModel.SystemCode,
                         Inactive = false
                     };
 
