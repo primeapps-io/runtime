@@ -379,7 +379,7 @@ angular.module('primeapps')
                                     if (record.process_status === 2)
                                         $scope.isApproved = true;
 
-                                    if (record.process_status === 1 || record.process_status === 2 || (record.process_status === 3 && record.updated_by.id != $scope.currentUser.id))
+                                    if (record.process_status === 1 || record.process_status === 2 || (record.process_status === 3 && record.created_by.id != $scope.currentUser.id))
                                         record.freeze = true;
 
                                     ModuleService.getProcess(record.process_id)
