@@ -346,8 +346,9 @@ namespace PrimeApps.App.Controllers
 
 			using (var httpClient = new HttpClient())
 			{
-				var token = await HttpContext.GetTokenAsync("access_token");
-				var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_user";
+			    var token = Request.Headers["Authorization"];
+
+                var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_user";
 				httpClient.BaseAddress = new Uri(url);
 				httpClient.DefaultRequestHeaders.Accept.Clear();
 				httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
