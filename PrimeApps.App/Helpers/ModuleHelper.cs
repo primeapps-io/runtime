@@ -873,7 +873,7 @@ namespace PrimeApps.App.Helpers
 
                     if (component.Content.StartsWith("http"))
                     {
-                        if (!IsTrustedUrl(component.Content, globalConfig))
+                        if (!IsTrustedUrl(component.Content, appConfigs))
                         {
                             component.Content = "console.error('" + component.Content + " is not a trusted url.');";
                             continue;
@@ -947,12 +947,12 @@ namespace PrimeApps.App.Helpers
             return value;
         }
 
-        public bool IsTrustedUrl(string url, JObject globalConfig)
+        public bool IsTrustedUrl(string url, JObject appConfigs)
         {
-            if (globalConfig.IsNullOrEmpty() || globalConfig["trusted_urls"].IsNullOrEmpty())
+            if (appConfigs.IsNullOrEmpty() || appConfigs["trusted_urls"].IsNullOrEmpty())
                 return false;
 
-            foreach (var trustedUrl in (JArray)globalConfig["trusted_urls"])
+            foreach (var trustedUrl in (JArray)appConfigs["trusted_urls"])
             {
                 if (url.StartsWith((string)trustedUrl["url"]))
                     return true;

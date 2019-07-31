@@ -48,7 +48,7 @@ namespace PrimeApps.App.Helpers
 
                 if (actionButton.Template.StartsWith("http"))
                 {
-                    if (!_moduleHelper.IsTrustedUrl(actionButton.Template, globalConfig))
+                    if (!_moduleHelper.IsTrustedUrl(actionButton.Template, appConfigs))
                     {
                         actionButton.Template = "console.error('" + actionButton.Template + " is not a trusted url.');";
                         continue;
