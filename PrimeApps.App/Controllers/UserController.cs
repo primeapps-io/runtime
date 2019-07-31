@@ -352,7 +352,7 @@ namespace PrimeApps.App.Controllers
 				httpClient.BaseAddress = new Uri(url);
 				httpClient.DefaultRequestHeaders.Accept.Clear();
 				httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-				httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+				httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.ToString().Replace("Bearer " , ""));
 
 				var json = JsonConvert.SerializeObject(addUserBindingModel);
 				var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
