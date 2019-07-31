@@ -850,8 +850,8 @@ namespace PrimeApps.App.Helpers
         public async Task<bool> ProcessScriptFiles(ICollection<Module> modules, IComponentRepository componentRepository)
         {
             var globalConfig = await GetGlobalConfig(componentRepository);
-            var environment = _configuration.GetValue("AppSettings:Environment", string.Empty) ?? "development";
-            var appConfigs = globalConfig?[environment] != null && !globalConfig[environment]["configs"].IsNullOrEmpty() ? (JObject)globalConfig[environment]["configs"] : null;
+            var environment = !string.IsNullOrEmpty(_configuration.GetValue("AppSettings:Environment", string.Empty)) ? _configuration.GetValue("AppSettings:Environment", string.Empty) : "development";
+            var appConfigs = globalConfig?[environment] != null && !globalConfig[environment].IsNullOrEmpty() ? (JObject)globalConfig[environment] : null;
 
             foreach (var module in modules)
             {
@@ -928,8 +928,7 @@ namespace PrimeApps.App.Helpers
 
         public string ReplaceDynamicValues(string value, JObject appConfigs)
         {
-            var environment = _configuration.GetValue("AppSettings:Environment", string.Empty) ?? "development";
-            appConfigs = appConfigs?[environment] != null && !appConfigs[environment]["configs"].IsNullOrEmpty() ? (JObject)appConfigs[environment]["configs"] : null;
+            appConfigs = appConfigs != null && !appConfigs["configs"].IsNullOrEmpty() ? (JObject)appConfigs["configs"] : null;
 
             if (appConfigs == null)
                 return value;

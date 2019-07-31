@@ -78,7 +78,7 @@ namespace PrimeApps.Studio.Jobs
 
                 if (!status.IsDirty)
                 {
-                    _giteaHelper.DeleteDirectory(localPath);
+                    //_giteaHelper.DeleteDirectory(localPath);
                     throw new Exception("Unhandled exception. Repo status is dirty.");
                 }
 
@@ -87,7 +87,7 @@ namespace PrimeApps.Studio.Jobs
                 _giteaHelper.Push(repo);
 
                 repo.Dispose();
-                _giteaHelper.DeleteDirectory(localPath);
+                //_giteaHelper.DeleteDirectory(localPath);
             }
 
             if (!model["notification_email"].IsNullOrEmpty())

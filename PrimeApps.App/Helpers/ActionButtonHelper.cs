@@ -33,11 +33,11 @@ namespace PrimeApps.App.Helpers
 
         public async Task<bool> ProcessScriptFiles(ICollection<ActionButtonViewModel> actionButtons, IComponentRepository componentRepository)
         {
-            var environment = _configuration.GetValue("AppSettings:Environment", string.Empty) ?? "development";
+            var environment = !string.IsNullOrEmpty(_configuration.GetValue("AppSettings:Environment", string.Empty)) ? _configuration.GetValue("AppSettings:Environment", string.Empty) : "development";
 
             var globalConfig = await _moduleHelper.GetGlobalConfig(componentRepository);
-            
-            var appConfigs = globalConfig?[environment] != null && !globalConfig[environment]["configs"].IsNullOrEmpty() ? (JObject)globalConfig[environment]["configs"] : null;
+
+            var appConfigs = globalConfig?[environment] != null && !globalConfig[environment].IsNullOrEmpty() ? (JObject)globalConfig[environment] : null;
 
             foreach (var actionButton in actionButtons)
             {
