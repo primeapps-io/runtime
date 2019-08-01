@@ -129,7 +129,7 @@ namespace PrimeApps.Auth.Controllers
                  */
                 platformUser = await _platformUserRepository.GetWithTenants(userModel.Email);
 
-                platformUser.TenantsAsUser.Add(new UserTenant {TenantId = 1, UserId = platformUser.Id});
+                platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1, UserId = platformUser.Id });
                 await _platformUserRepository.UpdateAsync(platformUser);
             }
 
@@ -150,7 +150,7 @@ namespace PrimeApps.Auth.Controllers
                 token = await GetConfirmToken(identityUser);
             }
 
-            return StatusCode(201, new {token = WebUtility.UrlEncode(token), password = password, id = platformUser.Id});
+            return StatusCode(201, new { token = WebUtility.UrlEncode(token), password = password, id = platformUser.Id });
         }
 
         [Route("add_organization_user"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
@@ -221,7 +221,7 @@ namespace PrimeApps.Auth.Controllers
                 token = await GetConfirmToken(identityUser);
             }
 
-            return StatusCode(201, new {token = WebUtility.UrlEncode(token), password});
+            return StatusCode(201, new { token = WebUtility.UrlEncode(token), password });
         }
 
         [Route("add_user"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
@@ -244,7 +244,7 @@ namespace PrimeApps.Auth.Controllers
             if (tenantCheck == null)
                 return Unauthorized();
 
-            _userRepository.CurrentUser = new CurrentUser {TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id};
+            _userRepository.CurrentUser = new CurrentUser { TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id };
 
             var currentTenantUser = _userRepository.GetByIdSync(currentPlatformUser.Id);
 
@@ -261,14 +261,17 @@ namespace PrimeApps.Auth.Controllers
             if (tenant.TenantUsers.Count >= tenant.License.UserLicenseCount)
                 return new StatusCodeResult(StatusCodes.Status402PaymentRequired);
 
-            var randomPassword = Utils.GenerateRandomUnique(8);
+            var password = Utils.GenerateRandomUnique(8);
+
+            if (!string.IsNullOrWhiteSpace(addUserBindingModel.Password))
+                password = addUserBindingModel.Password;
 
             var userModel = new AddUserBindingModel
             {
                 Email = addUserBindingModel.Email,
                 LastName = addUserBindingModel.LastName,
                 FirstName = addUserBindingModel.FirstName,
-                Password = randomPassword,
+                Password = password,
                 Phone = addUserBindingModel.Phone
             };
 
@@ -329,18 +332,18 @@ namespace PrimeApps.Auth.Controllers
             }
             else
             {
-                randomPassword = "*******";
+                password = "*******";
                 tenantUser.IsActive = true;
                 await _userRepository.UpdateAsync(tenantUser);
             }
 
-            _profileRepository.CurrentUser = _roleRepository.CurrentUser = new Model.Helpers.CurrentUser {TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id};
+            _profileRepository.CurrentUser = _roleRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id };
             await _profileRepository.AddUserAsync(platformUser.Id, addUserBindingModel.ProfileId);
             await _roleRepository.AddUserAsync(platformUser.Id, addUserBindingModel.RoleId);
 
             var currentTenant = _platformRepository.GetTenant(addUserBindingModel.TenantId);
 
-            platformUser.TenantsAsUser.Add(new UserTenant {Tenant = currentTenant, PlatformUser = platformUser});
+            platformUser.TenantsAsUser.Add(new UserTenant { Tenant = currentTenant, PlatformUser = platformUser });
 
             await _platformUserRepository.UpdateAsync(platformUser);
 
@@ -354,7 +357,7 @@ namespace PrimeApps.Auth.Controllers
                 var obj = new JObject
                 {
                     ["email"] = addUserBindingModel.Email,
-                    ["password"] = randomPassword,
+                    ["password"] = password,
                     ["first_name"] = addUserBindingModel.FirstName,
                     ["last_name"] = addUserBindingModel.LastName,
                     ["full_name"] = addUserBindingModel.FirstName + " " + addUserBindingModel.LastName,
@@ -364,7 +367,7 @@ namespace PrimeApps.Auth.Controllers
                 await ExternalAuthHelper.Register(externalLogin, action, obj);
             }
 
-            return StatusCode(201, new {token = WebUtility.UrlEncode(token), password = randomPassword});
+            return StatusCode(201, new { token = WebUtility.UrlEncode(token), password = password });
         }
 
         [Route("change_password"), HttpPost]

@@ -266,20 +266,6 @@ namespace PrimeApps.Studio.Helpers
             repo.Network.Push(repo.Branches["master"], options);
         }
 
-        public void Pull(Repository repo)
-        {
-            // Credential information to fetch
-            LibGit2Sharp.PullOptions options = GetOptions("push");
-            options.FetchOptions = new FetchOptions();
-
-            // User information to create a merge commit
-            var signature = new LibGit2Sharp.Signature(
-                new Identity("system", "system@primeapps.io"), DateTimeOffset.Now);
-
-            // Pull
-            Commands.Pull(repo, signature, options);
-        }
-
         public async Task<JObject> GetRepositoryInfo(string repositoryName, int organizationId)
         {
             using (var scope = _serviceScopeFactory.CreateScope())

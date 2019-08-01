@@ -31,37 +31,36 @@ namespace PrimeApps.App.Models
 
     public class ChangePasswordBindingModel
     {
+        [Required]
+        public string Email { get; set; }
 
-		[Required]
-		public string Email { get; set; }
-
-		[Required]
+        [Required]
         [DataType(DataType.Password)]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [Display(Name = "Current password")]
         [JsonProperty("old_password")]
-		public string OldPassword { get; set; }
+        public string OldPassword { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "New password")]
         [JsonProperty("new_password")]
-		public string NewPassword { get; set; }
+        public string NewPassword { get; set; }
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm new password")]
         [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
         [JsonProperty("confirm_password")]
-		public string ConfirmPassword { get; set; }
+        public string ConfirmPassword { get; set; }
     }
 
     public class RegisterBindingModel
     {
         [Required]
         [Display(Name = "Email")]
-		[JsonProperty("email")]
-		public string Email { get; set; }
+        [JsonProperty("email")]
+        public string Email { get; set; }
 
         [Required]
         [Display(Name = "Phone")]
@@ -71,20 +70,20 @@ namespace PrimeApps.App.Models
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
-		[JsonProperty("password")]
-		public string Password { get; set; }
+        [JsonProperty("password")]
+        public string Password { get; set; }
 
         [Required]
         [StringLength(40, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 2)]
         [Display(Name = "First Name")]
-		[JsonProperty("first_name")]
-		public string FirstName { get; set; }
+        [JsonProperty("first_name")]
+        public string FirstName { get; set; }
 
         [Required]
         [StringLength(40, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 2)]
         [Display(Name = "Last Name")]
-		[JsonProperty("last_name")]
-		public string LastName { get; set; }
+        [JsonProperty("last_name")]
+        public string LastName { get; set; }
 
         [Required]
         [Display(Name = "License")]
@@ -103,6 +102,7 @@ namespace PrimeApps.App.Models
 
         [Display(Name = "AppId")]
         public int AppID { get; set; }
+
         public object ModuleLicenseCount { get; internal set; }
     }
 
@@ -110,6 +110,7 @@ namespace PrimeApps.App.Models
     {
         [Required]
         public string Token { get; set; }
+
         [Required]
         public int Id { get; set; }
     }
@@ -166,7 +167,7 @@ namespace PrimeApps.App.Models
         public string Token { get; set; }
     }
 
-	//TODO Removed
+    //TODO Removed
     /*public class ClientBindingModel
     {
         public string Id { get; set; }
@@ -214,16 +215,16 @@ namespace PrimeApps.App.Models
         [Required, JsonProperty("role_id")]
         public int RoleId { get; set; }
 
-        [Required, JsonProperty("app_id")]
-		public int AppId { get; set; }
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        public string Password { get; set; }
 
-        [Required, JsonProperty("tenant_id")]
-        public int TenantId { get; set; }
-
-        public bool IsOfficeUser { get; set; }
-
-		public bool notCheckIsAdmin { get; set; }
-		
+        [JsonProperty("dont_send_mail")]
         public bool DontSendMail { get; set; }
+
+        [JsonProperty("app_id")]
+        public int AppId { get; set; }
+
+        [JsonProperty("tenant_id")]
+        public int TenantId { get; set; }
     }
 }
