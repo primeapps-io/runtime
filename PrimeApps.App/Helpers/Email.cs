@@ -327,9 +327,9 @@ namespace PrimeApps.App.Helpers
 		public void AddToQueue(int recordId = 0, int tenantId = 0, string from = "", string fromName = "", string cc = "", string bcc = "", UserItem appUser = null, string fromEmail = "", string Name = "")
 		{
 			if (string.IsNullOrEmpty(from))
-			{
-				from = "destek@ofisim.com";
-				fromName = "Ofisim.com";
+            {
+				from = !string.IsNullOrEmpty(fromEmail) ? fromEmail : "app@primeapps.io";
+				fromName = !string.IsNullOrEmpty(Name) ? Name: "PrimeApps";
 			}
 
 			if (appUser != null)
