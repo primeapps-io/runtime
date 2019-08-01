@@ -66,7 +66,7 @@
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
                                     </div>
-                                    <div class="form-group" ng-if="currentDependency.dependencyType === 'display' && currentDependency.parent_field && (parentDisplayFields | filter:{name: currentDependency.parent_field}:true)[0].data_type != 'checkbox'" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.values.$invalid}">
+                                    <div class="form-group" ng-if="(currentDependency.dependencyType === 'display' || currentDependency.dependencyType === 'freeze') && currentDependency.parent_field && (parentDisplayFields | filter:{name: currentDependency.parent_field}:true)[0].data_type != 'checkbox'" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.values.$invalid}">
                                         <label class="col-sm-12 required-field">{{'Setup.Modules.DependencyParentValues' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span> </label>
                                         <div class="col-sm-12 multiselect-container">
                                             <button type="button"
@@ -96,7 +96,7 @@
                                         </label>
                                     </div>
                                     <div class="form-group"
-                                         ng-if="affectedAreaType=='field'"
+                                         ng-if="affectedAreaType=='field' && currentDependency.dependencyType != 'freeze'"
                                          ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.childField.$invalid}">
                                         <label class="col-sm-12 required-field">{{'Setup.Modules.DependencyChildField' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                         <select name="childField"

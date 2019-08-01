@@ -19,6 +19,8 @@ namespace PrimeApps.Studio.Models
 
         public string Parameters { get; set; }
 
+        public string Headers { get; set; }
+
         public string ActionButtonUrl { get; set; }
 
         public string CssClass { get; set; }

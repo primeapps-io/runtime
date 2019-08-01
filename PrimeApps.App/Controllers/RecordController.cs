@@ -433,7 +433,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPut]
-        public async Task<IActionResult> Update(string module, [FromBody]JObject record, [FromQuery(Name = "runWorkflows")]bool runWorkflows = true, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false, int timezoneOffset = 180)
+        public async Task<IActionResult> Update(string module, [FromBody]JObject record, [FromQuery(Name = "runWorkflows")]bool runWorkflows = true, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false, int timezoneOffset = 180, [FromQuery(Name = "convertPicklists")]bool? convertPicklists = true)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -455,7 +455,7 @@ namespace PrimeApps.App.Controllers
             if (currentRecord == null)
                 return BadRequest("Record not found!");
 
-            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, true, currentRecord, AppUser);
+            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, (bool)convertPicklists, currentRecord, AppUser);
 
             //if ((bool)record["freeze"])
             //    return StatusCode(HttpStatusCode.Status403Forbidden);

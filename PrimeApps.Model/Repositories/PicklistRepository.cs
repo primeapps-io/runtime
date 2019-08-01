@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common;
+using System.Net;
+using System;
+using Npgsql;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -193,9 +196,19 @@ namespace PrimeApps.Model.Repositories
         {
             DbContext.Picklists.Add(picklist);
 
+            try
+            {
+                return await DbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                var message = ex.InnerException;
+                if (message.ToString().Contains("system_code"))
+                    return 2;
+            }
+
             return await DbContext.SaveChangesAsync();
         }
-
 
         public async Task<int> AddItem(PicklistItem item)
         {

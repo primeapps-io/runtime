@@ -43,7 +43,8 @@ namespace PrimeApps.Model.Repositories
                     DependentField = actionButtonItem.DependentField,
                     Dependent = actionButtonItem.Dependent,
                     MethodType = actionButtonItem.MethodType,
-                    Parameters = actionButtonItem.Parameters
+                    Parameters = actionButtonItem.Parameters,
+                    Headers = actionButtonItem.Headers
                 };
 
                 if (actionButtonItem.Permissions != null && actionButtonItem.Permissions.Count > 0)
@@ -119,6 +120,7 @@ namespace PrimeApps.Model.Repositories
         {
             var actionButtons = DbContext.ActionButtons
                 .Where(x => !x.Deleted)
+                .Include(x => x.Permissions)
                 .OrderByDescending(x => x.Id)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit);

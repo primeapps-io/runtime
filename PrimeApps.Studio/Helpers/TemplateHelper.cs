@@ -10,8 +10,8 @@ using PrimeApps.Studio.Models;
 
 namespace PrimeApps.Studio.Helpers
 {
-	public static class TemplateHelper
-	{
+    public static class TemplateHelper
+    {
         public static Template CreateEntity(TemplateBindingModel templateModel, IUserRepository userRepository)
         {
 
@@ -102,7 +102,8 @@ namespace PrimeApps.Studio.Helpers
                     //New Permissions
                     foreach (var permissionModel in templateModel.Permissions)
                     {
-                        if (!permissionModel.Id.HasValue)
+
+                        if (!permissionModel.Id.HasValue && !template.Permissions.Any(q => q.ProfileId == permissionModel.ProfileId))
                         {
                             if (template.Permissions == null)
                                 template.Permissions = new List<TemplatePermission>();
@@ -122,6 +123,11 @@ namespace PrimeApps.Studio.Helpers
                     {
                         foreach (var permissionEntity in template.Permissions)
                         {
+                            var result = templateModel.Permissions.FirstOrDefault(x => x.ProfileId == permissionEntity.ProfileId);
+
+                            if (result == null)
+                                permissionEntity.Deleted = true;
+
                             var permissionModel = templateModel.Permissions.FirstOrDefault(x => x.Id == permissionEntity.Id);
 
                             if (permissionModel == null)

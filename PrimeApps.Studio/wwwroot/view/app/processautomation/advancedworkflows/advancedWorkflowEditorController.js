@@ -1207,8 +1207,7 @@ angular.module('primeapps')
             };
 
             $scope.workflowHeaderAdd = function (addItem, workflowForm) {
-                workflowForm.$submitted = true;
-
+                
                 var header = {};
                 header.type = addItem.type;
                 header.key = addItem.key;

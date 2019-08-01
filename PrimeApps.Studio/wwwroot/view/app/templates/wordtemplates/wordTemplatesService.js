@@ -27,6 +27,9 @@ angular.module('primeapps')
                 },
                 find: function (data, templateType) {
                     return $http.post(config.apiUrl + 'template/find?TemplateType=' + templateType, data);
+                },
+                getAllModule: function () {
+                    return $http.get(config.apiUrl + 'module/get_all');
                 }
-            }
+            };
         }]);

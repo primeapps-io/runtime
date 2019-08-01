@@ -12,7 +12,7 @@
  Target Server Version : 90611
  File Encoding         : 65001
 
- Date: 02/04/2019 11:02:48
+ Date: 27/07/2019 10:09:49
 */
 
 
@@ -116,6 +116,8 @@ INSERT INTO "public"."_migration_history" VALUES ('20170722200412_WfReference', 
 INSERT INTO "public"."_migration_history" VALUES ('20171223020844_StepScope', '2.2.0-rtm-35687');
 INSERT INTO "public"."_migration_history" VALUES ('20190110102730_Task2814', '2.2.0-rtm-35687');
 INSERT INTO "public"."_migration_history" VALUES ('20190216151947_Task3224', '2.2.0-rtm-35687');
+INSERT INTO "public"."_migration_history" VALUES ('20190304143526_Task3227', '2.2.0-rtm-35687');
+INSERT INTO "public"."_migration_history" VALUES ('20190407134814_Task3230', '2.2.0-rtm-35687');
 COMMIT;
 
 -- ----------------------------
@@ -3859,7 +3861,8 @@ CREATE TABLE "public"."apps" (
   "description" varchar(4000) COLLATE "pg_catalog"."default",
   "logo" text COLLATE "pg_catalog"."default",
   "use_tenant_settings" bool NOT NULL,
-  "app_draft_id" int4 NOT NULL DEFAULT 0
+  "app_draft_id" int4 NOT NULL DEFAULT 0,
+  "secret" varchar(4000) COLLATE "pg_catalog"."default"
 )
 ;
 ALTER TABLE "public"."apps" OWNER TO "postgres";
@@ -3868,9 +3871,9 @@ ALTER TABLE "public"."apps" OWNER TO "postgres";
 -- Records of apps
 -- ----------------------------
 BEGIN;
-INSERT INTO "public"."apps" VALUES (2, 1, NULL, '2019-02-18 08:34:44', NULL, 'f', 'primeapps_studio', 'PrimeApps Studio', 'PrimeApps Studio', NULL, 'f', 0);
-INSERT INTO "public"."apps" VALUES (1, 1, NULL, '2019-01-07 17:27:11.541459', NULL, 'f', 'primeapps_app', 'PrimeApps App', 'PrimeApps App', NULL, 'f', 0);
-INSERT INTO "public"."apps" VALUES (3, 1, NULL, '2019-02-24 15:47:31', NULL, 'f', 'primeapps_preview', 'PrimeApps Preview', 'PrimeApps Preview', NULL, 'f', 0);
+INSERT INTO "public"."apps" VALUES (2, 1, NULL, '2019-02-18 08:34:44', NULL, 'f', 'primeapps_studio', 'PrimeApps Studio', 'PrimeApps Studio', NULL, 'f', 0, NULL);
+INSERT INTO "public"."apps" VALUES (1, 1, NULL, '2019-01-07 17:27:11.541459', NULL, 'f', 'primeapps_app', 'PrimeApps App', 'PrimeApps App', NULL, 'f', 0, NULL);
+INSERT INTO "public"."apps" VALUES (3, 1, NULL, '2019-02-24 15:47:31', NULL, 'f', 'primeapps_preview', 'PrimeApps Preview', 'PrimeApps Preview', NULL, 'f', 0, NULL);
 COMMIT;
 
 -- ----------------------------
@@ -4025,7 +4028,8 @@ CREATE TABLE "public"."users" (
   "created_at" timestamp(6) NOT NULL,
   "updated_at" timestamp(6),
   "is_integration_user" bool NOT NULL DEFAULT false,
-  "profile_picture" text COLLATE "pg_catalog"."default"
+  "profile_picture" text COLLATE "pg_catalog"."default",
+  "integration_user_client_id" text COLLATE "pg_catalog"."default"
 )
 ;
 ALTER TABLE "public"."users" OWNER TO "postgres";
@@ -4034,7 +4038,7 @@ ALTER TABLE "public"."users" OWNER TO "postgres";
 -- Records of users
 -- ----------------------------
 BEGIN;
-INSERT INTO "public"."users" VALUES (1, 'app@primeapps.io', 'Master', 'User', '2019-01-07 17:25:26.688474', NULL, 'f', NULL);
+INSERT INTO "public"."users" VALUES (1, 'app@primeapps.io', 'Master', 'User', '2019-01-07 17:25:26.688474', NULL, 'f', NULL, NULL);
 COMMIT;
 
 -- ----------------------------
@@ -4062,22 +4066,22 @@ ALTER TABLE "public"."warehouses" OWNER TO "postgres";
 -- ----------------------------
 ALTER SEQUENCE "public"."app_templates_id_seq"
 OWNED BY "public"."app_templates"."id";
-SELECT setval('"public"."app_templates_id_seq"', 21, true);
+SELECT setval('"public"."app_templates_id_seq"', 22, true);
 ALTER SEQUENCE "public"."apps_id_seq"
 OWNED BY "public"."apps"."id";
-SELECT setval('"public"."apps_id_seq"', 6, true);
+SELECT setval('"public"."apps_id_seq"', 7, true);
 ALTER SEQUENCE "public"."exchange_rates_id_seq"
 OWNED BY "public"."exchange_rates"."id";
-SELECT setval('"public"."exchange_rates_id_seq"', 6, false);
+SELECT setval('"public"."exchange_rates_id_seq"', 7, false);
 ALTER SEQUENCE "public"."tenants_id_seq"
 OWNED BY "public"."tenants"."id";
-SELECT setval('"public"."tenants_id_seq"', 6, false);
+SELECT setval('"public"."tenants_id_seq"', 7, false);
 ALTER SEQUENCE "public"."users_id_seq"
 OWNED BY "public"."users"."id";
-SELECT setval('"public"."users_id_seq"', 6, false);
+SELECT setval('"public"."users_id_seq"', 7, false);
 ALTER SEQUENCE "public"."warehouses_id_seq"
 OWNED BY "public"."warehouses"."id";
-SELECT setval('"public"."warehouses_id_seq"', 6, false);
+SELECT setval('"public"."warehouses_id_seq"', 7, false);
 
 -- ----------------------------
 -- Primary Key structure for table _migration_history
@@ -4137,7 +4141,7 @@ CREATE INDEX "IX_apps_created_by" ON "public"."apps" USING btree (
 CREATE INDEX "IX_apps_deleted" ON "public"."apps" USING btree (
   "deleted" "pg_catalog"."bool_ops" ASC NULLS LAST
 );
-CREATE INDEX "IX_apps_name" ON "public"."apps" USING btree (
+CREATE UNIQUE INDEX "IX_apps_name" ON "public"."apps" USING btree (
   "name" COLLATE "pg_catalog"."default" "pg_catalog"."text_ops" ASC NULLS LAST
 );
 CREATE INDEX "IX_apps_updated_at" ON "public"."apps" USING btree (

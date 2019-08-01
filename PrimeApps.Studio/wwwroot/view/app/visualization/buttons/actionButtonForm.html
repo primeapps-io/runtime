@@ -31,24 +31,20 @@
                 <div class="form-group"
                      ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.type.$invalid}">
                     <label class="col-sm-12 required-field">{{'Setup.Modules.ActionType' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
-                    <select
-                            name="type"
+                    <select name="type"
                             class="form-control ng-animate-disabled col-sm-8"
                             required
                             ng-model="currentActionButton.type"
-                            ng-options="o.value as o.type for o in actionButtonTypes">
-                    </select>
+                            ng-options="o.value as o.type for o in actionButtonTypes"></select>
                 </div>
                 <div class="form-group"
                      ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.trigger.$invalid}">
                     <label class="col-sm-12 required-field">{{'Setup.Modules.DisplayPage' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
-                    <select
-                            name="triggerType"
+                    <select name="triggerType"
                             class="form-control ng-animate-disabled col-sm-8"
                             required
                             ng-model="currentActionButton.triggerType"
-                            ng-options="o.value as o.name for o in displayPages">
-                    </select>
+                            ng-options="o.value as o.name for o in displayPages"></select>
                 </div>
                 <div class="form-group"
                      ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.name.$invalid}">
@@ -80,54 +76,142 @@
                         <input name="methodType" type="radio" ng-model="currentActionButton.method_type" value="get" required>GET<span></span>
                     </label>
                 </div>
-                <div class="form-group" ng-if="currentActionButton.type == 2">
-                    <div class="row form-inline" style="margin-bottom: 10px;">
-                        <label class="col-sm-12 required-field">{{'Setup.Workflow.WebHookParameters' | translate}}</label>
+                <div ng-if="currentActionButton.type == 2">
+                    <div class="form-group">
+                        <div class="row form-inline" style="margin-bottom: 10px;">
+                            <label class="col-sm-12 required-field">Headers</label>
+                        </div>
+                        <table class="filter-table table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Key</th>
+                                    <th>Value</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="header in hookHeaders">
+                                    <td style="padding: 1px;">
+                                        <div ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm['hookHeaderType_'+$index].$invalid}">
+                                            <select class="form-control"
+                                                    name="hookHeaderType_{{$index}}"
+                                                    ng-change="header.value=null"
+                                                    tabindex="{{$index}}"
+                                                    ng-model="header.type">
+                                                <option value="">Select a Type -></option>
+                                                <option value="static">Predefined</option>
+                                                <option value="module">Module</option>
+                                                <option value="custom">Custom</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 1px;">
+                                        <div ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm['hookHeaderKey_'+$index].$invalid}">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   name="hookHeaderKey_{{$index}}"
+                                                   ng-required="header.type"
+                                                   ng-disabled="!header.type"
+                                                   ng-model="header.key"
+                                                   maxlength="50" />
+                                        </div>
+                                    </td>
+                                    <td style="padding: 1px;">
+                                        <div ng-if="header.type === 'static'">
+                                            <div ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm['hookHeaderValue_'+$index].$invalid}">
+                                                <select class="form-control"
+                                                        name="hookHeaderValue_{{$index}}"
+                                                        ng-required="header.type && header.key"
+                                                        ng-disabled="!header.key"
+                                                        ng-model="header.value">
+                                                    <option value="">Select a Value -></option>
+                                                    <option value="{:app:}">App ID</option>
+                                                    <option value="{:tenant:}">Tenant ID</option>
+                                                    <option value="{:user:}">User ID</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div ng-if="header.type === 'module'">
+                                            <div ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm['headerField_'+$index].$invalid}">
+                                                <select class="form-control"
+                                                        name="headerField_{{$index}}"
+                                                        tabindex="2"
+                                                        required
+                                                        ng-model="header.value"
+                                                        ng-options="o as o['label_' + language] for o in currentActionButton.module.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.id">
+                                                    <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div ng-if="!header.type || header.type === 'custom'">
+                                            <div ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm['hookHeaderCustomValue_'+$index].$invalid}">
+                                                <input type="text"
+                                                       class="form-control"
+                                                       name="hookHeaderCustomValue_{{$index}}"
+                                                       ng-required="header.type && header.key"
+                                                       ng-disabled="!header.key"
+                                                       ng-model="header.value" />
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a href="javascript:void(0);" class="action-button2-delete" ng-show="hookHeaders.length > 1" ng-click="webHookHeaderRemove(header)"><i class="fas fa-trash"></i></a>
+                                        <a href="javascript:void(0);" class="action-button2-plus" ng-show="$last" ng-click="webHookHeaderAdd(header)"><i class="fas fa-plus"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <div>
-                        <div class="col-sm-12 table-responsive">
-                            <table class="filter-table">
-                                <thead>
-                                    <tr>
-                                        <th>{{'Setup.Workflow.ParameterName' | translate}}</th>
-                                        <th>{{'Setup.Workflow.SelectedModule' | translate}}</th>
-                                        <th>{{'Setup.Workflow.SelectedField' | translate}}</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.hookModule.$invalid && !parameter.parameterName && !parameter.selectedField}" ng-repeat="parameter in hookParameters">
-                                        <td style="padding: 1px">
-                                            <input type="text" required ng-model="parameter.parameterName" tabindex="2"
-                                                   class="form-control" maxlength="500" />
-                                        </td>
-                                        <td style="padding: 1px">
-                                            <select class="form-control"
-                                                    name="hookModule"
-                                                    tabindex="1"
-                                                    required
-                                                    ng-model="parameter.selectedModule"
-                                                    ng-options="o as o['label_' + language + '_singular'] for o in parameter.selectedModules | filter:{display:'!false'}:true  | orderBy:'order'">
-                                                <option value="">{{'Setup.Workflow.SelectModule' | translate}}</option>
-                                            </select>
-                                        </td>
-                                        <td style="padding: 1px">
-                                            <select class="form-control"
-                                                    name="hookField"
-                                                    tabindex="2"
-                                                    required
-                                                    ng-model="parameter.selectedField"
-                                                    ng-options="o as o['label_' + language] for o in parameter.selectedModule.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.id">
-                                                <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <a class="action-button2-delete" href ng-show="hookParameters.length > 1" ng-click="webhookParameterRemove(parameter)"><i class="fas fa-trash"></i></a>
-                                            <a class="action-button2-plus" href ng-show="$last" ng-click="webhookParameterAdd(parameter)"><i class="fas fa-plus"></i></a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div class="form-group">
+                        <div class="row form-inline" style="margin-bottom: 10px;">
+                            <label class="required-field">{{'Setup.Workflow.WebHookParameters' | translate}}</label>
+                        </div>
+                        <div>
+                            <div class="table-responsive">
+                                <table class="filter-table">
+                                    <thead>
+                                        <tr>
+                                            <th>{{'Setup.Workflow.ParameterName' | translate}}</th>
+                                            <th>{{'Setup.Workflow.SelectedModule' | translate}}</th>
+                                            <th>{{'Setup.Workflow.SelectedField' | translate}}</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.hookModule.$invalid && !parameter.parameterName && !parameter.selectedField}" ng-repeat="parameter in hookParameters">
+                                            <td style="padding: 1px">
+                                                <input type="text" required ng-model="parameter.parameterName" tabindex="2"
+                                                       class="form-control" maxlength="500" />
+                                            </td>
+                                            <td style="padding: 1px">
+                                                <select class="form-control"
+                                                        name="hookModule"
+                                                        tabindex="1"
+                                                        required
+                                                        ng-model="parameter.selectedModule"
+                                                        ng-options="o as o['label_' + language + '_singular'] for o in parameter.selectedModules | filter:{display:'!false'}:true  | orderBy:'order'">
+                                                    <option value="">{{'Setup.Workflow.SelectModule' | translate}}</option>
+                                                </select>
+                                            </td>
+                                            <td style="padding: 1px">
+                                                <select class="form-control"
+                                                        name="hookField"
+                                                        tabindex="2"
+                                                        required
+                                                        ng-model="parameter.selectedField"
+                                                        ng-options="o as o['label_' + language] for o in parameter.selectedModule.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.id">
+                                                    <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <a class="action-button2-delete" href ng-show="hookParameters.length > 1" ng-click="webhookParameterRemove(parameter)"><i class="fas fa-trash"></i></a>
+                                                <a class="action-button2-plus" href ng-show="$last" ng-click="webhookParameterAdd(parameter)"><i class="fas fa-plus"></i></a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -137,8 +221,37 @@
                            name="css_class"
                            class="form-control ng-animate-disabled col-sm-8"
                            maxlength="100"
-                           ng-model="currentActionButton.css_class">
+                           ng-model="currentActionButton.css_class"> 
                 </div>
+
+                <div>
+                    <a href class="advanced-options-link" style="margin-top: 25px;" ng-click="$parent.$parent.showPermissions = !$parent.$parent.showPermissions">
+                        {{'Setup.Modules.Permissions' | translate}}
+                        <i class="fa fa-caret-right" ng-if="!$parent.showPermissions"></i>
+                        <i class="fa fa-caret-down" ng-if="$parent.showPermissions"></i>
+                    </a>
+                    <div class="advanced-options" style="margin-bottom: 20px;" ng-show="$parent.$parent.showPermissions">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>{{'Setup.Modules.Profile' | translate}}</th>
+                                    <th class="text-center">{{'Setup.Modules.PermissionShow' | translate}}</th>
+                                    <!--<th class="text-center">{{'Setup.Modules.PermissionReadOnly' | translate}}</th>-->
+                                    <th class="text-center">{{'Setup.Modules.PermissionNone' | translate}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="permission in currentActionButton.permissions | orderBy:'profile_id'">
+                                    <td>{{permission.profile_name}}</td>
+                                    <td class="text-center"><label class="newinput radio-inline"><input type="radio" ng-model="permission.type" value="full" /><span></span></label></td>
+                                    <!--<td class="text-center user-not-select"><input type="radio" ng-model="permission.type" value="read_only" ng-disabled="permission.profile_is_admin" title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : ''}}" /></td>-->
+                                    <td class="text-center"><label class="newinput radio-inline"><input type="radio" ng-model="permission.type" value="none" ng-disabled="permission.profile_is_admin" title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : ''}}" /><span></span></label></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!--<div class="form-group" ng-show="actionButtonForm.$submitted && actionButtonForm.$invalid">
                     <div class="col-sm-12">
                         <div class="callout callout-danger">

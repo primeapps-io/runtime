@@ -44,6 +44,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<string>("DependentField")
                         .HasColumnName("dependent_field");
 
+                    b.Property<string>("Headers")
+                        .HasColumnName("headers");
+
                     b.Property<string>("Icon")
                         .HasColumnName("icon");
 

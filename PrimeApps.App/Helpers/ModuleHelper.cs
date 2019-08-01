@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Models;
 using PrimeApps.App.Services;
@@ -43,12 +44,15 @@ namespace PrimeApps.App.Helpers
 
     public class ModuleHelper : IModuleHelper
     {
+        private IConfiguration _configuration;
         private IAuditLogHelper _auditLogHelper;
         public IBackgroundTaskQueue Queue { get; }
 
-        public ModuleHelper(IAuditLogHelper auditLogHelper, IBackgroundTaskQueue queue)
+
+        public ModuleHelper(IAuditLogHelper auditLogHelper, IBackgroundTaskQueue queue, IConfiguration configuration)
         {
             _auditLogHelper = auditLogHelper;
+            _configuration = configuration;
             Queue = queue;
         }
 
@@ -846,7 +850,8 @@ namespace PrimeApps.App.Helpers
         public async Task<bool> ProcessScriptFiles(ICollection<Module> modules, IComponentRepository componentRepository)
         {
             var globalConfig = await GetGlobalConfig(componentRepository);
-            var appConfigs = globalConfig != null && !globalConfig["configs"].IsNullOrEmpty() ? (JObject)globalConfig["configs"] : null;
+            var environment = !string.IsNullOrEmpty(_configuration.GetValue("AppSettings:Environment", string.Empty)) ? _configuration.GetValue("AppSettings:Environment", string.Empty) : "development";
+            var appConfigs = globalConfig?[environment] != null && !globalConfig[environment].IsNullOrEmpty() ? (JObject)globalConfig[environment] : null;
 
             foreach (var module in modules)
             {
@@ -858,7 +863,7 @@ namespace PrimeApps.App.Helpers
                     if (component.Deleted || component.Type != ComponentType.Script || component.Place == ComponentPlace.GlobalConfig || string.IsNullOrEmpty(component.Content))
                         continue;
 
-                    if (component.Content.Contains('{') && appConfigs.IsNullOrEmpty())
+                    if (component.Content.StartsWith("{appConfigs") && appConfigs.IsNullOrEmpty())
                     {
                         component.Content = "console.error('Dynamic values not replaced. Because appConfigs is null.');";
                         continue;
@@ -868,7 +873,7 @@ namespace PrimeApps.App.Helpers
 
                     if (component.Content.StartsWith("http"))
                     {
-                        if (!IsTrustedUrl(component.Content, globalConfig))
+                        if (!IsTrustedUrl(component.Content, appConfigs))
                         {
                             component.Content = "console.error('" + component.Content + " is not a trusted url.');";
                             continue;
@@ -923,6 +928,8 @@ namespace PrimeApps.App.Helpers
 
         public string ReplaceDynamicValues(string value, JObject appConfigs)
         {
+            appConfigs = appConfigs != null && !appConfigs["configs"].IsNullOrEmpty() ? (JObject)appConfigs["configs"] : null;
+
             if (appConfigs == null)
                 return value;
 
@@ -940,12 +947,12 @@ namespace PrimeApps.App.Helpers
             return value;
         }
 
-        public bool IsTrustedUrl(string url, JObject globalConfig)
+        public bool IsTrustedUrl(string url, JObject appConfigs)
         {
-            if (globalConfig.IsNullOrEmpty() || globalConfig["trusted_urls"].IsNullOrEmpty())
+            if (appConfigs.IsNullOrEmpty() || appConfigs["trusted_urls"].IsNullOrEmpty())
                 return false;
 
-            foreach (var trustedUrl in (JArray)globalConfig["trusted_urls"])
+            foreach (var trustedUrl in (JArray)appConfigs["trusted_urls"])
             {
                 if (url.StartsWith((string)trustedUrl["url"]))
                     return true;

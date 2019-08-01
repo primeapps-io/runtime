@@ -21,6 +21,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -486,7 +487,7 @@ namespace PrimeApps.App.Helpers
                                     {
                                         type = 4;
                                         var firstModuleName = module.Fields.Where(x => x.Name == firstModule).FirstOrDefault().LookupType;
-                                        var secondModuleName = module.Fields.Where(x => x.Name == firstModule).FirstOrDefault().LookupType;
+                                        var secondModuleName = module.Fields.Where(x => x.Name == secondModule).FirstOrDefault().LookupType;
 
                                         fieldUpdateRecords.Add(secondModuleName, (int)record[secondModule + ".id"]);
                                     }
@@ -693,15 +694,16 @@ namespace PrimeApps.App.Helpers
 
                                 using (var client = new HttpClient())
                                 {
-                                    /*
-                                     * If the server only supports higher TLS version like TLS 1.2 only, it will still fail unless your client PC is configured to use higher TLS version by default. 
-                                     * To overcome this problem add the following in your code.
-                                     */
-                                    System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-
                                     var recordId = (int)record["id"];
                                     var jsonData = new JObject();
                                     jsonData["id"] = recordId;
+
+                                    if (webHook.CallbackUrl.StartsWith("https"))
+                                        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+
+                                    client.DefaultRequestHeaders.TryAddWithoutValidation("X-App-Id", appUser.AppId.ToString());
+                                    client.DefaultRequestHeaders.TryAddWithoutValidation("X-Tenant-Id", appUser.TenantId.ToString());
+                                    client.DefaultRequestHeaders.TryAddWithoutValidation("X-User-Id", appUser.Id.ToString());
 
                                     if (webHook.Parameters != null)
                                     {
@@ -752,19 +754,20 @@ namespace PrimeApps.App.Helpers
                                         }
                                     }
 
+
                                     switch (webHook.MethodType)
                                     {
                                         case WorkflowHttpMethod.Post:
                                             if (jsonData.HasValues)
                                             {
                                                 //fire and forget
-                                                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                                                client.DefaultRequestHeaders.Accept.Clear();
+                                                client.DefaultRequestHeaders.Add("Accept", "application/json");
 
                                                 var dataAsString = JsonConvert.SerializeObject(jsonData);
-                                                var contentResetPasswordBindingModel = new StringContent(dataAsString);
-                                                await client.PostAsync(webHook.CallbackUrl, contentResetPasswordBindingModel);
-
-                                                //await client.PostAsJsonAsync(webHook.CallbackUrl, jsonData);
+                                                var content = new StringContent(dataAsString, Encoding.UTF8, "application/json");
+                                                var response = await client.PostAsync(webHook.CallbackUrl, content);
+                                                var contentResponse = await response.Content.ReadAsStringAsync();
                                             }
                                             else
                                             {
@@ -833,39 +836,11 @@ namespace PrimeApps.App.Helpers
                                 sendNotificationBCC = (string)record[sendNotification.Bcc];
                             }
 
-                            string domain;
+                            var domain = string.Empty;
 
-                            domain = "http://{0}.ofisim.com/";
-                            var appDomain = "crm";
-
-                            switch (appUser.AppId)
+                            using (var appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
                             {
-                                case 2:
-                                    appDomain = "kobi";
-                                    break;
-                                case 3:
-                                    appDomain = "asistan";
-                                    break;
-                                case 4:
-                                    appDomain = "ik";
-                                    break;
-                                case 5:
-                                    appDomain = "cagri";
-                                    break;
-                            }
-							var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
-							var subdomain = "";
-							if (!string.IsNullOrEmpty(testMode))
-							{
-								subdomain = testMode == "true" ? "test" : appDomain;
-							}
-                            domain = string.Format(domain, subdomain);
-
-                            //domain = "http://localhost:5554/";
-
-                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
-							{
-                                var app = await _appRepository.Get(appUser.AppId);
+                                var app = await appRepository.Get(appUser.AppId);
                                 if (app != null)
                                 {
                                     domain = "http://" + app.Setting.AppDomain + "/";
@@ -911,13 +886,19 @@ namespace PrimeApps.App.Helpers
                                     }
                                 }
 
+                                if (string.IsNullOrWhiteSpace(recipient) || !recipient.Contains("@"))
+                                    continue;
+
                                 email.AddRecipient(recipient);
                             }
 
-                            if (sendNotification.Schedule.HasValue)
-                                email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
+                            if (email.toList.Count > 0)
+                            {
+                                if (sendNotification.Schedule.HasValue)
+                                    email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
 
-                            email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
+                                email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
+                            }
                         }
 
                         var workflowLog = new WorkflowLog
@@ -1204,7 +1185,7 @@ namespace PrimeApps.App.Helpers
                             workflow.SendNotification.CCArray = workflowModel.Actions.SendNotification.CC;
                         else
                         {
-                            string[] emptyCC = new string[] {""};
+                            string[] emptyCC = new string[] { "" };
                             workflow.SendNotification.CCArray = emptyCC;
                         }
 
@@ -1212,7 +1193,7 @@ namespace PrimeApps.App.Helpers
                             workflow.SendNotification.BccArray = workflowModel.Actions.SendNotification.Bcc;
                         else
                         {
-                            string[] emptyBcc = new string[] {""};
+                            string[] emptyBcc = new string[] { "" };
                             workflow.SendNotification.BccArray = emptyBcc;
                         }
 

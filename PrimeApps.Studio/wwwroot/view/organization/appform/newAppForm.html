@@ -55,7 +55,7 @@
                                            ng-blur="checkNameBlur();"
                                            ng-change="checkNameUnique(appModel.name)"
                                            ng-model="appModel.name"
-                                           id="subdomain"/>
+                                           id="subdomain" />
                                     <span style="right: 10px;" id="subdomaintwo">
                                         .primeapps.app
                                     </span>
@@ -92,8 +92,8 @@
                                     <div class="iconandcolor">
                                         <div class="flex-evenly">
                                             <div>
-                                                <div   ng-style="{background:appModel.color}" class="appicon" title="">
-                                                    <i ng-class=" appModel.icon.value ?  appModel.icon.value :appModel.icon"  class="fas fa-box-open"></i>
+                                                <div ng-style="{background:appModel.color}" class="appicon" title="">
+                                                    <i ng-class=" appModel.icon.value ?  appModel.icon.value :appModel.icon" class="fas fa-box-open"></i>
                                                     <div class="icon-search-list">
                                                         <ui-select ng-model="appModel.icon" ng-disabled="ctrl.disabled">
                                                             <ui-select-match placeholder="Select an icon">
@@ -106,12 +106,12 @@
                                                                 <div ng-bind-html="icon.label"></div>
                                                             </ui-select-choices>
                                                         </ui-select>
-                                                        
+
                                                     </div>
-                                                    
+
                                                 </div>
                                             </div>
-                                            <div >
+                                            <div>
                                                 <div class="appcolor">
                                                     <span ng-click="appModel.color='#D24D57'" ng-class="appModel.color =='#D24D57' ? 'active':''" style="background: #D24D57;"></span>
                                                     <span ng-click="appModel.color='#BE90D4'" ng-class="appModel.color =='#BE90D4' ? 'active':'' " style="background: #BE90D4;"></span>
@@ -121,12 +121,12 @@
                                                     <span ng-click="appModel.color='#B8BEC2'" ng-class="appModel.color =='#B8BEC2' ? 'active':'' " style="background: #B8BEC2;"></span>
                                                 </div>
                                                 <div class="appcolor">
-                                                    <span ng-click="appModel.color='#DC3023'" ng-class="appModel.color =='#DC3023' ? 'active':''"  style="background: #DC3023;"></span>
-                                                    <span ng-click="appModel.color='#8E44AD'" ng-class="appModel.color =='#8E44AD' ? 'active':''"  style="background: #8E44AD;"></span>
-                                                    <span ng-click="appModel.color='#19B5FE'" ng-class="appModel.color =='#19B5FE' ? 'active':''"  style="background: #19B5FE;"></span>
-                                                    <span ng-click="appModel.color='#25A65B'" ng-class="appModel.color =='#25A65B' ? 'active':''"  style="background: #25A65B;"></span>
-                                                    <span ng-click="appModel.color='#FFB61E'" ng-class="appModel.color =='#FFB61E' ? 'active':''"  style="background: #FFB61E;"></span>
-                                                    <span ng-click="appModel.color='#959EA4'" ng-class="appModel.color =='#959EA4' ? 'active':''"  style="background: #959EA4;"></span>
+                                                    <span ng-click="appModel.color='#DC3023'" ng-class="appModel.color =='#DC3023' ? 'active':''" style="background: #DC3023;"></span>
+                                                    <span ng-click="appModel.color='#8E44AD'" ng-class="appModel.color =='#8E44AD' ? 'active':''" style="background: #8E44AD;"></span>
+                                                    <span ng-click="appModel.color='#19B5FE'" ng-class="appModel.color =='#19B5FE' ? 'active':''" style="background: #19B5FE;"></span>
+                                                    <span ng-click="appModel.color='#25A65B'" ng-class="appModel.color =='#25A65B' ? 'active':''" style="background: #25A65B;"></span>
+                                                    <span ng-click="appModel.color='#FFB61E'" ng-class="appModel.color =='#FFB61E' ? 'active':''" style="background: #FFB61E;"></span>
+                                                    <span ng-click="appModel.color='#959EA4'" ng-class="appModel.color =='#959EA4' ? 'active':''" style="background: #959EA4;"></span>
                                                 </div>
                                                 <div class="appcolor">
                                                     <span ng-click="appModel.color='#C3272B'" ng-class="appModel.color =='#C3272B' ? 'active':''" style="background: #C3272B;"></span>
@@ -138,7 +138,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                     </div>
                                 </div>
                             </div>

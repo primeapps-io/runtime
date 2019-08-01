@@ -167,6 +167,7 @@ namespace PrimeApps.Model.Repositories
         {
             var modules = await GetModuleFullQuery()
                 .Where(x => !x.Deleted)
+                .Include(x => x.Fields)
                 .ToListAsync();
 
             return modules;

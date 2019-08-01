@@ -364,7 +364,7 @@ angular.module('primeapps')
                     return false;
 
                 if ($scope.wizardStep === 2 && tabClick.approverType.$valid ) {
-                    if (!$scope.hookParameters[0].approver)
+                    if ($scope.workflowModel.approver_type !== 'dynamicApprover' && !$scope.hookParameters[0].approver)
                         return false;
                 }
 
@@ -846,7 +846,7 @@ angular.module('primeapps')
                             };
                             processModule.fields.push(approverField);
                         }
-                        ModuleService.update(processModule, processModule.id).then(function () {
+                        ModuleService.moduleUpdate(processModule, processModule.id).then(function () {
                             $scope.saving = false;
                             $scope.changeOffset(1);
                             toastr.success($filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'));

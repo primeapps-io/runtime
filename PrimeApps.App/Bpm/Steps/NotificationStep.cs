@@ -93,8 +93,13 @@ namespace PrimeApps.App.Bpm.Steps
                                 RecipientList = tempSendNotification["recipients"].ToObject<JArray>(),
                                 CC = !tempSendNotification["cc"].IsNullOrEmpty() ? tempSendNotification["cc"].ToObject<JArray>() : new JArray(),
                                 Bcc = !tempSendNotification["bcc"].IsNullOrEmpty() ? tempSendNotification["bcc"].ToObject<JArray>() : new JArray(),
-                                Schedule = tempSendNotification["schedule"]["value"].Value<string>() == "now" ? 0 : tempSendNotification["schedule"]["value"].ToObject<int>()
                             };
+
+                            if (!tempSendNotification["schedule"].IsNullOrEmpty())
+                                sendNotification.Schedule = tempSendNotification["schedule"]["value"].Value<string>() == "now" ? 0 : tempSendNotification["schedule"]["value"].ToObject<int>();
+                            else
+                                sendNotification.Schedule = 0;
+
 
                             var recipients = sendNotification.RecipientList;
 

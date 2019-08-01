@@ -11,73 +11,75 @@
 <div class="tab-content table-responsive">
     <table class="table" ng-show="loading">
         <thead>
-        <tr>
-            <th>{{'Setup.Templates.Module' | translate}}</th>
-            <th>{{'Setup.Modules.DependencyType' | translate}}</th>
-            <th>{{'Setup.Modules.DependencyParentField' | translate}}</th>
-            <th>{{'Setup.Modules.DependencyChildField' | translate}}</th>
-            <th>{{'Setup.Modules.DependencyChildSection' | translate}}</th>
-            <th width="70"></th>
-        </tr>
+            <tr>
+                <th>{{'Setup.Templates.Module' | translate}}</th>
+                <th>{{'Setup.Modules.DependencyType' | translate}}</th>
+                <th>{{'Setup.Modules.DependencyParentField' | translate}}</th>
+                <th>{{'Setup.Modules.DependencyChildField' | translate}}</th>
+                <th>{{'Setup.Modules.DependencyChildSection' | translate}}</th>
+                <th width="70"></th>
+            </tr>
         </thead>
         <tbody>
-        <tr>
-        <tr ng-repeat="item in placeholderArray">
-            <td class="text-center">
-                <div>
+            <tr>
+            <tr ng-repeat="item in placeholderArray">
+                <td class="text-center">
+                    <div>
+                        <div class="animated-background"></div>
+                    </div>
+                </td>
+                <td>
                     <div class="animated-background"></div>
-                </div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td class="text-center">
-                <div class="animated-background"></div>
-            </td>
-        </tr>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td class="text-center">
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
         </tbody>
     </table>
     <table class="table" ng-show="!loading">
         <thead>
-        <tr>
-            <th>{{'Setup.Templates.Module' | translate}}</th>
-            <th>{{'Setup.Modules.DependencyType' | translate}}</th>
-            <th>{{'Setup.Modules.DependencyParentField' | translate}}</th>
-            <th>{{'Setup.Modules.DependencyChildField' | translate}}</th>
-            <th>{{'Setup.Modules.DependencyChildSection' | translate}}</th>
-            <th width="50"></th>
-        </tr>
+            <tr>
+                <th>{{'Setup.Templates.Module' | translate}}</th>
+                <th>{{'Setup.Modules.DependencyType' | translate}}</th>
+                <th>{{'Setup.Modules.DependencyParentField' | translate}}</th>
+                <th>{{'Setup.Modules.DependencyChildField' | translate}}</th>
+                <th>{{'Setup.Modules.DependencyChildSection' | translate}}</th>
+                <th width="50"></th>
+            </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="dependency in dependencies | filter:{hidden:'!true'} | orderBy:'created_at'"
-            ng-click="$event.stopPropagation(); showFormModal(dependency)">
-            <td>{{dependency.module['label_'+language+'_plural']}}</td>
-            <td>{{dependency.dependency_type === 'display' ? ('Setup.Modules.DependencyTypeDisplay' | translate) :
-                ('Setup.Modules.DependencyTypeValueChange' | translate)}}
-            </td>
-            <td>{{(dependency.module.fields | filter:{name:dependency.parent_field})[0]['label_'+language]}}</td>
-            <td>{{ dependency.child_field ?(dependency.module.fields |
-                filter:{name:dependency.child_field})[0]['label_'+language]: '-'}}
-            </td>
-            <td>{{ dependency.child_section ? dependency.sectionField['label_'+language] : '-' }}</td>
-            <td class="text-center">
-                <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation(); delete(dependency, $event);" type="button"
-                            class="action-buttons-delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
+            <tr ng-repeat="dependency in dependencies | filter:{hidden:'!true'} | orderBy:'created_at'"
+                ng-click="$event.stopPropagation(); showFormModal(dependency)">
+                <td>{{dependency.module['label_'+language+'_plural']}}</td>
+                <td>{{dependency.dependency_type === 'display' ? ('Setup.Modules.DependencyTypeDisplay' | translate) :
+                    dependency.dependency_type === 'freeze' ? ('Setup.Modules.DependencyTypeFreeze' | translate) :
+                    ('Setup.Modules.DependencyTypeValueChange' | translate)}}
+
+                </td>
+                <td>{{(dependency.module.fields | filter:{name:dependency.parent_field})[0]['label_'+language]}}</td>
+                <td>{{ dependency.child_field ?(dependency.module.fields |
+                    filter:{name:dependency.child_field})[0]['label_'+language]: '-'}}
+                </td>
+                <td>{{ dependency.child_section ? dependency.sectionField['label_'+language] : '-' }}</td>
+                <td class="text-center">
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation(); delete(dependency, $event);" type="button"
+                                class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
         </tbody>
     </table>
     <div class="table-pagination">

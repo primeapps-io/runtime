@@ -9,7 +9,7 @@
             </div>
             <div>
                 <div>
-                    <div class="page" ng-style="trial ? {'margin-top':'17px'}: ''">
+                    <div class="page" ng-style="trial ? {'margin-top':'17px'}: ''" block-ui="pageBlockUI">
                         <div class="panel panel-default" style="margin-bottom: 0;">
                             <div class="panel-heading clearfix">
                                 <h4 class="pull-left">{{title}}</h4>
@@ -21,15 +21,14 @@
                                             data-placement="bottom-right">{{'Module.DropdownButtons' | translate}} <span
                                                 class="caret"></span></button>
                                         <ul class="dropdown-menu  dropdown-menu-right" role="menu">
-                                            <li><a
-                                                    href="{{!back ? (!parentId ? '#/app/modules/' + type : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab)) : (back != 'calendar' && back != 'dashboard' && back != 'tasks' ? '#/app/modules/' + back : '#/app/' + back)}}"><i
-                                                        class="fa fa-chevron-left"></i>
-                                                    {{'Common.Back' | translate}}</a></li>
-                                            <li
-                                                ng-show="module.name === 'leads' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('accounts', operations.write) && hasPermission('contacts', operations.write)">
-                                                <a href="#/app/leadconvert{{'?id=' + record.id }}"
-                                                    id="LeadConvertButton" ng-disabled="loading"><i
-                                                        class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
+                                            <li><a href="{{!back ? (!parentId ? '#/app/modules/' + type : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab)) : (back != 'calendar' && back != 'dashboard' && back != 'tasks' ? '#/app/modules/' + back : '#/app/' + back)}}"><i class="fa fa-chevron-left"></i> {{'Common.Back' | translate}}</a></li>
+
+                                            <li ng-show="module.name === 'leads' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('accounts', operations.write) && hasPermission('contacts', operations.write)">
+                                                <a href="#/app/leadconvert{{'?id=' + record.id }}" id="LeadConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
+                                            </li>
+                                            <li role="separator" class="divider"></li>
+                                            <li>
+                                                <a href ng-click="refresh()" ng-disabled="loading"><i class="fa fa-refresh"></i> {{'Common.Refresh' | translate}}</a>
                                             </li>
                                             <li role="separator" class="divider"></li>
                                             <li ng-if="user.profile.word_pdf_download">
@@ -144,6 +143,7 @@
                                     <a href="{{!back ? (!parentId ? '#/app/modules/' + type : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab + (previousParentId ? ('&rpptype=' + previousParentType + '&rppid=' + previousParentId + '&rprtab=' + previousReturnTab) : ''))) : (back != 'calendar' && back != 'dashboard' && back != 'tasks' ? '#/app/modules/' + back : '#/app/' + back)}}"
                                         class="btn btn-sm btn-custom"><i class="fa fa-chevron-left"></i>
                                         {{'Common.Back' | translate}}</a>
+                                    <a href ng-click="refresh()" ng-disabled="loading" class="btn btn-sm btn-custom"><i class="fa fa-refresh"></i> {{'Common.Refresh' | translate}}</a>
                                     <a ng-show="user.profile.lead_convert && module.name === 'leads' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('accounts', operations.write) && hasPermission('contacts', operations.write)"
                                         href="#/app/leadconvert{{'?id=' + record.id }}" class="btn btn-sm btn-custom"
                                         id="LeadConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i>
@@ -365,7 +365,8 @@
                                         <li class="pull-right">
                                             <button class="{{custombutton.css_class}}" type="button"
                                                 custom-scripting="{{custombutton.template}}" data-spinner-color="#666"
-                                                ladda="scriptRunning[custombutton.id]" ng-repeat="custombutton in actionButtons"
+                                                ladda="scriptRunning[custombutton.id]"ng-disabled="actionButtonDisabled"
+                                                    ng-repeat="custombutton in actionButtons"
                                                 ng-if="custombutton.action_type === 'Scripting' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
                                                 style="margin-left: 10px">
                                                 <i ng-class="custombutton.icon"></i> {{custombutton.name}}
@@ -374,6 +375,7 @@
                                                 data-spinner-color="#666" ladda="webhookRequesting[custombutton.id]"
                                                 ng-click="webhookRequest(custombutton)"
                                                 ng-repeat="custombutton in actionButtons"
+                                                    ng-disabled="actionButtonDisabled"
                                                 ng-if="custombutton.action_type === 'Webhook' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
                                                 style="margin-left: 10px">
                                                 <i ng-class="custombutton.icon"></i> {{custombutton.name}}
@@ -381,6 +383,7 @@
                                             <button class="{{custombutton.css_class}}" type="button"
                                                 ng-click="showModuleFrameModal(custombutton.url)"
                                                 ng-repeat="custombutton in actionButtons"
+                                                    ng-disabled="actionButtonDisabled"
                                                 ng-if="custombutton.action_type === 'ModalFrame' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
                                                 style="margin-left: 10px">
                                                 <i ng-class="custombutton.icon"></i> {{custombutton.name}}
@@ -990,8 +993,8 @@
                                             <ng-include 
                                             src="section"></ng-include>
                                         </div>
-                                        
-                                        
+
+
                                         <div class="subpanel" ng-if="masterRecord && module.name === 'quotes'">
                                             <h5 class="subpanel-heading">{{'Module.RevisionMasters' | translate}}</h5>
                                             <div class="subpanel-body">

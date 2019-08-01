@@ -2,10 +2,10 @@
 
 angular.module('primeapps')
 
-    .controller('EmailTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'EmailTemplatesService', '$http', 'config', '$modal', '$localStorage', '$cookies', 'ModuleService',
-        function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, EmailTemplatesService, $http, config, $modal, $localStorage, $cookies, ModuleService) {
+    .controller('EmailTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'EmailTemplatesService', '$http', 'config', '$modal', '$localStorage', '$cookies', 'ModuleService', 'ProfilesService',
+        function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, EmailTemplatesService, $http, config, $modal, $localStorage, $cookies, ModuleService, ProfilesService) {
 
-            $scope.templateModules = $filter('filter')($rootScope.appModules, {deleted: false});
+            $scope.templateModules = $filter('filter')($rootScope.appModules, { deleted: false });
             //$scope.$parent.menuTopTitle = "Templates";
             //$scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesEmail';
@@ -76,11 +76,11 @@ angular.module('primeapps')
                     },
                     filters: {
                         mime_types: [
-                            {title: "Image files", extensions: "jpg,gif,png"},
+                            { title: "Image files", extensions: "jpg,gif,png" },
                         ],
                         max_file_size: "2mb"
                     },
-                    resize: {quality: 90}
+                    resize: { quality: 90 }
                 },
                 events: {
                     filesAdded: function (uploader, files) {
@@ -140,7 +140,7 @@ angular.module('primeapps')
                     },
                     filters: {
                         mime_types: [
-                            {title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv"},
+                            { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
                         ],
                         max_file_size: "50mb"
                     }
@@ -219,8 +219,8 @@ angular.module('primeapps')
                     toolbar: "addParameter | styleselect | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | table bullist numlist | link image imagetools |  cut copy paste | undo redo searchreplace | outdent indent | blockquote hr insertdatetime charmap | visualblocks code preview fullscreen",
                     menubar: 'false',
                     templates: [
-                        {title: 'Test template 1', content: 'Test 1'},
-                        {title: 'Test template 2', content: 'Test 2'}
+                        { title: 'Test template 1', content: 'Test 1' },
+                        { title: 'Test template 2', content: 'Test 2' }
                     ],
                     skin: 'lightgray',
                     theme: 'modern',
@@ -282,7 +282,8 @@ angular.module('primeapps')
                     $scope.newtemplate.tinymce_content = template.content;
                     $scope.newtemplate.sharing_type = template.sharing_type;
                     $scope.newtemplate.template_name = template.name;
-                    var module = $filter('filter')($rootScope.appModules, {name: template.module.name}, true)[0];
+                    $scope.newtemplate.permissions = template.permissions;
+                    var module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
                     $scope.newtemplate.moduleName = module;
 
                     if (template.shares)
@@ -290,6 +291,8 @@ angular.module('primeapps')
                 } else {
                     $scope.newtemplate.template_subject = $scope.Subject;
                     $scope.newtemplate.tinymce_content = $scope.tinymceModel;
+                    $scope.newtemplate.permissions = [];
+
                     if ($scope.currentTemplate) {
                         $scope.newtemplate.sharing_type = $scope.currentTemplate.sharing_type;
                         $scope.newtemplate.shares = $scope.currentTemplate.shares;
@@ -327,8 +330,12 @@ angular.module('primeapps')
             //2 templateType Module
             EmailTemplatesService.find($scope.requestModel, "email").then(function (response) {
                 var templates = response.data;
+                ProfilesService.getAllBasic().then(function (response) {
+                    //$scope.newProfiles = response.data;
+                    $scope.profiles = ProfilesService.getProfiles(response.data, $rootScope.appModules, false); 
+                });
                 angular.forEach(templates, function (template) {
-                    template.module = $filter('filter')($rootScope.appModules, {name: template.module}, true)[0];
+                    template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
                 });
                 $scope.templates = templates;
 
@@ -357,7 +364,7 @@ angular.module('primeapps')
                 EmailTemplatesService.find(requestModel, "email").then(function (response) {
                     var templates = response.data;
                     angular.forEach(templates, function (template) {
-                        template.module = $filter('filter')($rootScope.appModules, {name: template.module}, true)[0];
+                        template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
                     });
                     $scope.templates = templates;
 
@@ -394,6 +401,18 @@ angular.module('primeapps')
                 template.subject = $scope.newtemplate.template_subject;
                 template.content = $scope.newtemplate.tinymce_content;
                 template.sharing_type = $scope.newtemplate.sharing_type;
+                template.permissions = [];
+                if ($scope.newtemplate.permissions) {
+
+                    for (var i = 0; i < $scope.newtemplate.permissions.length; i++) {
+                        var newPermissions = {
+                            profile_id: $scope.newtemplate.permissions[i].id,
+                            type: 1
+                        };
+
+                        template.permissions.push(newPermissions);
+                    }
+                }
                 template.template_type = 2;
                 template.active = true;
 
@@ -436,15 +455,45 @@ angular.module('primeapps')
                 // });
             };
 
+
             $scope.showFormModal = function (template) {
+                $scope.multiselect = function () {
+                    return $filter('filter')($rootScope.appProfiles, { deleted: false, has_admin_rights: false }, true);
+                };
+
                 if (template) {
-                    $scope.setTemplate(template);
-                    $scope.currentTemplate = template;
-                    $scope.moduleDisabled = true;
+                    EmailTemplatesService.get(template.id)
+                        .then(function (response) {
+                            if (response.data) {
+                                var data = response.data;
+                                var newPermission = [];
+
+                                for (var i = 0; i < data.permissions.length; i++) {
+                                    var profile = $filter('filter')($scope.profiles, { id: data.permissions[i].profile_id }, true)[0];
+                                    if (profile) {
+                                        newPermission.push(profile);
+                                    }
+                                }
+
+                                data.permissions = newPermission;
+                                $scope.setTemplate(data);
+                                $scope.currentTemplate = data;
+                                $scope.moduleDisabled = true;
+                            }
+                            else {
+                                $scope.newtemplate = {};
+                                $scope.newtemplate.system_type = 'custom';
+                                $scope.newtemplate.sharing_type = 'everybody';
+                                newtemplate.permissions = [];
+                                $scope.currentTemplate = null;
+                                $scope.moduleDisabled = false;
+                            }
+                        });
+
                 } else {
                     $scope.newtemplate = {};
                     $scope.newtemplate.system_type = 'custom';
-                    $scope.newtemplate.sharing_type = 'me';
+                    $scope.newtemplate.sharing_type = 'everybody';
                     $scope.currentTemplate = null;
                     $scope.moduleDisabled = false;
                 }

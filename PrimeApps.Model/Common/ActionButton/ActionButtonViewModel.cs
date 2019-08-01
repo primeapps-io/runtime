@@ -17,6 +17,7 @@ namespace PrimeApps.Model.Common.ActionButton
         public string Dependent { get; set; }
         public ActionButtonEnum.WebhhookHttpMethod MethodType { get; set; }
         public string Parameters { get; set; }
+        public string Headers { get; set; }
         public ActionButtonEnum.ActionTrigger Trigger { get; set; }
         public List<ActionButtonPermissionViewModel> Permissions { get; set; }
     }

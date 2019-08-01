@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Helpers
 {
@@ -21,17 +22,22 @@ namespace PrimeApps.App.Helpers
 
     public class ActionButtonHelper : IActionButtonHelper
     {
+        private IConfiguration _configuration;
         private IModuleHelper _moduleHelper;
 
-        public ActionButtonHelper(IModuleHelper moduleHelper)
+        public ActionButtonHelper(IModuleHelper moduleHelper, IConfiguration configuration)
         {
             _moduleHelper = moduleHelper;
+            _configuration = configuration;
         }
 
         public async Task<bool> ProcessScriptFiles(ICollection<ActionButtonViewModel> actionButtons, IComponentRepository componentRepository)
         {
+            var environment = !string.IsNullOrEmpty(_configuration.GetValue("AppSettings:Environment", string.Empty)) ? _configuration.GetValue("AppSettings:Environment", string.Empty) : "development";
+
             var globalConfig = await _moduleHelper.GetGlobalConfig(componentRepository);
-            var appConfigs = globalConfig != null && !globalConfig["configs"].IsNullOrEmpty() ? (JObject)globalConfig["configs"] : null;
+
+            var appConfigs = globalConfig?[environment] != null && !globalConfig[environment].IsNullOrEmpty() ? (JObject)globalConfig[environment] : null;
 
             foreach (var actionButton in actionButtons)
             {
@@ -42,7 +48,7 @@ namespace PrimeApps.App.Helpers
 
                 if (actionButton.Template.StartsWith("http"))
                 {
-                    if (!_moduleHelper.IsTrustedUrl(actionButton.Template, globalConfig))
+                    if (!_moduleHelper.IsTrustedUrl(actionButton.Template, appConfigs))
                     {
                         actionButton.Template = "console.error('" + actionButton.Template + " is not a trusted url.');";
                         continue;

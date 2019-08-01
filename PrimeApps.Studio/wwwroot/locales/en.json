@@ -2161,7 +2161,8 @@
     "DefaultValueTrue": "Yes",
     "DefaultValueFalse": "No",
     "MenuElementType": "Element Type",
-    "Modules": "Modules"
+    "Modules": "Modules",
+    "NewCategory": "Enter New Category Name"
   },
   "Picklist": {
     "Name": "Name",

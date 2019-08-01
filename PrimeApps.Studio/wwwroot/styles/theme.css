@@ -1909,7 +1909,7 @@ button:focus, select:focus {
   width: 360px !important;
 }
 .primeapps .appicon:hover {
-  background: rgba(0, 0, 0, 0.75) !important;
+  background: rgba(0, 0, 0, 0.75);
 }
 .primeapps .appcolor:after {
   content: "";
@@ -3719,11 +3719,10 @@ button:focus, select:focus {
 .primeapps .angular-ui-tree-drag .action-buttons-block {
   display: none;
 }
-
-.primeapps .copy-hover .copy-button{
-   visibility: hidden;
- }
-.primeapps .copy-hover:hover .copy-button{
+.primeapps .copy-hover .copy-button {
+  visibility: hidden;
+}
+.primeapps .copy-hover:hover .copy-button {
   visibility: visible;
 }
 

@@ -1,0 +1,115 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: primeapps-auth-config-test
+  namespace: primeapps
+data:
+  AuthDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=auth;command timeout=0;keepalive=30;"
+  TenantDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=test;command timeout=0;keepalive=30;"
+  PlatformDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+  Authority: "https://auth-test.primeapps.io"
+  ForwardHeaders: "true"
+  HttpsRedirection: "true"
+  ValidationSkipDomains: "localhost;primeapps.io;"
+  SentryDsn: "https://270a56df0bd64502b8e36883a61ae32e:cc219c09992a419b81d33248eb4097d8@log.primeapps.io/14"
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: primeapps-auth-test
+  namespace: primeapps
+  labels:
+    k8s-app: "primeapps-auth-test"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: primeapps-auth-test
+  template:
+    metadata:
+      labels:
+        k8s-app: primeapps-auth-test
+    spec:
+      containers:
+        - name: primeapps-auth-test
+          image: primeapps/primeapps-auth:1.19.211.1-debian
+          env:
+            - name: ConnectionStrings__AuthDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config-test
+                  key: AuthDBConnection
+            - name: ConnectionStrings__TenantDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config-test
+                  key: TenantDBConnection
+            - name: ConnectionStrings__PlatformDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config-test
+                  key: PlatformDBConnection
+            - name: AppSettings__Authority
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config-test
+                  key: Authority
+            - name: AppSettings__ForwardHeaders
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config-test
+                  key: ForwardHeaders
+            - name: AppSettings__HttpsRedirection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config-test
+                  key: HttpsRedirection
+            - name: AppSettings__ValidationSkipDomains
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config-test
+                  key: ValidationSkipDomains
+            - name: Sentry__Dsn
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config-test
+                  key: SentryDsn
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: primeapps-auth-service-test
+  namespace: primeapps
+spec:
+  type: "ClusterIP"
+  selector:
+    k8s-app: primeapps-auth-test
+  ports:
+    - name: "http"
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: primeapps-auth-ingress-test
+  namespace: primeapps
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/server-snippet: |-
+      add_header X-Robots-Tag "noindex, nofollow"
+spec:
+  tls:
+    - hosts:
+        - auth-test.primeapps.io
+      secretName: primeapps-wildcard-ssl
+  rules:
+    - host: auth-test.primeapps.io
+      http:
+        paths:
+          - path: "/"
+            backend:
+              serviceName: primeapps-auth-service-test
+              servicePort: 80

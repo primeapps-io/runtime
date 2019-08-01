@@ -20,8 +20,8 @@ angular.module('primeapps')
                 $scope.revise = $location.search().revise;
                 $scope.paramField = $location.search().field;
                 $scope.paramValue = $location.search().value;
-            }
-            else {
+                $scope.isDisabled = false;
+            } else {
                 var parent = $scope.$parent.$parent;
                 $scope.formType = parent.formType;
                 $scope.type = parent.type;
@@ -39,6 +39,7 @@ angular.module('primeapps')
                 $scope.revise = parent.revise;
                 $scope.paramField = parent.field;
                 $scope.paramValue = parent.value;
+                $scope.actionButtonDisabled = false;
 
             }
 
@@ -61,7 +62,6 @@ angular.module('primeapps')
                 $window.scrollTo(0, 0);
 
             $scope.module = $filter('filter')($rootScope.modules, { name: $scope.type }, true)[0];
-
 
 
             components.run('BeforeFormLoaded', 'script', $scope);
@@ -510,6 +510,7 @@ angular.module('primeapps')
                             $scope.title = $scope.primaryField.valueFormatted;
                             $scope.recordState = angular.copy(record);
                             ModuleService.setDisplayDependency($scope.module, record);
+
 
                             //encrypted fields
                             for (var f = 0; f < $scope.module.fields.length; f++) {
@@ -1441,7 +1442,7 @@ angular.module('primeapps')
             ModuleService.getActionButtons($scope.module.id)
                 .then(function (actionButtons) {
                     $scope.actionButtons = $filter('filter')(actionButtons, function (actionButton) {
-                        return actionButton.trigger !== 'Detail' && actionButton.trigger !== 'List';
+                        return actionButton.trigger !== 'Detail' && actionButton.trigger !== 'List' && actionButton.trigger !== 'Relation';
                     }, true);
                 });
 
@@ -1584,12 +1585,21 @@ angular.module('primeapps')
 
             $scope.uploaderImage = function (field) {
                 $scope.image[field.name] = {};
+                var headers = {
+                    'Authorization': 'Bearer ' + $localStorage.read('access_token'),
+                    'Accept': 'application/json', /// we have to set accept header to provide consistency between browsers. 
+                };
+
+                if ($rootScope.preview) {
+                    headers['X-App-Id'] = $rootScope.user.app_id;
+                }
+                else {
+                    headers['X-Tenant-Id'] = $rootScope.user.tenant_id; 
+                }
+
                 var uploader_image = $scope.uploaderImage[field.name] = new FileUploader({
                     url: 'storage/record_file_upload',
-                    headers: {
-                        appId: $rootScope.user.app_id,
-                        'X-App-Id': $rootScope.user.app_id
-                    },
+                    headers: headers,
                     queueLimit: 1
                 });
 
@@ -1681,7 +1691,9 @@ angular.module('primeapps')
             //webhook request func for action button
             $scope.webhookRequest = function (action) {
                 var jsonData = {};
+                var headersData = [];
                 var params = action.parameters.split(',');
+                var headers = action.headers.split(',');
                 $scope.webhookRequesting = {};
 
                 $scope.webhookRequesting[action.id] = true;
@@ -1719,9 +1731,56 @@ angular.module('primeapps')
 
                 });
 
+                angular.forEach(headers, function (data) {
+                    var tempHeader = data.split('|');
+                    var type = tempHeader[0];
+                    var moduleName = tempHeader[1];
+                    var key = tempHeader[2];
+                    var value = tempHeader[3];
+
+                    switch (type) {
+                        case 'module':
+                            var fieldName = value;
+                            if (moduleName != $scope.module.name) {
+                                if ($scope.record[moduleName])
+                                    headersData[key] = $scope.record[moduleName][fieldName];
+                                else
+                                    headersData[key] = null;
+                            } else {
+                                if ($scope.record[fieldName])
+                                    headersData[key] = $scope.record[fieldName];
+                                else
+                                    headersData[key] = null;
+                            }
+                            break;
+                        case 'static':
+                            switch (value) {
+                                case '{:app:}':
+                                    headersData[key] = $rootScope.user.app_id;
+                                    break;
+                                case '{:tenant:}':
+                                    headersData[key] = $rootScope.user.tenant_id;
+                                    break;
+                                case '{:user:}':
+                                    headersData[key] = $rootScope.user.id;
+                                    break;
+                                default:
+                                    headersData[key] = null;
+                                    break;
+                            }
+                            break;
+                        case 'custom':
+                            headersData[key] = value;
+                            break;
+                        default:
+                            headersData[key] = null;
+                            break;
+                    }
+                });
+
                 if (action.method_type === 'post') {
 
-                    $http.post(action.url, jsonData, { headers: { 'Content-Type': 'application/json' } })
+                    $http.post(action.url, jsonData, { headers: headersData })
                         .then(function () {
                             ngToast.create({
                                 content: $filter('translate')('Module.ActionButtonWebhookSuccess'),

@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ModuleDetailController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', 'sipHelper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'entityTypes', 'operations', 'config', 'guidEmpty', '$popover', '$timeout', '$modal', '$sce', 'yesNo', 'activityTypes', 'transactionTypes', '$anchorScroll', 'FileUploader', 'DocumentService', 'ModuleService', '$http', 'components',
-        function ($rootScope, $scope, ngToast, $filter, helper, sipHelper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, entityTypes, operations, config, guidEmpty, $popover, $timeout, $modal, $sce, yesNo, activityTypes, transactionTypes, $anchorScroll, FileUploader, DocumentService, ModuleService, $http, components) {
+    .controller('ModuleDetailController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', 'sipHelper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'entityTypes', 'operations', 'config', 'guidEmpty', '$popover', '$timeout', '$modal', '$sce', 'yesNo', 'activityTypes', 'transactionTypes', '$anchorScroll', 'blockUI', 'FileUploader', 'DocumentService', 'ModuleService', '$http', 'components',
+        function ($rootScope, $scope, ngToast, $filter, helper, sipHelper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, entityTypes, operations, config, guidEmpty, $popover, $timeout, $modal, $sce, yesNo, activityTypes, transactionTypes, $anchorScroll, blockUI, FileUploader, DocumentService, ModuleService, $http, components) {
             $scope.type = $stateParams.type;
             $scope.id = $location.search().id;
             $scope.parentType = $location.search().ptype;
@@ -49,6 +49,8 @@ angular.module('primeapps')
             $scope.googleMapsApiKey = googleMapsApiKey;
             $scope.currentSectionComponentsTemplate = currentSectionComponentsTemplate;
             $scope.scriptRunning = {};
+            $scope.pageBlockUI = blockUI.instances.get('pageBlockUI');
+            $scope.actionButtonDisabled = false;
 
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
@@ -89,7 +91,8 @@ angular.module('primeapps')
             if ($scope.module.detail_view_type) {
                 if ($scope.module.detail_view_type != 'flat')
                     $scope.tabconfig = true; else $scope.tabconfig = false;
-            } else {
+            }
+            else {
                 if ($rootScope.detailViewType != 'flat')
                     $scope.tabconfig = true; else $scope.tabconfig = false;
             }
@@ -213,8 +216,8 @@ angular.module('primeapps')
                             }
 
                         }).then(function () {
-                            $scope.isActive[$state.params.rptype] = true;
-                        });
+                        $scope.isActive[$state.params.rptype] = true;
+                    });
                 });
             }
 
@@ -270,7 +273,6 @@ angular.module('primeapps')
                     $scope.record['dogum_tarihi'] = $scope.record['calisan']['dogum_tarihi'];
                     $scope.record['calisan_data'] = $scope.record['calisan'];
 
-
                     //Yıllık izin seçilmiş ise işe bağladığı tarih dikkate alınarak 1 yıllık kullandığı izinleri çekmek için tarih hesaplanıyor.
                     if ($scope.record['izin_turu_data']['yillik_izin']) {
                         var jobStart = moment($scope.record['calisan_data']['ise_baslama_tarihi']);
@@ -321,258 +323,277 @@ angular.module('primeapps')
                 };
             };
 
-            ModuleService.getPicklists($scope.module)
-                .then(function (picklists) {
-                    $scope.picklistsModule = picklists;
+            var loadRecord = function () {
+                ModuleService.getPicklists($scope.module)
+                    .then(function (picklists) {
+                        $scope.picklistsModule = picklists;
 
-                    ModuleService.getRecord($scope.module.name, $scope.id)
-                        .then(function (recordData) {
-                            if (Object.keys(recordData.data).length === 0) {
-                                ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                                $state.go('app.dashboard');
-                            }
-                            if ($scope.module.name != 'activities') {
-                                //If Set default value for picklist field, we set dependency value
-                                angular.forEach($scope.module.fields, function (field) {
-                                    ModuleService.setDependency(field, $scope.module, $scope.record, $scope.picklistsModule);
-                                    if (field.default_value && field.data_type == 'picklist') {
-                                        $scope.record[field.name] = $filter('filter')($scope.picklistsModule[field.picklist_id], { id: field.default_value })[0]
-                                        $scope.fieldValueChange(field);
-                                    }
-                                });
-                            }
-
-                            var record = ModuleService.processRecordSingle(recordData.data, $scope.module, $scope.picklistsModule);
-
-                            for (var i = 0; i < $rootScope.approvalProcesses.length; i++) {
-                                var currentProcess = $rootScope.approvalProcesses[i];
-                                if (currentProcess.module_id === $scope.module.id && currentProcess.trigger_time === 'manuel')
-                                    $scope.hasManuelProcess = true;
-
-                                if (currentProcess.module_id === $scope.module.id)
-                                    $scope.currentModuleProcess = currentProcess;
-                            }
-
-                            //encrypted field
-                            for (var f = 0; f < $scope.module.fields.length; f++) {
-                                var field = $scope.module.fields[f];
-                                var showEncryptedInput = false;
-                                if (field.encrypted && field.encryption_authorized_users_list.length > 0 && record[field.name]) {
-                                    for (var p = 0; p < field.encryption_authorized_users_list.length; p++) {
-                                        var encryrptionPermission = field.encryption_authorized_users_list[p];
-                                        if ($rootScope.user.id == parseInt(encryrptionPermission))
-                                            showEncryptedInput = true;
-                                    }
+                        ModuleService.getRecord($scope.module.name, $scope.id)
+                            .then(function (recordData) {
+                                if (Object.keys(recordData.data).length === 0) {
+                                    ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
+                                    $state.go('app.dashboard');
+                                }
+                                if ($scope.module.name != 'activities') {
+                                    //If Set default value for picklist field, we set dependency value
+                                    angular.forEach($scope.module.fields, function (field) {
+                                        ModuleService.setDependency(field, $scope.module, $scope.record, $scope.picklistsModule);
+                                        if (field.default_value && field.data_type == 'picklist') {
+                                            $scope.record[field.name] = $filter('filter')($scope.picklistsModule[field.picklist_id], { id: field.default_value })[0]
+                                            $scope.fieldValueChange(field);
+                                        }
+                                    });
                                 }
 
-                                if (field.encrypted && !showEncryptedInput)
-                                    field.show_lock = true;
-                                else
-                                    field.show_lock = false;
-                            }
+                                var record = ModuleService.processRecordSingle(recordData.data, $scope.module, $scope.picklistsModule);
 
+                                for (var i = 0; i < $rootScope.approvalProcesses.length; i++) {
+                                    var currentProcess = $rootScope.approvalProcesses[i];
+                                    if (currentProcess.module_id === $scope.module.id && currentProcess.trigger_time === 'manuel')
+                                        $scope.hasManuelProcess = true;
 
-                            //Approval Process
-                            if (record.process_status) {
-                                if (record.process_status === 2)
-                                    $scope.isApproved = true;
+                                    if (currentProcess.module_id === $scope.module.id)
+                                        $scope.currentModuleProcess = currentProcess;
+                                }
 
-                                if (record.process_status === 1 || record.process_status === 2 || (record.process_status === 3 && record.updated_by.id != $scope.currentUser.id))
-                                    record.freeze = true;
+                                //encrypted field
+                                for (var f = 0; f < $scope.module.fields.length; f++) {
+                                    var field = $scope.module.fields[f];
+                                    var showEncryptedInput = false;
+                                    if (field.encrypted && field.encryption_authorized_users_list.length > 0 && record[field.name]) {
+                                        for (var p = 0; p < field.encryption_authorized_users_list.length; p++) {
+                                            var encryrptionPermission = field.encryption_authorized_users_list[p];
+                                            if ($rootScope.user.id == parseInt(encryrptionPermission))
+                                                showEncryptedInput = true;
+                                        }
+                                    }
 
-                                ModuleService.getProcess(record.process_id)
-                                    .then(function (response) {
-                                        var approvers = response.data.approvers;
+                                    if (field.encrypted && !showEncryptedInput)
+                                        field.show_lock = true;
+                                    else
+                                        field.show_lock = false;
+                                }
 
-                                        if (approvers.length > 0) {
-                                            var currentApprover = $filter('filter')(approvers, { id: $scope.currentUser.id }, true)[0];
+                                //Approval Process
+                                if (record.process_status) {
+                                    if (record.process_status === 2)
+                                        $scope.isApproved = true;
 
-                                            if (!currentApprover && record.process_status !== 3)
-                                                $scope.waitingForApproval = true;
+                                    if (record.process_status === 1 || record.process_status === 2 || (record.process_status === 3 && record.created_by.id != $scope.currentUser.id))
+                                        record.freeze = true;
 
-                                            if (currentApprover) {
-                                                if (currentApprover.order === record.process_status_order)
-                                                    $scope.isApprovalRecord = true;
-                                                else {
-                                                    if (record.process_status !== 3)
+                                    ModuleService.getProcess(record.process_id)
+                                        .then(function (response) {
+                                            var approvers = response.data.approvers;
+
+                                            if (approvers.length > 0) {
+                                                var currentApprover = $filter('filter')(approvers, { id: $scope.currentUser.id }, true)[0];
+
+                                                if (!currentApprover && record.process_status !== 3)
+                                                    $scope.waitingForApproval = true;
+
+                                                if (currentApprover) {
+                                                    if (currentApprover.order === record.process_status_order)
+                                                        $scope.isApprovalRecord = true;
+                                                    else {
+                                                        if (record.process_status !== 3)
+                                                            $scope.waitingForApproval = true;
+                                                    }
+                                                }
+                                            }
+                                            else {
+                                                if (record.process_status_order === 1) {
+                                                    var customApprover = record.custom_approver;
+                                                    if (customApprover === $rootScope.user.email)
+                                                        $scope.isApprovalRecord = true;
+                                                    else if (customApprover !== $rootScope.user.email && record.process_status !== 3) {
                                                         $scope.waitingForApproval = true;
+                                                    }
+                                                }
+                                                else if (record.process_status_order === 2) {
+                                                    var customApprover2 = record.custom_approver_2;
+                                                    if (customApprover2 === $rootScope.user.email)
+                                                        $scope.isApprovalRecord = true;
+                                                    else if (customApprover2 !== $rootScope.user.email && record.process_status !== 3) {
+                                                        $scope.waitingForApproval = true;
+                                                    }
+                                                }
+                                                else if (record.process_status_order === 3) {
+                                                    var customApprover3 = record.custom_approver_3;
+                                                    if (customApprover3 === $rootScope.user.email)
+                                                        $scope.isApprovalRecord = true;
+                                                    else if (customApprover3 !== $rootScope.user.email && record.process_status !== 3) {
+                                                        $scope.waitingForApproval = true;
+                                                    }
+                                                }
+                                                else if (record.process_status_order === 4) {
+                                                    var customApprover4 = record.custom_approver_4;
+                                                    if (customApprover4 === $rootScope.user.email)
+                                                        $scope.isApprovalRecord = true;
+                                                    else if (customApprover4 !== $rootScope.user.email && record.process_status !== 3) {
+                                                        $scope.waitingForApproval = true;
+                                                    }
+                                                }
+                                                else if (record.process_status_order === 5) {
+                                                    var customApprover5 = record.custom_approver_5;
+                                                    if (customApprover5 === $rootScope.user.email)
+                                                        $scope.isApprovalRecord = true;
+                                                    else if (customApprover5 !== $rootScope.user.email && record.process_status !== 3) {
+                                                        $scope.waitingForApproval = true;
+                                                    }
+                                                }
+
+                                            }
+
+                                            if (record.operation_type === 0 && record.process_status === 2) {
+                                                for (var i = 0; i < response.data.operations_array.length; i++) {
+                                                    var process = response.data.operations_array[i];
+
+                                                    if (process === "update")
+                                                        record.freeze = false;
                                                 }
                                             }
-                                        } else {
-                                            if (record.process_status_order === 1) {
-                                                var customApprover = record.custom_approver;
-                                                if (customApprover === $rootScope.user.email)
-                                                    $scope.isApprovalRecord = true;
-                                                else if (customApprover !== $rootScope.user.email && record.process_status !== 3) {
-                                                    $scope.waitingForApproval = true;
-                                                }
-                                            }
-                                            else if (record.process_status_order === 2) {
-                                                var customApprover2 = record.custom_approver_2;
-                                                if (customApprover2 === $rootScope.user.email)
-                                                    $scope.isApprovalRecord = true;
-                                                else if (customApprover2 !== $rootScope.user.email && record.process_status !== 3) {
-                                                    $scope.waitingForApproval = true;
-                                                }
-                                            }
-                                            else if (record.process_status_order === 3) {
-                                                var customApprover3 = record.custom_approver_3;
-                                                if (customApprover3 === $rootScope.user.email)
-                                                    $scope.isApprovalRecord = true;
-                                                else if (customApprover3 !== $rootScope.user.email && record.process_status !== 3) {
-                                                    $scope.waitingForApproval = true;
-                                                }
-                                            }
-                                            else if (record.process_status_order === 4) {
-                                                var customApprover4 = record.custom_approver_4;
-                                                if (customApprover4 === $rootScope.user.email)
-                                                    $scope.isApprovalRecord = true;
-                                                else if (customApprover4 !== $rootScope.user.email && record.process_status !== 3) {
-                                                    $scope.waitingForApproval = true;
-                                                }
-                                            }
-                                            else if (record.process_status_order === 5) {
-                                                var customApprover5 = record.custom_approver_5;
-                                                if (customApprover5 === $rootScope.user.email)
-                                                    $scope.isApprovalRecord = true;
-                                                else if (customApprover5 !== $rootScope.user.email && record.process_status !== 3) {
-                                                    $scope.waitingForApproval = true;
-                                                }
+
+                                            if (record.operation_type === 1 && record.process_status === 2) {
+                                                record.freeze = false;
                                             }
 
-                                        }
+                                            if ($scope.module.name === 'izinler')
+                                                setRecordValidationData();
 
-                                        if (record.operation_type === 0 && record.process_status === 2) {
-                                            for (var i = 0; i < response.data.operations_array.length; i++) {
-                                                var process = response.data.operations_array[i];
+                                        });
+                                }
 
-                                                if (process === "update")
-                                                    record.freeze = false;
-                                            }
-                                        }
-
-                                        if (record.operation_type === 1 && record.process_status === 2) {
-                                            record.freeze = false;
-                                        }
-
-                                        if ($scope.module.name === 'izinler')
-                                            setRecordValidationData();
-
-                                    });
-                            }
-
-
-                            if ($scope.module.dependencies.length > 0) {
-                                var freezeDependencies = $filter('filter')($scope.module.dependencies, { dependency_type: 'freeze' }, true);
-                                angular.forEach(freezeDependencies, function (dependencie) {
-                                    var freezeFields = $filter('filter')($scope.module.fields, { name: dependencie.parent_field }, true);
-                                    angular.forEach(freezeFields, function (field) {
-                                        angular.forEach(dependencie.values_array, function (value) {
-                                            if (record[field.name] && (value == record[field.name] || value == record[field.name].id))
-                                                record.freeze = true;
+                                if ($scope.module.dependencies.length > 0) {
+                                    var freezeDependencies = $filter('filter')($scope.module.dependencies, { dependency_type: 'freeze' }, true);
+                                    angular.forEach(freezeDependencies, function (dependencie) {
+                                        var freezeFields = $filter('filter')($scope.module.fields, { name: dependencie.parent_field }, true);
+                                        angular.forEach(freezeFields, function (field) {
+                                            angular.forEach(dependencie.values_array, function (value) {
+                                                if (record[field.name] && (value == record[field.name] || value == record[field.name].id))
+                                                    record.freeze = true;
+                                            });
                                         });
                                     });
-                                });
-                            }
+                                }
 
-                            if ($scope.freeze)
-                                record.freeze = true;
+                                if ($scope.freeze)
+                                    record.freeze = true;
 
-                            if ($scope.currentModuleProcess !== null) {
-                                if ($scope.currentModuleProcess.profile_list && $scope.currentModuleProcess.profile_list.length > 0) {
-                                    for (var k = 0; k < $scope.currentModuleProcess.profile_list.length; k++) {
-                                        var profile = $scope.currentModuleProcess.profile_list[k];
-                                        if (parseInt(profile) === $rootScope.user.profile.id)
-                                            record.freeze = false;
+                                if ($scope.currentModuleProcess !== null) {
+                                    if ($scope.currentModuleProcess.profile_list && $scope.currentModuleProcess.profile_list.length > 0) {
+                                        for (var k = 0; k < $scope.currentModuleProcess.profile_list.length; k++) {
+                                            var profile = $scope.currentModuleProcess.profile_list[k];
+                                            if (parseInt(profile) === $rootScope.user.profile.id)
+                                                record.freeze = false;
+                                        }
                                     }
+
+                                    if ($rootScope.user.profile.has_admin_rights)
+                                        record.freeze = false;
+
                                 }
 
-                                if ($rootScope.user.profile.has_admin_rights)
-                                    record.freeze = false;
+                                ModuleService.formatRecordFieldValues(angular.copy(recordData.data), $scope.module, $scope.picklistsModule);
+                                $scope.title = $scope.primaryField.valueFormatted;
 
-                            }
+                                var success = function (record) {
+                                    $scope.record = record;
+                                    $scope.recordState = angular.copy($scope.record);
+                                    ModuleService.setDisplayDependency($scope.module, $scope.record);
 
-                            ModuleService.formatRecordFieldValues(angular.copy(recordData.data), $scope.module, $scope.picklistsModule);
-                            $scope.title = $scope.primaryField.valueFormatted;
+                                    if ($scope.record.currency)
+                                        $scope.currencySymbol = $scope.record.currency.value || $rootScope.currencySymbol;
 
-                            var success = function (record) {
-                                $scope.record = record;
-                                $scope.recordState = angular.copy($scope.record);
-                                ModuleService.setDisplayDependency($scope.module, $scope.record);
+                                    components.run('AfterRecordLoaded', 'Script', $scope, $scope.record);
 
-                                if ($scope.record.currency)
-                                    $scope.currencySymbol = $scope.record.currency.value || $rootScope.currencySymbol;
+                                    if ($scope.currentModuleProcess && $scope.currentModuleProcess.profile_list) {
+                                        if ($scope.currentModuleProcess.profile_list.indexOf($rootScope.user.profile.ID.toString()) > -1)
+                                            $scope.hasProcessRights = true;
+                                        else
+                                            $scope.hasProcessRights = false;
+                                    }
 
-                                components.run('AfterRecordLoaded', 'Script', $scope, $scope.record);
+                                    if ($scope.module.name === 'izinler')
+                                        setRecordValidationData();
+                                };
 
-                                if ($scope.currentModuleProcess && $scope.currentModuleProcess.profile_list) {
-                                    if ($scope.currentModuleProcess.profile_list.indexOf($rootScope.user.profile.ID.toString()) > -1)
-                                        $scope.hasProcessRights = true;
-                                    else
-                                        $scope.hasProcessRights = false;
-                                }
-
-                                if ($scope.module.name === 'izinler')
-                                    setRecordValidationData();
-                            };
-
-                            //generate action buttons
-                            ModuleService.getActionButtons($scope.module.id)
-                                .then(function (actionButtons) {
-                                    $scope.actionButtons = $filter('filter')(actionButtons, function (actionButton) {
-                                        return actionButton.trigger !== 'List' && actionButton.trigger !== 'Form' && actionButton.trigger !== 'Relation';
-                                    }, true);
-                                    //dependency control for action buttons
-                                    angular.forEach($scope.actionButtons, function (item) {
-                                        item.isShown = false;
-                                        if (item.dependent_field) {
-                                            if (record[item.dependent_field] && record[item.dependent_field].labelStr == item.dependent)
+                                //generate action buttons
+                                ModuleService.getActionButtons($scope.module.id)
+                                    .then(function (actionButtons) {
+                                        $scope.actionButtons = $filter('filter')(actionButtons, function (actionButton) {
+                                            return actionButton.trigger !== 'List' && actionButton.trigger !== 'Form' && actionButton.trigger !== 'Relation';
+                                        }, true);
+                                        //dependency control for action buttons
+                                        angular.forEach($scope.actionButtons, function (item) {
+                                            item.isShown = false;
+                                            if (item.dependent_field) {
+                                                if (record[item.dependent_field] && record[item.dependent_field].labelStr == item.dependent)
+                                                    item.isShown = true;
+                                            }
+                                            else {
                                                 item.isShown = true;
-                                        } else {
-                                            item.isShown = true;
-                                        }
+                                            }
+                                        });
                                     });
-                                });
 
-                            if ($scope.relatedToField && record['related_to'] && record[$scope.relatedToField.lookup_relation]) {
-                                var lookupModule = $filter('filter')($rootScope.modules, { id: record[$scope.relatedToField.lookup_relation].id - 900000 }, true)[0];
-                                var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                if ($scope.relatedToField && record['related_to'] && record[$scope.relatedToField.lookup_relation]) {
+                                    var lookupModule = $filter('filter')($rootScope.modules, { id: record[$scope.relatedToField.lookup_relation].id - 900000 }, true)[0];
+                                    var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
 
-                                ModuleService.getRecord(lookupModule.name, record['related_to'], true)
-                                    .then(function (relatedRecord) {
-                                        relatedRecord = relatedRecord.data;
-                                        relatedRecord.primary_value = relatedRecord[lookupModulePrimaryField.name];
-                                        record['related_to'] = relatedRecord;
+                                    ModuleService.getRecord(lookupModule.name, record['related_to'], true)
+                                        .then(function (relatedRecord) {
+                                            relatedRecord = relatedRecord.data;
+                                            relatedRecord.primary_value = relatedRecord[lookupModulePrimaryField.name];
+                                            record['related_to'] = relatedRecord;
 
-                                        success(record);
-                                        $scope.loading = false;
-                                    })
-                                    .catch(function (data) {
-                                        if (data.status === 404) {
-                                            record['related_to'] = null;
                                             success(record);
-                                        }
+                                            $scope.loading = false;
+                                            $scope.refreshing = false;
+                                            $scope.pageBlockUI.stop();
+                                        })
+                                        .catch(function (data) {
+                                            if (data.status === 404) {
+                                                record['related_to'] = null;
+                                                success(record);
+                                            }
 
-                                        $scope.loading = false;
-                                    });
-                            }
-                            else {
-                                success(record);
+                                            $scope.loading = false;
+                                            $scope.refreshing = false;
+                                            $scope.pageBlockUI.stop();
+                                        });
+                                }
+                                else {
+                                    success(record);
+                                    $scope.loading = false;
+                                    $scope.refreshing = false;
+                                    $scope.pageBlockUI.stop();
+                                }
+                            })
+                            .catch(function () {
                                 $scope.loading = false;
-                            }
-                        })
-                        .catch(function () {
-                            $scope.loading = false;
-                        });
+                                $scope.refreshing = false;
+                                $scope.pageBlockUI.stop();
+                            });
 
-                    $scope.yesNo = ModuleService.getYesNo(yesNo);
-                });
+                        $scope.yesNo = ModuleService.getYesNo(yesNo);
+                    });
+            };
+
+            loadRecord();
+
+            $scope.refresh = function () {
+                $scope.refreshing = true;
+                $scope.pageBlockUI.start();
+                loadRecord();
+            };
 
             $scope.changeTab = function (relatedModule) {
                 if (relatedModule.detail_view_type != 'flat') {
                     $scope.tab = relatedModule.id.toString();
                     $scope.activeType = 'flat'
-                } else {
+                }
+                else {
                     $scope.activeType = 'tab';
                 }
 
@@ -723,7 +744,8 @@ angular.module('primeapps')
                                 if (item.dependent_field) {
                                     if (response[item.dependent_field] && response[item.dependent_field] == item.dependent)
                                         item.isShown = true;
-                                } else {
+                                }
+                                else {
                                     item.isShown = true;
                                 }
                             });
@@ -771,7 +793,8 @@ angular.module('primeapps')
                                                                         $scope.waitingForApproval = true;
                                                                 }
                                                             }
-                                                        } else {
+                                                        }
+                                                        else {
                                                             if (record.process_status_order === 1) {
                                                                 var customApprover = record.custom_approver;
                                                                 if (customApprover === $rootScope.user.email)
@@ -815,7 +838,6 @@ angular.module('primeapps')
 
                                                         }
 
-
                                                         if (record.operation_type === 0 && record.process_status === 2) {
                                                             for (var i = 0; i < response.data.operations_array.length; i++) {
                                                                 var process = response.data.operations_array[i];
@@ -829,10 +851,8 @@ angular.module('primeapps')
                                                             record.freeze = false;
                                                         }
 
-
                                                     });
                                             }
-
 
                                             if ($scope.module.dependencies.length > 0) {
                                                 var freezeDependencies = $filter('filter')($scope.module.dependencies, { dependency_type: 'freeze' }, true);
@@ -878,7 +898,8 @@ angular.module('primeapps')
                                                 if (item.dependent_field) {
                                                     if (response[item.dependent_field] && response[item.dependent_field] == item.dependent)
                                                         item.isShown = true;
-                                                } else {
+                                                }
+                                                else {
                                                     item.isShown = true;
                                                 }
                                             });
@@ -914,7 +935,8 @@ angular.module('primeapps')
                                             $scope.updating = false;
                                         });
                                 }, 2000);
-                            } else
+                            }
+                            else
                                 result();
                         }
                         else
@@ -1004,13 +1026,13 @@ angular.module('primeapps')
                 $scope.formModalShown = true;
 
                 $scope.formModal = $scope.formModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/module/moduleFormModal.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false,
-                    tag: 'formModal'
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/module/moduleFormModal.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false,
+                        tag: 'formModal'
+                    });
 
                 $scope.formModal.$promise.then($scope.formModal.show);
             };
@@ -1510,22 +1532,22 @@ angular.module('primeapps')
 
             $scope.showActivityButtons = function () {
                 $scope.activityButtonsPopover = $scope.activityButtonsPopover || $popover(angular.element(document.getElementById('activityButtons')), {
-                    templateUrl: 'view/common/newactivity.html',
-                    placement: 'bottom',
-                    autoClose: true,
-                    scope: $scope,
-                    show: true
-                });
+                        templateUrl: 'view/common/newactivity.html',
+                        placement: 'bottom',
+                        autoClose: true,
+                        scope: $scope,
+                        show: true
+                    });
             };
 
             $scope.showTransactionButtons = function () {
                 $scope.transactionButtonsPopover = $scope.transactionButtonsPopover || $popover(angular.element(document.getElementById('transactionButtons')), {
-                    templateUrl: 'view/common/newtransaction.html',
-                    placement: 'bottom',
-                    autoClose: true,
-                    scope: $scope,
-                    show: true
-                });
+                        templateUrl: 'view/common/newtransaction.html',
+                        placement: 'bottom',
+                        autoClose: true,
+                        scope: $scope,
+                        show: true
+                    });
             };
 
             $scope.getCurrentTime = function () {
@@ -1538,12 +1560,12 @@ angular.module('primeapps')
 
                 var openPdfModal = function () {
                     $scope.PdfModal = $scope.PdfModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/module/modulePdfModal.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false
-                    });
+                            scope: $scope,
+                            templateUrl: 'view/app/module/modulePdfModal.html',
+                            animation: '',
+                            backdrop: 'static',
+                            show: false
+                        });
 
                     $scope.PdfModal.$promise.then($scope.PdfModal.show);
                 };
@@ -1573,7 +1595,8 @@ angular.module('primeapps')
                                     var currentQuoteTemplate = $filter('filter')(quoteTemplate.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
                                     if (currentQuoteTemplate.type === 'none') {
                                         quoteTemplate.isShown = false;
-                                    } else {
+                                    }
+                                    else {
                                         quoteTemplate.isShown = true;
                                     }
                                     if (quoteTemplate.isShown == true) {
@@ -1587,12 +1610,12 @@ angular.module('primeapps')
                             }
                             $scope.quoteTemplate = $scope.quoteTemplates[0];
                             $scope.PdfModal = $scope.PdfModal || $modal({
-                                scope: $scope,
-                                templateUrl: 'view/app/module/modulePdfModal.html',
-                                animation: '',
-                                backdrop: 'static',
-                                show: false
-                            });
+                                    scope: $scope,
+                                    templateUrl: 'view/app/module/modulePdfModal.html',
+                                    animation: '',
+                                    backdrop: 'static',
+                                    show: false
+                                });
 
                             openPdfModal();
                         }
@@ -1600,7 +1623,6 @@ angular.module('primeapps')
                     .catch(function () {
                         $scope.pdfCreating = false;
                     });
-
 
             };
 
@@ -1618,13 +1640,13 @@ angular.module('primeapps')
                 $scope.selectedRelatedModule = relatedModule;
                 $scope.selectedRelatedModule['relatedModuleInModal'] = true;
                 $scope.addModal = $scope.addModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/module/moduleAddModal.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false,
-                    tag: 'relatedModuleInModal'
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/module/moduleAddModal.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false,
+                        tag: 'relatedModuleInModal'
+                    });
 
                 $scope.addModal.$promise.then($scope.addModal.show);
             };
@@ -1640,16 +1662,15 @@ angular.module('primeapps')
 
                 /*Generates and displays modal form for the mail*/
                 $scope.mailModal = $scope.mailModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/email/singleEmailModal.html',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/email/singleEmailModal.html',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 if (!notShow)
                     $scope.mailModal.$promise.then($scope.mailModal.show);
             };
-
 
             $scope.showQuoteEMailModal = function (notShow, email) {
                 if (!$rootScope.system.messaging.SystemEMail && !$rootScope.system.messaging.PersonalEMail) {
@@ -1659,11 +1680,11 @@ angular.module('primeapps')
 
                 /*Generates and displays modal form for the mail*/
                 $scope.mailModal = $scope.mailModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/email/singleEmailModal.html',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/email/singleEmailModal.html',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 if (!notShow)
                     $scope.mailModal.$promise.then($scope.mailModal.show);
@@ -1677,11 +1698,11 @@ angular.module('primeapps')
 
                 /*Generates and displays modal form for the mail*/
                 $scope.smsModal = $scope.smsModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/sms/singleSMSModal.html',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/sms/singleSMSModal.html',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.smsModal.$promise.then($scope.smsModal.show);
             };
@@ -1700,12 +1721,12 @@ angular.module('primeapps')
                 else {
                     $scope.frameUrl = url;
                     $scope.frameModal = $scope.frameModal || $modal({
-                        scope: $scope,
-                        controller: 'ActionButtonFrameController',
-                        templateUrl: 'view/app/actionbutton/actionButtonFrameModal.html',
-                        backdrop: 'static',
-                        show: false
-                    });
+                            scope: $scope,
+                            controller: 'ActionButtonFrameController',
+                            templateUrl: 'view/app/actionbutton/actionButtonFrameModal.html',
+                            backdrop: 'static',
+                            show: false
+                        });
 
                     $scope.frameModal.$promise.then($scope.frameModal.show);
                 }
@@ -1725,12 +1746,12 @@ angular.module('primeapps')
 
             $scope.showTransactionButtons = function () {
                 $scope.transactionButtonsPopover = $scope.transactionButtonsPopover || $popover(angular.element(document.getElementById('transactionButtons')), {
-                    templateUrl: 'view/common/newtransaction.html',
-                    placement: 'bottom',
-                    autoClose: true,
-                    scope: $scope,
-                    show: true
-                });
+                        templateUrl: 'view/common/newtransaction.html',
+                        placement: 'bottom',
+                        autoClose: true,
+                        scope: $scope,
+                        show: true
+                    });
             };
 
             $scope.getmoduledownloadurl = function (fileName, fieldName) {
@@ -1805,12 +1826,12 @@ angular.module('primeapps')
             $scope.openLocationModal = function (filedName) {
                 $scope.filedName = filedName;
                 $scope.locationModal = $scope.frameModal || $modal({
-                    scope: $scope,
-                    controller: 'locationFormModalController',
-                    templateUrl: 'view/app/location/locationFormModal.html',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        controller: 'locationFormModalController',
+                        templateUrl: 'view/app/location/locationFormModal.html',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.locationModal.$promise.then($scope.locationModal.show);
             };
             //webhook request func for action button
@@ -1829,7 +1850,8 @@ angular.module('primeapps')
                                 className: 'success'
                             });
 
-                        } else {
+                        }
+                        else {
                             ngToast.create({
                                 content: $filter('translate')('Module.ActionButtonWebhookFail'),
                                 className: 'warning'
@@ -1841,9 +1863,10 @@ angular.module('primeapps')
 
                 };
 
-
                 var jsonData = {};
+                var headersData = [];
                 var params = action.parameters.split(',');
+                var headers = action.headers.split(',');
                 $scope.webhookRequesting = {};
 
                 $scope.webhookRequesting[action.id] = true;
@@ -1870,12 +1893,71 @@ angular.module('primeapps')
 
                 });
 
+                angular.forEach(headers, function (data) {
+                    var newValue = null;
+                    var tempHeader = data.split('|');
+                    var type = tempHeader[0];
+                    var moduleName = tempHeader[1];
+                    var key = tempHeader[2];
+                    var value = tempHeader[3];
+                    var newHeader = {};
+
+                    switch (type) {
+                        case 'module':
+                            var fieldName = value;
+                            if (moduleName != $scope.module.name) {
+                                if ($scope.record[moduleName])
+                                    newValue = $scope.record[moduleName][fieldName];
+                                else
+                                    newValue = $scope.record[moduleName][fieldName];
+                            }
+                            else {
+                                if ($scope.record[fieldName])
+                                    newValue = $scope.record[fieldName];
+                                else
+                                    newValue = null;
+                            }
+                            break;
+                        case 'static':
+                            switch (value) {
+                                case '{:app:}':
+                                    newValue = $rootScope.user.app_id;
+                                    break;
+                                case '{:tenant:}':
+                                    newValue = $rootScope.user.tenant_id;
+                                    break;
+                                case '{:user:}':
+                                    newValue = $rootScope.user.id;
+                                    break;
+                                default:
+                                    newValue = null;
+                                    break;
+                            }
+                            break;
+                        case 'custom':
+                            newValue = value;
+                            break;
+                        default:
+                            newValue = null;
+                            break;
+                    }
+
+                    newHeader['key'] = key;
+                    newHeader['value'] = newValue;
+                    headersData.push(newHeader);
+                });
+
                 if (action.method_type === 'post') {
                     http.open("POST", action.url, true);
                     if (action.url.indexOf(window.location.host) > -1) {
                         http.setRequestHeader("Authorization", 'Bearer ' + $localStorage.read('access_token'));
                     }
                     http.setRequestHeader("Content-Type", 'application/json');
+
+                    angular.forEach(headersData, function (header) {
+                        http.setRequestHeader(header.key, header.value);
+                    });
+
                     http.send(JSON.stringify(jsonData));
                 }
                 else if (action.method_type === 'get') {
@@ -1900,9 +1982,12 @@ angular.module('primeapps')
                         http.setRequestHeader("Authorization", 'Bearer ' + $localStorage.read('access_token'));
                     }
 
+                    angular.forEach(headersData, function (header) {
+                        http.setRequestHeader(header.key, header.value);
+                    });
+
                     http.send();
                 }
-
 
             };
 
@@ -1943,8 +2028,8 @@ angular.module('primeapps')
                         $scope.approving = false;
                         $scope.waitingForApproval = true;
                     }).catch(function onError() {
-                        $scope.approving = false;
-                    });
+                    $scope.approving = false;
+                });
             }
 
             $scope.rejectProcess = function (message) {
@@ -1963,8 +2048,8 @@ angular.module('primeapps')
                         $scope.record.process_status = 3;
                         $scope.rejectModal.hide();
                     }).catch(function onError() {
-                        $scope.rejecting = false;
-                    });
+                    $scope.rejecting = false;
+                });
             }
 
             $scope.reApproveProcess = function () {
@@ -1978,19 +2063,19 @@ angular.module('primeapps')
                         $scope.record.process_status = 1;
                         $scope.record.process_status_order++;
                     }).catch(function onError() {
-                        $scope.reapproving = false;
-                    });
+                    $scope.reapproving = false;
+                });
             }
 
             $scope.openRejectApprovalModal = function () {
                 $scope.rejectModal = $scope.rejectModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/module/rejectProcessModal.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false,
-                    tag: 'createModal'
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/module/rejectProcessModal.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false,
+                        tag: 'createModal'
+                    });
 
                 $scope.rejectModal.$promise.then($scope.rejectModal.show);
             };
@@ -2040,21 +2125,21 @@ angular.module('primeapps')
                         $scope.record.process_status = 1;
                         $scope.record.process_status_order++;
                     }).catch(function onError(response) {
-                        $scope.manuelApproveRequest = false;
-                        if (response.status === 400) {
-                            if (response.data.model_state && response.data.model_state['filters_not_match'])
-                                ngToast.create({
-                                    content: $filter('translate')('Common.FiltersNotMatched'),
-                                    className: 'warning'
-                                });
-                            if (response.data.model_state && response.data.model_state['approver_not_found']) {
-                                ngToast.create({
-                                    content: $filter('translate')('Common.ApproverNotFound'),
-                                    className: 'warning'
-                                });
-                            }
+                    $scope.manuelApproveRequest = false;
+                    if (response.status === 400) {
+                        if (response.data.model_state && response.data.model_state['filters_not_match'])
+                            ngToast.create({
+                                content: $filter('translate')('Common.FiltersNotMatched'),
+                                className: 'warning'
+                            });
+                        if (response.data.model_state && response.data.model_state['approver_not_found']) {
+                            ngToast.create({
+                                content: $filter('translate')('Common.ApproverNotFound'),
+                                className: 'warning'
+                            });
                         }
-                    });
+                    }
+                });
             };
 
             //converts sales order to sales invoice
@@ -2079,7 +2164,6 @@ angular.module('primeapps')
                         $scope.loading = false;
                     });
             };
-
 
             $scope.convertPurchaseOrder = function () {
                 var convertRequest = {};

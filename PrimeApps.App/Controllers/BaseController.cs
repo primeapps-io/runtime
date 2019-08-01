@@ -90,6 +90,18 @@ namespace PrimeApps.App.Controllers
                 appUser.TimeZone = platformUser.Setting?.TimeZone;
             }
 
+            if (string.IsNullOrEmpty(appUser.Currency))
+                appUser.Culture = "USD";
+
+            if (string.IsNullOrEmpty(appUser.Culture))
+                appUser.Culture = "en-US";
+
+            if (string.IsNullOrEmpty(appUser.Language))
+                appUser.Language = "en";
+
+            if (string.IsNullOrEmpty(appUser.TimeZone))
+                appUser.Language = "America/Chicago";
+
             //var cacheHelper = (ICacheHelper) HttpContext.RequestServices.GetService(typeof(ICacheHelper));
             //var cacheKeyTenantUser = "tenant_user_" + appUser.Id;
             //var tenantUser = cacheHelper.Get<TenantUser>(cacheKeyTenantUser);
