@@ -188,8 +188,8 @@ angular.module('primeapps')
                                 className: 'success'
                             });
 
-                            $scope.userPassword = response.data;
-                            $scope.hideSendEmailToUser = response.data.contains("***");
+                            $scope.userPassword = response.data.password;
+                            $scope.hideSendEmailToUser = response.data.password.contains("***");
                             $scope.addUserForm = false;
                             $scope.addUserModel = {};
                         }
