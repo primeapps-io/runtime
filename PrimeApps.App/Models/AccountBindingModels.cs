@@ -215,13 +215,16 @@ namespace PrimeApps.App.Models
         [Required, JsonProperty("role_id")]
         public int RoleId { get; set; }
 
-        [Required, JsonProperty("app_id")]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        public string Password { get; set; }
+
+        [JsonProperty("dont_send_mail")]
+        public bool DontSendMail { get; set; }
+
+        [JsonProperty("app_id")]
         public int AppId { get; set; }
 
-        [Required, JsonProperty("tenant_id")]
+        [JsonProperty("tenant_id")]
         public int TenantId { get; set; }
-
-        [Required, JsonProperty("dont_send_mail")]
-        public bool DontSendMail { get; set; }
     }
 }
