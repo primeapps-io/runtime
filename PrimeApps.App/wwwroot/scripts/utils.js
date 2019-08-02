@@ -1544,9 +1544,7 @@ angular.module('primeapps')
                     
                     place = place.split(/(?=[A-Z])/).join('_').toLowerCase();
                     type = type.split(/(?=[A-Z])/).join('_').toLowerCase();
-                    
-                    var appConfigs = appConfigs;
-                    
+                     
                     var ModuleService = $injector.get('ModuleService');//Don't remove. It can be used in components.
 
                     var components = $filter('filter')(scope.module.components, function (component) {
