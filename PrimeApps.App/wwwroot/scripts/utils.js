@@ -1541,8 +1541,12 @@ angular.module('primeapps')
         function ($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache, ngToast, $injector, $state, $stateParams, helper) {
             return {
                 run: function (place, type, scope, record, field) {//Don't remove record and field. It can be used in components.
+                    
                     place = place.split(/(?=[A-Z])/).join('_').toLowerCase();
                     type = type.split(/(?=[A-Z])/).join('_').toLowerCase();
+                    
+                    var appConfigs = appConfigs;
+                    
                     var ModuleService = $injector.get('ModuleService');//Don't remove. It can be used in components.
 
                     var components = $filter('filter')(scope.module.components, function (component) {
