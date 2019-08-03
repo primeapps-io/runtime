@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.App.Helpers;
@@ -20,16 +21,20 @@ namespace PrimeApps.App
             services.AddAuthentication("Bearer")
                 .AddIdentityServerAuthentication(options =>
                 {
-                    var authenticationServerURL = configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
-                    if (!string.IsNullOrEmpty(authenticationServerURL))
+                    var authenticationServerUrl = configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
+
+                    if (!string.IsNullOrEmpty(authenticationServerUrl))
                     {
-                        options.Authority = authenticationServerURL;
+                        options.Authority = authenticationServerUrl;
                     }
+
                     var httpsRedirection = configuration.GetValue("AppSettings:HttpsRedirection", string.Empty);
+
                     if (!string.IsNullOrEmpty(httpsRedirection))
                     {
                         options.RequireHttpsMetadata = bool.Parse(httpsRedirection);
                     }
+
                     options.ApiName = "api1";
                 });
 
@@ -43,37 +48,49 @@ namespace PrimeApps.App
                 {
                     options.TokenValidationParameters.NameClaimType = "email";
                     options.SignInScheme = "Cookies";
-                    var authenticationServerURL = configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
-                    if (!string.IsNullOrEmpty(authenticationServerURL))
+
+                    var authenticationServerUrl = configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
+
+                    if (!string.IsNullOrEmpty(authenticationServerUrl))
                     {
-                        options.Authority = authenticationServerURL;
+                        options.Authority = authenticationServerUrl;
                     }
+
                     var clientId = configuration.GetValue("AppSettings:ClientId", string.Empty);
+
                     if (!string.IsNullOrEmpty(clientId))
                     {
                         options.ClientId = clientId;
                     }
+
                     var clientSecret = configuration.GetValue("AppSettings:ClientSecret", string.Empty);
+
                     if (!string.IsNullOrEmpty(clientSecret))
                     {
                         options.ClientSecret = clientSecret;
                     }
+
                     var httpsRedirection = configuration.GetValue("AppSettings:HttpsRedirection", string.Empty);
+
                     if (!string.IsNullOrEmpty(httpsRedirection))
                     {
                         options.RequireHttpsMetadata = bool.Parse(httpsRedirection);
                     }
+
                     options.ResponseType = "code id_token";
                     options.SaveTokens = true;
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.Scope.Add("api1");
                     options.Scope.Add("email");
+                    
                     options.Events.OnRedirectToIdentityProvider = ctx =>
                     {
                         ctx.HttpContext.Request.Query.TryGetValue("preview", out var preview);
+
                         if (!string.IsNullOrEmpty(preview))
                         {
                             var previewApp = AppHelper.GetPreviewApp(preview);
+                            
                             if (!string.IsNullOrEmpty(previewApp))
                             {
                                 if (previewApp.Contains("app"))
@@ -83,6 +100,7 @@ namespace PrimeApps.App
                                 }
                             }
                         }
+
                         return Task.CompletedTask;
                     };
                     options.Events.OnRemoteFailure = context =>
@@ -90,7 +108,7 @@ namespace PrimeApps.App
                         if (context.Failure.Message.Contains("Correlation failed"))
                             context.Response.Redirect("/");
                         else
-                            context.Response.Redirect("/Error");
+                            throw new Exception(context.Failure.Message);
 
                         context.HandleResponse();
 
