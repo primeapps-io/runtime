@@ -16,8 +16,8 @@ COPY . .
 WORKDIR "/src/PrimeApps.App"
 RUN dotnet build "PrimeApps.App.csproj" --no-restore -c Debug -o /app
 
-dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p crypticpassword
-dotnet user-secrets -p PrimeApps.App.csproj set "Kestrel:Certificates:Development:Password" "crypticpassword"
+RUN dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p crypticpassword
+RUN dotnet user-secrets -p PrimeApps.App.csproj set "Kestrel:Certificates:Development:Password" "crypticpassword"
 
 FROM build AS publish
 RUN dotnet publish "PrimeApps.App.csproj" --no-restore --self-contained false -c Debug -o /app
