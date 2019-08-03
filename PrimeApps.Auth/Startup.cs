@@ -63,7 +63,8 @@ namespace PrimeApps.Auth
 				app.UseExceptionHandler("/Home/Error");
 			}
 
-			var forwardHeaders = Configuration.GetValue("AppSettings:ForwardHeaders", string.Empty);			
+			var forwardHeaders = Configuration.GetValue("AppSettings:ForwardHeaders", string.Empty);
+			
 			if (!string.IsNullOrEmpty(forwardHeaders) && bool.Parse(forwardHeaders))
 			{
 				var fordwardedHeaderOptions = new ForwardedHeadersOptions
@@ -78,10 +79,12 @@ namespace PrimeApps.Auth
 			}
 
 			var httpsRedirection = Configuration.GetValue("AppSettings:HttpsRedirection", string.Empty);
+			
 			if (!string.IsNullOrEmpty(httpsRedirection) && bool.Parse(httpsRedirection))
 			{
 				app.UseHsts().UseHttpsRedirection();
 			}
+			
 			var supportedCultures = new[]
 			{
 				new CultureInfo("tr"),
