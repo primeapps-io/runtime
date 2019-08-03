@@ -11,7 +11,7 @@ ENV ASPNETCORE_ENVIRONMENT=Development
 ENV ASPNETCORE_URLS="https://+;http://+"
 ENV ASPNETCORE_HTTPS_PORT=443
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password="crypticpassword"
-ENV ASPNETCORE_Kestrel__Certificates__Default__Path="/root/.aspnet/https/aspnetapp.pfx"
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path="aspnetapp.pfx"
 
 FROM microsoft/dotnet:2.2-sdk-stretch AS build
 WORKDIR /src
