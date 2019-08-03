@@ -1,6 +1,7 @@
 FROM microsoft/dotnet:2.2-aspnetcore-runtime-stretch-slim AS base
 WORKDIR /app
 EXPOSE 80
+EXPOSE 443
 
 ENV ASPNETCORE_ENVIRONMENT Development
 ENV DOTNET_RUNNING_IN_CONTAINER=true
@@ -15,15 +16,14 @@ COPY . .
 WORKDIR "/src/PrimeApps.Auth"
 RUN dotnet build "PrimeApps.Auth.csproj" --no-restore -c Debug -o /app
 
+RUN dotnet dev-certs https -ep ${HOME}/.aspnet/https/aspnetapp.pfx -p crypticpassword
+RUN dotnet user-secrets -p PrimeApps.Auth.csproj set "Kestrel:Certificates:Development:Password" "crypticpassword"
+
 FROM build AS publish
 RUN dotnet publish "PrimeApps.Auth.csproj" --no-restore --self-contained false -c Debug -o /app
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-
-# Install Visual Studio Remote Debugger
-# RUN apt-get update && apt-get install -y --no-install-recommends unzip
-# RUN curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l ~/vsdbg  
 
 ENTRYPOINT ["dotnet","PrimeApps.Auth.dll"]
