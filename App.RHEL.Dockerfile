@@ -20,9 +20,9 @@ COPY ["PrimeApps.Model/PrimeApps.Model.csproj", "PrimeApps.Model/"]
 RUN dotnet restore "PrimeApps.App/PrimeApps.App.csproj"
 COPY . .
 
-ADD PrimeApps.App/ca.crt /usr/local/share/ca-certificates/ca.crt
-RUN chmod 644 /usr/local/share/ca-certificates/ca.crt
-RUN update-ca-certificates
+ADD PrimeApps.App/ca.crt /usr/local/share/ca-certificates/kubernetes_ca.crt
+RUN chmod 777 /usr/local/share/ca-certificates/kubernetes_ca.crt
+RUN update-ca-certificates --fresh
 
 WORKDIR "/src/PrimeApps.App"
 RUN dotnet build "PrimeApps.App.csproj" --no-restore -c Debug -o /app
