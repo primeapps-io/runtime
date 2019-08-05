@@ -10,7 +10,7 @@ ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 ENV ASPNETCORE_ENVIRONMENT=Development
 ENV ASPNETCORE_URLS="https://+;http://+"
 ENV ASPNETCORE_HTTPS_PORT=443
-ENV ASPNETCORE_Kestrel__Certificates__Default__Password="crypticpassword"
+ENV ASPNETCORE_Kestrel__Certificates__Default__Password="1q2w3e4r5t"
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path="aspnetapp.pfx"
 
 FROM microsoft/dotnet:2.2-sdk-stretch AS build
