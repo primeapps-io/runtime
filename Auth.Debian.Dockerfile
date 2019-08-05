@@ -23,6 +23,10 @@ RUN dotnet build "PrimeApps.Auth.csproj" --no-restore -c Debug -o /app
 FROM build AS publish
 RUN dotnet publish "PrimeApps.Auth.csproj" --no-restore --self-contained false -c Debug -o /app
 
+ADD ca.crt /usr/local/share/ca-certificates/ca.crt
+RUN chmod 644 /usr/local/share/ca-certificates/ca.crt
+RUN update-ca-certificates
+
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .

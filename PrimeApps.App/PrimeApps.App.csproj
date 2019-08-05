@@ -48,6 +48,11 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
+        <Content Include="ca.crt">
+            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
         <Content Update="appsettings.Development.json" CopyToPublishDirectory="false"/>
     </ItemGroup>
 </Project>
