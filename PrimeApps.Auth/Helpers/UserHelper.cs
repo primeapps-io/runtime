@@ -32,6 +32,7 @@ namespace PrimeApps.Auth.Helpers
         private readonly IHttpContextAccessor _context;
         private readonly IGiteaHelper _giteaHelper;
 
+
         public IConfiguration _configuration { get; }
 
         public UserHelper(IHttpContextAccessor context,

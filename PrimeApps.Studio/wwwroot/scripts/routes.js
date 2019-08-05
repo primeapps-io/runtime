@@ -1049,7 +1049,7 @@ angular.module('primeapps')
                     url: '/releases',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/release/release.html',
+                            templateUrl: cdnUrl + 'view/app/manage/release/release.html',
                             controller: 'ReleaseController'
                         }
                     },
@@ -1064,8 +1064,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/release/releaseController.js',
-                                cdnUrl + 'view/app/release/releaseService.js'
+                                cdnUrl + 'view/app/manage/release/releaseController.js',
+                                cdnUrl + 'view/app/manage/release/releaseService.js'
                             ]);
                         }]
                     }
@@ -1075,7 +1075,7 @@ angular.module('primeapps')
                     url: '/releaseDetail?:id',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/release/releaseDetail.html',
+                            templateUrl: cdnUrl + 'view/app/manage/release/releaseDetail.html',
                             controller: 'ReleaseDetailController'
                         }
                     },
@@ -1090,8 +1090,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/release/releaseDetailController.js',
-                                cdnUrl + 'view/app/release/releaseService.js'
+                                cdnUrl + 'view/app/release/manage/releaseDetailController.js',
+                                cdnUrl + 'view/app/release/manage/releaseService.js'
                             ]);
                         }]
                     }

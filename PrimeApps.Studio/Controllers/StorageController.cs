@@ -222,7 +222,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> RecordFileUpload()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("record", OrganizationId, (int)AppId);
+            StringValues bucketName = UnifiedStorage.GetPath("record", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
 
             //if it is successfully parsed continue.
             if (parser.Success)

@@ -33,7 +33,7 @@ namespace PrimeApps.Auth.Helpers
             _serviceScopeFactory = serviceScopeFactory;
         }
 
-        
+
         public async Task CreateUser(string email, string password, string firstName, string lastName)
         {
             var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
@@ -57,7 +57,8 @@ namespace PrimeApps.Auth.Helpers
                     ["password"] = password,
                     ["send_notify"] = false,
                     ["source_id"] = 0,
-                    ["username"] = userName
+                    ["username"] = userName,
+                    ["must_change_password"] = false
                 };
 
                 SetHeaders(client: httpClient, type: "basic", email: email);
@@ -89,20 +90,16 @@ namespace PrimeApps.Auth.Helpers
                 {
                     using (var httpClient = new HttpClient())
                     {
-                        var request = new JObject
-                        {
-                            ["name"] = "primeapps"
-                        };
-
                         SetHeaders(httpClient, "basic", email, password);
                         var userName = GetUserName(email);
                         var giteaUrl = _configuration.GetValue("AppSettings:GiteaUrl", string.Empty);
                         if (!string.IsNullOrEmpty(giteaUrl))
                         {
-                            var response = await httpClient.PostAsync(giteaUrl + "/api/v1/users/" + userName + "/tokens", new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
+                            var response = await httpClient.GetAsync(giteaUrl + "/api/v1/users/" + userName + "/tokens");
                             var resp = await response.Content.ReadAsStringAsync();
-                            var giteaResponse = JObject.Parse(resp);
-                            return giteaResponse["sha1"].ToString();
+                            var giteaResponse = JArray.Parse(resp);
+
+                            return giteaResponse.Count > 0 ? giteaResponse[0]["sha1"].ToString() : string.Empty;
                         }
                         else
                             return string.Empty;
@@ -178,7 +175,7 @@ namespace PrimeApps.Auth.Helpers
                     ["name"] = "primeapps"
                 };
 
-                SetHeaders(client: httpClient, type: "basic", email: email);
+                SetHeaders(httpClient, "basic", email, password);
 
                 var giteaUrl = _configuration.GetValue("AppSettings:GiteaUrl", string.Empty);
                 var response = new HttpResponseMessage();

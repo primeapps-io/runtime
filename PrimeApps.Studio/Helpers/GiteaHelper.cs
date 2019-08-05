@@ -351,7 +351,7 @@ namespace PrimeApps.Studio.Helpers
                     ["full_name"] = fullName
                 };
 
-                SetHeaders(client: httpClient, type: type, email: email);
+                SetHeaders(client: httpClient, type: type);
 
                 var giteaUrl = _configuration.GetValue("AppSettings:GiteaUrl", string.Empty);
                 var response = new HttpResponseMessage();
@@ -403,7 +403,7 @@ namespace PrimeApps.Studio.Helpers
                             ["readme"] = "Default"
                         };
 
-                        SetHeaders(client: httpClient, type: "token", email: appUser.Email);
+                        SetHeaders(client: httpClient, type: "token");
 
                         var url = "/api/v1/org/" + organization.Name + "/repos";
 

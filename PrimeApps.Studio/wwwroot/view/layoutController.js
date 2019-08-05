@@ -65,27 +65,40 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
         $scope.goLive = function (update) {
             Swal.fire({
-                title: 'Go Live',
-                type: 'info',
                 html:
-                    'Do you approve the package creation ? </br> </br>' +
+                    '<div style="\n' +
+                    '    font-weight: 700;\n' +
+                    '    color: #0d6faa;\n' +
+                    '    font-size: 15px;\n' +
+                    '    padding-top: 15px;\n' +
+                    '    text-align: left;\n' +
+                    '    padding-bottom: 15px;\n' +
+                    '    padding-left: 10px;\n' +
+                    '    border-bottom: 3px solid #80808017;\n' +
+                    '">Go Live!</div>' +
+                    '<div style="    padding-top: 15px;\n' +
+                    '    text-align: left;\n' +
+                    '    font-weight: 600;\n' +
+                    '    font-size: 13px;">We\'ll go ahead and prepare a release package for you. You can track the status of your release packages at Manage-Release Packages. </br> </br>' +
                     '<div class="form-group" ng-controller="LayoutController">' +
                     '<div class="row">' +
-                    '<div class="col-sm-12" style="padding-left: 0;">' +
-                    '<label class="radio-inline newinput">' +
-                    '<input name="type" type="radio" checked value="package"> Prepare downloadable package <span></span>' +
-                    '</label>' +
-                    '<label class="radio-inline newinput">' +
+                    '<div class="col-sm-12" style="padding-left: 14px;">' +
+                    '<label class="radio-inline newinput go-live-input" style="padding-bottom: 10px;"><input name="type" type="radio" checked="" value="package"> Publish the app to PrimeApps Cloud after the package is prepared <span></span></label>' +
+                    '<label class="radio-inline newinput go-live-input">' +
                     '<input name="type" type="radio" value="publish"> Automatically publish to PrimeApps cloud <span></span>' +
                     '</label>' +
                     '</div>' +
                     '</div>' +
+                    '</div>' +
                     '</div>',
                 showCloseButton: true,
-                showCancelButton: true,
+                confirmButtonClass: 'go-live-confirm',
                 focusConfirm: false,
-                confirmButtonText: '<i class="fa fa-rocket"></i> Go',
-                cancelButtonText: 'Cancel'
+                width: '60em',
+                customClass: {
+                    container: 'go-live'
+                },
+                confirmButtonText: ' Go Live !'
             }).then(function (evt) {
                 if (evt.value) {
                     if ($scope.type === 'package') {

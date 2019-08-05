@@ -331,7 +331,7 @@ namespace PrimeApps.Studio.Controllers
             if (result < 0)
                 return BadRequest("An error occurred while creating an organization");
 
-            Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateOrganization(model.Name, model.Label, AppUser.Email, Request.Cookies["gitea_token"]));
+            Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateOrganization(model.Name, model.Label, AppUser.Email, "token"));
 
             return Ok(organization.Id);
         }
@@ -398,7 +398,7 @@ namespace PrimeApps.Studio.Controllers
                 using (var httpClient = new HttpClient())
                 {
                     var platformUser = await _platformUserRepository.GetAsync(model.Email);
-                    
+
                     if (platformUser == null)
                     {
                         var token = await HttpContext.GetTokenAsync("access_token");
@@ -409,16 +409,16 @@ namespace PrimeApps.Studio.Controllers
                         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Request.Headers["Authorization"].ToString().Substring("Basic ".Length).Trim());
 
                         model.AppName = appInfo.Name;
-                    
+
                         var json = JsonConvert.SerializeObject(model);
                         var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
 
                         if (!response.IsSuccessStatusCode)
                             return BadRequest(response);
-                        
+
                         platformUser = await _platformUserRepository.GetAsync(model.Email);
                     }
-                    
+
                     var studioUser = await _studioUserRepository.GetWithOrganizations(platformUser.Id);
 
                     if (studioUser == null)
@@ -455,7 +455,7 @@ namespace PrimeApps.Studio.Controllers
                     }
                 }
             }
-            
+
             return StatusCode(201, new {password = password});
         }
 
@@ -568,7 +568,7 @@ namespace PrimeApps.Studio.Controllers
 
             return Ok(result);
         }
-        
+
         [Route("is_user_exist"), HttpGet]
         public async Task<IActionResult> IsUserExist(string email)
         {
