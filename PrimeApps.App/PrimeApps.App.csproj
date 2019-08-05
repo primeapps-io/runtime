@@ -43,6 +43,11 @@
         <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj"/>
     </ItemGroup>
     <ItemGroup>
-        <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never"/>
+        <Content Include="aspnetapp.pfx">
+            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Update="appsettings.Development.json" CopyToPublishDirectory="false"/>
     </ItemGroup>
 </Project>

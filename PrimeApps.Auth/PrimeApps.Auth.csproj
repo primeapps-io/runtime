@@ -24,9 +24,14 @@
         <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj"/>
     </ItemGroup>
     <ItemGroup>
-        <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never"/>
+        <EmbeddedResource Include="primeapps_id4.pfx"/>
     </ItemGroup>
     <ItemGroup>
-        <EmbeddedResource Include="primeapps_id4.pfx"/>
+        <Content Include="aspnetapp.pfx">
+            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Update="appsettings.Development.json" CopyToPublishDirectory="false"/>
     </ItemGroup>
 </Project>
