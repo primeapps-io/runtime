@@ -50,7 +50,7 @@ namespace PrimeApps.App.Controllers
 
        
 //            if (Request.IsLocal() || previewMode == "app")
-//                await _actionButtonHelper.ProcessScriptFiles(actionButtons, _componentRepository);
+                await _actionButtonHelper.ProcessScriptFiles(actionButtons, _componentRepository);
 
             return Ok(actionButtons);
         }

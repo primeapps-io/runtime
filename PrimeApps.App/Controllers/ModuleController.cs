@@ -89,7 +89,7 @@ namespace PrimeApps.App.Controllers
             previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
 //            if (Request.IsLocal() || previewMode == "app")
-//                await _moduleHelper.ProcessScriptFiles(modules, _componentRepository);
+               await _moduleHelper.ProcessScriptFiles(modules, _componentRepository);
 
             return modules;
         }
