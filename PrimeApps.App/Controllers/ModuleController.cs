@@ -88,7 +88,7 @@ namespace PrimeApps.App.Controllers
             var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
             previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
-           if (previewMode == "app")
+           if (previewMode == "tenant")
                await _moduleHelper.ProcessScriptFiles(modules, _componentRepository);
 
             return modules;
