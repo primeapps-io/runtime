@@ -48,8 +48,9 @@ namespace PrimeApps.App.Controllers
             var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
             previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
-            if (Request.IsLocal() || previewMode == "app")
-                await _actionButtonHelper.ProcessScriptFiles(actionButtons, _componentRepository);
+       
+//            if (Request.IsLocal() || previewMode == "app")
+//                await _actionButtonHelper.ProcessScriptFiles(actionButtons, _componentRepository);
 
             return Ok(actionButtons);
         }
