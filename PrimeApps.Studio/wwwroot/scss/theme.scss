@@ -2730,36 +2730,18 @@ button, select {
 
         svg {
           height: 100%;
-
-          .st0 {
-            fill: #FFF;
-          }
-
-          .st1 {
-            fill: rgba(255, 255, 255, 0.75);
-          }
-
-          .st2 {
-            fill: #FCAD2D;
-          }
-
-          .st3 {
-            fill: #F06933;
-          }
-
-          .st4 {
-            fill: #E89728;
-          }
-
-          .st5 {
-            fill: #0D6FAA;
-          }
+          .prime{fill:rgba(255,255,255,1);}
+          .icon1{fill:#FAAC2C;}
+          .icon2{fill:#EF6A33;}
+          .icon3{fill:transparent;}
+          .icon4{fill:transparent;}
+          .apps{fill:rgba(255,255,255,.5);}
         }
 
         .logo-icon {
           position: absolute;
           height: 100%;
-          left: 11%;
+          left: 10%;
         }
       }
 
