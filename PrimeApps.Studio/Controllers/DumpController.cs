@@ -1,60 +1,98 @@
-﻿using Hangfire;
+﻿using System.IO;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Jobs;
 
 namespace PrimeApps.Studio.Controllers
 {
-    [Route("api/dump"), Authorize(AuthenticationSchemes = "Bearer"), ActionFilters.CheckHttpsRequire, ResponseCache(CacheProfileName = "Nocache")]
-    public class DumpController : ApiBaseController
+    [Route("api/dump"), ActionFilters.CheckHttpsRequire, ResponseCache(CacheProfileName = "Nocache")]
+    public class DumpController : BaseController
     {
+        public static int OrganizationId { get; set; }
         private IPosgresHelper _posgresHelper;
         private IConfiguration _configuration;
+        private IAppDraftRepository _appDraftRepository;
+        private IHostingEnvironment _hostingEnvironment;
 
-        public DumpController(IPosgresHelper posgresHelper, IConfiguration configuration)
+        public DumpController(IPosgresHelper posgresHelper, IConfiguration configuration, IAppDraftRepository appDraftRepository, IHostingEnvironment hostingEnvironment)
         {
             _posgresHelper = posgresHelper;
             _configuration = configuration;
+            _appDraftRepository = appDraftRepository;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            SetContext(context);
+            if (context.HttpContext.Request.Path.Value != "/api/dump/download")
+                OrganizationId = SetOrganization(context);
         }
 
-        [Route("create"), HttpPost]
+        [Route("create"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult Create([FromBody]JObject request)
         {
-            if (string.IsNullOrEmpty(request["app_ids"].ToString()) || !request["app_ids"].HasValues)
-                return BadRequest("app_ids is required.");
+            if (request["app_id"].IsNullOrEmpty())
+                return BadRequest("app_id is required.");
 
-            if (request["app_ids"].GetType() != typeof(JArray))
-                return BadRequest("app_ids not in valid format.");
+            if (!int.TryParse(request["app_id"].ToString(), out var appIdParsed))
+                return BadRequest("app_id must be a integer.");
 
-            if (string.IsNullOrEmpty(request["repo_name"].ToString()))
-                return BadRequest("repo_name is required.");
+            request["app_id"] = appIdParsed;
+            var organizationAppIds = _appDraftRepository.GetAppIdsByOrganizationId(OrganizationId);
 
-            if (((JArray)request["app_ids"]).Count < 1)
-                return BadRequest("app_ids should not be empty.");
+            if (!organizationAppIds.Contains(appIdParsed))
+                return Unauthorized();
 
-            foreach (var id in request["app_ids"])
-            {
-                var result = int.TryParse(id.ToString(), out var parsedId);
-
-                if (!result)
-                    return BadRequest("App id: " + id + " can not parsed in app_ids.");
-            }
-
-            var jobId = BackgroundJob.Enqueue<Dump>(dump => dump.Run(request));
+            var jobId = BackgroundJob.Enqueue<Dump>(dump => dump.Create(request));
 
             return Ok("Database dump process has been started. You'll be notified when finished. Job: " + jobId);
         }
 
-        [Route("test"), HttpPost]
+        [Route("restore"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
+        public IActionResult Restore([FromBody]JObject request)
+        {
+            if (request["app_id"].IsNullOrEmpty())
+                return BadRequest("app_id is required.");
+
+            if (!int.TryParse(request["app_id"].ToString(), out var appIdParsed))
+                return BadRequest("app_id must be a integer.");
+
+            if (!request["app_id_target"].IsNullOrEmpty())
+            {
+                if (!int.TryParse(request["app_id_target"].ToString(), out var appIdTargetParsed))
+                    return BadRequest("app_id_target must be a integer.");
+
+                request["app_id_target"] = appIdTargetParsed;
+            }
+
+            request["app_id"] = appIdParsed;
+            var organizationAppIds = _appDraftRepository.GetAppIdsByOrganizationId(OrganizationId);
+
+            if (!organizationAppIds.Contains(appIdParsed))
+                return Unauthorized();
+
+            var jobId = BackgroundJob.Enqueue<Dump>(dump => dump.Restore(request));
+
+            return Ok("Database dump restore process has been started. You'll be notified when finished. Job: " + jobId);
+        }
+
+        [Route("download")]
+        public IActionResult Download([FromQuery]int appId)
+        {
+            var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);
+
+            return PhysicalFile(Path.Combine(dumpDirectory, $"app{appId}.dmp"), "text/plain", $"app{appId}.dmp");
+        }
+
+        [Route("test"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult Test([FromBody]JObject request)
         {
             var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
 using System;
 using System.IO;
 using Microsoft.Extensions.Configuration;
@@ -21,34 +20,60 @@ namespace PrimeApps.Studio.Jobs
         }
 
         [QueueCustom]
-        public void Run(JObject request)
+        public void Create(JObject request)
         {
             var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);
+            var appId = (int)request["app_id"];
 
             if (!Directory.Exists(dumpDirectory))
                 Directory.CreateDirectory(dumpDirectory);
 
-            foreach (var id in request["app_ids"])
+            try
             {
-                try
-                {
-                    _posgresHelper.Dump("StudioDBConnection", $"app{id}", dumpDirectory, dumpDirectory);
-                }
-                catch (Exception ex)
-                {
-                    var notification = new Helpers.Email(_configuration, null, "app" + id + " Error", "app" + id + " has error");
-                    notification.AddRecipient(request["notification_email"].ToString());
-                    notification.AddToQueue("notifications@primeapps.io", "PrimeApps", null, null, ex.Message + id + " Error", "app" + id + " has error");
+                _posgresHelper.Dump("StudioDBConnection", $"app{appId}", dumpDirectory, dumpDirectory);
+            }
+            catch (Exception ex)
+            {
+                var notification = new Helpers.Email(_configuration, null, "app" + appId + " Error", "app" + appId + " has error");
+                notification.AddRecipient(request["notification_email"].ToString());
+                notification.AddToQueue("notifications@primeapps.io", "PrimeApps", null, null, ex.Message + appId + " Error", "app" + appId + " has error");
 
-                    ErrorHandler.LogError(ex);
-                }
+                ErrorHandler.LogError(ex);
             }
 
             if (!request["notification_email"].IsNullOrEmpty())
             {
-                var notification = new Helpers.Email(_configuration, null, "Database Dump Ready", "Database dump is ready!");
+                var notification = new Helpers.Email(_configuration, null, "Database Dump Ready", "Database dump is ready.");
+                notification.AddRecipient((string)request["notification_email"]);
+                notification.AddToQueue("notifications@primeapps.io", "PrimeApps", null, null, "Database dump is ready.", "Database Dump Ready");
+            }
+        }
+
+        [QueueCustom]
+        public void Restore(JObject request)
+        {
+            var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);
+            var appId = (int)request["app_id"];
+            var appIdTarget = !request["app_id_target"].IsNullOrEmpty() ? (int)request["app_id_target"] : 0;
+
+            try
+            {
+                _posgresHelper.Restore("PlatformDBConnection", $"app{appId}", dumpDirectory, appIdTarget > 0 ? $"app{appIdTarget}" : "", dumpDirectory);
+            }
+            catch (Exception ex)
+            {
+                var notification = new Helpers.Email(_configuration, null, "app" + appId + " Error", "app" + appId + " has error");
+                notification.AddRecipient((string)request["notification_email"]);
+                notification.AddToQueue("notifications@primeapps.io", "PrimeApps", null, null, ex.Message + appId + " Error", "app" + appId + " has error");
+
+                ErrorHandler.LogError(ex);
+            }
+
+            if (!request["notification_email"].IsNullOrEmpty())
+            {
+                var notification = new Helpers.Email(_configuration, null, "Database Dump Restored", "Database dump is restored.");
                 notification.AddRecipient(request["notification_email"].ToString());
-                notification.AddToQueue("notifications@primeapps.io", "PrimeApps", null, null, "Database Dump Ready", "Database Dump Ready");
+                notification.AddToQueue("notifications@primeapps.io", "PrimeApps", null, null, "Database dump is restored.", "Database Dump Restored");
             }
         }
     }

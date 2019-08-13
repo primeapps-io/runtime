@@ -51,7 +51,8 @@ namespace PrimeApps.Studio.Helpers
                 {
                     if (!string.IsNullOrEmpty(logDirectory))
                     {
-                        var sw = new StreamWriter($"{logDirectory + Path.DirectorySeparatorChar + databaseName}_create.log");
+                        var path = Path.Combine(logDirectory, $"{databaseName}_create.log");
+                        var sw = new StreamWriter(path);
                         sw.WriteLine(reader.ReadToEnd());
                         sw.Close();
                     }
@@ -90,7 +91,8 @@ namespace PrimeApps.Studio.Helpers
                 {
                     if (!string.IsNullOrEmpty(logDirectory))
                     {
-                        var sw = new StreamWriter($"{logDirectory + Path.DirectorySeparatorChar + databaseName}_drop.log");
+                        var path = Path.Combine(logDirectory, $"{databaseName}_drop.log");
+                        var sw = new StreamWriter(path);
                         sw.WriteLine(reader.ReadToEnd());
                         sw.Close();
                     }
@@ -110,7 +112,7 @@ namespace PrimeApps.Studio.Helpers
             if (string.IsNullOrEmpty(databaseName))
                 databaseName = npgsqlConnection.Database;
 
-            var dumpFile = $"{dumpDirectory + Path.DirectorySeparatorChar + databaseName}.dmp";
+            var dumpFile = Path.Combine(dumpDirectory, $"{databaseName}.dmp");
 
             if (File.Exists(dumpFile))
                 File.Delete(dumpFile);
@@ -118,7 +120,7 @@ namespace PrimeApps.Studio.Helpers
             var postgresPath = _configuration.GetValue("AppSettings:PostgresPath", string.Empty);
             var fileName = !string.IsNullOrEmpty(postgresPath) ? postgresPath + "pg_dump" : "pg_dump";
 
-            var arguments = $"-h {npgsqlConnection.Host} -U {npgsqlConnection.Username} -p {npgsqlConnection.Port} -Fc {databaseName} -f {dumpFile}";
+            var arguments = $"-h {npgsqlConnection.Host} -U {npgsqlConnection.Username} -p {npgsqlConnection.Port} -Fc {databaseName} -f {dumpFile} --clean --no-acl --no-owner";
 
             var psi = new ProcessStartInfo();
             psi.FileName = fileName;
@@ -134,7 +136,8 @@ namespace PrimeApps.Studio.Helpers
                 {
                     if (!string.IsNullOrEmpty(logDirectory))
                     {
-                        var sw = new StreamWriter($"{logDirectory + Path.DirectorySeparatorChar + databaseName}_dump.log");
+                        var path = Path.Combine(logDirectory, $"{databaseName}_dump.log");
+                        var sw = new StreamWriter(path);
                         sw.WriteLine(reader.ReadToEnd());
                         sw.Close();
                     }
@@ -154,7 +157,7 @@ namespace PrimeApps.Studio.Helpers
             if (string.IsNullOrEmpty(databaseName))
                 databaseName = npgsqlConnection.Database;
 
-            var dumpFile = $"{dumpDirectory + Path.DirectorySeparatorChar + databaseName}.dmp";
+            var dumpFile = Path.Combine(dumpDirectory, $"{databaseName}.dmp");
             var postgresPath = _configuration.GetValue("AppSettings:PostgresPath", string.Empty);
             var fileName = !string.IsNullOrEmpty(postgresPath) ? postgresPath + "pg_restore" : "pg_restore";
 
@@ -177,7 +180,8 @@ namespace PrimeApps.Studio.Helpers
                 {
                     if (!string.IsNullOrEmpty(logDirectory))
                     {
-                        var sw = new StreamWriter($"{logDirectory + Path.DirectorySeparatorChar + targetDatabaseName}_restore.log");
+                        var path = Path.Combine(logDirectory, $"{databaseName}_restore.log");
+                        var sw = new StreamWriter(path);
                         sw.WriteLine(reader.ReadToEnd());
                         sw.Close();
                     }
