@@ -11,8 +11,9 @@ RUN dotnet build "PrimeApps.Auth.csproj" --no-restore -c Debug -o /app
 FROM build AS publish
 RUN dotnet publish "PrimeApps.Auth.csproj" --no-restore -c Debug --self-contained false /p:MicrosoftNETPlatformLibrary=Microsoft.NETCore.App -o  /app
 
-FROM registry.access.redhat.com/dotnet/dotnet-22-runtime-rhel7  AS base
+FROM registry.centos.org/dotnet/dotnet-22-runtime-centos7  AS base
 SHELL ["/bin/bash", "-c"]
+WORKDIR /app
 COPY --from=publish /app .
 
 ENV DOTNET_RUNNING_IN_CONTAINER=true
@@ -27,8 +28,10 @@ ENV ASPNETCORE_HTTPS_PORT=443
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password="1q2w3e4r5t"
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path="aspnetapp.pfx"
 
-#COPY ca.crt /etc/pki/ca-trust/source/anchors/kubernetes_ca.crt
-#RUN update-ca-trust extract
+USER root
+RUN yum install ca-certificates && update-ca-trust force-enable
+RUN cp ca.crt /etc/pki/ca-trust/source/anchors/kubernetes_ca.crt
+RUN update-ca-trust extract
 
 FROM base AS final
 CMD ["dotnet","PrimeApps.Auth.dll"]
