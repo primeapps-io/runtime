@@ -1,17 +1,17 @@
 FROM microsoft/dotnet:2.2-sdk-stretch AS build
 WORKDIR /src
-COPY ["PrimeApps.Auth/PrimeApps.Auth.csproj", "PrimeApps.Auth/"]
+COPY ["PrimeApps.App/PrimeApps.App.csproj", "PrimeApps.App/"]
 COPY ["PrimeApps.Model/PrimeApps.Model.csproj", "PrimeApps.Model/"]
-RUN dotnet restore "PrimeApps.Auth/PrimeApps.Auth.csproj"
+RUN dotnet restore "PrimeApps.App/PrimeApps.App.csproj"
 COPY . .
 
-WORKDIR "/src/PrimeApps.Auth"
-RUN dotnet build "PrimeApps.Auth.csproj" --no-restore -c Debug -o /app
+WORKDIR "/src/PrimeApps.App"
+RUN dotnet build "PrimeApps.App.csproj" --no-restore -c Debug -o /app
 
 FROM build AS publish
-RUN dotnet publish "PrimeApps.Auth.csproj" --no-restore -c Debug --self-contained false /p:MicrosoftNETPlatformLibrary=Microsoft.NETCore.App -o  /app
+RUN dotnet publish "PrimeApps.App.csproj" --no-restore -c Debug --self-contained false /p:MicrosoftNETPlatformLibrary=Microsoft.NETCore.App -o  /app
 
-FROM registry.centos.org/dotnet/dotnet-22-runtime-centos7  AS base
+FROM registry.centos.org/dotnet/dotnet-22-runtime-centos7 AS base
 SHELL ["/bin/bash", "-c"]
 WORKDIR /app
 COPY --from=publish /app .
@@ -34,4 +34,4 @@ RUN cp ca.crt /etc/pki/ca-trust/source/anchors/kubernetes_ca.crt
 RUN update-ca-trust extract
 
 FROM base AS final
-CMD ["dotnet","PrimeApps.Auth.dll"]
+CMD ["dotnet","PrimeApps.App.dll"]
