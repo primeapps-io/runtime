@@ -162,7 +162,7 @@ namespace PrimeApps.Model.Helpers
                 {
                     if (!string.IsNullOrEmpty(sql))
                     {
-                        var restoreResult = ReleaseHelper.RunHistoryDatabaseScript(PREConnectionString, dbName, sql);
+                        var restoreResult = ReleaseHelper.RunRuntimeScript(PREConnectionString, dbName, sql);
 
                         if (!restoreResult)
                             File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While applying script. Script is : (" + sql + ")" + "\u001b[39m" + Environment.NewLine);
@@ -170,7 +170,9 @@ namespace PrimeApps.Model.Helpers
                 }
 
                 var storagesText = File.ReadAllText(storagePath, Encoding.UTF8);
-                sqls = storagesText.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+                
+                //Burası storage için düzenlenecek
+                /*sqls = storagesText.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
 
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Applying storage scripts..." + Environment.NewLine);
 
@@ -183,7 +185,7 @@ namespace PrimeApps.Model.Helpers
                         if (!restoreResult)
                             File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While applying script. Script is : (" + sql + ")" + "\u001b[39m" + Environment.NewLine);
                     }
-                }
+                }*/
             }
             catch (Exception e)
             {

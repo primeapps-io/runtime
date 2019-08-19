@@ -91,6 +91,12 @@ angular.module('primeapps')
                     chunk_size: '5mb',
                     multipart: true,
                     unique_names: true,
+                    headers: {
+                        'Authorization': 'Bearer ' + $localStorage.read('access_token'),
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id'),
+                        'X-App-Id': $rootScope.currentAppId
+                    },
                     filters: {
                         mime_types: [
                             { title: 'Template Files', extensions: 'doc,docx' }
@@ -145,6 +151,12 @@ angular.module('primeapps')
                     chunk_size: '5mb',
                     multipart: true,
                     unique_names: true,
+                    headers: {
+                        'Authorization': 'Bearer ' + $localStorage.read('access_token'),
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id'),
+                        'X-App-Id': $rootScope.currentAppId
+                    },
                     filters: {
                         mime_types: [
                             { title: 'Template Files', extensions: 'xls,xlsx' }

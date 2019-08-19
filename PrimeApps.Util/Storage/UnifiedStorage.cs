@@ -569,8 +569,18 @@ namespace PrimeApps.Util.Storage
         /// <returns></returns>
         public async Task<bool> ObjectExists(string bucket, string key)
         {
-            var response = await _client.GetAllObjectKeysAsync(bucket, key, null);
-            return response.Count > 0;
+            try
+            {
+                var response = await _client.GetObjectMetadataAsync(bucket, key);
+                return true;
+            }
+            catch (Amazon.S3.AmazonS3Exception e)
+            {
+                if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    return false;
+
+                throw;
+            }
         }
 
         public static string GetMimeType(string name)

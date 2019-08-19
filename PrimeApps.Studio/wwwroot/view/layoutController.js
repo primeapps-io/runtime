@@ -3,7 +3,7 @@
 angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scope', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'operations', 'blockUI', '$cache', 'helps', 'LayoutService', 'AuthService', '$sessionStorage', '$sce', '$modal', 'FileUploader',
     function ($rootScope, $scope, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, $popover, entityTypes, guidEmpty, component, convert, helper, operations, blockUI, $cache, helps, LayoutService, AuthService, $sessionStorage, $sce, $modal, FileUploader) {
         $rootScope.checkUserProfile = helper.checkUserProfile;
-
+        
         angular.element($window).on('load resize', function () {
             if ($window.innerWidth < 1200) {
                 $scope.$apply(function () {
@@ -63,7 +63,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
         $scope.type = "package";
 
-        $scope.goLive = function (update) {
+        $scope.goLiveModal = function (update) {
             Swal.fire({
                 html:
                     '<div style="\n' +

@@ -30,6 +30,9 @@ namespace PrimeApps.Studio.Helpers
         Task All(int appId, bool clearAllRecords, bool autoDistribute, string dbName, int version, int deploymentId);
 
         Task Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, int appId, bool goLive, string dbName, int version, int deploymentId);
+        Task<List<string>> CheckMissingFiles(int version, int appId);
+        Task<List<JObject>> CheckMissingScripts(int version, int appId);
+        Task<bool> IsFirstRelease(int version);
     }
 
     public class ReleaseHelper : IReleaseHelper
@@ -127,7 +130,11 @@ namespace PrimeApps.Studio.Helpers
                         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                     });
 
-                    var result = await Model.Helpers.ReleaseHelper.Diffs(historyDatabases, historyStorages, JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), goLive, dbName, version, deploymentId, _configuration, _storage);
+                    var missingScripts = await CheckMissingScripts(version, appId);
+                    var missingFiles = await CheckMissingFiles(version, appId);
+
+
+                    var result = await Model.Helpers.ReleaseHelper.Diffs(historyDatabases, historyStorages, JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), goLive, dbName, version, deploymentId, _configuration, _storage, missingScripts);
 
                     /*var deployment = await deploymentRepository.Get(deploymentId);
 
@@ -138,6 +145,132 @@ namespace PrimeApps.Studio.Helpers
 
                         await deploymentRepository.Update(deployment);
                     }*/
+                }
+            }
+        }
+
+
+        public async Task<List<string>> CheckMissingFiles(int version, int appId)
+        {
+            var endLoop = false;
+            var scripts = new List<string>();
+            var PREConnectionString = _configuration.GetConnectionString("PlatformDBConnection");
+
+            while (!endLoop)
+            {
+                version = version - 1;
+
+                try
+                {
+                    var query = $"SELECT * FROM \"public\".history_storages WHERE \"public\".history_storages.tag = '{version.ToString()}'";
+                    var result = PrimeApps.Model.Helpers.ReleaseHelper.GetScriptResult(PREConnectionString, $"app{appId}", query);
+
+                    if (result == null)
+                    {
+                        var bucketName = UnifiedStorage.GetPath("releases", "app", appId, version + "/");
+
+
+                        //var objects = await _storage.GetObject(bucketName, "scripts.txt");
+
+                        using (var response = await _storage.GetObject(bucketName, "scripts.txt"))
+                        using (var responseStream = response.ResponseStream)
+                        using (var reader = new StreamReader(responseStream))
+                        {
+                            var script = reader.ReadToEnd();
+                            if (!string.IsNullOrEmpty(script))
+                                scripts.Add(script);
+                        }
+                    }
+                    else
+                        endLoop = true;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+            }
+
+            return scripts;
+        }
+
+        public async Task<List<JObject>> CheckMissingScripts(int version, int appId)
+        {
+            var endLoop = false;
+            var scripts = new List<JObject>();
+            var PREConnectionString = _configuration.GetConnectionString("PlatformDBConnection");
+
+            while (!endLoop)
+            {
+                version = version - 1;
+
+                var query = $"SELECT * FROM \"public\".history_database WHERE \"public\".history_database.tag = '{version.ToString()}'";
+                var result = PrimeApps.Model.Helpers.ReleaseHelper.GetScriptResult(PREConnectionString, $"app{appId}", query);
+
+
+                if (result == null)
+                {
+                    var bucketName = UnifiedStorage.GetPath("releases", "app", appId, version + "/");
+                    //var objects = await _storage.GetObject(bucketName, "scripts.txt");
+                    using (var response = await _storage.GetObject(bucketName, "scripts.txt"))
+                    using (var responseStream = response.ResponseStream)
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        var script = reader.ReadToEnd();
+                        if (!string.IsNullOrEmpty(script))
+                        {
+                            scripts.Add(new JObject {["is_dump"] = false, ["script"] = script});
+                           
+
+                                var dumpExists = await _storage.ObjectExists(bucketName, "dumpSql.txt");
+                                if (dumpExists)
+                                {
+
+                                    using (var dumpResponse = await _storage.GetObject(bucketName, "dumpSql.txt"))
+                                    using (var dumpResponseStream = dumpResponse.ResponseStream)
+                                    using (var dumpReader = new StreamReader(dumpResponseStream))
+                                    {
+                                        var dump = dumpReader.ReadToEnd();
+                                        scripts.Add(new JObject {["is_dump"] = true, ["script"] = dump});
+                                        endLoop = true;
+                                    }
+                                }
+                            
+
+                           
+                        }
+                            
+                    }
+                }
+                else
+                    endLoop = true;
+            }
+
+            return scripts;
+        }
+
+        public async Task<bool> IsFirstRelease(int version)
+        {
+            version = version - 1;
+
+            if (version == 0)
+                return true;
+
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var studioDbContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+
+                using (var releaseRepository = new ReleaseRepository(studioDbContext, _configuration))
+                {
+                    var release = await releaseRepository.Get(version);
+
+                    if (release == null)
+                        return true;
+
+                    if (release.Status == ReleaseStatus.Succeed)
+                        return false;
+
+                    return await IsFirstRelease(version);
                 }
             }
         }

@@ -29,6 +29,11 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.HistoryDatabases.FirstOrDefaultAsync(x => x.CommandId == commandId);
         }
 
+        public async Task<HistoryDatabase> Get(string tag)
+        {
+            return await DbContext.HistoryDatabases.FirstOrDefaultAsync(x => x.Tag == tag);
+        }
+
         public async Task<HistoryDatabase> GetLast()
         {
             return await DbContext.HistoryDatabases.OrderByDescending(x => x.Id).FirstOrDefaultAsync();

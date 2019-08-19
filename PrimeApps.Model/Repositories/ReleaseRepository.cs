@@ -68,7 +68,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<Release>> Find(int appId, PaginationModel paginationModel)
         {
-            var deployments = DbContext.Releases
+            var releases = DbContext.Releases
                 .Include(x => x.AppDraft)
                 .Where(x => !x.Deleted & x.AppId == appId)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
@@ -80,15 +80,15 @@ namespace PrimeApps.Model.Repositories
 
                 if (paginationModel.OrderType == "asc")
                 {
-                    deployments = deployments.OrderBy(x => propertyInfo.GetValue(x, null));
+                    releases = releases.OrderBy(x => propertyInfo.GetValue(x, null));
                 }
                 else
                 {
-                    deployments = deployments.OrderByDescending(x => propertyInfo.GetValue(x, null));
+                    releases = releases.OrderByDescending(x => propertyInfo.GetValue(x, null));
                 }
             }
 
-            return await deployments.ToListAsync();
+            return await releases.ToListAsync();
         }
 
         public async Task<int> Create(Release release)

@@ -1843,7 +1843,7 @@ namespace PrimeApps.Studio.Controllers
             var temp = await _templateRepository.GetById(fileId);
             if (temp != null)
             {
-                return await _storage.Download(UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), temp.Content, temp.Name + type);
+                return await _storage.Download(UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? (int)TenantId : (int)AppId), temp.Content, temp.Name + type);
             }
             else
             {

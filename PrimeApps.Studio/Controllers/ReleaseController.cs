@@ -161,30 +161,37 @@ namespace PrimeApps.Studio.Controllers
 
             await _releaseRepository.Create(releaseModel);
 
-            if (app.Status != PublishStatus.Published)
+            /*
+             * Set version number to history_database and history_storage tables tag column.
+             */
+
+            var dbHistory = await _historyDatabaseRepository.GetLast();
+            if (dbHistory != null && dbHistory.Tag != (int.Parse(releaseModel.Version) - 1).ToString())
+            {
+                dbHistory.Tag = releaseModel.Version;
+                await _historyDatabaseRepository.Update(dbHistory);
+            }
+
+            var storageHistory = await _historyStorageRepository.GetLast();
+            if (storageHistory != null && storageHistory.Tag != (int.Parse(releaseModel.Version) - 1).ToString())
+            {
+                storageHistory.Tag = releaseModel.Version;
+                await _historyStorageRepository.Update(storageHistory);
+            }
+
+
+            if (app.Status != PublishStatus.Published && await _releaseHelper.IsFirstRelease(version))
                 _queue.QueueBackgroundWorkItem(token => _releaseHelper.All((int)AppId, (bool)appOptions["clear_all_records"], model["type"].ToString() == "publish", dbName, version, releaseModel.Id));
             else
             {
                 List<HistoryDatabase> historyDatabase = null;
                 List<HistoryStorage> historyStorages = null;
 
-                var dbHistory = await _historyDatabaseRepository.GetLast();
                 if (dbHistory != null && dbHistory.Tag != (int.Parse(releaseModel.Version) - 1).ToString())
-                {
-                    dbHistory.Tag = releaseModel.Version;
-                    await _historyDatabaseRepository.Update(dbHistory);
-
                     historyDatabase = await _historyDatabaseRepository.GetDiffs(currentBuildNumber.ToString());
-                }
 
-                var storageHistory = await _historyStorageRepository.GetLast();
                 if (storageHistory != null && storageHistory.Tag != (int.Parse(releaseModel.Version) - 1).ToString())
-                {
-                    storageHistory.Tag = releaseModel.Version;
-                    await _historyStorageRepository.Update(storageHistory);
-
                     historyStorages = await _historyStorageRepository.GetDiffs(currentBuildNumber.ToString());
-                }
 
                 _queue.QueueBackgroundWorkItem(token => _releaseHelper.Diffs(historyDatabase, historyStorages, (int)AppId, model["type"].ToString() == "publish", dbName, version, releaseModel.Id));
             }

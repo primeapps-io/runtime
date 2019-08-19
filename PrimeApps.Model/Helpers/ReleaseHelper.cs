@@ -175,9 +175,8 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static async Task<bool> Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, JObject app, string studioSecret, bool goLive, string dbName, int version, int deploymentId, IConfiguration configuration, IUnifiedStorage storage)
+        public static async Task<bool> Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, JObject app, string studioSecret, bool goLive, string dbName, int version, int deploymentId, IConfiguration configuration, IUnifiedStorage storage, List<JObject> missingVersionsScripts)
         {
-            var PDEConnectionString = configuration.GetConnectionString("StudioDBConnection");
             var path = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
             path = $"{path}releases\\{dbName}\\{version}";
@@ -192,8 +191,6 @@ namespace PrimeApps.Model.Helpers
             try
             {
                 File.AppendAllText(logPath, "\u001b[92m" + "********** Create Package **********" + "\u001b[39m" + Environment.NewLine);
-
-
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Database scripts creating..." + Environment.NewLine);
 
                 if (historyDatabases != null)
@@ -686,7 +683,25 @@ namespace PrimeApps.Model.Helpers
                    "WHERE table_name='" + tableName + "' and column_name='" + columnName + "';";
         }
 
-        public static bool RunHistoryDatabaseScript(string connectionString, string dbName, string script)
+        public static object GetScriptResult(string connectionString, string dbName, string script)
+        {
+            try
+            {
+                var connection = new PgSqlConnection(GetConnectionString(connectionString, dbName));
+                connection.Open();
+
+                var dropCommand = new PgSqlCommand(script) {Connection = connection};
+                return dropCommand.ExecuteReader();
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        
+        public static bool RunRuntimeScript(string connectionString, string dbName, string script)
         {
             try
             {

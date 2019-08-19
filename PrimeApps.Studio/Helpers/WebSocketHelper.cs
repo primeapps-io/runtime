@@ -149,7 +149,7 @@ namespace PrimeApps.Studio.Helpers
                             release = await releaseRepository.Get(releaseId);
                             releaseOptions = JObject.Parse(release.Settings);
 
-                            if (releaseOptions["type"].ToString() == "publish" && release.Status == ReleaseStatus.Succeed)
+                            if (releaseOptions["type"].ToString() == "publish")
                                 app = await appDraftRepository.Get(appId);
 
                             using (var fs = new FileStream($"{path}\\releases\\{dbName}\\{release.Version}\\log.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
@@ -161,18 +161,29 @@ namespace PrimeApps.Studio.Helpers
                                 {
                                     if (releaseOptions["type"].ToString() != "publish")
                                     {
-                                        release.Status = ReleaseStatus.Succeed;
-                                        await releaseRepository.Update(release);
+                                        try
+                                        {
+                                            release.Status = ReleaseStatus.Succeed;
+                                            await releaseRepository.Update(release);
 
-                                        var bucketName = UnifiedStorage.GetPath("releases", previewMode, previewMode == "tenant" ? tenantId : appId, "/" + release.Version + "/");
+                                            var bucketName = UnifiedStorage.GetPath("releases", previewMode, previewMode == "tenant" ? tenantId : appId, release.Version + "/");
 
-                                        var _storage = (IUnifiedStorage)hContext.RequestServices.GetService(typeof(IUnifiedStorage));
-                                        await _storage.UploadDirAsync(bucketName, $"{path}releases\\{dbName}\\{release.Version}");
-                                        Directory.Delete($"{path}releases\\{dbName}\\{release.Version}");
+                                            var _storage = (IUnifiedStorage)hContext.RequestServices.GetService(typeof(IUnifiedStorage));
+                                            await _storage.UploadDirAsync(bucketName, $"{path}releases\\{dbName}\\{release.Version}");
+                                            sr.Close();
+                                            fs.Close();
+                                            
+                                            Directory.Delete($"{path}releases\\{dbName}\\{release.Version}", true);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Console.WriteLine(e);
+                                            throw;
+                                        }
                                     }
                                 }
 
-                                else if (app != null && app.Status != PublishStatus.Published && text.Contains("********** Publish End**********"))
+                                if (app != null && app.Status != PublishStatus.Published && text.Contains("********** Publish End**********"))
                                 {
                                     /*release.Status = ReleaseStatus.Succeed;
                                     release.Published = true;
@@ -191,7 +202,12 @@ namespace PrimeApps.Studio.Helpers
 
                                     var _storage = (IUnifiedStorage)hContext.RequestServices.GetService(typeof(IUnifiedStorage));
                                     await _storage.UploadDirAsync(bucketName, $"{path}releases\\{dbName}\\{release.Version}");
-                                    Directory.Delete($"{path}releases\\{dbName}\\{release.Version}");
+                                    
+                                    
+                                    sr.Close();
+                                    fs.Close();
+                                            
+                                    Directory.Delete($"{path}releases\\{dbName}\\{release.Version}", true);
                                     /* 
                                     var bucketName = UnifiedStorage.GetPath("releases", null, appId, "/" + release.Version + "/");
     

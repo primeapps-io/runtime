@@ -147,7 +147,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> UploadWhole()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("attachment", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
+            StringValues bucketName = UnifiedStorage.GetPath("attachment", PreviewMode, PreviewMode == "tenant" ? (int)TenantId : (int)AppId);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -183,7 +183,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> UploadTemplate()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
+            StringValues bucketName = UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? (int)TenantId : (int)AppId);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -222,7 +222,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> RecordFileUpload()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("record", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
+            StringValues bucketName = UnifiedStorage.GetPath("record", PreviewMode, PreviewMode == "tenant" ? (int)TenantId : (int)AppId);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -315,7 +315,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> UploadLogo()
         {
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("applogo", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
+            StringValues bucketName = UnifiedStorage.GetPath("applogo", PreviewMode, PreviewMode == "tenant" ? (int)TenantId : (int)AppId);
 
             if (parser.Success)
             {

@@ -97,7 +97,7 @@ namespace PrimeApps.Studio.Controllers
         {
             try
             {
-                var bucketName = UnifiedStorage.GetPath("releases", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
+                var bucketName = UnifiedStorage.GetPath("releases", PreviewMode, PreviewMode == "tenant" ? (int)TenantId : (int)AppId);
 
                 var withouts = new string[] {"releases"};
                 await _storage.CopyBucket($"app{AppId}", bucketName + "/" + id + "/files", withouts);
