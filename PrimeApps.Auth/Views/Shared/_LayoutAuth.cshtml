@@ -269,7 +269,7 @@
                         <div class="carousel-item active">
                             <div class="carousel-caption d-none d-md-block">
                                 <div class="banner-text">
-                                    <p>@banner[0]["descriptions"][Model.Language].ToString()</p>
+                                    @Html.Raw(banner[0]["descriptions"][Model.Language].ToString())
                                 </div>
                             </div>
                         </div>

@@ -111,5 +111,18 @@ namespace PrimeApps.App.Controllers
 
             return Ok();
         }
+
+        [Route("get_system_code"), HttpGet]
+        public async Task<IActionResult> GetSystemCode([FromQuery]string systemcode)
+        {
+            var picklistEntity = await _picklistRepository.GetBySystemCode(systemcode);
+
+            if (picklistEntity == null)
+                return NotFound();
+
+            var picklistViewModel = PicklistHelper.MapToViewModel(picklistEntity);
+
+            return Ok(picklistViewModel);
+        }
     }
 }

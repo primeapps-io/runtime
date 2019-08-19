@@ -332,7 +332,7 @@
                                     <ul class="nav nav-tabs" ng-show="!isAvailableForSmallDevice() && tabconfig">
                                         <li ng-class="{'active':tab === 'general'}">
                                             <a class="module-tab-link" href
-                                                ng-click="tab = 'general'">{{'Common.General' | translate}}</a>
+                                                ng-click="$parent.tab = 'general'">{{'Common.General' | translate}}</a>
                                         </li>
                                         <li ng-class="{'active':tab === relatedModule.id.toString()}"
                                             ng-repeat="relatedModule in module.relations  | filter:{deleted:'!true',detail_view_type:'!flat'} | orderBy:'order'"
@@ -347,13 +347,13 @@
                                         </li>
                                         <li ng-class="{'active':tab === 'note'}" ng-show="showNotes !='false'">
                                             <a class="module-tab-link" href
-                                                ng-click="tab = 'note'">{{'Note.Notes' | translate}} <span class="badge"
+                                                ng-click="$parent.tab = 'note'">{{'Note.Notes' | translate}} <span class="badge"
                                                     ng-if="notesCount">{{notesCount}}</span></a>
                                         </li>
                                         <li ng-class="{'active':tab === 'document'}"
                                             ng-show="hasDocumentsPermission(operations.read)">
                                             <a class="module-tab-link" href
-                                                ng-click="tab = 'document'">{{'Common.Attachments' | translate}} <span
+                                                ng-click="$parent.tab = 'document'">{{'Common.Attachments' | translate}} <span
                                                     class="badge"
                                                     ng-if="documentsResultSet.totalDocumentCount">{{documentsResultSet.totalDocumentCount}}</span></a>
                                         </li>

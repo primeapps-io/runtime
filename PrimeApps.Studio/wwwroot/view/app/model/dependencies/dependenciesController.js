@@ -99,8 +99,9 @@ angular.module('primeapps')
 
                 angular.forEach($scope.module.fields, function (field) {
 
-                    if (isSystemField(field))
-                        return;
+                    //It was closed for lookup fields appear.
+                    //if (isSystemField(field))
+                    //    return;
 
                     var existDisplayDependency = $filter('filter')($scope.dependencies, {
                         child_field: { name: field.name },
@@ -123,6 +124,9 @@ angular.module('primeapps')
                                 break;
                             case 'multiselect':
                                 $scope.parentDisplayFields.push(field);
+                                $scope.childValueListFields.push(field);
+                                break;
+                            case 'lookup':
                                 $scope.childValueListFields.push(field);
                                 break;
                             case 'checkbox':

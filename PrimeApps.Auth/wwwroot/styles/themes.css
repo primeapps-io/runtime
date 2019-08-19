@@ -28,23 +28,23 @@ body {
 .login-page .logo svg {
   height: 100%;
 }
-.login-page .logo svg .st0 {
-  fill: #FFF;
+.login-page .logo svg .prime {
+  fill: white;
 }
-.login-page .logo svg .st1 {
-  fill: rgba(255, 255, 255, 0.75);
+.login-page .logo svg .icon1 {
+  fill: #FAAC2C;
 }
-.login-page .logo svg .st2 {
-  fill: #FCAD2D;
+.login-page .logo svg .icon2 {
+  fill: #EF6A33;
 }
-.login-page .logo svg .st3 {
-  fill: #F06933;
+.login-page .logo svg .icon3 {
+  fill: transparent;
 }
-.login-page .logo svg .st4 {
-  fill: #E89728;
+.login-page .logo svg .icon4 {
+  fill: transparent;
 }
-.login-page .logo svg .st5 {
-  fill: #0D6FAA;
+.login-page .logo svg .apps {
+  fill: rgba(255, 255, 255, 0.5);
 }
 .login-page .buttonx {
   color: rgba(255, 255, 255, 0.5);

@@ -1,48 +1,59 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-  <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
-    <AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>
-    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
-    <DockerTargetOS>Linux</DockerTargetOS>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Aspose.Cells" Version="18.12.0" />
-    <PackageReference Include="Aspose.Words" Version="19.1.0" />
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <AspNetCoreModuleName>AspNetCoreModule</AspNetCoreModuleName>
+        <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
+        <DockerTargetOS>Linux</DockerTargetOS>
+        <UserSecretsId>aspnet-PrimeApps.App-8EEB8A48-F97E-4E87-98F4-E854B24F1B76</UserSecretsId>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Aspose.Cells" Version="18.12.0"/>
+        <PackageReference Include="Aspose.Words" Version="19.1.0"/>
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.100.1" />
     <PackageReference Include="AWSSDK.S3" Version="3.3.101.13" />
-    <PackageReference Include="Hangfire" Version="1.7.0-beta4" />
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.0-beta4" />
-    <PackageReference Include="Hangfire.PostgreSql" Version="1.5.0" />
-    <PackageReference Include="Hangfire.Redis.StackExchange" Version="1.8.0" />
-    <PackageReference Include="Humanizer.Core" Version="2.5.16" />
-    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.7.0" />
-    <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Azure.Search" Version="5.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />
-    <PackageReference Include="MimeMapping" Version="1.0.1.12" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
-    <PackageReference Include="PowerBI.NetStandard.Api" Version="1.0.0" />
-    <PackageReference Include="Sentry" Version="1.1.0" />
-    <PackageReference Include="Sentry.AspNetCore" Version="1.1.0" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.9" />
-    <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
-    <PackageReference Include="WorkflowCore" Version="1.9.3" />
-    <PackageReference Include="WorkflowCore.Persistence.PostgreSQL" Version="1.9.1" />
-    <PackageReference Include="WorkflowCore.Providers.Redis" Version="1.9.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
+        <PackageReference Include="Hangfire" Version="1.7.0-beta4"/>
+        <PackageReference Include="Hangfire.AspNetCore" Version="1.7.0-beta4"/>
+        <PackageReference Include="Hangfire.PostgreSql" Version="1.5.0"/>
+        <PackageReference Include="Hangfire.Redis.StackExchange" Version="1.8.0"/>
+        <PackageReference Include="Humanizer.Core" Version="2.5.16"/>
+        <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.7.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.App"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="2.2.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0"/>
+        <PackageReference Include="Microsoft.Azure.Search" Version="5.0.3"/>
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.2.0"/>
+        <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.2.0"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0"/>
+        <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0"/>
+        <PackageReference Include="Microsoft.Extensions.Primitives" Version="2.2.0"/>
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0"/>
+        <PackageReference Include="MimeMapping" Version="1.0.1.12"/>
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.1"/>
+        <PackageReference Include="PowerBI.NetStandard.Api" Version="1.0.0"/>
+        <PackageReference Include="Sentry" Version="1.1.0"/>
+        <PackageReference Include="Sentry.AspNetCore" Version="1.1.0"/>
+        <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.9"/>
+        <PackageReference Include="WindowsAzure.Storage" Version="9.3.3"/>
+        <PackageReference Include="WorkflowCore" Version="1.9.3"/>
+        <PackageReference Include="WorkflowCore.Persistence.PostgreSQL" Version="1.9.1"/>
+        <PackageReference Include="WorkflowCore.Providers.Redis" Version="1.9.1"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj"/>
     <ProjectReference Include="..\PrimeApps.Util\PrimeApps.Util.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
-  </ItemGroup>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="aspnetapp.pfx">
+            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="ca.crt">
+            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Update="appsettings.Development.json" CopyToPublishDirectory="false"/>
+    </ItemGroup>
 </Project>

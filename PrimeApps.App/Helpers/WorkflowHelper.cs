@@ -767,7 +767,7 @@ namespace PrimeApps.App.Helpers
                                                 var dataAsString = JsonConvert.SerializeObject(jsonData);
                                                 var content = new StringContent(dataAsString, Encoding.UTF8, "application/json");
                                                 var response = await client.PostAsync(webHook.CallbackUrl, content);
-                                                var contentResponse = await response.Content.ReadAsStringAsync();
+                                                //var contentResponse = await response.Content.ReadAsStringAsync();
                                             }
                                             else
                                             {

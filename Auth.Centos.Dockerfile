@@ -9,15 +9,17 @@ WORKDIR "/src/PrimeApps.Auth"
 RUN dotnet build "PrimeApps.Auth.csproj" --no-restore -c Debug -o /app
 
 FROM build AS publish
-RUN dotnet publish "PrimeApps.Auth.csproj" --no-restore --self-contained false -c Debug -o /app
+RUN dotnet publish "PrimeApps.Auth.csproj" --no-restore -c Debug --self-contained false /p:MicrosoftNETPlatformLibrary=Microsoft.NETCore.App -o  /app
 
-FROM microsoft/dotnet:2.2-aspnetcore-runtime-stretch-slim AS base
+FROM registry.centos.org/dotnet/dotnet-22-runtime-centos7 AS base
+SHELL ["/bin/bash", "-c"]
 WORKDIR /app
 COPY --from=publish /app .
 
-EXPOSE 80
-EXPOSE 443
-
+ENV DOTNET_RUNNING_IN_CONTAINER=true
+ENV DOTNET_USE_POLLING_FILE_WATCHER=true
+ENV DOTNET_CORE_VERSION=2.2
+ENV DOTNET_FRAMEWORK=netcoreapp2.2
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 ENV ASPNETCORE_ENVIRONMENT=Development
@@ -26,11 +28,10 @@ ENV ASPNETCORE_HTTPS_PORT=443
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password="1q2w3e4r5t"
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path="aspnetapp.pfx"
 
-RUN mkdir -p /usr/local/share/ca-certificates/ && cp ca.crt /usr/local/share/ca-certificates/kubernetes_ca.crt
-RUN chmod 777 /usr/local/share/ca-certificates/kubernetes_ca.crt
-RUN update-ca-certificates --fresh
+USER root
+RUN yum install ca-certificates && update-ca-trust force-enable
+RUN cp ca.crt /etc/pki/ca-trust/source/anchors/kubernetes_ca.crt
+RUN update-ca-trust extract
 
 FROM base AS final
-WORKDIR /app
-
-ENTRYPOINT ["dotnet","PrimeApps.Auth.dll"]
+CMD ["dotnet","PrimeApps.Auth.dll"]

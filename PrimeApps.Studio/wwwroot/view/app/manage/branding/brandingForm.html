@@ -71,7 +71,7 @@
 
                                 <div class="form-group" ng-class="{'focused': focusPlace === '2'}">
                                     <label class="required-field">
-                                        2- Title
+                                        2-Title
                                     </label>
                                     <input type="text"
                                            name="label"
@@ -107,7 +107,8 @@
                                         <div class="iconandcolor">
                                             <div>
                                                 <div style="position: relative">
-                                                    <img ng-src="{{authLogo.image || authTheme.logo }}" class="resultimg"
+                                                    <img ng-src="{{authLogo.image || authTheme.logo }}"
+                                                         class="resultimg"
                                                          style="height: 64px; max-width: 100%; "/>
                                                     <div class="action-buttons-block">
                                                         <button type="button" class="action-buttons-delete"
@@ -123,24 +124,15 @@
                                 </div>
 
                                 <div class="form-group" ng-class="{'focused': focusPlace === '4'}">
-                                    <label class="required-field"> 4- Headline</label>
-                                        <textarea focus="focusPlace === '4'" mentio-id="'tinyMceTextArea2'" mentio
-                                                  mentio-typed-text="typedTerm"
-                                                  mentio-require-leading-space="true" ui-tinymce="tinymceTemplateEdit"
-                                                  name="tinymce"
-                                                  ng-model="authTheme.headLineEn" ng-required="true"
-                                                  mentio-iframe-element="iframeElement['tinymceTemplateEdit']"></textarea>
-                                        <script type="text/ng-template" id="tag-mentions.tpl">
-                                            <ul class="ment-tags">
-                                                <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
-                                                    class="list-group-item clearfix"
-                                                    ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
-                                                    {{tag.label}}
-                                                </li>
-                                            </ul>
-                                        </script>
+                                    <label class="required-field"> 4-Headline</label>
+                                    <textarea focus="focusPlace === '4'" mentio-id="'tinyMceTextArea'" mentio
+                                              mentio-typed-text="typedTerm"
+                                              mentio-require-leading-space="true" ui-tinymce="tinymceTemplateEdit"
+                                              name="tinymce"
+                                              ng-model="authTheme.headLineEn"
+                                              mentio-iframe-element="iframeElement['tinymceTemplateEdit']"></textarea>
                                 </div>
-          
+
                                 <div class="form-group" ng-class="{'focused': focusPlace === '5'}">
                                     <label class="required-field">5-Button Color</label>
                                     <div class="iconandcolor">
@@ -260,16 +252,15 @@
 
                                 <div class="form-group"
                                      ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid, 'focused': focusPlace === '7'}">
-                                    <label class="col-sm-4 required-field">
-                                        7- Main Text
+                                    <label class="required-field">
+                                        7-Main Text
                                     </label>
-                                    <input type="text"
-                                           name="label"
-                                           class="form-control ng-animate-disabled col-sm-8"
-                                           focus="focusPlace === '6'"
-                                           required
-                                           maxlength="50"
-                                           ng-model="authTheme.descriptionEn">
+                                    <textarea focus="focusPlace === '7'" mentio-id="'tinyMceTextArea2'" mentio
+                                              mentio-typed-text="typedTerm"
+                                              mentio-require-leading-space="true" ui-tinymce="tinymceTemplateEdit2"
+                                              name="tinymce2"
+                                              ng-model="authTheme.descriptionEn"
+                                              mentio-iframe-element="iframeElement['tinymceTemplateEdit2']"></textarea>
                                 </div>
 
                             </div>
@@ -302,7 +293,8 @@
                                         <div class="iconandcolor">
                                             <div>
                                                 <div style="position: relative">
-                                                    <img ng-src="{{appThemeFavicon.image || appTheme.favicon}}" class="resultimg"
+                                                    <img ng-src="{{appThemeFavicon.image || appTheme.favicon}}"
+                                                         class="resultimg"
                                                          style="height: 64px; max-width: 100%; "/>
                                                     <div class="action-buttons-block">
                                                         <button type="button" class="action-buttons-delete"
@@ -318,7 +310,7 @@
 
                                 <div class="form-group" ng-class="{'focused': focusPlace === '2'}">
                                     <label class="col-sm-4 required-field">
-                                        2- Title
+                                        2-Title
                                     </label>
                                     <input type="text"
                                            name="label"
@@ -354,7 +346,8 @@
                                         <div class="iconandcolor">
                                             <div>
                                                 <div style="position: relative">
-                                                    <img ng-src="{{appThemeLogo.image || appTheme.logo}}" class="resultimg"
+                                                    <img ng-src="{{appThemeLogo.image || appTheme.logo}}"
+                                                         class="resultimg"
                                                          style="height: 64px; max-width: 100%; "/>
                                                     <div class="action-buttons-block">
                                                         <button type="button" class="action-buttons-delete"

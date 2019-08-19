@@ -53,9 +53,6 @@ namespace PrimeApps.Studio.Controllers
         {
             var platformUser = (PlatformUser)HttpContext.Items["user"];
 
-            var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
-            var applicationRepository = (IApplicationRepository)HttpContext.RequestServices.GetService(typeof(IApplicationRepository));
-
             var appUser = new UserItem
             {
                 Id = platformUser.Id,

@@ -318,14 +318,14 @@ angular.module('primeapps')
                     setup: function (editor) {
                         editor.addButton('register', {
                             type: 'button',
-                            text: 'Register',//$filter('translate')('EMail.AddParameter'),
+                            text: 'Register',
                             onclick: function () {
                                 var content = undefined;
                                 if ($scope.language === "en") {
-                                    content = '&lt;span class="free-info-header"&gt;&lt;a href="https://{auth_domain}/Account/Register?ReturnUrl=%3Fclient_id%3D{client_id}"&gt;Register&lt;/a&gt;&lt;/span&gt;';
-                               
+                                    content = '<span class="free-info-header"><a href="https://{auth_domain}/Account/Register?ReturnUrl=%3Fclient_id%3D{client_id}">Register</a></span>';
+
                                 } else {
-                                    content = '&lt;span class="free-info-header"&gt;&lt;a href="https://{auth_domain}/Account/Register?ReturnUrl=%3Fclient_id%3D{client_id}"&gt;Kayıt Ol&lt;/a&gt;&lt;/span&gt;';
+                                    content = '<span class="free-info-header"><a href="https://{auth_domain}/Account/Register?ReturnUrl=%3Fclient_id%3D{client_id}">Kayıt Ol</a></span>';
                                 }
                                 tinymce.activeEditor.execCommand('mceInsertContent', false, content);
                             }
@@ -339,7 +339,7 @@ angular.module('primeapps')
                         });
                     },
                     inline: false,
-                    height: 20,
+                    height: 80,
                     language: $rootScope.language,
                     plugins: [
                         "advlist autolink lists link image charmap print preview anchor table",
@@ -367,8 +367,48 @@ angular.module('primeapps')
                 };
             };
 
-            $scope.tinymceOptions('tinymceTemplate');
+            $scope.tinymceOptions2 = function (scope) {
+                $scope[scope] = {
+                    setup: function (editor) {
+                        editor.on('init', function () {
+                            if ($scope.focusPlace === "7") {
+                                editor.focus();
+                                editor.selection.select(editor.getBody(), true);
+                                editor.selection.collapse(false);
+                            }
+                        });
+                    },
+                    inline: false,
+                    height: 80,
+                    language: $rootScope.language,
+                    plugins: [
+                        "advlist autolink lists link image charmap print preview anchor table",
+                        "searchreplace visualblocks code fullscreen",
+                        "insertdatetime table contextmenu paste imagetools wordcount textcolor colorpicker"
+                    ],
+                    imagetools_cors_hosts: ['crm.ofisim.com', 'test.ofisim.com', 'ofisimcomdev.blob.core.windows.net'],
+                    toolbar: "styleselect bold italic underline strikethrough  forecolor  backcolor alignleft aligncenter alignright alignjustify  link  | undo redo  searchreplace  outdent indent  code preview ",
+                    menubar: 'false',
+                    skin: 'lightgray',
+                    theme: 'modern',
+                    image_advtab: true,
+                    paste_data_images: true,
+                    paste_as_text: true,
+                    spellchecker_language: $rootScope.language,
+                    init_instance_callback: function (editor) {
+                        $scope.iframeElement[scope] = editor.iframeElement;
+                    },
+                    resize: false,
+                    width: '99,9%',
+                    toolbar_items_size: 'small',
+                    statusbar: false,
+                    convert_urls: false,
+                    remove_script_host: false
+                };
+            };
+
             $scope.tinymceOptions('tinymceTemplateEdit');
+            $scope.tinymceOptions2('tinymceTemplateEdit2');
 
         }
     ]);

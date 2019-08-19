@@ -8,6 +8,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     public interface IPicklistRepository : IRepositoryBaseTenant
     {
         Task<Picklist> GetById(int id);
+        Task<Picklist> GetBySystemCode(string systemcode);
         Task<ICollection<Picklist>> GetAll();
         Task<Picklist> GetPicklistByLabelEn(string labelEn);
         Task<ICollection<Picklist>> Find(PaginationModel paginationModel);

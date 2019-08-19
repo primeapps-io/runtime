@@ -17,7 +17,7 @@
     <img class="logo-img" src="@Model.ApplicationInfo.Logo"/>
     @if (!preview) //(!customDomain)
     {
-        @Html.Raw(HttpUtility.HtmlDecode(headLine))
+        @Html.Raw(headLine)
     }
 
     <form asp-route="Login" class="login-form" role="form" id="login-form">
