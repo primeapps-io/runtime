@@ -41,11 +41,4 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </EmbeddedResource>
     </ItemGroup>
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\view\app\release\release.html" />
-      <_ContentIncludedByDefault Remove="wwwroot\view\app\release\releaseController.js" />
-      <_ContentIncludedByDefault Remove="wwwroot\view\app\release\releaseDetail.html" />
-      <_ContentIncludedByDefault Remove="wwwroot\view\app\release\releaseDetailController.js" />
-      <_ContentIncludedByDefault Remove="wwwroot\view\app\release\releaseService.js" />
-    </ItemGroup>
 </Project>

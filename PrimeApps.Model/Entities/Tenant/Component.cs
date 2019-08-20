@@ -28,7 +28,7 @@ namespace PrimeApps.Model.Entities.Tenant
         public int Order { get; set; }
 
         [JsonProperty("status"), Column("status")]
-        public PublishStatus Status { get; set; }
+        public PublishStatusType Status { get; set; }
 
         [JsonProperty("label"), Column("label"), Required, MaxLength(100)]
         public string Label { get; set; }

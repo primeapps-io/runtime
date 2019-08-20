@@ -29,7 +29,7 @@ namespace PrimeApps.Model.Entities.Tenant
         public FunctionRuntime Runtime { get; set; }
 
         [JsonProperty("status"), Column("status")]
-        public PublishStatus Status { get; set; }
+        public PublishStatusType Status { get; set; }
 
         [Column("content_type"), Required]
         public FunctionContentType ContentType { get; set; }

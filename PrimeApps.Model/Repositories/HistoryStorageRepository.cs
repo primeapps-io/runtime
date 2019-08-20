@@ -17,7 +17,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<List<HistoryStorage>> GetDiffs(string min)
         {
-            var current = await DbContext.HistoryDatabases.FirstOrDefaultAsync(x => x.Tag == min);
+            var current = await DbContext.HistoryStorages.FirstOrDefaultAsync(x => x.Tag == min);
             if (current != null)
                 return await DbContext.HistoryStorages.Where(x => x.Id > current.Id).ToListAsync();
 

@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce, icons, icons2) {
             return {
                 createPackage: function (data) {
-                    return $http.post(config.apiUrl + 'release/create', data);
+                    return $http.post(config.apiUrl + 'package/create', data);
                 },
                 getLastDeployment: function () {
                     return $http.get(config.apiUrl + 'publish/get_last_deployment');

@@ -8,7 +8,7 @@
                 <input ng-model="appSearch" ng-change="appFilter(appSearch, appStatus)" ng-model-options='{ debounce: 500 }' class="form-control form-control-lg form-control-borderless app-search-input" type="search" placeholder="Search">
             </div>
         </div>
-        <div class="col-sm-2">
+        <!--<div class="col-sm-2">
             <div class="shadowh search-select">
                 <i class="fas fa-angle-down"></i>
                 <select ng-change="appFilter('', appStatus)" class="select-status" ng-model="appStatus">
@@ -18,7 +18,7 @@
                     <option value="3">Unpublished</option>
                 </select>
             </div>
-        </div>
+        </div>-->
     </div>
     <div class="row" style="margin-top: 50px" ng-hide="!appsFilter && apps.length < 1">
         <div>
@@ -45,11 +45,11 @@
             </div>
             <div class="col-sm-6 col-md-3 app-layout-box" ng-repeat="app in apps" ui-sref="studio.app.overview({appId:app.id, orgId:app.organization_id})">
                 <div class="app-box">
-                    <div class="oval">
+                    <!--<div class="oval">
                         <span data-trigger="hover" data-type="success"
                               data-title="{{app.status.charAt(0).toUpperCase() + app.status.slice(1)}}" bs-tooltip
                               class="oval-{{app.status === 'published' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>
-                    </div>
+                    </div>-->
                     <img class="applogo" ng-src="{{app.logo}}" alt="" />
                 </div>
                 <div class="app-info">

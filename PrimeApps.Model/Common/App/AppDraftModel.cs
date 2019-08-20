@@ -37,9 +37,6 @@ namespace PrimeApps.Model.Common.App
         /*[JsonProperty("organization_id"), DataMember(Name = "organization_id")]
         public int OrganizationId { get; set; }*/
 
-        [JsonProperty("status"), DataMember(Name = "status")]
-        public PublishStatus Status { get; set; }
-
         [JsonProperty("use_tenant_settings"), DataMember(Name = "use_tenant_settings")]
         public bool UseTenantSettings { get; set; }
 

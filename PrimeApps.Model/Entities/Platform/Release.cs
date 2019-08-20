@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Studio
+namespace PrimeApps.Model.Entities.Platform
 {
     [Table("releases")]
     public class Release : BaseEntity
     {
-        [Column("app_id"), Required, ForeignKey("AppDraft")]
+        [Column("app_id"), Required, ForeignKey("App")]
         public int AppId { get; set; }
 
         [Column("status"), Required]
@@ -26,9 +26,6 @@ namespace PrimeApps.Model.Entities.Studio
         [Column("settings", TypeName = "jsonb")]
         public string Settings { get; set; }
 
-        [Column("published")]
-        public bool Published { get; set; }
-
-        public virtual AppDraft AppDraft { get; set; }
+        public virtual App App { get; set; }
     }
 }

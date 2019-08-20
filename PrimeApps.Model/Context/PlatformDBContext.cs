@@ -12,7 +12,9 @@ namespace PrimeApps.Model.Context
     {
         public int? UserId { get; set; }
 
-        public PlatformDBContext(DbContextOptions<PlatformDBContext> options) : base(options) { }
+        public PlatformDBContext(DbContextOptions<PlatformDBContext> options) : base(options)
+        {
+        }
 
         public PlatformDBContext(IConfiguration configuration)
         {
@@ -100,7 +102,7 @@ namespace PrimeApps.Model.Context
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<UserTenant>()
-               .HasKey(t => new { t.UserId, t.TenantId });
+                .HasKey(t => new {t.UserId, t.TenantId});
 
             modelBuilder.Entity<UserTenant>()
                 .HasOne(pt => pt.PlatformUser)
@@ -113,9 +115,9 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey(pt => pt.TenantId);
 
             modelBuilder.Entity<App>()
-               .HasMany(p => p.Tenants)
-               .WithOne(i => i.App)
-               .HasForeignKey(b => b.AppId);
+                .HasMany(p => p.Tenants)
+                .WithOne(i => i.App)
+                .HasForeignKey(b => b.AppId);
 
             modelBuilder.Entity<Tenant>()
                 .HasOne(p => p.Owner)
@@ -191,10 +193,17 @@ namespace PrimeApps.Model.Context
             //UserTenants
             modelBuilder.Entity<UserTenant>().HasIndex(x => x.UserId);
             modelBuilder.Entity<UserTenant>().HasIndex(x => x.TenantId);
+
+            //Release
+            modelBuilder.Entity<Release>().HasIndex(x => x.AppId);
+            modelBuilder.Entity<Release>().HasIndex(x => x.StartTime);
+            modelBuilder.Entity<Release>().HasIndex(x => x.EndTime);
+            modelBuilder.Entity<Release>().HasIndex(x => x.Status);
         }
 
         public DbSet<PlatformUser> Users { get; set; }
         public DbSet<PlatformUserSetting> UserSettings { get; set; }
+        public DbSet<Release> Releases { get; set; }
         public DbSet<App> Apps { get; set; }
         public DbSet<AppSetting> AppSettings { get; set; }
         public DbSet<AppTemplate> AppTemplates { get; set; }

@@ -3,7 +3,7 @@
 angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scope', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'operations', 'blockUI', '$cache', 'helps', 'LayoutService', 'AuthService', '$sessionStorage', '$sce', '$modal', 'FileUploader',
     function ($rootScope, $scope, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, $popover, entityTypes, guidEmpty, component, convert, helper, operations, blockUI, $cache, helps, LayoutService, AuthService, $sessionStorage, $sce, $modal, FileUploader) {
         $rootScope.checkUserProfile = helper.checkUserProfile;
-        
+
         angular.element($window).on('load resize', function () {
             if ($window.innerWidth < 1200) {
                 $scope.$apply(function () {
@@ -61,9 +61,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             return check;
         };
 
-        $scope.type = "package";
-
-        $scope.goLiveModal = function (update) {
+        $scope.goLiveModal = function () {
             Swal.fire({
                 html:
                     '<div style="\n' +
@@ -82,12 +80,12 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     '    font-size: 13px;">We\'ll go ahead and prepare a release package for you. You can track the status of your release packages at Manage-Release Packages. </br> </br>' +
                     '<div class="form-group" ng-controller="LayoutController">' +
                     '<div class="row">' +
-                    '<div class="col-sm-12" style="padding-left: 14px;">' +
-                    '<label class="radio-inline newinput go-live-input" style="padding-bottom: 10px;"><input name="type" type="radio" checked="" value="package"> Publish the app to PrimeApps Cloud after the package is prepared <span></span></label>' +
-                    '<label class="radio-inline newinput go-live-input">' +
-                    '<input name="type" type="radio" value="publish"> Automatically publish to PrimeApps cloud <span></span>' +
-                    '</label>' +
-                    '</div>' +
+                    //'<div class="col-sm-12" style="padding-left: 14px;">' +
+                    //'<label class="radio-inline newinput go-live-input" style="padding-bottom: 10px;"><input name="type" type="radio" checked="" value="package"> Publish the app to PrimeApps Cloud after the package is prepared <span></span></label>' +
+                    //'<label class="radio-inline newinput go-live-input">' +
+                    //'<input name="type" type="radio" value="publish"> Automatically publish to PrimeApps cloud <span></span>' +
+                    //'</label>' +
+                    //'</div>' +
                     '</div>' +
                     '</div>' +
                     '</div>',
@@ -101,17 +99,11 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 confirmButtonText: ' Go Live !'
             }).then(function (evt) {
                 if (evt.value) {
-                    if ($scope.type === 'package') {
-                        toastr.success("Package creation started.");
-                    }
-                    else {
-                        toastr.success(update ? 'Update' : 'Publish' + " started.");
-                    }
+                    toastr.success("Package creation started.");
 
                     $rootScope.goLive = {status: true};
 
-                    var request = {type: $scope.type};
-                    LayoutService.createPackage(request)
+                    LayoutService.createPackage(null)
                         .then(function (response) {
                             $scope.loading = false;
                             $rootScope.openWS(response.data);
@@ -129,14 +121,14 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 }
             });
 
-            $('input[type=radio][name=type]').change(function () {
+            /*$('input[type=radio][name=type]').change(function () {
                 if (this.value === 'publish') {
                     $scope.type = 'publish';
                 }
                 else {
                     $scope.type = 'package';
                 }
-            });
+            });*/
 
             /*$state.go('studio.app.publish', {
                 orgId: $rootScope.currentOrgId,
@@ -164,12 +156,12 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $rootScope.goLive.status = false;
                     $scope.$apply();
                 }
-                else if ($scope.type === 'publish' || $rootScope.goLive.logs.contains('********** Publish End**********')) {
+                /*else if ($scope.type === 'publish' || $rootScope.goLive.logs.contains('********** Publish End**********')) {
                     toastr.success("Publish completed successfully.");
                     $rootScope.currentApp.status = "published";
                     $rootScope.goLive.status = false;
                     $scope.$apply();
-                }
+                }*/
 
             };
             $scope.socket.onerror = function (e) {

@@ -185,7 +185,6 @@ namespace PrimeApps.Studio.Controllers
 
             var search = "";
             var page = 0;
-            var status = PublishStatus.NotSet;
 
             if (request != null)
             {
@@ -194,12 +193,9 @@ namespace PrimeApps.Studio.Controllers
 
                 if (!request["page"].IsNullOrEmpty())
                     page = (int)request["page"];
-
-                if (!request["status"].IsNullOrEmpty())
-                    status = (PublishStatus)int.Parse(request["status"].ToString());
             }
 
-            var apps = await _appDraftRepository.GetByOrganizationId(AppUser.Id, (int)request["organization_id"], search, page, status);
+            var apps = await _appDraftRepository.GetByOrganizationId(AppUser.Id, (int)request["organization_id"], search, page);
 
 
             return Ok(apps);

@@ -174,7 +174,7 @@ namespace PrimeApps.Studio.Controllers
                 ContentType = function.ContentType != FunctionContentType.NotSet ? function.ContentType : FunctionContentType.Text,
                 Runtime = function.Runtime,
                 Handler = function.Handler,
-                Status = PublishStatus.Draft
+                Status = PublishStatusType.Draft
             };
 
             function.Name = functionName;

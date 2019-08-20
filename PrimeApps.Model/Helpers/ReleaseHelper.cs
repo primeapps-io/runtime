@@ -28,7 +28,7 @@ namespace PrimeApps.Model.Helpers
 
     public class ReleaseHelper
     {
-        public static async Task<bool> All(JObject app, string studioSecret, bool clearAllRecords, bool goLive, string dbName, int version, IConfiguration configuration, IUnifiedStorage storage)
+        public static async Task<bool> All(JObject app, string studioSecret, bool clearAllRecords, string dbName, int version, IConfiguration configuration, IUnifiedStorage storage)
         {
             var PDEConnectionString = configuration.GetConnectionString("StudioDBConnection");
             var path = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
@@ -155,8 +155,8 @@ namespace PrimeApps.Model.Helpers
 
                 File.AppendAllText(logPath, "\u001b[92m" + "********** Package Created **********" + "\u001b[39m" + Environment.NewLine);
 
-                if (goLive)
-                    PublishHelper.Create(configuration, storage, app, dbName, version, studioSecret, app["status"].ToString() != "published");
+                /*if (goLive)
+                    PublishHelper.Create(configuration, storage, app, dbName, version, studioSecret, app["status"].ToString() != "published");*/
                 /*else
                 {
                     var bucketName = UnifiedStorage.GetPath("releases", null, int.Parse(app["id"].ToString()), "/" + version + "/");
@@ -175,7 +175,7 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static async Task<bool> Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, JObject app, string studioSecret, bool goLive, string dbName, int version, int deploymentId, IConfiguration configuration, IUnifiedStorage storage, List<JObject> missingVersionsScripts)
+        public static async Task<bool> Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, JObject app, string studioSecret, string dbName, int version, int deploymentId, IConfiguration configuration, IUnifiedStorage storage)
         {
             var path = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
@@ -223,8 +223,8 @@ namespace PrimeApps.Model.Helpers
 
                 File.AppendAllText(logPath, "\u001b[92m" + "********** Package Created **********" + "\u001b[39m" + Environment.NewLine);
 
-                if (goLive)
-                    PublishHelper.Update(configuration, storage, app, dbName, version, app["status"].ToString() != "published");
+                /*if (goLive)
+                    PublishHelper.Update(configuration, storage, app, dbName, version, app["status"].ToString() != "published");*/
 
                 return true;
             }
@@ -692,7 +692,6 @@ namespace PrimeApps.Model.Helpers
 
                 var dropCommand = new PgSqlCommand(script) {Connection = connection};
                 return dropCommand.ExecuteReader();
-
             }
             catch (Exception ex)
             {
@@ -700,7 +699,7 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        
+
         public static bool RunRuntimeScript(string connectionString, string dbName, string script)
         {
             try

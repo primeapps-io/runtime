@@ -23,7 +23,7 @@ namespace PrimeApps.Studio.Controllers
     public class PublishController : DraftBaseController
     {
         private IBackgroundTaskQueue _queue;
-        private IReleaseRepository _releaseRepository;
+        private IPackageRepository _packageRepository;
         private IAppDraftRepository _appDraftRepository;
         private IHistoryDatabaseRepository _historyDatabaseRepository;
         private IHistoryStorageRepository _historyStorageRepository;
@@ -32,7 +32,7 @@ namespace PrimeApps.Studio.Controllers
         private IReleaseHelper _publishHelper;
 
         public PublishController(IReleaseHelper publishHelper,
-            IReleaseRepository releaseRepository,
+            IPackageRepository packageRepository,
             IAppDraftRepository appDraftRepository,
             IHistoryDatabaseRepository historyDatabaseRepository,
             IHistoryStorageRepository historyStorageRepository,
@@ -41,7 +41,7 @@ namespace PrimeApps.Studio.Controllers
             IBackgroundTaskQueue queue)
         {
             _publishHelper = publishHelper;
-            _releaseRepository = releaseRepository;
+            _packageRepository = packageRepository;
             _historyDatabaseRepository = historyDatabaseRepository;
             _historyStorageRepository = historyStorageRepository;
             _appDraftRepository = appDraftRepository;
@@ -53,7 +53,7 @@ namespace PrimeApps.Studio.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-            SetCurrentUser(_releaseRepository);
+            SetCurrentUser(_packageRepository);
             SetCurrentUser(_historyDatabaseRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_historyStorageRepository, PreviewMode, TenantId, AppId);
             base.OnActionExecuting(context);
@@ -66,7 +66,7 @@ namespace PrimeApps.Studio.Controllers
             if (!_permissionHelper.CheckUserProfile(UserProfile, "publish", RequestTypeEnum.Create))
                 return StatusCode(403);
 
-            var process = await _releaseRepository.GetActiveProcess((int)AppId);
+            var process = await _packageRepository.GetActiveProcess((int)AppId);
 
             return Ok(process);
         }
@@ -78,7 +78,7 @@ namespace PrimeApps.Studio.Controllers
             if (!_permissionHelper.CheckUserProfile(UserProfile, "publish", RequestTypeEnum.Create))
                 return StatusCode(403);
 
-            var result = await _releaseRepository.GetLastRelease((int)AppId);
+            var result = await _packageRepository.GetLastPackage((int)AppId);
 
             return Ok(result);
         }

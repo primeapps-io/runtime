@@ -25,8 +25,7 @@ angular.module('primeapps')
             $scope.appFilter = function (search, status) {
                 $scope.appsFilter = {
                     search: search || null,
-                    page: null,
-                    status: status || 0
+                    page: null
                 };
 
                 AllAppsService.myApps($scope.appsFilter)

@@ -133,7 +133,7 @@ namespace PrimeApps.Studio.Controllers
                 Type = ComponentType.Script,
                 Place = model.Place,
                 Order = model.Order,
-                Status = PublishStatus.Draft,
+                Status = PublishStatusType.Draft,
                 Label = model.Label
             };
 

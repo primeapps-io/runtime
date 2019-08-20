@@ -150,18 +150,17 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<TeamUser>().HasIndex(x => x.UserId);
             modelBuilder.Entity<TeamUser>().HasIndex(x => x.TeamId);
 
-            //Release
-            modelBuilder.Entity<Release>().HasIndex(x => x.AppId);
-            modelBuilder.Entity<Release>().HasIndex(x => x.StartTime);
-            modelBuilder.Entity<Release>().HasIndex(x => x.EndTime);
-            modelBuilder.Entity<Release>().HasIndex(x => x.Published);
-            modelBuilder.Entity<Release>().HasIndex(x => x.Status);
+            //Package
+            modelBuilder.Entity<Package>().HasIndex(x => x.AppId);
+            modelBuilder.Entity<Package>().HasIndex(x => x.StartTime);
+            modelBuilder.Entity<Package>().HasIndex(x => x.EndTime);
+            modelBuilder.Entity<Package>().HasIndex(x => x.Status);
         }
 
         public DbSet<StudioUser> Users { get; set; }
         public DbSet<AppDraft> Apps { get; set; }
         public DbSet<AppDraftSetting> AppSettings { get; set; }
-        public DbSet<Release> Releases { get; set; }
+        public DbSet<Package> Packages { get; set; }
         public DbSet<AppCollaborator> AppCollaborators { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationUser> OrganizationUsers { get; set; }

@@ -36,6 +36,6 @@ namespace PrimeApps.Model.Common.Component
         public string Label { get; set; }
 
         [JsonProperty("status"), DataMember(Name = "status")]
-        public PublishStatus Status { get; set; }
+        public PublishStatusType Status { get; set; }
     }
 }

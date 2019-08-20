@@ -1,0 +1,100 @@
+<div class="setup-title">
+    <h2>Release Packages</h2>
+</div>
+
+<div class="tab-content table-responsive">
+    <table class="table" ng-if="loading">
+        <thead>
+        <tr>
+            <th>Version</th>
+            <th>Status</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <tr ng-repeat="item in placeholderArray">
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+            <td>
+                <div class="animated-background"></div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table class="table" ng-if="!loading">
+        <thead>
+        <tr>
+            <th>Version</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th style="text-align: center; width: 50px;">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="release in releases" ui-sref="studio.app.releaseDetail({id:release.id})">
+            <td>{{release.version}}</td>
+            <td>{{getTime(release.start_time)}}</td>
+            <td>{{getTime(release.end_time)}}</td>
+            <td style="text-align: center;" ng-bind-html="getIcon(release.status)"></td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="table-pagination" ng-if="!loading">
+        <div>
+            <nav aria-label="Page navigation">
+                <div paging
+                     text-first="&laquo;"
+                     ul-class="pagination"
+                     active-class="active"
+                     page="$parent.$parent.$parent.activePage"
+                     page-size="requestModel.limit"
+                     total="pageTotal"
+                     scroll-top="true"
+                     hide-if-empty="true"
+                     show-prev-next="true"
+                     show-first-last="true"
+                     text-next-class="fas fa-chevron-right"
+                     text-prev-class="fas fa-chevron-left"
+                     text-first-class="fas fa-step-backward"
+                     text-last-class="fas fa-step-forward"
+                     paging-action="changePage(page)">
+                </div>
+            </nav>
+        </div>
+        <div class="total">Total {{pageTotal}}</div>
+        <div>
+            <span class="pagination-span">Items per page  </span>
+            <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                <option ng-selected="true" value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div ng-if="!loading && goLive && goLive.status" class="function" id="logger" style="padding-top: 20px;">
+    <div style="" id="log-screen">
+        <div class="tab-content">
+            <div class="ui grid">
+                <div class="sixteen wide column content" style="padding:0px;">
+                    <div class="subpanel-body" style="top:0;left:0;right:0;bottom:0;background-color:black; border-radius: 5px;">
+                        <pre id="logArea" data-ng-bind-html="asHtml()" style="color: white !important;padding-left: 10px !important;padding-top: 10px !important;padding-bottom: 10px !important;max-height: 300px !important;min-height: 100px;"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

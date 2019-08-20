@@ -101,7 +101,6 @@ namespace PrimeApps.Studio.Controllers
                 Logo = model.Logo,
                 OrganizationId = OrganizationId,
                 TempletId = model.TempletId,
-                Status = PublishStatus.Draft,
                 Color = model.Color,
                 Icon = model.Icon,
                 Setting = new AppDraftSetting()
@@ -176,7 +175,6 @@ namespace PrimeApps.Studio.Controllers
             app.Label = model.Label;
             app.Description = model.Description;
             app.Logo = model.Logo;
-            app.Status = model.Status;
             app.Icon = model.Icon;
             app.Color = model.Color;
 
@@ -206,12 +204,11 @@ namespace PrimeApps.Studio.Controllers
             return Ok(result);
         }
 
-        [Route("get_all"), HttpPost]
+        /*[Route("get_all"), HttpPost]
         public async Task<IActionResult> Organizations([FromBody]JObject request)
         {
             var search = "";
             var page = 0;
-            var status = PublishStatus.NotSet;
 
             if (request != null)
             {
@@ -220,15 +217,12 @@ namespace PrimeApps.Studio.Controllers
 
                 if (request["page"].IsNullOrEmpty())
                     page = (int)request["page"];
-
-                if (!request["status"].IsNullOrEmpty())
-                    status = (PublishStatus)int.Parse(request["status"].ToString());
             }
 
-            var organizations = await _appDraftRepository.GetAllByUserId(AppUser.Id, search, page, status);
+            var organizations = await _appDraftRepository.GetAllByUserId(AppUser.Id, search, page);
 
             return Ok(organizations);
-        }
+        }*/
 
         [Route("is_unique_name"), HttpGet]
         public async Task<IActionResult> IsUniqueName(string name)

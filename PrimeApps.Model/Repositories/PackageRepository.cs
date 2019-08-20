@@ -13,47 +13,47 @@ using PrimeApps.Model.Entities.Studio;
 
 namespace PrimeApps.Model.Repositories
 {
-    public class ReleaseRepository : RepositoryBaseStudio, IReleaseRepository
+    public class PackageRepository : RepositoryBaseStudio, IPackageRepository
     {
-        public ReleaseRepository(StudioDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        public PackageRepository(StudioDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
         {
         }
 
-        public async Task<Release> GetLastRelease(int appId)
+        public async Task<Package> GetLastPackage(int appId)
         {
-            return await DbContext.Releases.OrderByDescending(x => x.Id).FirstOrDefaultAsync(x => x.AppId == appId);
+            return await DbContext.Packages.OrderByDescending(x => x.Id).FirstOrDefaultAsync(x => x.AppId == appId);
         }
 
         public async Task<int> Count(int appId)
         {
-            return await DbContext.Releases
+            return await DbContext.Packages
                 .Where(x => !x.Deleted & x.AppId == appId)
                 .CountAsync();
         }
 
-        public async Task<Release> Get(int id)
+        public async Task<Package> Get(int id)
         {
-            return await DbContext.Releases
+            return await DbContext.Packages
                 .Where(x => !x.Deleted && x.Id == id)
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<int> CurrentBuildNumber(int appId)
+        public async Task<Package> GetByVersion(int version)
         {
-            return await DbContext.Releases
-                .Where(x => x.AppId == appId)
-                .CountAsync();
+            return await DbContext.Packages
+                .Where(x => !x.Deleted && x.Version == version.ToString())
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<Release> GetActiveProcess(int appId)
+        public async Task<Package> GetActiveProcess(int appId)
         {
-            var result = await DbContext.Releases
+            return await DbContext.Packages
                 .FirstOrDefaultAsync(x => x.AppId == appId && x.Status == ReleaseStatus.Running && !x.Deleted);
 
-            if (result != null)
+            /*if (result != null)
                 return result;
 
-            result = await DbContext.Releases.LastOrDefaultAsync(x => x.AppId == appId);
+            result = await DbContext.Packages.LastOrDefaultAsync(x => x.AppId == appId);
 
             if (result != null)
             {
@@ -63,12 +63,12 @@ namespace PrimeApps.Model.Repositories
                     return result;
             }
 
-            return null;
+            return null;*/
         }
 
-        public async Task<ICollection<Release>> Find(int appId, PaginationModel paginationModel)
+        public async Task<ICollection<Package>> Find(int appId, PaginationModel paginationModel)
         {
-            var releases = DbContext.Releases
+            var releases = DbContext.Packages
                 .Include(x => x.AppDraft)
                 .Where(x => !x.Deleted & x.AppId == appId)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
@@ -76,7 +76,7 @@ namespace PrimeApps.Model.Repositories
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
-                var propertyInfo = typeof(Release).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
+                var propertyInfo = typeof(Package).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
 
                 if (paginationModel.OrderType == "asc")
                 {
@@ -91,20 +91,20 @@ namespace PrimeApps.Model.Repositories
             return await releases.ToListAsync();
         }
 
-        public async Task<int> Create(Release release)
+        public async Task<int> Create(Package package)
         {
-            DbContext.Releases.Add(release);
+            DbContext.Packages.Add(package);
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> Update(Release release)
+        public async Task<int> Update(Package package)
         {
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> Delete(Release release)
+        public async Task<int> Delete(Package package)
         {
-            DbContext.Releases.Remove(release);
+            DbContext.Packages.Remove(package);
             return await DbContext.SaveChangesAsync();
         }
     }

@@ -34,9 +34,6 @@ namespace PrimeApps.Model.Entities.Studio
 
         [Column("use_tenant_settings")]
         public bool UseTenantSettings { get; set; }
-
-        [Column("status")]
-        public PublishStatus Status { get; set; }
         
         public virtual Templet Templet { get; set; }
         
@@ -46,6 +43,6 @@ namespace PrimeApps.Model.Entities.Studio
         
         public virtual ICollection<AppCollaborator> Collaborators { get; set; }
 
-        public virtual ICollection<Release> Deployments { get; set; }
+        public virtual ICollection<Package> Packages { get; set; }
     }
 }

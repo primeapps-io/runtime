@@ -106,42 +106,6 @@ angular.module('primeapps')
                             ]);
                         }]
                     }
-                })
-
-                .state('studio.organizationForm', {
-                    url: 'org?:id',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/organization/organizationform/organizationform.html',
-                            controller: 'OrganizationFormController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad, studio) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/organization/organizationform/organizationFormService.js',
-                                cdnUrl + 'view/organization/organizationform/organizationFormController.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.account', {
-                    url: 'account',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/account/account.html',
-                            controller: 'AccountController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', 'studio', function ($$animateJs, $ocLazyLoad, studio) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/account/accountService.js',
-                                cdnUrl + 'view/account/accountController.js'
-                            ]);
-                        }]
-                    }
                 });
 
             //app.organization
@@ -1049,7 +1013,7 @@ angular.module('primeapps')
                     url: '/releases',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/manage/release/release.html',
+                            templateUrl: cdnUrl + 'view/app/manage/package/package.html',
                             controller: 'ReleaseController'
                         }
                     },
@@ -1064,8 +1028,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/manage/release/releaseController.js',
-                                cdnUrl + 'view/app/manage/release/releaseService.js'
+                                cdnUrl + 'view/app/manage/package/packageController.js',
+                                cdnUrl + 'view/app/manage/package/packageService.js'
                             ]);
                         }]
                     }
@@ -1075,7 +1039,7 @@ angular.module('primeapps')
                     url: '/releaseDetail?:id',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/manage/release/releaseDetail.html',
+                            templateUrl: cdnUrl + 'view/app/manage/package/packageDetail.html',
                             controller: 'ReleaseDetailController'
                         }
                     },
@@ -1090,8 +1054,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/release/manage/releaseDetailController.js',
-                                cdnUrl + 'view/app/release/manage/releaseService.js'
+                                cdnUrl + 'view/app/manage/package/packageDetailController.js',
+                                cdnUrl + 'view/app/manage/package/packageService.js'
                             ]);
                         }]
                     }

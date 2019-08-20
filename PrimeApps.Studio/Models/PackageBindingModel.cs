@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PrimeApps.Studio.Models
 {
-    public class DeploymentBindingModel
+    public class PackageBindingModel
     {
         public int Id { get; set; }
         public int AppId { get; set; }

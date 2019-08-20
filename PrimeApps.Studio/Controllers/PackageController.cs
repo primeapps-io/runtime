@@ -19,21 +19,21 @@ using PrimeApps.Studio.Services;
 
 namespace PrimeApps.Studio.Controllers
 {
-    [Route("api/release")]
-    public class ReleaseController : DraftBaseController
+    [Route("api/package")]
+    public class PackageController : DraftBaseController
     {
         private IConfiguration _configuration;
         private IBackgroundTaskQueue _queue;
-        private IReleaseRepository _releaseRepository;
+        private IPackageRepository _packageRepository;
         private IAppDraftRepository _appDraftRepository;
         private IHistoryDatabaseRepository _historyDatabaseRepository;
         private IHistoryStorageRepository _historyStorageRepository;
         private IPermissionHelper _permissionHelper;
         private IReleaseHelper _releaseHelper;
 
-        public ReleaseController(IConfiguration configuration,
+        public PackageController(IConfiguration configuration,
             IReleaseHelper releaseHelper,
-            IReleaseRepository releaseRepository,
+            IPackageRepository packageRepository,
             IAppDraftRepository appDraftRepository,
             IHistoryDatabaseRepository historyDatabaseRepository,
             IHistoryStorageRepository historyStorageRepository,
@@ -42,7 +42,7 @@ namespace PrimeApps.Studio.Controllers
         {
             _configuration = configuration;
             _releaseHelper = releaseHelper;
-            _releaseRepository = releaseRepository;
+            _packageRepository = packageRepository;
             _historyDatabaseRepository = historyDatabaseRepository;
             _historyStorageRepository = historyStorageRepository;
             _appDraftRepository = appDraftRepository;
@@ -53,7 +53,7 @@ namespace PrimeApps.Studio.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-            SetCurrentUser(_releaseRepository);
+            SetCurrentUser(_packageRepository);
             SetCurrentUser(_historyDatabaseRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_historyStorageRepository, PreviewMode, TenantId, AppId);
             base.OnActionExecuting(context);
@@ -62,12 +62,12 @@ namespace PrimeApps.Studio.Controllers
         [Route("log/{id}"), HttpGet]
         public async Task<IActionResult> Log(int id)
         {
-            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment", RequestTypeEnum.View))
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "package", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var deployment = await _releaseRepository.Get(id);
+            var package = await _packageRepository.Get(id);
 
-            if (deployment == null)
+            if (package == null)
                 return BadRequest();
 
             var dbName = PreviewMode + (PreviewMode == "tenant" ? TenantId : AppId);
@@ -75,10 +75,10 @@ namespace PrimeApps.Studio.Controllers
             var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
             var text = "";
 
-            if (!System.IO.File.Exists($"{path}\\releases\\{dbName}\\{deployment.Version}\\log.txt"))
+            if (!System.IO.File.Exists($"{path}\\releases\\{dbName}\\{package.Version}\\log.txt"))
                 return Ok("Your logs have been deleted...");
 
-            using (var fs = new FileStream($"{path}\\releases\\{dbName}\\{deployment.Version}\\log.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var fs = new FileStream($"{path}\\releases\\{dbName}\\{package.Version}\\log.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             using (var sr = new StreamReader(fs, Encoding.Default))
             {
                 text = ConvertHelper.ASCIIToHTML(sr.ReadToEnd());
@@ -92,10 +92,10 @@ namespace PrimeApps.Studio.Controllers
         [Route("count"), HttpGet]
         public async Task<IActionResult> Count()
         {
-            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment", RequestTypeEnum.View))
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "package", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var count = await _releaseRepository.Count((int)AppId);
+            var count = await _packageRepository.Count((int)AppId);
 
             return Ok(count);
         }
@@ -103,10 +103,10 @@ namespace PrimeApps.Studio.Controllers
         [Route("find"), HttpPost]
         public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
         {
-            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment", RequestTypeEnum.View))
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "package", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var deployments = await _releaseRepository.Find((int)AppId, paginationModel);
+            var deployments = await _packageRepository.Find((int)AppId, paginationModel);
 
             return Ok(deployments);
         }
@@ -114,10 +114,10 @@ namespace PrimeApps.Studio.Controllers
         [Route("get/{id}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
-            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment", RequestTypeEnum.View))
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "package", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var deployment = await _releaseRepository.Get(id);
+            var deployment = await _packageRepository.Get(id);
 
             if (deployment == null)
                 return BadRequest();
@@ -129,37 +129,37 @@ namespace PrimeApps.Studio.Controllers
         [Route("create")]
         public async Task<IActionResult> Create([FromBody]JObject model)
         {
-            if (!_permissionHelper.CheckUserProfile(UserProfile, "publish", RequestTypeEnum.Create))
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "package", RequestTypeEnum.Create))
                 return StatusCode(403);
 
-            var anyProcess = await _releaseRepository.GetActiveProcess((int)AppId);
+            var anyProcess = await _packageRepository.GetActiveProcess((int)AppId);
 
             if (anyProcess != null)
                 return Conflict("Already have a running publish.");
 
             var dbName = PreviewMode + (PreviewMode == "tenant" ? TenantId : AppId);
 
-            var currentBuildNumber = await _releaseRepository.CurrentBuildNumber((int)AppId);
+            var currentBuildNumber = await _packageRepository.Count((int)AppId);
             var version = currentBuildNumber + 1;
 
             var app = await _appDraftRepository.Get((int)AppId);
             var appOptions = JObject.Parse(app.Setting?.Options);
 
-            var releaseModel = new Release()
+            var releaseModel = new Package()
             {
                 AppId = (int)AppId,
                 Version = version.ToString(),
+                Revision = version,
                 StartTime = DateTime.Now,
                 Status = ReleaseStatus.Running,
                 Settings = new JObject
                 {
                     ["clear_all_records"] = appOptions["clear_all_records"],
-                    ["enable_registration"] = appOptions["enable_registration"],
-                    ["type"] = model["type"]
+                    ["enable_registration"] = appOptions["enable_registration"]
                 }.ToString()
             };
 
-            await _releaseRepository.Create(releaseModel);
+            await _packageRepository.Create(releaseModel);
 
             /*
              * Set version number to history_database and history_storage tables tag column.
@@ -179,9 +179,8 @@ namespace PrimeApps.Studio.Controllers
                 await _historyStorageRepository.Update(storageHistory);
             }
 
-
-            if (app.Status != PublishStatus.Published && await _releaseHelper.IsFirstRelease(version))
-                _queue.QueueBackgroundWorkItem(token => _releaseHelper.All((int)AppId, (bool)appOptions["clear_all_records"], model["type"].ToString() == "publish", dbName, version, releaseModel.Id));
+            if (await _releaseHelper.IsFirstRelease(version))
+                _queue.QueueBackgroundWorkItem(token => _releaseHelper.All((int)AppId, (bool)appOptions["clear_all_records"], dbName, version, releaseModel.Id));
             else
             {
                 List<HistoryDatabase> historyDatabase = null;
@@ -193,56 +192,10 @@ namespace PrimeApps.Studio.Controllers
                 if (storageHistory != null && storageHistory.Tag != (int.Parse(releaseModel.Version) - 1).ToString())
                     historyStorages = await _historyStorageRepository.GetDiffs(currentBuildNumber.ToString());
 
-                _queue.QueueBackgroundWorkItem(token => _releaseHelper.Diffs(historyDatabase, historyStorages, (int)AppId, model["type"].ToString() == "publish", dbName, version, releaseModel.Id));
+                _queue.QueueBackgroundWorkItem(token => _releaseHelper.Diffs(historyDatabase, historyStorages, (int)AppId, dbName, version, releaseModel.Id));
             }
 
             return Ok(releaseModel.Id);
         }
-
-        [Route("update/{id}"), HttpPut]
-        public async Task<IActionResult> Update(int id, [FromBody]DeploymentBindingModel deployment)
-        {
-            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment", RequestTypeEnum.Update))
-                return StatusCode(403);
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var deploymentObj = await _releaseRepository.Get(id);
-
-            if (deployment == null)
-                return BadRequest("Component deployment not found.");
-
-            deploymentObj.Status = deployment.Status;
-            deploymentObj.Version = deployment.Version;
-            deploymentObj.StartTime = deployment.StartTime;
-            deploymentObj.EndTime = deployment.EndTime;
-
-            var result = await _releaseRepository.Update(deploymentObj);
-
-            if (result < 0)
-                return BadRequest("An error occurred while update component deployment.");
-
-            return Ok(result);
-        }
-
-        /*[Route("delete/{id}"), HttpDelete]
-        public async Task<IActionResult> Delete(int id)
-        {
-            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment_component", RequestTypeEnum.Delete))
-                return StatusCode(403);
-
-            var function = await _deploymentComponentRepository.Get(id);
-
-            if (function == null)
-                return BadRequest();
-
-            var result = await _deploymentComponentRepository.Delete(function);
-
-            if (result < 0)
-                return BadRequest("An error occurred while deleting an component deployment.");
-
-            return Ok(result);
-        }*/
     }
 }

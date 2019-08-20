@@ -41,7 +41,7 @@ namespace PrimeApps.Studio.Helpers
             bool hasPermission = true;
             switch (apiUrl)
             {
-                case "publish": 
+                case "package": 
                     if (profile == ProfileEnum.Viewer)
                     {
                         hasPermission = false;

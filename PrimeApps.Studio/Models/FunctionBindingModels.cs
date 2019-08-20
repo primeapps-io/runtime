@@ -25,6 +25,6 @@ namespace PrimeApps.Studio.Models
         public FunctionContentType ContentType { get; set; }
 
         [Required]
-        public PublishStatus Status { get; set; }
+        public PublishStatusType Status { get; set; }
     }
 }

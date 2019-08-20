@@ -134,60 +134,56 @@ namespace PrimeApps.Studio.Helpers
                 while (result.MessageType != WebSocketMessageType.Close)
                 {
                     string text;
-                    Release release;
-                    AppDraft app = null;
-                    JObject releaseOptions;
+                    Package package;
+                    //AppDraft app = null;
+                    //JObject releaseOptions;
                     using (var scope = _serviceScopeFactory.CreateScope())
                     {
                         var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
 
-                        using (var releaseRepository = new ReleaseRepository(databaseContext, _configuration))
+                        using (var packageRepository = new PackageRepository(databaseContext, _configuration))
                         using (var appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                         {
                             var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
-                            release = await releaseRepository.Get(releaseId);
-                            releaseOptions = JObject.Parse(release.Settings);
+                            package = await packageRepository.Get(releaseId);
+                            //releaseOptions = JObject.Parse(package.Settings);
 
-                            if (releaseOptions["type"].ToString() == "publish")
-                                app = await appDraftRepository.Get(appId);
+                            /*if (releaseOptions["type"].ToString() == "publish")
+                                app = await appDraftRepository.Get(appId);*/
 
-                            using (var fs = new FileStream($"{path}\\releases\\{dbName}\\{release.Version}\\log.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                            using (var fs = new FileStream($"{path}\\releases\\{dbName}\\{package.Version}\\log.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                             using (var sr = new StreamReader(fs, Encoding.Default))
                             {
                                 text = ConvertHelper.ASCIIToHTML(sr.ReadToEnd());
 
-                                if (release.Status != ReleaseStatus.Succeed && text.Contains("********** Package Created **********"))
+                                if (package.Status != ReleaseStatus.Succeed && text.Contains("********** Package Created **********"))
                                 {
-                                    if (releaseOptions["type"].ToString() != "publish")
+                                    try
                                     {
-                                        try
-                                        {
-                                            release.Status = ReleaseStatus.Succeed;
-                                            await releaseRepository.Update(release);
+                                        package.Status = ReleaseStatus.Succeed;
+                                        await packageRepository.Update(package);
 
-                                            var bucketName = UnifiedStorage.GetPath("releases", previewMode, previewMode == "tenant" ? tenantId : appId, release.Version + "/");
+                                        var bucketName = UnifiedStorage.GetPath("releases", previewMode, previewMode == "tenant" ? tenantId : appId, package.Version + "/");
 
-                                            var _storage = (IUnifiedStorage)hContext.RequestServices.GetService(typeof(IUnifiedStorage));
-                                            await _storage.UploadDirAsync(bucketName, $"{path}releases\\{dbName}\\{release.Version}");
-                                            sr.Close();
-                                            fs.Close();
-                                            
-                                            Directory.Delete($"{path}releases\\{dbName}\\{release.Version}", true);
-                                        }
-                                        catch (Exception e)
-                                        {
-                                            Console.WriteLine(e);
-                                            throw;
-                                        }
+                                        var _storage = (IUnifiedStorage)hContext.RequestServices.GetService(typeof(IUnifiedStorage));
+                                        await _storage.UploadDirAsync(bucketName, $"{path}releases\\{dbName}\\{package.Version}");
+                                        sr.Close();
+                                        fs.Close();
+
+                                        Directory.Delete($"{path}releases\\{dbName}\\{package.Version}", true);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Console.WriteLine(e);
+                                        throw;
                                     }
                                 }
-
-                                if (app != null && app.Status != PublishStatus.Published && text.Contains("********** Publish End**********"))
+                                /*if (app != null && app.Status != PublishStatus.Published && text.Contains("********** Publish End**********"))
                                 {
                                     /*release.Status = ReleaseStatus.Succeed;
                                     release.Published = true;
-                                    await releaseRepository.Update(release);*/
+                                    await releaseRepository.Update(release);//
 
                                     release.Status = ReleaseStatus.Succeed;
                                     await releaseRepository.Update(release);
@@ -213,8 +209,8 @@ namespace PrimeApps.Studio.Helpers
     
                                     var _storage = (IUnifiedStorage)hContext.RequestServices.GetService(typeof(IUnifiedStorage));
                                     await _storage.UploadDirAsync(bucketName, $"{path}\\releases\\{dbName}\\{release.Version}");
-                                    */
-                                }
+                                    //
+                                }*/
                                 else if (text.Contains("Error"))
                                     await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
                             }
@@ -223,7 +219,8 @@ namespace PrimeApps.Studio.Helpers
 
                     await wSocket.SendAsync(CreateWSMessage(text), result.MessageType, result.EndOfMessage, CancellationToken.None);
 
-                    if ((release.Status != ReleaseStatus.Running && releaseOptions["type"].ToString() == "package") || (app != null && app.Status == PublishStatus.Published && releaseOptions["type"].ToString() == "publish"))
+                    //if ((release.Status != ReleaseStatus.Running && releaseOptions["type"].ToString() == "package") || (app != null && app.Status == PublishStatus.Published && releaseOptions["type"].ToString() == "publish"))
+                    if (package.Status != ReleaseStatus.Running)
                         await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
 
                     Thread.Sleep(2000);

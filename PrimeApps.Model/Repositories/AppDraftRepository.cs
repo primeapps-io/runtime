@@ -65,7 +65,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<int> UpdateAuthTheme(int id, JObject model)
         {
-            var appSettings = DbContext.AppSettings.Where(x => x.AppId == id).FirstOrDefault();
+            var appSettings = DbContext.AppSettings.FirstOrDefault(x => x.AppId == id);
             var jsonData = JsonConvert.SerializeObject(model);
             appSettings.AuthTheme = jsonData;
 
@@ -80,7 +80,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<int> UpdateAppTheme(int id, JObject model)
         {
-            var appSettings = DbContext.AppSettings.Where(x => x.AppId == id).FirstOrDefault();
+            var appSettings = DbContext.AppSettings.FirstOrDefault(x => x.AppId == id);
             var jsonData = JsonConvert.SerializeObject(model);
             appSettings.AppTheme = jsonData;
 
@@ -101,12 +101,12 @@ namespace PrimeApps.Model.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<AppDraft>> GetByOrganizationId(int userId, int organizationId, string search = "", int page = 0, PublishStatus status = PublishStatus.NotSet)
+        public async Task<List<AppDraft>> GetByOrganizationId(int userId, int organizationId, string search = "", int page = 0)
         {
             var teamIds = await DbContext.TeamUsers.Where(x => x.UserId == userId && !x.Team.Deleted).Select(x => x.TeamId).ToListAsync();
 
             var appCollabrator = await DbContext.AppCollaborators
-                .Where(x => !x.Deleted && x.AppDraft.OrganizationId == organizationId && (x.UserId == userId || (x.Team != null && teamIds.Contains((int)x.TeamId))) && (!string.IsNullOrEmpty(search) ? x.AppDraft.Label.Contains(search) : true) && (status != PublishStatus.NotSet ? x.AppDraft.Status == status : true))
+                .Where(x => !x.Deleted && x.AppDraft.OrganizationId == organizationId && (x.UserId == userId || (x.Team != null && teamIds.Contains((int)x.TeamId))) && (string.IsNullOrEmpty(search) || x.AppDraft.Label.Contains(search)))
                 .Select(x => new AppDraft
                 {
                     Id = x.AppDraft.Id,
@@ -116,7 +116,6 @@ namespace PrimeApps.Model.Repositories
                     Description = x.AppDraft.Description,
                     Logo = x.AppDraft.Logo,
                     TempletId = x.AppDraft.TempletId,
-                    Status = x.AppDraft.Status,
                     Icon = x.AppDraft.Icon,
                     Color = x.AppDraft.Color
                 })
@@ -128,12 +127,12 @@ namespace PrimeApps.Model.Repositories
             return appCollabrator;
         }
 
-        public async Task<List<AppDraft>> GetAllByUserId(int userId, string search = "", int page = 0, PublishStatus status = PublishStatus.NotSet)
+        public async Task<List<AppDraft>> GetAllByUserId(int userId, string search = "", int page = 0)
         {
             var teamIds = await DbContext.TeamUsers.Where(x => x.UserId == userId && !x.Team.Deleted).Select(x => x.TeamId).ToListAsync();
 
             var appCollabrator = await DbContext.AppCollaborators
-                .Where(x => !x.Deleted && (x.UserId == userId || (x.Team != null && teamIds.Contains((int)x.TeamId))) && (string.IsNullOrEmpty(search) || x.AppDraft.Label.ToLower().Contains(search.ToLower())) && (status == PublishStatus.NotSet || x.AppDraft.Status == status))
+                .Where(x => !x.Deleted && (x.UserId == userId || (x.Team != null && teamIds.Contains((int)x.TeamId))) && (string.IsNullOrEmpty(search) || x.AppDraft.Label.ToLower().Contains(search.ToLower())))
                 .Select(x => x.AppDraft)
                 .Skip(500 * page)
                 .Take(500)

@@ -28,7 +28,7 @@ namespace PrimeApps.Model.Entities.Platform
         public string Handler { get; set; }
 
         [Column("status")]
-        public PublishStatus Status { get; set; }
+        public PublishStatusType Status { get; set; }
 
         [Column("runtime"), Required]
         public FunctionRuntime Runtime { get; set; }

@@ -39,8 +39,7 @@ angular.module('primeapps')
             $scope.appsFilter = {
                 organization_id: $rootScope.currentOrgId,
                 search: null,
-                page: null,
-                status: 0
+                page: null
             };
 
             $scope.openEditModal = function (app) {

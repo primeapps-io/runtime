@@ -1,8 +1,8 @@
-﻿using System.Runtime.Serialization;
+using System.Runtime.Serialization;
 
 namespace PrimeApps.Model.Enums
 {
-    public enum PublishStatus
+    public enum PublishStatusType
     {
         [EnumMember(Value = "")]
         NotSet = 0,
