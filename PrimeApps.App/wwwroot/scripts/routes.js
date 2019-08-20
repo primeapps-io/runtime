@@ -2,6 +2,23 @@
 
 var sectionComponents = {};
 var currentSectionComponentsTemplate = [];
+var replaceDynamicValues = function (str) {
+    var splitUrls = str.split('{appConfigs.');
+
+    if (splitUrls.length > 1) {
+        for (var i in splitUrls) {
+            if (splitUrls.hasOwnProperty(i)) {
+                if (!splitUrls[i])
+                    continue;
+
+                var configObj = splitUrls[i].split('}')[0];
+                str = str.replace('{appConfigs.' + configObj + '}', appConfigs[configObj]);
+            }
+        }
+    }
+
+    return str;
+};
 
 angular.module('primeapps')
     .config(['$stateProvider', '$urlRouterProvider',
@@ -127,10 +144,10 @@ angular.module('primeapps')
                                     for (var i = 0; i < sectionComponent.length; i++) {
                                         var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
                                         angular.forEach(sectionFiles, function (item) {
-                                            files.push(item)
+                                            files.push(replaceDynamicValues(item));
                                         });
 
-                                        currentSectionComponentsTemplate.push(angular.fromJson(sectionComponent[i].content).app.templateUrl);
+                                        currentSectionComponentsTemplate.push(replaceDynamicValues(angular.fromJson(sectionComponent[i].content).app.templateUrl));
                                     }
                                 }
                             }
@@ -166,10 +183,10 @@ angular.module('primeapps')
                                     for (var i = 0; i < sectionComponent.length; i++) {
                                         var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
                                         angular.forEach(sectionFiles, function (item) {
-                                            files.push(item)
+                                            files.push(replaceDynamicValues(item))
                                         });
 
-                                        currentSectionComponentsTemplate.push(angular.fromJson(sectionComponent[i].content).app.templateUrl);
+                                        currentSectionComponentsTemplate.push(replaceDynamicValues(angular.fromJson(sectionComponent[i].content).app.templateUrl));
                                     }
                                 }
                             }
@@ -1361,25 +1378,7 @@ angular.module('primeapps')
                         }
                         return;
                     }
-
-
-                    var replaceDynamicValues = function (str) {
-                        var splitUrls = str.split('{appConfigs.');
-
-                        if (splitUrls.length > 1) {
-                            for (var i in splitUrls) {
-                                if (splitUrls.hasOwnProperty(i)) {
-                                    if (!splitUrls[i])
-                                        continue;
-
-                                    var configObj = splitUrls[i].split('}')[0];
-                                    str = str.replace('{appConfigs.' + configObj + '}', appConfigs[configObj]);
-                                }
-                            }
-                        }
-
-                        return str;
-                    };
+                     
 
                     componentContent.app.templateUrl = replaceDynamicValues(componentContent.app.templateUrl);
 
