@@ -238,6 +238,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<int> ItemDeleteSoft(PicklistItem picklistItem)
         {
             picklistItem.Deleted = true;
+            picklistItem.Inactive = true;
 
             return await DbContext.SaveChangesAsync();
         }
