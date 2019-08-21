@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.SqlServer.Management.Smo;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -21,7 +22,12 @@ namespace PrimeApps.Model.Repositories
             if (current != null)
                 return await DbContext.HistoryStorages.Where(x => x.Id > current.Id).ToListAsync();
 
-            return null;
+            current = await DbContext.HistoryStorages.FirstOrDefaultAsync(x => x.Tag == (int.Parse(min) + 1).ToString());
+
+            if (current == null)
+                return null;
+
+            return await DbContext.HistoryStorages.Where(x => !x.Deleted).ToListAsync();
         }
 
         public async Task<HistoryStorage> GetLast()

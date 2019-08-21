@@ -21,7 +21,13 @@ namespace PrimeApps.Model.Repositories
             var current = await DbContext.HistoryDatabases.FirstOrDefaultAsync(x => x.Tag == min);
             if (current != null)
                 return await DbContext.HistoryDatabases.Where(x => x.Id > current.Id).ToListAsync();
-            return null;
+
+            current = await DbContext.HistoryDatabases.FirstOrDefaultAsync(x => x.Tag == (int.Parse(min) + 1).ToString());
+
+            if (current == null)
+                return null;
+
+            return await DbContext.HistoryDatabases.Where(x => !x.Deleted).ToListAsync();
         }
 
         public async Task<HistoryDatabase> Get(Guid commandId)

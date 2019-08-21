@@ -150,7 +150,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 }));
             };
             $scope.socket.onclose = function (e) {
-                if ($scope.type === 'package' || ($rootScope.goLive.logs.indexOf('********** Publish End**********') === -1 && $rootScope.goLive.logs.contains('********** Package Created **********'))) {
+                if ($rootScope.goLive.logs.contains('********** Package Created **********')) {
                     toastr.success("Your package is ready.");
 
                     $rootScope.goLive.status = false;

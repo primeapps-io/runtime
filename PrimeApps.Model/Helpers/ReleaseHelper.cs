@@ -205,23 +205,21 @@ namespace PrimeApps.Model.Helpers
 
                 if (historyStorages != null)
                 {
-                    foreach (var sql in historyStorages)
+                    foreach (var (value, index) in historyStorages.Select((v, i) => (v, i)))
                     {
-                        AddScript(storagePath, new JObject {["mime_type"] = sql.MimeType, ["operation"] = sql.Operation, ["file_name"] = sql.FileName, ["unique_name"] = sql.UniqueName, ["path"] = sql.Path}.ToJsonString());
-
-                        var bucketName = UnifiedStorage.GetPath("releases", "app", int.Parse(app["id"].ToString()), "/" + version + "/");
-
-                        path = $"{path}releases\\{dbName}\\{version}";
-
-                        if (!Directory.Exists(path))
-                        {
-                            Directory.CreateDirectory(path);
-                            await storage.CopyBucket(bucketName, path);
-                        }
+                        AddScript(storagePath, (index == 0 ? "[" : "") + new JObject {["mime_type"] = value.MimeType, ["operation"] = value.Operation, ["file_name"] = value.FileName, ["unique_name"] = value.UniqueName, ["path"] = value.Path}.ToJsonString() + (index != historyStorages.Count() - 1 ? "," : "]"));
                     }
                 }
 
+                var bucketName = UnifiedStorage.GetPath("releases", "app", int.Parse(app["id"].ToString()), version + "/");
+
                 File.AppendAllText(logPath, "\u001b[92m" + "********** Package Created **********" + "\u001b[39m" + Environment.NewLine);
+
+
+                if (historyStorages != null || historyDatabases != null)
+                    await storage.UploadDirAsync(bucketName, path);
+
+                Directory.Delete(path, true);
 
                 /*if (goLive)
                     PublishHelper.Update(configuration, storage, app, dbName, version, app["status"].ToString() != "published");*/
