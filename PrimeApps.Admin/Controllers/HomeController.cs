@@ -38,7 +38,9 @@ namespace PrimeApps.Admin.Controllers
             var user = platformUserRepository.Get(HttpContext.User.FindFirst("email").Value);
 
             var organizations = await _organizationHelper.Get(user.Id);
+            var titleText = "PrimeApps Admin";
 
+            ViewBag.Title = titleText;
             ViewBag.Organizations = organizations;
             ViewBag.User = user;
 
@@ -48,9 +50,10 @@ namespace PrimeApps.Admin.Controllers
                 if (selectedOrg == null)
                 {
                     ViewBag.ActiveOrganizationId = organizations[0].Id.ToString();
-                    return RedirectToAction("Index", new {id = organizations[0].Id});
+                    return RedirectToAction("Index", new { id = organizations[0].Id });
                 }
 
+                ViewBag.Title = selectedOrg.Name + " - " + titleText;
                 ViewBag.ActiveOrganizationId = id.ToString();
             }
 
@@ -58,6 +61,22 @@ namespace PrimeApps.Admin.Controllers
                 ViewBag.ActiveOrganizationId = organizations[0].Id.ToString();
 
             return View();
+        }
+
+        //[Route("get_release")]
+        //public async Task<IActionResult> GetReleaseOfApp(int id)
+        //{
+            
+        //}
+
+        public async Task<IActionResult> ReloadCahce()
+        {
+            var result = await _organizationHelper.ReloadOrganization();
+
+            if (result)
+                return RedirectToAction("Index", "Home");
+            else
+                return Ok();
         }
 
         [Route("Logout")]
@@ -72,7 +91,7 @@ namespace PrimeApps.Admin.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

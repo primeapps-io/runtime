@@ -20,6 +20,7 @@ namespace PrimeApps.Admin.Helpers
     {
         string Get(string key);
         void Set(string key, string value);
+        void Remove(string key);
     }
 
     public class RedisHelper : IRedisHelper
@@ -40,6 +41,11 @@ namespace PrimeApps.Admin.Helpers
         public void Set(string key, string value)
         {
             _distributedCache.SetString(key, value);
+        }
+
+        public void Remove(string key)
+        {
+            _distributedCache.Remove(key);
         }
     }
 }

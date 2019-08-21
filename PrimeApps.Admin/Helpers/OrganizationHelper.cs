@@ -19,6 +19,7 @@ namespace PrimeApps.Admin.Helpers
     public interface IOrganizationHelper
     {
         Task<List<OrganizationModel>> Get(int userId);
+        Task<bool> ReloadOrganization();
     }
 
     public class OrganizationHelper : IOrganizationHelper
@@ -82,6 +83,19 @@ namespace PrimeApps.Admin.Helpers
                     return organizations;
                 }
             }
+        }
+        
+        public async Task<bool> ReloadOrganization()
+        {
+            var organizationString = _redisHelper.Get(_organizationRedisKey);
+
+            if (!string.IsNullOrEmpty(organizationString))
+            {
+                _redisHelper.Remove(_organizationRedisKey);
+                return true;
+            }
+            else
+                return false;
         }
     }
 }

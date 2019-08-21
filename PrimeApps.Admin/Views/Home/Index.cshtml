@@ -13,7 +13,7 @@
                     foreach (var app in apps)
                     {
                         <div class="col-xl-3 col-lg-6 b-card">
-                            <div class="card card-stats mb-4 mb-xl-0">
+                            <div class="card card-stats mb-4 mb-xl-0" style="cursor:pointer;" onclick="location.href='@Url.Action("Index", "Package", new { appId = app.Id, orgId = ViewBag.ActiveOrganizationId})'">
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col">
@@ -39,6 +39,20 @@
                     <h5 style="color: #8e3232 !important; font-weight: bold;" class="card-title text-muted mb-0">Organization has not any application.</h5>
                 }
             </div>
+            @if (ViewBag.lastVersion != null)
+            {
+                <div class="row">
+                    <div class="col-xl-3 col-lg-6 b-card">
+                        <div class="card card-stats mb-4 mb-xl-0" style="cursor:pointer;">
+                            <div class="card-body">
+                                <div class="row">
+                                    @ViewBag.lastVersion.Version
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>
