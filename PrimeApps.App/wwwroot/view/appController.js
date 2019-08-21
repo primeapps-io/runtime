@@ -16,7 +16,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.isTimetrackerExist = false;
         $scope.isExpenseExist = false;
         $scope.componentModules = $filter('filter')($rootScope.modules, { system_type: 'component' }, true);
-console.log('s')
+
         $rootScope.isMobile = function () {
             var check = false;
             (function (a) {
