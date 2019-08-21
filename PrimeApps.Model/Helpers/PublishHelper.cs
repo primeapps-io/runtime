@@ -8,7 +8,6 @@ using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
-using Devart.Data.PostgreSql;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -25,7 +24,8 @@ namespace PrimeApps.Model.Helpers
             try
             {
                 var PREConnectionString = configuration.GetConnectionString("PlatformDBConnection");
-
+                var postgresPath = configuration.GetValue("AppSettings:PostgresPath", string.Empty);
+                
                 var bucketName = UnifiedStorage.GetPath("releases", "app", int.Parse(app["id"].ToString()), "/" + version + "/");
 
                 var path = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
@@ -51,7 +51,14 @@ namespace PrimeApps.Model.Helpers
                     var dumpText = File.ReadAllText($"{path}\\dumpSql.txt", Encoding.UTF8);
 
                     File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Restoring your database..." + Environment.NewLine);
-                    var restoreResult = ReleaseHelper.RestoreDatabase(PREConnectionString, dumpText, dbName);
+                    
+                    var createDbResult = ReleaseHelper.CreateDatabaseIfNotExists(PREConnectionString, dbName);
+                    
+                    if (!createDbResult)
+                        File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While creating database." + "\u001b[39m" + Environment.NewLine);
+                    
+                    var restoreResult = 
+                        PosgresHelper.Restore(PREConnectionString, dbName,postgresPath, $"{path}\\dumpSql.txt");
 
                     if (!restoreResult)
                         File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While restoring your database." + "\u001b[39m" + Environment.NewLine);
@@ -74,7 +81,7 @@ namespace PrimeApps.Model.Helpers
                 {
                     if (!string.IsNullOrEmpty(sql))
                     {
-                        var restoreResult = ReleaseHelper.ScriptApply(PREConnectionString, dbName, sql);
+                        var restoreResult = PosgresHelper.Run(PREConnectionString, dbName, sql);
 
                         if (!restoreResult)
                             File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While applying script. Script is : (" + sql + ")" + "\u001b[39m" + Environment.NewLine);
@@ -162,7 +169,7 @@ namespace PrimeApps.Model.Helpers
                 {
                     if (!string.IsNullOrEmpty(sql))
                     {
-                        var restoreResult = ReleaseHelper.RunRuntimeScript(PREConnectionString, dbName, sql);
+                        var restoreResult = PosgresHelper.Run(PREConnectionString, dbName, sql);
 
                         if (!restoreResult)
                             File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While applying script. Script is : (" + sql + ")" + "\u001b[39m" + Environment.NewLine);

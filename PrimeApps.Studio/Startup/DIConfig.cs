@@ -76,7 +76,6 @@ namespace PrimeApps.Studio
             services.AddScoped<Email, Email>(); //What the fuck!
             services.AddScoped<Warehouse, Warehouse>(); //What the fuck!
             services.AddScoped<IReportHelper, ReportHelper>();
-            services.AddScoped<IPosgresHelper, PosgresHelper>();
             services.AddScoped<IReleaseHelper, Helpers.ReleaseHelper>();
 
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();

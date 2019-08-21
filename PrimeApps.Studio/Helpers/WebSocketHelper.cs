@@ -4,7 +4,6 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Devart.Data.PostgreSql;
 using Hangfire.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;

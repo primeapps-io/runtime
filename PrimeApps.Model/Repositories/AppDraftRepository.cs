@@ -46,6 +46,43 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<List<AppDraft>> GetUserApps(int userId, int organizationId, string search = "", int page = 0)
+        {
+            var teamIds = await DbContext.TeamUsers.Where(x => x.UserId == userId && !x.Team.Deleted).Select(x => x.TeamId).ToListAsync();
+
+            var appCollabrator = await DbContext.AppCollaborators
+                .Where(x => !x.Deleted && x.AppDraft.OrganizationId == organizationId && (x.UserId == userId || (x.Team != null && teamIds.Contains((int)x.TeamId))) && (string.IsNullOrEmpty(search) || x.AppDraft.Label.Contains(search)))
+                .Select(x => new AppDraft
+                {
+                    Id = x.AppDraft.Id,
+                    OrganizationId = x.AppDraft.OrganizationId,
+                    Name = x.AppDraft.Name,
+                    Label = x.AppDraft.Label,
+                    Description = x.AppDraft.Description,
+                    Logo = x.AppDraft.Logo,
+                    TempletId = x.AppDraft.TempletId,
+                    Icon = x.AppDraft.Icon,
+                    Color = x.AppDraft.Color
+                })
+                .Skip(50 * page)
+                .Take(50)
+                .Distinct()
+                .ToListAsync();
+
+            return appCollabrator;
+        }
+        
+        
+
+        public async Task<AppDraft> GetWithPackages(int id)
+        {
+            return await DbContext.Apps
+                .Include(x => x.Packages)
+                .Where(x => x.Id == id && !x.Deleted)
+                //.Include(x => x.Organization)
+                .FirstOrDefaultAsync();
+        }
+        
         public async Task<int> Create(AppDraft app)
         {
             DbContext.Apps.Add(app);
@@ -99,32 +136,6 @@ namespace PrimeApps.Model.Repositories
                 .Where(x => x.TeamId == id && !x.Deleted)
                 .Select(x => x.AppId)
                 .ToListAsync();
-        }
-
-        public async Task<List<AppDraft>> GetByOrganizationId(int userId, int organizationId, string search = "", int page = 0)
-        {
-            var teamIds = await DbContext.TeamUsers.Where(x => x.UserId == userId && !x.Team.Deleted).Select(x => x.TeamId).ToListAsync();
-
-            var appCollabrator = await DbContext.AppCollaborators
-                .Where(x => !x.Deleted && x.AppDraft.OrganizationId == organizationId && (x.UserId == userId || (x.Team != null && teamIds.Contains((int)x.TeamId))) && (string.IsNullOrEmpty(search) || x.AppDraft.Label.Contains(search)))
-                .Select(x => new AppDraft
-                {
-                    Id = x.AppDraft.Id,
-                    OrganizationId = x.AppDraft.OrganizationId,
-                    Name = x.AppDraft.Name,
-                    Label = x.AppDraft.Label,
-                    Description = x.AppDraft.Description,
-                    Logo = x.AppDraft.Logo,
-                    TempletId = x.AppDraft.TempletId,
-                    Icon = x.AppDraft.Icon,
-                    Color = x.AppDraft.Color
-                })
-                .Skip(50 * page)
-                .Take(50)
-                .Distinct()
-                .ToListAsync();
-
-            return appCollabrator;
         }
 
         public async Task<List<AppDraft>> GetAllByUserId(int userId, string search = "", int page = 0)

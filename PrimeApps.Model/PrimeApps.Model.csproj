@@ -6,7 +6,6 @@
     <OutputType>Library</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Devart.Data.PostgreSql" Version="7.13.1366" />
     <PackageReference Include="Hangfire" Version="1.7.0-beta4" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />

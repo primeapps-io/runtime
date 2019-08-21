@@ -58,7 +58,7 @@ namespace PrimeApps.Admin.Helpers
 
                     foreach (var organizationUser in organizationUsers)
                     {
-                        var apps = await appDraftRepository.GetByOrganizationId(userId, organizationUser.Organization.Id);
+                        var apps = await appDraftRepository.GetUserApps(userId, organizationUser.Organization.Id);
 
                         var organization = new OrganizationModel
                         {

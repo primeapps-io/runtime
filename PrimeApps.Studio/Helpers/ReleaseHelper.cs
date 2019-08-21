@@ -163,7 +163,7 @@ namespace PrimeApps.Studio.Helpers
                 try
                 {
                     var query = $"SELECT * FROM \"public\".history_storages WHERE \"public\".history_storages.tag = '{version.ToString()}'";
-                    var result = PrimeApps.Model.Helpers.ReleaseHelper.GetScriptResult(PREConnectionString, $"app{appId}", query);
+                    var result = PosgresHelper.Read(PREConnectionString, $"app{appId}", query);
 
                     if (result == null)
                     {
@@ -205,8 +205,7 @@ namespace PrimeApps.Studio.Helpers
                 version = version - 1;
 
                 var query = $"SELECT * FROM \"public\".history_database WHERE \"public\".history_database.tag = '{version.ToString()}'";
-                var result = PrimeApps.Model.Helpers.ReleaseHelper.GetScriptResult(PREConnectionString, $"app{appId}", query);
-
+                var result = PosgresHelper.Read(PREConnectionString, $"app{appId}", query);
 
                 if (result == null)
                 {

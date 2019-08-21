@@ -10,7 +10,6 @@
         <PackageReference Include="Aspose.Words" Version="19.1.0" />
         <PackageReference Include="AWSSDK.S3" Version="3.3.101.13" />
         <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.100.1" />
-        <PackageReference Include="Devart.Data.PostgreSql" Version="7.13.1366" />
         <PackageReference Include="dotConnect.Express.for.PostgreSQL.Custom" Version="7.12.1357" />
         <PackageReference Include="Hangfire" Version="1.7.0-beta4" />
         <PackageReference Include="Hangfire.AspNetCore" Version="1.7.0-beta4" />
@@ -35,10 +34,5 @@
     <ItemGroup>
         <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
         <ProjectReference Include="..\PrimeApps.Util\PrimeApps.Util.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <EmbeddedResource Include="devart.key">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </EmbeddedResource>
     </ItemGroup>
 </Project>

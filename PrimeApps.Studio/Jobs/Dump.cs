@@ -11,18 +11,19 @@ namespace PrimeApps.Studio.Jobs
     public class Dump
     {
         private IConfiguration _configuration;
-        private IPosgresHelper _posgresHelper;
 
-        public Dump(IConfiguration configuration, IPosgresHelper posgresHelper)
+        public Dump(IConfiguration configuration)
         {
             _configuration = configuration;
-            _posgresHelper = posgresHelper;
         }
 
         [QueueCustom]
         public void Create(JObject request)
         {
             var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);
+            var postgresPath = _configuration.GetValue("AppSettings:PostgresPath", string.Empty);
+            var dbConnection = _configuration.GetConnectionString("StudioDBConnection");
+
             var appId = (int)request["app_id"];
 
             if (!Directory.Exists(dumpDirectory))
@@ -30,7 +31,7 @@ namespace PrimeApps.Studio.Jobs
 
             try
             {
-                _posgresHelper.Dump("StudioDBConnection", $"app{appId}", dumpDirectory, dumpDirectory);
+                PosgresHelper.Dump(dbConnection, $"app{appId}", postgresPath, dumpDirectory, dumpDirectory);
             }
             catch (Exception ex)
             {
@@ -53,12 +54,15 @@ namespace PrimeApps.Studio.Jobs
         public void Restore(JObject request)
         {
             var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);
+            var postgresPath = _configuration.GetValue("AppSettings:PostgresPath", string.Empty);
+            var dbConnection = _configuration.GetConnectionString("PlatformDBConnection");
+
             var appId = (int)request["app_id"];
             var appIdTarget = !request["app_id_target"].IsNullOrEmpty() ? (int)request["app_id_target"] : 0;
 
             try
             {
-                _posgresHelper.Restore("PlatformDBConnection", $"app{appId}", dumpDirectory, appIdTarget > 0 ? $"app{appIdTarget}" : "", dumpDirectory);
+                PosgresHelper.Restore(dbConnection, $"app{appId}", postgresPath, dumpDirectory, appIdTarget > 0 ? $"app{appIdTarget}" : "", dumpDirectory);
             }
             catch (Exception ex)
             {

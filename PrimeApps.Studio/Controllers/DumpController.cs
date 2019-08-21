@@ -17,14 +17,12 @@ namespace PrimeApps.Studio.Controllers
     public class DumpController : BaseController
     {
         public static int OrganizationId { get; set; }
-        private IPosgresHelper _posgresHelper;
         private IConfiguration _configuration;
         private IAppDraftRepository _appDraftRepository;
         private IHostingEnvironment _hostingEnvironment;
 
-        public DumpController(IPosgresHelper posgresHelper, IConfiguration configuration, IAppDraftRepository appDraftRepository, IHostingEnvironment hostingEnvironment)
+        public DumpController(IConfiguration configuration, IAppDraftRepository appDraftRepository, IHostingEnvironment hostingEnvironment)
         {
-            _posgresHelper = posgresHelper;
             _configuration = configuration;
             _appDraftRepository = appDraftRepository;
             _hostingEnvironment = hostingEnvironment;
@@ -96,17 +94,19 @@ namespace PrimeApps.Studio.Controllers
         public IActionResult Test([FromBody]JObject request)
         {
             var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);
+            var postgresPath = _configuration.GetValue("AppSettings:PostgresPath", string.Empty);
+            var dbConnection = _configuration.GetConnectionString("PlatformDBConnection");
 
             switch ((string)request["command"])
             {
                 case "create":
-                    _posgresHelper.Create("PlatformDBConnection", (string)request["database_name"], dumpDirectory);
+                    PosgresHelper.Create(dbConnection, (string)request["database_name"], postgresPath, dumpDirectory);
                     break;
                 case "drop":
-                    _posgresHelper.Drop("PlatformDBConnection", (string)request["database_name"], dumpDirectory);
+                    PosgresHelper.Drop(dbConnection, (string)request["database_name"], postgresPath, dumpDirectory);
                     break;
                 case "restore":
-                    _posgresHelper.Restore("PlatformDBConnection", (string)request["database_name"], dumpDirectory, (string)request["target_database_name"], dumpDirectory);
+                    PosgresHelper.Restore(dbConnection, (string)request["database_name"], postgresPath, dumpDirectory, (string)request["target_database_name"], dumpDirectory);
                     break;
             }
 

@@ -8,7 +8,6 @@ using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
-using Devart.Data.PostgreSql;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -31,6 +30,7 @@ namespace PrimeApps.Model.Helpers
         public static async Task<bool> All(JObject app, string studioSecret, bool clearAllRecords, string dbName, int version, IConfiguration configuration, IUnifiedStorage storage)
         {
             var PDEConnectionString = configuration.GetConnectionString("StudioDBConnection");
+            var postgresPath = configuration.GetValue("AppSettings:PostgresPath", string.Empty);
             var path = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
             path = $"{path}releases\\{dbName}\\{version}";
@@ -46,9 +46,11 @@ namespace PrimeApps.Model.Helpers
                 File.AppendAllText(logPath, "\u001b[92m" + "********** Create Package **********" + "\u001b[39m" + Environment.NewLine);
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Database sql generating..." + Environment.NewLine);
 
-                var sqlDump = ReleaseHelper.GetSqlDump(PDEConnectionString, dbName, $"{path}\\dumpSql.txt");
+                //var sqlDump = ReleaseHelper.GetSqlDump(PDEConnectionString, dbName, $"{path}\\dumpSql.txt");
 
-                if (string.IsNullOrEmpty(sqlDump))
+                var sqlDumpResult = PosgresHelper.Dump(PDEConnectionString, dbName, postgresPath, $"{path}\\dumpSql.txt");
+
+                if (!sqlDumpResult)
                     File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While creating sql dump script." + "\u001b[39m" + Environment.NewLine);
 
                 /*if (autoDistribute)
@@ -79,7 +81,10 @@ namespace PrimeApps.Model.Helpers
                 */
 
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Dynamic tables clearing..." + Environment.NewLine);
-                var arrayResult = ReleaseHelper.GetAllDynamicTables(PDEConnectionString, dbName);
+                //var arrayResult = ReleaseHelper.GetAllDynamicTables(PDEConnectionString, dbName);
+
+                var readResult = PosgresHelper.Read(PDEConnectionString, dbName, GetAllDynamicTablesSql());
+                var arrayResult = readResult.ResultToJArray();
 
                 if (arrayResult != null)
                 {
@@ -234,26 +239,6 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static bool ScriptApply(string connectionString, string dbName, string sql)
-        {
-            try
-            {
-                var connection = new PgSqlConnection(GetConnectionString(connectionString, dbName));
-                connection.Open();
-
-                var dropCommand = new PgSqlCommand(sql) {Connection = connection};
-                var result = dropCommand.ExecuteReader();
-
-                connection.Close();
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
         public static async Task<bool> AddClientUrl(string authUrl, string token, string url, string logPath = null)
         {
             using (var client = new HttpClient())
@@ -380,7 +365,7 @@ namespace PrimeApps.Model.Helpers
                    "ORDER BY cl.\"table_name\";";
         }
 
-        public static bool SetRecordsIsSample(string connectionString, string dbName, string scriptPath = null)
+        /*public static bool SetRecordsIsSample(string connectionString, string dbName, string scriptPath = null)
         {
             try
             {
@@ -403,7 +388,7 @@ namespace PrimeApps.Model.Helpers
             {
                 return false;
             }
-        }
+        }*/
 
         public static string CleanUpSystemTablesSql()
         {
@@ -425,7 +410,7 @@ namespace PrimeApps.Model.Helpers
                    "DELETE FROM workflow_logs;" + Environment.NewLine;
         }
 
-        public static bool CleanUpTables(string connectionString, string dbName, string scriptPath, JArray tableNames = null)
+        /*public static bool CleanUpTables(string connectionString, string dbName, string scriptPath, JArray tableNames = null)
         {
             try
             {
@@ -453,9 +438,9 @@ namespace PrimeApps.Model.Helpers
             {
                 return false;
             }
-        }
+        }*/
 
-        public static bool CleanUpSystemTables(string connectionString, Location location, string dbName, string scriptPath)
+        /*public static bool CleanUpSystemTables(string connectionString, Location location, string dbName, string scriptPath)
         {
             try
             {
@@ -484,7 +469,7 @@ namespace PrimeApps.Model.Helpers
             {
                 return false;
             }
-        }
+        }*/
 
         public static string GetAllSystemTablesSql()
         {
@@ -500,32 +485,29 @@ namespace PrimeApps.Model.Helpers
         {
             var sqls = new JArray();
 
-            var connection = new PgSqlConnection(GetConnectionString(connectionString, dbName));
-            connection.Open();
-
-            var dropCommand = new PgSqlCommand(GetAllSystemTablesSql()) {Connection = connection};
-            var tableData = dropCommand.ExecuteReader().ResultToJArray();
+            var dropCommand = PosgresHelper.Read(connectionString, dbName, GetAllSystemTablesSql());
+            var tableData = dropCommand.ResultToJArray();
 
             if (!tableData.HasValues) return null;
 
             foreach (var t in tableData)
             {
                 var table = t["table_name"];
-                dropCommand = new PgSqlCommand(GetUserFKColumnsSql(table.ToString())) {Connection = connection};
-                var columns = dropCommand.ExecuteReader().ResultToJArray();
+                dropCommand = PosgresHelper.Read(connectionString, dbName, GetUserFKColumnsSql(table.ToString()));
+                var columns = dropCommand.ResultToJArray();
 
                 if (!columns.HasValues) continue;
 
-                dropCommand = new PgSqlCommand(ColumnIsExistsSql(table.ToString(), "id")) {Connection = connection};
-                var idColumnIsExists = dropCommand.ExecuteReader();
+                dropCommand = PosgresHelper.Read(connectionString, dbName, ColumnIsExistsSql(table.ToString(), "id"));
+                var idColumnIsExists = dropCommand;
                 var idExists = true;
 
                 var fkColumns = (JArray)columns.DeepClone();
 
                 if (!idColumnIsExists.HasRows)
                 {
-                    dropCommand = new PgSqlCommand(GetAllColumnNamesSql(table.ToString())) {Connection = connection};
-                    columns = dropCommand.ExecuteReader().ResultToJArray();
+                    dropCommand = PosgresHelper.Read(connectionString, dbName, GetAllColumnNamesSql(table.ToString()));
+                    columns = dropCommand.ResultToJArray();
 
                     idExists = false;
                 }
@@ -534,8 +516,8 @@ namespace PrimeApps.Model.Helpers
                     columns.Add(new JObject {["column_name"] = "id"});
                 }
 
-                dropCommand = new PgSqlCommand(GetAllRecordsWithColumnsSql(table.ToString(), columns)) {Connection = connection};
-                var records = dropCommand.ExecuteReader().ResultToJArray();
+                dropCommand = PosgresHelper.Read(connectionString, dbName, GetAllRecordsWithColumnsSql(table.ToString(), columns));
+                var records = dropCommand.ResultToJArray();
 
                 foreach (var record in records)
                 {
@@ -547,7 +529,7 @@ namespace PrimeApps.Model.Helpers
             return sqls;
         }
 
-        public static bool SetAllUserFK(string connectionString, Location location, string dbName, string scriptPath = null)
+        /*public static bool SetAllUserFK(string connectionString, Location location, string dbName, string scriptPath = null)
         {
             try
             {
@@ -572,9 +554,9 @@ namespace PrimeApps.Model.Helpers
             }
 
             return true;
-        }
+        }*/
 
-        public static JArray GetAllDynamicTables(string connectionString, string dbName)
+        /*public static JArray GetAllDynamicTables(string connectionString, string dbName)
         {
             try
             {
@@ -591,7 +573,7 @@ namespace PrimeApps.Model.Helpers
             {
                 return null;
             }
-        }
+        }*/
 
         public static string GetUserFKColumnsSql(string tableName)
         {
@@ -681,7 +663,7 @@ namespace PrimeApps.Model.Helpers
                    "WHERE table_name='" + tableName + "' and column_name='" + columnName + "';";
         }
 
-        public static object GetScriptResult(string connectionString, string dbName, string script)
+        /*public static object GetScriptResult(string connectionString, string dbName, string script)
         {
             try
             {
@@ -695,10 +677,10 @@ namespace PrimeApps.Model.Helpers
             {
                 return null;
             }
-        }
+        }*/
 
 
-        public static bool RunRuntimeScript(string connectionString, string dbName, string script)
+        /*public static bool RunRuntimeScript(string connectionString, string dbName, string script)
         {
             try
             {
@@ -714,23 +696,14 @@ namespace PrimeApps.Model.Helpers
             {
                 return false;
             }
-        }
+        }*/
 
         public static bool CreateDatabaseIfNotExists(string connectionString, string dbName)
         {
             try
             {
-                var connection = new PgSqlConnection(GetConnectionString(connectionString, "postgres"));
-                connection.Open();
-
-                var dropCommand = new PgSqlCommand($"DROP DATABASE IF EXISTS {dbName};");
-                dropCommand.Connection = connection;
-                dropCommand.ExecuteReader();
-
-                var createCommand = new PgSqlCommand($"CREATE DATABASE {dbName};");
-                createCommand.Connection = connection;
-                createCommand.ExecuteReader();
-                connection.Close();
+                PosgresHelper.Run(connectionString, "postgres", $"DROP DATABASE IF EXISTS {dbName};");
+                PosgresHelper.Run(connectionString, "postgres", $"CREATE DATABASE {dbName};");
 
                 return true;
             }
@@ -764,18 +737,13 @@ namespace PrimeApps.Model.Helpers
                     };
                 }
 
-                var connection = new PgSqlConnection(GetConnectionString(connectionString, "postgres"));
-                connection.Open();
                 foreach (var sql in sqls)
                 {
                     if (!string.IsNullOrEmpty(scriptPath))
                         File.AppendAllText(scriptPath, sql + Environment.NewLine);
 
-                    var terminateCommand = new PgSqlCommand(sql.ToString()) {Connection = connection};
-                    terminateCommand.ExecuteReader();
+                    PosgresHelper.Run(connectionString, "postgres", sql.ToString());
                 }
-
-                connection.Close();
 
                 return true;
             }
@@ -785,7 +753,7 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static string GetSqlDump(string connectionString, string database, string scriptPath = null)
+        /*public static string GetSqlDump(string connectionString, string database, string scriptPath = null)
         {
             try
             {
@@ -805,9 +773,9 @@ namespace PrimeApps.Model.Helpers
             {
                 return null;
             }
-        }
+        }*/
 
-        public static bool RestoreDatabase(string connectionString, string dumpSql, string database)
+        /*public static bool RestoreDatabase(string connectionString, string dumpSql, string database)
         {
             try
             {
@@ -815,12 +783,7 @@ namespace PrimeApps.Model.Helpers
                 if (!result)
                     return false;
 
-                var connection = new PgSqlConnection(GetConnectionString(connectionString, database));
-
-                connection.Open();
-                var dump = new PgSqlDump {Connection = connection, DumpText = dumpSql};
-                dump.Restore();
-                connection.Close();
+               PosgresHelper.Restore(connectionString, database, );
 
                 return true;
             }
@@ -828,7 +791,7 @@ namespace PrimeApps.Model.Helpers
             {
                 return false;
             }
-        }
+        }*/
 
         public static string CreateSettingsAppNameSql(string name)
         {
@@ -881,20 +844,13 @@ namespace PrimeApps.Model.Helpers
             {
                 var sqls = CreatePlatformAppSql(app, secret);
 
-                var connection = new PgSqlConnection(GetConnectionString(connectionString, "platform"));
-                connection.Open();
-
                 foreach (var sql in sqls)
                 {
-                    var dropCommand = new PgSqlCommand(sql.ToString()) {Connection = connection};
-
                     if (!string.IsNullOrEmpty(scriptPath))
                         File.AppendAllText(scriptPath, sql.ToString() + Environment.NewLine);
 
-                    dropCommand.ExecuteReader();
+                    PosgresHelper.Run(connectionString, "platform", sql.ToString());
                 }
-
-                connection.Close();
 
                 return true;
             }

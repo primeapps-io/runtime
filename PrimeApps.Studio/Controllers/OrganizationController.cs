@@ -195,7 +195,7 @@ namespace PrimeApps.Studio.Controllers
                     page = (int)request["page"];
             }
 
-            var apps = await _appDraftRepository.GetByOrganizationId(AppUser.Id, (int)request["organization_id"], search, page);
+            var apps = await _appDraftRepository.GetUserApps(AppUser.Id, (int)request["organization_id"], search, page);
 
 
             return Ok(apps);
@@ -209,7 +209,7 @@ namespace PrimeApps.Studio.Controllers
             if (organization == null)
                 return BadRequest(ApiResponseMessages.ORGANIZATION_NOT_FOUND);
 
-            var organizationApps = await _appDraftRepository.GetByOrganizationId(id, AppUser.Id);
+            var organizationApps = await _appDraftRepository.GetUserApps(id, AppUser.Id);
 
             var organizationDTO = new OrganizationModel
             {
