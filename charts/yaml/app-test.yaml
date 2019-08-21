@@ -28,6 +28,15 @@ data:
   GoogleMapsApiKey: "AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o"
   SentryDsn: "https://6689a455217f446994a756650c03014e:95a248958d7e4affba79aa3157e2c7b7@log.primeapps.io/13"
 ---
+apiVersion: v1
+data:
+  aspnetapp.pfx: MIIEcgIBAzCCBDgGCSqGSIb3DQEHAaCCBCkEggQlMIIEITCCAxcGCSqGSIb3DQEHBqCCAwgwggMEAgEAMIIC/QYJKoZIhvcNAQcBMBwGCiqGSIb3DQEMAQYwDgQIkrrncSzDlUoCAggAgIIC0B/WII3vH0is31fWboRH4BfwLxqd+VvRqFZLK7Hno6dFdX3b7Aus8TpRPbCsI7qKITNz6YkP8ep8B9U4jOZUbSrRF5mpAOMwNaxiY/rwva3oz4wXOPo3QIEGqg+bqVVFOyjvckwe6u8O75okmPYEjaGXXXBOv2B5rt8Jaq06fC13ChTlBGlwAWDELLTjCVL1fo4+YmtC8FMsEhngMUvFvb0WfZd99fJmGOQHlbWaxiBlyVrjPHFxFzTcMmRi3hVCjbZm2xgbBCBZl0h8XTUaGyw5hPZ22j/SILyEAsqVK+/Xsvn3RBsd+FPpUnwFraNAAwNehpm2pLOEqA1RLgZgjvzTeaDdhrA+FpFhc/V3JJrBm0+YqbUFEArWKtFPrUUEj77kutZqgDcJs05pOeju3TQm6R2LRRGmnr+hlbz23HuS3ja3QAGNUUXiNeSggXBMecaz8PomIECaU2iF/7pWbguhSMP7JxCvw5+S7LgpNc5wpho6K5Si8tMlb7BzFjbdFoVYtc6agUB4bX/dn3ijWOobTUTkSLxyVzfNfyDJOUCo0RLChkHGJaBlEDBeJntxg2rF4IUTEdXPmz7G4ymudJ2u8Hg3sl4s/V+aqm5uR5ba72rZLB3Rs+bpgYomjuGRwkVev+v1EJd7FWSy99nMRwzR7EoXK9W59p8Ee5J6y3PM64VOmdB9cYMrd9G2PPSBhIRDkIiJdojGT+FEpjCrhmwEWOueWkXVa+I7tzRkJPkjSfRlPaGfNdEiXZDgD8stjmrLF6Wjg3/gX7+WkPuNNASuJ8xNhZEafhn100OnGCesCvXP6Tub3okEWMd5dAOyVq3r4XMqrSgVvQ6rj2LiorUFhk+K88cBGpI21/p0fonUrokFvC4O2PlTPwoPR1ytX57+7Vu8w+1t4vn4JbKSwqjY54KhfU0ZcD+83mBuT/dGWo8p3WV5VetrEItEaRvXTTCCAQIGCSqGSIb3DQEHAaCB9ASB8TCB7jCB6wYLKoZIhvcNAQwKAQKggbQwgbEwHAYKKoZIhvcNAQwBAzAOBAhY/tpYq9e7TwICCAAEgZBz/H0eL9NjxUiXUSXWRy9lPFpdQQKLSV4Lrp0EEuu/C7TlT6ttnr0ULmmXHhAEQhP6poZtLZHuyDdoU9PvNzBn5TDIgC2KuvCyVbIwTqhO6lLS6CR7qWl4gXVEMMmbw97bO3lx3QmyokNUnf3Pwd8ArIMACwgJvwi6VqDV/LZBSA9zMHX+bHa4kde6OVLEhjkxJTAjBgkqhkiG9w0BCRUxFgQURNjLA27hAeB2sl8e9HZmKMddxFowMTAhMAkGBSsOAwIaBQAEFNgHUQjP2Ck4YhSzOq0FoFEmhrlHBAjqW6pvvZTg8wICCAA=
+kind: Secret
+metadata:
+  name: primeapps-app-test-selfsigned-ssl
+  namespace: primeapps
+type: Opaque
+---
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -45,10 +54,19 @@ spec:
       labels:
         k8s-app: primeapps-app-test
     spec:
+      volumes:
+        - name: "self-signed-ssl"
+          secret:
+            secretName: primeapps-app-test-selfsigned-ssl
       containers:
         - name: primeapps-app-test
           image: primeapps/primeapps-app:1.19.211.1
+          volumeMounts:
+            - mountPath: "/etc/self-signed-ssl"
+              name: self-signed-ssl
           env:
+            - name: ASPNETCORE_Kestrel__Certificates__Default__Path
+              value: /etc/self-signed-ssl/aspnetapp.pfx
             - name: ConnectionStrings__TenantDBConnection
               valueFrom:
                 configMapKeyRef:
@@ -188,12 +206,12 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/server-snippet: |-
-      add_header X-Robots-Tag "noindex, nofollow"
+      add_header X-Robots-Tag "noindex, nofollow";
 spec:
   tls:
     - hosts:
         - "*.test.primeapps.app"
-      secretName: primeapps-app-wildcard-ssl
+      secretName: primeapps-test-wildcard-ssl
   rules:
     - host: "*.test.primeapps.app"
       http:
