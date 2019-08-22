@@ -7,6 +7,8 @@ namespace PrimeApps.Model.Repositories.Interfaces
     {
         Task<int> Count(int appId);
         Task<Release> Get(int id);
+        Task<Release> GetByAppId(int appId);
+        Task<bool> IsThereRunningProcess(int appId);
         Task<Release> GetByVersion(int version);
         Task<int> Create(Release package);
         Task<int> Update(Release package);

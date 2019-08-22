@@ -11,6 +11,7 @@ using PrimeApps.Admin.Services;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Util.Storage;
+using PublishHelper = PrimeApps.Admin.Helpers.PublishHelper;
 
 namespace PrimeApps.Admin
 {
@@ -55,6 +56,7 @@ namespace PrimeApps.Admin
             services.AddHostedService<QueuedHostedService>();
             services.AddScoped<IRedisHelper, RedisHelper>();
             services.AddScoped<IOrganizationHelper, OrganizationHelper>();
+            services.AddScoped<IPublishHelper, PublishHelper>();
 
             /*services.AddScoped<IRecordHelper, Helpers.RecordHelper>();
             services.AddScoped<IAuditLogHelper, AuditLogHelper>();

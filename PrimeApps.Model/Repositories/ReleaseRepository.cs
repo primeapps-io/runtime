@@ -5,6 +5,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using System.Linq;
 using System.Threading.Tasks;
 using PrimeApps.Model.Entities.Platform;
+using System;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -13,7 +14,7 @@ namespace PrimeApps.Model.Repositories
         public ReleaseRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
         {
         }
-        
+
         public async Task<int> Count(int appId)
         {
             return await DbContext.Releases
@@ -28,6 +29,34 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<Release> GetByAppId(int appId)
+        {
+            return await DbContext.Releases
+                .Where(x => !x.Deleted && x.AppId == appId && x.Status == Enums.ReleaseStatus.Succeed)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<int> GetLastVersion(int appId)
+        {
+            var result = await DbContext.Releases
+                .Where(x => !x.Deleted && x.AppId == appId && x.Status == Enums.ReleaseStatus.Succeed)
+                .OrderByDescending(x => x.Version)
+                .FirstOrDefaultAsync();
+
+            if (result != null)
+                return Convert.ToInt32(result.Version);
+            else
+                return -1;
+        }
+
+        public async Task<bool> IsThereRunningProcess(int appId)
+        {
+            var result = await DbContext.Releases
+                .Where(x => !x.Deleted && x.AppId == appId && x.Status == Enums.ReleaseStatus.Running)
+                .AnyAsync();
+
+            return result;
+        }
         public async Task<Release> GetByVersion(int version)
         {
             return await DbContext.Releases

@@ -192,7 +192,7 @@ namespace PrimeApps.Model.Helpers
             var logPath = $"{path}\\log.txt";
             var scriptPath = $"{path}\\scripts.txt";
             var storagePath = $"{path}\\storage.txt";
-
+            
             try
             {
                 File.AppendAllText(logPath, "\u001b[92m" + "********** Create Package **********" + "\u001b[39m" + Environment.NewLine);

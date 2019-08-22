@@ -15,15 +15,18 @@ namespace PrimeApps.Admin.Controllers
     {
         private readonly IHttpContextAccessor _context;
         private readonly IOrganizationHelper _organizationHelper;
+        private readonly IPublishHelper _publishHelper;
         private readonly IApplicationRepository _applicationRepository;
 
-        public PackageController(IHttpContextAccessor context, IOrganizationHelper organizationHelper, IApplicationRepository applicationRepository)
+        public PackageController(IHttpContextAccessor context, IOrganizationHelper organizationHelper, IPublishHelper publishHelper, IApplicationRepository applicationRepository)
         {
             _context = context;
             _organizationHelper = organizationHelper;
+            _publishHelper = publishHelper;
             _applicationRepository = applicationRepository;
         }
 
+        [Route("package")]
         public async Task<IActionResult> Index(int? appId, int? orgId)
         {
             var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
@@ -44,7 +47,7 @@ namespace PrimeApps.Admin.Controllers
                 }
 
                 var allVersions = await packageRepository.GetAll((int)appId);
-                var lastVersion = allVersions.OrderByDescending(x => x.Id).FirstOrDefault(x => x.AppId == appId);
+                var lastVersion = allVersions.LastOrDefault(x => x.AppId == appId);
 
                 ViewBag.allVersions = allVersions;
                 ViewBag.lastVersion = lastVersion;
@@ -52,12 +55,16 @@ namespace PrimeApps.Admin.Controllers
                 return View();
             }
 
-            return RedirectToAction("Index", "Home"); 
+            return RedirectToAction("Index", "Home");
         }
 
-        public async Task<IActionResult> Publish(int appId, int orgId)
+        [Route("publish")]
+        public async Task<IActionResult> Publish(int appId)
         {
+            if (appId < 0)
+                return RedirectToAction("Index", "Package");
 
+             //TODO
 
             return Ok();
         }

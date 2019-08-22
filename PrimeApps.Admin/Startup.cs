@@ -97,7 +97,7 @@ namespace PrimeApps.Admin
                     LanguageViewLocationExpanderFormat.Suffix,
                     opts => { opts.ResourcesPath = "Localization"; })
                 .AddDataAnnotationsLocalization();
-            
+
             services.AddMemoryCache();
 
             services.AddRouting(options => options.LowercaseUrls = true);
@@ -110,6 +110,12 @@ namespace PrimeApps.Admin
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
+                app.UseExceptionHandler("");
+            }
+            else
+            {
+                app.UseExceptionHandler("");
+                app.UseHsts();
             }
 
             /*using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
