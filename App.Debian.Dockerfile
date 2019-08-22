@@ -26,7 +26,7 @@ ENV ASPNETCORE_HTTPS_PORT=443
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password="1q2w3e4r5t"
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path="aspnetapp.pfx"
 
-# Trust kubernetes CA certificate
+# Trust Kubernetes CA certificate
 RUN mkdir -p /usr/local/share/ca-certificates/ && cp ca.crt /usr/local/share/ca-certificates/kubernetes_ca.crt
 RUN chmod 777 /usr/local/share/ca-certificates/kubernetes_ca.crt
 RUN update-ca-certificates --fresh
