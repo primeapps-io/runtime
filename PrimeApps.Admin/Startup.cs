@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon;
+using Amazon.Runtime;
+using Amazon.S3;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -101,6 +104,20 @@ namespace PrimeApps.Admin
             services.AddMemoryCache();
 
             services.AddRouting(options => options.LowercaseUrls = true);
+
+            var storageUrl = Configuration.GetValue("AppSettings:StorageUrl", string.Empty);
+
+            if (!string.IsNullOrEmpty(storageUrl))
+            {
+                var awsOptions = Configuration.GetAWSOptions();
+                awsOptions.DefaultClientConfig.RegionEndpoint = RegionEndpoint.EUWest1;
+                awsOptions.DefaultClientConfig.ServiceURL = storageUrl;
+                var storageAccessKey = Configuration.GetValue("AppSettings:StorageAccessKey", string.Empty);
+                var storageSecretKey = Configuration.GetValue("AppSettings:StorageSecretKey", string.Empty);
+                awsOptions.Credentials = new BasicAWSCredentials(storageAccessKey, storageSecretKey);
+                services.AddDefaultAWSOptions(awsOptions);
+                services.AddAWSService<IAmazonS3>();
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
