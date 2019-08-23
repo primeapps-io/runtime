@@ -54,6 +54,16 @@ namespace PrimeApps.Admin.Helpers
                     var appJObject = JObject.FromObject(app);
                     var appName = $"app{appId}";
                     var lastPackageVersion = Convert.ToInt32(packages.Last().Version.ToString());
+                     
+                    var releaseModel = new Release()
+                    {
+                        AppId = appId,
+                        StartTime = DateTime.Now,
+                        Status = Model.Enums.ReleaseStatus.Running,
+                        Version = lastPackageVersion.ToString(),
+                        //Settings=""
+                    };
+
 
                     if (!isThereTempDatabase)//Temp Update
                     {
@@ -74,14 +84,6 @@ namespace PrimeApps.Admin.Helpers
                                 if (package != null)
                                     currentPackages.Add(package);
                             }
-
-                            var releaseModel = new Release()
-                            {
-                                AppId = appId,
-                                StartTime = DateTime.Now,
-                                Status = Model.Enums.ReleaseStatus.Running,
-                                Version = lastPackageVersion.ToString()
-                            };
 
                             var releaseResult = await releaseRepository.Create(releaseModel);
 
@@ -111,14 +113,7 @@ namespace PrimeApps.Admin.Helpers
                         }
                     }
                     else //Temp Create
-                    {
-                        var releaseModel = new Release()
-                        {
-                            AppId = appId,
-                            StartTime = DateTime.Now,
-                            Status = Model.Enums.ReleaseStatus.Running,
-                            Version = lastPackageVersion.ToString()
-                        };
+                    { 
 
                         var releaseResult = await releaseRepository.Create(releaseModel);
 

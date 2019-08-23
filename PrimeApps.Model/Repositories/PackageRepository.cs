@@ -42,7 +42,7 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.Packages
                 .Where(x => x.AppId == appId && !x.Deleted)
-                .OrderBy(x => x.Version).ToListAsync();
+                .OrderBy(x => x.Id).ToListAsync();
         }
 
         public async Task<Package> GetByVersion(int version)
