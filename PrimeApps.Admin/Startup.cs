@@ -108,14 +108,7 @@ namespace PrimeApps.Admin
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
-                app.UseExceptionHandler("");
-            }
-            else
-            {
-                app.UseExceptionHandler("");
-                app.UseHsts();
+                app.UseDeveloperExceptionPage(); 
             }
 
             /*using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
