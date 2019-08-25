@@ -7,6 +7,7 @@ keywords:
   - low-code
   - apaas
 home: https://www.primeappps.io/
+icon: https://auth.primeapps.io/images/logo.png
 sources:
   - https://github.com/primeapps-io/pre
 maintainers:
