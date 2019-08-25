@@ -47,6 +47,8 @@ redis:
   password: "pAssW0rd987c"
   global:
     storageClass: "standard"
+  storage:
+    size: "8Gi"
 
 minio:
   install: true
@@ -55,3 +57,4 @@ minio:
   secretKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
   persistence:
     storageClass: "standard"
+    size: "20Gi"
