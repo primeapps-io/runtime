@@ -1,0 +1,49 @@
+# Default values for postgres-operator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+replicaCount: 1
+
+image:
+  repository: crunchydata/postgres-operator
+  tag: centos7-3.5.2
+  pullPolicy: IfNotPresent
+
+env:
+  debug: "true"
+  ccp_image_prefix: "crunchydata"
+  ccp_image_tag: "centos7-9.6.12-2.3.1"
+  co_image_prefix: "crunchydata"
+  co_image_tag: "centos7-3.5.2"
+  tls_no_verify: false
+
+storage:
+  backup:
+    class: "standard"
+    size: "20Gi"
+  primary:
+    class: "standard"
+    size: "20Gi"
+  secondary:
+    class: "standard"
+    size: "20Gi"
+
+service:
+  type: ClusterIP
+  port: 8443
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+serviceAccount:
+  name: "postgres-operator"
+  create: "true"
+
+rbac:
+  create: "true"
+
+nameOverride: "pgo"

@@ -1,0 +1,269 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: primeapps-studio-config
+  namespace: primeapps
+data:
+  TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
+  PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+  StudioDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=studio;command timeout=0;keepalive=30;"
+  RedisConnection: "cache-redis-master.cache:6379,password=pr!m€Appsi0r,defaultDatabase=1"
+  StorageUrl: "https://storage.primeapps.io"
+  StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
+  StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
+  EnableJobs: "true"
+  EmailSMTPEnableSsl: "true"
+  EmailSMTPHost: "smtp.sendgrid.net"
+  EmailSMTPPort: "587"
+  EmailSMTPUser: "apikey"
+  EmailSMTPPassword: "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"
+  TestMode: "false"
+  AuthenticationServerURL: "https://auth.primeapps.io"
+  ClientId: "primeapps_studio"
+  ClientSecret: "secret"
+  ForwardHeaders: "true"
+  HttpsRedirection: "true"
+  PreviewUrl: "https://preview.primeapps.io"
+  KubernetesClusterRootUrl: "https://d5de4cad6841d39174e78377e1551f98.sk1.eu-west-1.eks.amazonaws.com"
+  KubernetesClusterAccessToken: "eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJla3MtYWRtaW4tdG9rZW4ta2ZxcGciLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZWtzLWFkbWluIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiYWNjODkyYjctNTRmZC0xMWU5LWFkZDMtMDYxMmIxOTc5YjIwIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmVrcy1hZG1pbiJ9.j3rAlfrkjPiJxcleefpCF1P2E8oQNwvLe8ymW8sR_9N7QkTRRkyHLYVkvbGIL2gj-gzZ3itBeKoQ417VFn5LcybeE216ixxfHRIErnXZrTuatspSrIPM6D27VaBmUZLbYLkLZBW0SBKx0SBy8bJVmSu1LmiI-46d9cit4zmBZRYfrX0-WWq4uU0HUgo8D36dA5LC6_nnJ3xzbMs5VeyLPc3Z3UhQoDExcmxWUBDsbf3rvFQ85mj5rxXW0Y0JiHAHVKxKFrp3qidjlnikvFIZ905mpAyqmZksVZm4IOj5axX1gZ4eGLJRxPxrskNBZRM8PeAKxM6Gj1G8qgzkgj6b_Q"
+  GiteaEnabled: "true"
+  GiteaUrl: "https://git.primeapps.io"
+  GiteaEmail: "primeapps"
+  GiteaPassword: "pr!m€Appsi0g"
+  GiteaDirectory: "/data/git/"
+  PostgresPath: "/usr/bin/"
+  DumpDirectory: "/data/dump/"
+  SentryDsn: "https://a6d7a462d9184c5698ab07aa38b8a896:a915b64d63574d29b98998a69cbdc848@log.primeapps.io/2"
+---
+apiVersion: v1
+data:
+  aspnetapp.pfx: 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
+kind: Secret
+metadata:
+  name: primeapps-studio-selfsigned-ssl
+  namespace: primeapps
+type: Opaque
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: primeapps-studio
+  namespace: primeapps
+  labels:
+    k8s-app: "primeapps-studio"
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      k8s-app: primeapps-studio
+  template:
+    metadata:
+      labels:
+        k8s-app: primeapps-studio
+    spec:
+      volumes:
+        - name: "self-signed-ssl"
+          secret:
+            secretName: primeapps-auth-test-selfsigned-ssl
+      imagePullSecrets:
+        - name: image-pull-secret
+      containers:
+        - name: primeapps-studio
+          image: primeappsadmin/primeapps-studio:1.19.132.2
+          volumeMounts:
+            - mountPath: "/etc/self-signed-ssl"
+              name: self-signed-ssl
+          env:
+            - name: ASPNETCORE_Kestrel__Certificates__Default__Path
+              value: /etc/self-signed-ssl/aspnetapp.pfx
+            - name: ConnectionStrings__TenantDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: TenantDBConnection
+            - name: ConnectionStrings__PlatformDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: PlatformDBConnection
+            - name: ConnectionStrings__StudioDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: StudioDBConnection
+            - name: ConnectionStrings__RedisConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-config
+                  key: RedisConnection
+            - name: AppSettings__StorageUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: StorageUrl
+            - name: AppSettings__StorageAccessKey
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: StorageAccessKey
+            - name: AppSettings__StorageSecretKey
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: StorageSecretKey
+            - name: AppSettings__EnableJobs
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: EnableJobs
+            - name: AppSettings__EmailSMTPEnableSsl
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: EmailSMTPEnableSsl
+            - name: AppSettings__EmailSMTPHost
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: EmailSMTPHost
+            - name: AppSettings__EmailSMTPPort
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: EmailSMTPPort
+            - name: AppSettings__EmailSMTPUser
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: EmailSMTPUser
+            - name: AppSettings__EmailSMTPPassword
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: EmailSMTPPassword
+            - name: AppSettings__TestMode
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: TestMode
+            - name: AppSettings__AuthenticationServerURL
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: AuthenticationServerURL
+            - name: AppSettings__ClientId
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: ClientId
+            - name: AppSettings__ClientSecret
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: ClientSecret
+            - name: AppSettings__ForwardHeaders
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: ForwardHeaders
+            - name: AppSettings__HttpsRedirection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: HttpsRedirection
+            - name: AppSettings__PreviewUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: PreviewUrl
+            - name: AppSettings__KubernetesClusterRootUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: KubernetesClusterRootUrl
+            - name: AppSettings__KubernetesClusterAccessToken
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: KubernetesClusterAccessToken
+            - name: AppSettings__GiteaEnabled
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: GiteaEnabled
+            - name: AppSettings__GiteaUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: GiteaUrl
+            - name: AppSettings__GiteaEmail
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: GiteaEmail
+            - name: AppSettings__GiteaPassword
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: GiteaPassword
+            - name: AppSettings__GiteaDirectory
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: GiteaDirectory
+            - name: AppSettings__PostgresPath
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: PostgresPath
+            - name: AppSettings__DumpDirectory
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: DumpDirectory
+            - name: Sentry__Dsn
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: SentryDsn
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: primeapps-studio-service
+  namespace: primeapps
+spec:
+  type: "ClusterIP"
+  selector:
+    k8s-app: primeapps-studio
+  ports:
+    - name: "http"
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: primeapps-studio-ingress
+  namespace: primeapps
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/server-snippet: |-
+      add_header X-Robots-Tag "noindex, nofollow"
+spec:
+  tls:
+    - hosts:
+        - studio.primeapps.io
+      secretName: primeapps-wildcard-ssl
+  rules:
+    - host: studio.primeapps.io
+      http:
+        paths:
+          - path: "/"
+            backend:
+              serviceName: primeapps-studio-service
+              servicePort: 80

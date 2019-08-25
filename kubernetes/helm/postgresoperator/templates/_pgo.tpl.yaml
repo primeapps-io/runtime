@@ -1,0 +1,75 @@
+{{- define "postgres-operator.config" -}}
+Cluster:
+  PrimaryNodeLabel:
+  ReplicaNodeLabel:
+  CCPImagePrefix:  {{ .Values.env.ccp_image_prefix }}
+  Metrics:  true
+  Badger:  false
+  CCPImageTag:  {{ .Values.env.ccp_image_tag }}
+  Port:  5432
+  User:  primeapps
+  Database:  prod
+  PasswordAgeDays:  0
+  PasswordLength:  8
+  Strategy:  1
+  Replicas:  0
+  ArchiveMode:  true
+  ArchiveTimeout:  60
+  ServiceType:  LoadBalancer
+  Backrest:  true
+  BackrestPort:  2022
+  Autofail:  false
+  AutofailReplaceReplica:  false
+  LogStatement:  none
+  LogMinDurationStatement:  60000
+PrimaryStorage: primarystorage
+XlogStorage: secondarystorage
+BackupStorage: backupstorage
+ReplicaStorage: primarystorage
+BackrestStorage: backupstorage
+Storage:
+  backupstorage:
+    AccessMode:  ReadWriteMany
+    Size:  "{{.Values.storage.backup.size}}"
+    StorageType:  dynamic
+    StorageClass:  "{{.Values.storage.backup.class}}"
+    SupplementalGroups:  65534
+  primarystorage:
+    AccessMode:  ReadWriteOnce
+    Size:  "{{.Values.storage.primary.size}}"
+    StorageType:  dynamic
+    StorageClass:  "{{.Values.storage.primary.class}}"
+    Fsgroup:  26
+  secondarystorage:
+    AccessMode:  ReadWriteOnce
+    Size:  "{{.Values.storage.secondary.size}}"
+    StorageType:  dynamic
+    StorageClass:  "{{.Values.storage.secondary.class}}"
+    Fsgroup:  26
+DefaultContainerResources:
+DefaultLoadResources:
+DefaultLspvcResources:
+DefaultRmdataResources:
+DefaultBackupResources:
+DefaultPgbouncerResources:
+DefaultPgpoolResources:
+ContainerResources:
+  small:
+    RequestsMemory:  512Mi
+    RequestsCPU:  0.1
+    LimitsMemory:  512Mi
+    LimitsCPU:  0.1
+  large:
+    RequestsMemory:  2Gi
+    RequestsCPU:  2.0
+    LimitsMemory:  2Gi
+    LimitsCPU:  4.0
+Pgo:
+  AutofailSleepSeconds:  9
+  PreferredFailoverNode:
+  Audit:  true
+  LSPVCTemplate:  /pgo-config/pgo.lspvc-template.json
+  LoadTemplate:  /pgo-config/pgo.load-template.json
+  COImagePrefix:  {{ .Values.env.co_image_prefix }}
+  COImageTag:  {{ .Values.env.co_image_tag }}
+{{- end -}}

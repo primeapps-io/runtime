@@ -1,0 +1,57 @@
+# Default values for primeapps.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# global values can be accessed from any chart
+global:
+  tls:
+    type: "letsencrypt"
+    secretName: ""
+
+image:
+  tag: "1.19.236.1-debian"
+  pullPolicy: "IfNotPresent"
+
+auth:
+  domain: "auth.yourdomain.com"
+  sentryDsn: "https://your:dsn@log.primeapps.io/1"
+
+app:
+  domain: "app.yourdomain.com"
+  smtpHost: "smtp.yourdomain.com"
+  smtpEnableSsl: "true"
+  smtpPort: "587"
+  smtpUser: "smtp-user"
+  smtpPassword: "smpt-password"
+  googleMapsApiKey: "your-google-maps-api-key"
+  sentryDsn: "https://your:dsn@log.primeapps.io/2"
+
+postgresoperator:
+  install: true
+  password: "pAssW0rd987d"
+  storage:
+    backup:
+      class: "standard"
+      size: "20Gi"
+    primary:
+      class: "standard"
+      size: "20Gi"
+    secondary:
+      class: "standard"
+      size: "20Gi"
+  serverName: "primeapps"
+
+redis:
+  install: true
+  usePassword: "true"
+  password: "pAssW0rd987c"
+  global:
+    storageClass: "standard"
+
+minio:
+  install: true
+  domain: "storage.yourdomain.com"
+  accessKey: "AKIAIOSFODNN7EXAMPLE"
+  secretKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+  persistence:
+    storageClass: "standard"

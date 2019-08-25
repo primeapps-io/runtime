@@ -1,0 +1,26 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: "{{.Release.Name}}-app-config"
+data:
+  TenantDBConnection: "server={{.Values.postgresoperator.serverName}}.svc.cluster.local;port=5432;username=postgres;password={{.Values.postgresoperator.password}};database=prod;command timeout=0;keepalive=30;"
+  PlatformDBConnection: "server={{.Values.postgresoperator.serverName}}.svc.cluster.local;port=5432;username=postgres;password={{.Values.postgresoperator.password}};database=platform;command timeout=0;keepalive=30;"
+  RedisConnection: "redis-master.svc.cluster.local:6379,password={{.Values.redis.password}},defaultDatabase=1"
+  AuthenticationServerURL: "https://{{.Values.auth.domain}}"
+  StorageUrl: "https://{{.Values.minio.domain}}"
+  StorageAccessKey: "{{.Values.minio.accessKey}}"
+  StorageSecretKey: "{{.Values.minio.secretKey}}"
+  EnableJobs: "true"
+  EnableRequestLogging: "false"
+  EmailSMTPEnableSsl: "{{.Values.app.smtpEnableSsl}}"
+  EmailSMTPHost: "{{.Values.app.smtpHost}}"
+  EmailSMTPPort: "{{.Values.app.smtpPort}}"
+  EmailSMTPUser: "{{.Values.app.smtpUser}}"
+  EmailSMTPPassword: "{{.Values.app.smtpPassword}}"
+  ClientId: "primeapps_app"
+  ClientSecret: "secret"
+  ForwardHeaders: "true"
+  HttpsRedirection: "true"
+  TestMode: "false"
+  GoogleMapsApiKey: "{{.Values.app.googleMapsApiKey}}"
+  SentryDsn: "{{.Values.app.sentryDsn}}"

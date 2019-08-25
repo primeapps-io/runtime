@@ -1,0 +1,13 @@
+dependencies:
+  - name: postgresoperator
+    version: 0.3.2
+    repository: https://charts.primeapps.io/
+    condition: postgresoperator.install
+  - name: redis
+    version: 9.1.2
+    repository: https://charts.primeapps.io/
+    condition: redis.install
+  - name: minio
+    version: 2.5.12
+    repository: https://charts.primeapps.io/
+    condition: minio.install
