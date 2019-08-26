@@ -1,0 +1,220 @@
+categories:
+- Low-Code
+questions:
+- variable: defaultImage
+  default: true
+  description: "Use default PrimeApps Docker image"
+  type: boolean
+  label: Use Default Docker Image
+  show_subquestion_if: false
+  group: "Container Images"
+  subquestions:
+  - variable: image.tag
+    default: "1.19.236.1-debian"
+    description: "PrimeApps Docker image tag. https://hub.docker.com/u/primeapps"
+    type: string
+    label: Image Tag
+  - variable: image.pullPolicy
+    default: "IfNotPresent"
+    description: "PrimeApps Docker image pull policy"
+    type: string
+    label: Image Pull Policy
+- variable: auth.domain
+  default: "auth.yourdomain.com"
+  description: "Auth domain"
+  type: string
+  required: true
+  label: Auth Domain
+  group: "Domain and SSL Settings"
+- variable: app.domain
+  default: "app.yourdomain.com"
+  description: "App domain"
+  type: string
+  required: true
+  label: App Domain
+  group: "Domain and SSL Settings"
+- variable: global.tls.type
+  default: "letsencrypt"
+  description: "TLS type for Nginx Ingress"
+  type: enum
+  required: true
+  options:
+    - "letsencrypt"
+    - "custom"
+  label: TLS Type
+  group: "Domain and SSL Settings"
+- variable: global.tls.secretName
+  default: "wildcard-ssl"
+  description: "SSL Secret Name"
+  type: string
+  required: true
+  label: Secret Name
+  group: "Domain and SSL Settings"
+  show_if: "global.tls.type=custom"
+- variable: app.smtpHost
+  default: "smtp.yourdomain.com"
+  description: "SMTP host address"
+  type: string
+  required: true
+  label: SMTP Host
+  group: "SMTP Settings"
+- variable: app.smtpEnableSsl
+  default: "true"
+  description: "SMTP enable SSL"
+  type: string
+  required: true
+  label: SMTP Enable SSL
+  group: "SMTP Settings"
+- variable: app.smtpPort
+  default: "587"
+  description: "SMTP port"
+  type: string
+  required: true
+  label: SMTP Port
+  group: "SMTP Settings"
+- variable: app.smtpUser
+  default: "smtp-user"
+  description: "SMTP username"
+  type: string
+  required: true
+  label: SMTP Username
+  group: "SMTP Settings"
+- variable: app.smtpPassword
+  default: "smtp-password"
+  description: "SMTP password"
+  type: string
+  required: true
+  label: SMTP Password
+  group: "SMTP Settings"
+- variable: app.googleMapsApiKey
+  default: "your-google-maps-api-key"
+  description: "Google Mapps API Key"
+  type: string
+  label: Google Mapps API Key
+  group: "Other Settings"
+- variable: auth.sentryDsn
+  default: "https://your:dsn@log.primeapps.io/1"
+  description: "Sentry DSN (Auth)"
+  type: string
+  label: Sentry DSN (Auth)
+  group: "Other Settings"
+- variable: app.sentryDsn
+  default: "https://your:dsn@log.primeapps.io/2"
+  description: "Sentry DSN (App)"
+  type: string
+  label: Sentry DSN (App)
+  group: "Other Settings"
+- variable: postgresoperator.install
+  default: true
+  description: "Install Postgres-Operator"
+  type: boolean
+  required: true
+  label: Install Postgres-Operator
+  group: "Database Settings"
+- variable: postgresoperator.password
+  default: ""
+  description: "Password"
+  type: password
+  label: Password
+  group: "Database Settings"
+- variable: postgresoperator.storage.backup.class
+  default: "standard"
+  description: "Persistent volume class for backup storage"
+  type: string
+  label: Persistent Volume Class - Backup
+  group: "Database Settings"
+- variable: postgresoperator.storage.primary.class
+  default: "standard"
+  description: "Persistent volume class for primary storage"
+  type: string
+  label: Persistent Volume Class - Primary
+  group: "Database Settings"
+- variable: postgresoperator.storage.secondary.class
+  default: "standard"
+  description: "Persistent volume class for secondary storage"
+  type: string
+  label: Persistent Volume Class - Secondary
+  group: "Database Settings"
+- variable: postgresoperator.storage.backup.size
+  default: "20Gi"
+  description: "Persistent volume size for backup storage"
+  type: string
+  label: Persistent Volume Size - Backup
+  group: "Database Settings"
+- variable: postgresoperator.storage.primary.size
+  default: "20Gi"
+  description: "Persistent volume size for primary storage"
+  type: string
+  label: Persistent Volume Size - Primary
+  group: "Database Settings"
+- variable: postgresoperator.storage.secondary.size
+  default: "20Gi"
+  description: "Persistent volume size for secondary storage"
+  type: string
+  label: Persistent Volume Size - Secondary
+  group: "Database Settings"
+- variable: redis.install
+  default: true
+  description: "Install Redis"
+  type: boolean
+  required: true
+  label: Install Redis
+  group: "Cache Settings"
+- variable: redis.password
+  default: ""
+  description: "Password"
+  type: password
+  label: Password
+  group: "Cache Settings"
+- variable: redis.global.storageClass
+  default: "20Gi"
+  description: "Persistent volume class"
+  type: string
+  label: Class
+  group: "Cache Settings"
+- variable: redis.storage.size
+  default: "20Gi"
+  description: "Persistent volume size"
+  type: string
+  label: Size
+  group: "Cache Settings"
+- variable: minio.install
+  default: true
+  description: "Install Minio"
+  type: boolean
+  required: true
+  label: Install Minio
+  group: "Storage Settings"
+- variable: minio.domain
+  default: "storage.yourdomain.com"
+  description: "Storage Domain"
+  type: string
+  required: true
+  label: Install Minio
+  group: "Storage Settings"
+- variable: minio.accessKey
+  default: "AKIAIOSFODNN7EXAMPLE"
+  description: "Access key"
+  type: string
+  required: true
+  label: Access Key
+  group: "Storage Settings"
+- variable: minio.secretKey
+  default: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+  description: "Secret key"
+  type: string
+  required: true
+  label: Secret Key
+  group: "Storage Settings"
+- variable: minio.storage.storageClass
+  default: "50Gi"
+  description: "Persistent volume class"
+  type: string
+  label: Class
+  group: "Storage Settings"
+- variable: minio.storage.size
+  default: "50Gi"
+  description: "Persistent volume size"
+  type: string
+  label: Size
+  group: "Storage Settings"
