@@ -102,45 +102,45 @@ questions:
   group: "Database Settings"
 - variable: postgresoperator.storage.backup.class
   default: "standard"
-  description: "Persistent volume class for backup storage"
+  description: "Storage class for persistent volume - Backup"
   type: string
   required: true
-  label: Persistent Volume Class - Backup
+  label: Storage Class - Backup
   group: "Database Settings"
 - variable: postgresoperator.storage.primary.class
   default: "standard"
-  description: "Persistent volume class for primary storage"
+  description: "PStorage class for persistent volume - Primary"
   type: string
   required: true
-  label: Persistent Volume Class - Primary
+  label: Storage Class - Primary
   group: "Database Settings"
 - variable: postgresoperator.storage.secondary.class
   default: "standard"
-  description: "Persistent volume class for secondary storage"
+  description: "Storage class for persistent volume - Secondary"
   type: string
   required: true
-  label: Persistent Volume Class - Secondary
+  label: Storage Class - Secondary
   group: "Database Settings"
 - variable: postgresoperator.storage.backup.size
   default: "20Gi"
-  description: "Persistent volume size for backup storage"
+  description: "Storage size for persistent volume - Backup"
   type: string
   required: true
-  label: Persistent Volume Size - Backup
+  label: Storage Size - Backup
   group: "Database Settings"
 - variable: postgresoperator.storage.primary.size
   default: "20Gi"
-  description: "Persistent volume size for primary storage"
+  description: "Storage size for persistent volume - Primary"
   type: string
   required: true
-  label: Persistent Volume Size - Primary
+  label: Storage Size - Primary
   group: "Database Settings"
 - variable: postgresoperator.storage.secondary.size
   default: "20Gi"
-  description: "Persistent volume size for secondary storage"
+  description: "Storage size for persistent volume - Secondary"
   type: string
   required: true
-  label: Persistent Volume Size - Secondary
+  label: Storage Size - Secondary
   group: "Database Settings"
 - variable: redis.install
   default: true
@@ -157,15 +157,22 @@ questions:
   label: Password
   group: "Cache Settings"
 - variable: redis.global.storageClass
-  default: "20Gi"
-  description: "Persistent volume class"
+  default: "standard"
+  description: "Storage class for persistent volume"
   type: string
   required: true
   label: Class
   group: "Cache Settings"
-- variable: redis.storage.size
+- variable: redis.master.persistence.size
   default: "20Gi"
-  description: "Persistent volume size"
+  description: "Storage size for persistent volume - Master"
+  type: string
+  required: true
+  label: Size
+  group: "Cache Settings"
+- variable: redis.slave.persistence.size
+  default: "20Gi"
+  description: "Storage size for persistent volume - Slave"
   type: string
   required: true
   label: Size
@@ -198,16 +205,16 @@ questions:
   required: true
   label: Secret Key
   group: "Storage Settings"
-- variable: minio.storage.storageClass
-  default: "50Gi"
-  description: "Persistent volume class"
+- variable: minio.persistence.storageClass
+  default: "standard"
+  description: "Storage class for persistent volume"
   type: string
   required: true
   label: Class
   group: "Storage Settings"
-- variable: minio.storage.size
+- variable: minio.persistence.size
   default: "50Gi"
-  description: "Persistent volume size"
+  description: "Storage size for persistent volume"
   type: string
   required: true
   label: Size

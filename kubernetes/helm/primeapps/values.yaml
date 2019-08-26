@@ -47,8 +47,12 @@ redis:
   password: "pAssW0rd987c"
   global:
     storageClass: "standard"
-  storage:
-    size: "20Gi"
+  master:
+    persistence:
+      size: "20Gi"
+  slave:
+    persistence:
+      size: "20Gi"
 
 minio:
   install: true
