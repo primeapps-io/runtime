@@ -112,5 +112,40 @@ namespace PrimeApps.Studio.Controllers
 
             return Ok();
         }
+
+        [Route("publish"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
+        public IActionResult Publish([FromBody]JObject request)
+        {
+
+            var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);
+
+            if (request["app"].IsNullOrEmpty())
+                return BadRequest("app is required.");
+
+            if (request["environment"].IsNullOrEmpty())
+                return BadRequest("environment is required.");
+
+            var app = (string)request["app"];
+
+            switch ((string)request["environment"])
+            {
+                case "test":
+                    _posgresHelper.Drop("PlatformDBConnectionTest", app, dumpDirectory);
+                    _posgresHelper.Create("PlatformDBConnectionTest", app, dumpDirectory);
+                    _posgresHelper.Restore("PlatformDBConnectionTest", app, dumpDirectory, app, dumpDirectory);
+                break;
+                case "prod":
+                    _posgresHelper.Drop("PlatformDBConnection", app, dumpDirectory);
+                    _posgresHelper.Create("PlatformDBConnection", app, dumpDirectory);
+                    _posgresHelper.Restore("PlatformDBConnection", app, dumpDirectory, app, dumpDirectory);
+                    break;
+            }
+         
+
+
+            return Ok();
+
+        }
+
     }
 }
