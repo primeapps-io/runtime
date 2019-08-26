@@ -31,7 +31,7 @@ namespace PrimeApps.Admin
             services.TryAddSingleton(configuration);
 
             //Register all repositories
-            foreach (var assembly in new[] {"PrimeApps.Model"})
+            foreach (var assembly in new[] { "PrimeApps.Model" })
             {
                 var assemblies = Assembly.Load(assembly);
                 var allServices = assemblies.GetTypes().Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract && t.GetTypeInfo().Name.EndsWith("Repository")).ToList();
@@ -57,6 +57,7 @@ namespace PrimeApps.Admin
             services.AddScoped<IRedisHelper, RedisHelper>();
             services.AddScoped<IOrganizationHelper, OrganizationHelper>();
             services.AddScoped<IPublishHelper, PublishHelper>();
+            services.AddScoped<IWebSocketHelper, WebSocketHelper>();
 
             /*services.AddScoped<IRecordHelper, Helpers.RecordHelper>();
             services.AddScoped<IAuditLogHelper, AuditLogHelper>();

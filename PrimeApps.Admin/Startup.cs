@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using PrimeApps.Admin.Helpers;
 
 namespace PrimeApps.Admin
 {
@@ -179,7 +180,7 @@ namespace PrimeApps.Admin
                 ReceiveBufferSize = 4 * 1024
             };
 
-            /*app.UseWebSockets(new WebSocketOptions() { KeepAliveInterval = TimeSpan.FromSeconds(10) });
+            app.UseWebSockets(new WebSocketOptions() { KeepAliveInterval = TimeSpan.FromSeconds(10) });
             app.Use(async (ctx, next) =>
             {
                 if (ctx.Request.Path == "/log_stream")
@@ -200,7 +201,7 @@ namespace PrimeApps.Admin
                 {
                     await next();
                 }
-            });*/
+            });
 
             app.UseMvc(routes =>
             {
