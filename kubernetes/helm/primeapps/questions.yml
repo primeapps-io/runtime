@@ -21,14 +21,14 @@ questions:
     label: Image Pull Policy
 - variable: auth.domain
   default: "auth.yourdomain.com"
-  description: "Auth domain"
+  description: "Domain for PrimeApps Auth"
   type: string
   required: true
   label: Auth Domain
   group: "Domain and SSL Settings"
 - variable: app.domain
   default: "app.yourdomain.com"
-  description: "App domain"
+  description: "Domain for PrimeApps App"
   type: string
   required: true
   label: App Domain
@@ -86,24 +86,6 @@ questions:
   required: true
   label: SMTP Password
   group: "SMTP Settings"
-- variable: app.googleMapsApiKey
-  default: "your-google-maps-api-key"
-  description: "Google Mapps API Key"
-  type: string
-  label: Google Mapps API Key
-  group: "Other Settings"
-- variable: auth.sentryDsn
-  default: "https://your:dsn@log.primeapps.io/1"
-  description: "Sentry DSN (Auth)"
-  type: string
-  label: Sentry DSN (Auth)
-  group: "Other Settings"
-- variable: app.sentryDsn
-  default: "https://your:dsn@log.primeapps.io/2"
-  description: "Sentry DSN (App)"
-  type: string
-  label: Sentry DSN (App)
-  group: "Other Settings"
 - variable: postgresoperator.install
   default: true
   description: "Install Postgres-Operator"
@@ -113,44 +95,51 @@ questions:
   group: "Database Settings"
 - variable: postgresoperator.password
   default: ""
-  description: "Password"
+  description: "Database password"
   type: password
+  required: true
   label: Password
   group: "Database Settings"
 - variable: postgresoperator.storage.backup.class
   default: "standard"
   description: "Persistent volume class for backup storage"
   type: string
+  required: true
   label: Persistent Volume Class - Backup
   group: "Database Settings"
 - variable: postgresoperator.storage.primary.class
   default: "standard"
   description: "Persistent volume class for primary storage"
   type: string
+  required: true
   label: Persistent Volume Class - Primary
   group: "Database Settings"
 - variable: postgresoperator.storage.secondary.class
   default: "standard"
   description: "Persistent volume class for secondary storage"
   type: string
+  required: true
   label: Persistent Volume Class - Secondary
   group: "Database Settings"
 - variable: postgresoperator.storage.backup.size
   default: "20Gi"
   description: "Persistent volume size for backup storage"
   type: string
+  required: true
   label: Persistent Volume Size - Backup
   group: "Database Settings"
 - variable: postgresoperator.storage.primary.size
   default: "20Gi"
   description: "Persistent volume size for primary storage"
   type: string
+  required: true
   label: Persistent Volume Size - Primary
   group: "Database Settings"
 - variable: postgresoperator.storage.secondary.size
   default: "20Gi"
   description: "Persistent volume size for secondary storage"
   type: string
+  required: true
   label: Persistent Volume Size - Secondary
   group: "Database Settings"
 - variable: redis.install
@@ -164,18 +153,21 @@ questions:
   default: ""
   description: "Password"
   type: password
+  required: true
   label: Password
   group: "Cache Settings"
 - variable: redis.global.storageClass
   default: "20Gi"
   description: "Persistent volume class"
   type: string
+  required: true
   label: Class
   group: "Cache Settings"
 - variable: redis.storage.size
   default: "20Gi"
   description: "Persistent volume size"
   type: string
+  required: true
   label: Size
   group: "Cache Settings"
 - variable: minio.install
@@ -210,11 +202,31 @@ questions:
   default: "50Gi"
   description: "Persistent volume class"
   type: string
+  required: true
   label: Class
   group: "Storage Settings"
 - variable: minio.storage.size
   default: "50Gi"
   description: "Persistent volume size"
   type: string
+  required: true
   label: Size
   group: "Storage Settings"
+- variable: auth.sentryDsn
+  default: "https://your:dsn@log.primeapps.io/1"
+  description: "Sentry DSN (Auth)"
+  type: string
+  label: Sentry DSN (Auth)
+  group: "Other Settings"
+- variable: app.sentryDsn
+  default: "https://your:dsn@log.primeapps.io/2"
+  description: "Sentry DSN (App)"
+  type: string
+  label: Sentry DSN (App)
+  group: "Other Settings"
+- variable: app.googleMapsApiKey
+  default: "your-google-maps-api-key"
+  description: "Google Mapps API Key"
+  type: string
+  label: Google Mapps API Key
+  group: "Other Settings"
