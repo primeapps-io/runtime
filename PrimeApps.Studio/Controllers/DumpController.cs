@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -130,17 +131,25 @@ namespace PrimeApps.Studio.Controllers
             switch ((string)request["environment"])
             {
                 case "test":
-                    _posgresHelper.Drop("PlatformDBConnectionTest", app, dumpDirectory);
+                    try
+                    {
+                        _posgresHelper.Drop("PlatformDBConnectionTest", app, dumpDirectory);
+                    }
+                    catch (Exception e)
+                    {
+                       
+                    } 
+
                     _posgresHelper.Create("PlatformDBConnectionTest", app, dumpDirectory);
                     _posgresHelper.Restore("PlatformDBConnectionTest", app, dumpDirectory, app, dumpDirectory);
-                break;
+                    break;
                 case "prod":
                     _posgresHelper.Drop("PlatformDBConnection", app, dumpDirectory);
                     _posgresHelper.Create("PlatformDBConnection", app, dumpDirectory);
                     _posgresHelper.Restore("PlatformDBConnection", app, dumpDirectory, app, dumpDirectory);
                     break;
             }
-         
+
 
 
             return Ok();
