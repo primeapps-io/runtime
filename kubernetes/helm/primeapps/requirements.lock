@@ -1,0 +1,12 @@
+dependencies:
+- name: postgresoperator
+  repository: https://charts.primeapps.io/
+  version: 0.3.2
+- name: redis
+  repository: https://charts.primeapps.io/
+  version: 9.1.2
+- name: minio
+  repository: https://charts.primeapps.io/
+  version: 2.5.12
+digest: sha256:ffc4965a0aaf76ac624b2a8ad7098c5ed32f858ca4af1044643b2a4b0e5ab320
+generated: "2019-08-25T15:58:14.835627+03:00"
