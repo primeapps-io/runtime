@@ -159,10 +159,10 @@ namespace PrimeApps.App.Helpers
 					default:
 						appUrl = "http://www.ofisim.com/mail/crm/logo.png";
 						appCodeUrl = "http://www.ofisim.com/crm/";
-						appName = "Ofisim CRM";
+						appName = "Perapol APP";
 						appColor = "2560f6";
 						socialMediaIcons = "true";
-						footer = "Ofisim.com";
+						footer = "Perapole";
 						appLogo = "";
 						break;
 
@@ -395,8 +395,8 @@ namespace PrimeApps.App.Helpers
 		/// </summary>
 		public void AddToQueue(int tenantId, int moduleId, int recordId, string from = "", string fromName = "", string cc = "", string bcc = "", UserItem appUser = null, bool addRecordSummary = true)
 		{
-			from = "destek@ofisim.com";
-			fromName = "Ofisim.com";
+			from = "destek@perapol.com";
+			fromName = "Perapol";
 
 			if (appUser != null)
 			{
