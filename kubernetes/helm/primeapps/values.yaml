@@ -9,7 +9,7 @@ global:
     secretName: ""
 
 image:
-  tag: "1.19.236.1-debian"
+  tag: "1.19.239.1-debian"
   pullPolicy: "IfNotPresent"
 
 auth:
@@ -39,7 +39,7 @@ postgresoperator:
     secondary:
       class: "standard"
       size: "20Gi"
-  serverName: "primeapps"
+  serverName: "pre"
 
 redis:
   install: true

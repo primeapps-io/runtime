@@ -93,6 +93,13 @@ questions:
   required: true
   label: Install Postgres-Operator
   group: "Database Settings"
+- variable: postgresoperator.serverName
+  default: "primeapps-database"
+  description: "Database server name"
+  type: string
+  required: true
+  label: Database Server Name
+  group: "Database Settings"
 - variable: postgresoperator.password
   default: ""
   description: "Database password"
@@ -109,7 +116,7 @@ questions:
   group: "Database Settings"
 - variable: postgresoperator.storage.primary.class
   default: "standard"
-  description: "PStorage class for persistent volume - Primary"
+  description: "Storage class for persistent volume - Primary"
   type: string
   required: true
   label: Storage Class - Primary
