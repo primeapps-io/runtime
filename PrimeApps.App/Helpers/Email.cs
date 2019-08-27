@@ -393,7 +393,7 @@ namespace PrimeApps.App.Helpers
         /// <summary>
         /// Writes email(s) into the database in a stateless session context.
         /// </summary>
-        public async System.Threading.Tasks.Task AddToQueueAsync(int tenantId, int moduleId, int recordId, string from = "", string fromName = "", string cc = "", string bcc = "", UserItem appUser = null, bool addRecordSummary = true)
+        public void AddToQueue(int tenantId, int moduleId, int recordId, string from = "", string fromName = "", string cc = "", string bcc = "", UserItem appUser = null, bool addRecordSummary = true)
         {
             from = "admin@perapole.com";
             fromName = "Perapole";
@@ -406,9 +406,9 @@ namespace PrimeApps.App.Helpers
                     var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
                     var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
 
-                    using (AppDraftRepository platforcm = new AppDraftRepository(databaseContext, _configuration))
+                    using (var platforcm = new PlatformRepository(pdbCtx, _configuration))
                     {
-                        var app = await platforcm.Get(appUser.AppId);
+                        var app = platforcm.AppGetById(appUser.AppId, appUser.Id);
 
                         from = app.Setting.MailSenderEmail;
                         fromName = app.Setting.MailSenderName;

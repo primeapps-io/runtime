@@ -209,7 +209,7 @@ namespace PrimeApps.App.Bpm.Steps
                             if (sendNotification.Schedule.HasValue)
                                 email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
 
-                            email.AddToQueueAsync(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC == null ? "" : string.Join(",", sendNotificationCC.ToObject<string[]>()), sendNotificationBCC == null ? "" : string.Join(",", sendNotificationBCC.ToObject<string[]>()), appUser: appUser, addRecordSummary: false);
+                            email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC == null ? "" : string.Join(",", sendNotificationCC.ToObject<string[]>()), sendNotificationBCC == null ? "" : string.Join(",", sendNotificationBCC.ToObject<string[]>()), appUser: appUser, addRecordSummary: false);
 
                             //var workflowLog = new BpmWorkflowLog
                             //{

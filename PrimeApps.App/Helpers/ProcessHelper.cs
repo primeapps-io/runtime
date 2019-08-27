@@ -500,13 +500,13 @@ namespace PrimeApps.App.Helpers
 						{
 							var notification = new Email(EmailResource.ApprovalProcessCreateNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 							notification.AddRecipient(user.Email);
-							notification.AddToQueueAsync(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
+							notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
 						}
 						else if (operationType == OperationType.update)
 						{
 							var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 							notification.AddRecipient(user.Email);
-							notification.AddToQueueAsync(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
+							notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
 						}
 						else if (operationType == OperationType.delete)
 						{
@@ -1109,13 +1109,13 @@ namespace PrimeApps.App.Helpers
 						{
 							var notification = new Email(EmailResource.ApprovalProcessCreateNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 							notification.AddRecipient(user.Email);
-							notification.AddToQueueAsync(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
+							notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
 						}
 						else if (request.OperationType == OperationType.update)
 						{
 							var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 							notification.AddRecipient(user.Email);
-							notification.AddToQueueAsync(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
+							notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
 						}
 						else if (request.OperationType == OperationType.delete)
 						{
@@ -1241,13 +1241,13 @@ namespace PrimeApps.App.Helpers
 							{
 								var notification = new Email(EmailResource.ApprovalProcessCreateNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 								notification.AddRecipient(user.Email);
-								notification.AddToQueueAsync(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
+								notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
 							}
 							else if (request.OperationType == OperationType.update)
 							{
 								var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 								notification.AddRecipient(user.Email);
-								notification.AddToQueueAsync(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
+								notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
 							}
 							else if (request.OperationType == OperationType.delete)
 							{
@@ -1329,7 +1329,7 @@ namespace PrimeApps.App.Helpers
 
 							var notification = new Email(EmailResource.ApprovalProcessApproveNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 							notification.AddRecipient(user.Email);
-							notification.AddToQueueAsync(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
+							notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
 						}
 					}
 
@@ -1507,13 +1507,13 @@ namespace PrimeApps.App.Helpers
 					{
 						var notification = new Email(EmailResource.ApprovalProcessRejectNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 						notification.AddRecipient(user.Email);
-						notification.AddToQueueAsync(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
+						notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
 					}
 					else if (request.OperationType == OperationType.update)
 					{
 						var notification = new Email(EmailResource.ApprovalProcessUpdateRejectNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 						notification.AddRecipient(user.Email);
-						notification.AddToQueueAsync(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
+						notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
 					}
 
 					//TODO 
@@ -1698,13 +1698,13 @@ namespace PrimeApps.App.Helpers
 					{
 						var notification = new Email(EmailResource.ApprovalProcessCreateNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 						notification.AddRecipient(user.Email);
-						notification.AddToQueueAsync(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
+						notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
 					}
 					else if (request.OperationType == OperationType.update)
 					{
 						var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 						notification.AddRecipient(user.Email);
-						notification.AddToQueueAsync(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
+						notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
 					}
 					else if (request.OperationType == OperationType.delete)
 					{
