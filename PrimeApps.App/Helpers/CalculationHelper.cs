@@ -351,7 +351,7 @@ namespace PrimeApps.App.Helpers
 
                                 var externalEmail = new Email(mailSubject, mailBody, _configuration);
                                 externalEmail.AddRecipient((string)calisan["e_posta"]);
-                                externalEmail.AddToQueue(appUser.TenantId, appUser: appUser, cc: string.Join(",", ccList), moduleId: module.Id, recordId: (int)record["id"], addRecordSummary: false);
+                                externalEmail.AddToQueueAsync(appUser.TenantId, appUser: appUser, cc: string.Join(",", ccList), moduleId: module.Id, recordId: (int)record["id"], addRecordSummary: false);
                                 break;
                             case "ise_alim_talepleri":
                                 var iseAlimTalebiModule = await moduleRepository.GetByName("ise_alim_talepleri");
