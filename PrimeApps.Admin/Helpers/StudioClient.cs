@@ -74,6 +74,28 @@ namespace PrimeApps.Admin.Helpers
             }
         }
 
+        public async Task<Package> PackageLastDeployment()
+        {
+            using (_client)
+            {
+                var response = await _client.GetAsync($"publish/get_last_deployment");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    if (response.StatusCode == HttpStatusCode.Unauthorized)
+                        throw new UnauthorizedAccessException();
+
+                    var errorData = await response.Content.ReadAsStringAsync();
+
+                    throw new Exception($"Method of Get Last Package result {response.StatusCode}. Application Id: {AppId}, Organization Id: {OrgId}, Response: {errorData}");
+                }
+
+                var data = await response.Content.ReadAsAsync<Package>();
+
+                return data;
+            }
+        }
+
         public async Task<List<Package>> PackageGetAll()
         {
             using (_client)
@@ -98,7 +120,7 @@ namespace PrimeApps.Admin.Helpers
 
         public async Task<List<OrganizationModel>> OrganizationGetAllByUser()
         {
-            var response = await _client.GetAsync($"user/organizations");
+            var response = await _client.GetAsync($"user/organizations?includeApp=true");
 
             if (!response.IsSuccessStatusCode)
             {

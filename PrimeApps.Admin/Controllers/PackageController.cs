@@ -30,7 +30,6 @@ namespace PrimeApps.Admin.Controllers
         private readonly IOrganizationHelper _organizationHelper;
         private readonly IPublishHelper _publishHelper;
         private readonly IApplicationRepository _applicationRepository;
-        private readonly IPackageRepository _packageRepository;
         private readonly IAppDraftRepository _appDraftRepository;
         private readonly IPlatformRepository _platformRepository;
         private readonly IPlatformUserRepository _platformUserRepository;
@@ -46,7 +45,6 @@ namespace PrimeApps.Admin.Controllers
             _organizationHelper = organizationHelper;
             _publishHelper = publishHelper;
             _applicationRepository = applicationRepository;
-            _packageRepository = packageRepository;
             _platformUserRepository = platformUserRepository;
             _appDraftRepository = appDraftRepository;
             _platformRepository = platformRepository;
@@ -74,10 +72,8 @@ namespace PrimeApps.Admin.Controllers
                     ViewBag.CurrentApp = selectedOrg.Apps.FirstOrDefault(x => x.Id == appId);
                 }
 
-                var allPackages = await _packageRepository.GetAll((int)appId);
-                var lastPackage = allPackages.LastOrDefault(x => x.AppId == appId);
-
-                ViewBag.allPackages = allPackages;
+                var studioClient = new StudioClient(_configuration, token, (int)appId, selectedOrg.Id);
+                var lastPackage = await studioClient.PackageLastDeployment();
                 ViewBag.lastPackage = lastPackage;
 
                 return View();
@@ -90,8 +86,8 @@ namespace PrimeApps.Admin.Controllers
         public async Task<IActionResult> Apply(int id, string applyingVersion, List<Package> packages)
         {
             var token = await HttpContext.GetTokenAsync("access_token");
-
             var app = await _appDraftRepository.Get(id);
+            var studioClient = new StudioClient(_configuration, token, id, app.OrganizationId);
 
             var contractResolver = new DefaultContractResolver
             {
@@ -105,7 +101,7 @@ namespace PrimeApps.Admin.Controllers
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
 
-            var versions = new List<string>() {applyingVersion};
+            var versions = new List<string>() { applyingVersion };
 
             foreach (var package in packages)
             {
@@ -125,7 +121,7 @@ namespace PrimeApps.Admin.Controllers
 
             await PrimeApps.Model.Helpers.PublishHelper.ApplyVersions(_configuration, _storage, JObject.Parse(appString), app.OrganizationId, $"app{id}", versions, CryptoHelper.Decrypt(studioApp.Secret), true, 1, token);
 
-            return RedirectToAction("Index", "Package", new {appId = app.Id, orgId = app.OrganizationId, applying = true});
+            return RedirectToAction("Index", "Package", new { appId = app.Id, orgId = app.OrganizationId, applying = true });
         }
 
         /*[Route("publish")]
@@ -142,7 +138,7 @@ namespace PrimeApps.Admin.Controllers
         [Route("log")]
         public async Task<ActionResult<string>> Log(int id, int appId, int orgId)
         {
-            var token = await _context.HttpContext.GetTokenAsync("access_token");
+            var token = await HttpContext.GetTokenAsync("access_token");
             var studioClient = new StudioClient(_configuration, token, appId, orgId);
 
             var package = await studioClient.PackageGetById(id);

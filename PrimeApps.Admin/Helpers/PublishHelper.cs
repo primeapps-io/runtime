@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Entities.Studio;
@@ -17,7 +18,7 @@ namespace PrimeApps.Admin.Helpers
 {
     public interface IPublishHelper
     {
-        Task<bool> StartRelease(int appId, int orgId, string token);
+        Task<bool> StartRelease(int appId, int orgId, string applyingVersion, string token);
         Task<bool> CheckDatabaseTemplate(int appId);
     }
 
@@ -37,7 +38,7 @@ namespace PrimeApps.Admin.Helpers
             _storage = storage;
         }
 
-        public async Task<bool> StartRelease(int appId, int orgId, string token)
+        public async Task<bool> StartRelease(int appId, int orgId, string applyingVersion, string token)
         {
             using (var scope = _serviceScopeFactory.CreateScope())
             {
@@ -45,7 +46,7 @@ namespace PrimeApps.Admin.Helpers
                 var studioClient = new StudioClient(_configuration, token, appId, orgId);
                 //var studioContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
                 //using (var packageRepository = new PackageRepository(studioContext, _configuration))
-                //using (var appDraftRepository = new AppDraftRepository(studioContext, _configuration))
+                using (var platformRepository = new PlatformRepository(platformDbContext, _configuration))
                 using (var releaseRepository = new ReleaseRepository(platformDbContext, _configuration))
                 {
                     var isThereTempDatabase = await CheckDatabaseTemplate(appId);
@@ -55,6 +56,20 @@ namespace PrimeApps.Admin.Helpers
                     var appJObject = JObject.FromObject(app);
                     var appName = $"app{appId}";
                     var lastPackageVersion = Convert.ToInt32(packages.Last().Version.ToString());
+                    var versions = new List<string>() { applyingVersion };
+
+                    var contractResolver = new DefaultContractResolver
+                    {
+                        NamingStrategy = new SnakeCaseNamingStrategy()
+                    };
+
+                    var appString = JsonConvert.SerializeObject(app, new JsonSerializerSettings
+                    {
+                        ContractResolver = contractResolver,
+                        Formatting = Formatting.Indented,
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                    });
+
 
                     var releaseModel = new Release()
                     {
@@ -73,45 +88,43 @@ namespace PrimeApps.Admin.Helpers
                         if (runningPublish)
                             throw new Exception($"Already have a running publish for app{appId} database!");
 
-                        var lastReleaseVersion = await releaseRepository.GetLastVersion(appId);
 
-                        if (lastReleaseVersion > 0)
+
+                        foreach (var package in packages)
                         {
-                            var currentPackages = new List<Package>();
-                            for (var a = lastReleaseVersion + 1; lastPackageVersion < a; a++)
+                            if (package.Version != applyingVersion)
                             {
-                                var package = packages.Where(x => x.Version == a.ToString()).FirstOrDefault();
-
-                                if (package != null)
-                                    currentPackages.Add(package);
-                            }
-
-                            var releaseResult = await releaseRepository.Create(releaseModel);
-
-                            if (releaseResult > 0)
-                            {
-                                //TODO Method parameters have to change for current packages.
-                                var releaseProcess = true;// await Model.Helpers.PublishHelper.Update(_configuration, _storage, appJObject, appName, currentPackages, false);
-
-                                if (releaseProcess)
-                                    releaseModel.Status = Model.Enums.ReleaseStatus.Succeed;
+                                var release = await releaseRepository.Get(appId, package.Version);
+                                if (release == null)
+                                    versions.Add(package.Version);
                                 else
-                                {
-                                    //TODO
-                                    //If false, does the generated theme need to be deleted?
-                                    releaseModel.Status = Model.Enums.ReleaseStatus.Failed;
-
-                                }
-
-                                releaseResult = await releaseRepository.Update(releaseModel);
+                                    break;
                             }
+                        }
+
+                        var releaseResult = await releaseRepository.Create(releaseModel);
+
+                        if (releaseResult > 0)
+                        {
+                            //TODO Method parameters have to change for current packages.
+                            var releaseProcess = true;// await Model.Helpers.PublishHelper.Update(_configuration, _storage, appJObject, appName, currentPackages, false);
+
+                            if (releaseProcess)
+                                releaseModel.Status = Model.Enums.ReleaseStatus.Succeed;
                             else
-                                throw new Exception($"Release record cannot create for app{appId} database!");
+                            {
+                                //TODO
+                                //If false, does the generated theme need to be deleted?
+                                releaseModel.Status = Model.Enums.ReleaseStatus.Failed;
+
+                            }
+
+                            releaseResult = await releaseRepository.Update(releaseModel);
                         }
                         else
-                        {
-                            //TODO  Error case. if there, it have to rollback for database template
-                        }
+                            throw new Exception($"Release record cannot create for app{appId} database!");
+
+
                     }
                     else //Temp Create
                     {
@@ -129,8 +142,8 @@ namespace PrimeApps.Admin.Helpers
                             //    releaseModel.Status = Model.Enums.ReleaseStatus.Succeed;
                             //else
                             //{
-                                //TODO
-                                //If false, does the generated theme need to be deleted?
+                            //TODO
+                            //If false, does the generated theme need to be deleted?
                             //    releaseModel.Status = Model.Enums.ReleaseStatus.Failed;
 
                             //}
@@ -140,6 +153,12 @@ namespace PrimeApps.Admin.Helpers
                         else
                             throw new Exception($"Release record cannot create for app{appId} database!");
                     }
+
+                    var studioClientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
+                    var studioApp = await platformRepository.AppGetByName(studioClientId);
+
+                    await PrimeApps.Model.Helpers.PublishHelper.ApplyVersions(_configuration, _storage, JObject.Parse(appString), app.OrganizationId, $"app{appId}", versions, CryptoHelper.Decrypt(studioApp.Secret), true, 1, token);
+
                 }
             }
 

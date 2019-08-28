@@ -20,7 +20,8 @@ using PrimeApps.Util.Storage;
 
 namespace PrimeApps.Studio.Controllers
 {
-    [Route("api/user"), Authorize(AuthenticationSchemes = "Bearer"), ActionFilters.CheckHttpsRequire, ResponseCache(CacheProfileName = "Nocache")]
+    [Route("api/user"), Authorize(AuthenticationSchemes = "Bearer"), ActionFilters.CheckHttpsRequire,
+     ResponseCache(CacheProfileName = "Nocache")]
     public class UserController : BaseController
     {
         private IConfiguration _configuration;
@@ -31,7 +32,9 @@ namespace PrimeApps.Studio.Controllers
         private IStudioUserRepository _studioUserRepository;
         private IUnifiedStorage _storage;
 
-        public UserController(IConfiguration configuration, IPlatformUserRepository platformUserRepository, IAppDraftRepository appDraftRepository, IOrganizationRepository organizationRepository, ITeamRepository teamRepository, IStudioUserRepository consoleUserRepository, IUnifiedStorage storage)
+        public UserController(IConfiguration configuration, IPlatformUserRepository platformUserRepository,
+            IAppDraftRepository appDraftRepository, IOrganizationRepository organizationRepository,
+            ITeamRepository teamRepository, IStudioUserRepository consoleUserRepository, IUnifiedStorage storage)
         {
             _platformUserRepository = platformUserRepository;
             _appDraftRepository = appDraftRepository;
@@ -74,7 +77,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("apps"), HttpPost]
-        public async Task<IActionResult> Apps([FromBody]JObject request)
+        public async Task<IActionResult> Apps([FromBody] JObject request)
         {
             var search = "";
             var page = 0;
@@ -85,7 +88,7 @@ namespace PrimeApps.Studio.Controllers
                     search = request["search"].ToString();
 
                 if (!request["page"].IsNullOrEmpty())
-                    page = (int)request["page"];
+                    page = (int) request["page"];
             }
 
             var apps = await _appDraftRepository.GetAllByUserId(AppUser.Id, search, page);
@@ -94,7 +97,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("organizations"), HttpGet]
-        public async Task<IActionResult> Organizations()
+        public async Task<IActionResult> Organizations([FromQuery] bool? includeApp)
         {
             var organizationUsers = await _organizationRepository.GetByUserId(AppUser.Id);
 
@@ -119,6 +122,12 @@ namespace PrimeApps.Studio.Controllers
                     Role = organizationUser.Role
                 };
 
+                if (includeApp.HasValue && (bool)includeApp)
+                {
+                    var apps = await _appDraftRepository.GetUserApps(AppUser.Id, organizationUser.Organization.Id);
+                    organization.Apps = apps;
+                }
+
                 organizations.Add(organization);
             }
 
@@ -126,7 +135,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("edit"), HttpPut]
-        public async Task<IActionResult> PlatformUserUpdate([FromBody]PlatformUser user)
+        public async Task<IActionResult> PlatformUserUpdate([FromBody] PlatformUser user)
         {
             var platformUser = _platformUserRepository.GetByEmail(user.Email);
 

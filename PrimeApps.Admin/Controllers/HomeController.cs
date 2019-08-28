@@ -34,8 +34,11 @@ namespace PrimeApps.Admin.Controllers
         private readonly IAppDraftRepository _appDraftRepository;
         private readonly IConfiguration _configuration;
         private readonly IPlatformRepository _platformRepository;
+        private readonly IPlatformUserRepository _platformUserRepository;
 
-        public HomeController(IHttpContextAccessor context, IOrganizationHelper organizationHelper, IApplicationRepository applicationRepository, IUnifiedStorage storage, IAppDraftRepository appDraftRepository, IConfiguration configuration, IPlatformRepository platformRepository)
+        public HomeController(IHttpContextAccessor context, IOrganizationHelper organizationHelper, IApplicationRepository applicationRepository,
+            IUnifiedStorage storage, IAppDraftRepository appDraftRepository, IConfiguration configuration, IPlatformRepository platformRepository,
+            IPlatformUserRepository platformUserRepository)
         {
             _context = context;
             _organizationHelper = organizationHelper;
@@ -44,16 +47,16 @@ namespace PrimeApps.Admin.Controllers
             _appDraftRepository = appDraftRepository;
             _configuration = configuration;
             _platformRepository = platformRepository;
+            _platformUserRepository = platformUserRepository;
         }
 
         [Route("")]
         public async Task<IActionResult> Index(int? id)
         {
-            var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-            var user = platformUserRepository.Get(HttpContext.User.FindFirst("email").Value);
-            var token = await _context.HttpContext.GetTokenAsync("access_token");
+            var user = _platformUserRepository.Get(HttpContext.User.FindFirst("email").Value);
+            var token = await HttpContext.GetTokenAsync("access_token");
 
-            var organizations = await _organizationHelper.Get(user.Id,token);
+            var organizations = await _organizationHelper.Get(user.Id, token);
             var titleText = "PrimeApps Admin";
 
             ViewBag.Title = titleText;
@@ -66,7 +69,7 @@ namespace PrimeApps.Admin.Controllers
                 if (selectedOrg == null)
                 {
                     ViewBag.ActiveOrganizationId = organizations[0].Id.ToString();
-                    return RedirectToAction("Index", new {id = organizations[0].Id});
+                    return RedirectToAction("Index", new { id = organizations[0].Id });
                 }
 
                 ViewBag.Title = selectedOrg.Name + " - " + titleText;
@@ -83,10 +86,8 @@ namespace PrimeApps.Admin.Controllers
         {
             var result = await _organizationHelper.ReloadOrganization();
 
-            if (result)
-                return RedirectToAction("Index", "Home");
-            else
-                return Ok();
+            return RedirectToAction("Index", "Home");
+
         }
 
         [Route("Logout")]
@@ -101,7 +102,7 @@ namespace PrimeApps.Admin.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

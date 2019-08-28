@@ -43,18 +43,6 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<int> GetLastVersion(int appId)
-        {
-            var result = await DbContext.Releases
-                .Where(x => !x.Deleted && x.AppId == appId && x.Status == Enums.ReleaseStatus.Succeed)
-                .OrderByDescending(x => x.Version)
-                .FirstOrDefaultAsync();
-
-            if (result != null)
-                return Convert.ToInt32(result.Version);
-            else
-                return -1;
-        }
 
         public async Task<bool> IsThereRunningProcess(int appId)
         {
