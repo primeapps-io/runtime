@@ -404,14 +404,16 @@ namespace PrimeApps.App.Helpers
                 {
                     var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
                     var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
-                    var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
 
                     using (var platforcm = new PlatformRepository(pdbCtx, _configuration))
                     {
                         var app = platforcm.AppGetById(appUser.AppId, appUser.Id);
-                      
-                        from = app.Setting.MailSenderEmail;
-                        fromName = app.Setting.MailSenderName;
+                        if (!string.IsNullOrEmpty(app.Setting?.MailSenderName) && !string.IsNullOrEmpty(app.Setting?.MailSenderEmail))
+                        {
+                            from = app.Setting.MailSenderEmail;
+                            fromName = app.Setting.MailSenderName;
+                        }
+
 
                     }
 
