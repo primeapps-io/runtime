@@ -16,7 +16,6 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using PrimeApps.Admin.Helpers;
 using PrimeApps.Model.Entities.Studio;
-using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Util.Storage;
@@ -55,16 +54,11 @@ namespace PrimeApps.Admin.Controllers
             _storage = storage;
         }
 
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            executingContext = context;
-            base.OnActionExecuting(context);
-        }
 
         [Route("package")]
         public async Task<IActionResult> Index(int? appId, int? orgId, bool applying)
         {
-            var user = platformUserRepository.Get(HttpContext.User.FindFirst("email").Value);
+            var user = _platformUserRepository.Get(HttpContext.User.FindFirst("email").Value);
             var token = await _context.HttpContext.GetTokenAsync("access_token");
             var organizations = await _organizationHelper.Get(user.Id, token);
 
@@ -148,7 +142,7 @@ namespace PrimeApps.Admin.Controllers
         [Route("log")]
         public async Task<ActionResult<string>> Log(int id, int appId, int orgId)
         {
-            var token = await executingContext.HttpContext.GetTokenAsync("access_token");
+            var token = await _context.HttpContext.GetTokenAsync("access_token");
             var studioClient = new StudioClient(_configuration, token, appId, orgId);
 
             var package = await studioClient.PackageGetById(id);
