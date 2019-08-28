@@ -24,15 +24,18 @@ namespace PrimeApps.Util.Storage
         Task<string> InitiateMultipartUpload(string bucket, string key);
         Task UploadDirAsync(string bucket, string folderPath);
         Task Upload(string bucket, string key, Stream stream);
+        Task Upload(PutObjectRequest request);
         Task Upload(string fileName, string bucket, string key, Stream stream);
         Task<string> UploadPart(string bucket, string key, int chunk, int chunks, string uploadId, Stream stream);
         string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTPS);
         string GetLink(string bucket, string key, string storageHostUrl = null);
         Task<GetObjectResponse> GetObject(string bucket, string key);
+        Task<bool> FolderExists(string bucket);
         Task<bool> ObjectExists(string bucket, string key);
         Task<PutACLResponse> CreateACL(string bucket, string key, S3CannedACL cannedACL);
         Task<PutBucketPolicyResponse> CreateBucketPolicy(string bucket, string domainName, PolicyType policyType, bool CreateBucketIfNotExists = true);
         event FileUploaded FileUploadedEvent;
         string GetDownloadFolderPath();
+        Task<bool> DownloadFolder(string bucketName, string directory, string destinationPath);
     }
 }

@@ -15,7 +15,11 @@ namespace PrimeApps.Model.Repositories
         public HistoryStorageRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
         {
         }
-
+        
+        public async Task<List<HistoryStorage>> GetAll()
+        {
+            return await DbContext.HistoryStorages.Where(x => !x.Deleted).ToListAsync();
+        }
         public async Task<List<HistoryStorage>> GetDiffs(string min)
         {
             var current = await DbContext.HistoryStorages.FirstOrDefaultAsync(x => x.Tag == min);

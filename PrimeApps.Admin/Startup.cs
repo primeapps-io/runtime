@@ -101,7 +101,7 @@ namespace PrimeApps.Admin
                     LanguageViewLocationExpanderFormat.Suffix,
                     opts => { opts.ResourcesPath = "Localization"; })
                 .AddDataAnnotationsLocalization();
-
+            
             services.AddMemoryCache();
 
             services.AddRouting(options => options.LowercaseUrls = true);
