@@ -25,7 +25,7 @@
                                         </p>
                                     </div>
                                     <div class="col-auto">
-                                        <button class="btn btn-icon btn-3 btn-primary btn-lg" type="button" title="Click for Publish!" onclick="openWS(@ViewBag.lastPackage.Id);">
+                                        <button class="btn btn-icon btn-3 btn-primary btn-lg" type="button" title="Click for Publish!" onclick="publish(@ViewBag.lastPackage.Id,@ViewBag.CurrentApp.Id,@ViewBag.ActiveOrganizationId);">
                                             <span class="btn-inner--icon"><i class="ni ni-cloud-upload-96"></i></span>
 
                                             <span class="btn-inner--text">Publish</span>
@@ -63,27 +63,27 @@
     var goLive = {};
     logData.innerHTML = log;
 
-    //function publish(packageId, appId) {
-    //    if (!packageId || !appId)
-    //        return;
+    function publish(packageId, appId,orgId) {
+        if (!packageId || !appId)
+            return;
 
-    //    console.log('Package:' + packageId + ' App:' + appId);
-        
+        console.log('Package:' + packageId + ' App:' + appId);
 
-    //    var http = new XMLHttpRequest();
-    //    http.onreadystatechange = function () {
-    //        if (this.readyState == 4 && this.status == 200) {
-    //            logData.innerHTML = this.responseText;
-    //        }
-    //    };
 
-    //    http.open('GET', window.location.origin + '/log?id=' + packageId + '&appId=' + appId, true);
-    //    http.setRequestHeader("Content-Type", 'application/json');
-    //    http.send();
+        var http = new XMLHttpRequest();
+        http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                logData.innerHTML = this.responseText;
+            }
+        };
 
-    //    logEditor.hidden = false;
+        http.open('GET', window.location.origin + '/log?id=' + packageId + '&appId=' + appId + '&orgId=' + orgId, true);
+        http.setRequestHeader("Content-Type", 'application/json');
+        http.send();
 
-    //}
+        logEditor.hidden = false;
+
+    }
 
     function openWS(id) {
         //if ($scope.socket && $scope.socket.readyState !== WebSocket.CLOSED)

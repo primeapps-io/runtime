@@ -57,7 +57,7 @@ namespace PrimeApps.Admin
             services.AddScoped<IRedisHelper, RedisHelper>();
             services.AddScoped<IOrganizationHelper, OrganizationHelper>();
             services.AddScoped<IPublishHelper, PublishHelper>();
-            services.AddScoped<IWebSocketHelper, WebSocketHelper>();
+            services.AddScoped<IWebSocketHelper, WebSocketHelper>(); 
 
             /*services.AddScoped<IRecordHelper, Helpers.RecordHelper>();
             services.AddScoped<IAuditLogHelper, AuditLogHelper>();

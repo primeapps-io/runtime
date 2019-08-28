@@ -1,0 +1,142 @@
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
+using PrimeApps.Model.Common.Organization;
+using PrimeApps.Model.Entities.Studio;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+namespace PrimeApps.Admin.Helpers
+{
+    public class StudioClient
+    {
+        private IConfiguration _configuration;
+        private HttpClient _client;
+        private int AppId;
+        private int OrgId;
+        private int TenantId;
+
+
+        public StudioClient(IConfiguration configuration, string token, int appId, int orgId)
+        {
+            _configuration = configuration;
+            var apiBaseUrl = _configuration.GetValue("AppSettings:StudioUrl", string.Empty) + "/api/";
+            HttpClientHandler handler = new HttpClientHandler();
+
+            var client = new HttpClient(handler, false);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.BaseAddress = new Uri(apiBaseUrl);
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+
+            if (orgId > 0)
+            {
+                client.DefaultRequestHeaders.Add("X-Organization-Id", orgId.ToString());
+                OrgId = orgId;
+            }
+
+            if (appId > 0)
+            {
+                client.DefaultRequestHeaders.Add("X-App-Id", appId.ToString());
+                AppId = appId;
+            }
+
+            //client.DefaultRequestHeaders.Add("X-Tenant-Id", tenantId);
+
+            //TenantId = tenantId;
+            _client = client;
+        }
+
+        public async Task<Package> PackageGetById(int id)
+        {
+            using (_client)
+            {
+                var response = await _client.GetAsync($"package/get/{id}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    if (response.StatusCode == HttpStatusCode.Unauthorized)
+                        throw new UnauthorizedAccessException();
+
+                    var errorData = await response.Content.ReadAsStringAsync();
+
+                    throw new Exception($"Method of Get Package result {response.StatusCode}. Application Id: {AppId}, Organization Id: {OrgId}, Response: {errorData}");
+                }
+
+                var data = await response.Content.ReadAsAsync<Package>();
+
+                return data;
+            }
+        }
+
+        public async Task<List<Package>> PackageGetAll()
+        {
+            using (_client)
+            {
+                var response = await _client.GetAsync($"package/get_all/{AppId}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    if (response.StatusCode == HttpStatusCode.Unauthorized)
+                        throw new UnauthorizedAccessException();
+
+                    var errorData = await response.Content.ReadAsStringAsync();
+
+                    throw new Exception($"Method of Get Packages List result {response.StatusCode}. Application Id: {AppId}, Organization Id: {OrgId}, Response: {errorData}");
+                }
+
+                var data = await response.Content.ReadAsAsync<List<Package>>();
+
+                return data;
+            }
+        }
+
+        public async Task<List<OrganizationModel>> OrganizationGetAllByUser()
+        {
+            var response = await _client.GetAsync($"user/organizations");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    throw new UnauthorizedAccessException();
+
+                var errorData = await response.Content.ReadAsStringAsync();
+
+                throw new Exception($"Method of Get Organizations List result {response.StatusCode}. Application Id: {AppId}, Organization Id: {OrgId}, Response: {errorData}");
+            }
+
+            var data = await response.Content.ReadAsAsync<List<OrganizationModel>>();
+
+            return data;
+        }
+
+        public async Task<AppDraft> AppDraftGetById(int id)
+        {
+            var response = await _client.GetAsync($"app/user/get/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    throw new UnauthorizedAccessException();
+
+                var errorData = await response.Content.ReadAsStringAsync();
+
+                throw new Exception($"Method of Get App Draft result {response.StatusCode}. Application Id: {AppId}, Organization Id: {OrgId}, Response: {errorData}");
+
+            }
+
+            var data = await response.Content.ReadAsAsync<AppDraft>();
+
+            return data;
+        }
+
+
+
+
+    }
+}

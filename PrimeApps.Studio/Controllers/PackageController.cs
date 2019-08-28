@@ -125,6 +125,20 @@ namespace PrimeApps.Studio.Controllers
             return Ok(deployment);
         }
 
+        [Route("get_all/{appId}"), HttpGet]
+        public async Task<IActionResult> GetAll(int appId)
+        {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "package", RequestTypeEnum.View))
+                return StatusCode(403);
+
+            var packages = await _packageRepository.GetAll(appId);
+
+            if (packages.Count <= 0)
+                return NotFound();
+
+            return Ok(packages);
+        }
+
         [HttpPost]
         [Route("create")]
         public async Task<IActionResult> Create([FromBody]JObject model)

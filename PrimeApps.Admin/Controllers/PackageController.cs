@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Admin.Helpers;
+using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.Admin.Controllers
@@ -23,9 +27,12 @@ namespace PrimeApps.Admin.Controllers
         private readonly IApplicationRepository _applicationRepository;
         private readonly IPackageRepository _packageRepository;
         private readonly IAppDraftRepository _appDraftRepository;
+        private ActionExecutingContext executingContext;
 
-        public PackageController(IConfiguration configuration, IHttpContextAccessor context, IOrganizationHelper organizationHelper, IPublishHelper publishHelper,
-            IApplicationRepository applicationRepository, IPackageRepository packageRepository, IAppDraftRepository appDraftRepository)
+        public PackageController(IConfiguration configuration, IHttpContextAccessor context,
+            IOrganizationHelper organizationHelper, IPublishHelper publishHelper,
+            IApplicationRepository applicationRepository, IPackageRepository packageRepository,
+            IAppDraftRepository appDraftRepository)
         {
             _configuration = configuration;
             _context = context;
@@ -36,13 +43,22 @@ namespace PrimeApps.Admin.Controllers
             _appDraftRepository = appDraftRepository;
         }
 
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            executingContext = context;
+            base.OnActionExecuting(context);
+        }
+
         [Route("package")]
         public async Task<IActionResult> Index(int? appId, int? orgId)
         {
-            var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-            var packageRepository = (IPackageRepository)HttpContext.RequestServices.GetService(typeof(IPackageRepository));
+            var platformUserRepository =
+                (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+            var packageRepository =
+                (IPackageRepository)HttpContext.RequestServices.GetService(typeof(IPackageRepository));
             var user = platformUserRepository.Get(HttpContext.User.FindFirst("email").Value);
-            var organizations = await _organizationHelper.Get(user.Id);
+            var token = await _context.HttpContext.GetTokenAsync("access_token");
+            var organizations = await _organizationHelper.Get(user.Id, token);
 
             ViewBag.Organizations = organizations;
             ViewBag.User = user;
@@ -80,9 +96,12 @@ namespace PrimeApps.Admin.Controllers
         }
 
         [Route("log")]
-        public async Task<ActionResult<string>> Log(int id, int appId)
+        public async Task<ActionResult<string>> Log(int id, int appId, int orgId)
         {
-            var package = await _packageRepository.Get(id);
+            var token = await executingContext.HttpContext.GetTokenAsync("access_token");
+            var studioClient = new StudioClient(_configuration, token, appId, orgId);
+
+            var package = await studioClient.PackageGetById(id);
             var app = await _appDraftRepository.Get(appId);
 
             if (package == null || app == null)
@@ -96,7 +115,8 @@ namespace PrimeApps.Admin.Controllers
             if (!System.IO.File.Exists($"{path}\\releases\\{dbName}\\{package.Version}\\log.txt"))
                 return Ok("Your logs have been deleted...");
 
-            using (var fs = new FileStream($"{path}\\releases\\{dbName}\\{package.Version}\\log.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var fs = new FileStream($"{path}\\releases\\{dbName}\\{package.Version}\\log.txt", FileMode.Open,
+                FileAccess.Read, FileShare.ReadWrite))
             using (var sr = new StreamReader(fs, Encoding.Default))
             {
                 text = ConvertHelper.ASCIIToHTML(sr.ReadToEnd());

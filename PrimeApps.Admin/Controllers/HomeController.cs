@@ -36,8 +36,9 @@ namespace PrimeApps.Admin.Controllers
         {
             var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
             var user = platformUserRepository.Get(HttpContext.User.FindFirst("email").Value);
+            var token = await _context.HttpContext.GetTokenAsync("access_token");
 
-            var organizations = await _organizationHelper.Get(user.Id);
+            var organizations = await _organizationHelper.Get(user.Id,token);
             var titleText = "PrimeApps Admin";
 
             ViewBag.Title = titleText;

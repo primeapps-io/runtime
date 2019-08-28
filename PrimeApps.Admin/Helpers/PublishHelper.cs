@@ -17,7 +17,7 @@ namespace PrimeApps.Admin.Helpers
 {
     public interface IPublishHelper
     {
-        Task<bool> StartRelease(int appId);
+        Task<bool> StartRelease(int appId, int orgId, string token);
         Task<bool> CheckDatabaseTemplate(int appId);
     }
 
@@ -37,24 +37,25 @@ namespace PrimeApps.Admin.Helpers
             _storage = storage;
         }
 
-        public async Task<bool> StartRelease(int appId)
+        public async Task<bool> StartRelease(int appId, int orgId, string token)
         {
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var platformDbContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var studioContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
-                using (var packageRepository = new PackageRepository(studioContext, _configuration))
-                using (var appDraftRepository = new AppDraftRepository(studioContext, _configuration))
+                var studioClient = new StudioClient(_configuration, token, appId, orgId);
+                //var studioContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+                //using (var packageRepository = new PackageRepository(studioContext, _configuration))
+                //using (var appDraftRepository = new AppDraftRepository(studioContext, _configuration))
                 using (var releaseRepository = new ReleaseRepository(platformDbContext, _configuration))
                 {
                     var isThereTempDatabase = await CheckDatabaseTemplate(appId);
 
-                    var packages = await packageRepository.GetAll(appId);
-                    var app = await appDraftRepository.Get(appId);
+                    var packages = await studioClient.PackageGetAll();
+                    var app = await studioClient.AppDraftGetById(appId);
                     var appJObject = JObject.FromObject(app);
                     var appName = $"app{appId}";
                     var lastPackageVersion = Convert.ToInt32(packages.Last().Version.ToString());
-                     
+
                     var releaseModel = new Release()
                     {
                         AppId = appId,
@@ -102,10 +103,10 @@ namespace PrimeApps.Admin.Helpers
 
                                 }
 
-                                releaseResult = await releaseRepository.Update(releaseModel); 
+                                releaseResult = await releaseRepository.Update(releaseModel);
                             }
                             else
-                                throw new Exception($"Release record cannot create for app{appId} database!"); 
+                                throw new Exception($"Release record cannot create for app{appId} database!");
                         }
                         else
                         {
@@ -113,7 +114,7 @@ namespace PrimeApps.Admin.Helpers
                         }
                     }
                     else //Temp Create
-                    { 
+                    {
 
                         var releaseResult = await releaseRepository.Create(releaseModel);
 
@@ -134,7 +135,7 @@ namespace PrimeApps.Admin.Helpers
 
                             }
 
-                            releaseResult = await releaseRepository.Update(releaseModel); 
+                            releaseResult = await releaseRepository.Update(releaseModel);
                         }
                         else
                             throw new Exception($"Release record cannot create for app{appId} database!");
