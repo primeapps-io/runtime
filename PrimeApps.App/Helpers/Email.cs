@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace PrimeApps.App.Helpers
 {
@@ -393,40 +394,42 @@ namespace PrimeApps.App.Helpers
         /// <summary>
         /// Writes email(s) into the database in a stateless session context.
         /// </summary>
-        public void AddToQueue(int tenantId, int moduleId, int recordId, string from = "", string fromName = "", string cc = "", string bcc = "", UserItem appUser = null, bool addRecordSummary = true)
+        public async Task<bool> AddToQueue(int tenantId, int moduleId, int recordId, string from = "", string fromName = "", string cc = "", string bcc = "", UserItem appUser = null, bool addRecordSummary = true)
         {
-            from = "admin@perapole.com";
-            fromName = "Perapole";
 
             if (appUser != null)
             {
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                    var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
-
-                    using (var platforcm = new PlatformRepository(pdbCtx, _configuration))
+                    var platformDbContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                    using (var applicationRepository = new ApplicationRepository(platformDbContext, _configuration))
+                    using (var tenantRepository = new TenantRepository(platformDbContext, _configuration))
                     {
-                        var app = platforcm.AppGetById(appUser.AppId, appUser.Id);
-                        if (!string.IsNullOrEmpty(app.Setting?.MailSenderName) && !string.IsNullOrEmpty(app.Setting?.MailSenderEmail))
+                        if (string.IsNullOrEmpty(from) && string.IsNullOrEmpty(fromName))
                         {
-                            from = app.Setting.MailSenderEmail;
-                            fromName = app.Setting.MailSenderName;
-                        }
-
-
-                    }
-
-                    using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration))//, cacheHelper))
-                    {
-                        var instance = tRepo.Get(appUser.TenantId);
-                        if (!string.IsNullOrEmpty(instance.Setting?.MailSenderName) && !string.IsNullOrEmpty(instance.Setting?.MailSenderEmail))
-                        {
-                            from = instance.Setting.MailSenderEmail;
-                            fromName = instance.Setting.MailSenderName;
+                            var tenant = tenantRepository.Get(appUser.TenantId);
+                            if (!string.IsNullOrEmpty(tenant.Setting?.MailSenderName) && !string.IsNullOrEmpty(tenant.Setting?.MailSenderEmail))
+                            {
+                                from = tenant.Setting.MailSenderEmail;
+                                fromName = tenant.Setting.MailSenderName;
+                            }
+                            else
+                            {
+                                var app = await applicationRepository.Get(appUser.AppId);
+                                if (!string.IsNullOrEmpty(app.Setting?.MailSenderName) && !string.IsNullOrEmpty(app.Setting?.MailSenderEmail))
+                                {
+                                    from = app.Setting.MailSenderEmail;
+                                    fromName = app.Setting.MailSenderName;
+                                }
+                            }
                         }
                     }
                 }
+            }
+            else
+            {
+                from = "info@primeapps.io";
+                fromName = "Primeapps";
             }
 
             var queue = new EmailEntry()
@@ -444,8 +447,7 @@ namespace PrimeApps.App.Helpers
                 SendOn = SendOn
             };
             BackgroundJob.Enqueue<Jobs.Email.Email>(email => email.TransmitMail(queue, tenantId, moduleId, recordId, appUser, addRecordSummary));
-
+            return true;
         }
-
     }
 }
