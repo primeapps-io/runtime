@@ -43,7 +43,7 @@ namespace PrimeApps.Admin.Helpers
             if (!string.IsNullOrEmpty(organizationString))
                 return JsonConvert.DeserializeObject<List<OrganizationModel>>(organizationString);
 
-            var studioClient = new StudioClient(_configuration, token, 0, 0);
+            var studioClient = new StudioClient(_configuration, token);
             var organizations = await studioClient.OrganizationGetAllByUser();
 
             return organizations;

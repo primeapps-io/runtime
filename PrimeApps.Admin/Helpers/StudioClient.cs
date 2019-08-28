@@ -22,7 +22,7 @@ namespace PrimeApps.Admin.Helpers
         private int TenantId;
 
 
-        public StudioClient(IConfiguration configuration, string token, int appId, int orgId)
+        public StudioClient(IConfiguration configuration, string token, int appId = 0, int orgId = 0)
         {
             _configuration = configuration;
             var apiBaseUrl = _configuration.GetValue("AppSettings:StudioUrl", string.Empty) + "/api/";

@@ -57,7 +57,7 @@ namespace PrimeApps.Admin.Controllers
         public async Task<IActionResult> Index(int? appId, int? orgId, bool applying)
         {
             var user = _platformUserRepository.Get(HttpContext.User.FindFirst("email").Value);
-            var token = await _context.HttpContext.GetTokenAsync("access_token");
+            var token = await HttpContext.GetTokenAsync("access_token");
             var organizations = await _organizationHelper.Get(user.Id, token);
 
             ViewBag.Organizations = organizations;
@@ -86,8 +86,8 @@ namespace PrimeApps.Admin.Controllers
         public async Task<IActionResult> Apply(int id, string applyingVersion, List<Package> packages)
         {
             var token = await HttpContext.GetTokenAsync("access_token");
-            var app = await _appDraftRepository.Get(id);
-            var studioClient = new StudioClient(_configuration, token, id, app.OrganizationId);
+            var studioClient = new StudioClient(_configuration, token, id);
+            var app = await studioClient.AppDraftGetById(id);
 
             var contractResolver = new DefaultContractResolver
             {
@@ -142,7 +142,7 @@ namespace PrimeApps.Admin.Controllers
             var studioClient = new StudioClient(_configuration, token, appId, orgId);
 
             var package = await studioClient.PackageGetById(id);
-            var app = await _appDraftRepository.Get(appId);
+            var app = await studioClient.AppDraftGetById(appId);
 
             if (package == null || app == null)
                 return BadRequest();
