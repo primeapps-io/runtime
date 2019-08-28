@@ -27,9 +27,9 @@ namespace PrimeApps.Studio.Helpers
 {
     public interface IReleaseHelper
     {
-        Task All(int appId, bool clearAllRecords, string dbName, int version, int deploymentId);
+        Task All(int appId, bool clearAllRecords, string dbName, string version, int deploymentId, List<HistoryStorage> historyStorages);
 
-        Task Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, int appId, string dbName, int version, int deploymentId);
+        Task Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, int appId, string dbName, string version, int deploymentId);
         Task<List<string>> CheckMissingFiles(int version, int appId);
         Task<List<JObject>> CheckMissingScripts(int version, int appId);
         Task<bool> IsFirstRelease(int version);
@@ -55,7 +55,7 @@ namespace PrimeApps.Studio.Helpers
             _currentUser = UserHelper.GetCurrentUser(_context);
         }
 
-        public async Task All(int appId, bool clearAllRecords, string dbName, int version, int deploymentId)
+        public async Task All(int appId, bool clearAllRecords, string dbName, string version, int deploymentId, List<HistoryStorage> historyStorages)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -85,7 +85,7 @@ namespace PrimeApps.Studio.Helpers
                         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                     });
 
-                    var result = await Model.Helpers.ReleaseHelper.All(JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), clearAllRecords, dbName, version, _configuration, _storage);
+                    var result = await Model.Helpers.ReleaseHelper.All(JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), clearAllRecords, dbName, version, _configuration, _storage, historyStorages);
 
                     /*var deployment = await deploymentRepository.Get(deploymentId);
 
@@ -100,7 +100,7 @@ namespace PrimeApps.Studio.Helpers
             }
         }
 
-        public async Task Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, int appId, string dbName, int version, int deploymentId)
+        public async Task Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, int appId, string dbName, string version, int deploymentId)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -219,26 +219,21 @@ namespace PrimeApps.Studio.Helpers
                         if (!string.IsNullOrEmpty(script))
                         {
                             scripts.Add(new JObject {["is_dump"] = false, ["script"] = script});
-                           
 
-                                var dumpExists = await _storage.ObjectExists(bucketName, "dumpSql.txt");
-                                if (dumpExists)
+
+                            var dumpExists = await _storage.ObjectExists(bucketName, $"app{appId}.dmp");
+                            if (dumpExists)
+                            {
+                                using (var dumpResponse = await _storage.GetObject(bucketName, $"app{appId}.dmp"))
+                                using (var dumpResponseStream = dumpResponse.ResponseStream)
+                                using (var dumpReader = new StreamReader(dumpResponseStream))
                                 {
-
-                                    using (var dumpResponse = await _storage.GetObject(bucketName, "dumpSql.txt"))
-                                    using (var dumpResponseStream = dumpResponse.ResponseStream)
-                                    using (var dumpReader = new StreamReader(dumpResponseStream))
-                                    {
-                                        var dump = dumpReader.ReadToEnd();
-                                        scripts.Add(new JObject {["is_dump"] = true, ["script"] = dump});
-                                        endLoop = true;
-                                    }
+                                    var dump = dumpReader.ReadToEnd();
+                                    scripts.Add(new JObject {["is_dump"] = true, ["script"] = dump});
+                                    endLoop = true;
                                 }
-                            
-
-                           
+                            }
                         }
-                            
                     }
                 }
                 else

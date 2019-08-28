@@ -194,7 +194,10 @@ namespace PrimeApps.Studio.Controllers
             }
 
             if (await _releaseHelper.IsFirstRelease(version))
-                _queue.QueueBackgroundWorkItem(token => _releaseHelper.All((int)AppId, (bool)appOptions["clear_all_records"], dbName, version, releaseModel.Id));
+            {
+                var historyStorages = await _historyStorageRepository.GetAll();
+                _queue.QueueBackgroundWorkItem(token => _releaseHelper.All((int)AppId, (bool)appOptions["clear_all_records"], dbName, version.ToString(), releaseModel.Id, historyStorages));
+            }
             else
             {
                 List<HistoryDatabase> historyDatabase = null;
@@ -206,7 +209,7 @@ namespace PrimeApps.Studio.Controllers
                 if (storageHistory != null && storageHistory.Tag != (int.Parse(releaseModel.Version) - 1).ToString())
                     historyStorages = await _historyStorageRepository.GetDiffs(currentBuildNumber.ToString());
 
-                _queue.QueueBackgroundWorkItem(token => _releaseHelper.Diffs(historyDatabase, historyStorages, (int)AppId, dbName, version, releaseModel.Id));
+                _queue.QueueBackgroundWorkItem(token => _releaseHelper.Diffs(historyDatabase, historyStorages, (int)AppId, dbName, version.ToString(), releaseModel.Id));
             }
 
             return Ok(releaseModel.Id);

@@ -100,7 +100,7 @@ namespace PrimeApps.Studio.Controllers
                 var bucketName = UnifiedStorage.GetPath("releases", PreviewMode, PreviewMode == "tenant" ? (int)TenantId : (int)AppId);
 
                 var withouts = new string[] {"releases"};
-                await _storage.CopyBucket($"app{AppId}", bucketName + "/" + id + "/files", withouts);
+                await _storage.CopyBucket(bucketName + "/" + id + "/files", $"app{AppId}", withouts);
 
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls | SecurityProtocolType.Tls;

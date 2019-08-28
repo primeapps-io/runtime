@@ -11,9 +11,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using PrimeApps.Admin.Helpers;
 using PrimeApps.Model.Entities.Studio;
+using PrimeApps.Model.Entities.Studio;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Util.Storage;
 
 namespace PrimeApps.Admin.Controllers
 {
@@ -27,12 +33,14 @@ namespace PrimeApps.Admin.Controllers
         private readonly IApplicationRepository _applicationRepository;
         private readonly IPackageRepository _packageRepository;
         private readonly IAppDraftRepository _appDraftRepository;
-        private ActionExecutingContext executingContext;
+        private readonly IPlatformRepository _platformRepository;
+        private readonly IPlatformUserRepository _platformUserRepository;
+        private readonly IReleaseRepository _releaseRepository;
+        private readonly IUnifiedStorage _storage;
 
-        public PackageController(IConfiguration configuration, IHttpContextAccessor context,
-            IOrganizationHelper organizationHelper, IPublishHelper publishHelper,
-            IApplicationRepository applicationRepository, IPackageRepository packageRepository,
-            IAppDraftRepository appDraftRepository)
+        public PackageController(IConfiguration configuration, IHttpContextAccessor context, IOrganizationHelper organizationHelper, IPublishHelper publishHelper,
+            IApplicationRepository applicationRepository, IPackageRepository packageRepository, IAppDraftRepository appDraftRepository, IPlatformRepository platformRepository, IUnifiedStorage storage,
+            IPlatformUserRepository platformUserRepository, IReleaseRepository releaseRepository)
         {
             _configuration = configuration;
             _context = context;
@@ -40,7 +48,11 @@ namespace PrimeApps.Admin.Controllers
             _publishHelper = publishHelper;
             _applicationRepository = applicationRepository;
             _packageRepository = packageRepository;
+            _platformUserRepository = platformUserRepository;
             _appDraftRepository = appDraftRepository;
+            _platformRepository = platformRepository;
+            _releaseRepository = releaseRepository;
+            _storage = storage;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -50,12 +62,8 @@ namespace PrimeApps.Admin.Controllers
         }
 
         [Route("package")]
-        public async Task<IActionResult> Index(int? appId, int? orgId)
+        public async Task<IActionResult> Index(int? appId, int? orgId, bool applying)
         {
-            var platformUserRepository =
-                (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-            var packageRepository =
-                (IPackageRepository)HttpContext.RequestServices.GetService(typeof(IPackageRepository));
             var user = platformUserRepository.Get(HttpContext.User.FindFirst("email").Value);
             var token = await _context.HttpContext.GetTokenAsync("access_token");
             var organizations = await _organizationHelper.Get(user.Id, token);
@@ -72,7 +80,7 @@ namespace PrimeApps.Admin.Controllers
                     ViewBag.CurrentApp = selectedOrg.Apps.FirstOrDefault(x => x.Id == appId);
                 }
 
-                var allPackages = await packageRepository.GetAll((int)appId);
+                var allPackages = await _packageRepository.GetAll((int)appId);
                 var lastPackage = allPackages.LastOrDefault(x => x.AppId == appId);
 
                 ViewBag.allPackages = allPackages;
@@ -84,7 +92,49 @@ namespace PrimeApps.Admin.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [Route("publish")]
+        [Route("apply")]
+        public async Task<IActionResult> Apply(int id, string applyingVersion, List<Package> packages)
+        {
+            var token = await HttpContext.GetTokenAsync("access_token");
+
+            var app = await _appDraftRepository.Get(id);
+
+            var contractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new SnakeCaseNamingStrategy()
+            };
+
+            var appString = JsonConvert.SerializeObject(app, new JsonSerializerSettings
+            {
+                ContractResolver = contractResolver,
+                Formatting = Formatting.Indented,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            });
+
+            var versions = new List<string>() {applyingVersion};
+
+            foreach (var package in packages)
+            {
+                if (package.Version != applyingVersion)
+                {
+                    var release = await _releaseRepository.Get(id, package.Version);
+                    if (release == null)
+                        versions.Add(package.Version);
+                    else
+                        break;
+                }
+            }
+
+            var studioClientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
+
+            var studioApp = await _platformRepository.AppGetByName(studioClientId);
+
+            await PrimeApps.Model.Helpers.PublishHelper.ApplyVersions(_configuration, _storage, JObject.Parse(appString), app.OrganizationId, $"app{id}", versions, CryptoHelper.Decrypt(studioApp.Secret), true, 1, token);
+
+            return RedirectToAction("Index", "Package", new {appId = app.Id, orgId = app.OrganizationId, applying = true});
+        }
+
+        /*[Route("publish")]
         public async Task<IActionResult> Publish(int appId)
         {
             if (appId < 0)
@@ -93,7 +143,7 @@ namespace PrimeApps.Admin.Controllers
             //TODO
 
             return Ok();
-        }
+        }*/
 
         [Route("log")]
         public async Task<ActionResult<string>> Log(int id, int appId, int orgId)

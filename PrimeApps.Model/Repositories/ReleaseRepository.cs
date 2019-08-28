@@ -28,6 +28,13 @@ namespace PrimeApps.Model.Repositories
                 .Where(x => !x.Deleted && x.Id == id)
                 .FirstOrDefaultAsync();
         }
+        
+        public async Task<Release> Get(int appId, string version)
+        {
+            return await DbContext.Releases
+                .Where(x => !x.Deleted && x.AppId == appId && x.Version == version)
+                .FirstOrDefaultAsync();
+        }
 
         public async Task<Release> GetByAppId(int appId)
         {

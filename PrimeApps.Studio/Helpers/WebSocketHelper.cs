@@ -4,6 +4,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon.S3.Model;
 using Hangfire.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -166,16 +167,34 @@ namespace PrimeApps.Studio.Helpers
                                         var bucketName = UnifiedStorage.GetPath("releases", previewMode, previewMode == "tenant" ? tenantId : appId, package.Version + "/");
 
                                         var _storage = (IUnifiedStorage)hContext.RequestServices.GetService(typeof(IUnifiedStorage));
-                                        await _storage.UploadDirAsync(bucketName, $"{path}releases\\{dbName}\\{package.Version}");
+                                        try
+                                        {
+                                            using (var fileStream = new FileStream($"{path}releases\\{dbName}\\{dbName}.zip", FileMode.OpenOrCreate))
+                                            {
+                                                PutObjectRequest request = new PutObjectRequest()
+                                                {
+                                                    BucketName = bucketName,
+                                                    Key = $"{package.Version}.zip",
+                                                    InputStream = fileStream,
+                                                    ContentType = "application/zip"
+                                                };
+                                                await _storage.Upload(request);
+                                            }
+
+                                            //await _storage.UploadDirAsync(bucketName, $"{path}releases\\{dbName}\\{dbName}.zip");
+                                        }
+                                        catch (Exception e)
+                                        {
+                                        }
+
                                         sr.Close();
                                         fs.Close();
 
                                         Directory.Delete($"{path}releases\\{dbName}\\{package.Version}", true);
+                                        File.Delete($"{path}releases\\{dbName}\\{dbName}.zip");
                                     }
                                     catch (Exception e)
                                     {
-                                        Console.WriteLine(e);
-                                        throw;
                                     }
                                 }
                                 /*if (app != null && app.Status != PublishStatus.Published && text.Contains("********** Publish End**********"))

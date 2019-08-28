@@ -1,11 +1,18 @@
 using System;
 using System.IO;
+using System.IO.Compression;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
+using Amazon.S3.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Document;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
@@ -31,7 +38,7 @@ namespace PrimeApps.Studio.Controllers
         private IBackgroundTaskQueue _queue;
         private IHttpContextAccessor _context;
 
-        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IImportRepository importRepository, IUnifiedStorage storage, IConfiguration configuration, IHistoryHelper historyHelper,IBackgroundTaskQueue queue,  IHttpContextAccessor context)
+        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IImportRepository importRepository, IUnifiedStorage storage, IConfiguration configuration, IHistoryHelper historyHelper, IBackgroundTaskQueue queue, IHttpContextAccessor context)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
@@ -262,6 +269,54 @@ namespace PrimeApps.Studio.Controllers
             return NotFound();
         }
 
+        [Route("download_folder"), HttpPost]
+        public async Task<HttpResponseMessage> DownloadFolder([FromBody]JObject request)
+        {
+            if (await _storage.FolderExists(request["bucket_name"].ToString()))
+            {
+                var tempPath = Path.GetTempPath();
+
+                var tmpFolder = $"{tempPath}\\tmpVersionFolder\\";
+                var tmpZippedFolder = $"{tempPath}\\tmpVersionZippedFolder\\";
+                var bucketName = request["bucket_name"].ToString();
+
+                if (!Directory.Exists(tmpFolder))
+                    Directory.CreateDirectory(tmpFolder);
+
+                if (!Directory.Exists(tmpZippedFolder))
+                    Directory.CreateDirectory(tmpZippedFolder);
+
+                if (Directory.Exists(tmpFolder + bucketName))
+                    Directory.Delete(tmpFolder + bucketName, true);
+
+                if (Directory.Exists(tmpZippedFolder + bucketName + ".zip"))
+                    Directory.Delete(tmpZippedFolder + bucketName + ".zip", true);
+
+                Directory.CreateDirectory(tmpFolder + bucketName);
+
+                var zipPath = $"{tmpZippedFolder}{bucketName}.zip";
+                //await _storage.DownloadFolder(bucketName, $"releases\\{request["version"]}", tmpFolder + bucketName);
+                await _storage.Download(bucketName, $"releases\\{request["version"]}\\{request["version"]}.zip",zipPath);
+                
+                /*try
+                {
+                    ZipFile.CreateFromDirectory(tmpFolder + bucketName, zipPath);
+                }
+                catch (Exception e)
+                {
+                    return new HttpResponseMessage(HttpStatusCode.BadRequest);
+                }*/
+
+                var response = new HttpResponseMessage(HttpStatusCode.OK);
+                var stream = new FileStream(zipPath, FileMode.Open);
+                response.Content = new StreamContent(stream);
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+                return response;
+            }
+
+            return new HttpResponseMessage(HttpStatusCode.BadRequest);
+        }
 
         //[Route("download")]
         //public async Task<FileStreamResult> Download([FromQuery(Name = "fileId")] int fileId)

@@ -145,7 +145,7 @@ namespace PrimeApps.Util.Storage
             try
             {
                 await CreateBucketIfNotExists(bucket);
-
+                
                 var directoryTransferUtility =
                     new TransferUtility(_client);
 
@@ -200,6 +200,16 @@ namespace PrimeApps.Util.Storage
             {
                 await transUtil.UploadAsync(stream, bucket, key);
             }
+        }
+        
+        /// <summary>
+        /// Uploads a file stream into a bucket with put object request.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        public async Task Upload(PutObjectRequest request)
+        {
+            await _client.PutObjectAsync(request);
         }
 
         public async Task Upload(string fileName, string bucket, string key, Stream stream)
@@ -583,6 +593,18 @@ namespace PrimeApps.Util.Storage
             }
         }
 
+        public async Task<bool> FolderExists(string bucket)
+        {
+            try
+            {
+                return await _client.DoesS3BucketExistAsync(bucket);
+            }
+            catch (Amazon.S3.AmazonS3Exception e)
+            {
+                return false;
+            }
+        }
+
         public static string GetMimeType(string name)
         {
             var type = name.Split('.')[1];
@@ -705,6 +727,28 @@ namespace PrimeApps.Util.Storage
                     , String.Empty
                 )
             );
+        }
+
+        /// <summary>
+        /// Download folder from s3.
+        /// bucketName is only bucket root level name. (app{appId})
+        /// </summary>
+        /// <param name="bucketName"></param>
+        /// <param name="directory"></param>
+        /// <param name="destinationPath"></param>
+        /// <returns>Bool</returns>
+        public async Task<bool> DownloadFolder(string bucketName, string directory, string destinationPath)
+        {
+            try
+            {
+                var directoryTransferUtility = new TransferUtility(_client);
+                await directoryTransferUtility.DownloadDirectoryAsync(bucketName, directory, destinationPath);
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
         }
     }
 }

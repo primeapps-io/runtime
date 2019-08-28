@@ -2,6 +2,7 @@
 @{
     var organizations = ViewBag.Organizations as List<OrganizationModel>;
     var apps = organizations?.FirstOrDefault(x => x.Id == int.Parse(ViewBag.ActiveOrganizationId))?.Apps;
+    var currentApp = ViewBag.CurrentApp;
 }
 <div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
     <div class="container-fluid">
@@ -45,7 +46,7 @@
                         <div class="card card-stats mb-4 mb-xl-0">
                             <div class="card-body">
                                 <div class="tab-content table-responsive">
-                                    <pre style="color: white !important;padding-left: 10px !important;padding-top: 10px !important;padding-bottom: 10px !important;background-color: black !important;" data-ng-bind-html="goLive.logs" id="logData"></pre>
+                                    <pre style="color: white !important; padding-left: 10px !important; padding-top: 10px !important; padding-bottom: 10px !important; background-color: black !important;" data-ng-bind-html="goLive.logs" id="logData"></pre>
                                 </div>
                             </div>
                         </div>
@@ -90,7 +91,7 @@
         //    return;
 
         var socket = new WebSocket('ws://' + location.host + '/log_stream');
-        socket.onopen = function (e) {
+        socket.onopen = function(e) {
             socket.send(JSON.stringify({
                 'X-App-Id': @ViewBag.CurrentApp.Id,
                 'X-Tenant-Id': 1,
@@ -99,7 +100,7 @@
             }));
         };
 
-        socket.onclose = function (e) {
+        socket.onclose = function(e) {
             if (goLive && goLive.logs && goLive.logs.indexOf('********** Package Created **********') > -1) {
                 //toastr.success("Your package is ready.");
 
@@ -114,7 +115,7 @@
 
         };
 
-        socket.onerror = function (e) {
+        socket.onerror = function(e) {
             //$scope.publishError = e.data;
             //$scope.$apply();
             console.log(e);
@@ -122,7 +123,7 @@
             //$scope.loading = false;
         };
 
-        socket.onmessage = function (e) {
+        socket.onmessage = function(e) {
             logEditor.hidden = false;
             goLive.logs = e.data;
             logData.innerHTML = e.data;

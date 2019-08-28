@@ -121,19 +121,19 @@ namespace PrimeApps.Admin.Helpers
                         if (releaseResult > 0)
                         {
                             //TODO 
-                            var releaseProcess = await Model.Helpers.PublishHelper.Create(_configuration, _storage, appJObject, appName, lastPackageVersion, "", true);
+                            //var releaseProcess = await Model.Helpers.PublishHelper.Create(_configuration, _storage, appJObject, appName, lastPackageVersion, "", true);
                             //TODO
                             releaseModel.EndTime = DateTime.Now;
 
-                            if (releaseProcess)
-                                releaseModel.Status = Model.Enums.ReleaseStatus.Succeed;
-                            else
-                            {
+                            //if (releaseProcess)
+                            //    releaseModel.Status = Model.Enums.ReleaseStatus.Succeed;
+                            //else
+                            //{
                                 //TODO
                                 //If false, does the generated theme need to be deleted?
-                                releaseModel.Status = Model.Enums.ReleaseStatus.Failed;
+                            //    releaseModel.Status = Model.Enums.ReleaseStatus.Failed;
 
-                            }
+                            //}
 
                             releaseResult = await releaseRepository.Update(releaseModel);
                         }

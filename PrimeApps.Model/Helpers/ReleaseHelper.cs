@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -27,19 +28,24 @@ namespace PrimeApps.Model.Helpers
 
     public class ReleaseHelper
     {
-        public static async Task<bool> All(JObject app, string studioSecret, bool clearAllRecords, string dbName, int version, IConfiguration configuration, IUnifiedStorage storage)
+        public static async Task<bool> All(JObject app, string studioSecret, bool clearAllRecords, string dbName, string version, IConfiguration configuration, IUnifiedStorage storage, List<HistoryStorage> historyStorages)
         {
             var PDEConnectionString = configuration.GetConnectionString("StudioDBConnection");
             var postgresPath = configuration.GetValue("AppSettings:PostgresPath", string.Empty);
-            var path = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+            var root = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
-            path = $"{path}releases\\{dbName}\\{version}";
+            var path = $"{root}releases\\{dbName}\\{version}";
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
             var logPath = $"{path}\\log.txt";
             var scriptPath = $"{path}\\scripts.txt";
+            var storagePath = $"{path}\\storage.txt";
+            var storageFilesPath = $"{path}\\files";
+
+            if (!Directory.Exists(storageFilesPath))
+                Directory.CreateDirectory(storageFilesPath);
 
             try
             {
@@ -48,7 +54,7 @@ namespace PrimeApps.Model.Helpers
 
                 //var sqlDump = ReleaseHelper.GetSqlDump(PDEConnectionString, dbName, $"{path}\\dumpSql.txt");
 
-                var sqlDumpResult = PosgresHelper.Dump(PDEConnectionString, dbName, postgresPath, $"{path}\\dumpSql.txt");
+                var sqlDumpResult = PosgresHelper.Dump(PDEConnectionString, dbName, postgresPath, $"{path}\\");
 
                 if (!sqlDumpResult)
                     File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While creating sql dump script." + "\u001b[39m" + Environment.NewLine);
@@ -119,6 +125,29 @@ namespace PrimeApps.Model.Helpers
                     }
                 }
 
+                if (historyStorages != null)
+                {
+                    foreach (var (value, index) in historyStorages.Select((v, i) => (v, i)))
+                    {
+                        AddScript(storagePath, (index == 0 ? "[" : "") + new JObject {["mime_type"] = value.MimeType, ["operation"] = value.Operation, ["file_name"] = value.FileName, ["unique_name"] = value.UniqueName, ["path"] = value.Path}.ToJsonString() + (index != historyStorages.Count() - 1 ? "," : "]"));
+
+                        var file = await storage.GetObject($"app{app["id"]}/templates/", value.UniqueName);
+                        using (var fileStream = File.Create(storageFilesPath + $"\\{value.FileName}"))
+                        {
+                            file.ResponseStream.CopyTo(fileStream);
+                        }
+                    }
+                }
+
+                try
+                {
+                    ZipFile.CreateFromDirectory(path, path = $"{root}releases\\{dbName}\\{dbName}.zip");
+                }
+                catch (Exception e)
+                {
+                }
+                
+
                 /*if (!result)
                     File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while editing records... \u001b[39m" + Environment.NewLine);
                 */
@@ -180,7 +209,7 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static async Task<bool> Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, JObject app, string studioSecret, string dbName, int version, int deploymentId, IConfiguration configuration, IUnifiedStorage storage)
+        public static async Task<bool> Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, JObject app, string studioSecret, string dbName, string version, int deploymentId, IConfiguration configuration, IUnifiedStorage storage)
         {
             var path = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
@@ -192,7 +221,11 @@ namespace PrimeApps.Model.Helpers
             var logPath = $"{path}\\log.txt";
             var scriptPath = $"{path}\\scripts.txt";
             var storagePath = $"{path}\\storage.txt";
-            
+            var storageFilesPath = $"{path}\\files";
+
+            if (!Directory.Exists(storageFilesPath))
+                Directory.CreateDirectory(storageFilesPath);
+
             try
             {
                 File.AppendAllText(logPath, "\u001b[92m" + "********** Create Package **********" + "\u001b[39m" + Environment.NewLine);
@@ -208,15 +241,26 @@ namespace PrimeApps.Model.Helpers
 
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Storage scripts creating..." + Environment.NewLine);
 
+                var bucketName = UnifiedStorage.GetPath("releases", "app", int.Parse(app["id"].ToString()), version + "/");
+
                 if (historyStorages != null)
                 {
                     foreach (var (value, index) in historyStorages.Select((v, i) => (v, i)))
                     {
                         AddScript(storagePath, (index == 0 ? "[" : "") + new JObject {["mime_type"] = value.MimeType, ["operation"] = value.Operation, ["file_name"] = value.FileName, ["unique_name"] = value.UniqueName, ["path"] = value.Path}.ToJsonString() + (index != historyStorages.Count() - 1 ? "," : "]"));
+
+                        //await storage.Download(bucketName, value.UniqueName, value.FileName);
+                        var file = await storage.GetObject(bucketName, value.UniqueName);
+
+                        using (var fileStream = File.Create(storageFilesPath + $"\\{value.FileName}"))
+                        {
+                            file.ResponseStream.Seek(0, SeekOrigin.Begin);
+                            file.ResponseStream.CopyTo(fileStream);
+                        }
                     }
                 }
 
-                var bucketName = UnifiedStorage.GetPath("releases", "app", int.Parse(app["id"].ToString()), version + "/");
+                //var bucketName = UnifiedStorage.GetPath("releases", "app", int.Parse(app["id"].ToString()), version + "/");
 
                 File.AppendAllText(logPath, "\u001b[92m" + "********** Package Created **********" + "\u001b[39m" + Environment.NewLine);
 
