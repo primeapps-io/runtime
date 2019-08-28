@@ -409,7 +409,7 @@ namespace PrimeApps.App.Helpers
                     using (var platforcm = new PlatformRepository(pdbCtx, _configuration))
                     {
                         var app = platforcm.AppGetById(appUser.AppId, appUser.Id);
-
+                      
                         from = app.Setting.MailSenderEmail;
                         fromName = app.Setting.MailSenderName;
 
