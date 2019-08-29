@@ -23,7 +23,13 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.Setting)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
-
+        public  App GetAppById(int? id)
+        {
+            return  DbContext.Apps
+                .Include(x => x.Setting)
+                .FirstOrDefault(x => x.Id == id);
+        }
+        
         public async Task<App> GetByNameAsync(string name)
         {
             return await DbContext.Apps
