@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: primeapps-serverless
+  namespace: serverless
+type: Opaque
+data:
+  RedisConnection: Y2FjaGUtdGVzdC1yZWRpcy1tYXN0ZXIuY2FjaGU6NjM3OSxwYXNzd29yZD1wciFt4oKsQXBwc2kwcixkZWZhdWx0RGF0YWJhc2U9MQo=
+---
+apiVersion: v1
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJodHRwczovL3JlZ2lzdHJ5LnByaW1lYXBwcy5pbyI6eyJ1c2VybmFtZSI6InByaW1lYXBwcyIsInBhc3N3b3JkIjoicHIxbWVBcHBzaTByIiwiZW1haWwiOiJhZG1pbkBwcmltZWFwcHMuaW8iLCJhdXRoIjoiY0hKcGJXVmhjSEJ6T25CeU1XMWxRWEJ3YzJrd2NnPT0ifX19
+kind: Secret
+metadata:
+  name: primeapps-registry
+  namespace: serverless
+type: kubernetes.io/dockerconfigjson

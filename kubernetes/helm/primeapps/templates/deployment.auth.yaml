@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{.Release.Name}}-auth"
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    k8s-app: "{{.Release.Name}}-auth"
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      k8s-app: "{{.Release.Name}}-auth"
+  template:
+    metadata:
+      labels:
+        heritage: {{.Release.Service | quote }}
+        release: {{.Release.Name | quote }}
+        chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+        k8s-app: "{{.Release.Name}}-auth"
+    spec:
+      volumes:
+        - name: "self-signed-ssl"
+          secret:
+            secretName: "{{.Release.Name}}-auth-selfsigned-ssl"
+      containers:
+        - name: "{{.Release.Name}}-auth"
+          image: "primeapps/primeapps-auth:{{.Values.image.tag}}"
+          imagePullPolicy: "{{.Values.image.pullPolicy}}"
+          volumeMounts:
+            - mountPath: "/etc/self-signed-ssl"
+              name: self-signed-ssl
+          env:
+            - name: ASPNETCORE_Kestrel__Certificates__Default__Path
+              value: /etc/self-signed-ssl/aspnetapp.pfx
+            - name: ConnectionStrings__AuthDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: AuthDBConnection
+            - name: ConnectionStrings__TenantDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: TenantDBConnection
+            - name: ConnectionStrings__PlatformDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: PlatformDBConnection
+            - name: AppSettings__Authority
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: Authority
+            - name: AppSettings__ForwardHeaders
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: ForwardHeaders
+            - name: AppSettings__HttpsRedirection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: HttpsRedirection
+            - name: Sentry__Dsn
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-auth-config
+                  key: SentryDsn

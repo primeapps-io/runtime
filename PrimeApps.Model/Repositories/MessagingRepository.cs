@@ -4,6 +4,7 @@ using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -22,6 +23,12 @@ namespace PrimeApps.Model.Repositories
             DbContext.Entry(notification).State = EntityState.Modified;
             await DbContext.SaveChangesAsync();
             return notification;
+        }
+        public async Task<Template> GetTemplate(string code)
+        {
+            var templateBody = await DbContext.Templates.Where(x => x.Code == code && !x.Deleted).FirstOrDefaultAsync();
+
+            return templateBody;
         }
     }
 }

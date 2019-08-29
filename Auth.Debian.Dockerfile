@@ -26,9 +26,13 @@ ENV ASPNETCORE_HTTPS_PORT=443
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password="1q2w3e4r5t"
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path="aspnetapp.pfx"
 
+# Trust Kubernetes CA certificate
 RUN mkdir -p /usr/local/share/ca-certificates/ && cp ca.crt /usr/local/share/ca-certificates/kubernetes_ca.crt
 RUN chmod 777 /usr/local/share/ca-certificates/kubernetes_ca.crt
 RUN update-ca-certificates --fresh
+
+# Install System.Drawing native dependencies
+RUN apt-get update && apt-get install -y --allow-unauthenticated libc6-dev libgdiplus libx11-dev && rm -rf /var/lib/apt/lists/*
 
 FROM base AS final
 WORKDIR /app

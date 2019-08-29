@@ -46,11 +46,10 @@ namespace PrimeApps.Model.Repositories
 
         public App AppGetById(int id, int userId)
         {
-            //var note = await DbContext.Apps
-            //    .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id && x.UserId == userId);
+            var app =   DbContext.Apps.FirstOrDefault(x => !x.Deleted && x.Id == id);
 
-            //return note;
-            return null;
+            //return app;
+            return app;
         }
 
         public List<App> AppGetAll(int userId)

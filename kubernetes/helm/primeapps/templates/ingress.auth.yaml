@@ -1,0 +1,31 @@
+{{- $secretName := "auth-letsencrypt" -}}
+{{- if eq .Values.global.tls.type "custom" -}}
+  {{- $secretName := .Values.global.tls.secretName -}}
+{{- end }}
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: "{{.Release.Name}}-auth-ingress"
+  annotations:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/server-snippet: |-
+      add_header X-Robots-Tag "noindex, nofollow";
+    {{- if eq .Values.global.tls.type "letsencrypt" }}
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    {{- end }}
+spec:
+  tls:
+    - hosts:
+        - "{{.Values.auth.domain}}"
+      secretName: "{{$secretName}}"
+  rules:
+    - host: "{{.Values.auth.domain}}"
+      http:
+        paths:
+          - path: "/"
+            backend:
+              serviceName: "{{.Release.Name}}-auth-service"
+              servicePort: 80

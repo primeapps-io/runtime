@@ -1,0 +1,34 @@
+{{- $fullName := include "minio.fullname" . -}}
+{{- $secretName := "storage-letsencrypt" -}}
+{{- if eq .Values.global.tls.type "custom" -}}
+  {{- $secretName := .Values.global.tls.secretName -}}
+{{- end }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    app: {{ template "minio.name" . }}
+    chart: {{ template "minio.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/server-snippet: |-
+      add_header X-Robots-Tag "noindex, nofollow";
+    {{- if eq .Values.global.tls.type "letsencrypt" }}
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    {{- end }}
+spec:
+  tls:
+    - hosts:
+        - "{{.Values.domain}}"
+      secretName: "{{$secretName}}"
+  rules:
+    - host: "{{.Values.domain}}"
+      http:
+        paths:
+          - path: "/"
+            backend:
+              serviceName: "{{.Release.Name}}-minio"
+              servicePort: {{.Values.service.port}}

@@ -22,13 +22,13 @@
                                         <a href="{{!back ? (!parentId ? (!id ? '#/app/modules/' + type : '#/app/module/' + type + '?id=' + id) : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab)) : (back != 'calendar' ? '#/app/modules/' + back : '#/app/calendar')}}"
                                            class="btn btn-sm btn-custom" ng-disabled="submitting || loading">{{'Common.Cancel' |
                                             translate}}</a>
-                                        <button type="submit" class="btn btn-sm btn-primary" ladda="submitting && saveAndNew"
+                                        <!--<button type="submit" class="btn btn-sm btn-primary" ladda="submitting && saveAndNew"
                                                 ng-mouseup="saveAndNew = true"
                                                 ng-show="showSaveAndNew != 'false'"
                                                 ng-disabled="(submitting && !saveAndNew) || loading || fileLoadingCounter>0">
                                             {{'Common.SaveAndNew'
                                             | translate}}
-                                        </button>
+                                        </button>-->
                                         <button type="submit" class="btn btn-sm btn-primary" ladda="submitting && !saveAndNew"
                                                 ng-mouseup="saveAndNew = false"
                                                 ng-disabled="(submitting && saveAndNew) || loading || fileLoadingCounter>0">{{'Common.Save'
@@ -868,11 +868,11 @@
                                                 <a href="{{!back ? (!parentId ? (!id ? '#/app/modules/' + type : '#/app/module/' + type + '?id=' + id) : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab)) : (back != 'calendar' ? '#/app/modules/' + back : '#/app/calendar')}}"
                                                    class="btn btn-custom" ng-disabled="submitting" tabindex="9999">{{'Common.Cancel' |
                                                     translate}}</a>
-                                                <button type="submit" class="btn btn-primary" ladda="submitting && saveAndNew"
+                                                <!--<button type="submit" class="btn btn-primary" ladda="submitting && saveAndNew"
                                                         ng-mouseup="saveAndNew = true" ng-disabled="submitting && !saveAndNew"
                                                         ng-show="showSaveAndNew != 'false'" tabindex="9998">{{'Common.SaveAndNew' |
                                                     translate}}
-                                                </button>
+                                                </button>-->
                                                 <button type="submit" class="btn btn-primary" ladda="submitting && !saveAndNew"
                                                         ng-mouseup="saveAndNew = false" id="RecordSaveButton"
                                                         ng-disabled="(submitting && saveAndNew) || fileLoadingCounter>0  " tabindex="9997">
