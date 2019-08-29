@@ -124,6 +124,10 @@ angular.module('primeapps')
                         value: 3
                     },
                     {
+                        name: $filter('translate')('Setup.Modules.List'),
+                        value: 3
+                    },
+                    {
                         name: $filter('translate')('Setup.Modules.Relation'),
                         value: 5
                     }
@@ -473,6 +477,9 @@ angular.module('primeapps')
 
                 if (actionButton.trigger === 'All')
                     actionButton.triggerType = 3;
+
+                if (actionButton.trigger === 'List')
+                    actionButton.triggerType = 4;
 
                 if (actionButton.trigger === 'Relation')
                     actionButton.triggerType = 5;
