@@ -1001,7 +1001,7 @@ angular.module('primeapps')
                     //get only active users to list! if need also inactive users, use utils lookupuser with includeInactiveUsers parameter
                     if (lookupModule.name === 'users' || ($rootScope.branchAvailable && lookupType === 'branchs')) {
                         var filterOrderNo = findRequest.filters.length + 1;
-                        findRequest.filters.push({ field: 'is_active', operator: 'equals', value: true, no: filterOrderNo });
+                        findRequest.filters.push({ field: 'is_active', operator: 'equals', value: true, no: filterOrderNo }, { field: 'email', operator: 'not_contain', value: "integration", no: filterOrderNo+1 });
                     }
 
                     //lookup field filters (from field_filters table)
