@@ -1,12 +1,8 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json.Linq;
+﻿using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Organization;
 using PrimeApps.Model.Entities.Studio;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -20,7 +16,6 @@ namespace PrimeApps.Admin.Helpers
         private int AppId;
         private int OrgId;
         private int TenantId;
-
 
         public StudioClient(IConfiguration configuration, string token, int appId = 0, int orgId = 0)
         {
@@ -120,41 +115,47 @@ namespace PrimeApps.Admin.Helpers
 
         public async Task<List<OrganizationModel>> OrganizationGetAllByUser()
         {
-            var response = await _client.GetAsync($"user/organizations?includeApp=true");
-
-            if (!response.IsSuccessStatusCode)
+            using (_client)
             {
-                if (response.StatusCode == HttpStatusCode.Unauthorized)
-                    throw new UnauthorizedAccessException();
+                var response = await _client.GetAsync($"user/organizations?includeApp=true");
 
-                var errorData = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                {
+                    if (response.StatusCode == HttpStatusCode.Unauthorized)
+                        throw new UnauthorizedAccessException();
 
-                throw new Exception($"Method of Get Organizations List result {response.StatusCode}. Application Id: {AppId}, Organization Id: {OrgId}, Response: {errorData}");
+                    var errorData = await response.Content.ReadAsStringAsync();
+
+                    throw new Exception($"Method of Get Organizations List result {response.StatusCode}. Application Id: {AppId}, Organization Id: {OrgId}, Response: {errorData}");
+                }
+
+                var data = await response.Content.ReadAsAsync<List<OrganizationModel>>();
+
+                return data;
             }
-
-            var data = await response.Content.ReadAsAsync<List<OrganizationModel>>();
-
-            return data;
         }
 
         public async Task<AppDraft> AppDraftGetById(int id)
         {
-            var response = await _client.GetAsync($"app/user/get/{id}");
-
-            if (!response.IsSuccessStatusCode)
+            using (_client)
             {
-                if (response.StatusCode == HttpStatusCode.Unauthorized)
-                    throw new UnauthorizedAccessException();
+                var response = await _client.GetAsync($"app/get/{id}");
 
-                var errorData = await response.Content.ReadAsStringAsync();
+                if (!response.IsSuccessStatusCode)
+                {
+                    if (response.StatusCode == HttpStatusCode.Unauthorized)
+                        throw new UnauthorizedAccessException();
 
-                throw new Exception($"Method of Get App Draft result {response.StatusCode}. Application Id: {AppId}, Organization Id: {OrgId}, Response: {errorData}");
+                    var errorData = await response.Content.ReadAsStringAsync();
 
+                    throw new Exception($"Method of Get App Draft result {response.StatusCode}. Application Id: {AppId}, Organization Id: {OrgId}, Response: {errorData}");
+
+                }
+
+                var data = await response.Content.ReadAsAsync<AppDraft>();
+
+                return data;
             }
-
-            var data = await response.Content.ReadAsAsync<AppDraft>();
-
-            return data;
         }
 
 

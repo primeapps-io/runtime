@@ -26,15 +26,17 @@
                                         </p>
                                     </div>
                                     <div class="col-auto">
-                                        <button class="btn btn-icon btn-3 btn-primary btn-lg" type="button" title="Click for Publish!" onclick="publish(@ViewBag.lastPackage.Id,@ViewBag.CurrentApp.Id,@ViewBag.ActiveOrganizationId);">
+                                        <button class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="Click for Publish!" onclick="publish(@ViewBag.lastPackage.Id,@ViewBag.CurrentApp.Id,@ViewBag.ActiveOrganizationId);">
                                             <span class="btn-inner--icon"><i class="ni ni-cloud-upload-96"></i></span>
-
                                             <span class="btn-inner--text">Publish</span>
-
                                         </button>
-                                        @*<div class="icon icon-shape text-white rounded-circle shadow" style="background-color:orange">
-                                                <i class="ni ni-cloud-upload-96" title="Publish"></i>
-                                            </div>*@
+                                        @if (ViewBag.UpdateButtonActive != null && ViewBag.UpdateButtonActive == true)
+                                        {
+                                            <button class="btn ifn-icon btn-3 btn-warning btn-md" type="button" title="Click for Update Tenants!" onclick="tenantUpdate(@ViewBag.lastPackage.Id,@ViewBag.CurrentApp.Id,@ViewBag.ActiveOrganizationId)">
+                                                <span class="btn-inner--icon"><i class="ni ni-cloud-upload-96"></i></span>
+                                                <span class="btn-inner--text">Update Tenants</span>
+                                            </button>
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -64,12 +66,9 @@
     var goLive = {};
     logData.innerHTML = log;
 
-    function publish(packageId, appId,orgId) {
-        if (!packageId || !appId)
+    function publish(packageId, appId, orgId) {
+        if (!packageId || !appId || !orgId)
             return;
-
-        console.log('Package:' + packageId + ' App:' + appId);
-
 
         var http = new XMLHttpRequest();
         http.onreadystatechange = function () {
@@ -79,6 +78,25 @@
         };
 
         http.open('GET', window.location.origin + '/log?id=' + packageId + '&appId=' + appId + '&orgId=' + orgId, true);
+        http.setRequestHeader("Content-Type", 'application/json');
+        http.send();
+
+        logEditor.hidden = false;
+
+    }
+
+    function tenantUpdate(packageId, appId, orgId) {
+        if (!packageId || !appId || !orgId)
+            return;
+
+        var http = new XMLHttpRequest();
+        http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                logData.innerHTML = this.responseText;
+            }
+        };
+
+        http.open('GET', window.location.origin + '/update_tenants?id=' + packageId + '&appId=' + appId + '&orgId=' + orgId, true);
         http.setRequestHeader("Content-Type", 'application/json');
         http.send();
 

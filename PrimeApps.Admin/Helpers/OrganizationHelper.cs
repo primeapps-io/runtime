@@ -1,18 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
+using System.Collections.Generic; 
+using System.Threading.Tasks; 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using PrimeApps.Model.Common.Organization;
-using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Tenant;
-using PrimeApps.Model.Helpers;
-using PrimeApps.Model.Repositories;
+using PrimeApps.Model.Common.Organization; 
 
 namespace PrimeApps.Admin.Helpers
 {

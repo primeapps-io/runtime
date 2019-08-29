@@ -1,13 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Helpers;
-using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Util.Storage;
 using System;
@@ -21,6 +20,7 @@ namespace PrimeApps.Admin.Helpers
     {
         Task<bool> StartRelease(int appId, int orgId, string applyingVersion, string token);
         Task<bool> CheckDatabaseTemplate(int appId);
+        Task<bool> IsActiveUpdateButton(int appId);
     }
 
     public class PublishHelper : IPublishHelper
@@ -32,9 +32,11 @@ namespace PrimeApps.Admin.Helpers
         private readonly IUnifiedStorage _storage;
         private readonly IPlatformRepository _platformRepository;
         private readonly IReleaseRepository _releaseRepository;
+        private readonly ITenantRepository _tenantRepository;
 
-        public PublishHelper(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, IRedisHelper redisHelper, IUnifiedStorage storage,
-            IPlatformRepository platformRepository, IReleaseRepository releaseRepository)
+        public PublishHelper(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, IRedisHelper redisHelper,
+            IUnifiedStorage storage, IPlatformRepository platformRepository, IReleaseRepository releaseRepository,
+            ITenantRepository tenantRepository)
         {
             _serviceScopeFactory = serviceScopeFactory;
             _configuration = configuration;
@@ -42,6 +44,7 @@ namespace PrimeApps.Admin.Helpers
             _storage = storage;
             _platformRepository = platformRepository;
             _releaseRepository = releaseRepository;
+            _tenantRepository = tenantRepository;
         }
 
         public async Task<bool> StartRelease(int appId, int orgId, string applyingVersion, string token)
@@ -168,5 +171,21 @@ namespace PrimeApps.Admin.Helpers
 
             return true;
         }
+
+        public async Task<bool> IsActiveUpdateButton(int appId)
+        {
+            var tenantIds = await _tenantRepository.GetByAppId(appId);
+            var releases = await _releaseRepository.GetByAppId(appId);
+
+            if (releases == null)
+                return false;
+
+            if (releases != null && (tenantIds == null || tenantIds.Count < 1))
+                return false;
+
+            return true;
+        }
+
     }
 }
+
