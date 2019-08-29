@@ -10,7 +10,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 		Task<App> Get(int? id);
         Task<App> GetByNameAsync(string name);
         App GetByName(string name);
-
+        App GetAppById(int? id);
         Task<int> GetAppIdWithDomain(string domain);
         Task<App> GetAppWithDomain(string domain);
     }

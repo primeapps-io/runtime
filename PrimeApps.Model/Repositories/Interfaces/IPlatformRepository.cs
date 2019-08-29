@@ -26,5 +26,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> CreateAppTemplate(AppTemplate template);
 
         Task<App> AppGetByName(string appName);
+        AppTemplate GetTemplateBySystemCode(int appId, string systemCode, string language);
     }
 }

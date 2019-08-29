@@ -281,15 +281,9 @@ namespace PrimeApps.Model.Repositories
 
         public async Task HardCodedUpdateUser(PlatformUser userToEdit)
         {
-            var sql = @"UPDATE users set first_name='@firstName', last_name='@lastName', updated_at= Now() where id = @userId1;"
-                      + "UPDATE user_settings set phone ='@phone' where user_id = @userId2;";
+            var sql = "UPDATE users set first_name='" + userToEdit.FirstName + "',last_name='" + userToEdit.LastName + "', updated_at= Now() where id = " + userToEdit.Id + "; UPDATE user_settings set phone ='" + userToEdit.Setting.Phone + "' where user_id = " + userToEdit.Id + "";
 
-            await DbContext.Database.ExecuteSqlCommandAsync(sql,
-                new SqlParameter("@firstName", userToEdit.FirstName),
-                new SqlParameter("@lastName", userToEdit.LastName),
-                new SqlParameter("@userId1", userToEdit.Id),
-                new SqlParameter("@phone", userToEdit.Setting.Phone),
-                new SqlParameter("@userId2", userToEdit.Id));
+            await DbContext.Database.ExecuteSqlCommandAsync(sql);
         }
     }
 }
