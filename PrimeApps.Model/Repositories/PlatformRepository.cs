@@ -46,7 +46,7 @@ namespace PrimeApps.Model.Repositories
 
         public App AppGetById(int id, int userId)
         {
-            var app =   DbContext.Apps.FirstOrDefault(x => !x.Deleted && x.Id == id);
+            var app = DbContext.Apps.FirstOrDefault(x => !x.Deleted && x.Id == id);
 
             //return app;
             return app;
@@ -154,5 +154,12 @@ namespace PrimeApps.Model.Repositories
 
             return await app;
         }
+        public AppTemplate GetTemplateBySystemCode(int appId, string systemCode, string language)
+        {
+            var template = DbContext.AppTemplates.FirstOrDefault(x => x.AppId == appId && x.Language == language && x.SystemCode == systemCode && x.Active);
+
+            return template;
+        }
+
     }
 }
