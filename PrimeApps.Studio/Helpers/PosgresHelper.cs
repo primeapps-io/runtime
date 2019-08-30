@@ -230,12 +230,12 @@ namespace PrimeApps.Studio.Helpers
                     {
                         // Rename existing database as old
                         command.CommandText = $"ALTER DATABASE \"{databaseName}\" RENAME TO \"{databaseName}_old\";";
+
+                        result = command.ExecuteNonQuery();
+
+                        if (result > -1)
+                            throw new Exception($"Template database cannot be renamed as old. Database name: {databaseName}");
                     }
-
-                    result = command.ExecuteNonQuery();
-
-                    if (result > -1)
-                        throw new Exception($"Template database cannot be renamed as old. Database name: {databaseName}");
 
                     // Remove _new suffix from new database
                     command.CommandText = $"ALTER DATABASE \"{databaseName}_new\" RENAME TO \"{databaseName}\";";
