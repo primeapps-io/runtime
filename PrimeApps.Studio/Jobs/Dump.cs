@@ -36,9 +36,10 @@ namespace PrimeApps.Studio.Jobs
             {
                 var notification = new Helpers.Email(_configuration, null, "app" + appId + " Error", "app" + appId + " has error");
                 notification.AddRecipient(request["notification_email"].ToString());
-                notification.AddToQueue("notifications@primeapps.io", "PrimeApps", null, null, ex.Message + appId + " Error", "app" + appId + " has error");
+                notification.AddToQueue("notifications@primeapps.io", "PrimeApps", null, null, ex.Message + ". app" + appId + " Error", "app" + appId + " has error");
 
                 ErrorHandler.LogError(ex);
+                return;
             }
 
             if (!request["notification_email"].IsNullOrEmpty())
@@ -66,9 +67,10 @@ namespace PrimeApps.Studio.Jobs
             {
                 var notification = new Helpers.Email(_configuration, null, "app" + appId + " Error", "app" + appId + " has error");
                 notification.AddRecipient((string)request["notification_email"]);
-                notification.AddToQueue("notifications@primeapps.io", "PrimeApps", null, null, ex.Message + appId + " Error", "app" + appId + " has error");
+                notification.AddToQueue("notifications@primeapps.io", "PrimeApps", null, null, ex.Message + ". app" + appId + " Error", "app" + appId + " has error");
 
                 ErrorHandler.LogError(ex);
+                return;
             }
 
             if (!request["notification_email"].IsNullOrEmpty())

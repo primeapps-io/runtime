@@ -195,8 +195,9 @@ namespace PrimeApps.Studio.Helpers
 
         public void Template(string connectionStringName, string databaseName)
         {
-            var npgsqlConnectionString = new NpgsqlConnectionStringBuilder(connectionStringName);
-            npgsqlConnectionString.Database = databaseName;
+            var connectionString = _configuration.GetConnectionString(connectionStringName);
+            var npgsqlConnectionString = new NpgsqlConnectionStringBuilder(connectionString);
+            npgsqlConnectionString.Database = "postgres";
 
             using (var connection = new NpgsqlConnection(npgsqlConnectionString.ToString()))
             {
