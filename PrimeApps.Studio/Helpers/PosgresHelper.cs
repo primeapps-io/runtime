@@ -195,14 +195,22 @@ namespace PrimeApps.Studio.Helpers
 
         public void Template(string connectionStringName, string databaseName)
         {
-            using (var connection = new NpgsqlConnection(connectionStringName))
+            var npgsqlConnectionString = new NpgsqlConnectionStringBuilder(connectionStringName);
+            npgsqlConnectionString.Database = databaseName;
+
+            using (var connection = new NpgsqlConnection(npgsqlConnectionString.ToString()))
             {
                 connection.Open();
 
                 using (var command = connection.CreateCommand())
                 {
+                    // Check database is exists
+                    command.CommandText = $"SELECT EXISTS(SELECT datname FROM pg_catalog.pg_database WHERE datname = '{databaseName}');";
+
+                    var isExists = (bool)command.ExecuteScalar();
+
                     // Terminate connections on new database
-                    command.CommandText = $"SELECET pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = '{databaseName}_new' and pid <> pg_backend_pid();";
+                    command.CommandText = $"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = '{databaseName}_new' and pid <> pg_backend_pid();";
 
                     var result = command.ExecuteNonQuery();
 
@@ -217,8 +225,11 @@ namespace PrimeApps.Studio.Helpers
                     if (result < 1)
                         throw new Exception($"Template database cannot be set as a template database. Database name: {databaseName}");
 
-                    // Rename existing database as old
-                    command.CommandText = $"ALTER DATABASE \"{databaseName}\" RENAME TO \"{databaseName}_old\";";
+                    if (isExists)
+                    {
+                        // Rename existing database as old
+                        command.CommandText = $"ALTER DATABASE \"{databaseName}\" RENAME TO \"{databaseName}_old\";";
+                    }
 
                     result = command.ExecuteNonQuery();
 
@@ -231,23 +242,26 @@ namespace PrimeApps.Studio.Helpers
                     result = command.ExecuteNonQuery();
 
                     if (result > -1)
-                        throw new Exception($"Template database cannot be renamed as {databaseName}");
+                        throw new Exception($"New template database cannot be renamed as {databaseName}");
 
-                    // Unset old database as template
-                    command.CommandText = $"UPDATE pg_database SET datistemplate=false WHERE datname='{databaseName}_old';";
+                    if (!isExists)
+                    {
+                        // Unset old database as template
+                        command.CommandText = $"UPDATE pg_database SET datistemplate=false WHERE datname='{databaseName}_old';";
 
-                    result = command.ExecuteNonQuery();
+                        result = command.ExecuteNonQuery();
 
-                    if (result < 1)
-                        ErrorHandler.LogError(new Exception($"Template database (old) cannot be unset as template. Database name:{databaseName}"));
+                        if (result < 1)
+                            ErrorHandler.LogError(new Exception($"Template database (old) cannot be unset as template. Database name:{databaseName}"));
 
-                    // Drop old database
-                    command.CommandText = $"DROP DATABASE \"{databaseName}_old\";";
+                        // Drop old database
+                        command.CommandText = $"DROP DATABASE \"{databaseName}_old\";";
 
-                    result = command.ExecuteNonQuery();
+                        result = command.ExecuteNonQuery();
 
-                    if (result > -1)
-                        ErrorHandler.LogError(new Exception($"Template database (old) cannot be droped. Database name: {databaseName}"));
+                        if (result > -1)
+                            ErrorHandler.LogError(new Exception($"Template database (old) cannot be droped. Database name: {databaseName}"));
+                    }
                 }
 
                 connection.Close();
