@@ -1,8 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -21,14 +19,12 @@ namespace PrimeApps.Studio.Controllers
         private IPosgresHelper _posgresHelper;
         private IConfiguration _configuration;
         private IAppDraftRepository _appDraftRepository;
-        private IHostingEnvironment _hostingEnvironment;
 
-        public DumpController(IPosgresHelper posgresHelper, IConfiguration configuration, IAppDraftRepository appDraftRepository, IHostingEnvironment hostingEnvironment)
+        public DumpController(IPosgresHelper posgresHelper, IConfiguration configuration, IAppDraftRepository appDraftRepository)
         {
             _posgresHelper = posgresHelper;
             _configuration = configuration;
             _appDraftRepository = appDraftRepository;
-            _hostingEnvironment = hostingEnvironment;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -43,13 +39,13 @@ namespace PrimeApps.Studio.Controllers
             if (request["app_id"].IsNullOrEmpty())
                 return BadRequest("app_id is required.");
 
-            if (!int.TryParse(request["app_id"].ToString(), out var appIdParsed))
+            if (!int.TryParse(request["app_id"].ToString(), out var appId))
                 return BadRequest("app_id must be a integer.");
 
-            request["app_id"] = appIdParsed;
+            request["app_id"] = appId;
             var organizationAppIds = _appDraftRepository.GetAppIdsByOrganizationId(OrganizationId);
 
-            if (!organizationAppIds.Contains(appIdParsed))
+            if (!organizationAppIds.Contains(appId))
                 return Unauthorized();
 
             var jobId = BackgroundJob.Enqueue<Dump>(dump => dump.Create(request));
@@ -63,21 +59,21 @@ namespace PrimeApps.Studio.Controllers
             if (request["app_id"].IsNullOrEmpty())
                 return BadRequest("app_id is required.");
 
-            if (!int.TryParse(request["app_id"].ToString(), out var appIdParsed))
+            if (!int.TryParse(request["app_id"].ToString(), out var appId))
                 return BadRequest("app_id must be a integer.");
 
-            if (!request["app_id_target"].IsNullOrEmpty())
-            {
-                if (!int.TryParse(request["app_id_target"].ToString(), out var appIdTargetParsed))
-                    return BadRequest("app_id_target must be a integer.");
+            if (request["environment"].IsNullOrEmpty())
+                return BadRequest("environment is required.");
 
-                request["app_id_target"] = appIdTargetParsed;
-            }
+            var environment = (string)request["environment"];
 
-            request["app_id"] = appIdParsed;
+            if (environment != "test" && environment != "production")
+                return BadRequest("environment must be 'test' or 'production'.");
+
+            request["app_id"] = appId;
             var organizationAppIds = _appDraftRepository.GetAppIdsByOrganizationId(OrganizationId);
 
-            if (!organizationAppIds.Contains(appIdParsed))
+            if (!organizationAppIds.Contains(appId))
                 return Unauthorized();
 
             var jobId = BackgroundJob.Enqueue<Dump>(dump => dump.Restore(request));
@@ -92,61 +88,5 @@ namespace PrimeApps.Studio.Controllers
 
             return PhysicalFile(Path.Combine(dumpDirectory, $"app{appId}.dmp"), "text/plain", $"app{appId}.dmp");
         }
-
-        [Route("test"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult Test([FromBody]JObject request)
-        {
-            var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);
-
-            switch ((string)request["command"])
-            {
-                case "create":
-                    _posgresHelper.Create("PlatformDBConnection", (string)request["database_name"], dumpDirectory);
-                    break;
-                case "drop":
-                    _posgresHelper.Drop("PlatformDBConnection", (string)request["database_name"], dumpDirectory);
-                    break;
-                case "restore":
-                    _posgresHelper.Restore("PlatformDBConnection", (string)request["database_name"], dumpDirectory, (string)request["target_database_name"], dumpDirectory);
-                    break;
-            }
-
-            return Ok();
-        }
-
-        [Route("publish"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult Publish([FromBody]JObject request)
-        {
-
-            var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);
-
-            if (request["app"].IsNullOrEmpty())
-                return BadRequest("app is required.");
-
-            if (request["environment"].IsNullOrEmpty())
-                return BadRequest("environment is required.");
-
-            var app = (string)request["app"];
-
-            switch ((string)request["environment"])
-            {
-                case "test":                    
-                    _posgresHelper.Drop("PlatformDBConnectionTest", app, dumpDirectory);
-                    _posgresHelper.Create("PlatformDBConnectionTest", app, dumpDirectory);
-                    _posgresHelper.Restore("PlatformDBConnectionTest", app, dumpDirectory, app, dumpDirectory);
-                    break;
-                case "prod":
-                    _posgresHelper.Drop("PlatformDBConnection", app, dumpDirectory);
-                    _posgresHelper.Create("PlatformDBConnection", app, dumpDirectory);
-                    _posgresHelper.Restore("PlatformDBConnection", app, dumpDirectory, app, dumpDirectory);
-                    break;
-            }
-
-
-
-            return Ok();
-
-        }
-
     }
 }

@@ -53,12 +53,14 @@ namespace PrimeApps.Studio.Jobs
         public void Restore(JObject request)
         {
             var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);
+            var connectionStringName = (string)request["environment"] == "test" ? "PlatformDBConnectionTest" : "PlatformDBConnection";
             var appId = (int)request["app_id"];
-            var appIdTarget = !request["app_id_target"].IsNullOrEmpty() ? (int)request["app_id_target"] : 0;
 
             try
             {
-                _posgresHelper.Restore("PlatformDBConnection", $"app{appId}", dumpDirectory, appIdTarget > 0 ? $"app{appIdTarget}" : "", dumpDirectory);
+                _posgresHelper.Create(connectionStringName, $"app{appId}_new");
+                _posgresHelper.Restore(connectionStringName, $"app{appId}", dumpDirectory, $"app{appId}_new", dumpDirectory);
+                _posgresHelper.Template(connectionStringName, $"app{appId}");
             }
             catch (Exception ex)
             {

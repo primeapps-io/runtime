@@ -12,6 +12,7 @@ namespace PrimeApps.Studio.Helpers
         void Drop(string connectionStringName, string databaseName, string logDirectory = "", bool ifExist = true);
         void Dump(string connectionStringName, string databaseName, string dumpDirectory, string logDirectory = "");
         void Restore(string connectionStringName, string databaseName, string dumpDirectory, string targetDatabaseName = "", string logDirectory = "");
+        void Template(string connectionStringName, string databaseName);
     }
 
     public class PosgresHelper : IPosgresHelper
@@ -189,6 +190,67 @@ namespace PrimeApps.Studio.Helpers
 
                 process.WaitForExit();
                 process.Close();
+            }
+        }
+
+        public void Template(string connectionStringName, string databaseName)
+        {
+            using (var connection = new NpgsqlConnection(connectionStringName))
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    // Terminate connections on new database
+                    command.CommandText = $"SELECET pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = '{databaseName}_new' and pid <> pg_backend_pid();";
+
+                    var result = command.ExecuteNonQuery();
+
+                    if (result > -1)
+                        throw new Exception($"Template database connections cannot be terminated. Database name: {databaseName}");
+
+                    // Set new database as template
+                    command.CommandText = $"UPDATE pg_database SET datistemplate=true, datallowconn=false WHERE datname='{databaseName}_new';";
+
+                    result = command.ExecuteNonQuery();
+
+                    if (result < 1)
+                        throw new Exception($"Template database cannot be set as a template database. Database name: {databaseName}");
+
+                    // Rename existing database as old
+                    command.CommandText = $"ALTER DATABASE \"{databaseName}\" RENAME TO \"{databaseName}_old\";";
+
+                    result = command.ExecuteNonQuery();
+
+                    if (result > -1)
+                        throw new Exception($"Template database cannot be renamed as old. Database name: {databaseName}");
+
+                    // Remove _new suffix from new database
+                    command.CommandText = $"ALTER DATABASE \"{databaseName}_new\" RENAME TO \"{databaseName}\";";
+
+                    result = command.ExecuteNonQuery();
+
+                    if (result > -1)
+                        throw new Exception($"Template database cannot be renamed as {databaseName}");
+
+                    // Unset old database as template
+                    command.CommandText = $"UPDATE pg_database SET datistemplate=false WHERE datname='{databaseName}_old';";
+
+                    result = command.ExecuteNonQuery();
+
+                    if (result < 1)
+                        ErrorHandler.LogError(new Exception($"Template database (old) cannot be unset as template. Database name:{databaseName}"));
+
+                    // Drop old database
+                    command.CommandText = $"DROP DATABASE \"{databaseName}_old\";";
+
+                    result = command.ExecuteNonQuery();
+
+                    if (result > -1)
+                        ErrorHandler.LogError(new Exception($"Template database (old) cannot be droped. Database name: {databaseName}"));
+                }
+
+                connection.Close();
             }
         }
     }
