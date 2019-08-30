@@ -245,7 +245,7 @@ namespace PrimeApps.Studio.Helpers
                     if (result > -1)
                         throw new Exception($"New template database cannot be renamed as {databaseName}");
 
-                    if (!isExists)
+                    if (isExists)
                     {
                         // Unset old database as template
                         command.CommandText = $"UPDATE pg_database SET datistemplate=false WHERE datname='{databaseName}_old';";
