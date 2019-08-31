@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Cache;
-using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Linq;
-using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
@@ -27,18 +25,10 @@ namespace PrimeApps.App.Controllers
             }
         }
 
-        public JsonSerializerSettings CacheSerializerSettings => new JsonSerializerSettings
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        };
-
         public void SetCurrentUser(IRepositoryBaseTenant repository, string previewMode, int? tenantId, int? appId)
         {
             if (AppUser != null)
             {
-                /*if (previewMode == "app")
-					repository.CurrentUser = new CurrentUser { UserId = 1, TenantId = appId ?? (tenantId ?? 0), PreviewMode = previewMode };
-				else*/
                 repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = appId ?? (tenantId ?? 0), PreviewMode = previewMode };
             }
         }
@@ -102,51 +92,20 @@ namespace PrimeApps.App.Controllers
             if (string.IsNullOrEmpty(appUser.TimeZone))
                 appUser.Language = "America/Chicago";
 
-            //var cacheHelper = (ICacheHelper) HttpContext.RequestServices.GetService(typeof(ICacheHelper));
-            //var cacheKeyTenantUser = "tenant_user_" + appUser.Id;
-            //var tenantUser = cacheHelper.Get<TenantUser>(cacheKeyTenantUser);
-
             var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
             var previewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);
             previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
-            //if (tenantUser == null)
-            //{
             var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
-
             tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, PreviewMode = previewMode };
 
             var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
-            //cacheHelper.Set(cacheKeyTenantUser, tenantUser);
-            //}
-
-            /*appUser.RoleId = previewMode == "app" ? 1 : tenantUser.RoleId ?? 0;
-			appUser.ProfileId = previewMode == "app" ? 1 : tenantUser.ProfileId ?? 0;*/
             appUser.RoleId = (int)tenantUser.RoleId;
             appUser.ProfileId = (int)tenantUser.ProfileId;
 
             appUser.HasAdminProfile = previewMode == "app" || tenantUser.Profile != null && tenantUser.Profile.HasAdminRights;
-
-            if (previewMode != "app" && tenant.License?.AnalyticsLicenseCount > 0)
-            {
-                //var cacheKeyWarehouse = "platform_warehouse_" + appUser.Id;
-                //var platformWarehouse = cacheHelper.Get<PlatformWarehouse>(cacheKeyWarehouse);
-
-                //if (platformWarehouse == null)
-                //{
-                //var warehouseRepository = (IPlatformWarehouseRepository) HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
-                // var platformWarehouse = warehouseRepository.GetByTenantIdSync(tenant.Id);
-
-                //cacheHelper.Set(cacheKeyWarehouse, platformWarehouse);
-                //}
-
-                // appUser.WarehouseDatabaseName = platformWarehouse.DatabaseName;
-            }
-            else
-            {
-                appUser.WarehouseDatabaseName = "0";
-            }
+            appUser.WarehouseDatabaseName = "0";
 
             return appUser;
         }

@@ -897,7 +897,7 @@ namespace PrimeApps.App.Helpers
                                 if (sendNotification.Schedule.HasValue)
                                     email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
 
-                                email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
+                                await email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
                             }
                         }
 
