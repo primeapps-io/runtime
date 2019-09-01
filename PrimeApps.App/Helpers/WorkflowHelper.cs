@@ -42,20 +42,22 @@ namespace PrimeApps.App.Helpers
         private IHttpContextAccessor _context;
         private IConfiguration _configuration;
         private IServiceScopeFactory _serviceScopeFactory;
+        private IModuleHelper _moduleHelper;
 
-        public WorkflowHelper(IServiceScopeFactory serviceScopeFactory, IHttpContextAccessor context, IConfiguration configuration)
+        public WorkflowHelper(IServiceScopeFactory serviceScopeFactory, IHttpContextAccessor context, IConfiguration configuration, IModuleHelper moduleHelper)
         {
             _context = context;
             _currentUser = UserHelper.GetCurrentUser(_context, configuration);
             _serviceScopeFactory = serviceScopeFactory;
             _configuration = configuration;
+            _moduleHelper = moduleHelper;
         }
 
-        public WorkflowHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser)
+        public WorkflowHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser, IModuleHelper moduleHelper)
         {
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
-
+            _moduleHelper = moduleHelper;
             _currentUser = currentUser;
         }
 
@@ -78,8 +80,9 @@ namespace PrimeApps.App.Helpers
                 using (var _picklistRepository = new PicklistRepository(databaseContext, _configuration))
                 using (var _tagRepository = new TagRepository(databaseContext, _configuration))
                 using (var _settingRepository = new SettingRepository(databaseContext, _configuration))
+                using (var componentRepository = new ComponentRepository(databaseContext, _configuration))
                 {
-                    _profileRepository.CurrentUser = _userRepository.CurrentUser = _picklistRepository.CurrentUser = _workflowRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _settingRepository.CurrentUser = _tagRepository.CurrentUser = _currentUser;
+                    _profileRepository.CurrentUser = _userRepository.CurrentUser = _picklistRepository.CurrentUser = _workflowRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _settingRepository.CurrentUser = _tagRepository.CurrentUser = _currentUser = componentRepository.CurrentUser = _currentUser;
                     var workflows = await _workflowRepository.GetAll(module.Id, true);
                     workflows = workflows.Where(x => x.OperationsArray.Contains(operationType.ToString())).ToList();
                     var culture = CultureInfo.CreateSpecificCulture(appUser.Culture);
@@ -697,6 +700,14 @@ namespace PrimeApps.App.Helpers
                                     var recordId = (int)record["id"];
                                     var jsonData = new JObject();
                                     jsonData["id"] = recordId;
+
+                                    if (webHook.CallbackUrl.StartsWith("{appConfigs."))
+                                    {
+                                        var environment = !string.IsNullOrEmpty(_configuration.GetValue("AppSettings:Environment", string.Empty)) ? _configuration.GetValue("AppSettings:Environment", string.Empty) : "development";
+                                        var globalConfig = await _moduleHelper.GetGlobalConfig(componentRepository);
+                                        var appConfigs = globalConfig?[environment] != null && !globalConfig[environment].IsNullOrEmpty() ? (JObject)globalConfig[environment] : null;
+                                        webHook.CallbackUrl = _moduleHelper.ReplaceDynamicValues(webHook.CallbackUrl, appConfigs);
+                                    }
 
                                     if (webHook.CallbackUrl.StartsWith("https"))
                                         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;

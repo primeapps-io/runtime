@@ -72,10 +72,11 @@ namespace PrimeApps.App.Helpers
         private IHttpContextAccessor _context;
         private IWorkflowHost _workflowHost;
         private IModuleRepository _moduleRepository;
+        private IModuleHelper _moduleHelper;
 
         public IBackgroundTaskQueue Queue { get; }
 
-        public RecordHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IAuditLogHelper auditLogHelper, INotificationHelper notificationHelper, IWorkflowHelper workflowHelper, IProcessHelper processHelper, ICalculationHelper calculationHelper, IBpmHelper bpmHelper, IBackgroundTaskQueue queue, IHttpContextAccessor context, IWorkflowHost workflowHost, IModuleRepository moduleRepository)
+        public RecordHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IAuditLogHelper auditLogHelper, INotificationHelper notificationHelper, IWorkflowHelper workflowHelper, IProcessHelper processHelper, ICalculationHelper calculationHelper, IBpmHelper bpmHelper, IBackgroundTaskQueue queue, IHttpContextAccessor context, IWorkflowHost workflowHost, IModuleRepository moduleRepository, IModuleHelper moduleHelper)
         {
             _context = context;
             _serviceScopeFactory = serviceScopeFactory;
@@ -89,6 +90,7 @@ namespace PrimeApps.App.Helpers
             _bpmHelper = bpmHelper;
             _workflowHost = workflowHost;
             _moduleRepository = moduleRepository;
+            _moduleHelper = moduleHelper;
 
             Queue = queue;
         }
@@ -100,7 +102,7 @@ namespace PrimeApps.App.Helpers
             _currentUser = currentUser;
             _auditLogHelper = new AuditLogHelper(configuration, serviceScopeFactory, currentUser);
             _notificationHelper = new NotificationHelper(configuration, serviceScopeFactory, currentUser);
-            _workflowHelper = new WorkflowHelper(configuration, serviceScopeFactory, currentUser);
+            _workflowHelper = new WorkflowHelper(configuration, serviceScopeFactory, currentUser, _moduleHelper);
             _processHelper = new ProcessHelper(configuration, serviceScopeFactory, currentUser);
             _calculationHelper = new CalculationHelper(configuration, serviceScopeFactory, currentUser);
             _bpmHelper = new BpmHelper(configuration, serviceScopeFactory, currentUser);
@@ -524,7 +526,7 @@ namespace PrimeApps.App.Helpers
         public void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true)
         {
             var previewMode = _configuration["AppSettings:PreviewMode"];
-           
+
             if (runDefaults)
             {
                 if (previewMode != "app")
@@ -550,7 +552,7 @@ namespace PrimeApps.App.Helpers
         public void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180)
         {
             var previewMode = _configuration["AppSettings:PreviewMode"];
-           
+
             if (previewMode != "app")
                 Queue.QueueBackgroundWorkItem(async token => await _auditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(currentRecord, module), AuditType.Record, RecordActionType.Updated, null, module));
 
@@ -574,7 +576,7 @@ namespace PrimeApps.App.Helpers
         public void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180)
         {
             var previewMode = _configuration["AppSettings:PreviewMode"];
-                   
+
             if (previewMode != "app")
                 Queue.QueueBackgroundWorkItem(async token => await _auditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Deleted, null, module));
 
