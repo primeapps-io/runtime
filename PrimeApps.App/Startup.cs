@@ -172,7 +172,7 @@ namespace PrimeApps.App
             );
 
             JobConfiguration(app, Configuration);
-            BpmConfiguration(app, Configuration);
+            //BpmConfiguration(app, Configuration);
 
             app.UseMvc(routes =>
             {
