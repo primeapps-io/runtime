@@ -2,10 +2,16 @@
 
 angular.module('primeapps')
 
-    .controller('GeneralSettingsController', ['$rootScope', '$scope', '$filter', 'ngToast', 'GeneralSettingsService', '$localStorage',
-        function ($rootScope, $scope, $filter, ngToast, GeneralSettingsService, $localStorage) {
+    .controller('GeneralSettingsController', ['$rootScope', '$scope', '$filter', 'ngToast', 'GeneralSettingsService', '$localStorage', 'helper', '$state',
+        function ($rootScope, $scope, $filter, ngToast, GeneralSettingsService, $localStorage, helper, $state) {
 
             $scope.hasAdminRight = $filter('filter')($rootScope.profiles, { id: $rootScope.user.profile.id }, true)[0].has_admin_rights;
+            if (!$scope.hasAdminRight) {
+                if (!helper.hasCustomProfilePermission('general')) {
+                    ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
+                    $state.go('app.crm.dashboard');
+                }
+            }
             GeneralSettingsService.getByKey('module', 'detail_view_type')
                 .then(function (response) {
                     if (response.data) {
