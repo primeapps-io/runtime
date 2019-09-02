@@ -81,7 +81,7 @@ namespace PrimeApps.App.Controllers
             }
 
             if (string.IsNullOrEmpty(appUser.Currency))
-                appUser.Culture = "USD";
+                appUser.Currency = "USD";
 
             if (string.IsNullOrEmpty(appUser.Culture))
                 appUser.Culture = "en-US";
@@ -90,7 +90,7 @@ namespace PrimeApps.App.Controllers
                 appUser.Language = "en";
 
             if (string.IsNullOrEmpty(appUser.TimeZone))
-                appUser.Language = "America/Chicago";
+                appUser.TimeZone = "America/Chicago";
 
             var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
             var previewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);

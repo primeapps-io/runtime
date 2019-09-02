@@ -64,7 +64,6 @@ namespace PrimeApps.App.Controllers
                 PhoneField = request.PhoneField,
                 Rev = randomRevNumber,
                 Query = request.Query,
-
             };
             var smsMessage = await _messagingRepository.Create(smsNotification);
             if (smsMessage != null)
@@ -86,13 +85,13 @@ namespace PrimeApps.App.Controllers
                 {
                     throw ex;
                 }
-
             }
             else
             {
                 return StatusCode(500);
                 //return InternalServerError();
             }
+
             return Ok();
         }
 
@@ -143,11 +142,9 @@ namespace PrimeApps.App.Controllers
                     /// send message to the queue.(Same queue with sms, does not affect something on service bus)
                     //await ServiceBus.SendMessage("sms", queuedMessage, DateTime.UtcNow);
                     Hangfire.BackgroundJob.Enqueue<EMailClient>(email => email.Process(queuedMessage, AppUser));
-
                 }
                 catch (Exception ex)
                 {
-
                     throw ex;
                 }
             }
@@ -156,6 +153,7 @@ namespace PrimeApps.App.Controllers
                 return StatusCode(500);
                 //return InternalServerError();
             }
+
             return Ok();
         }
 
@@ -189,7 +187,10 @@ namespace PrimeApps.App.Controllers
                     externalEmail.AddRecipient(emailRecipient);
                 }
 
-                externalEmail.AddToQueue(cc: emailRequest.Cc, bcc: emailRequest.Bcc, fromEmail: emailRequest.FromEmail, Name: emailRequest.FromName);
+                var moduleId = emailRequest.ModuleId ?? 0;
+                var recordId = emailRequest.RecordId ?? 0;
+
+                await externalEmail.AddToQueue(AppUser.TenantId, moduleId, recordId, cc: emailRequest.Cc, bcc: emailRequest.Bcc, from: emailRequest.FromEmail, fromName: emailRequest.FromName, appUser: AppUser, addRecordSummary: false);
 
                 return Ok(emailRequest.ToAddresses.Count());
             }
@@ -216,15 +217,18 @@ namespace PrimeApps.App.Controllers
                 };
                 settings.Add(setting);
             }
+
             if (settings.Count > 0)
             {
                 await RemoveSMSSettings();
             }
+
             var count = await _settingRepository.AddSettings(settings);
             if (count > 0)
             {
                 return Ok(count);
             }
+
             return BadRequest();
         }
 
@@ -247,15 +251,18 @@ namespace PrimeApps.App.Controllers
                 };
                 settings.Add(setting);
             }
+
             if (settings.Count > 0)
             {
                 await RemoveEMailSettings();
             }
+
             var count = await _settingRepository.AddSettings(settings);
             if (count > 0)
             {
                 return Ok(count);
             }
+
             return BadRequest();
         }
 
@@ -270,7 +277,6 @@ namespace PrimeApps.App.Controllers
             IList<Setting> settings = new List<Setting>();
             foreach (var data in newSettings)
             {
-
                 /// we set here the local (tenant user id) to make this settings personal.
                 Setting setting = new Setting()
                 {
@@ -287,15 +293,18 @@ namespace PrimeApps.App.Controllers
 
                 settings.Add(setting);
             }
+
             if (settings.Count > 0)
             {
                 await RemovePersonalEMailSettings();
             }
+
             var count = await _settingRepository.AddSettings(settings);
             if (count > 0)
             {
                 return Ok(count);
             }
+
             return BadRequest();
         }
 
@@ -311,6 +320,7 @@ namespace PrimeApps.App.Controllers
             {
                 return Ok();
             }
+
             return NotFound();
         }
 
@@ -326,6 +336,7 @@ namespace PrimeApps.App.Controllers
             {
                 return Ok();
             }
+
             return NotFound();
         }
 
@@ -341,8 +352,8 @@ namespace PrimeApps.App.Controllers
             {
                 return Ok();
             }
-            return NotFound();
 
+            return NotFound();
         }
 
         /// <summary>
@@ -387,7 +398,6 @@ namespace PrimeApps.App.Controllers
                             else
                             {
                                 config["SystemEMail"][emailSetting.Key] = JArray.Parse(emailSetting.Value);
-
                             }
                         }
                     }
