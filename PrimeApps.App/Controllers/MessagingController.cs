@@ -186,9 +186,10 @@ namespace PrimeApps.App.Controllers
                     externalEmail.AddRecipient(emailRecipient);
                 }
 
+                var moduleId = emailRequest.ModuleId ?? 0;
                 var recordId = emailRequest.RecordId ?? 0;
 
-                externalEmail.AddToQueue(cc: emailRequest.Cc, bcc: emailRequest.Bcc, fromEmail: emailRequest.FromEmail, Name: emailRequest.FromName, recordId: recordId);
+                await externalEmail.AddToQueue(AppUser.TenantId, moduleId, recordId, cc: emailRequest.Cc, bcc: emailRequest.Bcc, from: emailRequest.FromEmail, fromName: emailRequest.FromName, appUser: AppUser, addRecordSummary: false);
 
                 return Ok(emailRequest.ToAddresses.Count());
             }
