@@ -166,12 +166,14 @@ namespace PrimeApps.App.Controllers
         [Route("send_external_email")]
         public async Task<IActionResult> SendExternalEmail([FromBody]ExternalEmail emailRequest)
         {
-            if (emailRequest.Subject != null && emailRequest.TemplateWithBody != null && emailRequest.ToAddresses.Length > 0)
+            if (emailRequest.Subject != null && emailRequest.ToAddresses.Length > 0)
             {
-                if (!emailRequest.TemplateWithBody.Contains("html"))
+                if (emailRequest.TemplateName != null)
                 {
-                    var template = await _messagingRepository.GetTemplate(emailRequest.TemplateWithBody);
-                    emailRequest.TemplateWithBody = template.Content;
+                    var template = await _messagingRepository.GetTemplate(emailRequest.TemplateName);
+
+                    if (!emailRequest.TemplateWithBody.Contains("html"))
+                        emailRequest.TemplateWithBody = template.Content.Replace("{{EmailBody}}", emailRequest.TemplateWithBody);
                 }
 
                 if (emailRequest.Cc == null)
@@ -179,7 +181,9 @@ namespace PrimeApps.App.Controllers
 
                 if (emailRequest.Bcc == null)
                     emailRequest.Bcc = "";
+
                 var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody, _configuration);
+
                 foreach (var emailRecipient in emailRequest.ToAddresses)
                 {
                     externalEmail.AddRecipient(emailRecipient);
