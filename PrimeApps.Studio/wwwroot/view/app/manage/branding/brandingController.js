@@ -35,7 +35,7 @@ angular.module('primeapps')
                         .then(function (image) {
                             item.image = image;
                             var img = new Image();
-                            resizeService.resizeImage(item.image, {width: 1024}, function (err, resizedImage) {
+                            resizeService.resizeImage(item.image, { width: 1024 }, function (err, resizedImage) {
                                 if (err)
                                     return;
 
@@ -276,14 +276,14 @@ angular.module('primeapps')
                 $scope.savingAuth = true;
                 var authThemes = {};
                 var description = {};
-                description.en = $scope.authTheme.descriptionEn;
-                description.tr = $scope.authTheme.descriptionTr;
+                description.en = $scope.authTheme.descriptionEn ? $scope.authTheme.descriptionEn : $scope.authTheme.descriptionTr;
+                description.tr = $scope.authTheme.descriptionTr ? $scope.authTheme.descriptionTr : $scope.authTheme.descriptionEn;
                 var headLine = {};
                 headLine.en = $scope.authTheme.headLineEn;
                 headLine.tr = $scope.authTheme.headLineTr;
 
                 var banner = [
-                    {descriptions: description, image: $scope.authTheme.banner}
+                    { descriptions: description, image: $scope.authTheme.banner }
                 ];
                 authThemes.color = $scope.authTheme.color;
                 authThemes.title = $scope.authTheme.title;
