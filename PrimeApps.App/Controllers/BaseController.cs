@@ -81,7 +81,7 @@ namespace PrimeApps.App.Controllers
             }
 
             if (string.IsNullOrEmpty(appUser.Currency))
-                appUser.Culture = "USD";
+                appUser.Currency = "USD";
 
             if (string.IsNullOrEmpty(appUser.Culture))
                 appUser.Culture = "en-US";
