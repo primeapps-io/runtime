@@ -411,7 +411,7 @@ angular.module('primeapps')
                 parameter.selectedField = addItem.selectedField;
 
                 if (parameter.parameterName && parameter.selectedModules && parameter.selectedField) {
-                    if ($scope.hookParameters.length <= 10) {
+                    if ($scope.hookParameters.length <= 20) {
                         $scope.hookParameters.push(parameter);
                     } else {
                         toastr.warning($filter('translate')('Setup.Workflow.MaximumHookWarning'));
