@@ -98,7 +98,7 @@ namespace PrimeApps.App.Helpers
             templateRegex = new Regex(templatePattern);
             resourceTypeName = GetResourceTypeName(resourceType);
 
-            LanguageType language = appUser.TenantLanguage.Contains("tr") ? LanguageType.Tr : LanguageType.En;
+            var language = appUser.Language.ToEnum<LanguageType>();
             Template templateEntity;
             Model.Entities.Platform.App appInfo;
             Model.Entities.Platform.AppTemplate appEmailTemplate;
@@ -118,7 +118,7 @@ namespace PrimeApps.App.Helpers
 
                     var appTheme = JToken.Parse(appInfo.Setting.AppTheme);
 
-                    appEmailTemplate = platformRepository.GetTemplateBySystemCode(appId, resourceTypeName, appInfo.Setting.Language);
+                    appEmailTemplate = platformRepository.GetTemplateBySystemCode(appId, resourceTypeName, appUser.Language);
 
                     appUrl = appTheme["logo"].ToString();
                     appCodeUrl = appInfo.Setting.AppDomain;
