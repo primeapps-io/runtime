@@ -125,7 +125,7 @@ angular.module('primeapps')
                     },
                     {
                         name: $filter('translate')('Setup.Modules.List'),
-                        value: 3
+                        value: 4
                     },
                     {
                         name: $filter('translate')('Setup.Modules.Relation'),
