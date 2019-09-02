@@ -19,7 +19,8 @@ angular.module('primeapps')
             $scope.hasActionButtonDisplayPermission = ModuleService.hasActionButtonDisplayPermission;
             $scope.hideDeleteAll = $filter('filter')($rootScope.deleteAllHiddenModules, $scope.type + '|' +  $scope.type, true)[0];
             $scope.actionButtonDisabled = false;
-            
+            $scope.showExportButton = true;
+
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
                 $state.go('app.dashboard');
