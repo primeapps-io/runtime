@@ -26,7 +26,8 @@
                                         </p>
                                     </div>
                                     <div class="col-auto">
-                                        <button class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="Click for Publish!" onclick="publish(@ViewBag.lastPackage.Id,@ViewBag.CurrentApp.Id,@ViewBag.ActiveOrganizationId);">
+                                        @*<button class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="Click for Publish!" disabled="@ViewBag.Applying" onclick="publish(@ViewBag.lastPackage.Id,@ViewBag.CurrentApp.Id,@ViewBag.ActiveOrganizationId);">*@
+                                        <button class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="Click for Publish!" disabled="@ViewBag.Applying" onclick="location.href='@Url.Action("apply", "Package", new { id=ViewBag.CurrentApp.Id, orgId=ViewBag.ActiveOrganizationId, applyingVersion=ViewBag.lastPackage.Version });'">
                                             <span class="btn-inner--icon"><i class="ni ni-cloud-upload-96"></i></span>
                                             <span class="btn-inner--text">Publish</span>
                                         </button>
@@ -43,18 +44,19 @@
                         </div>
                     </div>
                 </div>
-                <div class="row" id="log" hidden>
-                    <div class="col-xl-5 col-lg-10 b-card">
-                        <div class="card card-stats mb-4 mb-xl-0">
-                            <div class="card-body">
-                                <div class="tab-content table-responsive">
-                                    <pre style="color: white !important; padding-left: 10px !important; padding-top: 10px !important; padding-bottom: 10px !important; background-color: black !important;" data-ng-bind-html="goLive.logs" id="logData"></pre>
-                                </div>
+            }
+            <div class="row" id="log" hidden>
+                <div class="col-xl-5 col-lg-10 b-card">
+                    <div class="card card-stats mb-4 mb-xl-0">
+                        <div class="card-body">
+                            <div class="tab-content table-responsive">
+                                <pre style="color: white !important; padding-left: 10px !important; padding-top: 10px !important; padding-bottom: 10px !important; background-color: black !important;" data-ng-bind-html="goLive.logs" id="logData"></pre>
                             </div>
                         </div>
                     </div>
                 </div>
-            }
+            </div>
+
         </div>
     </div>
 </div>
@@ -66,7 +68,10 @@
     var goLive = {};
     logData.innerHTML = log;
 
-    function publish(packageId, appId, orgId) {
+    var appyling =@Html.Raw(Json.Serialize(ViewBag.Applying));
+    var lastPackage =@Html.Raw(Json.Serialize(ViewBag.lastPackage));
+
+    function getLog(packageId, appId, orgId) {
         if (!packageId || !appId || !orgId)
             return;
 
@@ -83,7 +88,7 @@
 
         logEditor.hidden = false;
 
-    }
+    };
 
     function tenantUpdate(packageId, appId, orgId) {
         if (!packageId || !appId || !orgId)
@@ -102,7 +107,13 @@
 
         logEditor.hidden = false;
 
+    };
+
+    //
+     if (appyling === true && lastPackage != null) {
+         getLog(lastPackage.id, @ViewBag.CurrentApp.Id, @ViewBag.ActiveOrganizationId);
     }
+    //
 
     function openWS(id) {
         //if ($scope.socket && $scope.socket.readyState !== WebSocket.CLOSED)

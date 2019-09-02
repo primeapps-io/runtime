@@ -21,7 +21,9 @@ namespace PrimeApps.Model.Helpers
 {
     public class PublishHelper
     {
-        public static async Task ApplyVersions(IConfiguration configuration, IUnifiedStorage storage, JObject app, int orgId, string dbName, List<string> versions, string studioSecret, bool firstTime, int releaseId, string studioToken)
+        public static async Task ApplyVersions(IConfiguration configuration, IUnifiedStorage storage, JObject app,
+            int orgId, string dbName, List<string> versions, string studioSecret, bool firstTime, int releaseId,
+            string studioToken)
         {
             var PREConnectionString = configuration.GetConnectionString("PlatformDBConnection");
             var postgresPath = configuration.GetValue("AppSettings:PostgresPath", string.Empty);
@@ -36,20 +38,23 @@ namespace PrimeApps.Model.Helpers
 
             logPath += $"\\release-{releaseId}-log.txt";
 
-            File.AppendAllText(logPath, "\u001b[92m" + "********** Publish **********" + "\u001b[39m" + Environment.NewLine);
+            File.AppendAllText(logPath,
+                "\u001b[92m" + "********** Publish **********" + "\u001b[39m" + Environment.NewLine);
 
-            foreach (var obj in versions.OfType<object>().Select((version, index) => new {version, index}))
+            foreach (var obj in versions.OfType<object>().Select((version, index) => new { version, index }))
             {
                 var version = obj.version;
 
-                File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + $" : Applying version is {version}..." + Environment.NewLine);
+                File.AppendAllText(logPath,
+                    "\u001b[90m" + DateTime.Now + "\u001b[39m" + $" : Applying version is {version}..." +
+                    Environment.NewLine);
 
                 try
                 {
                     var path = $"{rootPath}releases\\{dbName}\\{version}";
 
                     if (Directory.Exists(path))
-                        Directory.Delete(path);
+                        Directory.Delete(path, true);
 
                     Directory.CreateDirectory(path);
 
@@ -78,10 +83,14 @@ namespace PrimeApps.Model.Helpers
                             ["version"] = version.ToString()
                         };
 
-                        var response = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
+                        var response = await httpClient.PostAsync(url,
+                            new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
 
                         if (!response.IsSuccessStatusCode)
-                            File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Error - Unhandle exception. While downloading folder." + "\u001b[39m" + Environment.NewLine);
+                            File.AppendAllText(logPath,
+                                "\u001b[31m" + DateTime.Now +
+                                " : Error - Unhandle exception. While downloading folder." + "\u001b[39m" +
+                                Environment.NewLine);
 
                         var fileByte = await response.Content.ReadAsByteArrayAsync();
                         Directory.CreateDirectory(path);
@@ -103,13 +112,18 @@ namespace PrimeApps.Model.Helpers
 
                         //var dumpText = File.ReadAllText($"{path}\\dumpSql.txt", Encoding.UTF8);
 
-                        File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Restoring your database..." + Environment.NewLine);
+                        File.AppendAllText(logPath,
+                            "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Restoring your database..." +
+                            Environment.NewLine);
 
                         var createDbResult = ReleaseHelper.CreateDatabaseIfNotExists(PREConnectionString, dbName);
 
                         if (!createDbResult)
                         {
-                            File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Error - Unhandle exception. While creating database." + "\u001b[39m" + Environment.NewLine);
+                            File.AppendAllText(logPath,
+                                "\u001b[31m" + DateTime.Now +
+                                " : Error - Unhandle exception. While creating database." + "\u001b[39m" +
+                                Environment.NewLine);
                             break;
                         }
 
@@ -118,26 +132,36 @@ namespace PrimeApps.Model.Helpers
 
                         if (!restoreResult)
                         {
-                            File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Error - Unhandle exception. While restoring your database." + "\u001b[39m" + Environment.NewLine);
+                            File.AppendAllText(logPath,
+                                "\u001b[31m" + DateTime.Now +
+                                " : Error - Unhandle exception. While restoring your database." + "\u001b[39m" +
+                                Environment.NewLine);
                             break;
                         }
                     }
                     else
                     {
-                        File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Database removing template mark..." + Environment.NewLine);
-                        result = ReleaseHelper.ChangeTemplateDatabaseStatus(PREConnectionString, dbName, true, scriptPath);
+                        File.AppendAllText(logPath,
+                            "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Database removing template mark..." +
+                            Environment.NewLine);
+                        result = ReleaseHelper.ChangeTemplateDatabaseStatus(PREConnectionString, dbName, true,
+                            scriptPath);
 
                         if (!result)
                         {
-                            File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Error - Unhandle exception while removing database as template mark... \u001b[39m" + Environment.NewLine);
+                            File.AppendAllText(logPath,
+                                "\u001b[90m" + DateTime.Now + "\u001b[39m" +
+                                " : \u001b[93m Error - Unhandle exception while removing database as template mark... \u001b[39m" +
+                                Environment.NewLine);
                             break;
                         }
                     }
 
                     var scriptsText = File.ReadAllText(scriptPath, Encoding.UTF8);
-                    var sqls = scriptsText.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+                    var sqls = scriptsText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
-                    File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." + Environment.NewLine);
+                    File.AppendAllText(logPath,
+                        "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." + Environment.NewLine);
 
                     foreach (var sql in sqls)
                     {
@@ -146,16 +170,24 @@ namespace PrimeApps.Model.Helpers
                             var restoreResult = PosgresHelper.Run(PREConnectionString, dbName, sql);
 
                             if (!restoreResult)
-                                File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While applying script. Script is : (" + sql + ")" + "\u001b[39m" + Environment.NewLine);
+                                File.AppendAllText(logPath,
+                                    "\u001b[31m" + DateTime.Now +
+                                    " : Unhandle exception. While applying script. Script is : (" + sql + ")" +
+                                    "\u001b[39m" + Environment.NewLine);
                         }
                     }
 
-                    File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Database marking as template..." + Environment.NewLine);
+                    File.AppendAllText(logPath,
+                        "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Database marking as template..." +
+                        Environment.NewLine);
 
                     result = ReleaseHelper.ChangeTemplateDatabaseStatus(PREConnectionString, dbName, false, scriptPath);
 
                     if (!result)
-                        File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while marking database as template... \u001b[39m" + Environment.NewLine);
+                        File.AppendAllText(logPath,
+                            "\u001b[90m" + DateTime.Now + "\u001b[39m" +
+                            " : \u001b[93m Unhandle exception while marking database as template... \u001b[39m" +
+                            Environment.NewLine);
 
 
                     if (File.Exists(storagePath))
@@ -174,7 +206,10 @@ namespace PrimeApps.Model.Helpers
                             }
                             catch (Exception e)
                             {
-                                File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while applying storage files... \u001b[39m" + Environment.NewLine);
+                                File.AppendAllText(logPath,
+                                    "\u001b[90m" + DateTime.Now + "\u001b[39m" +
+                                    " : \u001b[93m Unhandle exception while applying storage files... \u001b[39m" +
+                                    Environment.NewLine);
                             }
                         }
                     }
@@ -198,42 +233,61 @@ namespace PrimeApps.Model.Helpers
 
                     if (firstTime && obj.index == 0)
                     {
-                        File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Final arrangements being made..." + Environment.NewLine);
+                        File.AppendAllText(logPath,
+                            "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Final arrangements being made..." +
+                            Environment.NewLine);
 
                         var secret = Guid.NewGuid().ToString().Replace("-", string.Empty);
                         var secretEncrypt = CryptoHelper.Encrypt(secret);
                         result = ReleaseHelper.CreatePlatformApp(PREConnectionString, app, secretEncrypt, scriptPath);
 
                         if (!result)
-                            File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while creating platform app... \u001b[39m" + Environment.NewLine);
+                            File.AppendAllText(logPath,
+                                "\u001b[90m" + DateTime.Now + "\u001b[39m" +
+                                " : \u001b[93m Unhandle exception while creating platform app... \u001b[39m" +
+                                Environment.NewLine);
 
                         if (!string.IsNullOrEmpty(token))
                         {
-                            var appUrl = string.Format(configuration.GetValue("AppSettings:AppUrl", string.Empty), app["name"].ToString());
-                            var addClientResult = await CreateClient(appUrl, authUrl, token, app["name"].ToString(), app["label"].ToString(), secret);
+                            var appUrl = string.Format(configuration.GetValue("AppSettings:AppUrl", string.Empty),
+                                app["name"].ToString());
+                            var addClientResult = await CreateClient(appUrl, authUrl, token, app["name"].ToString(),
+                                app["label"].ToString(), secret);
 
                             if (string.IsNullOrEmpty(addClientResult))
                             {
-                                var clientResult = await AddClientUrl(configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty), token, appUrl);
+                                var clientResult = await AddClientUrl(
+                                    configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty), token,
+                                    appUrl);
                                 if (!string.IsNullOrEmpty(clientResult))
-                                    File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while adding app url to client... \u001b[39m" + Environment.NewLine);
+                                    File.AppendAllText(logPath,
+                                        "\u001b[90m" + DateTime.Now + "\u001b[39m" +
+                                        " : \u001b[93m Unhandle exception while adding app url to client... \u001b[39m" +
+                                        Environment.NewLine);
                             }
                             else
-                                File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while creating app client... Error: " + addClientResult + " \u001b[39m" + Environment.NewLine);
+                                File.AppendAllText(logPath,
+                                    "\u001b[90m" + DateTime.Now + "\u001b[39m" +
+                                    " : \u001b[93m Unhandle exception while creating app client... Error: " +
+                                    addClientResult + " \u001b[39m" + Environment.NewLine);
                         }
                     }
 
-                    File.AppendAllText(logPath, "\u001b[90m ------------------------------------------ \u001b[39m" + Environment.NewLine);
+                    File.AppendAllText(logPath,
+                        "\u001b[90m ------------------------------------------ \u001b[39m" + Environment.NewLine);
                 }
                 catch (Exception e)
                 {
-                    Directory.Delete($"{rootPath}releases\\{dbName}");
-                    File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Error - Unhandle exception \u001b[39m" + Environment.NewLine);
+                    Directory.Delete($"{rootPath}releases\\{dbName}",true);
+                    File.AppendAllText(logPath,
+                        "\u001b[90m" + DateTime.Now + "\u001b[39m" +
+                        " : \u001b[93m Error - Unhandle exception \u001b[39m" + Environment.NewLine);
                     break;
                 }
             }
 
-            File.AppendAllText(logPath, "\u001b[92m" + "********** Publish End**********" + "\u001b[39m" + Environment.NewLine);
+            File.AppendAllText(logPath,
+                "\u001b[92m" + "********** Publish End**********" + "\u001b[39m" + Environment.NewLine);
         }
 
         public static async Task<string> AddClientUrl(string authUrl, string token, string url)
@@ -249,7 +303,8 @@ namespace PrimeApps.Model.Helpers
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var response = await client.PostAsync(authUrl + "/api/client/add_url", new StringContent(JsonConvert.SerializeObject(clientRequest), Encoding.UTF8, "application/json"));
+                var response = await client.PostAsync(authUrl + "/api/client/add_url",
+                    new StringContent(JsonConvert.SerializeObject(clientRequest), Encoding.UTF8, "application/json"));
 
 
                 if (!response.IsSuccessStatusCode)
@@ -262,7 +317,8 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static async Task<string> CreateClient(string appUrl, string authUrl, string token, string appName, string appLabel, string secret)
+        public static async Task<string> CreateClient(string appUrl, string authUrl, string token, string appName,
+            string appLabel, string secret)
         {
             using (var client = new HttpClient())
             {
@@ -285,7 +341,8 @@ namespace PrimeApps.Model.Helpers
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var response = await client.PostAsync(authUrl + "/api/client/create", new StringContent(JsonConvert.SerializeObject(clientRequest), Encoding.UTF8, "application/json"));
+                var response = await client.PostAsync(authUrl + "/api/client/create",
+                    new StringContent(JsonConvert.SerializeObject(clientRequest), Encoding.UTF8, "application/json"));
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -298,7 +355,8 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static async Task<string> GetAuthToken(string authUrl, string studioSecret, string integrationEmail, string clientId)
+        public static async Task<string> GetAuthToken(string authUrl, string studioSecret, string integrationEmail,
+            string clientId)
         {
             using (var httpClient = new HttpClient())
             {
@@ -311,7 +369,8 @@ namespace PrimeApps.Model.Helpers
                     {"client_secret", studioSecret}
                 };
 
-                var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token") {Content = new FormUrlEncodedContent(dict)};
+                var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token")
+                { Content = new FormUrlEncodedContent(dict) };
                 var res = await httpClient.SendAsync(req);
 
                 if (res.IsSuccessStatusCode)

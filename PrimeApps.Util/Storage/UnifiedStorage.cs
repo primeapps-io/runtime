@@ -129,7 +129,7 @@ namespace PrimeApps.Util.Storage
         public UnifiedStorage(IAmazonS3 client, IConfiguration configuration)
         {
             _client = client;
-            ((AmazonS3Config)(_client.Config)).ForcePathStyle = true;
+            ((AmazonS3Config) (_client.Config)).ForcePathStyle = true;
             _configuration = configuration;
         }
 
@@ -145,7 +145,7 @@ namespace PrimeApps.Util.Storage
             try
             {
                 await CreateBucketIfNotExists(bucket);
-                
+
                 var directoryTransferUtility =
                     new TransferUtility(_client);
 
@@ -201,7 +201,7 @@ namespace PrimeApps.Util.Storage
                 await transUtil.UploadAsync(stream, bucket, key);
             }
         }
-        
+
         /// <summary>
         /// Uploads a file stream into a bucket with put object request.
         /// </summary>
@@ -344,7 +344,8 @@ namespace PrimeApps.Util.Storage
             return await _client.PutACLAsync(request);
         }
 
-        public async Task<PutBucketPolicyResponse> CreateBucketPolicy(string bucket, string domainName, PolicyType policyType, bool createBucketIfNotExists = true)
+        public async Task<PutBucketPolicyResponse> CreateBucketPolicy(string bucket, string domainName,
+            PolicyType policyType, bool createBucketIfNotExists = true)
         {
             string policy = string.Empty;
 
@@ -683,14 +684,14 @@ namespace PrimeApps.Util.Storage
         /// <returns></returns>
         public static string GetPath(string type, string mode, int id, string extraPath = "")
         {
-            ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
+            ObjectType objectType = (ObjectType) System.Enum.Parse(typeof(ObjectType), type, true);
 
             return $"{mode}{id}{pathMap[objectType]}{extraPath}";
         }
 
         public static string GetPathPictures(string type, int userId, string extraPath = "")
         {
-            ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
+            ObjectType objectType = (ObjectType) System.Enum.Parse(typeof(ObjectType), type, true);
 
             return $"profile-pictures{pathMap[objectType]}{"user" + userId}{extraPath}";
         }
@@ -702,7 +703,7 @@ namespace PrimeApps.Util.Storage
 
         public static ObjectType GetType(string type)
         {
-            return (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
+            return (ObjectType) System.Enum.Parse(typeof(ObjectType), type, true);
         }
 
         public string GetDownloadFolderPath()

@@ -296,8 +296,8 @@ namespace PrimeApps.Studio.Controllers
 
                 var zipPath = $"{tmpZippedFolder}{bucketName}.zip";
                 //await _storage.DownloadFolder(bucketName, $"releases\\{request["version"]}", tmpFolder + bucketName);
-                await _storage.Download(bucketName, $"releases\\{request["version"]}\\{request["version"]}.zip",zipPath);
-                
+                await _storage.Download(bucketName, $"releases\\{request["version"]}\\{request["version"]}.zip", zipPath);
+
                 /*try
                 {
                     ZipFile.CreateFromDirectory(tmpFolder + bucketName, zipPath);
