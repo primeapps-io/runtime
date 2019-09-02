@@ -130,15 +130,15 @@ namespace PrimeApps.Studio.Controllers
 
             switch ((string)request["environment"])
             {
-                case "test":                    
-                    _posgresHelper.Drop("PlatformDBConnectionTest", app, dumpDirectory);
-                    _posgresHelper.Create("PlatformDBConnectionTest", app, dumpDirectory);
-                    _posgresHelper.Restore("PlatformDBConnectionTest", app, dumpDirectory, app, dumpDirectory);
+                case "test":
+                    PosgresHelper.Drop("PlatformDBConnectionTest", app, dumpDirectory);
+                    PosgresHelper.Create("PlatformDBConnectionTest", app, dumpDirectory);
+                    PosgresHelper.Restore("PlatformDBConnectionTest", app, dumpDirectory, app, dumpDirectory);
                     break;
                 case "prod":
-                    _posgresHelper.Drop("PlatformDBConnection", app, dumpDirectory);
-                    _posgresHelper.Create("PlatformDBConnection", app, dumpDirectory);
-                    _posgresHelper.Restore("PlatformDBConnection", app, dumpDirectory, app, dumpDirectory);
+                    PosgresHelper.Drop("PlatformDBConnection", app, dumpDirectory);
+                    PosgresHelper.Create("PlatformDBConnection", app, dumpDirectory);
+                    PosgresHelper.Restore("PlatformDBConnection", app, dumpDirectory, app, dumpDirectory);
                     break;
             }
 
