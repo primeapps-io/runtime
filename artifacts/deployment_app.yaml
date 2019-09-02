@@ -11,4 +11,4 @@ spec:
     spec:
       containers:
         - name: primeapps-app
-          image: primeapps/primeapps-auth:IMAGE_TAG-debian
+          image: primeapps/primeapps-app:IMAGE_TAG-debian
