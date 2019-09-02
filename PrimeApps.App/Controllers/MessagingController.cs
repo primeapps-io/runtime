@@ -64,7 +64,6 @@ namespace PrimeApps.App.Controllers
                 PhoneField = request.PhoneField,
                 Rev = randomRevNumber,
                 Query = request.Query,
-
             };
             var smsMessage = await _messagingRepository.Create(smsNotification);
             if (smsMessage != null)
@@ -86,13 +85,13 @@ namespace PrimeApps.App.Controllers
                 {
                     throw ex;
                 }
-
             }
             else
             {
                 return StatusCode(500);
                 //return InternalServerError();
             }
+
             return Ok();
         }
 
@@ -143,11 +142,9 @@ namespace PrimeApps.App.Controllers
                     /// send message to the queue.(Same queue with sms, does not affect something on service bus)
                     //await ServiceBus.SendMessage("sms", queuedMessage, DateTime.UtcNow);
                     Hangfire.BackgroundJob.Enqueue<EMailClient>(email => email.Process(queuedMessage, AppUser));
-
                 }
                 catch (Exception ex)
                 {
-
                     throw ex;
                 }
             }
@@ -156,6 +153,7 @@ namespace PrimeApps.App.Controllers
                 return StatusCode(500);
                 //return InternalServerError();
             }
+
             return Ok();
         }
 
@@ -166,12 +164,14 @@ namespace PrimeApps.App.Controllers
         [Route("send_external_email")]
         public async Task<IActionResult> SendExternalEmail([FromBody]ExternalEmail emailRequest)
         {
-            if (emailRequest.Subject != null && emailRequest.TemplateWithBody != null && emailRequest.ToAddresses.Length > 0)
+            if (emailRequest.Subject != null && emailRequest.ToAddresses.Length > 0)
             {
-                if (!emailRequest.TemplateWithBody.Contains("html"))
+                if (emailRequest.TemplateName != null)
                 {
-                    var template = await _messagingRepository.GetTemplate(emailRequest.TemplateWithBody);
-                    emailRequest.TemplateWithBody = template.Content;
+                    var template = await _messagingRepository.GetTemplate(emailRequest.TemplateName);
+
+                    if (!emailRequest.TemplateWithBody.Contains("html"))
+                        emailRequest.TemplateWithBody = template.Content.Replace("{{EmailBody}}", emailRequest.TemplateWithBody);
                 }
 
                 if (emailRequest.Cc == null)
@@ -179,13 +179,18 @@ namespace PrimeApps.App.Controllers
 
                 if (emailRequest.Bcc == null)
                     emailRequest.Bcc = "";
+
                 var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody, _configuration);
+
                 foreach (var emailRecipient in emailRequest.ToAddresses)
                 {
                     externalEmail.AddRecipient(emailRecipient);
                 }
 
-                externalEmail.AddToQueue(cc: emailRequest.Cc, bcc: emailRequest.Bcc, fromEmail: emailRequest.FromEmail, Name: emailRequest.FromName);
+                var moduleId = emailRequest.ModuleId ?? 0;
+                var recordId = emailRequest.RecordId ?? 0;
+
+                await externalEmail.AddToQueue(AppUser.TenantId, moduleId, recordId, cc: emailRequest.Cc, bcc: emailRequest.Bcc, from: emailRequest.FromEmail, fromName: emailRequest.FromName, appUser: AppUser, addRecordSummary: false);
 
                 return Ok(emailRequest.ToAddresses.Count());
             }
@@ -212,15 +217,18 @@ namespace PrimeApps.App.Controllers
                 };
                 settings.Add(setting);
             }
+
             if (settings.Count > 0)
             {
                 await RemoveSMSSettings();
             }
+
             var count = await _settingRepository.AddSettings(settings);
             if (count > 0)
             {
                 return Ok(count);
             }
+
             return BadRequest();
         }
 
@@ -243,15 +251,18 @@ namespace PrimeApps.App.Controllers
                 };
                 settings.Add(setting);
             }
+
             if (settings.Count > 0)
             {
                 await RemoveEMailSettings();
             }
+
             var count = await _settingRepository.AddSettings(settings);
             if (count > 0)
             {
                 return Ok(count);
             }
+
             return BadRequest();
         }
 
@@ -266,7 +277,6 @@ namespace PrimeApps.App.Controllers
             IList<Setting> settings = new List<Setting>();
             foreach (var data in newSettings)
             {
-
                 /// we set here the local (tenant user id) to make this settings personal.
                 Setting setting = new Setting()
                 {
@@ -283,15 +293,18 @@ namespace PrimeApps.App.Controllers
 
                 settings.Add(setting);
             }
+
             if (settings.Count > 0)
             {
                 await RemovePersonalEMailSettings();
             }
+
             var count = await _settingRepository.AddSettings(settings);
             if (count > 0)
             {
                 return Ok(count);
             }
+
             return BadRequest();
         }
 
@@ -307,6 +320,7 @@ namespace PrimeApps.App.Controllers
             {
                 return Ok();
             }
+
             return NotFound();
         }
 
@@ -322,6 +336,7 @@ namespace PrimeApps.App.Controllers
             {
                 return Ok();
             }
+
             return NotFound();
         }
 
@@ -337,8 +352,8 @@ namespace PrimeApps.App.Controllers
             {
                 return Ok();
             }
-            return NotFound();
 
+            return NotFound();
         }
 
         /// <summary>
@@ -383,7 +398,6 @@ namespace PrimeApps.App.Controllers
                             else
                             {
                                 config["SystemEMail"][emailSetting.Key] = JArray.Parse(emailSetting.Value);
-
                             }
                         }
                     }

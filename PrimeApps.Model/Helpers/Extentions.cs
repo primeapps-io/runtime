@@ -5,7 +5,8 @@ using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.Contracts;
 using System.Globalization;
-using System.Text;
+using System.Runtime.Serialization;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using Npgsql;
@@ -35,8 +36,8 @@ namespace PrimeApps.Model.Helpers
             for (var j = 0; j < columns; j++)
             {
                 result.Add(new JObject(
-                                        new JProperty("Name", record.GetName(j)),
-                                        new JProperty("Value", data[j])));
+                    new JProperty("Name", record.GetName(j)),
+                    new JProperty("Value", data[j])));
             }
 
             return result;
@@ -74,6 +75,7 @@ namespace PrimeApps.Model.Helpers
                 {
                     result.Add(reader.RecordAsJObject());
                 }
+
                 if (!reader.NextResult())
                 {
                     break;
@@ -226,7 +228,29 @@ namespace PrimeApps.Model.Helpers
             var memInfo = type.GetMember(enumVal.ToString());
             var attributes = memInfo[0].GetCustomAttributes(typeof(T), false);
 
-            return (attributes.Length > 0) ? (T)attributes[0] : null;
+            return attributes.Length > 0 ? (T)attributes[0] : null;
+        }
+
+        public static string ToEnumString<T>(T type)
+        {
+            var enumType = typeof(T);
+            var name = Enum.GetName(enumType, type);
+            var enumMemberAttribute = ((EnumMemberAttribute[])enumType.GetField(name).GetCustomAttributes(typeof(EnumMemberAttribute), true)).Single();
+            
+            return enumMemberAttribute.Value;
+        }
+
+        public static T ToEnum<T>(this string str)
+        {
+            var enumType = typeof(T);
+            
+            foreach (var name in Enum.GetNames(enumType))
+            {
+                var enumMemberAttribute = ((EnumMemberAttribute[])enumType.GetField(name).GetCustomAttributes(typeof(EnumMemberAttribute), true)).Single();
+                if (enumMemberAttribute.Value == str) return (T)Enum.Parse(enumType, name);
+            }
+
+            return default(T);
         }
 
         public static string EscapeSimilarTo(this string value)
@@ -264,6 +288,5 @@ namespace PrimeApps.Model.Helpers
                 return default(T);
             }
         }
-
     }
 }
