@@ -125,8 +125,9 @@ namespace PrimeApps.Studio.Services
                     }
                 }
 
-                string parameterId = parameter.ParameterName.Replace("@", "");
-                query = Regex.Replace(query, "@(?:[\\w#_$]" + parameterId + "|(?:(\\[)|\")." + parameterId + "?(?(1)]|\"))", value);
+                string parameterId = parameter.ParameterName.Replace("@p", "");
+                string regex = @"@(?:[\w#_$]" + parameterId + @"|(?:(\[)|"")." + parameterId + @"?(?(1)]|""))";
+                query = Regex.Replace(query, regex, value);
 
                 // if (query.Contains(parameter.ParameterName + ","))
                 // {
