@@ -179,7 +179,7 @@ namespace PrimeApps.App.Controllers
                 if (emailRequest.Bcc == null)
                     emailRequest.Bcc = "";
 
-                var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody, _configuration);
+                var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody, _configuration,);
 
                 foreach (var emailRecipient in emailRequest.ToAddresses)
                 {
