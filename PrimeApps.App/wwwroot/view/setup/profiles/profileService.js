@@ -22,11 +22,6 @@ angular.module('primeapps')
                             profile.description = $filter('translate')('Setup.Profiles.AdministratorDescription');
                         }
 
-                        if (profile.is_persistent && !profile.has_admin_rights) {
-                            profile.name = $filter('translate')('Setup.Profiles.Standard');
-                            profile.description = $filter('translate')('Setup.Profiles.StandardDescription');
-                        }
-
                         if (clearPermissions) {
                             if (profile.permissions) {
                                 profile.permissions = [];
