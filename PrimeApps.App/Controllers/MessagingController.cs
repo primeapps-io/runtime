@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Jobs.Messaging.EMail;
@@ -24,12 +25,14 @@ namespace PrimeApps.App.Controllers
         private IMessagingRepository _messagingRepository;
         private ISettingRepository _settingRepository;
         private IConfiguration _configuration;
+        private IServiceScopeFactory _serviceScopeFactory;
 
-        public MessagingController(IMessagingRepository messagingRepository, ISettingRepository settingRepository, IConfiguration configuration)
+        public MessagingController(IMessagingRepository messagingRepository, ISettingRepository settingRepository, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
         {
             _messagingRepository = messagingRepository;
             _settingRepository = settingRepository;
             _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -179,7 +182,7 @@ namespace PrimeApps.App.Controllers
                 if (emailRequest.Bcc == null)
                     emailRequest.Bcc = "";
 
-                var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody, _configuration,);
+                var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody, _configuration, _serviceScopeFactory);
 
                 foreach (var emailRecipient in emailRequest.ToAddresses)
                 {
