@@ -101,6 +101,7 @@ angular.module('primeapps')
                             promises.push($http.get(config.apiUrl + 'menu/get/' + responseAccount.data.user.profile.id));
                             promises.push($http.get(config.apiUrl + 'settings/get_all/custom?userId=' + responseAccount.data.user.id));
                             promises.push($http.get(config.apiUrl + 'settings/get_by_key/1/branch'));
+                            promises.push($http.get(config.apiUrl + 'settings/get_by_key/1/custom_profile_permissions'));
 
                             $q.all(promises)
                                 .then(function (response) {
@@ -278,6 +279,12 @@ angular.module('primeapps')
                                     if (menu.length > 0) {
                                         $rootScope.customMenu = true;
                                         $rootScope.menu = $filter('orderBy')(menu, 'order', false);
+                                    }
+
+                                    //custom profile permissions
+                                    var profilePermissions = response[13].data;
+                                    if (profilePermissions) {
+                                        $rootScope.customProfilePermissions = JSON.parse(profilePermissions.value).profilePermissions;
                                     }
 
                                     //module profile settings

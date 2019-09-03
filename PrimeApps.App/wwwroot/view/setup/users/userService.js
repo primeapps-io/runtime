@@ -23,7 +23,8 @@ angular.module('primeapps')
                             }
                         });
 
-                        users.push(user);
+                        if (!user.email.startsWith('integration_'))
+                            users.push(user);
                     });
 
                     return users;

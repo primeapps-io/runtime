@@ -552,6 +552,28 @@ angular.module('primeapps')
     .factory('helper', ['$rootScope', '$timeout', '$filter', '$localStorage', '$sessionStorage', '$q', '$http', 'config', '$cache',
         function ($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache) {
             return {
+                hasCustomProfilePermission: function (str) {
+                    if ($rootScope.customProfilePermissions && $rootScope.customProfilePermissions.length > 0) {
+                        for (var i = 0; i < $rootScope.customProfilePermissions.length; i++) {
+                            var profilePermission = $rootScope.customProfilePermissions[i];
+                            if (profilePermission.profileId == $rootScope.user.profile.id) {
+                                var hasPermission = false;
+                                for (var j = 0; j < profilePermission.permissions.length; j++) {
+                                    var permission = profilePermission.permissions[j];
+                                    if (permission == str)
+                                        hasPermission = true;
+                                }
+                                if (hasPermission)
+                                    return true;
+                                else
+                                    return false;
+                            }
+                        }
+                    } else {
+                        return false;
+                    }
+                    return false;
+                },
                 SnakeToCamel: function (data, depth) {
 
                     function _processKeys(obj, processer, depth) {
