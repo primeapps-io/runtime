@@ -411,7 +411,7 @@ namespace PrimeApps.App.Controllers
             if (requestMail.IsNullOrEmpty())
                 return BadRequest();
 
-            var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Language, "add_user");
+            var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Language, "send_password");
 
             foreach (var template in templates)
             {
