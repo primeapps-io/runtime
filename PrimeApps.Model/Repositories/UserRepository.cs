@@ -115,6 +115,7 @@ namespace PrimeApps.Model.Repositories
                         Home = user.Profile.Home,
                         CollectiveAnnualLeave = user.Profile.CollectiveAnnualLeave,
                         StartPage = user.Profile.StartPage,
+                        SystemCode = user.Profile.SystemCode,
                         Permissions = user.Profile.Permissions.Select(pm => new ProfilePermissionDTO()
                         {
                             ID = pm.Id,
