@@ -135,7 +135,7 @@ namespace PrimeApps.Model.Repositories
 
             return template;
         }
-
+  
         public async Task<int> UpdateAppTemplate(AppTemplate template)
         {
             return await DbContext.SaveChangesAsync();

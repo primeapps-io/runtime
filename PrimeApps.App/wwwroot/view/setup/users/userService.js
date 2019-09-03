@@ -29,16 +29,19 @@ angular.module('primeapps')
 
                     return users;
                 },
-                getAllUser: function(){
+                getAllUser: function () {
                     return $http.get(config.apiUrl + 'User/get_users');
                 },
-                sendPasswordToOfficeUser: function (requestMail) {
+                sendExternalMail: function (requestMail) {
                     return $http.post(config.apiUrl + 'messaging/send_external_email', requestMail);
                 },
-                addUser: function(user){
-                  return $http.post(config.apiUrl + 'User/add_user',user);
+                sendPasswordToOfficeUser: function (requestMail) {
+                    return $http.post(config.apiUrl + 'User/send_user_password', requestMail);
                 },
-                getOfficeUsers: function(){
+                addUser: function (user) {
+                    return $http.post(config.apiUrl + 'User/add_user', user);
+                },
+                getOfficeUsers: function () {
                     return $http.get(config.apiUrl + 'User/get_office_users');
                 },
                 isAvailableToInvite: function (email, instanceId) {
@@ -47,7 +50,7 @@ angular.module('primeapps')
                         InstanceID: instanceId
                     });
                 },
-                updateActiveDirectoryEmail: function (id, email){
+                updateActiveDirectoryEmail: function (id, email) {
                     return $http.get(config.apiUrl + 'User/UpdateActiveDirectoryEmail?UserId=' + id + '&Email=' + email);
                 },
                 invite: function (email, instanceId, profileId, roleId, culture, createdBy) {

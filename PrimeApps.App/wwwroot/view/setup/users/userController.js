@@ -55,12 +55,11 @@ angular.module('primeapps')
 
 
                 $scope.submitting = true;
-                var emailBody = $filter('translate')('Setup.Office.EmailNotification.Hello') + " " + $scope.addedUser.fullName + "<br />" + $filter('translate')('Setup.Office.EmailNotification.Created') + "<br />" + $filter('translate')('Setup.Office.EmailNotification.Email') + $scope.addedUser.email + "<br />" + $filter('translate')('Setup.Office.EmailNotification.Password') + $scope.userPassword;
+                // var emailBody = $filter('translate')('Setup.Office.EmailNotification.Hello') + " " + $scope.addedUser.fullName + "<br />" + $filter('translate')('Setup.Office.EmailNotification.Created') + "<br />" + $filter('translate')('Setup.Office.EmailNotification.Email') + $scope.addedUser.email + "<br />" + $filter('translate')('Setup.Office.EmailNotification.Password') + $scope.userPassword;
                 var requestMail = {};
-                requestMail.Subject = $filter('translate')('Setup.Office.EmailNotification.Subject');
-                requestMail.Template_With_Body = emailBody;
-                requestMail.To_Addresses = [$scope.addedUser.email];
-                requestMail.Template_Name='add_user'
+                requestMail.full_name = $scope.addedUser.fullName;
+                requestMail.password = $scope.userPassword;
+                requestMail.email = $scope.addedUser.email;
 
                 UserService.sendPasswordToOfficeUser(requestMail)
                     .then(function (response) {
