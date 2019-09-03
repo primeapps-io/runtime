@@ -524,7 +524,7 @@
                                                                            ng-disabled="field.validation.readonly || (id && !field.editable)"
                                                                            ng-click="setDropdownData(field)" ng-model="record[field.name]"
                                                                            ng-if="field.data_type === 'lookup' && field.show_as_dropdown">
-                                                                    <ui-select-match placeholder="{{('Common.Select' | translate)}}">
+                                                                    <ui-select-match placeholder="{{('Common.Select' | translate)}}" allow-clear="true">
                                                                         {{$select.selected.primary_value}}
                                                                     </ui-select-match>
                                                                     <ui-select-choices
