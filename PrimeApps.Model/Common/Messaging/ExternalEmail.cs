@@ -10,8 +10,6 @@
         public string FromEmail { get; set; }
         public string FromName { get; set; }
         public int? ModuleId { get; set; }
-        public int? RecordId { get; set; }
-        public string TemplateName { get; set; }
-
+        public int? RecordId { get; set; }  
     }
 }

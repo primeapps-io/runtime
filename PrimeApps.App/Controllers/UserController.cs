@@ -405,6 +405,35 @@ namespace PrimeApps.App.Controllers
             }
         }
 
+        [Route("send_user_password"), HttpPost]
+        public async Task<IActionResult> UserSendPassword([FromBody]JObject requestMail)
+        {
+            if (requestMail.IsNullOrEmpty())
+                return BadRequest();
+
+            var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Language, "add_user");
+
+            foreach (var template in templates)
+            {
+                if (template != null)
+                {
+                    template.Content = template.Content.Replace("{:FullName}", requestMail["full_name"].ToString());
+                    template.Content = template.Content.Replace("{:Email}", requestMail["email"].ToString());
+                    template.Content = template.Content.Replace("{:Password}", requestMail["password"].ToString());
+
+                    Email notification = new Email(template.Subject, template.Content, _configuration);
+                    var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
+                    if (req != null)
+                    {
+                        notification.AddRecipient((string)req["MailSenderEmail"]);
+                        notification.AddToQueue((string)req["MailSenderEmail"], (string)req["MailSenderName"]);
+                    }
+                }
+            }
+
+            return Ok();
+        }
+
         //TODO TenantId
         [Route("get_user"), HttpGet]
         public async Task<IActionResult> GetUser([FromQuery(Name = "email")]string email, [FromQuery(Name = "tenantId")]int tenantId)

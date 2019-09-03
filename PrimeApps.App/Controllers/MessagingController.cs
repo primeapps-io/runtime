@@ -164,14 +164,12 @@ namespace PrimeApps.App.Controllers
         [Route("send_external_email")]
         public async Task<IActionResult> SendExternalEmail([FromBody]ExternalEmail emailRequest)
         {
-            if (emailRequest.Subject != null && emailRequest.ToAddresses.Length > 0)
+            if (emailRequest.Subject != null && emailRequest.TemplateWithBody != null && emailRequest.ToAddresses.Length > 0)
             {
-                if (emailRequest.TemplateName != null)
+                if (!emailRequest.TemplateWithBody.Contains("html"))
                 {
-                    var template = await _messagingRepository.GetTemplate(emailRequest.TemplateName);
-
-                    if (!emailRequest.TemplateWithBody.Contains("html"))
-                        emailRequest.TemplateWithBody = template.Content.Replace("{{EmailBody}}", emailRequest.TemplateWithBody);
+                    var template = await _messagingRepository.GetTemplate(emailRequest.TemplateWithBody);
+                    emailRequest.TemplateWithBody = template.Content;
                 }
 
                 if (emailRequest.Cc == null)
