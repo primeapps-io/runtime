@@ -9,7 +9,7 @@ angular.module('primeapps')
             if (!$scope.hasAdminRight) {
                 if (!helper.hasCustomProfilePermission('users')) {
                     ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                    $state.go('app.crm.dashboard');
+                    $state.go('app.dashboard');
                 }
             }
 
@@ -134,6 +134,9 @@ angular.module('primeapps')
                     $rootScope.workgroup.users = users;
 
                     $scope.profiles = ProfileService.getProfiles(responseProfiles, $rootScope.workgroup.tenant_id, true);
+                    if (!$rootScope.user.profile.has_admin_rights)
+                        $scope.profiles = $filter('filter')($scope.profiles, { has_admin_rights: !true }, true);
+
                     $scope.roles = responseRoles;
                     $scope.users = UserService.getUsers(users, $scope.profiles, $scope.roles);
                     $scope.licensesBought = license.total || 0;

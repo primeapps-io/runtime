@@ -50,7 +50,7 @@ angular.module('primeapps')
                                         customPermissionMenuItems.push({ link: '#/app/setup/general', label: 'Setup.Nav.System', order: 8, app: 'crm' })
 
                                     if (permission == 'organization')
-                                        customPermissionMenuItems.push({ link: '#/app/setup/users', label: 'Setup.Nav.OrganizationSettings', order: 3, app: 'crm' })
+                                        customPermissionMenuItems.push({ link: '#/app/setup/organization', label: 'Setup.Nav.OrganizationSettings', order: 3, app: 'crm' })
                                 }
                                 var allMenuItems = $scope.menuItems.concat(customPermissionMenuItems);
                                 $scope.menuItems = $filter('orderBy')(allMenuItems, 'order');

@@ -9,7 +9,7 @@ angular.module('primeapps')
             if (!$scope.hasAdminRight) {
                 if (!helper.hasCustomProfilePermission('general')) {
                     ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                    $state.go('app.crm.dashboard');
+                    $state.go('app.dashboard');
                 }
             }
             GeneralSettingsService.getByKey('module', 'detail_view_type')

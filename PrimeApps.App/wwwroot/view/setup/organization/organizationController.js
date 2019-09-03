@@ -2,14 +2,14 @@
 
 angular.module('primeapps')
 
-    .controller('OrganizationController', ['$rootScope', '$scope', '$translate', 'tmhDynamicLocale', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'FileUploader', 'AppService', 'OrganizationService','$cookies',
-        function ($rootScope, $scope, $translate, tmhDynamicLocale, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, FileUploader, AppService, OrganizationService,$cookies) {
+    .controller('OrganizationController', ['$rootScope', '$scope', '$translate', 'tmhDynamicLocale', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'FileUploader', 'AppService', 'OrganizationService', '$cookies', '$state', 'helper',
+        function ($rootScope, $scope, $translate, tmhDynamicLocale, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, FileUploader, AppService, OrganizationService, $cookies, $state, helper) {
 
             $scope.hasAdminRight = $filter('filter')($rootScope.profiles, { id: $rootScope.user.profile.id }, true)[0].has_admin_rights;
             if (!$scope.hasAdminRight) {
                 if (!helper.hasCustomProfilePermission('organization')) {
                     ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                    $state.go('app.crm.dashboard');
+                    $state.go('app.dashboard');
                 }
             }
             $scope.company = {};
