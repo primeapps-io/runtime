@@ -469,7 +469,7 @@ namespace PrimeApps.Model.Helpers
                 case DataType.NumberDecimal:
                     return "DECIMAL";
                 case DataType.Currency:
-                    return "MONEY";
+                    return "NUMERIC";
                 case DataType.Date:
                     return "DATE";
                 case DataType.DateTime:

@@ -293,10 +293,10 @@ namespace PrimeApps.App.Controllers
                     return NotFound();
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 if (ex.SqlState == PostgreSqlStateCodes.InvalidInput)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
@@ -335,10 +335,13 @@ namespace PrimeApps.App.Controllers
             var moduleEntity = await _moduleRepository.GetByNameWithDependencies(module);
 
             if (moduleEntity == null || record == null)
-                return BadRequest();         
+                return BadRequest();
+
+            if (record["owner"].IsNullOrEmpty())
+                record["owner"] = AppUser.Id;
 
             var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, (bool)convertPicklists, appUser: AppUser);
-            
+
             if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
                 return StatusCode(resultBefore, ModelState);
 
@@ -361,10 +364,10 @@ namespace PrimeApps.App.Controllers
                     return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.Detail});
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
@@ -418,7 +421,7 @@ namespace PrimeApps.App.Controllers
             //Format records if has locale
             if (!string.IsNullOrWhiteSpace(locale))
             {
-                ICollection<Module> lookupModules = new List<Module> {ModuleHelper.GetFakeUserModule()};
+                ICollection<Module> lookupModules = new List<Module> { ModuleHelper.GetFakeUserModule() };
                 var currentCulture = locale == "en" ? "en-US" : "tr-TR";
                 record = _recordRepository.GetById(moduleEntity, (int)record["id"], !AppUser.HasAdminProfile, lookupModules);
                 record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
@@ -482,10 +485,10 @@ namespace PrimeApps.App.Controllers
                     return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.Detail});
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
@@ -499,7 +502,7 @@ namespace PrimeApps.App.Controllers
             //Format records if has locale
             if (!string.IsNullOrWhiteSpace(locale))
             {
-                ICollection<Module> lookupModules = new List<Module> {ModuleHelper.GetFakeUserModule()};
+                ICollection<Module> lookupModules = new List<Module> { ModuleHelper.GetFakeUserModule() };
                 var currentCulture = locale == "en" ? "en-US" : "tr-TR";
                 record = _recordRepository.GetById(moduleEntity, (int)record["id"], !AppUser.HasAdminProfile, lookupModules);
                 record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
@@ -575,10 +578,10 @@ namespace PrimeApps.App.Controllers
                         return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.Detail});
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     throw;
                 }
@@ -672,11 +675,11 @@ namespace PrimeApps.App.Controllers
                         return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
 
-                        return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     throw;
                 }
@@ -726,10 +729,10 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.Detail});
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
@@ -765,7 +768,7 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
@@ -834,10 +837,10 @@ namespace PrimeApps.App.Controllers
                     return NotFound();
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 if (ex.SqlState == PostgreSqlStateCodes.InvalidInput)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
