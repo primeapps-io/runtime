@@ -138,7 +138,7 @@
                                 <div class="form-group"
                                      ng-class="{'has-error': uploadForm.$submitted && uploadForm.profiles.$invalid}">
                                     <label class="control-label">
-                                        {{'Setup.Nav.Tabs.Profiles'|translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
+                                        {{'Setup.Nav.Tabs.Profiles'|translate}}
                                     </label>
                                     <tags-input name="profiles"
                                                 tabindex="999"
@@ -149,8 +149,7 @@
                                                 placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
                                                 replace-spaces-with-dashes="false"
                                                 add-from-autocomplete-only="true"
-                                                min-length="1"
-                                                ng-required="true">
+                                                min-length="1">
                                         <auto-complete source="profiles"
                                                        min-length="0"
                                                        load-on-focus="true"
