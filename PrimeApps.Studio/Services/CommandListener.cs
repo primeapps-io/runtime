@@ -127,9 +127,20 @@ namespace PrimeApps.Studio.Services
                 }
 
                 if (query.Contains(parameter.ParameterName + ","))
+                {
+                    // in query parameters
                     query = query.Replace(parameter.ParameterName + ",", value + ",");
-                else
-                    query = query.Replace(parameter.ParameterName, value);
+                }
+                else if (query.Contains(parameter.ParameterName + ";"))
+                {
+                    // in update or delete statement parameter
+                    query = query.Replace(parameter.ParameterName + ";", value + ";");
+                }
+                else if (query.Contains(parameter.ParameterName + ")"))
+                {
+                    // End of query parameters
+                    query = query.Replace(parameter.ParameterName + ")", value + ")");
+                }
             }
 
             return query;
