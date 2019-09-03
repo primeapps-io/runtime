@@ -4,6 +4,15 @@ angular.module('primeapps')
 
     .controller('UserController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', 'guidEmpty', '$popover', 'helper', 'UserService', 'WorkgroupService', 'AppService', 'ProfileService', 'RoleService', 'LicenseService', '$q', 'officeHelper',
         function ($rootScope, $scope, $filter, $state, ngToast, guidEmpty, $popover, helper, UserService, WorkgroupService, AppService, ProfileService, RoleService, LicenseService, $q, officeHelper) {
+
+            $scope.hasAdminRight = $filter('filter')($rootScope.profiles, { id: $rootScope.user.profile.id }, true)[0].has_admin_rights;
+            if (!$scope.hasAdminRight) {
+                if (!helper.hasCustomProfilePermission('users')) {
+                    ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
+                    $state.go('app.dashboard');
+                }
+            }
+
             $scope.loading = true;
             $scope.isOfficeConnected = false;
             //user add button popover controller
@@ -46,12 +55,11 @@ angular.module('primeapps')
 
 
                 $scope.submitting = true;
-                var emailBody = $filter('translate')('Setup.Office.EmailNotification.Hello') + " " + $scope.addedUser.fullName + "<br />" + $filter('translate')('Setup.Office.EmailNotification.Created') + "<br />" + $filter('translate')('Setup.Office.EmailNotification.Email') + $scope.addedUser.email + "<br />" + $filter('translate')('Setup.Office.EmailNotification.Password') + $scope.userPassword;
+                // var emailBody = $filter('translate')('Setup.Office.EmailNotification.Hello') + " " + $scope.addedUser.fullName + "<br />" + $filter('translate')('Setup.Office.EmailNotification.Created') + "<br />" + $filter('translate')('Setup.Office.EmailNotification.Email') + $scope.addedUser.email + "<br />" + $filter('translate')('Setup.Office.EmailNotification.Password') + $scope.userPassword;
                 var requestMail = {};
-                requestMail.Subject = $filter('translate')('Setup.Office.EmailNotification.Subject');
-                requestMail.Template_With_Body = emailBody;
-                requestMail.To_Addresses = [$scope.addedUser.email];
-                requestMail.Template_Name='add_user'
+                requestMail.full_name = $scope.addedUser.fullName;
+                requestMail.password = $scope.userPassword;
+                requestMail.email = $scope.addedUser.email;
 
                 UserService.sendPasswordToOfficeUser(requestMail)
                     .then(function (response) {
@@ -125,6 +133,9 @@ angular.module('primeapps')
                     $rootScope.workgroup.users = users;
 
                     $scope.profiles = ProfileService.getProfiles(responseProfiles, $rootScope.workgroup.tenant_id, true);
+                    if (!$rootScope.user.profile.has_admin_rights)
+                        $scope.profiles = $filter('filter')($scope.profiles, { has_admin_rights: !true }, true);
+
                     $scope.roles = responseRoles;
                     $scope.users = UserService.getUsers(users, $scope.profiles, $scope.roles);
                     $scope.licensesBought = license.total || 0;
