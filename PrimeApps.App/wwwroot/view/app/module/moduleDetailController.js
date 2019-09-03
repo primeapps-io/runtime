@@ -582,15 +582,19 @@ angular.module('primeapps')
 
             loadRecord();
 
+            $scope.refreshSubModules[$scope.type] = {};
             $scope.refresh = function () {
                 $scope.refreshing = true;
                 $scope.pageBlockUI.start();
                 loadRecord();
+                angular.forEach($scope.module.relations, function (item) {
+                    $scope.refreshSubModules[$scope.type][item.related_module] = $scope.getCurrentTime();
+                });
             };
 
             $scope.changeTab = function (relatedModule) {
                 if (relatedModule.detail_view_type != 'flat') {
-                    $scope.tab = angular.copy(relatedModule.id.toString()); 
+                    $scope.tab = angular.copy(relatedModule.id.toString());
                     $scope.activeType = 'flat'
                 }
                 else {
