@@ -425,7 +425,7 @@ namespace PrimeApps.App.Controllers
                     var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
                     if (req != null)
                     {
-                        notification.AddRecipient((string)req["MailSenderEmail"]);
+                        notification.AddRecipient(requestMail["email"].ToString());
                         notification.AddToQueue((string)req["MailSenderEmail"], (string)req["MailSenderName"]);
                     }
                 }
