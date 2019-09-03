@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -21,12 +22,10 @@ namespace PrimeApps.Studio.Services
         private IBackgroundTaskQueue _queue;
         private IHistoryHelper _historyHelper;
         private IHttpContextAccessor _context;
-
         private CurrentUser _currentUser { get; set; }
         private DbCommand _command;
         private bool _hastExecuting = false;
         private Guid? _lastCommandId = null;
-
         private CurrentUser CurrentUser => _currentUser ?? (_currentUser = UserHelper.GetCurrentUser(_context));
 
         public CommandListener(IBackgroundTaskQueue queue, IHistoryHelper historyHelper, IHttpContextAccessor context, IConfiguration configuration)
@@ -126,21 +125,24 @@ namespace PrimeApps.Studio.Services
                     }
                 }
 
-                if (query.Contains(parameter.ParameterName + ","))
-                {
-                    // in query parameters
-                    query = query.Replace(parameter.ParameterName + ",", value + ",");
-                }
-                else if (query.Contains(parameter.ParameterName + ";"))
-                {
-                    // in update or delete statement parameter
-                    query = query.Replace(parameter.ParameterName + ";", value + ";");
-                }
-                else if (query.Contains(parameter.ParameterName + ")"))
-                {
-                    // End of query parameters
-                    query = query.Replace(parameter.ParameterName + ")", value + ")");
-                }
+                string parameterId = parameter.ParameterName.Replace("@", "");
+                query = Regex.Replace(query, "@(?:[\\w#_$]" + parameterId + "|(?:(\\[)|\")." + parameterId + "?(?(1)]|\"))", value);
+
+                // if (query.Contains(parameter.ParameterName + ","))
+                // {
+                //     // in query parameters
+                //     query = query.Replace(parameter.ParameterName + ",", value + ",");
+                // }
+                // else if (query.Contains(parameter.ParameterName + ";"))
+                // {
+                //     // in update or delete statement parameter
+                //     query = query.Replace(parameter.ParameterName + ";", value + ";");
+                // }
+                // else if (query.Contains(parameter.ParameterName + ")"))
+                // {
+                //     // End of query parameters
+                //     query = query.Replace(parameter.ParameterName + ")", value + ")");
+                // }
             }
 
             return query;
