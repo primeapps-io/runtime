@@ -26,7 +26,7 @@ angular.module('primeapps')
 			$scope.newSender = {};
 			$scope.addingNewSender = false;
 
-			if ($scope.emailModel === null || !$scope.emailModel.hasOwnProperty("provider")) {
+			if ($scope.emailModel == null || !$scope.emailModel.hasOwnProperty("provider")) {
 				$scope.emailModel = {
 					provider: "",
 					user_name: "",

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
@@ -28,17 +29,19 @@ namespace PrimeApps.App.Controllers
 		private IPlatformUserRepository _platformUserRepository;
 		private IDocumentHelper _documentHelper;
 		private IConfiguration _configuration;
+        private IServiceScopeFactory _serviceScopeFactory;
 
-		public AccountController(IApplicationRepository applicationRepository, IConfiguration configuration,
+        public AccountController(IApplicationRepository applicationRepository, IConfiguration configuration,
 			IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository,
-			IBackgroundTaskQueue queue, IDocumentHelper documentHelper)
+			IBackgroundTaskQueue queue, IDocumentHelper documentHelper, IServiceScopeFactory serviceScopeFactory)
 		{
 			_platformUserRepository = platformUserRepository;
 			_platformRepository = platformRepository;
 			_documentHelper = documentHelper;
 			_configuration = configuration;
 			_applicationRepository = applicationRepository;
-		}
+            _serviceScopeFactory = serviceScopeFactory;
+        }
 
 
 		[HttpPost]
@@ -80,7 +83,7 @@ namespace PrimeApps.App.Controllers
 							WebUtility.UrlEncode(request["code"].ToString()),
 							HttpUtility.UrlEncode(request["return_url"].ToString())));
 
-					Email notification = new Email(template.Subject, content, _configuration);
+					Email notification = new Email(template.Subject, content, _configuration,_serviceScopeFactory);
 
 					var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
 
@@ -123,7 +126,7 @@ namespace PrimeApps.App.Controllers
 						new Guid(request["guid_id"].ToString()),
 						HttpUtility.UrlEncode(request["return_url"].ToString())));
 				content = content.Replace("{:FullName}", user.FirstName + " " + user.LastName);
-				Email notification = new Email(template.Subject, content, _configuration);
+				Email notification = new Email(template.Subject, content, _configuration, _serviceScopeFactory);
 
 				var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
 				if (req != null)

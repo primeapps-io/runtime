@@ -382,7 +382,7 @@ namespace PrimeApps.App.Controllers
                                     template.Content = template.Content.Replace("{:Email}", addUserBindingModel.Email);
                                     template.Content = template.Content.Replace("{:Url}", Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/account/confirmemail?email=" + addUserBindingModel.Email + "&code=" + WebUtility.UrlDecode(jsonResult["token"].ToString()));
 
-                                    Email notification = new Email(template.Subject, template.Content, _configuration);
+                                    Email notification = new Email(template.Subject, template.Content, _configuration, _serviceScopeFactory);
                                     var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
                                     if (req != null)
                                     {
@@ -421,11 +421,11 @@ namespace PrimeApps.App.Controllers
                     template.Content = template.Content.Replace("{:Email}", requestMail["email"].ToString());
                     template.Content = template.Content.Replace("{:Password}", requestMail["password"].ToString());
 
-                    Email notification = new Email(template.Subject, template.Content, _configuration);
+                    Email notification = new Email(template.Subject, template.Content, _configuration, _serviceScopeFactory);
                     var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
                     if (req != null)
                     {
-                        notification.AddRecipient((string)req["MailSenderEmail"]);
+                        notification.AddRecipient(requestMail["email"].ToString());
                         notification.AddToQueue((string)req["MailSenderEmail"], (string)req["MailSenderName"]);
                     }
                 }

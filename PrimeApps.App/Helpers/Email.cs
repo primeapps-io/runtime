@@ -199,9 +199,10 @@ namespace PrimeApps.App.Helpers
         /// <param name="resourceType">Type of the resource.</param>
         /// <param name="culture">The culture (tr-TR / en-US).</param>
         /// <param name="dataFields">The data fields of email</param>
-        public Email(string subject, string templateData, IConfiguration configuration)
+        public Email(string subject, string templateData, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
         {
             _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
             this.Template = templateData;
             this.Subject = subject;
         }
