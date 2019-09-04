@@ -91,7 +91,10 @@ namespace PrimeApps.App.Jobs.Email
 					IsBodyHtml = true
 				};
 
-				foreach (var to in mail.EmailTo)
+                myMessage.SubjectEncoding = System.Text.Encoding.UTF8;
+                myMessage.BodyEncoding = System.Text.Encoding.UTF8;
+
+                foreach (var to in mail.EmailTo)
 				{
 					if (string.IsNullOrWhiteSpace(to) || !emailAddress.IsValid(to))
 						continue;
@@ -182,7 +185,10 @@ namespace PrimeApps.App.Jobs.Email
 					IsBodyHtml = true
 				};
 
-				foreach (var to in email.EmailTo)
+                myMessage.SubjectEncoding = System.Text.Encoding.UTF8;
+                myMessage.BodyEncoding = System.Text.Encoding.UTF8;
+
+                foreach (var to in email.EmailTo)
 				{
 					if (string.IsNullOrWhiteSpace(to) || !emailAddress.IsValid(to))
 						continue;
