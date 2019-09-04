@@ -36,6 +36,7 @@ namespace PrimeApps.Auth.Controllers
         private IPlatformRepository _platformRepository;
         private IApplicationRepository _applicationRepository;
         private IUserRepository _userRepository;
+        private ISettingRepository _settingRepository;
         private IPlatformUserRepository _platformUserRepository;
         private IProfileRepository _profileRepository;
         private IRoleRepository _roleRepository;
@@ -52,6 +53,7 @@ namespace PrimeApps.Auth.Controllers
             IPlatformUserRepository platformUserRepository,
             IApplicationRepository applicationRepository,
             IUserRepository userRepository,
+            ISettingRepository settingRepository,
             IProfileRepository profileRepository,
             IRoleRepository roleRepository,
             IPlatformWarehouseRepository platformWarehouseRepository,
@@ -63,6 +65,7 @@ namespace PrimeApps.Auth.Controllers
             _signInManager = signInManager;
             _platformRepository = platformRepository;
             _userRepository = userRepository;
+            _settingRepository = settingRepository;
             _profileRepository = profileRepository;
             _platformUserRepository = platformUserRepository;
             _roleRepository = roleRepository;
@@ -249,7 +252,25 @@ namespace PrimeApps.Auth.Controllers
             var currentTenantUser = _userRepository.GetByIdSync(currentPlatformUser.Id);
 
             if (!currentTenantUser.Profile.HasAdminRights)
-                return Unauthorized();
+            {
+                //checks custom profile settings
+                _settingRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id };
+                var customProfileSetting = await _settingRepository.GetByKeyAsync("custom_profile_permissions");
+                if (customProfileSetting != null)
+                {
+                    JToken profileSetting = JObject.Parse(customProfileSetting.Value)["profilePermissions"].Where(x => (int)x["profileId"] == currentTenantUser.Profile.Id).FirstOrDefault();
+                    if (profileSetting != null)
+                    {
+                        var hasUserCreatePermission = profileSetting["permissions"].Any(x => x.Value<string>() == "users");
+                        if(!hasUserCreatePermission)
+                            return Unauthorized();
+                    }
+                    else
+                        return Unauthorized();
+                }
+                else
+                    return Unauthorized();
+            }
 
             var checkEmail = await _platformUserRepository.IsEmailAvailable(addUserBindingModel.Email, addUserBindingModel.AppId);
 
