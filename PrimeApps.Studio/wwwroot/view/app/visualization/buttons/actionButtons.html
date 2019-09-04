@@ -3,7 +3,8 @@
     <div>
         <ul class="list-unstyled list-inline">
             <li>
-                <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>
+                <button class="btn add-button" ng-click="showFormModal()">
+                    <i class="fas fa-plus"></i>
                     {{'Setup.Modules.NewActionButton' | translate}}
                 </button>
             </li>
@@ -14,49 +15,54 @@
 <div class="tab-content table-responsive">
     <table class="table" ng-show="loading">
         <thead>
-        <tr>
-            <th>{{'Setup.Modules.Name' | translate}}</th>
-            <th>{{'Setup.Modules.ActionButtonLabel' | translate}}</th>
-            <th>{{'Setup.Modules.ActionType' | translate}}</th>
-            <th>URL</th>
-            <th>{{'Setup.Modules.DisplayPage' | translate}}</th>
-            <th width="70"></th>
-        </tr>
+            <tr>
+                <th>{{'Setup.Modules.Name' | translate}}</th>
+                <th>{{'Setup.Modules.ActionButtonLabel' | translate}}</th>
+                <th>{{'Setup.Modules.ActionType' | translate}}</th>
+                <th>URL</th>
+                <th>{{'Setup.Modules.DisplayPage' | translate}}</th>
+                <th>Environment</th>
+                <th width="70"></th>
+            </tr>
         </thead>
         <tbody>
-        <tr>
-        <tr ng-repeat="item in placeholderArray">
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-        </tr>
+            <tr>
+            <tr ng-repeat="item in placeholderArray">
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
         </tbody>
     </table>
     <table class="table" ng-show="!loading">
         <thead>
-        <tr>
-            <th>{{'Setup.Modules.Name' | translate}}</th>
-            <th>{{'Setup.Modules.ActionButtonLabel' | translate}}</th>
-            <th>{{'Setup.Modules.ActionType' | translate}}</th>
-            <th>URL</th>
-            <th>{{'Setup.Modules.DisplayPage' | translate}}</th>
-            <th></th>
-        </tr>
+            <tr>
+                <th>{{'Setup.Modules.Name' | translate}}</th>
+                <th>{{'Setup.Modules.ActionButtonLabel' | translate}}</th>
+                <th>{{'Setup.Modules.ActionType' | translate}}</th>
+                <th>URL</th>
+                <th>{{'Setup.Modules.DisplayPage' | translate}}</th>
+                <th>Environment</th>
+                <th></th>
+            </tr>
         </thead>
         <tbody>
             <tr ng-repeat="actionButton in actionButtons | filter:{hidden:'!true'} | orderBy:'created_at'"
@@ -71,6 +77,7 @@
                 <td ng-if="actionButton.trigger == 'All'">{{'Setup.Modules.All' | translate}}</td>
                 <td ng-if="actionButton.trigger == 'List'">{{'Setup.Modules.List' | translate}}</td>
                 <td ng-if="actionButton.trigger == 'Relation'">{{'Setup.Modules.Relation' | translate}}</td>
+                <td class="text-capitalize">{{actionButton.environment_list.toString()}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
                         <button ng-click="$event.stopPropagation(); delete(actionButton, $event);" type="button"

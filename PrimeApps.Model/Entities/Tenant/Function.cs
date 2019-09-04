@@ -34,6 +34,9 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("content_type"), Required]
         public FunctionContentType ContentType { get; set; }
 
+        [Column("environment"), MaxLength(10)]
+        public string Environment { get; set; }
+
         public virtual ICollection<DeploymentFunction> Deployments { get; set; }
     }
 }

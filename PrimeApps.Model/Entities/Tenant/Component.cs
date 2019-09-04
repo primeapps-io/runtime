@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using PrimeApps.Model.Enums;
 using System.Collections.Generic;
+using System;
+using System.Linq;
 
 namespace PrimeApps.Model.Entities.Tenant
 {
@@ -33,9 +35,38 @@ namespace PrimeApps.Model.Entities.Tenant
         [JsonProperty("label"), Column("label"), Required, MaxLength(100)]
         public string Label { get; set; }
 
+        [JsonProperty("environment"), Column("environment"),  MaxLength(10)]
+        public string Environment { get; set; }
+
         [JsonIgnore]
         public virtual Module Module { get; set; }
 
         public virtual ICollection<DeploymentComponent> Deployments { get; set; }
+
+        [NotMapped]
+        public ICollection<EnvironmentType> EnvironmentList
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Environment))
+                    return null;
+
+                var list = Environment.Split(",");
+                var data = new List<EnvironmentType>();
+
+                foreach (var item in list)
+                {
+                    var value = (EnvironmentType)Enum.Parse(typeof(EnvironmentType), item);
+                    data.Add(value);
+                }
+
+                return data;
+            }
+
+            set
+            {
+                Environment = string.Join(",", value.Select(x => (int)x));
+            }
+        }
     }
 }

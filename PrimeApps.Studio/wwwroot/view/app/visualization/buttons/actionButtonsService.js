@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('ActionButtonsService', ['$http', 'config',
-        function ($http, config) {
+    .factory('ActionButtonsService', ['$http', 'config', 'environments',
+        function ($http, config, environments) {
             return {
                 getActionButtons: function (moduleId) {
                     return $http.get(config.apiUrl + 'action_button/get/' + moduleId);
@@ -24,6 +24,9 @@ angular.module('primeapps')
                 },
                 find: function (id, data) {
                     return $http.post(config.apiUrl + 'action_button/find/' + id, data);
+                },
+                getEnvironments: function () {
+                    return environments.data;
                 },
             }
         }

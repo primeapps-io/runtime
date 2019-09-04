@@ -1,4 +1,5 @@
-﻿using PrimeApps.Model.Enums;
+﻿using Newtonsoft.Json;
+using PrimeApps.Model.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -56,6 +57,9 @@ namespace PrimeApps.Model.Entities.Tenant
                 _profileList = value?.Trim().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
             }
         }
+
+        [Column("environment"), MaxLength(10)]
+        public string Environment { get; set; }
 
         public virtual Module Module { get; set; }
 

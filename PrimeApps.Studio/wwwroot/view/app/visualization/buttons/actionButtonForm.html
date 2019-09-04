@@ -221,7 +221,17 @@
                            name="css_class"
                            class="form-control ng-animate-disabled col-sm-8"
                            maxlength="100"
-                           ng-model="currentActionButton.css_class"> 
+                           ng-model="currentActionButton.css_class">
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-12"> Environment </label>
+                    <div ng-repeat="env in environments">
+                        <label class="newinput checkbox-inline">
+                            <input type="checkbox" name="env{{$index}}" ng-model="env.selected" ng-change="environmentChange(env,$index)" ng-disabled="env.disabled" value="{{env.value}}" title="{{env.name}}" />{{env.name}}
+                            <span></span>
+                        </label>
+                        <br />
+                    </div>
                 </div>
 
                 <div>

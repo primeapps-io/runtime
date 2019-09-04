@@ -14,6 +14,7 @@ angular.module('primeapps')
 
             $scope.app = $rootScope.currentApp;
             $scope.modules = $rootScope.appModules;
+            $scope.environments = ComponentsService.getEnvironments();
 
             if (!$scope.id) {
                 $state.go('studio.app.components');
@@ -22,6 +23,30 @@ angular.module('primeapps')
             /*if (!$scope.orgId || !$scope.appId) {
              $state.go('studio.apps', { organizationId: $scope.orgId });
              }*/
+
+            $scope.environmentChange = function (env, index, otherValue = false) {
+                if (!env || index === 0)
+                    return;
+
+                if (index === 1) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[1].selected = otherValue;
+                    }
+                }
+                else if (index === 2) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+                    $scope.environments[1].disabled = env.selected || otherValue;
+                    $scope.environments[1].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[2].selected = otherValue;
+                    }
+                }
+            };
 
             $scope.loading = true;
             $scope.generator = function (limit) {
@@ -84,7 +109,7 @@ angular.module('primeapps')
             };
 
             //var currentOrganization = $localStorage.get("currentApp");
-            $scope.organization = $filter('filter')($rootScope.organizations, {id: $scope.orgId})[0];
+            $scope.organization = $filter('filter')($rootScope.organizations, { id: $scope.orgId })[0];
             $scope.giteaUrl = giteaUrl;
 
             $scope.deployments = [];
@@ -95,7 +120,7 @@ angular.module('primeapps')
                     .then(function (response) {
                         $scope.files = [];
                         angular.forEach(response.data, function (file) {
-                            var path = {'path': file.path, 'value': file.path.replace('components/' + $scope.component.name + '/', '')};
+                            var path = { 'path': file.path, 'value': file.path.replace('components/' + $scope.component.name + '/', '') };
                             $scope.files.push(path);
                             $scope.filesLoading = false;
                         });
@@ -116,7 +141,7 @@ angular.module('primeapps')
                     $scope.content = {};
                     $scope.componentCopy = angular.copy(response.data);
                     $scope.component = response.data;
-                    $scope.content.url = $filter('filter')($scope.modules, {id: $scope.component.module_id})[0]['name'];
+                    $scope.content.url = $filter('filter')($scope.modules, { id: $scope.component.module_id })[0]['name'];
 
                     if ($scope.component.content) {
                         $scope.component.content = JSON.parse($scope.component.content);
@@ -135,6 +160,15 @@ angular.module('primeapps')
                         }
                     }
 
+                    if ($scope.component.environment.indexOf(',') > -1)
+                        $scope.component.environments = $scope.component.environment.split(',');
+                    else
+                        $scope.component.environments = $scope.component.environment;
+
+                    angular.forEach($scope.component.environments, function (envValue) {
+                        $scope.environmentChange($scope.environments[envValue - 1], envValue - 1, true);
+                    });
+
                     $scope.changePage(1);
                     $scope.loading = false;
                 });
@@ -146,11 +180,11 @@ angular.module('primeapps')
             };
 
             $scope.save = function (componentFormValidation) {
-                if (!componentFormValidation.$valid){
+                if (!componentFormValidation.$valid) {
                     toastr.error($filter('translate')('Module.RequiredError'));
                     return;
                 }
-                    
+
 
                 $scope.saving = true;
 
@@ -171,6 +205,16 @@ angular.module('primeapps')
                 $scope.copyComponent.content.url = $scope.content.url + (($scope.content.url_parameters) ? '?' + $scope.content.url_parameters : '');
 
                 $scope.copyComponent.content = JSON.stringify($scope.copyComponent.content);
+
+                $scope.copyComponent.environments = [];
+                angular.forEach($scope.environments, function (env) {
+                    if (env.selected)
+                        $scope.component.environments.push(env.value);
+                });
+
+                delete $scope.copyComponent.environment;
+                delete $scope.copyComponent.environment_list;
+
 
                 ComponentsService.update($scope.id, $scope.copyComponent)
                     .then(function (response) {

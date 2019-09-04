@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PrimeApps.Model.Context;
@@ -9,9 +10,10 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.TenantDB
 {
     [DbContext(typeof(TenantDBContext))]
-    partial class TenantDBContextModelSnapshot : ModelSnapshot
+    [Migration("20190904093149_Task3246")]
+    partial class Task3246
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

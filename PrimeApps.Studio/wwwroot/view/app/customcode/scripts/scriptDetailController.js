@@ -30,6 +30,7 @@ angular.module('primeapps')
             $scope.app = $rootScope.currentApp;
             $scope.organization = $filter('filter')($rootScope.organizations, {id: $scope.orgId})[0];
             $scope.giteaUrl = giteaUrl;
+            $scope.environments = ScriptsService.getEnvironments();
 
             if (!$scope.name) {
                 $state.go('studio.app.scripts');
@@ -50,10 +51,34 @@ angular.module('primeapps')
 
             $scope.generator(10);
 
+            $scope.environmentChange = function (env, index, otherValue = false) {
+                if (!env || index === 0)
+                    return;
+
+                if (index === 1) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[1].selected = otherValue;
+                    }
+                }
+                else if (index === 2) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+                    $scope.environments[1].disabled = env.selected || otherValue;
+                    $scope.environments[1].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[2].selected = otherValue;
+                    }
+                }
+            };
+
             $scope.requestModel = {
                 limit: "10",
                 offset: 0
-            };
+            }; 
 
             $scope.changePage = function (page) {
                 $scope.loadingDeployments = true;
@@ -107,6 +132,7 @@ angular.module('primeapps')
                         toastr.error('Script Not Found !');
                         $state.go('studio.app.scripts');
                     }
+
                     $scope.scriptCopy = angular.copy(response.data);
                     $scope.script = response.data;
 
@@ -117,6 +143,15 @@ angular.module('primeapps')
 
                     if (!$scope.script.place_value)
                         $scope.script.place_value = $scope.script.place;
+
+                    if ($scope.script.environment.indexOf(',') > -1)
+                        $scope.script.environments = $scope.script.environment.split(',');
+                    else
+                        $scope.script.environments = $scope.script.environment;
+
+                    angular.forEach($scope.script.environments, function (envValue) {
+                        $scope.environmentChange($scope.environments[envValue - 1], envValue - 1, true);
+                    });
 
                     $scope.script.place = $scope.componentPlaceEnums[$scope.script.place_value];
                     $scope.changePage(1);
@@ -204,6 +239,15 @@ angular.module('primeapps')
                 }
                 
                 $scope.saving = true;
+
+                $scope.script.environments = [];
+                angular.forEach($scope.environments, function (env) {
+                    if (env.selected)
+                        $scope.script.environments.push(env.value);
+                });
+
+                delete $scope.script.environment;
+                delete $scope.script.environment_list;
 
                 ScriptsService.update($scope.script)
                     .then(function (response) {

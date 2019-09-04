@@ -15,6 +15,31 @@ angular.module('primeapps')
             $scope.componentPlaceEnums = componentPlaceEnums;
             $scope.modules = $rootScope.appModules;
             $scope.activePage = 1;
+            $scope.environments = ScriptsService.getEnvironments();
+
+            $scope.environmentChange = function (env, index, otherValue = false) {
+                if (!env || index === 0)
+                    return;
+
+                if (index === 1) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[1].selected = otherValue;
+                    }
+                }
+                else if (index === 2) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+                    $scope.environments[1].disabled = env.selected || otherValue;
+                    $scope.environments[1].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[2].selected = otherValue;
+                    }
+                }
+            };
 
             $scope.requestModel = {
                 limit: "10",
@@ -93,6 +118,15 @@ angular.module('primeapps')
                     toastr.error($filter('translate')('Setup.Modules.RequiredError'));
                     return;
                 }
+
+                $scope.scriptModel.environments = [];
+                angular.forEach($scope.environments, function (env) {
+                    if (env.selected)
+                        $scope.scriptModel.environments.push(env.value);
+                });
+
+                delete $scope.scriptModel.environment;
+                delete $scope.scriptModel.environment_list;
 
                 if ($scope.id) {
                     ScriptsService.update($scope.scriptModel)
@@ -228,7 +262,18 @@ angular.module('primeapps')
 
                     $scope.scriptModel.place = $scope.componentPlaceEnums[$scope.scriptModel.place_value];
                     $scope.id = script.id;
+
+                    if (script.environment.indexOf(',') > -1)
+                        $scope.scriptModel.environments = script.environment.split(',');
+                    else
+                        $scope.scriptModel.environments = script.environment;
+
+                    angular.forEach($scope.scriptModel.environments, function (envValue) {
+                        $scope.environmentChange($scope.environments[envValue - 1], envValue - 1, true);
+                    });
                 }
+                else
+                    $scope.environments[0].selected = true;
 
                 $scope.scriptFormModal = $scope.scriptFormModal || $modal({
                     scope: $scope,
