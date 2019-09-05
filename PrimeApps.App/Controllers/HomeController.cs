@@ -160,6 +160,12 @@ namespace PrimeApps.App.Controllers
 
 			return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Register?ReturnUrl=/connect/authorize/callback?client_id=" + appInfo.Name + "%26redirect_uri=" + Request.Scheme + "%3A%2F%2F" + appInfo.Setting.AppDomain + "%2Fsignin-oidc%26response_type=code%20id_token&scope=openid%20profile%20api1%20email&response_mode=form_post");
 		}
+		
+		[HttpGet, Route("healthz")]
+		public IActionResult Healthz()
+		{
+			return Ok();
+		}
 
 		private async Task SetValues(int userId, Model.Entities.Platform.App app, int? tenantId, int? appId, bool preview = false)
 		{
