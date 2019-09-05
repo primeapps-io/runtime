@@ -137,10 +137,8 @@ namespace PrimeApps.App.Helpers
 
 
                 var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-
-                using (TenantRepository tRepo = new TenantRepository(pdbCtx, configuration))//, cacheHelper))
+                using (TenantRepository tRepo = new TenantRepository(pdbCtx, configuration))
                 {
                     var instance = tRepo.Get(appUser.TenantId);
 
@@ -309,8 +307,6 @@ namespace PrimeApps.App.Helpers
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
                     var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                    var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
-
 
                     using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration))//, cacheHelper))
                     {

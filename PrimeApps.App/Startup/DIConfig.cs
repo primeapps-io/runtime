@@ -18,7 +18,6 @@ namespace PrimeApps.App
     {
         public static void DIRegister(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<ICacheHelper, CacheHelper>();
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
             services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));

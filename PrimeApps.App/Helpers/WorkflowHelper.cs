@@ -70,7 +70,6 @@ namespace PrimeApps.App.Helpers
 
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
                 using (var _workflowRepository = new WorkflowRepository(databaseContext, _configuration))
                 using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))

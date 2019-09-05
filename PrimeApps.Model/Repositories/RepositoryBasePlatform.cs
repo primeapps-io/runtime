@@ -16,8 +16,6 @@ namespace PrimeApps.Model.Repositories
 
         public CurrentUser CurrentUser { get; set; }
 
-        public ICacheHelper CacheHelper { get; set; }
-
         public RepositoryBasePlatform(PlatformDBContext dbContext, IConfiguration configuration)//, ICacheHelper cacheHelper)
         {
             _dbContext = dbContext;

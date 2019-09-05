@@ -71,7 +71,6 @@ namespace PrimeApps.App.Helpers
 			{
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 				var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-				var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
 				PlatformWarehouse warehouse = null;
 

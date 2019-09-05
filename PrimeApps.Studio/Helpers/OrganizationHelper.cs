@@ -35,8 +35,6 @@ namespace PrimeApps.Studio.Helpers
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
-
                 var collaborators = new List<OrganizationUserModel>();
 
                 using (var _platformUserRepository = new PlatformUserRepository(databaseContext, _configuration))//, cacheHelper))

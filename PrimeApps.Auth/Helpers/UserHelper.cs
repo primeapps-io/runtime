@@ -122,7 +122,6 @@ namespace PrimeApps.Auth.Helpers
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
                 using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 				{
@@ -205,7 +204,6 @@ namespace PrimeApps.Auth.Helpers
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
                 using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 				using (var _tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))//, cacheHelper))

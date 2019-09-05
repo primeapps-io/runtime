@@ -29,8 +29,6 @@ namespace PrimeApps.App.Jobs
 			{
 				var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 				var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-				var distributedCache = scope.ServiceProvider.GetRequiredService<IDistributedCache>();
-				var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
 				var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
 				previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";

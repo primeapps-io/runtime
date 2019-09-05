@@ -74,8 +74,6 @@ namespace PrimeApps.Studio.Helpers
             var giteaUrl = _configuration.GetValue("AppSettings:GiteaUrl", string.Empty);
             using (var scope = _serviceScopeFactory.CreateScope())
             {
-                var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
-
                 var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
                 var platformDbContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
                 using (var appDraftRepository = new AppDraftRepository(databaseContext, _configuration))

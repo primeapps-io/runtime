@@ -17,7 +17,6 @@ namespace PrimeApps.Studio
     {
         public static void DIRegister(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<ICacheHelper, CacheHelper>();
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
             services.AddDbContext<StudioDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("StudioDBConnection")));
