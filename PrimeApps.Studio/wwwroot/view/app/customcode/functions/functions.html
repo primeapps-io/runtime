@@ -3,7 +3,8 @@
     <div>
         <ul class="list-unstyled list-inline">
             <li>
-                <button class="btn add-button" ng-click="createModal()"><i class="fas fa-plus"></i> New Function
+                <button class="btn add-button" ng-click="createModal()">
+                    <i class="fas fa-plus"></i> New Function
                 </button>
             </li>
         </ul>
@@ -13,78 +14,84 @@
 <div class="tab-content table-responsive">
     <table class="table" ng-show="loading">
         <thead>
-        <tr>
-            <th>Identifier</th>
-            <th>Label</th>
-            <th>Runtime</th>
-            <th>Handler</th>
-            <th>Creation Time</th>
-            <th width="50"></th>
-        </tr>
+            <tr>
+                <th>Identifier</th>
+                <th>Label</th>
+                <th>Runtime</th>
+                <th>Handler</th>
+                <th>Creation Time</th>
+                <th>Environment</th>
+                <th width="50"></th>
+            </tr>
         </thead>
         <tbody>
-        <tr>
-        <tr ng-repeat="item in placeholderArray">
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td class="text-center">
-                <div class="animated-background"></div>
-            </td>
-        </tr>
+            <tr>
+            <tr ng-repeat="item in placeholderArray">
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td class="text-center">
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
         </tbody>
     </table>
     <table class="table" ng-if="!loading">
         <thead>
-        <tr>
-            <th>Identifier</th>
-            <th>Label</th>
-            <th>Runtime</th>
-            <th>Handler</th>
-            <th>Creation Time</th>
-            <th width="50"></th>
-        </tr>
+            <tr>
+                <th>Identifier</th>
+                <th>Label</th>
+                <th>Runtime</th>
+                <th>Handler</th>
+                <th>Creation Time</th>
+                <th>Environment</th>
+                <th width="50"></th>
+            </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="function in functions" ui-sref="studio.app.functionDetail({name:function.name})">
-            <td>{{function.name}}</td>
-            <td>{{function.label}}</td>
-            <td>{{function.runtime}}</td>
-            <td>{{function.handler}}</td>
-            <td>{{getTime(function.created_at)}}</td>
-            <td class="text-right">
-                <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation();$parent.$parent.delete(function.name, $event)"
-                            type="button" class="action-buttons-delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                    <div class="spinner-border spinner-border-sm" role="status">
-                        <span class="sr-only">Loading...</span>
+            <tr ng-repeat="function in functions" ui-sref="studio.app.functionDetail({name:function.name})">
+                <td>{{function.name}}</td>
+                <td>{{function.label}}</td>
+                <td>{{function.runtime}}</td>
+                <td>{{function.handler}}</td>
+                <td>{{getTime(function.created_at)}}</td>
+                <td class="text-capitalize">{{function.environment_list.toString()}}</td>
+                <td class="text-right">
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation();$parent.$parent.delete(function.name, $event)"
+                                type="button" class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <div class="spinner-border spinner-border-sm" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
                     </div>
-                </div>
-                <!--<button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                        action="deleteUser(user.user_id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                        confirm-yes="{{'Common.Yes' | translate}}"
-                        confirm-no="{{'Common.No' | translate}}">
-                    {{'Common.Remove' | translate}}
-                </button>-->
-            </td>
-        </tr>
+                    <!--<button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
+                            action="deleteUser(user.user_id)" confirm-message="{{'Common.AreYouSure' | translate}}"
+                            confirm-yes="{{'Common.Yes' | translate}}"
+                            confirm-no="{{'Common.No' | translate}}">
+                        {{'Common.Remove' | translate}}
+                    </button>-->
+                </td>
+            </tr>
         </tbody>
     </table>
     <div class="table-pagination" ng-if="!loading">

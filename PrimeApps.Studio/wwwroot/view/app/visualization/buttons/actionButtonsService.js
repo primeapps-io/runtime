@@ -27,7 +27,7 @@ angular.module('primeapps')
                 },
                 getEnvironments: function () {
                     return environments.data;
-                },
+                }
             }
         }
     ]);

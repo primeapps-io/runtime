@@ -42,7 +42,7 @@ namespace PrimeApps.Model.Entities.Tenant
         public virtual Module Module { get; set; }
 
         public virtual ICollection<DeploymentComponent> Deployments { get; set; }
-
+         
         [NotMapped]
         public ICollection<EnvironmentType> EnvironmentList
         {

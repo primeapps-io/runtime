@@ -10,7 +10,7 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = $scope.currentApp.label;
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'functions';
-
+            $scope.environments = FunctionsService.getEnvironments();
             $scope.functionNameValid = null;
             $scope.isFunctionNameBlur = false;
             $scope.page = 1;
@@ -108,7 +108,7 @@ angular.module('primeapps')
                     $scope.function.dependencies = "";
                 }
                 else {
-                    var runtime = $filter('filter')($scope.runtimes, {value: $scope.function.runtime}, true)[0];
+                    var runtime = $filter('filter')($scope.runtimes, { value: $scope.function.runtime }, true)[0];
                     $scope.function.handler = "module.handler";
                     $scope.function.dependencies = runtime.editorDependencySample;
                 }
@@ -119,6 +119,30 @@ angular.module('primeapps')
             /*if (!$scope.orgId || !$scope.appId) {
              $state.go('studio.apps', { organizationId: $scope.orgId });
              }*/
+
+            $scope.environmentChange = function (env, index, otherValue = false) {
+                if (!env || index === 0)
+                    return;
+
+                if (index === 1) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[1].selected = otherValue;
+                    }
+                }
+                else if (index === 2) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+                    $scope.environments[1].disabled = env.selected || otherValue;
+                    $scope.environments[1].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[2].selected = otherValue;
+                    }
+                }
+            };
 
             $scope.function = {};
             $scope.functions = [];
@@ -177,6 +201,9 @@ angular.module('primeapps')
 
             $scope.createModal = function () {
                 $scope.function = {};
+                $scope.environments = FunctionsService.getEnvironments();
+                $scope.environments[0].selected = true;
+
                 $scope.createFormModal = $scope.createFormModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/customcode/functions/functionFormModal.html',
@@ -184,6 +211,7 @@ angular.module('primeapps')
                     backdrop: 'static',
                     show: false
                 });
+
                 $scope.createFormModal.$promise.then(function () {
                     $scope.createFormModal.show();
                 });
@@ -194,19 +222,26 @@ angular.module('primeapps')
             };
 
             $scope.save = function (functionFormValidation) {
-                if (!functionFormValidation.$valid){
+                if (!functionFormValidation.$valid) {
                     toastr.error($filter('translate')('Module.RequiredError'));
                     return;
                 }
-                
+
                 $scope.saving = true;
                 $scope.function.content_type = 'text';
+                $scope.function.environments = [];
+
+                angular.forEach($scope.environments, function (env) {
+                    if (env.selected)
+                        $scope.function.environments.push(env.value);
+                });
+
                 FunctionsService.create($scope.function)
                     .then(function (response) {
                         $scope.saving = false;
                         $scope.createFormModal.hide();
                         toastr.success("Function is created successfully.");
-                        $state.go('studio.app.functionDetail', {name: $scope.function.name});
+                        $state.go('studio.app.functionDetail', { name: $scope.function.name });
                     })
                     .catch(function (response) {
                         $scope.saving = false;

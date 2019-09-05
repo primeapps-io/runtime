@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -62,6 +63,32 @@ namespace PrimeApps.Model.Entities.Tenant
             {
                 if (value != null && value.Length > 0)
                     Operations = string.Join(",", value.Select(x => x.ToString()).ToArray());
+            }
+        }
+
+        [NotMapped]
+        public ICollection<EnvironmentType> EnvironmentList
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Environment))
+                    return null;
+
+                var list = Environment.Split(",");
+                var data = new List<EnvironmentType>();
+
+                foreach (var item in list)
+                {
+                    var value = (EnvironmentType)Enum.Parse(typeof(EnvironmentType), item);
+                    data.Add(value);
+                }
+
+                return data;
+            }
+
+            set
+            {
+                Environment = string.Join(",", value.Select(x => (int)x));
             }
         }
     }
