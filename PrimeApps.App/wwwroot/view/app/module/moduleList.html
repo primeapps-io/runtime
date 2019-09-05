@@ -13,7 +13,7 @@
                     </select>
                 </div>
                 <div class="view-action-buttons pull-right">
-                    <a href="#app/viewForm/{{type}}?id={{view.id}}" ng-if="Isview || view.created_by === user.id || user.profile.has_admin_rights">{{'Common.Edit' | translate}}</a>
+                    <a href="#app/viewForm/{{type}}?id={{view.id}}" ng-if="hasViewPermission || view.created_by === user.id || user.profile.has_admin_rights">{{'Common.Edit' | translate}}</a>
                     <span ng-if="view.created_by == user.id || user.profile.has_admin_rights"> |</span>
                     <a href="#app/viewForm/{{type}}?clone=true&id={{view.id}}" ng-if="view.created_by === user.ID || user.profile.HasAdminRights">{{'Common.Copy' | translate}}</a>
                     <span ng-if="view.created_by == user.ID || user.profile.HasAdminRights"> |</span>
