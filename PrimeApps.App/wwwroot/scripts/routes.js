@@ -133,10 +133,13 @@ angular.module('primeapps')
                                 cdnUrl + 'view/app/location/locationFormModalController.js',
                                 cdnUrl + 'view/app/email/templateService.js',
                             ];
+                            if (window.location.hash.split("/")[3]) {
+                                var moduleName = window.location.hash.split("/")[3];
+                            }
 
-                            if ($state.params.type) {
+                            if (moduleName) {
                                 currentSectionComponentsTemplate = [];
-                                var moduleId = $filter('filter')($rootScope.modules, { name: $state.params.type }, true)[0].id;
+                                var moduleId = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0].id;
 
                                 if (sectionComponents['component' + moduleId]) {
                                     var sectionComponent = sectionComponents['component' + moduleId];
@@ -173,9 +176,13 @@ angular.module('primeapps')
                                 cdnUrl + 'view/app/actionbutton/actionButtonFrameController.js',
                             ];
 
-                            if ($state.params.type) {
+                            if (window.location.hash.split("/")[3]) {
+                                var moduleName = window.location.hash.split("/")[3];
+                            }
+
+                            if (moduleName) {
                                 currentSectionComponentsTemplate = [];
-                                var moduleId = $filter('filter')($rootScope.modules, { name: $state.params.type }, true)[0].id;
+                                var moduleId = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0].id;
 
                                 if (sectionComponents['component' + moduleId]) {
                                     var sectionComponent = sectionComponents['component' + moduleId];
@@ -183,7 +190,7 @@ angular.module('primeapps')
                                     for (var i = 0; i < sectionComponent.length; i++) {
                                         var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
                                         angular.forEach(sectionFiles, function (item) {
-                                            files.push(replaceDynamicValues(item))
+                                            files.push(replaceDynamicValues(item));
                                         });
 
                                         currentSectionComponentsTemplate.push(replaceDynamicValues(angular.fromJson(sectionComponent[i].content).app.templateUrl));
@@ -1378,7 +1385,7 @@ angular.module('primeapps')
                         }
                         return;
                     }
-                     
+
 
                     componentContent.app.templateUrl = replaceDynamicValues(componentContent.app.templateUrl);
 
