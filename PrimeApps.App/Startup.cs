@@ -113,8 +113,8 @@ namespace PrimeApps.App
                 services.AddAWSService<IAmazonS3>();
             }
 
-            if (!string.IsNullOrEmpty(redisConnection))
-                services.AddDistributedRedisCache(option => { option.Configuration = Configuration.GetConnectionString("RedisConnection"); });
+//            if (!string.IsNullOrEmpty(redisConnection))
+//                services.AddDistributedRedisCache(option => { option.Configuration = Configuration.GetConnectionString("RedisConnection"); });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
