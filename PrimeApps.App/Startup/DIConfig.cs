@@ -51,6 +51,7 @@ namespace PrimeApps.App
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
+            services.AddScoped<ICacheHelper, CacheHelper>();
             services.AddScoped<Helpers.IRecordHelper, Helpers.RecordHelper>();
             services.AddScoped<Helpers.IAuditLogHelper, Helpers.AuditLogHelper>();
             services.AddScoped<Helpers.IDocumentHelper, Helpers.DocumentHelper>();
@@ -80,7 +81,7 @@ namespace PrimeApps.App
             services.AddScoped<Jobs.UpdateLeave, Jobs.UpdateLeave>();
             services.AddScoped<Jobs.EmployeeCalculation, Jobs.EmployeeCalculation>();
             services.AddScoped<Jobs.AccountCleanup, Jobs.AccountCleanup>();
-
+            
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
             services.AddTransient<ApprovalStep>();
             services.AddTransient<DataCreateStep>();
