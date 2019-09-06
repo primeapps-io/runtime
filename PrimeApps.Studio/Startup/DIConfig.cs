@@ -53,6 +53,7 @@ namespace PrimeApps.Studio
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
+            services.AddScoped<ICacheHelper, CacheHelper>();
             services.AddScoped<IRecordHelper, Helpers.RecordHelper>();
             services.AddScoped<IAuditLogHelper, AuditLogHelper>();
             services.AddScoped<ICalculationHelper, CalculationHelper>();
@@ -71,9 +72,9 @@ namespace PrimeApps.Studio
             services.AddScoped<IOrganizationHelper, OrganizationHelper>();
             services.AddScoped<IPermissionHelper, PermissionHelper>();
             services.AddScoped<IDeploymentHelper, DeploymentHelper>();
-            services.AddScoped<ActionButtonHelper, ActionButtonHelper>();//What the fuck!
-            services.AddScoped<Email, Email>();//What the fuck!
-            services.AddScoped<Warehouse, Warehouse>();//What the fuck!
+            services.AddScoped<ActionButtonHelper, ActionButtonHelper>();
+            services.AddScoped<Email, Email>();
+            services.AddScoped<Warehouse, Warehouse>();
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
             services.AddScoped<IReportHelper, ReportHelper>();
             services.AddScoped<IPosgresHelper, PosgresHelper>();

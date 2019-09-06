@@ -7,7 +7,7 @@ metadata:
 data:
   TenantDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=test;command timeout=0;keepalive=30;"
   PlatformDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
-  RedisConnection: "cache-test-redis-master.cache:6379,password=pr!m€Appsi0r,defaultDatabase=1"
+  RedisConnection: "cache-test-redis-master.cache:6379,password=pr!m€Appsi0r,defaultDatabase=1,syncTimeout=30000"
   StorageUrl: "https://storage-test.primeapps.io"
   StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
   StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
@@ -184,6 +184,16 @@ spec:
                 configMapKeyRef:
                   name: primeapps-app-config-test
                   key: SentryDsn
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 1                  
 ---
 kind: Service
 apiVersion: v1
