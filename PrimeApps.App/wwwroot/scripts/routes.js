@@ -133,24 +133,30 @@ angular.module('primeapps')
                                 cdnUrl + 'view/app/location/locationFormModalController.js',
                                 cdnUrl + 'view/app/email/templateService.js',
                             ];
+
                             if (window.location.hash.split("/")[3]) {
                                 var moduleName = window.location.hash.split("/")[3];
+                                if (moduleName.search("/?") > -1) {
+                                    moduleName = moduleName.split("?")[0];
+                                }
                             }
 
                             if (moduleName) {
                                 currentSectionComponentsTemplate = [];
-                                var moduleId = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0].id;
+                                if ($rootScope.modules) {
+                                    var moduleId = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0].id;
 
-                                if (sectionComponents['component' + moduleId]) {
-                                    var sectionComponent = sectionComponents['component' + moduleId];
+                                    if (sectionComponents['component' + moduleId]) {
+                                        var sectionComponent = sectionComponents['component' + moduleId];
 
-                                    for (var i = 0; i < sectionComponent.length; i++) {
-                                        var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
-                                        angular.forEach(sectionFiles, function (item) {
-                                            files.push(replaceDynamicValues(item));
-                                        });
+                                        for (var i = 0; i < sectionComponent.length; i++) {
+                                            var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
+                                            angular.forEach(sectionFiles, function (item) {
+                                                files.push(replaceDynamicValues(item));
+                                            });
 
-                                        currentSectionComponentsTemplate.push(replaceDynamicValues(angular.fromJson(sectionComponent[i].content).app.templateUrl));
+                                            currentSectionComponentsTemplate.push(replaceDynamicValues(angular.fromJson(sectionComponent[i].content).app.templateUrl));
+                                        }
                                     }
                                 }
                             }
@@ -176,27 +182,35 @@ angular.module('primeapps')
                                 cdnUrl + 'view/app/actionbutton/actionButtonFrameController.js',
                             ];
 
+
                             if (window.location.hash.split("/")[3]) {
                                 var moduleName = window.location.hash.split("/")[3];
+                                if (moduleName.search("/?") > -1) {
+                                    moduleName = moduleName.split("?")[0];
+                                }
                             }
+
 
                             if (moduleName) {
                                 currentSectionComponentsTemplate = [];
-                                var moduleId = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0].id;
+                                if ($rootScope.modules) {
+                                    var moduleId = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0].id;
 
-                                if (sectionComponents['component' + moduleId]) {
-                                    var sectionComponent = sectionComponents['component' + moduleId];
+                                    if (sectionComponents['component' + moduleId]) {
+                                        var sectionComponent = sectionComponents['component' + moduleId];
 
-                                    for (var i = 0; i < sectionComponent.length; i++) {
-                                        var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
-                                        angular.forEach(sectionFiles, function (item) {
-                                            files.push(replaceDynamicValues(item));
-                                        });
+                                        for (var i = 0; i < sectionComponent.length; i++) {
+                                            var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
+                                            angular.forEach(sectionFiles, function (item) {
+                                                files.push(replaceDynamicValues(item));
+                                            });
 
-                                        currentSectionComponentsTemplate.push(replaceDynamicValues(angular.fromJson(sectionComponent[i].content).app.templateUrl));
+                                            currentSectionComponentsTemplate.push(replaceDynamicValues(angular.fromJson(sectionComponent[i].content).app.templateUrl));
+                                        }
                                     }
                                 }
                             }
+
 
                             if (googleMapsApiKey && googleMapsApiKey !== 'your-google-maps-api-key') {
                                 files.push({
