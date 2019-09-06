@@ -17,40 +17,45 @@ using PrimeApps.Model.Helpers;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/process"), Authorize]
-	public class ProcessController : ApiBaseController
+    public class ProcessController : ApiBaseController
     {
         private IProcessRepository _processRepository;
         private IModuleRepository _moduleRepository;
         private IViewRepository _viewRepository;
         private IPicklistRepository _picklistRepository;
-	    private IProcessHelper _processHelper;
+        private IProcessHelper _processHelper;
+        private IEnvironmentHelper _environmentHelper;
         private Warehouse _warehouse;
 
-        public ProcessController(IProcessRepository processRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IViewRepository viewRepository, IProcessHelper processHelper, Warehouse warehouse)
+        public ProcessController(IProcessRepository processRepository, IModuleRepository moduleRepository,
+            IPicklistRepository picklistRepository, IViewRepository viewRepository, IProcessHelper processHelper,
+            IEnvironmentHelper environmentHelper, Warehouse warehouse)
         {
             _processRepository = processRepository;
             _viewRepository = viewRepository;
             _moduleRepository = moduleRepository;
             _picklistRepository = picklistRepository;
-	        _processHelper = processHelper;
+            _processHelper = processHelper;
+            _environmentHelper = environmentHelper;
             _warehouse = warehouse;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_processRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_viewRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_picklistRepository, PreviewMode, TenantId, AppId);
+        {
+            SetContext(context);
+            SetCurrentUser(_processRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_viewRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_picklistRepository, PreviewMode, TenantId, AppId);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("get/{id:int}"), HttpGet]
+        [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
             var processEntity = await _processRepository.GetAllById(id);
+            processEntity = await _environmentHelper.DataFilter(processEntity);
 
             if (processEntity == null)
                 return NotFound();
@@ -64,6 +69,8 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> GetAll()
         {
             var processEntities = await _processRepository.GetAllBasic();
+
+            processEntities = await _environmentHelper.DataFilter(processEntities.ToList());
 
             return Ok(processEntities);
         }
@@ -105,7 +112,7 @@ namespace PrimeApps.App.Controllers
             }
 
             var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + processEntity.Id, processEntity);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + processEntity.Id, processEntity);
             //return Created(Request.Scheme + "://" + Request.Host + "/api/view/get/" + processEntity.Id, processEntity);
         }
 
@@ -113,6 +120,7 @@ namespace PrimeApps.App.Controllers
         public async Task<dynamic> Update(int id, [FromBody]ProcessBindingModel process)
         {
             var processEntity = await _processRepository.GetById(id);
+            processEntity = await _environmentHelper.DataFilter(processEntity);
 
             if (processEntity == null)
                 return NotFound();

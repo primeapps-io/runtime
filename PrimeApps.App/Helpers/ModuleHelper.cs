@@ -46,12 +46,15 @@ namespace PrimeApps.App.Helpers
     {
         private IConfiguration _configuration;
         private IAuditLogHelper _auditLogHelper;
+        private IEnvironmentHelper _environmentHelper;
         public IBackgroundTaskQueue Queue { get; }
 
 
-        public ModuleHelper(IAuditLogHelper auditLogHelper, IBackgroundTaskQueue queue, IConfiguration configuration)
+        public ModuleHelper(IAuditLogHelper auditLogHelper, IEnvironmentHelper environmentHelper, IBackgroundTaskQueue queue,
+            IConfiguration configuration)
         {
             _auditLogHelper = auditLogHelper;
+            _environmentHelper = environmentHelper;
             _configuration = configuration;
             Queue = queue;
         }
@@ -916,7 +919,8 @@ namespace PrimeApps.App.Helpers
 
         public async Task<JObject> GetGlobalConfig(IComponentRepository componentRepository)
         {
-            var globalConfigEntity = await componentRepository.GetGlobalConfig();
+            var globalConfigEntity = await componentRepository.GetGlobalConfig(); 
+            globalConfigEntity = await _environmentHelper.DataFilter(globalConfigEntity);
 
             if (globalConfigEntity == null || string.IsNullOrWhiteSpace(globalConfigEntity.Content))
                 return null;

@@ -56,8 +56,7 @@ namespace PrimeApps.Studio.Models
                 foreach (var env in list)
                 {
                     Environments.Add((EnvironmentType)Enum.Parse(typeof(EnvironmentType), env));
-                }
-
+                } 
             }
         }
 

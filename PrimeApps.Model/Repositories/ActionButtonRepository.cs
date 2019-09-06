@@ -44,7 +44,8 @@ namespace PrimeApps.Model.Repositories
                     Dependent = actionButtonItem.Dependent,
                     MethodType = actionButtonItem.MethodType,
                     Parameters = actionButtonItem.Parameters,
-                    Headers = actionButtonItem.Headers
+                    Headers = actionButtonItem.Headers,
+                    Environment = actionButtonItem.Environment
                 };
 
                 if (actionButtonItem.Permissions != null && actionButtonItem.Permissions.Count > 0)
