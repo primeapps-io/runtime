@@ -55,7 +55,6 @@ namespace PrimeApps.Auth
             }
 
             services.AddHostedService<QueuedHostedService>();
-            services.AddScoped<ICacheHelper, CacheHelper>();
             services.AddScoped<IGiteaHelper, GiteaHelper>();
             services.AddScoped<IUserHelper, UserHelper>();
             services.AddSingleton<IProfileService, CustomProfileService>();

@@ -20,18 +20,12 @@ angular.module('primeapps')
             $scope.hideDeleteAll = $filter('filter')($rootScope.deleteAllHiddenModules, $scope.type + '|' + $scope.type, true)[0];
             $scope.actionButtonDisabled = false;
             $scope.showExportButton = true;
-            $scope.Isview = false;
+            $scope.hasViewPermission = false;
 
-            if ($rootScope.customProfilePermissions && $rootScope.customProfilePermissions.length > 0) {
-                angular.forEach($rootScope.customProfilePermissions, function (value) {
-                    if (value.profileId === $rootScope.user.profile.id) {
-                        angular.forEach(value.permissions, function (item) {
-                            if (item == "view") {
-                                $scope.Isview = true;
-                            }
-                        });
-                    }                     
-                });
+            if (!$scope.isAdmin) {
+                if (!helper.hasCustomProfilePermission('view')) {
+                    $scope.hasViewPermission = true;
+                }
             }
 
             if (!$scope.module) {

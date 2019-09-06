@@ -76,7 +76,6 @@ namespace PrimeApps.App.Helpers
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
                 using (var _processRequestRepository = new ProcessRequestRepository(databaseContext, _configuration))
                 using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
@@ -594,7 +593,6 @@ namespace PrimeApps.App.Helpers
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
                 using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
                 using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
@@ -951,7 +949,6 @@ namespace PrimeApps.App.Helpers
 
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
                 using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
@@ -1375,7 +1372,6 @@ namespace PrimeApps.App.Helpers
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
                 using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
                 using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
@@ -1547,7 +1543,6 @@ namespace PrimeApps.App.Helpers
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
                 using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
                 using (var _recordRepository = new RecordRepository(databaseContext, _configuration))

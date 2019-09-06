@@ -66,8 +66,6 @@ namespace PrimeApps.Studio.Helpers
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
                     var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                    var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
-
 
                     using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration))//, cacheHelper))
 					{

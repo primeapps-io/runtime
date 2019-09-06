@@ -18,7 +18,6 @@ namespace PrimeApps.App
     {
         public static void DIRegister(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<ICacheHelper, CacheHelper>();
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
             services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
@@ -52,6 +51,7 @@ namespace PrimeApps.App
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
+            services.AddScoped<ICacheHelper, CacheHelper>();
             services.AddScoped<Helpers.IRecordHelper, Helpers.RecordHelper>();
             services.AddScoped<Helpers.IAuditLogHelper, Helpers.AuditLogHelper>();
             services.AddScoped<Helpers.IDocumentHelper, Helpers.DocumentHelper>();
@@ -82,7 +82,7 @@ namespace PrimeApps.App
             services.AddScoped<Jobs.UpdateLeave, Jobs.UpdateLeave>();
             services.AddScoped<Jobs.EmployeeCalculation, Jobs.EmployeeCalculation>();
             services.AddScoped<Jobs.AccountCleanup, Jobs.AccountCleanup>();
-
+            
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
             services.AddTransient<ApprovalStep>();
             services.AddTransient<DataCreateStep>();

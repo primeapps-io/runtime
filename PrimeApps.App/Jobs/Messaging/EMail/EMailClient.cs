@@ -75,7 +75,6 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 				{
 					var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 					var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-					var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
 					databaseContext.TenantId = emailQueueItem.TenantId;
 
