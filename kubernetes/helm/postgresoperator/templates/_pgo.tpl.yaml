@@ -15,7 +15,7 @@ Cluster:
   Replicas:  0
   ArchiveMode:  true
   ArchiveTimeout:  60
-  ServiceType:  LoadBalancer
+  ServiceType:  ClusterIP
   Backrest:  true
   BackrestPort:  2022
   Autofail:  false
@@ -29,11 +29,11 @@ ReplicaStorage: primarystorage
 BackrestStorage: backupstorage
 Storage:
   backupstorage:
-    AccessMode:  ReadWriteMany
+    AccessMode:  ReadWriteOnce
     Size:  "{{.Values.storage.backup.size}}"
     StorageType:  dynamic
     StorageClass:  "{{.Values.storage.backup.class}}"
-    SupplementalGroups:  65534
+    Fsgroup:  26
   primarystorage:
     AccessMode:  ReadWriteOnce
     Size:  "{{.Values.storage.primary.size}}"
