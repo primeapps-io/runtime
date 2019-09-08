@@ -9,7 +9,7 @@ global:
     secretName: ""
 
 image:
-  tag: "1.19.239.1-debian"
+  tag: "1.19.248.1-debian"
   pullPolicy: "IfNotPresent"
 
 auth:
