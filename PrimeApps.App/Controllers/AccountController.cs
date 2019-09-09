@@ -32,12 +32,10 @@ namespace PrimeApps.App.Controllers
         private IDocumentHelper _documentHelper;
         private IConfiguration _configuration;
         private IServiceScopeFactory _serviceScopeFactory;
-        private PlatformDBContext _dBContext;
-
 
         public AccountController(IApplicationRepository applicationRepository, IConfiguration configuration,
             IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository,
-            IBackgroundTaskQueue queue, IDocumentHelper documentHelper, IServiceScopeFactory serviceScopeFactory, PlatformDBContext dBContext)
+            IBackgroundTaskQueue queue, IDocumentHelper documentHelper, IServiceScopeFactory serviceScopeFactory)
         {
             _platformUserRepository = platformUserRepository;
             _platformRepository = platformRepository;
@@ -45,7 +43,6 @@ namespace PrimeApps.App.Controllers
             _configuration = configuration;
             _applicationRepository = applicationRepository;
             _serviceScopeFactory = serviceScopeFactory;
-            _dBContext = dBContext;
         }
 
 
@@ -76,7 +73,7 @@ namespace PrimeApps.App.Controllers
                 var templates = await _platformRepository.GetAppTemplate(int.Parse(request["app_id"].ToString()),
                     AppTemplateType.Email, request["culture"].ToString().Substring(0, 2), "email_confirm");
 
-                var appSettings = _dBContext.AppSettings.Where(x => x.AppId == appId).SingleOrDefault();
+                var appSettings = _platformRepository.GetAppSettings(appId);
 
                 foreach (var template in templates)
                 {
@@ -128,7 +125,7 @@ namespace PrimeApps.App.Controllers
 
             var appId = int.Parse(request["app_id"].ToString());
 
-            var appSettings = _dBContext.AppSettings.Where(x => x.AppId == appId).SingleOrDefault();
+            var appSettings = _platformRepository.GetAppSettings(appId);
 
             foreach (var template in templates)
             {
