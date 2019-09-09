@@ -1588,7 +1588,7 @@ angular.module('primeapps')
                     url: '/appEmailTemplates',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/manage/appemailtemplates/appEmailTemplates.html',
+                            templateUrl: cdnUrl + 'view/app/templates/appemailtemplates/appEmailTemplates.html',
                             controller: 'AppEmailTemplatesController'
                         }
                     },
@@ -1603,8 +1603,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/manage/appemailtemplates/appEmailTemplatesController.js',
-                                cdnUrl + 'view/app/manage/appemailtemplates/appEmailTemplatesService.js'
+                                cdnUrl + 'view/app/templates/appemailtemplates/appEmailTemplatesController.js',
+                                cdnUrl + 'view/app/templates/appemailtemplates/appEmailTemplatesService.js'
                             ]);
                         }]
                     }
