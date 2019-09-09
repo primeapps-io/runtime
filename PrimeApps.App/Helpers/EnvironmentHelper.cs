@@ -72,13 +72,8 @@ namespace PrimeApps.App.Helpers
         }
 
         public async Task<string> GetEnvironmentValue()
-        {
-
+        { 
             var environment = !string.IsNullOrEmpty(_configuration.GetValue("AppSettings:Environment", string.Empty)) ? _configuration.GetValue("AppSettings:Environment", string.Empty) : "development";
-            //var environmentType = Enum.Parse<EnvironmentType>( environment.ToString(),false );
-            //var e = Enum.TryParse("development", out EnvironmentType myStatus);
-            //var a = (EnvironmentType)Enum.Parse(typeof(EnvironmentType), environment);
-
             string value = null;
 
             switch (environment)
