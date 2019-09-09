@@ -135,7 +135,7 @@ namespace PrimeApps.Model.Repositories
 
             return template;
         }
-  
+
         public async Task<int> UpdateAppTemplate(AppTemplate template)
         {
             return await DbContext.SaveChangesAsync();
@@ -159,6 +159,13 @@ namespace PrimeApps.Model.Repositories
             var template = DbContext.AppTemplates.FirstOrDefault(x => x.AppId == appId && x.Language == language && x.SystemCode == systemCode && x.Active);
 
             return template;
+        }
+
+        public AppSetting GetAppSettings(int appId)
+        {
+            var appSettings = DbContext.AppSettings.Where(x => x.AppId == appId).SingleOrDefault();
+
+            return appSettings;
         }
 
     }
