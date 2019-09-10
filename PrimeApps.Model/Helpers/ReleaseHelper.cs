@@ -35,7 +35,7 @@ namespace PrimeApps.Model.Helpers
             var postgresPath = configuration.GetValue("AppSettings:PostgresPath", string.Empty);
             var root = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
-            var path = $"{root}releases\\{dbName}\\{version}";
+            var path = $"{root}releases/{dbName}/{version}";
 
             if (Directory.Exists(path))
                 Directory.Delete(path);
@@ -43,7 +43,7 @@ namespace PrimeApps.Model.Helpers
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            var logPath = $"{path}\\log.txt";
+            var logPath = $"{path}\\log.txt";//Path.Combine(path,"log.txt") 
             var scriptPath = $"{path}\\scripts.txt";
             var storagePath = $"{path}\\storage.txt";
             var storageFilesPath = $"{path}\\files";
