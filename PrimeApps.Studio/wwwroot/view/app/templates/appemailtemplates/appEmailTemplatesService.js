@@ -4,7 +4,7 @@ angular.module('primeapps')
 		function ($http, config) {
 			return {
 				create: function (appTemplate, currentAppName) {
-					return $http.post(config.apiUrl + 'template/create_app_email_template?currentAppName=' + currentAppName, appTemplate);
+					return $http.post(config.apiUrl + 'template/create_app_email_template', appTemplate);
 				},
 				update: function (appTemplate) {
 					return $http.put(config.apiUrl + 'template/update_app_email_template/' + appTemplate.id, appTemplate);

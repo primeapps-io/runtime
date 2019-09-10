@@ -26,5 +26,8 @@ namespace PrimeApps.Studio.Models
 		[Required]
 		public string Settings { get; set; }
 
+		[Required, StringLength(200)]
+		public string AppName { get; set; }
+
 	}
 }

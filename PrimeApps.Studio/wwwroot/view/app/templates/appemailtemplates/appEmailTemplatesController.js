@@ -298,6 +298,8 @@ angular.module('primeapps')
 
 				$scope.saving = true;
 				var template = {};
+				template.app_id = $scope.appId;
+				template.app_name = $scope.currentApp.name;
 				template.name = $scope.template.template_name;
 				template.subject = $scope.template.template_subject;
 				template.content = $scope.template.tinymce_content;
