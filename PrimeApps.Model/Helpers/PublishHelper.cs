@@ -30,7 +30,7 @@ namespace PrimeApps.Model.Helpers
         {
             var PREConnectionString = configuration.GetConnectionString("PlatformDBConnection");
             var rootPath = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
-            var root = $"{rootPath}\\tenant-update-logs";
+            var root = Path.Combine(rootPath, "tenant-update-logs");
 
             if (!Directory.Exists(root))
                 Directory.CreateDirectory(root);
@@ -40,20 +40,20 @@ namespace PrimeApps.Model.Helpers
             if (available.HasRows)
                 return true;
 
-            var logPath = $"{root}\\update-{dbName}-version-{version}-log.txt";
+            var logPath = Path.Combine(root, $"update-{dbName}-version-{version}-log.txt");
 
             File.AppendAllText(logPath, "\u001b[92m" + "********** Update Tenant **********" + "\u001b[39m" + Environment.NewLine);
             File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + $" : Applying version is {version}..." + Environment.NewLine);
 
             try
             {
-                var path = $"{rootPath}releases\\app{appId}\\{version}";
+                var path = Path.Combine(rootPath, "releases", $"app{appId}", version);
 
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
 
 
-                if (!File.Exists(path + $"\\{version}.zip"))
+                if (!File.Exists(Path.Combine(path, $"{version}.zip")))
                 {
                     using (var httpClient = new HttpClient())
                     {
@@ -80,21 +80,19 @@ namespace PrimeApps.Model.Helpers
                             File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Error - Unhandle exception. While downloading folder." + "\u001b[39m" + Environment.NewLine);
 
                         var fileByte = await response.Content.ReadAsByteArrayAsync();
-                        File.WriteAllBytes(path + $"\\{version}.zip", fileByte);
+                        File.WriteAllBytes(Path.Combine(path, $"{version}.zip"), fileByte);
                         await Task.Delay(1000);
-                        ZipFile.ExtractToDirectory(path + $"\\{version}.zip", path);
+                        ZipFile.ExtractToDirectory(Path.Combine(path, $"{version}.zip"), path);
                     }
                 }
 
-                var scriptPath = $"{path}\\scripts.txt";
-                var storagePath = $"{path}\\storage.txt";
+                var scriptPath = Path.Combine(path, "scripts.txt");
+                var storagePath = Path.Combine(path, "storage.txt");
 
                 var scriptsText = File.ReadAllText(scriptPath, Encoding.UTF8);
                 var sqls = scriptsText.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
 
-
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." + Environment.NewLine);
-
 
                 var result = PosgresHelper.RunAll(PREConnectionString, dbName, sqls);
 
@@ -120,7 +118,7 @@ namespace PrimeApps.Model.Helpers
                             {
                                 if (!await storage.ObjectExists(bucketName, file["unique_name"].ToString()))
                                 {
-                                    using (var fileStream = new FileStream($"{path}\\files\\{file["file_name"]}", FileMode.OpenOrCreate))
+                                    using (var fileStream = new FileStream(Path.Combine(path, "files", file["file_name"].ToString()), FileMode.OpenOrCreate))
                                     {
                                         try
                                         {
@@ -160,7 +158,7 @@ namespace PrimeApps.Model.Helpers
             var dbName = databaseName;
             var templateCopied = false;
 
-            var root = $"{rootPath}\\release-logs";
+            var root = Path.Combine(rootPath, "release-logs");
 
             if (!Directory.Exists(root))
                 Directory.CreateDirectory(root);
@@ -180,7 +178,7 @@ namespace PrimeApps.Model.Helpers
                     Version = version.ToString()
                 });
 
-                var logPath = $"{root}\\release-{currentReleaseId}-log.txt";
+                var logPath = Path.Combine(root, $"release-{currentReleaseId}-log.txt");
 
                 /*if (!File.Exists(logPath))
                     File.Create(logPath);*/
@@ -191,7 +189,7 @@ namespace PrimeApps.Model.Helpers
 
                 try
                 {
-                    var path = $"{rootPath}releases\\{dbName}\\{version}";
+                    var path = Path.Combine(rootPath, "releases", dbName, version.ToString());
 
                     if (Directory.Exists(path))
                         Directory.Delete(path, true);
@@ -230,13 +228,13 @@ namespace PrimeApps.Model.Helpers
                             File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Error - Unhandle exception. While downloading folder." + "\u001b[39m" + Environment.NewLine);
 
                         var fileByte = await response.Content.ReadAsByteArrayAsync();
-                        File.WriteAllBytes(path + $"\\{version}.zip", fileByte);
+                        File.WriteAllBytes(Path.Combine(path, $"{version}.zip"), fileByte);
                         await Task.Delay(1000);
-                        ZipFile.ExtractToDirectory(path + $"\\{version}.zip", path);
+                        ZipFile.ExtractToDirectory(Path.Combine(path, $"{version}.zip"), path);
                     }
 
-                    var scriptPath = $"{path}\\scripts.txt";
-                    var storagePath = $"{path}\\storage.txt";
+                    var scriptPath = Path.Combine(path, "scripts.txt");
+                    var storagePath = Path.Combine(path, "storage.txt");
 
                     bool result;
 
@@ -341,7 +339,7 @@ namespace PrimeApps.Model.Helpers
                                 {
                                     if (!await storage.ObjectExists(bucketName, file["unique_name"].ToString()))
                                     {
-                                        using (var fileStream = new FileStream($"{path}\\files\\{file["file_name"]}", FileMode.OpenOrCreate))
+                                        using (var fileStream = new FileStream(Path.Combine(path, "files", file["file_name"].ToString()), FileMode.OpenOrCreate))
                                         {
                                             try
                                             {
@@ -413,19 +411,19 @@ namespace PrimeApps.Model.Helpers
                     break;
                 }
 
-                Directory.Delete($"{rootPath}releases\\{databaseName}\\{version}", true);
+                Directory.Delete(Path.Combine(rootPath, "releases", databaseName, version.ToString()), true);
             }
 
             if (templateCopied)
             {
-                File.AppendAllText($"{root}\\release-{currentReleaseId}-log.txt", "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Template database swapping..." + Environment.NewLine);
+                File.AppendAllText(Path.Combine(root, $"releases-{currentReleaseId}-log.txt"), "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Template database swapping..." + Environment.NewLine);
                 var result = ReleaseHelper.SwapCopyDatabase(PREConnectionString, databaseName);
 
                 if (!result)
                     File.AppendAllText($"{root}\\release-{currentReleaseId}-log.txt", "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Error - Unhandle exception while swapping database... \u001b[39m" + Environment.NewLine);
             }
 
-            File.AppendAllText($"{root}\\release-{currentReleaseId}-log.txt", "\u001b[92m" + "********** Apply Version End**********" + "\u001b[39m" + Environment.NewLine);
+            File.AppendAllText(Path.Combine(root, $"releases-{currentReleaseId}-log.txt"), "\u001b[92m" + "********** Apply Version End**********" + "\u001b[39m" + Environment.NewLine);
             return releaseList;
         }
 

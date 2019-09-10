@@ -35,7 +35,7 @@ namespace PrimeApps.Model.Helpers
             var postgresPath = configuration.GetValue("AppSettings:PostgresPath", string.Empty);
             var root = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
-            var path = $"{root}releases/{dbName}/{version}";
+            var path = Path.Combine(root, "releases", dbName, version);
 
             if (Directory.Exists(path))
                 Directory.Delete(path);
@@ -43,10 +43,10 @@ namespace PrimeApps.Model.Helpers
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            var logPath = $"{path}\\log.txt";//Path.Combine(path,"log.txt") 
-            var scriptPath = $"{path}\\scripts.txt";
-            var storagePath = $"{path}\\storage.txt";
-            var storageFilesPath = $"{path}\\files";
+            var logPath = Path.Combine(path, "log.txt"); //Path.Combine(path,"log.txt") 
+            var scriptPath = Path.Combine(path, "scripts.txt");
+            var storagePath = Path.Combine(path, "storage.txt");
+            var storageFilesPath = Path.Combine(path, "files");
 
             if (!Directory.Exists(storageFilesPath))
                 Directory.CreateDirectory(storageFilesPath);
@@ -58,7 +58,7 @@ namespace PrimeApps.Model.Helpers
 
                 //var sqlDump = ReleaseHelper.GetSqlDump(PDEConnectionString, dbName, $"{path}\\dumpSql.txt");
 
-                var sqlDumpResult = PosgresHelper.Dump(PDEConnectionString, dbName, postgresPath, $"{path}\\");
+                var sqlDumpResult = PosgresHelper.Dump(PDEConnectionString, dbName, postgresPath, $"{path}/");
 
                 if (!sqlDumpResult)
                     File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While creating sql dump script." + "\u001b[39m" + Environment.NewLine);
@@ -136,7 +136,7 @@ namespace PrimeApps.Model.Helpers
                         AddScript(storagePath, (index == 0 ? "[" : "") + new JObject {["mime_type"] = value.MimeType, ["operation"] = value.Operation, ["file_name"] = value.FileName, ["unique_name"] = value.UniqueName, ["path"] = value.Path}.ToJsonString() + (index != historyStorages.Count() - 1 ? "," : "]"));
 
                         var file = await storage.GetObject($"app{app["id"]}/templates/", value.UniqueName);
-                        using (var fileStream = File.Create(storageFilesPath + $"\\{value.FileName}"))
+                        using (var fileStream = File.Create(Path.Combine(storageFilesPath, value.FileName)))
                         {
                             file.ResponseStream.CopyTo(fileStream);
                         }
@@ -145,7 +145,7 @@ namespace PrimeApps.Model.Helpers
 
                 try
                 {
-                    ZipFile.CreateFromDirectory(path, path = $"{root}releases\\{dbName}\\{dbName}.zip");
+                    ZipFile.CreateFromDirectory(path, path = Path.Combine(root, "releases", dbName, $"{dbName}.zip"));
                 }
                 catch (Exception e)
                 {
@@ -217,15 +217,15 @@ namespace PrimeApps.Model.Helpers
         {
             var root = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
-            var path = $"{root}releases\\{dbName}\\{version}";
+            var path = Path.Combine(root, "releases", dbName, version);
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            var logPath = $"{path}\\log.txt";
-            var scriptPath = $"{path}\\scripts.txt";
-            var storagePath = $"{path}\\storage.txt";
-            var storageFilesPath = $"{path}\\files";
+            var logPath = Path.Combine(path, "log.txt");
+            var scriptPath = Path.Combine(path, "scripts.txt");
+            var storagePath = Path.Combine(path, "storage.txt");
+            var storageFilesPath = Path.Combine(path, "files");
 
             if (!Directory.Exists(storageFilesPath))
                 Directory.CreateDirectory(storageFilesPath);
@@ -265,7 +265,7 @@ namespace PrimeApps.Model.Helpers
                         //await storage.Download(bucketName, value.UniqueName, value.FileName);
                         var file = await storage.GetObject(value.Path, value.UniqueName);
 
-                        using (var fileStream = File.Create(storageFilesPath + $"\\{value.FileName}"))
+                        using (var fileStream = File.Create(Path.Combine(storageFilesPath, $"{value.FileName}")))
                         {
                             //file.ResponseStream.Seek(0, SeekOrigin.Begin);
                             file.ResponseStream.CopyTo(fileStream);
@@ -277,7 +277,7 @@ namespace PrimeApps.Model.Helpers
 
                 try
                 {
-                    ZipFile.CreateFromDirectory(path, path = $"{root}releases\\{dbName}\\{dbName}.zip");
+                    ZipFile.CreateFromDirectory(path, path = Path.Combine(root, "releases", dbName, $"{dbName}.zip"));
                 }
                 catch (Exception e)
                 {

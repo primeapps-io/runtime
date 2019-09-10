@@ -276,20 +276,20 @@ namespace PrimeApps.Studio.Controllers
             {
                 var tempPath = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
-                var tmpFolder = $"{tempPath}tmpVersionFolder\\";
+                var tmpFolder = Path.Combine(tempPath, "tmpVersionFolder");
                 var bucketName = request["bucket_name"].ToString();
 
-                if (Directory.Exists(tmpFolder + bucketName))
-                    Directory.Delete(tmpFolder + bucketName, true);
+                if (Directory.Exists(Path.Combine(tmpFolder, bucketName)))
+                    Directory.Delete(Path.Combine(tmpFolder, bucketName), true);
 
-                if (!Directory.Exists(tmpFolder + bucketName))
-                    Directory.CreateDirectory(tmpFolder + bucketName);
+                if (!Directory.Exists(Path.Combine(tmpFolder, bucketName)))
+                    Directory.CreateDirectory(Path.Combine(tmpFolder, bucketName));
 
                 //await _storage.DownloadFolder(bucketName, $"releases\\{request["version"]}", tmpFolder + bucketName);
-                await _storage.DownloadByPath(request["bucket_name"].ToString() + request["path"], request["key"].ToString(), tmpFolder + bucketName + "\\" + request["key"]);
+                await _storage.DownloadByPath(request["bucket_name"].ToString() + request["path"], request["key"].ToString(), Path.Combine(tmpFolder, bucketName, request["key"].ToString()));
 
                 var response = new HttpResponseMessage(HttpStatusCode.OK);
-                var stream = new FileStream(tmpFolder + bucketName + "\\" + request["key"], FileMode.Open);
+                var stream = new FileStream(Path.Combine(tmpFolder, bucketName, request["key"].ToString()), FileMode.Open);
                 response.Content = new StreamContent(stream);
                 response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 

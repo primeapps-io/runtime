@@ -82,10 +82,10 @@ namespace PrimeApps.Studio.Controllers
             var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
             var text = "";
 
-            if (!System.IO.File.Exists($"{path}\\releases\\{dbName}\\{package.Version}\\log.txt"))
+            if (!System.IO.File.Exists(Path.Combine(path, "releases", dbName, package.Version, "log.txt")))
                 return Ok("Your logs have been deleted...");
 
-            using (var fs = new FileStream($"{path}\\releases\\{dbName}\\{package.Version}\\log.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var fs = new FileStream(Path.Combine(path, "releases", dbName, package.Version, "log.txt"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             using (var sr = new StreamReader(fs, Encoding.Default))
             {
                 text = ConvertHelper.ASCIIToHTML(sr.ReadToEnd());

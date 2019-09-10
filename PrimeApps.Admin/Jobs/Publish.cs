@@ -224,7 +224,7 @@ namespace PrimeApps.Admin.Jobs
                     }
 
                     var rootPath = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
-                    Directory.Delete($"{rootPath}releases\\app{appId}", true);
+                    Directory.Delete(Path.Combine(rootPath, "releases", $"app{appId}"), true);
                 }
             }
         }

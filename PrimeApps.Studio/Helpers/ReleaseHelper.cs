@@ -279,7 +279,7 @@ namespace PrimeApps.Studio.Helpers
             var bucketName = UnifiedStorage.GetPath("releases", "app", appId, version + "/");
             try
             {
-                using (var fileStream = new FileStream($"{path}releases\\{dbName}\\{dbName}.zip", FileMode.OpenOrCreate))
+                using (var fileStream = new FileStream(Path.Combine(path, "releases", dbName, $"{dbName}.zip"), FileMode.OpenOrCreate))
                 {
                     var request = new PutObjectRequest()
                     {
@@ -298,8 +298,8 @@ namespace PrimeApps.Studio.Helpers
                 throw e;
             }
 
-            Directory.Delete($"{path}releases\\{dbName}\\{version}", true);
-            File.Delete($"{path}releases\\{dbName}\\{dbName}.zip");
+            Directory.Delete(Path.Combine(path, "releases", dbName, version), true);
+            File.Delete(Path.Combine(path, "releases", dbName, $"{dbName}.zip"));
         }
     }
 }

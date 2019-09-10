@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -98,7 +99,7 @@ namespace PrimeApps.Admin.Controllers
                     ViewBag.ProcessActive = await _releaseRepository.IsThereRunningProcess((int)appId);
                 else
                     ViewBag.ProcessActive = applying;
-                
+
                 return View();
             }
 
@@ -106,7 +107,6 @@ namespace PrimeApps.Admin.Controllers
         }
 
         [Route("apply")]
-        
         public async Task<IActionResult> Apply(int id, int orgId, string appUrl, string authUrl)
         {
             var token = await HttpContext.GetTokenAsync("access_token");
@@ -117,7 +117,7 @@ namespace PrimeApps.Admin.Controllers
                 throw new Exception($"Already have a running publish for app{id} database!");
 
             Queue.QueueBackgroundWorkItem(x => _publish.PackageApply(id, orgId, token, AppUser.Id, appUrl, authUrl, false));
-            
+
             return Ok();
         }
 
@@ -171,11 +171,10 @@ namespace PrimeApps.Admin.Controllers
             var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
             var text = "";
 
-            if (!System.IO.File.Exists($"{path}\\releases\\{dbName}\\{package.Version}\\log.txt"))
+            if (!System.IO.File.Exists(Path.Combine(path, "releases", dbName, package.Version, "log.txt")))
                 return Ok("Your logs have been deleted...");
 
-            using (var fs = new FileStream($"{path}\\releases\\{dbName}\\{package.Version}\\log.txt", FileMode.Open,
-                FileAccess.Read, FileShare.ReadWrite))
+            using (var fs = new FileStream(Path.Combine(path, "releases", dbName, package.Version, "log.txt"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             using (var sr = new StreamReader(fs, Encoding.Default))
             {
                 text = ConvertHelper.ASCIIToHTML(sr.ReadToEnd());
