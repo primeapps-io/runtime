@@ -10,23 +10,23 @@
     <title>@ViewBag.Title</title>
 
 
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="/css/site.css" />
 
     <!-- Favicon -->
-    <link href="~/img/brand/favicon.png" rel="icon" type="image/png">
+    <link href="/img/brand/favicon.png" rel="icon" type="image/png">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
 
     <!-- Icons -->
-    <link href="~/js/plugins/nucleo/css/nucleo.css" rel="stylesheet">
-    <link href="~/js/plugins/fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <link href="/js/plugins/nucleo/css/nucleo.css" rel="stylesheet">
+    <link href="/js/plugins/fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
 
     <!-- Bootstrap -->
-    <link href="~/js/plugins/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/js/plugins/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!--  CSS -->
-    <link type="text/css" href="~/css/argon-dashboard.css" rel="stylesheet">
+    <link type="text/css" href="/css/argon-dashboard.css" rel="stylesheet">
 
 </head>
 <body>
@@ -38,7 +38,7 @@
             </button>
             <!-- Brand -->
             <a class="navbar-brand pt-0" href="@Url.Action("Index","Home")">
-                <img src="~/img/brand/blue.png" class="navbar-brand-img" alt="...">
+                <img src="/img/brand/blue.png" class="navbar-brand-img" alt="...">
             </a>
             <!-- User -->
             <ul class="nav align-items-center d-md-none">
@@ -57,7 +57,7 @@
                     <a class="nav-link" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <div class="media align-items-center">
                             <span class="avatar avatar-sm rounded-circle">
-                                <img alt="Image placeholder" src="~/img/theme/team-1-800x800.jpg
+                                <img alt="Image placeholder" src="/img/theme/team-1-800x800.jpg
 ">
                             </span>
                         </div>
@@ -66,19 +66,19 @@
                         <div class=" dropdown-header noti-title">
                             <h6 class="text-overflow m-0">Welcome!</h6>
                         </div>
-                        <a href="~/examples/profile.html" class="dropdown-item">
+                        <a href="/examples/profile.html" class="dropdown-item">
                             <i class="ni ni-single-02"></i>
                             <span>My profile</span>
                         </a>
-                        <a href="~/examples/profile.html" class="dropdown-item">
+                        <a href="/examples/profile.html" class="dropdown-item">
                             <i class="ni ni-settings-gear-65"></i>
                             <span>Settings</span>
                         </a>
-                        <a href="~/examples/profile.html" class="dropdown-item">
+                        <a href="/examples/profile.html" class="dropdown-item">
                             <i class="ni ni-calendar-grid-58"></i>
                             <span>Activity</span>
                         </a>
-                        <a href="~/examples/profile.html" class="dropdown-item">
+                        <a href="/examples/profile.html" class="dropdown-item">
                             <i class="ni ni-support-16"></i>
                             <span>Support</span>
                         </a>
@@ -97,7 +97,7 @@
                     <div class="row">
                         <div class="col-6 collapse-brand">
                             <a href="@Url.Action("Index","Home")">
-                                <img src="~/img/brand/blue.png">
+                                <img src="/img/brand/blue.png">
                             </a>
                         </div>
                         <div class="col-6 collapse-close">
@@ -137,7 +137,7 @@
                         /*foreach (var organization in organizations)
                         {
                             <li class="nav-item">
-                                <a class="nav-link " href="~/examples/icons.html">
+                                <a class="nav-link " href="/examples/icons.html">
                                     <i class="@(organization.Icon ?? "ni ni-planet") text-blue"></i> @organization.Name
                                 </a>
                             </li>
@@ -182,7 +182,7 @@
                         <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <div class="media align-items-center">
                                 <span class="avatar avatar-sm rounded-circle">
-                                    <img alt="Image placeholder" src="~/img/theme/team-4-800x800.jpg">
+                                    <img alt="Image placeholder" src="/img/theme/team-4-800x800.jpg">
                                 </span>
                                 <div class="media-body ml-2 d-none d-lg-block">
                                     <span class="mb-0 text-sm  font-weight-bold">@ViewBag.User.FirstName @ViewBag.User.LastName</span>
@@ -193,19 +193,19 @@
                             @*<div class=" dropdown-header noti-title">
                                     <h6 class="text-overflow m-0">Welcome!</h6>
                                 </div>
-                                <a href="~/examples/profile.html" class="dropdown-item">
+                                <a href="/examples/profile.html" class="dropdown-item">
                                     <i class="ni ni-single-02"></i>
                                     <span>My profile</span>
                                 </a>
-                                <a href="~/examples/profile.html" class="dropdown-item">
+                                <a href="/examples/profile.html" class="dropdown-item">
                                     <i class="ni ni-settings-gear-65"></i>
                                     <span>Settings</span>
                                 </a>
-                                <a href="~/examples/profile.html" class="dropdown-item">
+                                <a href="/examples/profile.html" class="dropdown-item">
                                     <i class="ni ni-calendar-grid-58"></i>
                                     <span>Activity</span>
                                 </a>
-                                <a href="~/examples/profile.html" class="dropdown-item">
+                                <a href="/examples/profile.html" class="dropdown-item">
                                     <i class="ni ni-support-16"></i>
                                     <span>Support</span>
                                 </a>
@@ -231,12 +231,12 @@
 
 
     <!-- Core -->
-    <script src="~/js/plugins/jquery/dist/jquery.min.js"></script>
-    <script src="~/js/plugins/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/plugins/clipboard/dist/clipboard.min.js"></script>
-    <script src="~/js/plugins/sweetalert2/sweetalert2.js"></script>
+    <script src="/js/plugins/jquery/dist/jquery.min.js"></script>
+    <script src="/js/plugins/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/plugins/clipboard/dist/clipboard.min.js"></script>
+    <script src="/js/plugins/sweetalert2/sweetalert2.js"></script>
     <!--  JS -->
-    <script src="~/js/argon-dashboard.min.js"></script>
+    <script src="/js/argon-dashboard.min.js"></script>
 
 
 
