@@ -15,8 +15,10 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using Amazon.S3.Model;
 using Hangfire.Common;
 using Newtonsoft.Json.Serialization;
 using PrimeApps.Model.Entities.Tenant;
@@ -27,11 +29,9 @@ namespace PrimeApps.Studio.Helpers
 {
     public interface IReleaseHelper
     {
-        Task All(int appId, bool clearAllRecords, string dbName, string version, int deploymentId, List<HistoryStorage> historyStorages);
+        Task All(int appId, bool clearAllRecords, string dbName, string version, int packageId, List<HistoryStorage> historyStorages);
 
-        Task Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, int appId, string dbName, string version, int deploymentId);
-        Task<List<string>> CheckMissingFiles(int version, int appId);
-        Task<List<JObject>> CheckMissingScripts(int version, int appId);
+        Task Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, int appId, string dbName, string version, int packageId);
         Task<bool> IsFirstRelease(int version);
     }
 
@@ -55,7 +55,7 @@ namespace PrimeApps.Studio.Helpers
             _currentUser = UserHelper.GetCurrentUser(_context);
         }
 
-        public async Task All(int appId, bool clearAllRecords, string dbName, string version, int deploymentId, List<HistoryStorage> historyStorages)
+        public async Task All(int appId, bool clearAllRecords, string dbName, string version, int packageId, List<HistoryStorage> historyStorages)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -65,8 +65,9 @@ namespace PrimeApps.Studio.Helpers
                 using (var platformRepository = new PlatformRepository(platformDbContext, _configuration))
                     //using (var deploymentRepository = new DeploymentRepository(studioDbContext, _configuration))
                 using (var appDraftRepository = new AppDraftRepository(studioDbContext, _configuration))
+                using (var packageRepository = new PackageRepository(studioDbContext, _configuration))
                 {
-                    platformRepository.CurrentUser = appDraftRepository.CurrentUser = _currentUser;
+                    packageRepository.CurrentUser = platformRepository.CurrentUser = appDraftRepository.CurrentUser = _currentUser;
 
                     var studioClientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
 
@@ -87,20 +88,17 @@ namespace PrimeApps.Studio.Helpers
 
                     var result = await Model.Helpers.ReleaseHelper.All(JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), clearAllRecords, dbName, version, _configuration, _storage, historyStorages);
 
-                    /*var deployment = await deploymentRepository.Get(deploymentId);
+                    var package = await packageRepository.Get(packageId);
+                    package.Status = result ? ReleaseStatus.Succeed : ReleaseStatus.Failed;
+                    package.EndTime = DateTime.Now;
+                    await packageRepository.Update(package);
 
-                    if (deployment != null)
-                    {
-                        deployment.Status = result ? DeploymentStatus.Succeed : DeploymentStatus.Failed;
-                        deployment.EndTime = DateTime.Now;
-
-                        await deploymentRepository.Update(deployment);
-                    }*/
+                    UploadPackage(appId, dbName, package.Version);
                 }
             }
         }
 
-        public async Task Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, int appId, string dbName, string version, int deploymentId)
+        public async Task Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, int appId, string dbName, string version, int packageId)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -110,8 +108,9 @@ namespace PrimeApps.Studio.Helpers
                 using (var platformRepository = new PlatformRepository(platformDbContext, _configuration))
                     //using (var deploymentRepository = new DeploymentRepository(studioDbContext, _configuration))
                 using (var appDraftRepository = new AppDraftRepository(studioDbContext, _configuration))
+                using (var packageRepository = new PackageRepository(studioDbContext, _configuration))
                 {
-                    platformRepository.CurrentUser = appDraftRepository.CurrentUser = _currentUser;
+                    packageRepository.CurrentUser = platformRepository.CurrentUser = appDraftRepository.CurrentUser = _currentUser;
 
                     var studioClientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
 
@@ -133,9 +132,14 @@ namespace PrimeApps.Studio.Helpers
                     //var missingScripts = await CheckMissingScripts(version, appId);
                     //var missingFiles = await CheckMissingFiles(version, appId);
 
+                    var result = await Model.Helpers.ReleaseHelper.Diffs(historyDatabases, historyStorages, JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), dbName, version, packageId, _configuration, _storage);
 
-                    var result = await Model.Helpers.ReleaseHelper.Diffs(historyDatabases, historyStorages, JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), dbName, version, deploymentId, _configuration, _storage);
+                    var package = await packageRepository.Get(packageId);
+                    package.Status = result ? ReleaseStatus.Succeed : ReleaseStatus.Failed;
+                    package.EndTime = DateTime.Now;
+                    await packageRepository.Update(package);
 
+                    UploadPackage(appId, dbName, package.Version);
                     /*var deployment = await deploymentRepository.Get(deploymentId);
 
                     if (deployment != null)
@@ -150,7 +154,7 @@ namespace PrimeApps.Studio.Helpers
         }
 
 
-        public async Task<List<string>> CheckMissingFiles(int version, int appId)
+        /*public async Task<List<string>> CheckMissingFiles(int version, int appId)
         {
             var endLoop = false;
             var scripts = new List<string>();
@@ -241,7 +245,7 @@ namespace PrimeApps.Studio.Helpers
             }
 
             return scripts;
-        }
+        }*/
 
         public async Task<bool> IsFirstRelease(int version)
         {
@@ -267,6 +271,35 @@ namespace PrimeApps.Studio.Helpers
                     return await IsFirstRelease(version);
                 }
             }
+        }
+
+        public async void UploadPackage(int appId, string dbName, string version)
+        {
+            var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+            var bucketName = UnifiedStorage.GetPath("releases", "app", appId, version + "/");
+            try
+            {
+                using (var fileStream = new FileStream($"{path}releases\\{dbName}\\{dbName}.zip", FileMode.OpenOrCreate))
+                {
+                    var request = new PutObjectRequest()
+                    {
+                        BucketName = bucketName,
+                        Key = $"{version}.zip",
+                        InputStream = fileStream,
+                        ContentType = "application/zip"
+                    };
+                    await _storage.Upload(request);
+                }
+
+                //await _storage.UploadDirAsync(bucketName, $"{path}releases\\{dbName}\\{dbName}.zip");
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+            Directory.Delete($"{path}releases\\{dbName}\\{version}", true);
+            File.Delete($"{path}releases\\{dbName}\\{dbName}.zip");
         }
     }
 }

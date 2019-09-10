@@ -26,8 +26,7 @@ namespace PrimeApps.Admin.Controllers
         private readonly IPlatformUserRepository _platformUserRepository;
 
         public HomeController(IHttpContextAccessor context, IOrganizationHelper organizationHelper, IApplicationRepository applicationRepository,
-            IUnifiedStorage storage, IAppDraftRepository appDraftRepository, IConfiguration configuration, IPlatformRepository platformRepository,
-            IPlatformUserRepository platformUserRepository)
+            IUnifiedStorage storage, IAppDraftRepository appDraftRepository, IConfiguration configuration, IPlatformRepository platformRepository, IPlatformUserRepository platformUserRepository)
         {
             _context = context;
             _organizationHelper = organizationHelper;

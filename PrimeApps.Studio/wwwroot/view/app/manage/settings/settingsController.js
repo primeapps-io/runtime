@@ -20,6 +20,8 @@ angular.module('primeapps')
             $scope.save = function () {
                 $scope.loading = true;
                 var appModel = {};
+                appModel.setting = {};
+
                 appModel.name = $scope.app.name;
                 appModel.id = $scope.app.id;
                 appModel.label = $scope.app.label;
@@ -29,6 +31,9 @@ angular.module('primeapps')
                 appModel.color = $scope.app.color;
                 appModel.enable_registration = $scope.app.setting.options.enable_registration;
                 appModel.clear_all_records = $scope.app.setting.options.clear_all_records;
+
+                appModel.app_domain = $scope.app.setting.app_domain;
+                appModel.auth_domain = $scope.app.setting.auth_domain;
 
                 AppFormService.update($rootScope.currentApp.id, appModel)
                     .then(function (response) {

@@ -37,5 +37,6 @@ namespace PrimeApps.Util.Storage
         event FileUploaded FileUploadedEvent;
         string GetDownloadFolderPath();
         Task<bool> DownloadFolder(string bucketName, string directory, string destinationPath);
+        Task<bool> DownloadByPath(string bucketName, string key, string filePath);
     }
 }

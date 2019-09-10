@@ -30,6 +30,12 @@ namespace PrimeApps.Model.Common.App
 
         [JsonProperty("icon"), DataMember(Name = "icon")]
         public string Icon { get; set; }
+        
+        [JsonProperty("app_domain"), DataMember(Name = "app_domain")]
+        public string AppDomain { get; set; }
+        
+        [JsonProperty("auth_domain"), DataMember(Name = "auth_domain")]
+        public string AuthDomain { get; set; }
 
         [JsonProperty("templet_id"), DataMember(Name = "templet_id")]
         public int TempletId { get; set; }

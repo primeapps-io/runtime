@@ -54,6 +54,26 @@
                        maxlength="50"
                        ng-model="app.description">
             </div>
+
+            <div class="form-group"
+                 ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
+                <label class="col-sm-4 required-field">App Domain</label>
+                <input type="text"
+                       name="app_domain"
+                       class="form-control ng-animate-disabled col-sm-8"
+                       maxlength="50"
+                       ng-model="app.setting.app_domain">
+            </div>
+
+            <div class="form-group"
+                 ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
+                <label class="col-sm-4 required-field">Auth Domain</label>
+                <input type="text"
+                       name="auth_domain"
+                       class="form-control ng-animate-disabled col-sm-8"
+                       maxlength="50"
+                       ng-model="app.setting.auth_domain">
+            </div>
         </div>
         <div class="col-sm-6">
             <div class="form-group">

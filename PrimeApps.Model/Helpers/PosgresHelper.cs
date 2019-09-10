@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.Model.Helpers
 {
@@ -186,7 +188,7 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static bool Run(string connectionString, string databaseName, string script, string logDirectory = "")
+        public static bool Run(string connectionString, string databaseName, string script, bool lastTry = false)
         {
             var npgsqlConnection = new NpgsqlConnectionStringBuilder(connectionString);
 
@@ -207,9 +209,69 @@ namespace PrimeApps.Model.Helpers
                         conn.Close();
                         return true;
                     }
-                    catch (Exception e)
+                    catch (PostgresException e)
                     {
+                        if (lastTry)
+                            return false;
+
+                        var sql = script;
+                        if (e.SqlState == "55006")
+                        {
+                            Run(connectionString, databaseName, $"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{databaseName}' AND pid <> pg_backend_pid();");
+                            Run(connectionString, databaseName, sql, true);
+                        }
+                        else if (e.SqlState == "23503")
+                        {
+                            var tableName = ReleaseHelper.GetTableName(script);
+                            Run(connectionString, databaseName, $"SELECT SETVAL('{tableName}_id_seq', (SELECT MAX(id) + 1 FROM {tableName}));");
+                            Run(connectionString, databaseName, sql, true);
+                        }
+
+
                         return false;
+                    }
+                }
+            }
+        }
+
+        public static bool RunAll(string connectionString, string databaseName, string[] sqls)
+        {
+            var npgsqlConnection = new NpgsqlConnectionStringBuilder(connectionString);
+
+            if (!string.IsNullOrEmpty(databaseName))
+                npgsqlConnection.Database = databaseName;
+
+            using (var conn = new NpgsqlConnection(npgsqlConnection.ToString()))
+            {
+                conn.Open();
+
+                NpgsqlTransaction transaction = conn.BeginTransaction();
+
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.Transaction = transaction;
+
+                    try
+                    {
+                        foreach (var sql in sqls)
+                        {
+                            cmd.CommandText = sql;
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        transaction.Commit();
+
+                        return true;
+                    }
+                    catch (PostgresException e)
+                    {
+                        transaction.Rollback();
+                        return false;
+                    }
+                    finally
+                    {
+                        conn.Close();
                     }
                 }
             }

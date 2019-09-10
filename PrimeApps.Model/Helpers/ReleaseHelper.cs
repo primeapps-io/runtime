@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.Configuration;
@@ -35,6 +36,9 @@ namespace PrimeApps.Model.Helpers
             var root = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
             var path = $"{root}releases\\{dbName}\\{version}";
+
+            if (Directory.Exists(path))
+                Directory.Delete(path);
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -146,7 +150,7 @@ namespace PrimeApps.Model.Helpers
                 catch (Exception e)
                 {
                 }
-                
+
 
                 /*if (!result)
                     File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while editing records... \u001b[39m" + Environment.NewLine);
@@ -211,9 +215,9 @@ namespace PrimeApps.Model.Helpers
 
         public static async Task<bool> Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, JObject app, string studioSecret, string dbName, string version, int deploymentId, IConfiguration configuration, IUnifiedStorage storage)
         {
-            var path = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+            var root = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
-            path = $"{path}releases\\{dbName}\\{version}";
+            var path = $"{root}releases\\{dbName}\\{version}";
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -235,7 +239,16 @@ namespace PrimeApps.Model.Helpers
                 {
                     foreach (var table in historyDatabases)
                     {
-                        AddScript(scriptPath, table.CommandText);
+                        try
+                        {
+                            AddScript(scriptPath, table.CommandText);
+                            AddScript(scriptPath, $"INSERT INTO public.history_database (id, command_text, table_name, command_id, executed_at, created_by, deleted, tag) VALUES ({table.Id}, '{table.CommandText.Replace("'", "''")}', '{table.TableName ?? "NULL"}', '{table.CommandId}', '{table.ExecutedAt}', '{table.CreatedByEmail}', '{table.Deleted}', {(!string.IsNullOrEmpty(table.Tag) ? "'" + table.Tag + "'" : "NULL")});");
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                            throw;
+                        }
                     }
                 }
 
@@ -248,13 +261,13 @@ namespace PrimeApps.Model.Helpers
                     foreach (var (value, index) in historyStorages.Select((v, i) => (v, i)))
                     {
                         AddScript(storagePath, (index == 0 ? "[" : "") + new JObject {["mime_type"] = value.MimeType, ["operation"] = value.Operation, ["file_name"] = value.FileName, ["unique_name"] = value.UniqueName, ["path"] = value.Path}.ToJsonString() + (index != historyStorages.Count() - 1 ? "," : "]"));
-
+                        AddScript(scriptPath, $"INSERT INTO public.history_storage (id, mime_type, operation, file_name, unique_name, path, executed_at, created_by, deleted, tag) VALUES ({value.Id}, '{value.MimeType}', '{value.Operation}', '{value.FileName}', '{value.UniqueName}', '{value.Path}', '{value.ExecutedAt}', '{value.CreatedByEmail}', '{value.Deleted}', {(!string.IsNullOrEmpty(value.Tag) ? "'" + value.Tag + "'" : "NULL")});");
                         //await storage.Download(bucketName, value.UniqueName, value.FileName);
-                        var file = await storage.GetObject(bucketName, value.UniqueName);
+                        var file = await storage.GetObject(value.Path, value.UniqueName);
 
                         using (var fileStream = File.Create(storageFilesPath + $"\\{value.FileName}"))
                         {
-                            file.ResponseStream.Seek(0, SeekOrigin.Begin);
+                            //file.ResponseStream.Seek(0, SeekOrigin.Begin);
                             file.ResponseStream.CopyTo(fileStream);
                         }
                     }
@@ -262,13 +275,20 @@ namespace PrimeApps.Model.Helpers
 
                 //var bucketName = UnifiedStorage.GetPath("releases", "app", int.Parse(app["id"].ToString()), version + "/");
 
+                try
+                {
+                    ZipFile.CreateFromDirectory(path, path = $"{root}releases\\{dbName}\\{dbName}.zip");
+                }
+                catch (Exception e)
+                {
+                }
+
                 File.AppendAllText(logPath, "\u001b[92m" + "********** Package Created **********" + "\u001b[39m" + Environment.NewLine);
 
-
-                if (historyStorages != null || historyDatabases != null)
+                /*if (historyStorages != null || historyDatabases != null)
                     await storage.UploadDirAsync(bucketName, path);
 
-                Directory.Delete(path, true);
+                Directory.Delete(path, true);*/
 
                 /*if (goLive)
                     PublishHelper.Update(configuration, storage, app, dbName, version, app["status"].ToString() != "published");*/
@@ -757,6 +777,23 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
+        public static bool CopyDatabase(string connectionString, string dbName, string scriptPath = null)
+        {
+            try
+            {
+                var sql = $"CREATE DATABASE {dbName}_copy WITH TEMPLATE {dbName} OWNER primeapps;";
+
+                if (!string.IsNullOrEmpty(scriptPath))
+                    File.AppendAllText(scriptPath, sql + Environment.NewLine);
+
+                return PosgresHelper.Run(connectionString, "postgres", sql);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
         public static bool ChangeTemplateDatabaseStatus(string connectionString, string dbName, bool open = false, string scriptPath = null)
         {
             try
@@ -869,24 +906,37 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static JArray CreatePlatformAppSql(JObject app, string secret)
+        public static JArray CreatePlatformAppSql(JObject app, string secret, string appUrl, string authUrl)
         {
             var options = JObject.Parse(app["setting"]["options"].ToString());
             var sqls = new JArray
             {
                 $"INSERT INTO \"public\".\"apps\"(\"id\", \"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\", \"name\", \"label\", \"description\", \"logo\", \"use_tenant_settings\", \"app_draft_id\", \"secret\") VALUES (" + app["id"] + ", 1, NULL, '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) + "', NULL, 'f', '" + app["name"] + "', '" + app["label"] + "', '" + app["description"] + "', '" + app["logo"] + "', '" + app["use_tenant_settings"] + "', 0, '" + secret + "');",
-                $"INSERT INTO \"public\".\"app_settings\"(\"app_id\", \"app_domain\", \"auth_domain\", \"currency\", \"culture\", \"time_zone\", \"language\", \"auth_theme\", \"app_theme\", \"mail_sender_name\", \"mail_sender_email\", \"google_analytics_code\", \"tenant_operation_webhook\", \"registration_type\", \"enable_registration\") VALUES (" + app["id"] + ", " + (!string.IsNullOrEmpty(app["setting"]["app_domain"].ToString()) ? "'" + app["setting"]["app_domain"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["auth_domain"].ToString()) ? "'" + app["setting"]["auth_domain"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["currency"].ToString()) ? "'" + app["setting"]["currency"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["culture"].ToString()) ? "'" + app["setting"]["culture"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["time_zone"].ToString()) ? "'" + app["setting"]["time_zone"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["language"].ToString()) ? "'" + app["setting"]["language"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["auth_theme"].ToString()) ? "'" + app["setting"]["auth_theme"].ToJsonString() + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["app_theme"].ToString()) ? "'" + app["setting"]["app_theme"].ToJsonString() + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_name"].ToString()) ? "'" + app["setting"]["mail_sender_name"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_email"].ToString()) ? "'" + app["setting"]["mail_sender_email"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["google_analytics_code"].ToString()) ? "'" + app["setting"]["google_analytics_code"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["tenant_operation_webhook"].ToString()) ? "'" + app["setting"]["tenant_operation_webhook"] + "'" : "NULL") + ", 2, '" + options["enable_registration"].ToString().Substring(0, 1).ToLower() + "');"
+                $"INSERT INTO \"public\".\"app_settings\"(\"app_id\", \"app_domain\", \"auth_domain\", \"currency\", \"culture\", \"time_zone\", \"language\", \"auth_theme\", \"app_theme\", \"mail_sender_name\", \"mail_sender_email\", \"google_analytics_code\", \"tenant_operation_webhook\", \"registration_type\", \"enable_registration\") VALUES (" + app["id"] + ", '" + appUrl + "', '" + authUrl + "', " + (!string.IsNullOrEmpty(app["setting"]["currency"].ToString()) ? "'" + app["setting"]["currency"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["culture"].ToString()) ? "'" + app["setting"]["culture"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["time_zone"].ToString()) ? "'" + app["setting"]["time_zone"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["language"].ToString()) ? "'" + app["setting"]["language"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["auth_theme"].ToString()) ? "'" + app["setting"]["auth_theme"].ToJsonString() + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["app_theme"].ToString()) ? "'" + app["setting"]["app_theme"].ToJsonString() + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_name"].ToString()) ? "'" + app["setting"]["mail_sender_name"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_email"].ToString()) ? "'" + app["setting"]["mail_sender_email"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["google_analytics_code"].ToString()) ? "'" + app["setting"]["google_analytics_code"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["tenant_operation_webhook"].ToString()) ? "'" + app["setting"]["tenant_operation_webhook"] + "'" : "NULL") + ", 2, '" + options["enable_registration"].ToString().Substring(0, 1).ToLower() + "');"
             };
 
             //app["templates"].Aggregate(sql, (current, template) => current + ($"INSERT INTO \"public\".\"app_templates\"(\"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\", \"app_id\", \"name\", \"subject\", \"content\", \"language\", \"type\", \"system_code\", \"active\", \"settings\") VALUES (1, NULL, '2018-10-01 11:41:02.829818', NULL, '" + template["deleted"] + "', " + app["id"] + ", '" + template["name"] + "', '" + template["subject"] + "', '" + template["content"] + "', '" + template["language"] + "', " + template["type"] + ", '" + template["system_code"] + "', '" + template["active"] + "', '" + template["settings"] + "');" + Environment.NewLine));
             return sqls;
         }
 
-        public static bool CreatePlatformApp(string connectionString, JObject app, string secret, string scriptPath = null)
+        public static JArray UpdatePlatformAppSql(JObject app, string appUrl, string authUrl)
+        {
+            var options = JObject.Parse(app["setting"]["options"].ToString());
+            var sqls = new JArray
+            {
+                $"UPDATE public.apps SET created_by = 1, updated_by = 1, created_at = '2019-05-24 07:15:15.699988', updated_at = '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) + "', label = '" + app["label"] + "', description = '" + app["description"] + "', logo = '" + app["logo"] + "', use_tenant_settings = '" + app["use_tenant_settings"] + "', app_draft_id = 0 WHERE id = " + app["id"] + ";",
+                $"UPDATE public.app_settings SET " + (!string.IsNullOrEmpty(appUrl) ? $"app_domain = '{appUrl}'" : "") + (!string.IsNullOrEmpty(authUrl) ? $"auth_domain = '{authUrl}'" : "") + " currency = " + (!string.IsNullOrEmpty(app["setting"]["currency"].ToString()) ? "'" + app["setting"]["currency"] + "'" : "NULL") + ", culture = " + (!string.IsNullOrEmpty(app["setting"]["culture"].ToString()) ? "'" + app["setting"]["culture"] + "'" : "NULL") + ", time_zone = " + (!string.IsNullOrEmpty(app["setting"]["time_zone"].ToString()) ? "'" + app["setting"]["time_zone"] + "'" : "NULL") + ", language = " + (!string.IsNullOrEmpty(app["setting"]["language"].ToString()) ? "'" + app["setting"]["language"] + "'" : "NULL") + ", auth_theme = " + (!string.IsNullOrEmpty(app["setting"]["auth_theme"].ToString()) ? "'" + app["setting"]["auth_theme"].ToJsonString() + "'" : "NULL") + ", app_theme = " + (!string.IsNullOrEmpty(app["setting"]["app_theme"].ToString()) ? "'" + app["setting"]["app_theme"].ToJsonString() + "'" : "NULL") + ", mail_sender_name = " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_name"].ToString()) ? "'" + app["setting"]["mail_sender_name"] + "'" : "NULL") + ", mail_sender_email = " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_email"].ToString()) ? "'" + app["setting"]["mail_sender_email"] + "'" : "NULL") + ", google_analytics_code = " + (!string.IsNullOrEmpty(app["setting"]["google_analytics_code"].ToString()) ? "'" + app["setting"]["google_analytics_code"] + "'" : "NULL") + ", tenant_operation_webhook = " + (!string.IsNullOrEmpty(app["setting"]["tenant_operation_webhook"].ToString()) ? "'" + app["setting"]["tenant_operation_webhook"] + "'" : "NULL") + ", external_auth = " + (!string.IsNullOrEmpty(app["setting"]["external_auth"].ToString()) ? "'" + app["setting"]["external_auth"].ToJsonString() + "'" : "NULL") + ", registration_type = 2, enable_registration = '" + options["enable_registration"].ToString().Substring(0, 1).ToLower() + "' WHERE app_id = " + app["id"] + ";"
+            };
+
+            //app["templates"].Aggregate(sql, (current, template) => current + ($"INSERT INTO \"public\".\"app_templates\"(\"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\", \"app_id\", \"name\", \"subject\", \"content\", \"language\", \"type\", \"system_code\", \"active\", \"settings\") VALUES (1, NULL, '2018-10-01 11:41:02.829818', NULL, '" + template["deleted"] + "', " + app["id"] + ", '" + template["name"] + "', '" + template["subject"] + "', '" + template["content"] + "', '" + template["language"] + "', " + template["type"] + ", '" + template["system_code"] + "', '" + template["active"] + "', '" + template["settings"] + "');" + Environment.NewLine));
+            return sqls;
+        }
+
+        public static bool CreatePlatformApp(string connectionString, JObject app, string secret, string appUrl, string authUrl, string scriptPath = null)
         {
             try
             {
-                var sqls = CreatePlatformAppSql(app, secret);
+                var sqls = CreatePlatformAppSql(app, secret, appUrl, authUrl);
 
                 foreach (var sql in sqls)
                 {
@@ -904,10 +954,89 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
+        public static bool UpdatePlatformApp(string connectionString, JObject app, string appUrl, string authUrl, string scriptPath = null)
+        {
+            try
+            {
+                var sqls = UpdatePlatformAppSql(app, appUrl, authUrl);
+
+                foreach (var sql in sqls)
+                {
+                    if (!string.IsNullOrEmpty(scriptPath))
+                        File.AppendAllText(scriptPath, sql.ToString() + Environment.NewLine);
+
+                    PosgresHelper.Run(connectionString, "platform", sql.ToString());
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public static bool SwapCopyDatabase(string connectionString, string dbName)
+        {
+            try
+            {
+                var result = RemoveTemplateDatabase(connectionString, dbName);
+
+                if (result)
+                {
+                    try
+                    {
+                        PosgresHelper.Run(connectionString, "postgres", $"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{dbName}_copy' AND pid <> pg_backend_pid();");
+                        PosgresHelper.Run(connectionString, "postgres", $"ALTER DATABASE {dbName}_copy RENAME TO {dbName};");
+                        PosgresHelper.Run(connectionString, "postgres", $"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{dbName}' AND pid <> pg_backend_pid();");
+                        ChangeTemplateDatabaseStatus(connectionString, dbName, true);
+                    }
+                    catch (Exception e)
+                    {
+                        return false;
+                    }
+
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public static bool RemoveTemplateDatabase(string connectionString, string dbName)
+        {
+            try
+            {
+                ChangeTemplateDatabaseStatus(connectionString, dbName, true);
+
+                PosgresHelper.Run(connectionString, "postgres", $"DROP DATABASE {dbName};");
+
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
         public static void AddScript(string path, string sql)
         {
             if (!string.IsNullOrEmpty(path) && !string.IsNullOrEmpty(sql))
                 File.AppendAllText(path, sql + Environment.NewLine);
+        }
+
+        public static string GetTableName(string query)
+        {
+            Regex nameExtractor = new Regex("((?<=INSERT\\sINTO\\s)|(?<=UPDATE\\s)|(?<=DELETE\\sFROM\\s))([^\\s]+)");
+
+            Match match = nameExtractor.Match(query);
+
+            return match.Value;
         }
     }
 }

@@ -33,8 +33,7 @@ namespace PrimeApps.Admin.Services
         {
             while (!_shutdown.IsCancellationRequested)
             {
-                var workItem =
-                    await TaskQueue.DequeueAsync(_shutdown.Token);
+                var workItem = await TaskQueue.DequeueAsync(_shutdown.Token);
 
                 try
                 {

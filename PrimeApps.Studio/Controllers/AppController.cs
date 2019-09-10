@@ -178,6 +178,9 @@ namespace PrimeApps.Studio.Controllers
             app.Icon = model.Icon;
             app.Color = model.Color;
 
+            app.Setting.AppDomain = model.AppDomain;
+            app.Setting.AuthDomain = model.AuthDomain;
+
             var options = JObject.Parse(app.Setting.Options);
             options["enable_registration"] = model.EnableRegistration;
             options["clear_all_records"] = model.ClearAllRecords;

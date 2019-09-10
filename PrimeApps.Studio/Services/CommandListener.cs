@@ -125,25 +125,26 @@ namespace PrimeApps.Studio.Services
                     }
                 }
 
-                string parameterId = parameter.ParameterName.Replace("@p", "");
-                string regex = @"@(?:[\w#_$]" + parameterId + @"|(?:(\[)|"")." + parameterId + @"?(?(1)]|""))";
-                query = Regex.Replace(query, regex, value);
-
-                // if (query.Contains(parameter.ParameterName + ","))
-                // {
-                //     // in query parameters
-                //     query = query.Replace(parameter.ParameterName + ",", value + ",");
-                // }
-                // else if (query.Contains(parameter.ParameterName + ";"))
-                // {
-                //     // in update or delete statement parameter
-                //     query = query.Replace(parameter.ParameterName + ";", value + ";");
-                // }
-                // else if (query.Contains(parameter.ParameterName + ")"))
-                // {
-                //     // End of query parameters
-                //     query = query.Replace(parameter.ParameterName + ")", value + ")");
-                // }
+                if (query.Contains(parameter.ParameterName + ","))
+                {
+                    // in query parameters
+                    query = query.Replace(parameter.ParameterName + ",", value + ",");
+                }
+                else if (query.Contains(parameter.ParameterName + ";"))
+                {
+                    // in update or delete statement parameter
+                    query = query.Replace(parameter.ParameterName + ";", value + ";");
+                }
+                else if (query.Contains(parameter.ParameterName + ")"))
+                {
+                    // End of query parameters
+                    query = query.Replace(parameter.ParameterName + ")", value + ")");
+                }
+                else if (query.Contains("= " + parameter.ParameterName))
+                {
+                    // End of query parameters
+                    query = query.Replace("= " + parameter.ParameterName, "= " + value);
+                }
             }
 
             return query;

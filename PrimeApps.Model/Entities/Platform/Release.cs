@@ -10,6 +10,9 @@ namespace PrimeApps.Model.Entities.Platform
     {
         [Column("app_id"), Required, ForeignKey("App")]
         public int AppId { get; set; }
+        
+        [Column("tenant_id"), ForeignKey("Tenant")]
+        public int? TenantId { get; set; }
 
         [Column("status"), Required]
         public ReleaseStatus Status { get; set; }
@@ -27,5 +30,7 @@ namespace PrimeApps.Model.Entities.Platform
         public string Settings { get; set; }
 
         public virtual App App { get; set; }
+        
+        public virtual Tenant Tenant { get; set; }
     }
 }

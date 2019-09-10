@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
 using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Entities.Studio
@@ -26,13 +28,13 @@ namespace PrimeApps.Model.Entities.Studio
         [Column("color")]
         public string Color { get; set; }
 
-        [Column("organization_id"), ForeignKey("Organization")]
+        [Column("organization_id"), ForeignKey("Organization"), JsonProperty("organization_id"), DataMember(Name = "organization_id")]
         public int OrganizationId { get; set; }
 
-        [Column("templet_id"), ForeignKey("Templet")]
+        [Column("templet_id"), ForeignKey("Templet"), JsonProperty("templet_id"), DataMember(Name = "templet_id")]
         public int TempletId { get; set; }
 
-        [Column("use_tenant_settings")]
+        [Column("use_tenant_settings"), JsonProperty("use_tenant_settings"), DataMember(Name = "use_tenant_settings")]
         public bool UseTenantSettings { get; set; }
         
         public virtual Templet Templet { get; set; }

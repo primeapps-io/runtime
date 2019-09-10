@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using PrimeApps.Admin.Helpers;
+using PrimeApps.Admin.Jobs;
 using PrimeApps.Admin.Services;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
@@ -58,7 +59,9 @@ namespace PrimeApps.Admin
             services.AddScoped<IOrganizationHelper, OrganizationHelper>();
             services.AddScoped<IPublishHelper, PublishHelper>();
             services.AddScoped<IWebSocketHelper, WebSocketHelper>(); 
-
+            services.TryAddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.TryAddSingleton<IPublish, Publish>();
+            services.AddTransient<IUnifiedStorage, UnifiedStorage>();
             /*services.AddScoped<IRecordHelper, Helpers.RecordHelper>();
             services.AddScoped<IAuditLogHelper, AuditLogHelper>();
             services.AddScoped<ICalculationHelper, CalculationHelper>();
@@ -85,9 +88,7 @@ namespace PrimeApps.Admin
             services.TryAddSingleton<IHistoryHelper, HistoryHelper>();
             services.TryAddSingleton<IWebSocketHelper, WebSocketHelper>();*/
 
-            services.AddTransient<IUnifiedStorage, UnifiedStorage>();
 
-            services.TryAddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
         }
     }
 }

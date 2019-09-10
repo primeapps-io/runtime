@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PrimeApps.Model.Entities.Platform;
 using System;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -15,34 +16,42 @@ namespace PrimeApps.Model.Repositories
         {
         }
 
-        public async Task<int> Count(int appId)
-        {
-            return await DbContext.Releases
-                .Where(x => !x.Deleted & x.AppId == appId)
-                .CountAsync();
-        }
-
         public async Task<Release> Get(int id)
         {
             return await DbContext.Releases
                 .Where(x => !x.Deleted && x.Id == id)
                 .FirstOrDefaultAsync();
         }
-        
-        public async Task<Release> Get(int appId, string version)
+
+        public async Task<Release> Get(int appId, string version, int? tenantId = null)
         {
             return await DbContext.Releases
-                .Where(x => !x.Deleted && x.AppId == appId && x.Version == version)
+                .Where(x => !x.Deleted && x.AppId == appId && x.Version == version && x.TenantId == tenantId)
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Release> GetByAppId(int appId)
+        public async Task<bool> FirstTime(int appId)
+        {
+            return (await DbContext.Releases
+                        .Where(x => !x.Deleted && x.AppId == appId && x.Status == ReleaseStatus.Succeed && x.TenantId == null)
+                        .FirstOrDefaultAsync() == null);
+        }
+
+        public async Task<Release> GetLast()
         {
             return await DbContext.Releases
-                .Where(x => !x.Deleted && x.AppId == appId && x.Status == Enums.ReleaseStatus.Succeed)
+                .Where(x => x.TenantId == null)
+                .OrderByDescending(x => x.Id)
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<Release> GetLast(int appId)
+        {
+            return await DbContext.Releases
+                .Where(x => x.AppId == appId && x.TenantId == null)
+                .OrderByDescending(x => x.Id)
+                .FirstOrDefaultAsync();
+        }
 
         public async Task<bool> IsThereRunningProcess(int appId)
         {
@@ -51,12 +60,6 @@ namespace PrimeApps.Model.Repositories
                 .AnyAsync();
 
             return result;
-        }
-        public async Task<Release> GetByVersion(int version)
-        {
-            return await DbContext.Releases
-                .Where(x => !x.Deleted && x.Version == version.ToString())
-                .FirstOrDefaultAsync();
         }
 
         public async Task<int> Create(Release package)

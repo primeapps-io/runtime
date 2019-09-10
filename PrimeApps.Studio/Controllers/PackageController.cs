@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Amazon.S3.Model;
 using Aspose.Words.Lists;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -16,6 +19,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
 using PrimeApps.Studio.Services;
+using PrimeApps.Util.Storage;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -30,6 +34,7 @@ namespace PrimeApps.Studio.Controllers
         private IHistoryStorageRepository _historyStorageRepository;
         private IPermissionHelper _permissionHelper;
         private IReleaseHelper _releaseHelper;
+        private IUnifiedStorage _storage;
 
         public PackageController(IConfiguration configuration,
             IReleaseHelper releaseHelper,
@@ -38,6 +43,7 @@ namespace PrimeApps.Studio.Controllers
             IHistoryDatabaseRepository historyDatabaseRepository,
             IHistoryStorageRepository historyStorageRepository,
             IPermissionHelper permissionHelper,
+            IUnifiedStorage storage,
             IBackgroundTaskQueue queue)
         {
             _configuration = configuration;
@@ -47,6 +53,7 @@ namespace PrimeApps.Studio.Controllers
             _historyStorageRepository = historyStorageRepository;
             _appDraftRepository = appDraftRepository;
             _permissionHelper = permissionHelper;
+            _storage = storage;
             _queue = queue;
         }
 
@@ -106,9 +113,9 @@ namespace PrimeApps.Studio.Controllers
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "package", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var deployments = await _packageRepository.Find((int)AppId, paginationModel);
+            var packages = await _packageRepository.Find((int)AppId, paginationModel);
 
-            return Ok(deployments);
+            return Ok(packages);
         }
 
         [Route("get/{id}"), HttpGet]
@@ -117,12 +124,12 @@ namespace PrimeApps.Studio.Controllers
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "package", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var deployment = await _packageRepository.Get(id);
+            var package = await _packageRepository.Get(id);
 
-            if (deployment == null)
+            if (package == null)
                 return BadRequest();
 
-            return Ok(deployment);
+            return Ok(package);
         }
 
         [Route("get_all/{appId}"), HttpGet]
@@ -159,7 +166,7 @@ namespace PrimeApps.Studio.Controllers
             var app = await _appDraftRepository.Get((int)AppId);
             var appOptions = JObject.Parse(app.Setting?.Options);
 
-            var releaseModel = new Package()
+            var packageModel = new Package()
             {
                 AppId = (int)AppId,
                 Version = version.ToString(),
@@ -173,46 +180,126 @@ namespace PrimeApps.Studio.Controllers
                 }.ToString()
             };
 
-            await _packageRepository.Create(releaseModel);
+            await _packageRepository.Create(packageModel);
 
             /*
              * Set version number to history_database and history_storage tables tag column.
              */
 
             var dbHistory = await _historyDatabaseRepository.GetLast();
-            if (dbHistory != null && dbHistory.Tag != (int.Parse(releaseModel.Version) - 1).ToString())
+            if (dbHistory != null && dbHistory.Tag != (int.Parse(packageModel.Version) - 1).ToString())
             {
-                dbHistory.Tag = releaseModel.Version;
+                dbHistory.Tag = packageModel.Version;
                 await _historyDatabaseRepository.Update(dbHistory);
             }
 
             var storageHistory = await _historyStorageRepository.GetLast();
-            if (storageHistory != null && storageHistory.Tag != (int.Parse(releaseModel.Version) - 1).ToString())
+            if (storageHistory != null && storageHistory.Tag != (int.Parse(packageModel.Version) - 1).ToString())
             {
-                storageHistory.Tag = releaseModel.Version;
+                storageHistory.Tag = packageModel.Version;
                 await _historyStorageRepository.Update(storageHistory);
             }
 
             if (await _releaseHelper.IsFirstRelease(version))
             {
                 var historyStorages = await _historyStorageRepository.GetAll();
-                _queue.QueueBackgroundWorkItem(token => _releaseHelper.All((int)AppId, (bool)appOptions["clear_all_records"], dbName, version.ToString(), releaseModel.Id, historyStorages));
+                _queue.QueueBackgroundWorkItem(token => _releaseHelper.All((int)AppId, (bool)appOptions["clear_all_records"], dbName, version.ToString(), packageModel.Id, historyStorages));
             }
             else
             {
                 List<HistoryDatabase> historyDatabase = null;
                 List<HistoryStorage> historyStorages = null;
 
-                if (dbHistory != null && dbHistory.Tag != (int.Parse(releaseModel.Version) - 1).ToString())
+                if (dbHistory != null && dbHistory.Tag != (int.Parse(packageModel.Version) - 1).ToString())
                     historyDatabase = await _historyDatabaseRepository.GetDiffs(currentBuildNumber.ToString());
 
-                if (storageHistory != null && storageHistory.Tag != (int.Parse(releaseModel.Version) - 1).ToString())
+                if (storageHistory != null && storageHistory.Tag != (int.Parse(packageModel.Version) - 1).ToString())
                     historyStorages = await _historyStorageRepository.GetDiffs(currentBuildNumber.ToString());
 
-                _queue.QueueBackgroundWorkItem(token => _releaseHelper.Diffs(historyDatabase, historyStorages, (int)AppId, dbName, version.ToString(), releaseModel.Id));
+                _queue.QueueBackgroundWorkItem(token => _releaseHelper.Diffs(historyDatabase, historyStorages, (int)AppId, dbName, version.ToString(), packageModel.Id));
             }
 
-            return Ok(releaseModel.Id);
+            return Ok(packageModel.Id);
+        }
+
+        [HttpGet]
+        [Route("get_active_process")]
+        public async Task<IActionResult> GetActiveProcess()
+        {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "package", RequestTypeEnum.Create))
+                return StatusCode(403);
+
+            var process = await _packageRepository.GetActiveProcess((int)AppId);
+
+            return Ok(process);
+        }
+
+        [HttpGet]
+        [Route("get_last")]
+        public async Task<IActionResult> GetLastPackage()
+        {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "package", RequestTypeEnum.Create))
+                return StatusCode(403);
+
+            var result = await _packageRepository.GetLastPackage((int)AppId);
+
+            return Ok(result);
+        }
+
+
+        [HttpGet]
+        [Route("download_package/{id}")]
+        [Obsolete]
+        public async Task DownloadPackage(int id)
+        {
+            try
+            {
+                var bucketName = UnifiedStorage.GetPath("releases", PreviewMode, PreviewMode == "tenant" ? (int)TenantId : (int)AppId);
+
+                var withouts = new string[] {"releases"};
+                await _storage.CopyBucket(bucketName + "/" + id + "/files", $"app{AppId}", withouts);
+
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls | SecurityProtocolType.Tls;
+
+                var stMarged = new System.IO.MemoryStream();
+                //Doc.Save(stMarged);
+
+
+                stMarged.Position = 0;
+                var list = await _storage.GetListObject(bucketName + "/" + id + "/");
+
+                /*using (MemoryStream zipStream = new MemoryStream())
+                {
+                    using (ZipArchive zip = new ZipArchive(zipStream))
+                    {
+                        foreach (var item in list.S3Objects)
+                        {
+                            ZipArchiveEntry entry = zip.CreateEntry(item.Key);
+                            using (Stream entryStream = entry.Open())
+                            {
+                                stMarged.CopyTo(entryStream);
+                            }
+                        }
+                    }
+                    zipStream.Position = 0;
+                }*/
+
+                var token = new CancellationToken();
+
+                foreach (var objt in list.S3Objects)
+                {
+                    var request1 = new GetObjectRequest {BucketName = objt.BucketName, Key = objt.Key};
+
+                    using (var response = await _storage.Client.GetObjectAsync(request1, token))
+                    {
+                        await response.WriteResponseStreamToFileAsync(_storage.GetDownloadFolderPath() + "\\" + objt.Key, true, token);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+            }
         }
     }
 }

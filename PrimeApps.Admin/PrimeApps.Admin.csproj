@@ -7,6 +7,10 @@
         <UserSecretsId>aspnet-PrimeApps.Admin-AA7131F3-C76E-49DB-9A39-DA12693AB9B9</UserSecretsId>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Hangfire" Version="1.7.0-beta4" />
+        <PackageReference Include="Hangfire.AspNetCore" Version="1.7.0-beta4" />
+        <PackageReference Include="Hangfire.PostgreSql" Version="1.5.0" />
+        <PackageReference Include="Hangfire.Redis.StackExchange" Version="1.8.0" />
         <PackageReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
         <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.7.0" />

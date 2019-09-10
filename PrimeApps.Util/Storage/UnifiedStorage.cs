@@ -209,6 +209,7 @@ namespace PrimeApps.Util.Storage
         /// <returns></returns>
         public async Task Upload(PutObjectRequest request)
         {
+            await CreateBucketIfNotExists(request.BucketName);
             await _client.PutObjectAsync(request);
         }
 
@@ -744,6 +745,23 @@ namespace PrimeApps.Util.Storage
             {
                 var directoryTransferUtility = new TransferUtility(_client);
                 await directoryTransferUtility.DownloadDirectoryAsync(bucketName, directory, destinationPath);
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        /*
+        * Other download method not working with zip file.
+        */
+        public async Task<bool> DownloadByPath(string bucketName, string key, string filePath)
+        {
+            try
+            {
+                var directoryTransferUtility = new TransferUtility(_client);
+                await directoryTransferUtility.DownloadAsync(filePath, bucketName, key);
                 return true;
             }
             catch (Exception e)

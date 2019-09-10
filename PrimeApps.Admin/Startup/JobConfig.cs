@@ -5,6 +5,7 @@ using Humanizer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using PrimeApps.Admin.ActionFilters;
 
 namespace PrimeApps.Admin
 {
@@ -27,7 +28,7 @@ namespace PrimeApps.Admin
 				return;
 			
 			app.UseHangfireServer(new BackgroundJobServerOptions { Queues = new[] { QueueName, "default" } });
-			/*app.UseHangfireDashboard("/jobs", new DashboardOptions { Authorization = new[] { new HangfireAuthorizationFilter() } });*/
+			app.UseHangfireDashboard("/jobs", new DashboardOptions { Authorization = new[] { new HangfireAuthorizationFilter() } });
 			JobHelper.SetSerializerSettings(new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
 			GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });

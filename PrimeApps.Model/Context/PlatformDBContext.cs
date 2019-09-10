@@ -196,6 +196,7 @@ namespace PrimeApps.Model.Context
 
             //Release
             modelBuilder.Entity<Release>().HasIndex(x => x.AppId);
+            modelBuilder.Entity<Release>().HasIndex(x => x.TenantId);
             modelBuilder.Entity<Release>().HasIndex(x => x.StartTime);
             modelBuilder.Entity<Release>().HasIndex(x => x.EndTime);
             modelBuilder.Entity<Release>().HasIndex(x => x.Status);

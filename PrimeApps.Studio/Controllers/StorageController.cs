@@ -269,46 +269,27 @@ namespace PrimeApps.Studio.Controllers
             return NotFound();
         }
 
-        [Route("download_folder"), HttpPost]
-        public async Task<HttpResponseMessage> DownloadFolder([FromBody]JObject request)
+        [Route("download_file"), HttpPost]
+        public async Task<HttpResponseMessage> DownloadFile([FromBody]JObject request)
         {
             if (await _storage.FolderExists(request["bucket_name"].ToString()))
             {
-                var tempPath = Path.GetTempPath();
+                var tempPath = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
-                var tmpFolder = $"{tempPath}\\tmpVersionFolder\\";
-                var tmpZippedFolder = $"{tempPath}\\tmpVersionZippedFolder\\";
+                var tmpFolder = $"{tempPath}tmpVersionFolder\\";
                 var bucketName = request["bucket_name"].ToString();
-
-                if (!Directory.Exists(tmpFolder))
-                    Directory.CreateDirectory(tmpFolder);
-
-                if (!Directory.Exists(tmpZippedFolder))
-                    Directory.CreateDirectory(tmpZippedFolder);
 
                 if (Directory.Exists(tmpFolder + bucketName))
                     Directory.Delete(tmpFolder + bucketName, true);
 
-                if (Directory.Exists(tmpZippedFolder + bucketName + ".zip"))
-                    Directory.Delete(tmpZippedFolder + bucketName + ".zip", true);
+                if (!Directory.Exists(tmpFolder + bucketName))
+                    Directory.CreateDirectory(tmpFolder + bucketName);
 
-                Directory.CreateDirectory(tmpFolder + bucketName);
-
-                var zipPath = $"{tmpZippedFolder}{bucketName}.zip";
                 //await _storage.DownloadFolder(bucketName, $"releases\\{request["version"]}", tmpFolder + bucketName);
-                await _storage.Download(bucketName, $"releases\\{request["version"]}\\{request["version"]}.zip", zipPath);
-
-                /*try
-                {
-                    ZipFile.CreateFromDirectory(tmpFolder + bucketName, zipPath);
-                }
-                catch (Exception e)
-                {
-                    return new HttpResponseMessage(HttpStatusCode.BadRequest);
-                }*/
+                await _storage.DownloadByPath(request["bucket_name"].ToString() + request["path"], request["key"].ToString(), tmpFolder + bucketName + "\\" + request["key"]);
 
                 var response = new HttpResponseMessage(HttpStatusCode.OK);
-                var stream = new FileStream(zipPath, FileMode.Open);
+                var stream = new FileStream(tmpFolder + bucketName + "\\" + request["key"], FileMode.Open);
                 response.Content = new StreamContent(stream);
                 response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
 

@@ -8,8 +8,8 @@ angular.module('primeapps')
                 createPackage: function (data) {
                     return $http.post(config.apiUrl + 'package/create', data);
                 },
-                getLastDeployment: function () {
-                    return $http.get(config.apiUrl + 'publish/get_last_deployment');
+                getPackage: function (id) {
+                    return $http.get(config.apiUrl + 'package/get/' + id);
                 },
                 getAll: function () {
                     var promises = [];
@@ -283,7 +283,7 @@ angular.module('primeapps')
                     promises.push($http.get(config.apiUrl + 'profile/get_all_basic'));
                     promises.push($http.get(config.apiUrl + "app/get/" + $rootScope.currentAppId));
                     promises.push($http.get(config.apiUrl + 'app_collaborator/get_user_profile'));
-                    promises.push($http.get(config.apiUrl + 'publish/get_active_process'));
+                    promises.push($http.get(config.apiUrl + 'package/get_active_process'));
                     return $q.all(promises)
                         .then(function (response) {
                             $rootScope.appModules = response[0].data;

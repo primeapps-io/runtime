@@ -54,7 +54,7 @@ namespace PrimeApps.Studio.Helpers
 
         public async Task Database(string sql, DateTime executedAt, string createdByEmail, CurrentUser currentUser, Guid commandId)
         {
-            var tableName = GetTableName(sql);
+            var tableName = Model.Helpers.ReleaseHelper.GetTableName(sql);
 
             using (var scope = _serviceScopeFactory.CreateScope())
             {
@@ -101,15 +101,6 @@ namespace PrimeApps.Studio.Helpers
                     await historyStorage.Create(history);
                 }
             }
-        }
-
-        public static string GetTableName(string query)
-        {
-            Regex nameExtractor = new Regex("((?<=INSERT\\sINTO\\s)|(?<=UPDATE\\s)|(?<=DELETE\\sFROM\\s))([^\\s]+)");
-
-            Match match = nameExtractor.Match(query);
-
-            return match.Value;
         }
     }
 }

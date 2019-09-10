@@ -146,23 +146,32 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     'X-App-Id': $rootScope.currentAppId,
                     'X-Tenant-Id': $rootScope.currentTenantId,
                     'X-Organization-Id': $rootScope.currentOrgId,
-                    'release_id': id
+                    'package_id': id
                 }));
             };
             $scope.socket.onclose = function (e) {
-                if ($rootScope.goLive.logs.contains('********** Package Created **********')) {
+                if ($rootScope.goLive && $rootScope.goLive.logs && $rootScope.goLive.logs.contains('********** Package Created **********')) {
                     toastr.success("Your package is ready.");
 
                     $rootScope.goLive.status = false;
                     $scope.$apply();
                 }
-                /*else if ($scope.type === 'publish' || $rootScope.goLive.logs.contains('********** Publish End**********')) {
-                    toastr.success("Publish completed successfully.");
-                    $rootScope.currentApp.status = "published";
-                    $rootScope.goLive.status = false;
-                    $scope.$apply();
-                }*/
+                else {
+                    LayoutService.getPackage(id)
+                        .then(function (response) {
+                            if (response.data) {
+                                if (response.data.status === 'succeed') {
+                                    toastr.success("Your package is ready.");
+                                }
+                                else {
+                                    toastr.success("An unexpected error occurred while creating a package.");
+                                }
 
+                                $rootScope.goLive.status = false;
+                                $scope.$apply();
+                            }
+                        });
+                }
             };
             $scope.socket.onerror = function (e) {
                 //$scope.publishError = e.data;

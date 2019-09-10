@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace PrimeApps.Admin.Helpers
 {
@@ -70,7 +71,7 @@ namespace PrimeApps.Admin.Helpers
 
         public async Task<Package> PackageLastDeployment()
         {
-            var response = await _client.GetAsync($"publish/get_last_deployment");
+            var response = await _client.GetAsync($"package/get_last");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -139,7 +140,6 @@ namespace PrimeApps.Admin.Helpers
                 throw new Exception($"Method of Get App Draft result {response.StatusCode}. Application Id: {AppId}, Organization Id: {OrgId}, Response: {errorData}");
 
             }
-
             var data = await response.Content.ReadAsAsync<AppDraft>();
 
             return data;

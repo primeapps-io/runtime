@@ -110,118 +110,33 @@ namespace PrimeApps.Admin.Helpers
                 }
 
                 var dbName = previewMode + (previewMode == "tenant" ? tenantId : appId);
-                //var logType = wsParameters["type"].ToString();
 
-                /*if (!string.IsNullOrEmpty(logType))
-                {
-                    if (logType == "release")
-                        await ReleaseLog(wSocket, wsParameters, result, dbName, appId);
-
-                    else if (logType == "distribute")
-                        await DistributeLog(wSocket, wsParameters, result, dbName, appId);
-                }*/
-
-                var releaseIdResult = int.TryParse(wsParameters["release_id"].ToString(), out var releaseId);
+                /*var releaseIdResult = int.TryParse(wsParameters["package_id"].ToString(), out var releaseId);
 
                 if (!releaseIdResult)
                 {
                     await wSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
                     await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
                     throw new Exception("Release id not found.");
-                }
+                }*/
 
                 while (result.MessageType != WebSocketMessageType.Close)
                 {
                     string text;
-                    Package package;
-                    //AppDraft app = null;
-                    //JObject releaseOptions;
                     using (var scope = _serviceScopeFactory.CreateScope())
                     {
-                        var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+                        var databaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 
-                        using (var packageRepository = new PackageRepository(databaseContext, _configuration))
-                        using (var appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
+                        using (var releaseRepository = new ReleaseRepository(databaseContext, _configuration))
                         {
-                            var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+                            var processActive = await releaseRepository.IsThereRunningProcess(appId);
 
-                            package = await packageRepository.Get(releaseId);
-                            //releaseOptions = JObject.Parse(package.Settings);
-
-                            /*if (releaseOptions["type"].ToString() == "publish")
-                                app = await appDraftRepository.Get(appId);*/
-
-                            using (var fs = new FileStream($"{path}\\releases\\{dbName}\\{package.Version}\\log.txt", FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                            using (var sr = new StreamReader(fs, Encoding.Default))
-                            {
-                                text = ConvertHelper.ASCIIToHTML(sr.ReadToEnd());
-
-                                if (package.Status != ReleaseStatus.Succeed && text.Contains("********** Package Created **********"))
-                                {
-                                    try
-                                    {
-                                        package.Status = ReleaseStatus.Succeed;
-                                        await packageRepository.Update(package);
-
-                                        var bucketName = UnifiedStorage.GetPath("releases", previewMode, previewMode == "tenant" ? tenantId : appId, package.Version + "/");
-
-                                        var _storage = (IUnifiedStorage)hContext.RequestServices.GetService(typeof(IUnifiedStorage));
-                                        await _storage.UploadDirAsync(bucketName, $"{path}releases\\{dbName}\\{package.Version}");
-                                        sr.Close();
-                                        fs.Close();
-
-                                        Directory.Delete($"{path}releases\\{dbName}\\{package.Version}", true);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        Console.WriteLine(e);
-                                        throw;
-                                    }
-                                }
-                                /*if (app != null && app.Status != PublishStatus.Published && text.Contains("********** Publish End**********"))
-                                {
-                                    /*release.Status = ReleaseStatus.Succeed;
-                                    release.Published = true;
-                                    await releaseRepository.Update(release);//
-
-                                    release.Status = ReleaseStatus.Succeed;
-                                    await releaseRepository.Update(release);
-
-                                    app.Status = PublishStatus.Published;
-                                    await appDraftRepository.Update(app);
-
-                                    release.Published = true;
-                                    await releaseRepository.Update(release);
-
-                                    var bucketName = UnifiedStorage.GetPath("releases", previewMode, previewMode == "tenant" ? tenantId : appId, "/" + release.Version + "/");
-
-                                    var _storage = (IUnifiedStorage)hContext.RequestServices.GetService(typeof(IUnifiedStorage));
-                                    await _storage.UploadDirAsync(bucketName, $"{path}releases\\{dbName}\\{release.Version}");
-                                    
-                                    
-                                    sr.Close();
-                                    fs.Close();
-                                            
-                                    Directory.Delete($"{path}releases\\{dbName}\\{release.Version}", true);
-                                    /* 
-                                    var bucketName = UnifiedStorage.GetPath("releases", null, appId, "/" + release.Version + "/");
-    
-                                    var _storage = (IUnifiedStorage)hContext.RequestServices.GetService(typeof(IUnifiedStorage));
-                                    await _storage.UploadDirAsync(bucketName, $"{path}\\releases\\{dbName}\\{release.Version}");
-                                    //
-                                }*/
-                                else if (text.Contains("Error"))
-                                    await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
-                            }
+                            if (!processActive)
+                                await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
                         }
                     }
 
-                    await wSocket.SendAsync(CreateWSMessage(text), result.MessageType, result.EndOfMessage, CancellationToken.None);
-
-                    //if ((release.Status != ReleaseStatus.Running && releaseOptions["type"].ToString() == "package") || (app != null && app.Status == PublishStatus.Published && releaseOptions["type"].ToString() == "publish"))
-                    if (package.Status != ReleaseStatus.Running)
-                        await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
-
+                    await wSocket.SendAsync(CreateWSMessage("There is active process."), result.MessageType, result.EndOfMessage, CancellationToken.None);
                     Thread.Sleep(2000);
                 }
             }

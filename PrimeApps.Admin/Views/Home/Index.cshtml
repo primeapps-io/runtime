@@ -1,7 +1,8 @@
 ﻿@using PrimeApps.Model.Common.Organization
 @{
     var organizations = ViewBag.Organizations as List<OrganizationModel>;
-    var apps = organizations?.FirstOrDefault(x => x.Id == int.Parse(ViewBag.ActiveOrganizationId))?.Apps;
+    var currentOrganizationId = ViewBag.ActiveOrganizationId;
+    var apps = organizations?.FirstOrDefault(x => x.Id == int.Parse(currentOrganizationId))?.Apps;
 }
 <div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
     <div class="container-fluid">
@@ -13,11 +14,11 @@
                     foreach (var app in apps)
                     {
                         <div class="col-xl-3 col-lg-6 b-card">
-                            <div class="card card-stats mb-4 mb-xl-0" style="cursor:pointer;" onclick="location.href='@Url.Action("Index", "Package", new { appId = app.Id, orgId = ViewBag.ActiveOrganizationId})'">
+                            <div class="card card-stats mb-4 mb-xl-0" style="cursor: pointer;" onclick="location.href = '@Url.Action("Index", "Package", new {appId = app.Id, orgId = ViewBag.ActiveOrganizationId})'">
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col">
-                                            <h5 class="card-title text-uppercase text-muted mb-0">Application Label</h5> 
+                                            <h5 class="card-title text-uppercase text-muted mb-0">Application Label</h5>
                                             <span class="h2 font-weight-bold mb-0">@app.Label</span>
                                             <p class="mt-3 mb-0 text-muted text-sm">
                                                 <span class="text-nowrap">Name: @app.Name</span>
@@ -43,7 +44,7 @@
             {
                 <div class="row">
                     <div class="col-xl-3 col-lg-6 b-card">
-                        <div class="card card-stats mb-4 mb-xl-0" style="cursor:pointer;">
+                        <div class="card card-stats mb-4 mb-xl-0" style="cursor: pointer;">
                             <div class="card-body">
                                 <div class="row">
                                     @ViewBag.lastVersion.Version

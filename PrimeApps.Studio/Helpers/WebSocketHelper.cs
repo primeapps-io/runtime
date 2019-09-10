@@ -122,7 +122,7 @@ namespace PrimeApps.Studio.Helpers
                         await DistributeLog(wSocket, wsParameters, result, dbName, appId);
                 }*/
 
-                var releaseIdResult = int.TryParse(wsParameters["release_id"].ToString(), out var releaseId);
+                var releaseIdResult = int.TryParse(wsParameters["package_id"].ToString(), out var releaseId);
 
                 if (!releaseIdResult)
                 {
@@ -157,80 +157,11 @@ namespace PrimeApps.Studio.Helpers
                             {
                                 text = ConvertHelper.ASCIIToHTML(sr.ReadToEnd());
 
-                                if (package.Status != ReleaseStatus.Succeed && text.Contains("********** Package Created **********"))
-                                {
-                                    try
-                                    {
-                                        package.Status = ReleaseStatus.Succeed;
-                                        await packageRepository.Update(package);
-
-                                        var bucketName = UnifiedStorage.GetPath("releases", previewMode, previewMode == "tenant" ? tenantId : appId, package.Version + "/");
-
-                                        var _storage = (IUnifiedStorage)hContext.RequestServices.GetService(typeof(IUnifiedStorage));
-                                        try
-                                        {
-                                            using (var fileStream = new FileStream($"{path}releases\\{dbName}\\{dbName}.zip", FileMode.OpenOrCreate))
-                                            {
-                                                PutObjectRequest request = new PutObjectRequest()
-                                                {
-                                                    BucketName = bucketName,
-                                                    Key = $"{package.Version}.zip",
-                                                    InputStream = fileStream,
-                                                    ContentType = "application/zip"
-                                                };
-                                                await _storage.Upload(request);
-                                            }
-
-                                            //await _storage.UploadDirAsync(bucketName, $"{path}releases\\{dbName}\\{dbName}.zip");
-                                        }
-                                        catch (Exception e)
-                                        {
-                                        }
-
-                                        sr.Close();
-                                        fs.Close();
-
-                                        Directory.Delete($"{path}releases\\{dbName}\\{package.Version}", true);
-                                        File.Delete($"{path}releases\\{dbName}\\{dbName}.zip");
-                                    }
-                                    catch (Exception e)
-                                    {
-                                    }
-                                }
-                                /*if (app != null && app.Status != PublishStatus.Published && text.Contains("********** Publish End**********"))
-                                {
-                                    /*release.Status = ReleaseStatus.Succeed;
-                                    release.Published = true;
-                                    await releaseRepository.Update(release);//
-
-                                    release.Status = ReleaseStatus.Succeed;
-                                    await releaseRepository.Update(release);
-
-                                    app.Status = PublishStatus.Published;
-                                    await appDraftRepository.Update(app);
-
-                                    release.Published = true;
-                                    await releaseRepository.Update(release);
-
-                                    var bucketName = UnifiedStorage.GetPath("releases", previewMode, previewMode == "tenant" ? tenantId : appId, "/" + release.Version + "/");
-
-                                    var _storage = (IUnifiedStorage)hContext.RequestServices.GetService(typeof(IUnifiedStorage));
-                                    await _storage.UploadDirAsync(bucketName, $"{path}releases\\{dbName}\\{release.Version}");
-                                    
-                                    
-                                    sr.Close();
-                                    fs.Close();
-                                            
-                                    Directory.Delete($"{path}releases\\{dbName}\\{release.Version}", true);
-                                    /* 
-                                    var bucketName = UnifiedStorage.GetPath("releases", null, appId, "/" + release.Version + "/");
-    
-                                    var _storage = (IUnifiedStorage)hContext.RequestServices.GetService(typeof(IUnifiedStorage));
-                                    await _storage.UploadDirAsync(bucketName, $"{path}\\releases\\{dbName}\\{release.Version}");
-                                    //
-                                }*/
-                                else if (text.Contains("Error"))
+                                if (text.Contains("Error"))
                                     await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
+                                
+                                sr.Close();
+                                fs.Close();
                             }
                         }
                     }
