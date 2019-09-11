@@ -166,7 +166,7 @@ namespace PrimeApps.Studio.Helpers
 
                                             switch (module.Name)
                                             {
-                                                case "branchs":
+                                                case "branches":
                                                     if (isBranch != null && isBranch.Value == "t")
                                                     {
                                                         using (var roleRepository = new RoleRepository(databaseContext, warehouse, _configuration))
@@ -2455,7 +2455,7 @@ namespace PrimeApps.Studio.Helpers
 
                                                         using (var roleRepository = new RoleRepository(databaseContext, warehouse, _configuration))
                                                         {
-                                                            var branchModule = await moduleRepository.GetByName("branchs");
+                                                            var branchModule = await moduleRepository.GetByName("branches");
                                                             var calisanlar = await moduleRepository.GetByName("calisanlar");
                                                             var calisanRecord = recordRepository.GetById(calisanlar, recordId);
                                                             if (!calisanRecord["profile"].IsNullOrEmpty() && !calisanRecord["branch"].IsNullOrEmpty())

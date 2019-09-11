@@ -1,4 +1,5 @@
-﻿using PrimeApps.Model.Entities.Tenant;
+﻿using PrimeApps.Model.Common;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,10 @@ namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface ISettingRepository : IRepositoryBaseTenant
     {
+        Task<ICollection<Setting>> Find(PaginationModel paginationModel);
+        Task<int> Count();
         Task<Setting> GetById(int id);
+        Task<Setting> GetByIdWithType(int id, SettingType type);
         Task<IList<Setting>> GetAllSettings();
         Task<IList<Setting>> GetAllSettings(int userId);
         IList<Setting> Get(SettingType settingType);

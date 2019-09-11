@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -19,10 +20,48 @@ namespace PrimeApps.Model.Repositories
         {
         }
 
+        public async Task<ICollection<Setting>> Find(PaginationModel paginationModel)
+        {
+            var settings = DbContext.Settings
+                .Where(x => !x.Deleted && x.Type == SettingType.Custom)
+                .Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit);
+
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
+
+                if (paginationModel.OrderType == "asc")
+                {
+                    settings = settings.OrderBy(x => propertyInfo.GetValue(x, null));
+                }
+                else
+                {
+                    settings = settings.OrderByDescending(x => propertyInfo.GetValue(x, null));
+                }
+            }
+
+            return await settings.ToListAsync();
+        }
+
+        public async Task<int> Count()
+        {
+            return await DbContext.Settings
+                .Where(x => !x.Deleted && x.Type == SettingType.Custom).CountAsync();
+        }
+
         public async Task<Setting> GetById(int id)
         {
             var setting = await DbContext.Settings
                 .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
+
+            return setting;
+        }
+
+        public async Task<Setting> GetByIdWithType(int id, SettingType type)
+        {
+            var setting = await DbContext.Settings
+                .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id && x.Type == type);
 
             return setting;
         }

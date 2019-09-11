@@ -155,6 +155,14 @@
                     <span>Spreadsheet </span>
                 </a>
             </li>
+            
+            <li ng-class="activeMenuItem ==='appEmailTemplates' ? 'active' :''">
+                <a href="/#/org/{{orgId}}/app/{{appId}}/appEmailTemplates" data-trigger="hover" data-type="info"
+                   data-title="App Email Templates" bs-tooltip data-placement="right">
+                    <i class="fas fa-at"></i>
+                    <span>App Email Templates</span>
+                </a>
+            </li>
 
         </ul>
     </li>
@@ -275,6 +283,13 @@
                    data-title="Extensions" bs-tooltip data-placement="right">
                     <i class="fas fa-plug"></i>
                     <span>Extensions</span>
+                </a>
+            </li>
+            <li ng-class="activeMenuItem ==='customsettings' ?  'active' :''">
+                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/customsettings" data-trigger="hover" data-type="info"
+                   data-title="Settings" bs-tooltip data-placement="right">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
                 </a>
             </li>
         </ul>
