@@ -84,10 +84,12 @@ namespace PrimeApps.App.Helpers
 
             string tmpl = "",
                    appUrl = "",
+                   appTitle = "",
+                   appDescription = "",
                    appName = "",
                    appCodeUrl = "",
                    appColor = "",
-                appLogo = "",
+                   appLogo = "",
                    socialMediaIcons = "",
                    footer = "",
                    resourceTypeName = "";
@@ -127,7 +129,7 @@ namespace PrimeApps.App.Helpers
                     socialMediaIcons = "true";
                     footer = appInfo.Label;
                     appLogo = appTheme["logo"].ToString();
-
+                    appTitle = appTheme["title"].ToString();
 
 
                     tRepo.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
@@ -145,15 +147,14 @@ namespace PrimeApps.App.Helpers
                     if (!string.IsNullOrEmpty(instance.Setting?.MailSenderName) && !string.IsNullOrEmpty(instance.Setting?.MailSenderEmail))
                     {
                         appUrl = instance.Setting.Logo;
-                        appCodeUrl = "#";
+                        appCodeUrl = instance.Setting.CustomDomain;
                         appName = instance.Setting.MailSenderName;
+                        appTitle = instance.Setting.CustomTitle;
                         socialMediaIcons = "none";
                         footer = instance.Setting.MailSenderName;
+                        appLogo = instance.Setting.Logo;
+                        appDescription = instance.Setting.CustomDescription;
 
-                        if (instance.Setting.MailSenderEmail.Contains("@etiya.com"))
-                        {
-                            appLogo = "none";
-                        }
                     }
                 }
             }
@@ -167,6 +168,8 @@ namespace PrimeApps.App.Helpers
             tmpl = tmpl.Replace("{{SOCIAL_ICONS}}", socialMediaIcons);
             tmpl = tmpl.Replace("{{FOOTER}}", footer);
             tmpl = tmpl.Replace("{{APP_LOGO}}", appLogo);
+            tmpl = tmpl.Replace("{{APP_TITLE}}", appTitle);
+            tmpl = tmpl.Replace("{{APP_DESCRIPTION}}", appDescription);
             int startIndex = tmpl.IndexOf("{{F}}");
             int lastIndex = tmpl.IndexOf("{{/F}}");
 

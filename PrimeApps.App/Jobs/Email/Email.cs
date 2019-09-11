@@ -27,45 +27,45 @@ namespace PrimeApps.App.Jobs.Email
     /// Schedules and send email messages application wide.
     /// </summary>
     public class Email
-	{
-		private static IConfiguration _configuration;
-		private static IServiceScopeFactory _serviceScopeFactory;
+    {
+        private static IConfiguration _configuration;
+        private static IServiceScopeFactory _serviceScopeFactory;
 
-		public Email(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
-		{
-			_configuration = configuration;
-			_serviceScopeFactory = serviceScopeFactory;
-		}
+        public Email(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+        {
+            _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
+        }
 
-		public static object Messaging { get; internal set; }
+        public static object Messaging { get; internal set; }
 
-		/// <summary>
-		/// Checks database for new email records and transmits it if there is new one.
-		/// </summary>
-		/// <returns></returns>
-		[QueueCustom]
-		public bool TransmitMail(EmailEntry mail)
-		// public bool TransmitMail(EmailEntry mail)
-		{
-			bool status = false;
+        /// <summary>
+        /// Checks database for new email records and transmits it if there is new one.
+        /// </summary>
+        /// <returns></returns>
+        [QueueCustom]
+        public bool TransmitMail(EmailEntry mail)
+        // public bool TransmitMail(EmailEntry mail)
+        {
+            bool status = false;
 
-			// get a record by the queue algorithm from database.
+            // get a record by the queue algorithm from database.
 
-			if (mail != null)
-			{
-				if (mail.EmailTo == null || mail.EmailTo.Count < 1)
-					throw new Exception("EmailTo cannot be null.");
+            if (mail != null)
+            {
+                if (mail.EmailTo == null || mail.EmailTo.Count < 1)
+                    throw new Exception("EmailTo cannot be null.");
 
-				// create smtp client and mail message objects
-				SmtpClient smtpClient = null;
-				MailMessage myMessage;
-				var smtpHostSetting = _configuration.GetValue("AppSettings:EmailSMTPHost", string.Empty);
+                // create smtp client and mail message objects
+                SmtpClient smtpClient = null;
+                MailMessage myMessage;
+                var smtpHostSetting = _configuration.GetValue("AppSettings:EmailSMTPHost", string.Empty);
 
-				if (!string.IsNullOrEmpty(smtpHostSetting))
-				{
-					var smtpUserSetting = _configuration.GetValue("AppSettings:EmailSMTPUser", string.Empty);
-					var smtpPasswordSetting = _configuration.GetValue("AppSettings:EmailSMTPPassword", string.Empty);
-                    var emailSMTPEnableSsl = _configuration.GetValue("AppSettings:EmailSMTPEnableSsl", string.Empty);		
+                if (!string.IsNullOrEmpty(smtpHostSetting))
+                {
+                    var smtpUserSetting = _configuration.GetValue("AppSettings:EmailSMTPUser", string.Empty);
+                    var smtpPasswordSetting = _configuration.GetValue("AppSettings:EmailSMTPPassword", string.Empty);
+                    var emailSMTPEnableSsl = _configuration.GetValue("AppSettings:EmailSMTPEnableSsl", string.Empty);
                     var smtpPortSetting = _configuration.GetValue("AppSettings:EmailSMTPPort", string.Empty);
 
                     smtpClient = new SmtpClient(smtpHostSetting, int.Parse(smtpPortSetting))
@@ -78,84 +78,84 @@ namespace PrimeApps.App.Jobs.Email
                         EnableSsl = bool.Parse(emailSMTPEnableSsl)
                     };
                 }
-				// get configuration settings from appsetting and apply them.
+                // get configuration settings from appsetting and apply them.
 
-				var emailAddress = new EmailAddressAttribute();
+                var emailAddress = new EmailAddressAttribute();
 
-				// generate email message
-				myMessage = new MailMessage()
-				{
-					From = new MailAddress(mail.EmailFrom, mail.FromName),
-					Subject = mail.Subject,
-					Body = mail.Body,
-					IsBodyHtml = true
-				};
+                // generate email message
+                myMessage = new MailMessage()
+                {
+                    From = new MailAddress(mail.EmailFrom, mail.FromName),
+                    Subject = mail.Subject,
+                    Body = mail.Body,
+                    IsBodyHtml = true
+                };
 
                 myMessage.SubjectEncoding = System.Text.Encoding.UTF8;
                 myMessage.BodyEncoding = System.Text.Encoding.UTF8;
 
                 foreach (var to in mail.EmailTo)
-				{
-					if (string.IsNullOrWhiteSpace(to) || !emailAddress.IsValid(to))
-						continue;
+                {
+                    if (string.IsNullOrWhiteSpace(to) || !emailAddress.IsValid(to))
+                        continue;
 
-					//kullanıcı e-postası pre__ ile başlayan kullanıcıları filtreleme
-					myMessage.To.Add(Regex.Replace(to, "^pre__", ""));
-				}
+                    //kullanıcı e-postası pre__ ile başlayan kullanıcıları filtreleme
+                    myMessage.To.Add(Regex.Replace(to, "^pre__", ""));
+                }
 
-				if (!string.IsNullOrWhiteSpace(mail.CC))
-				{
-					var ccList = mail.CC.Split(',');
-					foreach (var cc in ccList)
-					{
-						if (string.IsNullOrWhiteSpace(cc) || !emailAddress.IsValid(cc))
-							continue;
+                if (!string.IsNullOrWhiteSpace(mail.CC))
+                {
+                    var ccList = mail.CC.Split(',');
+                    foreach (var cc in ccList)
+                    {
+                        if (string.IsNullOrWhiteSpace(cc) || !emailAddress.IsValid(cc))
+                            continue;
 
-						myMessage.CC.Add(cc);
-					}
-				}
+                        myMessage.CC.Add(cc);
+                    }
+                }
 
-				if (!string.IsNullOrWhiteSpace(mail.Bcc))
-				{
-					var bccList = mail.Bcc.Split(',');
+                if (!string.IsNullOrWhiteSpace(mail.Bcc))
+                {
+                    var bccList = mail.Bcc.Split(',');
 
-					foreach (var bcc in bccList)
-					{
-						if (string.IsNullOrWhiteSpace(bcc) || !emailAddress.IsValid(bcc))
-							continue;
+                    foreach (var bcc in bccList)
+                    {
+                        if (string.IsNullOrWhiteSpace(bcc) || !emailAddress.IsValid(bcc))
+                            continue;
 
-						myMessage.Bcc.Add(bcc);
-					}
-				}
+                        myMessage.Bcc.Add(bcc);
+                    }
+                }
 
-				// transmit it.
-				if (myMessage.To.Count > 0)
-				smtpClient.Send(myMessage);
+                // transmit it.
+                if (myMessage.To.Count > 0)
+                    smtpClient.Send(myMessage);
 
-				// set status to true
-				status = true;
-			}
+                // set status to true
+                status = true;
+            }
 
-			// return status.
-			return status;
-		}
+            // return status.
+            return status;
+        }
 
-		[QueueCustom]
-		public bool TransmitMail(EmailEntry email, int tenantId, int moduleId, int recordId, UserItem appUser, bool addRecordSummary = true)
-		{
-			bool status = false;
+        [QueueCustom]
+        public bool TransmitMail(EmailEntry email, int tenantId, int moduleId, int recordId, UserItem appUser, bool addRecordSummary = true)
+        {
+            bool status = false;
 
-			if (email != null)
-			{
-				// create smtp client and mail message objects
-				SmtpClient smtpClient = null;
-				MailMessage myMessage;
-				var smtpHostSetting = _configuration.GetValue("AppSettings:EmailSMTPHost", string.Empty);
+            if (email != null)
+            {
+                // create smtp client and mail message objects
+                SmtpClient smtpClient = null;
+                MailMessage myMessage;
+                var smtpHostSetting = _configuration.GetValue("AppSettings:EmailSMTPHost", string.Empty);
 
-				if (!string.IsNullOrEmpty(smtpHostSetting))
-				{
-					var smtpUserSetting = _configuration.GetValue("AppSettings:EmailSMTPUser", string.Empty);
-					var smtpPasswordSetting = _configuration.GetValue("AppSettings:EmailSMTPPassword", string.Empty);
+                if (!string.IsNullOrEmpty(smtpHostSetting))
+                {
+                    var smtpUserSetting = _configuration.GetValue("AppSettings:EmailSMTPUser", string.Empty);
+                    var smtpPasswordSetting = _configuration.GetValue("AppSettings:EmailSMTPPassword", string.Empty);
                     var emailSMTPEnableSsl = _configuration.GetValue("AppSettings:EmailSMTPEnableSsl", string.Empty);
                     var smtpPortSetting = _configuration.GetValue("AppSettings:EmailSMTPPort", string.Empty);
 
@@ -170,85 +170,108 @@ namespace PrimeApps.App.Jobs.Email
                         EnableSsl = bool.Parse(emailSMTPEnableSsl)
                     };
                 }
-				// parse subject and body
-				var subject = AsyncHelpers.RunSync(() => ParseDynamicContent(email.Subject, tenantId, moduleId, recordId, appUser, false));
-				var body = AsyncHelpers.RunSync(() => ParseDynamicContent(email.Body, tenantId, moduleId, recordId, appUser, addRecordSummary));
+                // parse subject and body
+                var subject = AsyncHelpers.RunSync(() => ParseDynamicContent(email.Subject, tenantId, moduleId, recordId, appUser, false));
+                var body = AsyncHelpers.RunSync(() => ParseDynamicContent(email.Body, tenantId, moduleId, recordId, appUser, addRecordSummary));
 
-				var emailAddress = new EmailAddressAttribute();
+                var emailAddress = new EmailAddressAttribute();
 
-				// generate email message
-				myMessage = new MailMessage()
-				{
-					From = new MailAddress(email.EmailFrom, email.FromName),
-					Subject = subject,
-					Body = body,
-					IsBodyHtml = true
-				};
+                // generate email message
+                myMessage = new MailMessage()
+                {
+                    From = new MailAddress(email.EmailFrom, email.FromName),
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = true
+                };
 
                 myMessage.SubjectEncoding = System.Text.Encoding.UTF8;
                 myMessage.BodyEncoding = System.Text.Encoding.UTF8;
 
                 foreach (var to in email.EmailTo)
-				{
-					if (string.IsNullOrWhiteSpace(to) || !emailAddress.IsValid(to))
-						continue;
+                {
+                    if (string.IsNullOrWhiteSpace(to) || !emailAddress.IsValid(to))
+                        continue;
 
-					myMessage.To.Add(to);
-				}
+                    myMessage.To.Add(to);
+                }
 
-				if (!string.IsNullOrWhiteSpace(email.CC))
-				{
-					var ccList = email.CC.Split(',');
-					foreach (var cc in ccList)
-					{
-						myMessage.CC.Add(cc);
-					}
-				}
+                if (!string.IsNullOrWhiteSpace(email.CC))
+                {
+                    var ccList = email.CC.Split(',');
+                    foreach (var cc in ccList)
+                    {
+                        myMessage.CC.Add(cc);
+                    }
+                }
 
-				if (!string.IsNullOrWhiteSpace(email.Bcc))
-				{
-					var bccList = email.Bcc.Split(',');
+                if (!string.IsNullOrWhiteSpace(email.Bcc))
+                {
+                    var bccList = email.Bcc.Split(',');
 
-					foreach (var bcc in bccList)
-					{
-						myMessage.Bcc.Add(bcc);
-					}
-				}
+                    foreach (var bcc in bccList)
+                    {
+                        myMessage.Bcc.Add(bcc);
+                    }
+                }
 
-				// transmit it.
-				if (myMessage.To.Count > 0)
-				smtpClient.Send(myMessage);
+                // transmit it.
+                if (myMessage.To.Count > 0)
+                    smtpClient.Send(myMessage);
 
-				// set status to true
-				status = true;
-			}
+                // set status to true
+                status = true;
+            }
 
-			// return status.
-			return status;
-		}
+            // return status.
+            return status;
+        }
 
-		private static async Task<string> ParseDynamicContent(string content, int tenantId, int moduleId, int recordId, UserItem appUser, bool addRecordSummary = true)
-		{
-			var pattern = new Regex(@"{(.*?)}");
-			var contentFields = new List<string>();
-			var matches = pattern.Matches(content);
+        private static async Task<string> ParseDynamicContent(string content, int tenantId, int moduleId, int recordId, UserItem appUser, bool addRecordSummary = true)
+        {
+            var pattern = new Regex(@"{(.*?)}");
+            var contentFields = new List<string>();
+            var matches = pattern.Matches(content);
 
-			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
-			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+            var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+            previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
 
-			Tenant subscriber = null;
-			using (var scope = _serviceScopeFactory.CreateScope())
-			{
-				var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-				var tenantDatabaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+            Tenant subscriber = null;
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                var tenantDatabaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 
-				using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))//, cacheHelper))
-				{
-					subscriber = await tenantRepository.GetAsync(tenantId);
-				}
+                string appDomain = "",
+                    appLogo = "",
+                  appTitle = "",
+                  appDescription = "",
+                  appCodeUrl = "",
+                  appColor = "";
 
-				/*
+                using (var applicationRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                using (var platformRepository = new PlatformRepository(platformDatabaseContext, _configuration))
+
+                using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))//, cacheHelper))
+                {
+                    var appInfo = applicationRepository.GetAppById(appUser.AppId);
+                    subscriber = await tenantRepository.GetAsync(tenantId);
+                    var appTheme = JToken.Parse(appInfo.Setting.AppTheme);
+
+                    appDomain = !string.IsNullOrEmpty(subscriber.Setting.CustomDomain) ? subscriber.Setting.CustomDomain : appInfo.Setting.AppDomain;
+                    appLogo = !string.IsNullOrEmpty(subscriber.Setting.Logo) ? subscriber.Setting.Logo : appTheme["logo"].ToString();
+                    appTitle = !string.IsNullOrEmpty(subscriber.Setting.CustomTitle) ? subscriber.Setting.CustomTitle : appTheme["title"].ToString();
+                    appColor = !string.IsNullOrEmpty(subscriber.Setting.CustomColor) ? subscriber.Setting.CustomColor : appTheme["color"].ToString();
+
+                    content = content.Replace("{{APP_URL}}", appDomain);
+                    content = content.Replace("{{APP_TITLE}}", appTitle);
+                    content = content.Replace("{{APP_LOGO}}", appLogo);
+                    content = content.Replace("{{APP_COLOR}}", appColor);
+
+                }
+
+                /*
 			PlatformUser subscriber = null;
 
 			using (var platformDBContext = new PlatformDBContext())
@@ -257,126 +280,128 @@ namespace PrimeApps.App.Jobs.Email
 				subscriber = await platformUserRepository.GetWithTenant(tenantId);
 			}
 			*/
-				foreach (object match in matches)
-				{
-					string fieldName = match.ToString().Replace("{", "").Replace("}", "");
 
-					if (!contentFields.Contains(fieldName))
-					{
-						contentFields.Add(fieldName);
-					}
-				}
 
-				using (var moduleRepository = new ModuleRepository(tenantDatabaseContext, _configuration))
-				using (var picklistRepository = new PicklistRepository(tenantDatabaseContext, _configuration))
-				using (var recordRepository = new RecordRepository(tenantDatabaseContext, _configuration))
-				{
+                foreach (object match in matches)
+                {
+                    string fieldName = match.ToString().Replace("{", "").Replace("}", "");
 
-					moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : tenantId, UserId = appUser.Id, PreviewMode = previewMode };
+                    if (!contentFields.Contains(fieldName))
+                    {
+                        contentFields.Add(fieldName);
+                    }
+                }
 
-					var module = await moduleRepository.GetById(moduleId);
-					var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository, tenantLanguage: subscriber.Setting.Language);
-					var record = recordRepository.GetById(module, recordId, false, lookupModules, true);
+                using (var moduleRepository = new ModuleRepository(tenantDatabaseContext, _configuration))
+                using (var picklistRepository = new PicklistRepository(tenantDatabaseContext, _configuration))
+                using (var recordRepository = new RecordRepository(tenantDatabaseContext, _configuration))
+                {
 
-					if (!record.IsNullOrEmpty())
-					{
-						record = await RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, _configuration, subscriber.GuidId, subscriber.Setting.Language, subscriber.Setting.Culture, 180, lookupModules, true);
+                    moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : tenantId, UserId = appUser.Id, PreviewMode = previewMode };
 
-						if (contentFields.Count > 0)
-						{
-							foreach (var field in contentFields)
-							{
-								if (!record[field].IsNullOrEmpty())
-									content = content.Replace($"{{{field}}}", record[field].ToString());
-								else
-									content = content.Replace($"{{{field}}}", "");
-							}
-						}
+                    var module = await moduleRepository.GetById(moduleId);
+                    var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository, tenantLanguage: subscriber.Setting.Language);
+                    var record = recordRepository.GetById(module, recordId, false, lookupModules, true);
 
-						if (addRecordSummary)
-						{
-							var recordTable = "";
-							var recordRow = "<table style=\"width:100%;height:30px\"; border=\"0\" cellpadding=\"0\" cellspacing=\"0\" ><tr><td style=\"border: solid 1px #e5e8ec; background-color:#f1f1f1;width:25%;padding-left: 10px;\">{label}</td><td style=\"border:solid 1px #e5e8ec;width:40%;padding-left: 10px;\">{value}</td></tr></table>" + "\n";
+                    if (!record.IsNullOrEmpty())
+                    {
+                        record = await RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, _configuration, subscriber.GuidId, subscriber.Setting.Language, subscriber.Setting.Culture, 180, lookupModules, true);
 
-							var fields = module.Fields.Where(x => x.DisplayDetail && x.Deleted != true && x.Validation != null && x.Validation.Required.HasValue && x.Validation.Required.Value && (x.Permissions == null || x.Permissions.Count < 1)).OrderBy(x => x.Order);
-							if (module.Name == "izinler" && !record["calisan.id"].IsNullOrEmpty())
-							{
-								var format = "Gün";
-								if (!record["izin_turu.saatlik_kullanim_yapilir"].IsNullOrEmpty() && record["izin_turu.saatlik_kullanim_yapilir"].HasValues)
-									format = "Saat";
+                        if (contentFields.Count > 0)
+                        {
+                            foreach (var field in contentFields)
+                            {
+                                if (!record[field].IsNullOrEmpty())
+                                    content = content.Replace($"{{{field}}}", record[field].ToString());
+                                else
+                                    content = content.Replace($"{{{field}}}", "");
+                            }
+                        }
 
-								var tarih = (string)record["baslangic_tarihi"] + " - " + record["bitis_tarihi"] + " / " + record["hesaplanan_alinacak_toplam_izin"] + " " + format;
+                        if (addRecordSummary)
+                        {
+                            var recordTable = "";
+                            var recordRow = "<table style=\"width:100%;height:30px\"; border=\"0\" cellpadding=\"0\" cellspacing=\"0\" ><tr><td style=\"border: solid 1px #e5e8ec; background-color:#f1f1f1;width:25%;padding-left: 10px;\">{label}</td><td style=\"border:solid 1px #e5e8ec;width:40%;padding-left: 10px;\">{value}</td></tr></table>" + "\n";
 
-								if (record["calisan.name_surname"].IsNullOrEmpty())
-								{
-									recordTable += recordRow.Replace("{label}", "Adı Soyadı").Replace("{value}", !record["calisan.ad_soyad"].IsNullOrEmpty() ? record["calisan.ad_soyad"].ToString() : "");
-									recordTable += recordRow.Replace("{label}", "Unvanı").Replace("{value}", !record["calisan.unvan"].IsNullOrEmpty() ? record["calisan.unvan"].ToString() : "");
-									recordTable += recordRow.Replace("{label}", "Departman").Replace("{value}", !record["calisan.departman"].IsNullOrEmpty() ? record["calisan.departman"].ToString() : "");
-									recordTable += recordRow.Replace("{label}", "İzin Türü").Replace("{value}", !record["izin_turu.adi"].IsNullOrEmpty() ? record["izin_turu.adi"].ToString() : "");
-									recordTable += recordRow.Replace("{label}", "Tarih").Replace("{value}", tarih);
-									recordTable += recordRow.Replace("{label}", "Açıklama").Replace("{value}", !record["aciklama"].IsNullOrEmpty() ? record["aciklama"].ToString() : "");
-								}
-								else
-								{
-									recordTable += recordRow.Replace("{label}", "Name Surname").Replace("{value}", !record["calisan.name_surname"].IsNullOrEmpty() ? record["calisan.name_surname"].ToString() : "");
-									recordTable += recordRow.Replace("{label}", "Position").Replace("{value}", !record["calisan.position"].IsNullOrEmpty() ? record["calisan.position"].ToString() : "");
-									recordTable += recordRow.Replace("{label}", "Departmant").Replace("{value}", !record["calisan.department"].IsNullOrEmpty() ? record["calisan.department"].ToString() : "");
-									recordTable += recordRow.Replace("{label}", "Leave Type").Replace("{value}", !record["izin_turu.adi"].IsNullOrEmpty() ? record["izin_turu.adi"].ToString() : "");
-									recordTable += recordRow.Replace("{label}", "Date").Replace("{value}", tarih);
-									recordTable += recordRow.Replace("{label}", "Description").Replace("{value}", !record["aciklama"].IsNullOrEmpty() ? record["aciklama"].ToString() : "");
-								}
+                            var fields = module.Fields.Where(x => x.DisplayDetail && x.Deleted != true && x.Validation != null && x.Validation.Required.HasValue && x.Validation.Required.Value && (x.Permissions == null || x.Permissions.Count < 1)).OrderBy(x => x.Order);
+                            if (module.Name == "izinler" && !record["calisan.id"].IsNullOrEmpty())
+                            {
+                                var format = "Gün";
+                                if (!record["izin_turu.saatlik_kullanim_yapilir"].IsNullOrEmpty() && record["izin_turu.saatlik_kullanim_yapilir"].HasValues)
+                                    format = "Saat";
 
-							}
-							else
-							{
-								foreach (var field in fields)
-								{
-									if (!record[field.Name].IsNullOrEmpty() && field.Name != "created_by" && field.Name != "updated_by" && field.Name != "created_at" && field.Name != "updated_at")
-										recordTable += recordRow.Replace("{label}", field.LabelTr).Replace("{value}", record[field.Name].ToString());
+                                var tarih = (string)record["baslangic_tarihi"] + " - " + record["bitis_tarihi"] + " / " + record["hesaplanan_alinacak_toplam_izin"] + " " + format;
 
-								}
+                                if (record["calisan.name_surname"].IsNullOrEmpty())
+                                {
+                                    recordTable += recordRow.Replace("{label}", "Adı Soyadı").Replace("{value}", !record["calisan.ad_soyad"].IsNullOrEmpty() ? record["calisan.ad_soyad"].ToString() : "");
+                                    recordTable += recordRow.Replace("{label}", "Unvanı").Replace("{value}", !record["calisan.unvan"].IsNullOrEmpty() ? record["calisan.unvan"].ToString() : "");
+                                    recordTable += recordRow.Replace("{label}", "Departman").Replace("{value}", !record["calisan.departman"].IsNullOrEmpty() ? record["calisan.departman"].ToString() : "");
+                                    recordTable += recordRow.Replace("{label}", "İzin Türü").Replace("{value}", !record["izin_turu.adi"].IsNullOrEmpty() ? record["izin_turu.adi"].ToString() : "");
+                                    recordTable += recordRow.Replace("{label}", "Tarih").Replace("{value}", tarih);
+                                    recordTable += recordRow.Replace("{label}", "Açıklama").Replace("{value}", !record["aciklama"].IsNullOrEmpty() ? record["aciklama"].ToString() : "");
+                                }
+                                else
+                                {
+                                    recordTable += recordRow.Replace("{label}", "Name Surname").Replace("{value}", !record["calisan.name_surname"].IsNullOrEmpty() ? record["calisan.name_surname"].ToString() : "");
+                                    recordTable += recordRow.Replace("{label}", "Position").Replace("{value}", !record["calisan.position"].IsNullOrEmpty() ? record["calisan.position"].ToString() : "");
+                                    recordTable += recordRow.Replace("{label}", "Departmant").Replace("{value}", !record["calisan.department"].IsNullOrEmpty() ? record["calisan.department"].ToString() : "");
+                                    recordTable += recordRow.Replace("{label}", "Leave Type").Replace("{value}", !record["izin_turu.adi"].IsNullOrEmpty() ? record["izin_turu.adi"].ToString() : "");
+                                    recordTable += recordRow.Replace("{label}", "Date").Replace("{value}", tarih);
+                                    recordTable += recordRow.Replace("{label}", "Description").Replace("{value}", !record["aciklama"].IsNullOrEmpty() ? record["aciklama"].ToString() : "");
+                                }
 
-							}
-							if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1 && (int)record["process_status_order"] != 0)
-							{
-								var userDataObj = new JObject();
-								var findRequest = new FindRequest();
-								switch ((int)record["process_status_order"])
-								{
-									case 2:
-										findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = record["custom_approver"].ToString(), No = 1 } }, Limit = 1 };
-										break;
-									case 3:
-										findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = record["custom_approver_2"].ToString(), No = 1 } }, Limit = 1 };
-										break;
-									case 4:
-										findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = record["custom_approver_3"].ToString(), No = 1 } }, Limit = 1 };
-										break;
-									case 5:
-										findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = record["custom_approver_4"].ToString(), No = 1 } }, Limit = 1 };
-										break;
-								}
+                            }
+                            else
+                            {
+                                foreach (var field in fields)
+                                {
+                                    if (!record[field.Name].IsNullOrEmpty() && field.Name != "created_by" && field.Name != "updated_by" && field.Name != "created_at" && field.Name != "updated_at")
+                                        recordTable += recordRow.Replace("{label}", field.LabelTr).Replace("{value}", record[field.Name].ToString());
 
-								var userData = recordRepository.Find("users", findRequest, false);
-								userDataObj = (JObject)userData.First();
+                                }
 
-								if (subscriber.Setting.Culture.Contains("tr"))
-									recordTable += recordRow.Replace("{label}", "Önceki Onaylayan").Replace("{value}", !userDataObj["full_name"].IsNullOrEmpty() ? userDataObj["full_name"].ToString() : "");
-								else
-									recordTable += recordRow.Replace("{label}", "Previous Approver").Replace("{value}", !userDataObj["full_name"].IsNullOrEmpty() ? userDataObj["full_name"].ToString() : "");
-							}
+                            }
+                            if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1 && (int)record["process_status_order"] != 0)
+                            {
+                                var userDataObj = new JObject();
+                                var findRequest = new FindRequest();
+                                switch ((int)record["process_status_order"])
+                                {
+                                    case 2:
+                                        findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = record["custom_approver"].ToString(), No = 1 } }, Limit = 1 };
+                                        break;
+                                    case 3:
+                                        findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = record["custom_approver_2"].ToString(), No = 1 } }, Limit = 1 };
+                                        break;
+                                    case 4:
+                                        findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = record["custom_approver_3"].ToString(), No = 1 } }, Limit = 1 };
+                                        break;
+                                    case 5:
+                                        findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = record["custom_approver_4"].ToString(), No = 1 } }, Limit = 1 };
+                                        break;
+                                }
 
-							content = content.Replace("[[recordTable]]", recordTable);
-						}
-						else
-						{
-							content = content.Replace("[[recordTable]]", "");
-						}
-					}
-				}
-			}
+                                var userData = recordRepository.Find("users", findRequest, false);
+                                userDataObj = (JObject)userData.First();
 
-			return content;
-		}
-	}
+                                if (subscriber.Setting.Culture.Contains("tr"))
+                                    recordTable += recordRow.Replace("{label}", "Önceki Onaylayan").Replace("{value}", !userDataObj["full_name"].IsNullOrEmpty() ? userDataObj["full_name"].ToString() : "");
+                                else
+                                    recordTable += recordRow.Replace("{label}", "Previous Approver").Replace("{value}", !userDataObj["full_name"].IsNullOrEmpty() ? userDataObj["full_name"].ToString() : "");
+                            }
+
+                            content = content.Replace("[[recordTable]]", recordTable);
+                        }
+                        else
+                        {
+                            content = content.Replace("[[recordTable]]", "");
+                        }
+                    }
+                }
+            }
+
+            return content;
+        }
+    }
 }

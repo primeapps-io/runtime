@@ -2058,7 +2058,7 @@ angular.module('primeapps')
 
                     var hasPermission = lookupType != 'users' && lookupType != 'profiles' && lookupType != 'roles' ? helper.hasPermission(lookupType, operations.read) : true;
 
-                    if (!hasPermission && !($rootScope.branchAvailable && lookupType == 'branchs')) {
+                    if (!hasPermission && !($rootScope.branchAvailable && lookupType == 'branches')) {
                         deferred.resolve([]);
                         return deferred.promise;
                     }
@@ -2119,7 +2119,7 @@ angular.module('primeapps')
                         findRequest.limit = 1000;
                     }
                     //get only active users to list! if need also inactive users, use utils lookupuser with includeInactiveUsers parameter
-                    if (lookupModule.name == 'users' || ($rootScope.branchAvailable && lookupType == 'branchs')) {
+                    if (lookupModule.name == 'users' || ($rootScope.branchAvailable && lookupType == 'branches')) {
                         var filterOrderNo = findRequest.filters.length + 1;
                         findRequest.filters.push({ field: 'is_active', operator: 'equals', value: true, no: filterOrderNo });
                     }
