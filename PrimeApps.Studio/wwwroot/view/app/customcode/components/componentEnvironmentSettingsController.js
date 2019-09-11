@@ -12,10 +12,6 @@ angular.module('primeapps')
 			$scope.$parent.activeMenuItem = 'components';
 			$scope.app = $rootScope.currentApp;
 
-			if (!$scope.id) {
-				$state.go('studio.app.components');
-			}
-
 			$scope.loading = true;
 
 			$scope.$parent.$parent.tabManage = {
@@ -39,27 +35,16 @@ angular.module('primeapps')
 					$scope.content = {};
 					/**development,test,production*/
 					$scope.currenContent = {};
-					$scope.componentCopy = angular.copy(response.data);
 					$scope.component = response.data;
-
-					var a = $scope.$parent.$parent.tabManage.activeTab;
-					console.log(a);
+					$scope.componentCopy = angular.copy(response.data);
 
 					if ($scope.component.content) {
+
 						$scope.component.content = JSON.parse($scope.component.content);
+						$scope.contentCopy = angular.copy($scope.component.content);
 
-						//if ($scope.component.content.files) {
-						//	$scope.component.content.files = $scope.component.content.files.join("\n");
-						//}
-
-						//var urlParameters = $scope.component.content.url.split('?');
-						//$scope.content.url_parameters = urlParameters.length > 1 ? urlParameters[1] : null;
-
-						//if ($scope.component.content.app) {
-						//	if ($scope.component.content.app.templateFile && $scope.component.content.app.templateFile.contains('http')) {
-						//		$scope.content.templateUrl = true;
-						//	}
-						//}
+						var activeTab = $scope.$parent.$parent.tabManage.activeTab;
+						$scope.changeTab(activeTab);
 					}
 
 					$scope.loading = false;
@@ -68,40 +53,78 @@ angular.module('primeapps')
 
 			$scope.save = function (componentFormValidation) {
 
-				if (!componentFormValidation.$valid) {
-					toastr.error($filter('translate')('Module.RequiredError'));
-					return;
-				}
+				//if (!componentFormValidation.$valid) {
+				//	toastr.error($filter('translate')('Module.RequiredError'));
+				//	return;
+				//}
 
 				$scope.saving = true;
 
-				$scope.copyComponent = angular.copy($scope.component);
 
-				if (!$scope.component.content) {
-					$scope.copyComponent.content = {};
+				if (!$scope.content) {
+					$scope.content = {};
 				}
 
-				//if ($scope.component.content && $scope.component.content.files) {
-				//	$scope.copyComponent.content.files = $scope.component.content.files.split("\n");
-				//}
+				if ($scope.content && $scope.content.trusted_urls && $scope.content.trusted_urls.url) {
+					$scope.currenContent.trusted_urls[0].url = $scope.content.trusted_urls.url;
+				}
 
-				//if (!$scope.content.templateUrl && $scope.component.content.app && $scope.component.content.app.templateFile) {
-				//	$scope.copyComponent.content.app.templateUrl = $scope.component.content.app.templateFile;
-				//}
+				if ($scope.content && $scope.content.trusted_urls && $scope.content.trusted_urls.headers) {
+					$scope.currenContent.trusted_urls[0].headers["X-User-Id"] = $scope.content.trusted_urls.headers.x_user_id;
+					$scope.currenContent.trusted_urls[0].headers["X-Tenant-Id"] = $scope.content.trusted_urls.headers.x_tenant_id;
+				}
 
-				//$scope.copyComponent.content.url = $scope.content.url + (($scope.content.url_parameters) ? '?' + $scope.content.url_parameters : '');
+				if ($scope.content && $scope.content.imports && $scope.content.imports.css) {
+					$scope.currenContent.imports.css.before = $scope.content.imports.css.before;
+					$scope.currenContent.imports.css.after = $scope.content.imports.css.after;
 
-				$scope.copyComponent.content = JSON.stringify($scope.copyComponent.content);
+				}
+				if ($scope.content && $scope.content.imports && $scope.content.imports.js) {
+					$scope.currenContent.imports.js.before = $scope.content.imports.js.before;
+					$scope.currenContent.imports.js.after = $scope.content.imports.js.after;
+				}
 
-				ComponentsService.update($scope.id, $scope.copyComponent)
+				if ($scope.configParameters && $scope.configParameters.length > 0) {
+					var array = [];
+					$scope.currenContent.configs = {};
+					angular.forEach($scope.configParameters, function (configParameter, key) {
+						var query = configParameter.key + '":"' + configParameter.value + '"';
+						if (key === 0) {
+							query = '{"' + query;
+						}
+						else if (key > 0 && key !== $scope.configParameters.length - 1) {
+							query = '"' + query;
+						}
+						else {
+							query = '"' + query + "}";
+						}
+						array.push(query);
+					});
+
+					$scope.currenContent.configs = JSON.parse(array.toString());
+				}
+
+				switch ($scope.$parent.$parent.tabManage.activeTab) {
+					case "development":
+						$scope.contentCopy.development = $scope.contentCopy.development;
+						break;
+					case "test":
+						$scope.contentCopy.test = $scope.contentCopy.test;
+						break;
+					case "production":
+						$scope.contentCopy.production = $scope.contentCopy.production;
+						break;
+				}
+
+				$scope.componentCopy.content = JSON.stringify($scope.currenContent);
+
+				ComponentsService.update($scope.id, $scope.componentCopy)
 					.then(function (response) {
 						$scope.saving = false;
-						$scope.editing = false;
 						toastr.success("Component updated successfully.");
 					})
 					.catch(function () {
 						$scope.saving = false;
-						$scope.editing = false;
 						toastr.error("Component not updated successfully.");
 					});
 			};
@@ -124,27 +147,61 @@ angular.module('primeapps')
 						toastr.warning($filter('translate')('Setup.Workflow.MaximumHookWarning'));
 					}
 				}
-				var lastHookParameter = $scope.configParameters[$scope.configParameters.length - 1];
-				lastHookParameter.key = null;
-				lastHookParameter.value = null;
+				var lastConfigParameter = $scope.configParameters[$scope.configParameters.length - 1];
+				lastConfigParameter.key = null;
+				lastConfigParameter.value = null;
 			};
 
 			$scope.changeTab = function (tabName) {
+
+				//if (tabName !== $scope.$parent.$parent.tabManage.activeTab) {
 				switch (tabName) {
 					case "development":
-						$scope.currenContent = $scope.component.content.development;
+						$scope.currenContent = $scope.contentCopy.development;
 						break;
 					case "test":
-						$scope.currenContent = $scope.component.content.test;
+						$scope.currenContent = $scope.contentCopy.test;
 						break;
 					case "production":
-						$scope.currenContent = $scope.component.content.production;
+						$scope.currenContent = $scope.contentCopy.production;
 						break;
 				}
 
 				if (Object.keys($scope.currenContent).length > 0) {
-					console.log($scope.currenContent);
+
+					if ($scope.currenContent.trusted_urls) {
+						$scope.content.trusted_urls = {};
+						$scope.content.trusted_urls.headers = {};
+						$scope.content.trusted_urls.url = $scope.currenContent.trusted_urls[0].url;
+						$scope.content.trusted_urls.headers.x_user_id = $scope.currenContent.trusted_urls[0].headers["X-User-Id"];
+						$scope.content.trusted_urls.headers.x_tenant_id = $scope.currenContent.trusted_urls[0].headers["X-Tenant-Id"];
+					}
+					if ($scope.currenContent.route_template_urls) {
+						$scope.content.route_template_urls = $scope.currenContent.route_template_urls;
+					}
+					if ($scope.currenContent.imports) {
+						$scope.content.imports = {};
+						$scope.content.imports.css = {};
+						$scope.content.imports.js = {};
+						$scope.content.imports.css.before = $scope.currenContent.imports.css.before;
+						$scope.content.imports.css.after = $scope.currenContent.imports.css.after;
+						$scope.content.imports.js.before = $scope.currenContent.imports.js.before;
+						$scope.content.imports.js.after = $scope.currenContent.imports.js.after;
+					}
+					if ($scope.currenContent.configs) {
+
+						$scope.configParameters = [];
+
+						angular.forEach($scope.currenContent.configs, function (value, key) {
+							var parameter = {};
+							parameter.key = key;
+							parameter.value = value;
+							$scope.configParameters.push(parameter);
+						});
+					}
 				}
+				//}
+
 
 			};
 		}

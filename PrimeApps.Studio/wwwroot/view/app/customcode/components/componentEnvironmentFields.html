@@ -14,7 +14,7 @@
 					   name="url"
 					   class="form-control ng-animate-disabled col-sm-6"
 					   maxlength="300"
-					   ng-model="content.tabManage.activeTab.trusted_urls.url" />
+					   ng-model="content.trusted_urls.url" />
 			</div>
 			<label class="col-sm-12">Headers</label>
 			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
@@ -28,7 +28,7 @@
 					   name="x_user_id"
 					   class="form-control ng-animate-disabled col-sm-6"
 					   maxlength="300"
-					   ng-model="content.tabManage.activeTab.trusted_urls.headers.x_user_id" />
+					   ng-model="content.trusted_urls.headers.x_user_id" />
 			</div>
 			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
 				<label type="text"
@@ -40,7 +40,7 @@
 					   name="x_tenant_id"
 					   class="form-control ng-animate-disabled col-sm-6"
 					   maxlength="300"
-					   ng-model="content.tabManage.activeTab.trusted_urls.headers.x_tenant_id" />
+					   ng-model="content.trusted_urls.headers.x_tenant_id" />
 			</div>
 		</div>
 
@@ -56,7 +56,7 @@
 					   name="route_template_urls"
 					   class="form-control ng-animate-disabled col-sm-6"
 					   maxlength="300"
-					   ng-model="content.tabManage.activeTab.route_template_urls" />
+					   ng-model="content.route_template_urls" />
 			</div>
 		</div>
 
@@ -73,7 +73,7 @@
 					   name="css.before"
 					   class="form-control ng-animate-disabled col-sm-6"
 					   maxlength="300"
-					   ng-model="content.tabManage.activeTab.imports.css.before" />
+					   ng-model="content.imports.css.before" />
 			</div>
 
 			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
@@ -86,7 +86,7 @@
 					   name="css.after"
 					   class="form-control ng-animate-disabled col-sm-6"
 					   maxlength="300"
-					   ng-model="content.tabManage.activeTab.imports.css.after" />
+					   ng-model="content.imports.css.after" />
 			</div>
 
 			<label class="col-sm-12">Js</label>
@@ -101,7 +101,7 @@
 					   name="js.before"
 					   class="form-control ng-animate-disabled col-sm-6"
 					   maxlength="300"
-					   ng-model="content.tabManage.activeTab.imports.js.before" />
+					   ng-model="content.imports.js.before" />
 			</div>
 			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
 				<label type="text"
@@ -113,7 +113,7 @@
 					   name="js.after"
 					   class="form-control ng-animate-disabled col-sm-6"
 					   maxlength="300"
-					   ng-model="content.tabManage.activeTab.imports.js.after" />
+					   ng-model="content.imports.js.after" />
 			</div>
 		</div>
 
@@ -130,11 +130,11 @@
 				<tbody>
 					<tr ng-repeat="parameter in configParameters">
 						<td style="padding: 1px">
-							<input type="text" required ng-model="parameter.key" tabindex="2"
+							<input type="text" ng-model="parameter.key" tabindex="2"
 								   class="form-control" maxlength="500" />
 						</td>
 						<td style="padding: 1px">
-							<input type="text" required ng-model="parameter.value" tabindex="2"
+							<input type="text" ng-model="parameter.value" tabindex="2"
 								   class="form-control" maxlength="500" />
 						</td>
 						<td>
