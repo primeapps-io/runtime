@@ -41,6 +41,9 @@ namespace PrimeApps.Model.Common.Component
         [JsonProperty("environments"), DataMember(Name = "environments"), MaxLength(10)]
         public List<EnvironmentType> Environments { get; set; }
 
+        [JsonProperty("custom_url"), DataMember(Name = "custom_url")]
+        public string CustomUrl { get; set; }
+
         public string EnvironmentValues
         {
             get

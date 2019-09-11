@@ -145,13 +145,17 @@ namespace PrimeApps.Studio.Controllers
                 Order = model.Order,
                 Status = PublishStatus.Draft,
                 Label = model.Label,
-                Environment = model.EnvironmentValues
+                Environment = model.EnvironmentValues,
+                CustomUrl = model.CustomUrl
             };
 
-            var sampleCreated = await _componentHelper.CreateSampleScript((int)AppId, model, OrganizationId);
+            if (string.IsNullOrEmpty(model.CustomUrl))
+            {
+                var sampleCreated = await _componentHelper.CreateSampleScript((int)AppId, model, OrganizationId);
 
-            if (!sampleCreated)
-                return BadRequest("Script not created.");
+                if (!sampleCreated)
+                    return BadRequest("Script not created.");
+            }
 
             var result = await _scriptRepository.Create(script);
 
@@ -194,6 +198,7 @@ namespace PrimeApps.Studio.Controllers
             script.Status = model.Status;
             script.Label = model.Label;
             script.Environment = model.EnvironmentValues;
+            script.CustomUrl = model.CustomUrl;
 
             var result = await _scriptRepository.Update(script);
 

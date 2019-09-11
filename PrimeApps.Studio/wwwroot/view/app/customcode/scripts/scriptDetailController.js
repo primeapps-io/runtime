@@ -28,7 +28,7 @@ angular.module('primeapps')
             $scope.activePage = 1;
 
             $scope.app = $rootScope.currentApp;
-            $scope.organization = $filter('filter')($rootScope.organizations, {id: $scope.orgId})[0];
+            $scope.organization = $filter('filter')($rootScope.organizations, { id: $scope.orgId })[0];
             $scope.giteaUrl = giteaUrl;
             $scope.environments = ScriptsService.getEnvironments();
 
@@ -52,8 +52,11 @@ angular.module('primeapps')
             $scope.generator(10);
 
             $scope.environmentChange = function (env, index, otherValue = false) {
-                if (!env || index === 0)
+                if (!env || index === 0) {
+                    $scope.environments[0].selected = env.selected || otherValue;
                     return;
+                }
+
 
                 if (index === 1) {
                     $scope.environments[0].disabled = env.selected || otherValue;
@@ -78,7 +81,7 @@ angular.module('primeapps')
             $scope.requestModel = {
                 limit: "10",
                 offset: 0
-            }; 
+            };
 
             $scope.changePage = function (page) {
                 $scope.loadingDeployments = true;
@@ -135,6 +138,9 @@ angular.module('primeapps')
 
                     $scope.scriptCopy = angular.copy(response.data);
                     $scope.script = response.data;
+
+                    if ($scope.script.custom_url)
+                        $scope.tabManage.activeTab = 'settings';
 
                     ScriptsDeploymentService.count($scope.script.id)
                         .then(function (response) {
@@ -233,11 +239,15 @@ angular.module('primeapps')
             };
 
             $scope.save = function (FormValidation) {
-                if (!FormValidation.$valid){
-                    toastr.error($filter('translate')('Setup.Modules.RequiredError'));
+                if (!FormValidation.$valid) {
+                    if (FormValidation.custom_url.$invalid)
+                        toastr.error("Please enter a valid url.");
+                    else
+                        toastr.error($filter('translate')('Setup.Modules.RequiredError'));
+
                     return;
                 }
-                
+
                 $scope.saving = true;
 
                 $scope.script.environments = [];

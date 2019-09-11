@@ -114,8 +114,12 @@ angular.module('primeapps')
                 $scope.saving = true;
 
                 if (!scriptForm.$valid || !$scope.scriptNameValid) {
+                    if (scriptForm.custom_url.$invalid)
+                        toastr.error("Please enter a valid url.");
+                    else
+                        toastr.error($filter('translate')('Setup.Modules.RequiredError'));
+
                     $scope.saving = false;
-                    toastr.error($filter('translate')('Setup.Modules.RequiredError'));
                     return;
                 }
 

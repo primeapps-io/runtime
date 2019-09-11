@@ -35,14 +35,17 @@ namespace PrimeApps.Model.Entities.Tenant
         [JsonProperty("label"), Column("label"), Required, MaxLength(100)]
         public string Label { get; set; }
 
-        [JsonProperty("environment"), Column("environment"),  MaxLength(10)]
+        [JsonProperty("environment"), Column("environment"), MaxLength(10)]
         public string Environment { get; set; }
+
+        [JsonProperty("custom_url"), Column("custom_url")]
+        public string CustomUrl { get; set; }
 
         [JsonIgnore]
         public virtual Module Module { get; set; }
 
         public virtual ICollection<DeploymentComponent> Deployments { get; set; }
-         
+
         [NotMapped]
         public ICollection<EnvironmentType> EnvironmentList
         {
