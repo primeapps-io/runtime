@@ -465,7 +465,7 @@ angular.module('primeapps')
 								}
 
 								if ($scope.module.dependencies.length > 0) {
-									var freezeDependencies = $filter('filter')($scope.module.dependencies, { dependency_type: 'freeze' }, true);
+									var freezeDependencies = $filter('filter')($scope.module.dependencies, { dependency_type: 'freeze' , deleted: false}, true);
 									angular.forEach(freezeDependencies, function (dependencie) {
 										var freezeFields = $filter('filter')($scope.module.fields, { name: dependencie.parent_field }, true);
 										angular.forEach(freezeFields, function (field) {
