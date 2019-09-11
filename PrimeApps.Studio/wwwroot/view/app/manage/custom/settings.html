@@ -1,0 +1,99 @@
+﻿<div class="setup-title">
+    <h2>Settings</h2>
+    <ul class="list-unstyled list-inline">
+        <li>
+            <button class="btn add-button" ng-click="showFormModal(null, false)">
+                <i class="fas fa-plus"></i>New Setting
+            </button>
+        </li>
+    </ul>
+</div>
+<div class="tab-content table-responsive">
+    <table class="table" ng-show="loading">
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+               <!-- <th>Type</th>-->
+                <th width="70"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            <tr ng-repeat="item in placeholderArray">
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <!--<td>
+                    <div class="animated-background"></div>
+                </td>-->
+            </tr>
+        </tbody>
+    </table>
+    <table ng-show="!loading" class="table">
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+               <!-- <th>Type</th>-->
+                <th width="50"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="setting in settings" ng-click="$event.stopPropagation(); showFormModal(setting);">
+                <td>{{setting.key}}</td>
+                <td>{{setting.value}}</td>
+                <!--<td style="text-transform: capitalize;">{{setting.type}}</td>-->
+                <td class="text-center">
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation(); delete(setting);" type="button" ladda="setting.deleting"
+                                class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="table-pagination">
+        <div>
+            <nav aria-label="Page navigation">
+                <div paging
+                     text-first="&laquo;"
+                     ul-class="pagination"
+                     active-class="active"
+                     page="page"
+                     page-size="requestModel.limit"
+                     total="pageTotal"
+                     scroll-top="true"
+                     hide-if-empty="true"
+                     show-prev-next="true"
+                     show-first-last="true"
+                     text-next-class="fas fa-chevron-right"
+                     text-prev-class="fas fa-chevron-left"
+                     text-first-class="fas fa-step-backward"
+                     text-last-class="fas fa-step-forward"
+                     paging-action="changePage(page)">
+                </div>
+            </nav>
+        </div>
+        <div class="total">Total {{pageTotal}}</div>
+        <div>
+            <span class="pagination-span">Items per page  </span>
+            <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset(1)">
+                <option ng-selected="true" value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+            </select>
+        </div>
+    </div>
+</div>
