@@ -128,16 +128,16 @@ angular.module('primeapps')
 										var branchSettings = $filter('filter')(response[12].data, { key: 'branch' }, true)[0];
 										$rootScope.branchAvailable = branchSettings ? branchSettings.value === 't' : undefined;
 
-										if ($rootScope.branchAvailable) {
+										if ($rootScope.branchAvailable && $rootScope.isEmployee) {
 											var calisanRequest = {
 												filters: [
-													{ field: 'e_posta', operator: 'is', value: account.user.email, no: 1 },
+													{ field: 'work_e_mail', operator: 'is', value: account.user.email, no: 1 },
 													{ field: 'deleted', operator: 'equals', value: false, no: 2 }
 												],
 												limit: 1
 											};
 
-											$http.post(config.apiUrl + 'record/find/calisanlar', calisanRequest)
+											$http.post(config.apiUrl + 'record/find/' + $rootScope.isEmployee, calisanRequest)
 												.then(function (response) {
 													var calisan = response.data;
 													if (calisan.length > 0) {
