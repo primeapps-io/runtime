@@ -1716,9 +1716,34 @@ angular.module('primeapps')
                             ]);
                         }]
                     }
-                });
+                })
 
+        .state('studio.app.componentEnvironmentSettings', {
+                url: '/componentEnvironmentSettings',
+                views: {
+                    'app': {
+                        templateUrl: cdnUrl + 'view/app/customcode/components/componentEnvironmentSettings.html',
+                        controller: 'ComponentEnvironmentSettingsController'
+                    }
+                },
+                resolve: {
+                    componentEnvironment: ['$rootScope', '$state', 'app', function ($rootScope, $state) {
+                        if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
+                            $state.go('studio.app.overview', {
+                                orgId: $rootScope.currentOrgId,
+                                appId: $rootScope.currentAppId
+                            });
+                        }
+                    }],
+                    plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        return $ocLazyLoad.load([
+                            cdnUrl + 'view/app/customcode/components/componentEnvironmentSettingsController.js',
+                            cdnUrl + 'view/app/customcode/components/componentsService.js'
+                        ]);
+                    }]
+                }
+            });
+            
             //console.log($rootScope.currentOrgId);
             $urlRouterProvider.otherwise('/apps?orgId=orgId');
-        }])
-    ;
+        }]);

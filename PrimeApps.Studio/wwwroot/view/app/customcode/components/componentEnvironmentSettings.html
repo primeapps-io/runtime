@@ -1,0 +1,67 @@
+<div ng-if="!loading" class="function tab-content">
+	<div class="col-sm-12" style="border: none ;">
+		<div class="setup-liste-header row">
+			<div class="col-sm-12">
+				<div class="setup-title">
+					<h2>
+						Component Environment Settings ( {{component.name}} )
+					</h2>
+				</div>
+			</div>
+		</div>
+
+		<div class="tab-content" style="padding: 20px;position: relative;">
+			<div class="bs-docs-section">
+				<div class="bs-example" append-source>
+					<div bs-active-pane="$parent.$parent.$parent.$parent.tabManage.activeTab" bs-tabs ng-click="changeTab($parent.$parent.$parent.$parent.tabManage.activeTab)">
+
+						<div data-title="Development" name="development" bs-pane>
+							<div ng-if="!loading" class="tab-content" style="padding: 20px;">
+								<ng-include src="'view/app/customcode/components/componentEnvironmentFields.html'"></ng-include>
+							</div>
+						</div>
+
+						<div data-title="Test" name="test" bs-pane >
+
+						</div>
+
+						<div data-title="Production" name="production" bs-pane ng-click="changeTab('production')">
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div ng-if="loading" class="function tab-content">
+	<div class="col-sm-12" style="border: none ;">
+		<div class="setup-liste-header row">
+			<div class="col-sm-12">
+				<div class="setup-title">
+					<div style="width: 100px;" class="animated-background"></div>
+				</div>
+			</div>
+		</div>
+		<div class="tab-content" style="padding: 20px;position: relative;">
+			<div class="tab-content" style="padding: 20px;">
+				<div class="markdown" style="padding-bottom: 20px;">
+					<pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;padding-right: 20px !important;border-radius: 5;">
+					<code><div class="animated-background"></div></code>
+                    </pre>
+				</div>
+				<div class="markdown" style="padding-bottom: 20px;">
+					<pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;padding-right: 20px !important;border-radius: 5;">
+					<code><div class="animated-background"></div></code>
+                    </pre>
+				</div>
+				<div class="markdown" style="padding-bottom: 20px;">
+					<pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;padding-right: 20px !important;border-radius: 5;">
+					<code><div class="animated-background"></div></code>
+                    </pre>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
