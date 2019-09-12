@@ -4,7 +4,7 @@
   bottom: 2px;
   right: -5px;
   border: none;
-}
+} 
 @keyframes pagepointmove {
   from {
     opacity: 0.5;
@@ -4477,6 +4477,25 @@ button, select {
     &:hover{
       .copy-button{
         visibility: visible;
+      }
+    }
+  }
+  .c-settings-table{
+    table{
+      margin-bottom: 20px;
+      thead{
+        background: rgba(0,0,0,0.1);
+      }
+      tbody{
+        tr{
+          cursor: default;
+          &:hover{
+            background: transparent;
+          }
+        }
+      }
+      .form-group{
+        margin-bottom: 0px !important;
       }
     }
   }
