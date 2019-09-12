@@ -1,10 +1,10 @@
 <form name="functionFormValidation" style="margin-top: 20px;" class="form-horizontal form-custom" ng-submit="save(functionFormValidation);" autocomplete="off" novalidate>
-	
+
 	<div class="table-responsive c-settings-table">
 		<table class="table table-bordered">
 			<thead>
 				<tr>
-					<td>Trusted Url's</td>
+					<td>Trusted Urls</td>
 					<td>Key</td>
 					<td>Value</td>
 				</tr>
@@ -13,203 +13,85 @@
 				<tr>
 					<td>Url</td>
 					<td><div class="form-group"><input class="form-control disabled" value="url"></div></td>
-					<td><div class="form-group"><input type="text" class="form-control" value="url"  name="url" maxlength="300" ng-model="content.trusted_urls.url"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" name="url" maxlength="300" ng-model="content.trusted_urls.url"></div></td>
 				</tr>
 				<tr>
 					<td rowspan="2">Headers</td>
 					<td><div class="form-group"><input class="form-control disabled" value="X-User-Id"></div></td>
-					<td><div class="form-group"><input type="text" class="form-control" value="url"  name="x_user_id"  maxlength="300" ng-model="content.trusted_urls.headers.x_user_id"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" name="x_user_id" maxlength="300" ng-model="content.trusted_urls.headers.x_user_id"></div></td>
 				</tr>
 				<tr>
 					<td><div class="form-group"><input class="form-control disabled" value="X-Tenant-Id"></div></td>
-					<td><div class="form-group"><input type="text" class="form-control" value="url"  name="x_tenant_id"  maxlength="300" ng-model="content.trusted_urls.headers.x_tenant_id"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" name="x_tenant_id" maxlength="300" ng-model="content.trusted_urls.headers.x_tenant_id"></div></td>
 				</tr>
 			</tbody>
 		</table>
 		<table class="table table-bordered">
 			<thead>
 				<tr>
-					<td>Trusted Url's</td>
+					<td>Route Template Urls</td>
 					<td>Key</td>
 					<td>Value</td>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<td>Url</td>
-					<td><div class="form-group"><input class="form-control disabled" value="url"></div></td>
-					<td><div class="form-group"><input type="text" class="form-control" value="url"  name="url" maxlength="300" ng-model="content.trusted_urls.url"></div></td>
-				</tr>
-				<tr>
-					<td rowspan="2">Headers</td>
-					<td><div class="form-group"><input class="form-control disabled" value="X-User-Id"></div></td>
-					<td><div class="form-group"><input type="text" class="form-control" value="url"  name="x_user_id"  maxlength="300" ng-model="content.trusted_urls.headers.x_user_id"></div></td>
-				</tr>
-				<tr>
-					<td><div class="form-group"><input class="form-control disabled" value="X-Tenant-Id"></div></td>
-					<td><div class="form-group"><input type="text" class="form-control" value="url"  name="x_tenant_id"  maxlength="300" ng-model="content.trusted_urls.headers.x_tenant_id"></div></td>
+					<td>Route Template Urls</td>
+					<td><div class="form-group"><input class="form-control disabled" value="route_template_urls"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" name="route_template_urls" maxlength="300" ng-model="content.route_template_urls"></div></td>
 				</tr>
 			</tbody>
 		</table>
-		
-		
-		
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<td>Imports</td>
+					<td>Key</td>
+					<td>Value</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td rowspan="2">Css</td>
+					<td><div class="form-group"><input class="form-control disabled" value="before"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" name="css.before"  placeholder="Separate with ;" maxlength="300" ng-model="content.imports.css.before"></div></td>
+				</tr>
+				<tr>
+					<td><div class="form-group"><input class="form-control disabled" value="after"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" name="css.after"  placeholder="Separate with ;" maxlength="300" ng-model="content.imports.css.after"></div></td>
+				</tr>
+				<tr>
+					<td rowspan="2">Js</td>
+					<td><div class="form-group"><input class="form-control disabled" value="before"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" name="js.before"  placeholder="Separate with ;" maxlength="300" ng-model="content.imports.js.before"></div></td>
+				</tr>
+				<tr>
+					<td><div class="form-group"><input class="form-control disabled" value="after"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" name="js.after"  placeholder="Separate with ;" maxlength="300" ng-model="content.imports.js.after"></div></td>
+				</tr>
+			</tbody>
+		</table>
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<td>Configs</td>
+					<td>Key</td>
+					<td>Value</td>
+					<td></td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="parameter in configParameters">
+					<td>{{$index+1}}</td>
+					<td><input type="text" ng-model="parameter.key" tabindex="2" class="form-control" maxlength="500" /></td>
+					<td style="padding: 1px"><input type="text" ng-model="parameter.value" tabindex="2" class="form-control" maxlength="500" /></td>
+					<td><a class="action-button2-delete" href ng-show="configParameters.length > 1" ng-click="configParameterRemove(parameter)"><i class="fas fa-trash"></i></a><a class="action-button2-plus" href ng-show="$last" ng-click="configParameterAdd(parameter)"><i class="fas fa-plus"></i></a></td>
+				</tr>
+			</tbody>
+		</table>
+
+
 	</div>
-	
-	
-	<div class="row">
-		<!--<div class="col-sm-6">-->
-		<div class="form-group" style="position: relative;">
-			<label class="col-sm-12">TRUSTED URLS:</label>
-			<label class="col-sm-12">Url</label>
-			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
-				<label type="text"
-					   class="form-control ng-animate-disabled col-sm-6">Key: url</label>
-			</div>
-			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
-				<span style="position: absolute;left: 0px;padding: 10px;">Value:</span>
-				<input type="text"
-					   name="url"
-					   class="form-control ng-animate-disabled col-sm-6"
-					   maxlength="300"
-					   ng-model="content.trusted_urls.url" />
-			</div>
-			<label class="col-sm-12">Headers</label>
-			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
-				<label type="text"
-					   name="url"
-					   class="form-control ng-animate-disabled col-sm-6">Key: X-User-Id</label>
-			</div>
-			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
-				<span style="position: absolute;left: 0px;padding: 10px;">Value:</span>
-				<input type="text"
-					   name="x_user_id"
-					   class="form-control ng-animate-disabled col-sm-6"
-					   maxlength="300"
-					   ng-model="content.trusted_urls.headers.x_user_id" />
-			</div>
-			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
-				<label type="text"
-					   class="form-control ng-animate-disabled col-sm-6">Key: X-Tenant-Id</label>
-			</div>
-			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
-				<span style="position: absolute;left: 0px;padding: 10px;">Value:</span>
-				<input type="text"
-					   name="x_tenant_id"
-					   class="form-control ng-animate-disabled col-sm-6"
-					   maxlength="300"
-					   ng-model="content.trusted_urls.headers.x_tenant_id" />
-			</div>
-		</div>
-
-		<div class="form-group">
-			<label class="col-sm-12 required-field">ROUTE TEMPLATE URLS</label>
-			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
-				<label type="text"
-					   class="form-control ng-animate-disabled col-sm-6">Key: route_template_urls</label>
-			</div>
-			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
-				<span style="position: absolute;left: 0px;padding: 10px;">Value:</span>
-				<input type="text"
-					   name="route_template_urls"
-					   class="form-control ng-animate-disabled col-sm-6"
-					   maxlength="300"
-					   ng-model="content.route_template_urls" />
-			</div>
-		</div>
-
-		<div class="form-group" style="position: relative;">
-			<label class="col-sm-12">IMPORTS</label>
-			<label class="col-sm-12">Css</label>
-			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
-				<label type="text"
-					   class="form-control ng-animate-disabled col-sm-6">Key: before</label>
-			</div>
-			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
-				<span style="position: absolute;left: 0px;padding: 10px;">Value:</span>
-				<input type="text"
-					   name="css.before"
-					   placeholder="Separate with ;"
-					   class="form-control ng-animate-disabled col-sm-6"
-					   maxlength="300"
-					   ng-model="content.imports.css.before" />
-			</div>
-
-			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
-				<label type="text"
-					   class="form-control ng-animate-disabled col-sm-6">Key: after</label>
-			</div>
-			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
-				<span style="position: absolute;left: 0px;padding: 10px;">Value:</span>
-				<input type="text"
-					   name="css.after"
-					   placeholder="Separate with ;"
-					   class="form-control ng-animate-disabled col-sm-6"
-					   maxlength="300"
-					   ng-model="content.imports.css.after" />
-			</div>
-
-			<label class="col-sm-12">Js</label>
-			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
-				<label type="text"
-					   name="url"
-					   class="form-control ng-animate-disabled col-sm-6">Key: before</label>
-			</div>
-			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
-				<span style="position: absolute;left: 0px;padding: 10px;">Value:</span>
-				<input type="text"
-					   name="js.before"
-					   placeholder="Separate with ;"
-					   class="form-control ng-animate-disabled col-sm-6"
-					   maxlength="300"
-					   ng-model="content.imports.js.before" />
-			</div>
-			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
-				<label type="text"
-					   class="form-control ng-animate-disabled col-sm-6">Key: after</label>
-			</div>
-			<div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
-				<span style="position: absolute;left: 0px;padding: 10px;">Value:</span>
-				<input type="text"
-					   name="js.after"
-					   placeholder="Separate with ;"
-					   class="form-control ng-animate-disabled col-sm-6"
-					   maxlength="300"
-					   ng-model="content.imports.js.after" />
-			</div>
-		</div>
-
-		<div class="form-group">
-			<label class="col-sm-12">CONFIGS</label>
-			<table class="filter-table table-responsive">
-				<thead>
-					<tr>
-						<th>Key</th>
-						<th>Value</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr ng-repeat="parameter in configParameters">
-						<td style="padding: 1px">
-							<input type="text" ng-model="parameter.key" tabindex="2"
-								   class="form-control" maxlength="500" />
-						</td>
-						<td style="padding: 1px">
-							<input type="text" ng-model="parameter.value" tabindex="2"
-								   class="form-control" maxlength="500" />
-						</td>
-						<td>
-							<a class="action-button2-delete" href ng-show="configParameters.length > 1" ng-click="configParameterRemove(parameter)"><i class="fas fa-trash"></i></a>
-							<a class="action-button2-plus" href ng-show="$last" ng-click="configParameterAdd(parameter)"><i class="fas fa-plus"></i></a>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-
-	<!--</div>-->
 
 	<div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;">
 		<button ng-click="$parent.$parent.$parent.$parent.$parent.$parent.$parent.save(functionFormValidation);" ladda="saving" class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;">

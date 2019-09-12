@@ -59,6 +59,7 @@ angular.module('primeapps')
 				//}
 
 				$scope.saving = true;
+				$scope.loading = true;
 
 
 				if (!$scope.content) {
@@ -135,11 +136,13 @@ angular.module('primeapps')
 				ComponentsService.update($scope.id, $scope.componentCopy)
 					.then(function (response) {
 						$scope.saving = false;
-						toastr.success("Component updated successfully.");
+						toastr.success("Global Config updated successfully.");
+						$scope.loading = false;
 					})
 					.catch(function () {
 						$scope.saving = false;
-						toastr.error("Component not updated successfully.");
+						$scope.loading = false;
+						toastr.error("Global Config not updated successfully.");
 					});
 			};
 
