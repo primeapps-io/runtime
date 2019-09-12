@@ -3188,12 +3188,21 @@ button, select {
 
 .primeapps .c-settings-table table {
   margin-bottom: 20px; }
-  .primeapps .c-settings-table table thead {
-    background: rgba(0, 0, 0, 0.1); }
   .primeapps .c-settings-table table tbody tr {
     cursor: default; }
     .primeapps .c-settings-table table tbody tr:hover {
       background: transparent; }
+    .primeapps .c-settings-table table tbody tr.black5 {
+      background: rgba(0, 0, 0, 0.05);
+      font-size: 90%; }
+      .primeapps .c-settings-table table tbody tr.black5:hover {
+        background: rgba(0, 0, 0, 0.05); }
+      .primeapps .c-settings-table table tbody tr.black5 td:first-child {
+        color: #0D6FAA !important;
+        font-size: 110% !important;
+        font-weight: bold !important; }
+    .primeapps .c-settings-table table tbody tr td {
+      cursor: default !important; }
   .primeapps .c-settings-table table .form-group {
     margin-bottom: 0px !important; }
 

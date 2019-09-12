@@ -4483,14 +4483,30 @@ button, select {
   .c-settings-table{
     table{
       margin-bottom: 20px;
-      thead{
-        background: rgba(0,0,0,0.1);
-      }
+      
       tbody{
         tr{
           cursor: default;
           &:hover{
             background: transparent;
+          }
+          &.black5{
+            background: rgba(0,0,0,0.05);
+            font-size: 90%;
+            
+            &:hover{
+              background: rgba(0,0,0,0.05);
+            }
+            td {
+              &:first-child {
+                color: $primeapps-color !important;
+                font-size: 110% !important;
+                font-weight: bold !important;
+              }
+            }
+          }
+          td{
+            cursor: default !important;
           }
         }
       }
