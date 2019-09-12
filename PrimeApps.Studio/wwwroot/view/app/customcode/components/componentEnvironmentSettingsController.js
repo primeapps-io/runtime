@@ -168,6 +168,8 @@ angular.module('primeapps')
 
 			$scope.changeTab = function (tabName) {
 
+				$scope.$parent.$parent.tabManage.activeTab = tabName;
+
 				switch (tabName) {
 					case "development":
 						$scope.currenContent = $scope.contentCopy.development;
