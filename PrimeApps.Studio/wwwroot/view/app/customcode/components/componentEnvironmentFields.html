@@ -1,4 +1,62 @@
 <form name="functionFormValidation" style="margin-top: 20px;" class="form-horizontal form-custom" ng-submit="save(functionFormValidation);" autocomplete="off" novalidate>
+	
+	<div class="table-responsive c-settings-table">
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<td>Trusted Url's</td>
+					<td>Key</td>
+					<td>Value</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Url</td>
+					<td><div class="form-group"><input class="form-control disabled" value="url"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" value="url"  name="url" maxlength="300" ng-model="content.trusted_urls.url"></div></td>
+				</tr>
+				<tr>
+					<td rowspan="2">Headers</td>
+					<td><div class="form-group"><input class="form-control disabled" value="X-User-Id"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" value="url"  name="x_user_id"  maxlength="300" ng-model="content.trusted_urls.headers.x_user_id"></div></td>
+				</tr>
+				<tr>
+					<td><div class="form-group"><input class="form-control disabled" value="X-Tenant-Id"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" value="url"  name="x_tenant_id"  maxlength="300" ng-model="content.trusted_urls.headers.x_tenant_id"></div></td>
+				</tr>
+			</tbody>
+		</table>
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<td>Trusted Url's</td>
+					<td>Key</td>
+					<td>Value</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Url</td>
+					<td><div class="form-group"><input class="form-control disabled" value="url"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" value="url"  name="url" maxlength="300" ng-model="content.trusted_urls.url"></div></td>
+				</tr>
+				<tr>
+					<td rowspan="2">Headers</td>
+					<td><div class="form-group"><input class="form-control disabled" value="X-User-Id"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" value="url"  name="x_user_id"  maxlength="300" ng-model="content.trusted_urls.headers.x_user_id"></div></td>
+				</tr>
+				<tr>
+					<td><div class="form-group"><input class="form-control disabled" value="X-Tenant-Id"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" value="url"  name="x_tenant_id"  maxlength="300" ng-model="content.trusted_urls.headers.x_tenant_id"></div></td>
+				</tr>
+			</tbody>
+		</table>
+		
+		
+		
+	</div>
+	
+	
 	<div class="row">
 		<!--<div class="col-sm-6">-->
 		<div class="form-group" style="position: relative;">
