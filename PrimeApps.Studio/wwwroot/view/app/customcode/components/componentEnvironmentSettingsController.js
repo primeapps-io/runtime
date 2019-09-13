@@ -52,66 +52,24 @@ angular.module('primeapps')
 
 			$scope.save = function (contentFormValidation) {
 
-				//if (!contentFormValidation.$valid) {
-				//	toastr.error($filter('translate')('Module.RequiredError'));
-				//	return;
-				//}
-
 				$scope.saving = true;
 				$scope.loading = true;
 
-
-				if (!$scope.content) {
-					$scope.content = {};
-				}
-
-				if ($scope.content && $scope.content.trusted_urls && $scope.content.trusted_urls.url) {
-					$scope.currenContent.trusted_urls[0].url = $scope.content.trusted_urls.url;
-				}
-
-				if ($scope.content && $scope.content.trusted_urls && $scope.content.trusted_urls.headers) {
-					$scope.currenContent.trusted_urls[0].headers["X-User-Id"] = $scope.content.trusted_urls.headers.x_user_id;
-					$scope.currenContent.trusted_urls[0].headers["X-Tenant-Id"] = $scope.content.trusted_urls.headers.x_tenant_id;
-				}
-
-				if ($scope.content && $scope.content.imports && $scope.content.imports.css) {
-
-					var cssBeforeArray = $scope.content.imports.css.before.length > 0 ? $scope.content.imports.css.before.split(';') : [];
-					angular.forEach(cssBeforeArray, function (value) {
-						$scope.currenContent.imports.css.before.push(value);
-					});
-
-					var cssAfterArray = $scope.content.imports.css.after.length > 0 ? $scope.content.imports.css.after.split(';') : [];
-					angular.forEach(cssAfterArray, function (value) {
-						$scope.currenContent.imports.css.after.push(value);
-					});
-				}
-				if ($scope.content && $scope.content.imports && $scope.content.imports.js) {
-
-					var jsBeforeArray = $scope.content.imports.js.length > 0 ? $scope.content.imports.js.before.split(';') : [];
-					angular.forEach(jsBeforeArray, function (value) {
-						$scope.currenContent.imports.js.before.push(value);
-					});
-
-					var jsAfterArray = $scope.content.imports.js.before.length > 0 ? $scope.content.imports.css.before.split(';') : [];
-					angular.forEach(jsAfterArray, function (value) {
-						$scope.currenContent.imports.js.after.push(value);
-					});
-				}
-				if ($scope.configParameters && $scope.configParameters.length > 0) {
-
-					var configsArray = prepareConfigs();
-					$scope.currenContent.configs = JSON.parse(configsArray.toString());
-				}
-
+				prepareContent($scope.content);
 				switch ($scope.$parent.$parent.tabManage.activeTab) {
 					case "development":
 						$scope.contentCopy.development = $scope.currenContent;
+						$scope.contentCopy.test = $scope.testContentState ? $scope.testContentState : $scope.contentCopy.test;
+						$scope.contentCopy.production = $scope.productionContentState ? $scope.productionContentState : $scope.contentCopy.production;
 						break;
 					case "test":
 						$scope.contentCopy.test = $scope.currenContent;
+						$scope.contentCopy.development = $scope.developmentContentState ? $scope.developmentContentState : $scope.contentCopy.development;
+						$scope.contentCopy.production = $scope.productionContentState ? $scope.productionContentState : $scope.contentCopy.production;
 						break;
 					case "production":
+						$scope.contentCopy.development = $scope.developmentContentState ? $scope.developmentContentState : $scope.contentCopy.development;
+						$scope.contentCopy.test = $scope.testContentState ? $scope.testContentState : $scope.contentCopy.test;
 						$scope.contentCopy.production = $scope.currenContent;
 						break;
 				}
@@ -119,7 +77,7 @@ angular.module('primeapps')
 				$scope.componentCopy.content = JSON.stringify($scope.contentCopy);
 
 				ComponentsService.update($scope.id, $scope.componentCopy)
-					.then(function (response) {
+					.then(function () {
 						$scope.saving = false;
 						toastr.success("Global Config updated successfully.");
 						$scope.loading = false;
@@ -145,8 +103,6 @@ angular.module('primeapps')
 				if (parameter.key && parameter.value) {
 					if ($scope.configParameters.length <= 20) {
 						$scope.configParameters.push(parameter);
-					} else {
-						toastr.warning($filter('translate')('Setup.Workflow.MaximumHookWarning'));
 					}
 				}
 				var lastConfigParameter = $scope.configParameters[$scope.configParameters.length - 1];
@@ -154,19 +110,22 @@ angular.module('primeapps')
 				lastConfigParameter.value = null;
 			};
 
-			$scope.changeTab = function (tabName) {
+			$scope.changeTab = function (tabName, previousContent) {
 
+				$scope.previousTabName = $scope.$parent.$parent.tabManage.activeTab;
 				$scope.$parent.$parent.tabManage.activeTab = tabName;
+
+				setPreviousContent($scope.previousTabName, previousContent);
 
 				switch (tabName) {
 					case "development":
-						$scope.currenContent = $scope.contentCopy.development;
+						$scope.currenContent = $scope.developmentContentState ? $scope.developmentContentState : $scope.contentCopy.development;
 						break;
 					case "test":
-						$scope.currenContent = $scope.contentCopy.test;
+						$scope.currenContent = $scope.testContentState ? $scope.testContentState : $scope.contentCopy.test;
 						break;
 					case "production":
-						$scope.currenContent = $scope.contentCopy.production;
+						$scope.currenContent = $scope.productionContentStat ? $scope.productionContentStat : $scope.contentCopy.production;
 						break;
 				}
 
@@ -185,11 +144,31 @@ angular.module('primeapps')
 					if ($scope.currenContent.imports) {
 						$scope.content.imports = {};
 						$scope.content.imports.css = {};
+						$scope.content.imports.css.before = [];
+						$scope.content.imports.css.after = [];
 						$scope.content.imports.js = {};
-						$scope.content.imports.css.before = $scope.currenContent.imports.css.before;
-						$scope.content.imports.css.after = $scope.currenContent.imports.css.after;
-						$scope.content.imports.js.before = $scope.currenContent.imports.js.before;
-						$scope.content.imports.js.after = $scope.currenContent.imports.js.after;
+						$scope.content.imports.js.before = [];
+						$scope.content.imports.js.after = [];
+
+						angular.forEach($scope.currenContent.imports.css.before, function (value) {
+							if (value !== "")
+								$scope.content.imports.css.before += value + ";";
+						});
+
+						angular.forEach($scope.currenContent.imports.css.after, function (value) {
+							if (value !== "")
+								$scope.content.imports.css.after += value + ";";
+						});
+
+						angular.forEach($scope.currenContent.imports.js.before, function (value) {
+							if (value !== "")
+								$scope.content.imports.js.before += value + ";";
+						});
+
+						angular.forEach($scope.currenContent.imports.js.after, function (value) {
+							if (value !== "")
+								$scope.content.imports.js.after += value + ";";
+						});
 					}
 					if ($scope.currenContent.configs) {
 
@@ -224,7 +203,76 @@ angular.module('primeapps')
 					}
 					configArray.push(query);
 				});
-				return configArray;
+				return configArray.toString();
+			};
+
+			var setPreviousContent = function (previousTabName, previousContent) {
+				if (previousContent) {
+					previousContent = prepareContent(previousContent);
+					switch (previousTabName) {
+						case "development":
+							$scope.developmentContentState = previousContent ? previousContent : $scope.contentCopy.development;
+							break;
+						case "test":
+							$scope.testContentState = previousContent ? previousContent : $scope.contentCopy.test;
+							break;
+						case "production":
+							$scope.productionContentState = previousContent ? previousContent : $scope.contentCopy.production;
+							break;
+					}
+				}
+			};
+
+			var prepareContent = function (content) {
+
+				if (content && content.trusted_urls && content.trusted_urls.url) {
+					$scope.currenContent.trusted_urls[0].url = $scope.content.trusted_urls.url;
+				}
+
+				if (content && content.trusted_urls && content.trusted_urls.headers) {
+					$scope.currenContent.trusted_urls[0].headers["X-User-Id"] = content.trusted_urls.headers.x_user_id;
+					$scope.currenContent.trusted_urls[0].headers["X-Tenant-Id"] = content.trusted_urls.headers.x_tenant_id;
+				}
+
+				if (content && content.imports && content.imports.css) {
+
+					var cssBeforeArray = content.imports.css.before.length > 0 ? content.imports.css.before.split(';') : [];
+					$scope.currenContent.imports.css.before = [];
+					angular.forEach(cssBeforeArray, function (value) {
+						if (value !== "")
+							$scope.currenContent.imports.css.before.push(value);
+					});
+
+					var cssAfterArray = content.imports.css.after.length > 0 ? content.imports.css.after.split(';') : [];
+					$scope.currenContent.imports.css.after = [];
+					angular.forEach(cssAfterArray, function (value) {
+						if (value !== "")
+							$scope.currenContent.imports.css.after.push(value);
+					});
+				}
+				if (content && content.imports && content.imports.js) {
+
+					var jsBeforeArray = content.imports.js.before.length > 0 ? content.imports.js.before.split(';') : [];
+					$scope.currenContent.imports.js.before = [];
+					angular.forEach(jsBeforeArray, function (value) {
+						if (value !== "")
+							$scope.currenContent.imports.js.before.push(value);
+					});
+
+					var jsAfterArray = content.imports.js.after.length > 0 ? content.imports.js.after.split(';') : [];
+					$scope.currenContent.imports.js.after = [];
+					angular.forEach(jsAfterArray, function (value) {
+						if (value !== "")
+							$scope.currenContent.imports.js.after.push(value);
+					});
+				}
+				if ($scope.configParameters && $scope.configParameters.length > 0) {
+
+					var configsArrayString = prepareConfigs();
+					$scope.currenContent.configs = JSON.parse(configsArrayString);
+				}
+
+				return $scope.currenContent;
 			};
 		}
 	]);
