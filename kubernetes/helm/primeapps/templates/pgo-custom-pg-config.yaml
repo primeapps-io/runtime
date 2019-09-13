@@ -1,0 +1,287 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: pgo-custom-pg-config
+data:
+  postgresql.conf: "# -----------------------------\n# PostgreSQL configuration file\n#
+    -----------------------------\n#\n# This file consists of lines of the form:\n#\n#
+    \  name = value\n#\n# (The \"=\" is optional.)  Whitespace may be used.  Comments
+    are introduced with\n# \"#\" anywhere on a line.  The complete list of parameter
+    names and allowed\n# values can be found in the PostgreSQL documentation.\n#\n#
+    The commented-out settings shown in this file represent the default values.\n#
+    Re-commenting a setting is NOT sufficient to revert it to the default value;\n#
+    you need to reload the server.\n#\n# This file is read on server startup and when
+    the server receives a SIGHUP\n# signal.  If you edit the file on a running system,
+    you have to SIGHUP the\n# server for the changes to take effect, or use \"pg_ctl
+    reload\".  Some\n# parameters, which are marked below, require a server shutdown
+    and restart to\n# take effect.\n#\n# Any parameter can also be given as a command-line
+    option to the server, e.g.,\n# \"postgres -c log_connections=on\".  Some parameters
+    can be changed at run time\n# with the \"SET\" SQL command.\n#\n# Memory units:
+    \ kB = kilobytes        Time units:  ms  = milliseconds\n#                MB =
+    megabytes                     s   = seconds\n#                GB = gigabytes                     min
+    = minutes\n#                TB = terabytes                     h   = hours\n#
+    \                                                  d   = days\n\n\n#------------------------------------------------------------------------------\n#
+    FILE LOCATIONS\n#------------------------------------------------------------------------------\n\n#
+    The default values of these variables are driven from the -D command-line\n# option
+    or PGDATA environment variable, represented here as ConfigDir.\n\n#data_directory
+    = 'ConfigDir'\t\t# use data in another directory\n\t\t\t\t\t# (change requires
+    restart)\n#hba_file = 'ConfigDir/pg_hba.conf'\t# host-based authentication file\n\t\t\t\t\t#
+    (change requires restart)\n#ident_file = 'ConfigDir/pg_ident.conf'\t# ident configuration
+    file\n\t\t\t\t\t# (change requires restart)\n\n# If external_pid_file is not explicitly
+    set, no extra PID file is written.\n#external_pid_file = ''\t\t\t# write an extra
+    PID file\n\t\t\t\t\t# (change requires restart)\n\n\n#------------------------------------------------------------------------------\n#
+    CONNECTIONS AND AUTHENTICATION\n#------------------------------------------------------------------------------\n\n#
+    - Connection Settings -\n\nlisten_addresses = '*'\n\t\t\t\t\t# comma-separated
+    list of addresses;\n\t\t\t\t\t# defaults to 'localhost'; use '*' for all\n\t\t\t\t\t#
+    (change requires restart)\n#port = 5432\t\t\t\t# (change requires restart)\n#max_connections
+    = 1000\t\t\t# (change requires restart)\n#superuser_reserved_connections = 3\t#
+    (change requires restart)\n#unix_socket_directories = '/var/run/postgresql'\t#
+    comma-separated list of directories\n\t\t\t\t\t# (change requires restart)\n#unix_socket_group
+    = ''\t\t\t# (change requires restart)\n#unix_socket_permissions = 0777\t\t# begin
+    with 0 to use octal notation\n\t\t\t\t\t# (change requires restart)\n#bonjour
+    = off\t\t\t\t# advertise server via Bonjour\n\t\t\t\t\t# (change requires restart)\n#bonjour_name
+    = ''\t\t\t# defaults to the computer name\n\t\t\t\t\t# (change requires restart)\n\n#
+    - Security and Authentication -\n\n#authentication_timeout = 1min\t\t# 1s-600s\nssl
+    = off\t\t\t# (change requires restart)\nssl_ciphers = 'HIGH:MEDIUM:+3DES:!aNULL'
+    # allowed SSL ciphers\n\t\t\t\t\t# (change requires restart)\nssl_prefer_server_ciphers
+    = on\t\t# (change requires restart)\nssl_ecdh_curve = 'prime256v1'\t\t# (change
+    requires restart)\nssl_cert_file = 'server.crt'\t\t# (change requires restart)\nssl_key_file
+    = 'server.key'\t\t# (change requires restart)\n#ssl_ca_file = ''\t\t\t# (change
+    requires restart)\n#ssl_crl_file = ''\t\t\t# (change requires restart)\npassword_encryption
+    = on\n#db_user_namespace = off\n#row_security = on\n\n# GSSAPI using Kerberos\n#krb_server_keyfile
+    = ''\n#krb_caseins_users = off\n\n# - TCP Keepalives -\n# see \"man 7 tcp\" for
+    details\n\n#tcp_keepalives_idle = 0\t\t# TCP_KEEPIDLE, in seconds;\n\t\t\t\t\t#
+    0 selects the system default\n#tcp_keepalives_interval = 0\t\t# TCP_KEEPINTVL,
+    in seconds;\n\t\t\t\t\t# 0 selects the system default\n#tcp_keepalives_count =
+    0\t\t# TCP_KEEPCNT;\n\t\t\t\t\t# 0 selects the system default\n\n\n#------------------------------------------------------------------------------\n#
+    RESOURCE USAGE (except WAL)\n#------------------------------------------------------------------------------\n\n#
+    - Memory -\n\n#shared_buffers = 1280MB\t\t\t# min 128kB\n\t\t\t\t\t# (change requires
+    restart)\n#huge_pages = try\t\t\t# on, off, or try\n\t\t\t\t\t# (change requires
+    restart)\n#temp_buffers = 8MB\t\t\t# min 800kB\n#max_prepared_transactions = 0\t\t#
+    zero disables the feature\n\t\t\t\t\t# (change requires restart)\n# Caution: it
+    is not advisable to set max_prepared_transactions nonzero unless\n# you actively
+    intend to use prepared transactions.\n#work_mem = 6553MB\t\t\t\t# min 64kB\n#maintenance_work_mem
+    = 64MB\t\t# min 1MB\n#replacement_sort_tuples = 150000\t# limits use of replacement
+    selection sort\n#autovacuum_work_mem = -1\t\t# min 1MB, or -1 to use maintenance_work_mem\n#max_stack_depth
+    = 2MB\t\t\t# min 100kB\ndynamic_shared_memory_type = posix\t# the default is the
+    first option\n\t\t\t\t\t# supported by the operating system:\n\t\t\t\t\t#   posix\n\t\t\t\t\t#
+    \  sysv\n\t\t\t\t\t#   windows\n\t\t\t\t\t#   mmap\n\t\t\t\t\t# use none to disable
+    dynamic shared memory\n\n# - Disk -\n\n#temp_file_limit = -1\t\t\t# limits per-process
+    temp file space\n\t\t\t\t\t# in kB, or -1 for no limit\n\n# - Kernel Resource
+    Usage -\n\n#max_files_per_process = 1000\t\t# min 25\n\t\t\t\t\t# (change requires
+    restart)\n#shared_preload_libraries = ''\t\t# (change requires restart)\n\n# -
+    Cost-Based Vacuum Delay -\n\n#vacuum_cost_delay = 0\t\t\t# 0-100 milliseconds\n#vacuum_cost_page_hit
+    = 1\t\t# 0-10000 credits\n#vacuum_cost_page_miss = 10\t\t# 0-10000 credits\n#vacuum_cost_page_dirty
+    = 20\t\t# 0-10000 credits\n#vacuum_cost_limit = 200\t\t# 1-10000 credits\n\n#
+    - Background Writer -\n\n#bgwriter_delay = 200ms\t\t\t# 10-10000ms between rounds\n#bgwriter_lru_maxpages
+    = 100\t\t# 0-1000 max buffers written/round\n#bgwriter_lru_multiplier = 2.0\t\t#
+    0-10.0 multiplier on buffers scanned/round\n#bgwriter_flush_after = 0\t\t# 0 disables,\n\t\t\t\t\t#
+    default is 512kB on linux, 0 otherwise\n\n# - Asynchronous Behavior -\n\n#effective_io_concurrency
+    = 1\t\t# 1-1000; 0 disables prefetching\n#max_worker_processes = 8\t\t# (change
+    requires restart)\n#max_parallel_workers_per_gather = 0\t# taken from max_worker_processes\n#old_snapshot_threshold
+    = -1\t\t# 1min-60d; -1 disables; 0 is immediate\n\t\t\t\t\t\t\t\t\t# (change requires
+    restart)\n#backend_flush_after = 0\t\t# 0 disables, default is 0\n\n\n#------------------------------------------------------------------------------\n#
+    WRITE AHEAD LOG\n#------------------------------------------------------------------------------\n\n#
+    - Settings -\n\n#wal_level = minimal\t\t\t# minimal, replica, or logical\n\t\t\t\t\t#
+    (change requires restart)\n#fsync = on\t\t\t\t# flush data to disk for crash safety\n\t\t\t\t\t\t#
+    (turning this off can cause\n\t\t\t\t\t\t# unrecoverable data corruption)\n#synchronous_commit
+    = on\t\t# synchronization level;\n\t\t\t\t\t# off, local, remote_write, remote_apply,
+    or on\n#wal_sync_method = fsync\t\t# the default is the first option\n\t\t\t\t\t#
+    supported by the operating system:\n\t\t\t\t\t#   open_datasync\n\t\t\t\t\t#   fdatasync
+    (default on Linux)\n\t\t\t\t\t#   fsync\n\t\t\t\t\t#   fsync_writethrough\n\t\t\t\t\t#
+    \  open_sync\n#full_page_writes = on\t\t\t# recover from partial page writes\n#wal_compression
+    = off\t\t\t# enable compression of full-page writes\n#wal_log_hints = off\t\t\t#
+    also do full page writes of non-critical updates\n\t\t\t\t\t# (change requires
+    restart)\n#wal_buffers = -1\t\t\t# min 32kB, -1 sets based on shared_buffers\n\t\t\t\t\t#
+    (change requires restart)\n#wal_writer_delay = 200ms\t\t# 1-10000 milliseconds\n#wal_writer_flush_after
+    = 1MB\t\t# 0 disables\n\n#commit_delay = 0\t\t\t# range 0-100000, in microseconds\n#commit_siblings
+    = 5\t\t\t# range 1-1000\n\n# - Checkpoints -\n\n#checkpoint_timeout = 5min\t\t#
+    range 30s-1d\n#max_wal_size = 1GB\n#min_wal_size = 80MB\n#checkpoint_completion_target
+    = 0.5\t# checkpoint target duration, 0.0 - 1.0\n#checkpoint_flush_after = 0\t\t#
+    0 disables,\n\t\t\t\t\t# default is 256kB on linux, 0 otherwise\n#checkpoint_warning
+    = 30s\t\t# 0 disables\n\n# - Archiving -\n\n#archive_mode = off\t\t# enables archiving;
+    off, on, or always\n\t\t\t\t# (change requires restart)\n#archive_command = ''\t\t#
+    command to use to archive a logfile segment\n\t\t\t\t# placeholders: %p = path
+    of file to archive\n\t\t\t\t#               %f = file name only\n\t\t\t\t# e.g.
+    'test ! -f /mnt/server/archivedir/%f && cp %p /mnt/server/archivedir/%f'\n#archive_timeout
+    = 0\t\t# force a logfile segment switch after this\n\t\t\t\t# number of seconds;
+    0 disables\n\n\n#------------------------------------------------------------------------------\n#
+    REPLICATION\n#------------------------------------------------------------------------------\n\n#
+    - Sending Server(s) -\n\n# Set these on the master and on any standby that will
+    send replication data.\n\n#max_wal_senders = 0\t\t# max number of walsender processes\n\t\t\t\t#
+    (change requires restart)\n#wal_keep_segments = 0\t\t# in logfile segments, 16MB
+    each; 0 disables\n#wal_sender_timeout = 60s\t# in milliseconds; 0 disables\n\n#max_replication_slots
+    = 0\t# max number of replication slots\n\t\t\t\t# (change requires restart)\n#track_commit_timestamp
+    = off\t# collect timestamp of transaction commit\n\t\t\t\t# (change requires restart)\n\n#
+    - Master Server -\n\n# These settings are ignored on a standby server.\n\n#synchronous_standby_names
+    = ''\t# standby servers that provide sync rep\n\t\t\t\t# number of sync standbys
+    and comma-separated list of application_name\n\t\t\t\t# from standby(s); '*' =
+    all\n#vacuum_defer_cleanup_age = 0\t# number of xacts by which cleanup is delayed\n\n#
+    - Standby Servers -\n\n# These settings are ignored on a master server.\n\n#hot_standby
+    = off\t\t\t# \"on\" allows queries during recovery\n\t\t\t\t\t# (change requires
+    restart)\n#max_standby_archive_delay = 30s\t# max delay before canceling queries\n\t\t\t\t\t#
+    when reading WAL from archive;\n\t\t\t\t\t# -1 allows indefinite delay\n#max_standby_streaming_delay
+    = 30s\t# max delay before canceling queries\n\t\t\t\t\t# when reading streaming
+    WAL;\n\t\t\t\t\t# -1 allows indefinite delay\n#wal_receiver_status_interval =
+    10s\t# send replies at least this often\n\t\t\t\t\t# 0 disables\n#hot_standby_feedback
+    = off\t\t# send info from standby to prevent\n\t\t\t\t\t# query conflicts\n#wal_receiver_timeout
+    = 60s\t\t# time that receiver waits for\n\t\t\t\t\t# communication from master\n\t\t\t\t\t#
+    in milliseconds; 0 disables\n#wal_retrieve_retry_interval = 5s\t# time to wait
+    before retrying to\n\t\t\t\t\t# retrieve WAL after a failed attempt\n\n\n#------------------------------------------------------------------------------\n#
+    QUERY TUNING\n#------------------------------------------------------------------------------\n\n#
+    - Planner Method Configuration -\n\n#enable_bitmapscan = on\n#enable_hashagg =
+    on\n#enable_hashjoin = on\n#enable_indexscan = on\n#enable_indexonlyscan = on\n#enable_material
+    = on\n#enable_mergejoin = on\n#enable_nestloop = on\n#enable_seqscan = on\n#enable_sort
+    = on\n#enable_tidscan = on\n\n# - Planner Cost Constants -\n\n#seq_page_cost =
+    1.0\t\t\t# measured on an arbitrary scale\n#random_page_cost = 4.0\t\t\t# same
+    scale as above\n#cpu_tuple_cost = 0.01\t\t\t# same scale as above\n#cpu_index_tuple_cost
+    = 0.005\t\t# same scale as above\n#cpu_operator_cost = 0.0025\t\t# same scale
+    as above\n#parallel_tuple_cost = 0.1\t\t# same scale as above\n#parallel_setup_cost
+    = 1000.0\t# same scale as above\n#min_parallel_relation_size = 8MB\n#effective_cache_size
+    = 4GB\n\n# - Genetic Query Optimizer -\n\n#geqo = on\n#geqo_threshold = 12\n#geqo_effort
+    = 5\t\t\t# range 1-10\n#geqo_pool_size = 0\t\t\t# selects default based on effort\n#geqo_generations
+    = 0\t\t\t# selects default based on effort\n#geqo_selection_bias = 2.0\t\t# range
+    1.5-2.0\n#geqo_seed = 0.0\t\t\t# range 0.0-1.0\n\n# - Other Planner Options -\n\n#default_statistics_target
+    = 100\t# range 1-10000\n#constraint_exclusion = partition\t# on, off, or partition\n#cursor_tuple_fraction
+    = 0.1\t\t# range 0.0-1.0\n#from_collapse_limit = 8\n#join_collapse_limit = 8\t\t#
+    1 disables collapsing of explicit\n\t\t\t\t\t# JOIN clauses\n#force_parallel_mode
+    = off\n\n\n#------------------------------------------------------------------------------\n#
+    ERROR REPORTING AND LOGGING\n#------------------------------------------------------------------------------\n\n#
+    - Where to Log -\n\n#log_destination = 'stderr'\t\t# Valid values are combinations
+    of\n\t\t\t\t\t# stderr, csvlog, syslog, and eventlog,\n\t\t\t\t\t# depending on
+    platform.  csvlog\n\t\t\t\t\t# requires logging_collector to be on.\n\n# This
+    is used when logging to stderr:\n#logging_collector = off\t\t# Enable capturing
+    of stderr and csvlog\n\t\t\t\t\t# into log files. Required to be on for\n\t\t\t\t\t#
+    csvlogs.\n\t\t\t\t\t# (change requires restart)\n\n# These are only used if logging_collector
+    is on:\n#log_directory = 'pg_log'\t\t# directory where log files are written,\n\t\t\t\t\t#
+    can be absolute or relative to PGDATA\n#log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'\t#
+    log file name pattern,\n\t\t\t\t\t# can include strftime() escapes\n#log_file_mode
+    = 0600\t\t\t# creation mode for log files,\n\t\t\t\t\t# begin with 0 to use octal
+    notation\n#log_truncate_on_rotation = off\t\t# If on, an existing log file with
+    the\n\t\t\t\t\t# same name as the new log file will be\n\t\t\t\t\t# truncated
+    rather than appended to.\n\t\t\t\t\t# But such truncation only occurs on\n\t\t\t\t\t#
+    time-driven rotation, not on restarts\n\t\t\t\t\t# or size-driven rotation.  Default
+    is\n\t\t\t\t\t# off, meaning append to existing files\n\t\t\t\t\t# in all cases.\n#log_rotation_age
+    = 1d\t\t\t# Automatic rotation of logfiles will\n\t\t\t\t\t# happen after that
+    time.  0 disables.\n#log_rotation_size = 10MB\t\t# Automatic rotation of logfiles
+    will\n\t\t\t\t\t# happen after that much log output.\n\t\t\t\t\t# 0 disables.\n\n#
+    These are relevant when logging to syslog:\n#syslog_facility = 'LOCAL0'\n#syslog_ident
+    = 'postgres'\n#syslog_sequence_numbers = on\n#syslog_split_messages = on\n\n#
+    This is only relevant when logging to eventlog (win32):\n#event_source = 'PostgreSQL'\n\n#
+    - When to Log -\n\n#client_min_messages = notice\t\t# values in order of decreasing
+    detail:\n\t\t\t\t\t#   debug5\n\t\t\t\t\t#   debug4\n\t\t\t\t\t#   debug3\n\t\t\t\t\t#
+    \  debug2\n\t\t\t\t\t#   debug1\n\t\t\t\t\t#   log\n\t\t\t\t\t#   notice\n\t\t\t\t\t#
+    \  warning\n\t\t\t\t\t#   error\n\n#log_min_messages = warning\t\t# values in
+    order of decreasing detail:\n\t\t\t\t\t#   debug5\n\t\t\t\t\t#   debug4\n\t\t\t\t\t#
+    \  debug3\n\t\t\t\t\t#   debug2\n\t\t\t\t\t#   debug1\n\t\t\t\t\t#   info\n\t\t\t\t\t#
+    \  notice\n\t\t\t\t\t#   warning\n\t\t\t\t\t#   error\n\t\t\t\t\t#   log\n\t\t\t\t\t#
+    \  fatal\n\t\t\t\t\t#   panic\n\n#log_min_error_statement = error\t# values in
+    order of decreasing detail:\n\t\t\t\t\t#   debug5\n\t\t\t\t\t#   debug4\n\t\t\t\t\t#
+    \  debug3\n\t\t\t\t\t#   debug2\n\t\t\t\t\t#   debug1\n\t\t\t\t\t#   info\n\t\t\t\t\t#
+    \  notice\n\t\t\t\t\t#   warning\n\t\t\t\t\t#   error\n\t\t\t\t\t#   log\n\t\t\t\t\t#
+    \  fatal\n\t\t\t\t\t#   panic (effectively off)\n\n#log_min_duration_statement
+    = -1\t# -1 is disabled, 0 logs all statements\n\t\t\t\t\t# and their durations,
+    > 0 logs only\n\t\t\t\t\t# statements running at least this number\n\t\t\t\t\t#
+    of milliseconds\n\n\n# - What to Log -\n\n#debug_print_parse = off\n#debug_print_rewritten
+    = off\n#debug_print_plan = off\n#debug_pretty_print = on\n#log_checkpoints = off\n#log_connections
+    = off\n#log_disconnections = off\n#log_duration = off\n#log_error_verbosity =
+    default\t\t# terse, default, or verbose messages\n#log_hostname = off\n#log_line_prefix
+    = ''\t\t\t# special values:\n\t\t\t\t\t#   %a = application name\n\t\t\t\t\t#
+    \  %u = user name\n\t\t\t\t\t#   %d = database name\n\t\t\t\t\t#   %r = remote
+    host and port\n\t\t\t\t\t#   %h = remote host\n\t\t\t\t\t#   %p = process ID\n\t\t\t\t\t#
+    \  %t = timestamp without milliseconds\n\t\t\t\t\t#   %m = timestamp with milliseconds\n\t\t\t\t\t#
+    \  %n = timestamp with milliseconds (as a Unix epoch)\n\t\t\t\t\t#   %i = command
+    tag\n\t\t\t\t\t#   %e = SQL state\n\t\t\t\t\t#   %c = session ID\n\t\t\t\t\t#
+    \  %l = session line number\n\t\t\t\t\t#   %s = session start timestamp\n\t\t\t\t\t#
+    \  %v = virtual transaction ID\n\t\t\t\t\t#   %x = transaction ID (0 if none)\n\t\t\t\t\t#
+    \  %q = stop here in non-session\n\t\t\t\t\t#        processes\n\t\t\t\t\t#   %%
+    = '%'\n\t\t\t\t\t# e.g. '<%u%%%d> '\n#log_lock_waits = off\t\t\t# log lock waits
+    >= deadlock_timeout\n#log_statement = 'none'\t\t\t# none, ddl, mod, all\n#log_replication_commands
+    = off\n#log_temp_files = -1\t\t\t# log temporary files equal or larger\n\t\t\t\t\t#
+    than the specified size in kilobytes;\n\t\t\t\t\t# -1 disables, 0 logs all temp
+    files\nlog_timezone = 'UTC'\n\n\n# - Process Title -\n\n#cluster_name = ''\t\t\t#
+    added to process titles if nonempty\n\t\t\t\t\t# (change requires restart)\n#update_process_title
+    = on\n\n\n#------------------------------------------------------------------------------\n#
+    RUNTIME STATISTICS\n#------------------------------------------------------------------------------\n\n#
+    - Query/Index Statistics Collector -\n\n#track_activities = on\n#track_counts
+    = on\n#track_io_timing = off\n#track_functions = none\t\t\t# none, pl, all\n#track_activity_query_size
+    = 1024\t# (change requires restart)\n#stats_temp_directory = 'pg_stat_tmp'\n\n\n#
+    - Statistics Monitoring -\n\n#log_parser_stats = off\n#log_planner_stats = off\n#log_executor_stats
+    = off\n#log_statement_stats = off\n\n\n#------------------------------------------------------------------------------\n#
+    AUTOVACUUM PARAMETERS\n#------------------------------------------------------------------------------\n\n#autovacuum
+    = on\t\t\t# Enable autovacuum subprocess?  'on'\n\t\t\t\t\t# requires track_counts
+    to also be on.\n#log_autovacuum_min_duration = -1\t# -1 disables, 0 logs all actions
+    and\n\t\t\t\t\t# their durations, > 0 logs only\n\t\t\t\t\t# actions running at
+    least this number\n\t\t\t\t\t# of milliseconds.\n#autovacuum_max_workers = 3\t\t#
+    max number of autovacuum subprocesses\n\t\t\t\t\t# (change requires restart)\n#autovacuum_naptime
+    = 1min\t\t# time between autovacuum runs\n#autovacuum_vacuum_threshold = 50\t#
+    min number of row updates before\n\t\t\t\t\t# vacuum\n#autovacuum_analyze_threshold
+    = 50\t# min number of row updates before\n\t\t\t\t\t# analyze\n#autovacuum_vacuum_scale_factor
+    = 0.2\t# fraction of table size before vacuum\n#autovacuum_analyze_scale_factor
+    = 0.1\t# fraction of table size before analyze\n#autovacuum_freeze_max_age = 200000000\t#
+    maximum XID age before forced vacuum\n\t\t\t\t\t# (change requires restart)\n#autovacuum_multixact_freeze_max_age
+    = 400000000\t# maximum multixact age\n\t\t\t\t\t# before forced vacuum\n\t\t\t\t\t#
+    (change requires restart)\n#autovacuum_vacuum_cost_delay = 20ms\t# default vacuum
+    cost delay for\n\t\t\t\t\t# autovacuum, in milliseconds;\n\t\t\t\t\t# -1 means
+    use vacuum_cost_delay\n#autovacuum_vacuum_cost_limit = -1\t# default vacuum cost
+    limit for\n\t\t\t\t\t# autovacuum, -1 means use\n\t\t\t\t\t# vacuum_cost_limit\n\n\n#------------------------------------------------------------------------------\n#
+    CLIENT CONNECTION DEFAULTS\n#------------------------------------------------------------------------------\n\n#
+    - Statement Behavior -\n\n#search_path = '\"$user\", public'\t# schema names\n#default_tablespace
+    = ''\t\t# a tablespace name, '' uses the default\n#temp_tablespaces = ''\t\t\t#
+    a list of tablespace names, '' uses\n\t\t\t\t\t# only default tablespace\n#check_function_bodies
+    = on\n#default_transaction_isolation = 'read committed'\n#default_transaction_read_only
+    = off\n#default_transaction_deferrable = off\n#session_replication_role = 'origin'\n#statement_timeout
+    = 0\t\t\t# in milliseconds, 0 is disabled\n#lock_timeout = 0\t\t\t# in milliseconds,
+    0 is disabled\n#idle_in_transaction_session_timeout = 0\t\t# in milliseconds,
+    0 is disabled\n#vacuum_freeze_min_age = 50000000\n#vacuum_freeze_table_age = 150000000\n#vacuum_multixact_freeze_min_age
+    = 5000000\n#vacuum_multixact_freeze_table_age = 150000000\n#bytea_output = 'hex'\t\t\t#
+    hex, escape\n#xmlbinary = 'base64'\n#xmloption = 'content'\n#gin_fuzzy_search_limit
+    = 0\n#gin_pending_list_limit = 4MB\n\n# - Locale and Formatting -\n\ndatestyle
+    = 'iso, mdy'\n#intervalstyle = 'postgres'\ntimezone = 'UTC'\n#timezone_abbreviations
+    = 'Default'     # Select the set of available time zone\n\t\t\t\t\t# abbreviations.
+    \ Currently, there are\n\t\t\t\t\t#   Default\n\t\t\t\t\t#   Australia (historical
+    usage)\n\t\t\t\t\t#   India\n\t\t\t\t\t# You can create your own file in\n\t\t\t\t\t#
+    share/timezonesets/.\n#extra_float_digits = 0\t\t\t# min -15, max 3\n#client_encoding
+    = sql_ascii\t\t# actually, defaults to database\n\t\t\t\t\t# encoding\n\n# These
+    settings are initialized by initdb, but they can be changed.\nlc_messages = 'en_US.utf8'\t\t\t#
+    locale for system error message\n\t\t\t\t\t# strings\nlc_monetary = 'en_US.utf8'\t\t\t#
+    locale for monetary formatting\nlc_numeric = 'en_US.utf8'\t\t\t# locale for number
+    formatting\nlc_time = 'en_US.utf8'\t\t\t\t# locale for time formatting\n\n# default
+    configuration for text search\ndefault_text_search_config = 'pg_catalog.english'\n\n#
+    - Other Defaults -\n\n#dynamic_library_path = '$libdir'\n#local_preload_libraries
+    = ''\n#session_preload_libraries = ''\n\n\n#------------------------------------------------------------------------------\n#
+    LOCK MANAGEMENT\n#------------------------------------------------------------------------------\n\n#deadlock_timeout
+    = 1s\n#max_locks_per_transaction = 64\t\t# min 10\n\t\t\t\t\t# (change requires
+    restart)\n#max_pred_locks_per_transaction = 64\t# min 10\n\t\t\t\t\t# (change
+    requires restart)\n\n\n#------------------------------------------------------------------------------\n#
+    VERSION/PLATFORM COMPATIBILITY\n#------------------------------------------------------------------------------\n\n#
+    - Previous PostgreSQL Versions -\n\n#array_nulls = on\n#backslash_quote = safe_encoding\t#
+    on, off, or safe_encoding\n#default_with_oids = off\n#escape_string_warning =
+    on\n#lo_compat_privileges = off\n#operator_precedence_warning = off\n#quote_all_identifiers
+    = off\n#sql_inheritance = on\n#standard_conforming_strings = on\n#synchronize_seqscans
+    = on\n\n# - Other Platforms and Clients -\n\n#transform_null_equals = off\n\n\n#------------------------------------------------------------------------------\n#
+    ERROR HANDLING\n#------------------------------------------------------------------------------\n\n#exit_on_error
+    = off\t\t\t# terminate session on any error?\n#restart_after_crash = on\t\t# reinitialize
+    after backend crash?\n\n\n#------------------------------------------------------------------------------\n#
+    CONFIG FILE INCLUDES\n#------------------------------------------------------------------------------\n\n#
+    These options allow settings to be loaded from files other than the\n# default
+    postgresql.conf.\n\n#include_dir = 'conf.d'\t\t\t# include files ending in '.conf'
+    from\n\t\t\t\t\t# directory 'conf.d'\n#include_if_exists = 'exists.conf'\t# include
+    file only if it exists\n#include = 'special.conf'\t\t# include file\n\n\n#------------------------------------------------------------------------------\n#
+    CUSTOMIZED OPTIONS\n#------------------------------------------------------------------------------\n\n#
+    Add settings for extensions here\n\nmax_connections = 1000\nsuperuser_reserved_connections
+    = 3\nshared_buffers = 1280MB\neffective_cache_size = 3840MB\nwork_mem = 6553kB\nmaintenance_work_mem
+    = 320MB\nmin_wal_size = 1GB\nmax_wal_size = 2GB\ncheckpoint_completion_target
+    = 0.9\nwal_buffers = 16MB\ndefault_statistics_target = 100\n\nssl = off\t\t\t\t#
+    (change requires restart)\nssl_ciphers = 'HIGH:MEDIUM:+3DES:!aNULL' # allowed
+    SSL ciphers\nssl_prefer_server_ciphers = on\t\t# (change requires restart)\nssl_ecdh_curve
+    = 'prime256v1'\t\t# (change requires restart)\nssl_cert_file = 'server.crt'\t\t#
+    (change requires restart)\nssl_key_file = 'server.key'\t\t# (change requires restart)\n#ssl_ca_file
+    = ''\t\t\t# (change requires restart)\n#ssl_crl_file = ''\t\t\t# (change requires
+    restart)\npassword_encryption = on\n\n# replication\nwal_level = hot_standby\nfull_page_writes
+    = on\nwal_log_hints = on\nmax_wal_senders = 6\nmax_replication_slots = 6\nhot_standby
+    = on\nhot_standby_feedback = on\n\n# continous archiving\narchive_mode = on\narchive_command
+    = 'test ! -f /var/lib/postgresql/data/archive/%f && cp %p /var/lib/postgresql/data/archive/%f'\n\n#
+    logging\nlog_destination = 'stderr'\nlogging_collector = on\nlog_directory = 'pg_log'\nlog_filename
+    = 'postgresql-%Y-%m-%d_%H%M%S.log'\nlog_file_mode = 0600\nlog_truncate_on_rotation
+    = on\nlog_rotation_age = 1d\nlog_rotation_size = 10MB\n"

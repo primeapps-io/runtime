@@ -917,7 +917,7 @@ angular.module('primeapps')
 					return deferred.promise;
 				},
 
-				lookup: function (searchTerm, field, record, additionalFields, exactMatch) {
+                lookup: function (searchTerm, field, record, additionalFields, exactMatch, customFilters) {
 					var deferred = $q.defer();
 					var lookupType = field.lookup_type;
 					var that = this;
@@ -1039,7 +1039,16 @@ angular.module('primeapps')
 							}
 
 						}
-					}
+                    }
+                     
+                    if (customFilters) {
+                        for (var j = 0; j < customFilters.length; j++) {
+                            var customFilter = customFilters[j];
+                            customFilter.no = findRequest.filters.length + 1;
+
+                            findRequest.filters.push(customFilter);
+                        }
+                    }
 
 					this.findRecords(lookupType, findRequest)
 						.then(function (response) {

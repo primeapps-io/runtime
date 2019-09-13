@@ -141,3 +141,7 @@ spec:
                 configMapKeyRef:
                   name: primeapps-app-config
                   key: SentryDsn
+      initContainers:
+       - name: init-app
+         image: primeapps/primeapps-init:alpine-beta8
+         imagePullPolicy: Always
