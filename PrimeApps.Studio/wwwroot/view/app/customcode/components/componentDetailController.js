@@ -25,8 +25,10 @@ angular.module('primeapps')
              }*/
 
             $scope.environmentChange = function (env, index, otherValue = false) {
-                if (!env || index === 0)
+                if (!env || index === 0) {
+                    $scope.environments[0].selected = env.selected || otherValue;
                     return;
+                }
 
                 if (index === 1) {
                     $scope.environments[0].disabled = env.selected || otherValue;
@@ -160,7 +162,7 @@ angular.module('primeapps')
                         }
                     }
 
-                    if ($scope.component.environment.indexOf(',') > -1)
+                    if ($scope.component.environment && $scope.component.environment.indexOf(',') > -1)
                         $scope.component.environments = $scope.component.environment.split(',');
                     else
                         $scope.component.environments = $scope.component.environment;

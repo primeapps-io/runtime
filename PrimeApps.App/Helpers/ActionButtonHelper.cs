@@ -43,11 +43,11 @@ namespace PrimeApps.App.Helpers
                 {
                     actionButton.Template = _moduleHelper.ReplaceDynamicValues(actionButton.Template, appConfigs);
 
-                    if (actionButton.Template.StartsWith("http"))
+                    if (!string.IsNullOrEmpty(actionButton.Url))
                     {
-                        if (!_moduleHelper.IsTrustedUrl(actionButton.Template, appConfigs))
+                        if (!_moduleHelper.IsTrustedUrl(actionButton.Url, appConfigs))
                         {
-                            actionButton.Template = "console.error('" + actionButton.Template + " is not a trusted url.');";
+                            actionButton.Template = "console.error('" + actionButton.Url + " is not a trusted url.');";
                             continue;
                         }
 
@@ -56,18 +56,18 @@ namespace PrimeApps.App.Helpers
                             using (var httpClient = new HttpClient())
                             {
                                 httpClient.DefaultRequestHeaders.Accept.Clear();
-                                var response = await httpClient.GetAsync(actionButton.Template);
+                                var response = await httpClient.GetAsync(actionButton.Url);
                                 var content = await response.Content.ReadAsStringAsync();
 
                                 if (!response.IsSuccessStatusCode)
                                 {
-                                    actionButton.Template = "console.error('" + actionButton.Template + " response error. Http Status Code: " + response.StatusCode + "');";
+                                    actionButton.Template = "console.error('" + actionButton.Url + " response error. Http Status Code: " + response.StatusCode + "');";
                                     continue;
                                 }
 
                                 if (string.IsNullOrWhiteSpace(content))
                                 {
-                                    actionButton.Template = "console.warn('" + actionButton.Template + " has empty content.');";
+                                    actionButton.Template = "console.warn('" + actionButton.Url + " has empty content.');";
                                     continue;
                                 }
 
@@ -76,7 +76,7 @@ namespace PrimeApps.App.Helpers
                         }
                         catch
                         {
-                            actionButton.Template = "console.error('" + actionButton.Template + " has connection error. Please check the url.');";
+                            actionButton.Template = "console.error('" + actionButton.Url + " has connection error. Please check the url.');";
                             continue;
                         }
                     }

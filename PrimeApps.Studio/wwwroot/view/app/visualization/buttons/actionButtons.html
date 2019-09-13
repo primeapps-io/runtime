@@ -71,6 +71,7 @@
                 <td>{{actionButton.name}}</td>
                 <td ng-if="actionButton.action_type == 'ModalFrame'">Modal</td>
                 <td ng-if="actionButton.action_type == 'Webhook'">Webhook</td>
+                <td ng-if="actionButton.action_type == 'Scripting'">Script</td>
                 <td>{{actionButton.url}}</td>
                 <td ng-if="actionButton.trigger == 'Detail'">{{'Setup.Modules.Detail' | translate}}</td>
                 <td ng-if="actionButton.trigger == 'Form'">Form</td>

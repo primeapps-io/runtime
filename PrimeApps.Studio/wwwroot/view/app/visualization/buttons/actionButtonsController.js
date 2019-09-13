@@ -14,8 +14,10 @@ angular.module('primeapps')
             $scope.environments = ActionButtonsService.getEnvironments();
 
             $scope.environmentChange = function (env, index, otherValue = false) {
-                if (!env || index === 0)
+                if (!env || index === 0) {
+                    $scope.environments[0].selected = env.selected || otherValue;
                     return;
+                }
 
                 if (index === 1) {
                     $scope.environments[0].disabled = env.selected || otherValue;
@@ -123,7 +125,7 @@ angular.module('primeapps')
                     $scope.currentActionButton.action_button_url = actionButton.url;
                     $scope.currentActionButton.module = actionButton.parent_module;
 
-                    if (actionButton.environment.indexOf(',') > -1)
+                    if (actionButton.environment && actionButton.environment.indexOf(',') > -1)
                         $scope.currentActionButton.environments = actionButton.environment.split(',');
                     else
                         $scope.currentActionButton.environments = actionButton.environment;
@@ -137,12 +139,16 @@ angular.module('primeapps')
                 $scope.currentActionButtonState = angular.copy($scope.currentActionButton);
                 $scope.actionButtonTypes = [
                     {
-                        type: "Modal",
-                        value: 3
+                        type: "Script",
+                        value: 1
                     },
                     {
                         type: "Webhook",
                         value: 2
+                    },
+                    {
+                        type: "Modal",
+                        value: 3
                     }
                 ];
 
@@ -506,6 +512,9 @@ angular.module('primeapps')
             };
 
             var conditions = function (actionButton) {
+
+                if (actionButton.action_type === 'Scripting')
+                    actionButton.type = 1;
 
                 if (actionButton.action_type === 'Webhook')
                     actionButton.type = 2;

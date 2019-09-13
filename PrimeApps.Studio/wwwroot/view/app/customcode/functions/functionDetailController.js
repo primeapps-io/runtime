@@ -26,8 +26,10 @@ angular.module('primeapps')
             $scope.deployments = [];
 
             $scope.environmentChange = function (env, index, otherValue = false) {
-                if (!env || index === 0)
+                if (!env || index === 0) {
+                    $scope.environments[0].selected = env.selected || otherValue;
                     return;
+                }
 
                 if (index === 1) {
                     $scope.environments[0].disabled = env.selected || otherValue;
@@ -164,7 +166,7 @@ angular.module('primeapps')
                     $scope.functionCopy = angular.copy(response.data);
                     $scope.function = response.data;
 
-                    if ($scope.function.environment.indexOf(',') > -1)
+                    if ($scope.function.environment && $scope.function.environment.indexOf(',') > -1)
                         $scope.function.environments = $scope.function.environment.split(',');
                     else
                         $scope.function.environments = $scope.function.environment;

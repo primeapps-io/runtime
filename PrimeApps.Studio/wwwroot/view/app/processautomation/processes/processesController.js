@@ -66,8 +66,10 @@ angular.module('primeapps')
             };
 
             $scope.environmentChange = function (env, index, otherValue = false) {
-                if (!env || index === 0)
+                if (!env || index === 0) {
+                    $scope.environments[0].selected = env.selected || otherValue;
                     return;
+                }
 
                 if (index === 1) {
                     $scope.environments[0].disabled = env.selected || otherValue;
@@ -253,19 +255,19 @@ angular.module('primeapps')
                                     $scope.secondApproverLookupChange(true, workflow);
                                     $scope.prepareFilters();
 
-                                    if (workflow.environment) {
-                                        if (workflow.environment.indexOf(',') > -1)
-                                            $scope.workflowModel.environments = workflow.environment.split(',');
-                                        else
-                                            $scope.workflowModel.environments = workflow.environment;
+                                    //if (workflow.environment) {
+                                    if (workflow.environment && workflow.environment.indexOf(',') > -1)
+                                        $scope.workflowModel.environments = workflow.environment.split(',');
+                                    else
+                                        $scope.workflowModel.environments = workflow.environment;
 
-                                        angular.forEach($scope.workflowModel.environments, function (envValue) {
-                                            $scope.environmentChange($scope.environments[envValue - 1], envValue - 1, true);
-                                        });
-                                    }
-                                    else {
-                                        $scope.environments = ProcessesService.getEnvironments();
-                                    }
+                                    angular.forEach($scope.workflowModel.environments, function (envValue) {
+                                        $scope.environmentChange($scope.environments[envValue - 1], envValue - 1, true);
+                                    });
+                                    //}
+                                    //else {
+                                    //    $scope.environments = ProcessesService.getEnvironments();
+                                    //}
                                     //$scope.isEdit = true;
                                     //$scope.lastStepClicked = true;
                                     $scope.loading = false;

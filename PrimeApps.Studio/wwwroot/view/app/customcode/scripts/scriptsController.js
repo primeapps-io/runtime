@@ -18,8 +18,10 @@ angular.module('primeapps')
             $scope.environments = ScriptsService.getEnvironments();
 
             $scope.environmentChange = function (env, index, otherValue = false) {
-                if (!env || index === 0)
+                if (!env || index === 0) {
+                    $scope.environments[0].selected = env.selected || otherValue;
                     return;
+                }
 
                 if (index === 1) {
                     $scope.environments[0].disabled = env.selected || otherValue;
@@ -267,7 +269,7 @@ angular.module('primeapps')
                     $scope.scriptModel.place = $scope.componentPlaceEnums[$scope.scriptModel.place_value];
                     $scope.id = script.id;
 
-                    if (script.environment.indexOf(',') > -1)
+                    if (script.environment && script.environment.indexOf(',') > -1)
                         $scope.scriptModel.environments = script.environment.split(',');
                     else
                         $scope.scriptModel.environments = script.environment;

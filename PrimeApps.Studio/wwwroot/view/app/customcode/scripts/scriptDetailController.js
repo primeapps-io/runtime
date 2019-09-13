@@ -150,7 +150,7 @@ angular.module('primeapps')
                     if (!$scope.script.place_value)
                         $scope.script.place_value = $scope.script.place;
 
-                    if ($scope.script.environment.indexOf(',') > -1)
+                    if ($scope.script.environment && $scope.script.environment.indexOf(',') > -1)
                         $scope.script.environments = $scope.script.environment.split(',');
                     else
                         $scope.script.environments = $scope.script.environment;
