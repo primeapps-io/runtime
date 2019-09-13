@@ -219,5 +219,11 @@ namespace PrimeApps.Studio.Controllers
 
 			return Ok();
 		}
+
+		[Route("get_global_config"), HttpGet]
+		public async Task<Component> GetGlobalConfig( )
+		{
+			return await _componentRepository.GetGlobalConfig();
+		}
 	}
 }

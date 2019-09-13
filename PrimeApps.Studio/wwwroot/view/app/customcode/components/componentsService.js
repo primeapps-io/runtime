@@ -34,7 +34,10 @@ angular.module('primeapps')
                 },
                 deploy: function (id) {
                     return $http.get(config.apiUrl + 'component/deploy/' + id);
-                }
+				},
+				getGlobalConfig: function () {
+					return $http.get(config.apiUrl + 'component/get_global_config');
+				}
             };
         }]);
 

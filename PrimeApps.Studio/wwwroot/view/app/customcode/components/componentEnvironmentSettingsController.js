@@ -5,8 +5,6 @@ angular.module('primeapps')
 	.controller('ComponentEnvironmentSettingsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ComponentsService', 'componentPlaces', 'componentPlaceEnums', 'componentTypeEnums', '$localStorage', 'ComponentsDeploymentService', '$sce',
 		function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ComponentsService, componentPlaces, componentPlaceEnums, componentTypeEnums, $localStorage, ComponentsDeploymentService, $sce) {
 
-			/**Global Config id always 1*/
-			$scope.id = 1;
 			$scope.$parent.menuTopTitle = $scope.currentApp.label;
 			$scope.$parent.activeMenu = 'app';
 			$scope.$parent.activeMenuItem = 'components';
@@ -24,7 +22,7 @@ angular.module('primeapps')
 			parameter.value = null;
 			$scope.configParameters.push(parameter);
 
-			ComponentsService.get($scope.id)
+			ComponentsService.getGlobalConfig()
 				.then(function (response) {
 
 					if (!response.data) {
@@ -32,6 +30,7 @@ angular.module('primeapps')
 						$state.go('studio.app.components');
 					}
 
+					$scope.id = response.data.id;
 					$scope.content = {};
 					/**development,test,production*/
 					$scope.currenContent = {};
@@ -51,9 +50,9 @@ angular.module('primeapps')
 				});
 
 
-			$scope.save = function (componentFormValidation) {
+			$scope.save = function (contentFormValidation) {
 
-				//if (!componentFormValidation.$valid) {
+				//if (!contentFormValidation.$valid) {
 				//	toastr.error($filter('translate')('Module.RequiredError'));
 				//	return;
 				//}
@@ -100,23 +99,9 @@ angular.module('primeapps')
 					});
 				}
 				if ($scope.configParameters && $scope.configParameters.length > 0) {
-					var array = [];
-					$scope.currenContent.configs = {};
-					angular.forEach($scope.configParameters, function (configParameter, key) {
-						var query = configParameter.key + '":"' + configParameter.value + '"';
-						if (key === 0) {
-							query = '{"' + query;
-						}
-						else if (key > 0 && key !== $scope.configParameters.length - 1) {
-							query = '"' + query;
-						}
-						else {
-							query = '"' + query + "}";
-						}
-						array.push(query);
-					});
 
-					$scope.currenContent.configs = JSON.parse(array.toString());
+					var configsArray = prepareConfigs();
+					$scope.currenContent.configs = JSON.parse(configsArray.toString());
 				}
 
 				switch ($scope.$parent.$parent.tabManage.activeTab) {
@@ -218,6 +203,28 @@ angular.module('primeapps')
 						});
 					}
 				}
+			};
+
+			var prepareConfigs = function () {
+				var configArray = [];
+				$scope.currenContent.configs = {};
+				angular.forEach($scope.configParameters, function (configParameter, key) {
+					var query = configParameter.key + '":"' + configParameter.value + '"';
+					if (key === 0 && key !== $scope.configParameters.length - 1) {
+						query = '{"' + query;
+					}
+					else if (key > 0 && key !== $scope.configParameters.length - 1) {
+						query = '"' + query;
+					}
+					else if (key !== 0 && key === $scope.configParameters.length - 1) {
+						query = '"' + query + "}";
+					}
+					else {
+						query = '{"' + query + '}';
+					}
+					configArray.push(query);
+				});
+				return configArray;
 			};
 		}
 	]);
