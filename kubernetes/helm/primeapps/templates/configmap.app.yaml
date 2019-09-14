@@ -5,7 +5,7 @@ metadata:
 data:
   TenantDBConnection: "server={{.Values.postgresoperator.serverName}}.primeapps.svc.cluster.local;port=5432;username=postgres;password={{.Values.postgresoperator.password}};database=prod;command timeout=0;keepalive=30;"
   PlatformDBConnection: "server={{.Values.postgresoperator.serverName}}.primeapps.svc.cluster.local;port=5432;username=postgres;password={{.Values.postgresoperator.password}};database=platform;command timeout=0;keepalive=30;"
-  RedisConnection: "{{.Release.Name}}-redis-master:6379,password={{.Values.redis.password}},defaultDatabase=1,syncTimeout=30000"
+  RedisConnection: "{{.Release.Name}}-redis-master.primeapps:6379,password={{.Values.redis.password}},defaultDatabase=1,syncTimeout=30000"
   AuthenticationServerURL: "https://{{.Values.auth.domain}}"
   StorageUrl: "https://{{.Values.minio.domain}}"
   StorageAccessKey: "{{.Values.minio.accessKey}}"
