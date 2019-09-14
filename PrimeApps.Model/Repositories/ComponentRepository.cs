@@ -25,18 +25,9 @@ namespace PrimeApps.Model.Repositories
 
 		public async Task<Component> Get(int id)
 		{
-			var components = DbContext.Components
-				.Where(x => !x.Deleted && x.Id == id);
-
-
-			if (id > 1)
-				components.Where(x => x.Type == ComponentType.Component);
-
-			return await components.FirstOrDefaultAsync();
-
-			//await DbContext.Components
-			//.Where(x => !x.Deleted && x.Id == id && x.Type == ComponentType.Component)
-			//.FirstOrDefaultAsync();
+			return await DbContext.Components
+			   .Where(x => !x.Deleted && x.Id == id && x.Type == ComponentType.Component)
+			   .FirstOrDefaultAsync();
 		}
 
 		public async Task<Component> Get(string name)
