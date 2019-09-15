@@ -525,6 +525,8 @@ angular.module('primeapps')
 									$rootScope.permissionsNewsfeed = $filter('filter')($rootScope.user.profile.permissions, { type: 3 }, true)[0];
 									$rootScope.deleteAllHiddenModules = $filter('filter')($rootScope.moduleSettings, { key: 'delete_all_hidden_modules' }, true)[0];
 									$rootScope.deleteAllHiddenModules = $rootScope.deleteAllHiddenModules ? $rootScope.deleteAllHiddenModules.value.split(',') : [];
+									$rootScope.showAttachments = $filter('filter')($rootScope.moduleSettings, { key: 'show_attachments' }, true)[0];
+									$rootScope.showAttachments = $rootScope.showAttachments ? $rootScope.showAttachments.value : true;
 
 									that.setCustomActivityTypes(activityTypes);
 
