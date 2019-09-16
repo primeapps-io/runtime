@@ -142,6 +142,15 @@ spec:
                   name: primeapps-app-config
                   key: SentryDsn
       initContainers:
-       - name: init-app
-         image: primeapps/primeapps-init:alpine-beta8
-         imagePullPolicy: Always
+       - name: "{{.Release.Name}}-init"
+         image: "primeapps/primeapps-init:rc3"
+         imagePullPolicy: "{{.Values.image.pullPolicy}}"
+         env:
+            - name: CO_APISERVER_URL
+              value: https://{{.Release.Name}}-pgo.{{.Release.Namespace}}.svc:8443
+            - name: PGHOST
+              value: https://{{.Release.Name}}-database.{{.Release.Namespace}}.svc
+            - name: PGPASSWORD
+              value: {{.Values.postgresoperator.password}}
+            - name: PGOPASSWORD
+              value: {{.Values.postgresoperator.pgoPassword}}

@@ -28,6 +28,7 @@ app:
 
 postgresoperator:
   install: true
+  pgoPassword: "pg0P@ssW0rd" #Do not modify. Must be constant for this release.
   password: "pAssW0rd987d"
   storage:
     backup:
