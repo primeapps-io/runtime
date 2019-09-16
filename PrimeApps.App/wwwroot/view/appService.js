@@ -116,39 +116,6 @@ angular.module('primeapps')
 									var isDemo = responseAccount.data.user.isDemo || false;
 									var account = responseAccount.data;
 
-
-									if (response[12].status === 200 && response[12].data) {
-
-										var employeeSettings = $filter('filter')(response[12].data, { key: 'employee' }, true)[0];
-										$rootScope.isEmployee = employeeSettings ? employeeSettings.value : undefined;
-
-                                        /*
-										* Check branch mode is available.
-										* */
-										var branchSettings = $filter('filter')(response[12].data, { key: 'branch' }, true)[0];
-										$rootScope.branchAvailable = branchSettings ? branchSettings.value === 't' : undefined;
-
-										if ($rootScope.branchAvailable && $rootScope.isEmployee) {
-											var calisanRequest = {
-												filters: [
-													{ field: 'work_e_mail', operator: 'is', value: account.user.email, no: 1 },
-													{ field: 'deleted', operator: 'equals', value: false, no: 2 }
-												],
-												limit: 1
-											};
-
-											$http.post(config.apiUrl + 'record/find/' + $rootScope.isEmployee, calisanRequest)
-												.then(function (response) {
-													var calisan = response.data;
-													if (calisan.length > 0) {
-														$rootScope.user.calisanId = calisan[0]['id'];
-														$rootScope.user.branchId = calisan[0]['branch'];
-													} else if (account.user.profile.has_admin_rights) {
-														$rootScope.user.branchId = 1;
-													}
-												});
-										}
-									}
 									var modules = !isDemo ? response[0].data : $filter('filter')(response[0].data, function (value) {
 										return value.created_by_id == account.user.id || value.system_type == 'system';
 									}, true);
@@ -218,6 +185,7 @@ angular.module('primeapps')
 									$rootScope.system = {};
 									$rootScope.approvalProcesses = response[6].data;
 									$rootScope.helpPageFirstScreen = response[9].data;
+									var customSettings = response[12].data;
 
 									$rootScope.user.settings = [];
 									for (var i = 0; i < userSettings.length; i++) {
@@ -527,6 +495,45 @@ angular.module('primeapps')
 									$rootScope.deleteAllHiddenModules = $rootScope.deleteAllHiddenModules ? $rootScope.deleteAllHiddenModules.value.split(',') : [];
 									$rootScope.showAttachments = $filter('filter')($rootScope.moduleSettings, { key: 'show_attachments' }, true)[0];
 									$rootScope.showAttachments = $rootScope.showAttachments ? $rootScope.showAttachments.value : true;
+									$rootScope.newEpostaFieldName = $filter('filter')($rootScope.moduleSettings, { key: 'e_posta' }, true)[0];
+									$rootScope.newEpostaFieldName = $rootScope.newEpostaFieldName ? $rootScope.newEpostaFieldName.value : undefined;
+									$rootScope.newAdFieldName = $filter('filter')($rootScope.moduleSettings, { key: 'ad' }, true)[0];
+									$rootScope.newAdFieldName = $rootScope.newAdFieldName ? $rootScope.newAdFieldName.value : undefined;
+									$rootScope.newSoyadFieldName = $filter('filter')($rootScope.moduleSettings, { key: 'soyad' }, true)[0];
+									$rootScope.newSoyadFieldName = $rootScope.newSoyadFieldName ? $rootScope.newSoyadFieldName.value : undefined;
+
+									if (customSettings) {
+
+										var employeeSettings = $filter('filter')(customSettings, { key: 'employee' }, true)[0];
+										$rootScope.isEmployee = employeeSettings ? employeeSettings.value : undefined;
+
+                                        /*
+										* Check branch mode is available.
+										* */
+										var branchSettings = $filter('filter')(response[12].data, { key: 'branch' }, true)[0];
+										$rootScope.branchAvailable = branchSettings ? branchSettings.value === 't' : undefined;
+
+										if ($rootScope.branchAvailable && $rootScope.isEmployee) {
+											var calisanRequest = {
+												filters: [
+													{ field: $rootScope.newEpostaFieldName ? rootScope.newEpostaFieldName : 'e_posta', operator: 'is', value: account.user.email, no: 1 },
+													{ field: 'deleted', operator: 'equals', value: false, no: 2 }
+												],
+												limit: 1
+											};
+
+											$http.post(config.apiUrl + 'record/find/' + $rootScope.isEmployee, calisanRequest)
+												.then(function (response) {
+													var calisan = response.data;
+													if (calisan.length > 0) {
+														$rootScope.user.calisanId = calisan[0]['id'];
+														$rootScope.user.branchId = calisan[0]['branch'];
+													} else if (account.user.profile.has_admin_rights) {
+														$rootScope.user.branchId = 1;
+													}
+												});
+										}
+									}
 
 									that.setCustomActivityTypes(activityTypes);
 
