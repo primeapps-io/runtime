@@ -833,7 +833,7 @@
                                         <!--<ng-include ng-show="module.name === 'purchase_invoices'"-->
                                                     <!--src="'view/app/product/purchaseInvoiceProducts.html'"></ng-include>-->
 
-                                        <div class="subpanel" ng-if="hasDocumentsPermission(operations.read)">
+                                        <div class="subpanel" ng-if="hasDocumentsPermission(operations.read) && showAttachments !=='false'">
                                             <h5 class="subpanel-heading">{{'Common.Attachments' | translate}}</h5>
                                             <div class="subpanel-body">
                                                 <div class="row row-custom">

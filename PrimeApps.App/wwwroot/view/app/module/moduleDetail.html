@@ -190,7 +190,7 @@
                                             <li ng-class="{'active':tab === 'note'}" ng-show="showNotes !='false'">
                                                 <a href ng-click="tab = 'note';dropdownHide();">{{'Note.Notes' | translate}} <span class="badge" ng-if="notesCount">{{notesCount}}</span></a>
                                             </li>
-                                            <li ng-class="{'active':tab === 'document'}" ng-show="hasDocumentsPermission(operations.read)">
+                                            <li ng-class="{'active':tab === 'document'}" ng-show="hasDocumentsPermission(operations.read) && showAttachments !=='false'">
                                                 <a href ng-click="tab = 'document';dropdownHide();">{{'Common.Attachments' | translate}} <span class="badge" ng-if="documentsResultSet.totalDocumentCount">{{documentsResultSet.totalDocumentCount}}</span></a>
                                             </li>
                                             <li ng-class="{'active':tab === 'location'}" ng-if="record.latitude && record.longitude">
@@ -216,7 +216,7 @@
                                         <li ng-class="{'active':tab === 'note'}" ng-show="showNotes !='false'">
                                             <a class="module-tab-link" href ng-click="$parent.tab = 'note'">{{'Note.Notes' | translate}} <span class="badge" ng-if="notesCount">{{notesCount}}</span></a>
                                         </li>
-                                        <li ng-class="{'active':tab === 'document'}" ng-show="hasDocumentsPermission(operations.read)">
+                                        <li ng-class="{'active':tab === 'document'}" ng-show="hasDocumentsPermission(operations.read) && showAttachments !=='false'">
                                             <a class="module-tab-link" href ng-click="$parent.tab = 'document'">{{'Common.Attachments' | translate}} <span class="badge" ng-if="documentsResultSet.totalDocumentCount">{{documentsResultSet.totalDocumentCount}}</span></a>
                                         </li>
                                         <li ng-class="{'active':tab === 'location'}" ng-if="record.latitude && record.longitude">
@@ -845,7 +845,7 @@
                                         </div>
                                     </div>
                                     <div class="subpanel"
-                                         ng-show="hasDocumentsPermission(operations.read) && tab === 'document' || !tabconfig">
+                                         ng-show="(hasDocumentsPermission(operations.read) && tab === 'document' || !tabconfig) && showAttachments !=='false'">
                                         <h5 class="subpanel-heading" ng-show="!tabconfig">{{ 'Common.Attachments' | translate }}</h5>
                                         <div class="subpanel-body">
                                             <div class="row row-custom" ng-style="{ height: !tabconfig ? '' : '100%' }">

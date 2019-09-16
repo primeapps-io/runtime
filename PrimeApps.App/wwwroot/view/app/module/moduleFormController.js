@@ -677,8 +677,8 @@ angular.module('primeapps')
 					return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['e_posta'], false, $scope.customFilters);
 				else if ($rootScope.isEmployee && $scope.currentLookupField.lookup_type === $rootScope.isEmployee)
 					return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['work_e_mail'], false, $scope.customFilters);
-				else
-					return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record);
+                else
+                    return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record,null, false, $scope.customFilters);
 
 			};
 

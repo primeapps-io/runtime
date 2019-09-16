@@ -128,6 +128,7 @@ metadata:
   namespace: primeapps
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
     nginx.ingress.kubernetes.io/server-snippet: |-
       add_header X-Robots-Tag "noindex, nofollow";
 spec:
