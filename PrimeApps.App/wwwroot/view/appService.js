@@ -504,6 +504,8 @@ angular.module('primeapps')
 
 									if (customSettings) {
 
+										$rootScope.showAccountOwner = $filter('filter')(customSettings, { key: 'show_admin' }, true)[0];
+
 										var employeeSettings = $filter('filter')(customSettings, { key: 'employee' }, true)[0];
 										$rootScope.isEmployee = employeeSettings ? employeeSettings.value : undefined;
 
