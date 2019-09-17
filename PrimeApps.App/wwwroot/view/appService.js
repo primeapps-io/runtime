@@ -518,7 +518,7 @@ angular.module('primeapps')
 										if ($rootScope.branchAvailable && $rootScope.isEmployee) {
 											var calisanRequest = {
 												filters: [
-													{ field: $rootScope.newEpostaFieldName ? rootScope.newEpostaFieldName : 'e_posta', operator: 'is', value: account.user.email, no: 1 },
+													{ field: $rootScope.newEpostaFieldName ? $rootScope.newEpostaFieldName : 'e_posta', operator: 'is', value: account.user.email, no: 1 },
 													{ field: 'deleted', operator: 'equals', value: false, no: 2 }
 												],
 												limit: 1
