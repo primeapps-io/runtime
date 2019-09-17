@@ -140,9 +140,15 @@ angular.module('primeapps')
 					$scope.users = UserService.getUsers(users, $scope.profiles, $scope.roles);
 					/*Bazı hesaplarda is_admin : true yani hesap sahiplerinin kullanıcılar listesinde gösterilmesini istememekte*/ 
 					var accountOwner = $filter('filter')($scope.users, { is_admin: true }, true)[0];
+					var subscriber = $filter('filter')($scope.users, { is_subscriber: true }, true)[0];
+
 					if (accountOwner) {
-						accountOwner.show = $rootScope.showAccountOwner ? JSON.parse($rootScope.showAccountOwner.value) : true;
+						accountOwner.show_account_owner = $rootScope.showAccountOwner ? JSON.parse($rootScope.showAccountOwner.value) : true;
 					}
+					if (subscriber) {
+						subscriber.show_subscriber = $rootScope.showSubscriber ? JSON.parse($rootScope.showSubscriber.value) : true;
+					}
+
 					$scope.licensesBought = license.total || 0;
 					$scope.licensesUsed = license.used || 0;
 					$scope.licenseAvailable = $scope.licensesBought - $scope.licensesUsed;

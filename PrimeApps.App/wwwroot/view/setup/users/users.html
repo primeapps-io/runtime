@@ -39,7 +39,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr ng-repeat="userItem in users | filter:{ show : '!false' }">
+							<tr ng-repeat="userItem in users | filter:{ show_account_owner : '!false', show_subscriber: '!false' }">
 								<td>{{userItem.email}}</td>
 								<td><span ng-if="userItem.has_account">{{userItem.user_name}}</span></td>
 								<td>
