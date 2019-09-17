@@ -39,118 +39,116 @@ spec:
             - name: ConnectionStrings__TenantDBConnection
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: TenantDBConnection
             - name: ConnectionStrings__PlatformDBConnection
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: PlatformDBConnection
             - name: ConnectionStrings__RedisConnection
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: RedisConnection
             - name: AppSettings__AuthenticationServerURL
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: AuthenticationServerURL
             - name: AppSettings__StorageUrl
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: StorageUrl
             - name: AppSettings__StorageAccessKey
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: StorageAccessKey
             - name: AppSettings__StorageSecretKey
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: StorageSecretKey
             - name: AppSettings__EnableJobs
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: EnableJobs
             - name: AppSettings__EnableRequestLogging
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: EnableRequestLogging
             - name: AppSettings__EmailSMTPEnableSsl
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: EmailSMTPEnableSsl
             - name: AppSettings__EmailSMTPHost
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: EmailSMTPHost
             - name: AppSettings__EmailSMTPPort
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: EmailSMTPPort
             - name: AppSettings__EmailSMTPUser
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: EmailSMTPUser
             - name: AppSettings__EmailSMTPPassword
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: EmailSMTPPassword
             - name: AppSettings__ClientId
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: ClientId
             - name: AppSettings__ClientSecret
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: ClientSecret
             - name: AppSettings__ForwardHeaders
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: ForwardHeaders
             - name: AppSettings__HttpsRedirection
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: HttpsRedirection
             - name: AppSettings__TestMode
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: TestMode
             - name: AppSettings__GoogleMapsApiKey
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: GoogleMapsApiKey
             - name: Sentry__Dsn
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-app-config
+                  name: {{.Release.Name}}-app-config
                   key: SentryDsn
       initContainers:
        - name: "{{.Release.Name}}-init"
-         image: "primeapps/primeapps-init:rc3"
+         image: "primeapps/primeapps-init:{{.Values.image.tag}}"
          imagePullPolicy: "{{.Values.image.pullPolicy}}"
          env:
             - name: CO_APISERVER_URL
               value: https://{{.Release.Name}}-pgo.{{.Release.Namespace}}.svc:8443
             - name: PGHOST
-              value: https://{{.Release.Name}}-database.{{.Release.Namespace}}.svc
+              value: {{.Release.Name}}-database.{{.Release.Namespace}}.svc
             - name: PGPASSWORD
               value: {{.Values.postgresoperator.password}}
-            - name: PGOPASSWORD
-              value: {{.Values.postgresoperator.pgoPassword}}

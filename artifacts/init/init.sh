@@ -5,10 +5,6 @@ sleep 30
 
 echo -e "${GREEN}Creating Cluster...${NC}"
 
-echo "primeapps:$PGOPASSWORD:pgoadmin
-primeappstest:$PGOPASSWORD:pgoadmin
-primeappsreadonly:$PGOPASSWORD:pgoreader" > .pgouser
-
 pgo create cluster -w $PGPASSWORD --metrics --pgbackrest --custom-config 'pgo-custom-pg-config' primeapps-database
 
 until pg_isready; do echo Waiting for cluster...; sleep 15; done;

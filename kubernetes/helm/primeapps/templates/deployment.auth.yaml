@@ -39,35 +39,35 @@ spec:
             - name: ConnectionStrings__AuthDBConnection
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-auth-config
+                  name: {{.Release.Name}}-auth-config
                   key: AuthDBConnection
             - name: ConnectionStrings__TenantDBConnection
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-auth-config
+                  name: {{.Release.Name}}-auth-config
                   key: TenantDBConnection
             - name: ConnectionStrings__PlatformDBConnection
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-auth-config
+                  name: {{.Release.Name}}-auth-config
                   key: PlatformDBConnection
             - name: AppSettings__Authority
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-auth-config
+                  name: {{.Release.Name}}-auth-config
                   key: Authority
             - name: AppSettings__ForwardHeaders
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-auth-config
+                  name: {{.Release.Name}}-auth-config
                   key: ForwardHeaders
             - name: AppSettings__HttpsRedirection
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-auth-config
+                  name: {{.Release.Name}}-auth-config
                   key: HttpsRedirection
             - name: Sentry__Dsn
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-auth-config
+                  name: {{.Release.Name}}-auth-config
                   key: SentryDsn
