@@ -47,6 +47,23 @@ metadata:
   namespace: primeapps
 type: Opaque
 ---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: studio-data-volume-claim
+  namespace: primeapps
+  labels:
+    k8s-app: "primeapps"
+  annotations:
+    volume.alpha.kubernetes.io/storage-class: gp2
+    failure-domain.beta.kubernetes.io/zone: eu-west-1c
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -70,6 +87,9 @@ spec:
         - name: "self-signed-ssl"
           secret:
             secretName: primeapps-auth-test-selfsigned-ssl
+        - name: studio-data-volume
+          persistentVolumeClaim:
+            claimName: studio-data-volume-claim
       imagePullSecrets:
         - name: image-pull-secret
       containers:
@@ -78,6 +98,8 @@ spec:
           volumeMounts:
             - mountPath: "/etc/self-signed-ssl"
               name: self-signed-ssl
+            - mountPath: "/data"
+              name: studio-data-volume
           env:
             - name: ASPNETCORE_Kestrel__Certificates__Default__Path
               value: /etc/self-signed-ssl/aspnetapp.pfx

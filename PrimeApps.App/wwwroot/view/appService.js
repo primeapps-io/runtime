@@ -504,6 +504,9 @@ angular.module('primeapps')
 
 									if (customSettings) {
 
+										$rootScope.showAccountOwner = $filter('filter')(customSettings, { key: 'show_admin' }, true)[0];
+										$rootScope.showSubscriber = $filter('filter')(customSettings, { key: 'show_subscriber' }, true)[0];
+
 										var employeeSettings = $filter('filter')(customSettings, { key: 'employee' }, true)[0];
 										$rootScope.isEmployee = employeeSettings ? employeeSettings.value : undefined;
 
@@ -516,7 +519,7 @@ angular.module('primeapps')
 										if ($rootScope.branchAvailable && $rootScope.isEmployee) {
 											var calisanRequest = {
 												filters: [
-													{ field: $rootScope.newEpostaFieldName ? rootScope.newEpostaFieldName : 'e_posta', operator: 'is', value: account.user.email, no: 1 },
+													{ field: $rootScope.newEpostaFieldName ? $rootScope.newEpostaFieldName : 'e_posta', operator: 'is', value: account.user.email, no: 1 },
 													{ field: 'deleted', operator: 'equals', value: false, no: 2 }
 												],
 												limit: 1
