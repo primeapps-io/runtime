@@ -3,10 +3,10 @@ apiVersion: v1
 metadata:
   name: "{{.Release.Name}}-auth-config"
 data:
-  AuthDBConnection: "server={{.Values.postgresoperator.serverName}}.svc.cluster.local;port=5432;username=postgres;password={{.Values.postgresoperator.password}};database=auth;command timeout=0;keepalive=30;"
-  TenantDBConnection: "server={{.Values.postgresoperator.serverName}}.local;port=5432;username=postgres;password={{.Values.postgresoperator.password}};database=prod;command timeout=0;keepalive=30;"
-  PlatformDBConnection: "server={{.Values.postgresoperator.serverName}}.svc.cluster.local;port=5432;username=postgres;password={{.Values.postgresoperator.password}};database=platform;command timeout=0;keepalive=30;"
-  Authority: "{{.Values.auth.domain}}"
+  AuthDBConnection: "server={{.Values.postgresoperator.serverName}}.primeapps.svc.cluster.local;port=5432;username=postgres;password={{.Values.postgresoperator.password}};database=auth;command timeout=0;keepalive=30;"
+  TenantDBConnection: "server={{.Values.postgresoperator.serverName}}.primeapps.svc.cluster.local;port=5432;username=postgres;password={{.Values.postgresoperator.password}};database=prod;command timeout=0;keepalive=30;"
+  PlatformDBConnection: "server={{.Values.postgresoperator.serverName}}.primeapps.svc.cluster.local;port=5432;username=postgres;password={{.Values.postgresoperator.password}};database=platform;command timeout=0;keepalive=30;"
+  Authority: "https://{{.Values.auth.domain}}"
   ForwardHeaders: "true"
   HttpsRedirection: "true"
   SentryDsn: "{{.Values.auth.sentryDsn}}"

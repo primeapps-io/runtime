@@ -663,7 +663,7 @@ angular.module('primeapps')
 
                         sendNotification.recipients = [];
 
-                        if (workflowModel.send_notification.recipients) {
+                        if (workflowModel.send_notification.recipients && workflowModel.send_notification.recipients.length > 0) {
                             angular.forEach(workflowModel.send_notification.recipients, function (user) {
                                 sendNotification.recipients.push(user.email);
                             });

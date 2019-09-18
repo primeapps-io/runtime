@@ -1,7 +1,6 @@
 ﻿using Amazon.Runtime;
 using Amazon.S3;
 using Hangfire;
-using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
@@ -172,7 +171,7 @@ namespace PrimeApps.App
             );
 
             JobConfiguration(app, Configuration);
-            BpmConfiguration(app, Configuration);
+            //BpmConfiguration(app, Configuration);
 
             app.UseMvc(routes =>
             {

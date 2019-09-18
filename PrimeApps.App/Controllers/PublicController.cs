@@ -42,10 +42,10 @@ namespace PrimeApps.App.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         //[ResponseType(typeof(bool))]
         [HttpGet]
-        public IActionResult IsUniqueEmail([FromQuery(Name = "email")]string email, [FromQuery(Name = "appId")]int appId)
+        public async Task<IActionResult> IsUniqueEmail([FromQuery(Name = "email")]string email, [FromQuery(Name = "appId")]int appId)
         {
             //check it in the entity layer and return the result.
-            var result = _platformUserRepository.IsEmailAvailable(email, appId);
+            var result = await _platformUserRepository.IsEmailAvailable(email, appId);
             return Ok(result);
         }
 

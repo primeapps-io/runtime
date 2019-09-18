@@ -62,7 +62,6 @@ namespace PrimeApps.Auth
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHostedService<QueuedHostedService>();
             services.AddAWSService<IAmazonS3>();
-            services.AddScoped<ICacheHelper, CacheHelper>();
             services.AddScoped<IGiteaHelper, GiteaHelper>();
             services.AddScoped<IUserHelper, UserHelper>();
             services.AddSingleton<IProfileService, CustomProfileService>();

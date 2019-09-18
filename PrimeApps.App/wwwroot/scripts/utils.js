@@ -552,6 +552,28 @@ angular.module('primeapps')
     .factory('helper', ['$rootScope', '$timeout', '$filter', '$localStorage', '$sessionStorage', '$q', '$http', 'config', '$cache',
         function ($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache) {
             return {
+                hasCustomProfilePermission: function (str) {
+                    if ($rootScope.customProfilePermissions && $rootScope.customProfilePermissions.length > 0) {
+                        for (var i = 0; i < $rootScope.customProfilePermissions.length; i++) {
+                            var profilePermission = $rootScope.customProfilePermissions[i];
+                            if (profilePermission.profileId == $rootScope.user.profile.id) {
+                                var hasPermission = false;
+                                for (var j = 0; j < profilePermission.permissions.length; j++) {
+                                    var permission = profilePermission.permissions[j];
+                                    if (permission == str)
+                                        hasPermission = true;
+                                }
+                                if (hasPermission)
+                                    return true;
+                                else
+                                    return false;
+                            }
+                        }
+                    } else {
+                        return false;
+                    }
+                    return false;
+                },
                 SnakeToCamel: function (data, depth) {
 
                     function _processKeys(obj, processer, depth) {
@@ -1537,8 +1559,8 @@ angular.module('primeapps')
         }
     }])
 
-    .factory('components', ['$rootScope', '$timeout', '$filter', '$localStorage', '$sessionStorage', '$q', '$http', 'config', '$cache', 'ngToast', '$injector', '$state', '$stateParams', 'helper',
-        function ($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache, ngToast, $injector, $state, $stateParams, helper) {
+    .factory('components', ['$rootScope', '$timeout', '$filter', '$localStorage', '$sessionStorage', '$q', '$http', 'config', '$cache', 'ngToast', '$injector', '$state', '$stateParams', 'helper','$modal',
+        function ($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache, ngToast, $injector, $state, $stateParams, helper,$modal) {
             return {
                 run: function (place, type, scope, record, field) {//Don't remove record and field. It can be used in components.
                     

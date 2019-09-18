@@ -20,6 +20,27 @@ var replaceDynamicValues = function (str) {
     return str;
 };
 
+var loadSectionComponents = function (rootScope, filter, moduleName, files) {
+    currentSectionComponentsTemplate = [];
+
+    if (rootScope.modules) {
+        var moduleId = filter('filter')(rootScope.modules, {name: moduleName}, true)[0].id;
+
+        if (sectionComponents['component' + moduleId]) {
+            var sectionComponent = sectionComponents['component' + moduleId];
+
+            for (var i = 0; i < sectionComponent.length; i++) {
+                var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
+                angular.forEach(sectionFiles, function (item) {
+                    files.push(replaceDynamicValues(item));
+                });
+
+                currentSectionComponentsTemplate.push(replaceDynamicValues(angular.fromJson(sectionComponent[i].content).app.templateUrl));
+            }
+        }
+    }
+};
+
 angular.module('primeapps')
     .config(['$stateProvider', '$urlRouterProvider',
         function ($stateProvider, $urlRouterProvider) {
@@ -120,7 +141,8 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$rootScope', '$state', '$$animateJs', '$ocLazyLoad', '$filter', function ($rootScope, $state, $$animateJs, $ocLazyLoad, $filter) {
+                        AppService: 'AppService',
+                        plugins: ['$rootScope', '$state', '$$animateJs', '$ocLazyLoad', '$filter', 'AppService', function ($rootScope, $state, $$animateJs, $ocLazyLoad, $filter, AppService) {
 
                             var files = [
                                 cdnUrl + 'view/app/module/moduleDetailController.js',
@@ -134,21 +156,23 @@ angular.module('primeapps')
                                 cdnUrl + 'view/app/email/templateService.js',
                             ];
 
-                            if ($state.params.type) {
-                                currentSectionComponentsTemplate = [];
-                                var moduleId = $filter('filter')($rootScope.modules, { name: $state.params.type }, true)[0].id;
+                            if (window.location.hash.split("/")[3]) {
+                                var moduleName = window.location.hash.split("/")[3];
+                                if (moduleName.search("/?") > -1) {
+                                    moduleName = moduleName.split("?")[0];
+                                }
+                            }
 
-                                if (sectionComponents['component' + moduleId]) {
-                                    var sectionComponent = sectionComponents['component' + moduleId];
-
-                                    for (var i = 0; i < sectionComponent.length; i++) {
-                                        var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
-                                        angular.forEach(sectionFiles, function (item) {
-                                            files.push(replaceDynamicValues(item));
+                            if (moduleName) {
+                                if ($rootScope.modules) {
+                                    loadSectionComponents($rootScope, $filter, moduleName, files);
+                                }
+                                else {
+                                    AppService.getMyAccount()
+                                        .then(function () {
+                                            loadSectionComponents($rootScope, $filter, moduleName, files);
+                                            return $ocLazyLoad.load(files);
                                         });
-
-                                        currentSectionComponentsTemplate.push(replaceDynamicValues(angular.fromJson(sectionComponent[i].content).app.templateUrl));
-                                    }
                                 }
                             }
 
@@ -166,36 +190,40 @@ angular.module('primeapps')
                         }
                     },
                     resolve: {
-                        plugins: ['$rootScope', '$state', '$$animateJs', '$ocLazyLoad', '$filter', function ($rootScope, $state, $$animateJs, $ocLazyLoad, $filter) {
+                        AppService: 'AppService',
+                        plugins: ['$rootScope', '$state', '$$animateJs', '$ocLazyLoad', '$filter', 'AppService', function ($rootScope, $state, $$animateJs, $ocLazyLoad, $filter, AppService) {
                             var files = [
                                 cdnUrl + 'view/app/module/moduleFormController.js',
                                 cdnUrl + 'view/app/module/moduleFormModalController.js',
                                 cdnUrl + 'view/app/actionbutton/actionButtonFrameController.js',
                             ];
 
-                            if ($state.params.type) {
-                                currentSectionComponentsTemplate = [];
-                                var moduleId = $filter('filter')($rootScope.modules, { name: $state.params.type }, true)[0].id;
-
-                                if (sectionComponents['component' + moduleId]) {
-                                    var sectionComponent = sectionComponents['component' + moduleId];
-
-                                    for (var i = 0; i < sectionComponent.length; i++) {
-                                        var sectionFiles = angular.fromJson(sectionComponent[i].content).files;
-                                        angular.forEach(sectionFiles, function (item) {
-                                            files.push(replaceDynamicValues(item))
-                                        });
-
-                                        currentSectionComponentsTemplate.push(replaceDynamicValues(angular.fromJson(sectionComponent[i].content).app.templateUrl));
-                                    }
+                            if (window.location.hash.split("/")[3]) {
+                                var moduleName = window.location.hash.split("/")[3];
+                                if (moduleName.search("/?") > -1) {
+                                    moduleName = moduleName.split("?")[0];
                                 }
                             }
+
 
                             if (googleMapsApiKey && googleMapsApiKey !== 'your-google-maps-api-key') {
                                 files.push({
                                     type: 'js',
                                     path: 'https://maps.googleapis.com/maps/api/js?key=' + googleMapsApiKey + '&libraries=places'
                                 });
+                            }
+                            
+                            if (moduleName) {
+                                if ($rootScope.modules) {
+                                    loadSectionComponents($rootScope, $filter, moduleName, files);
+                                }
+                                else {
+                                    AppService.getMyAccount()
+                                        .then(function () {
+                                            loadSectionComponents($rootScope, $filter, moduleName, files);
+                                            return $ocLazyLoad.load(files);
+                                        });
+                                }
                             }
 
                             return $ocLazyLoad.load(files);
@@ -536,7 +564,6 @@ angular.module('primeapps')
                     }
                 })
 
-
                 .state('app.report', {
                     url: '/report',
                     views: {
@@ -594,7 +621,8 @@ angular.module('primeapps')
                                         .then(function () {
                                             deferred.resolve();
                                         });
-                                } else {
+                                }
+                                else {
                                     deferred.resolve();
                                 }
 
@@ -1363,7 +1391,6 @@ angular.module('primeapps')
                     if (!component.content)
                         return;
 
-
                     var files = [];
                     var componentContent = angular.fromJson(component.content);
 
@@ -1371,14 +1398,14 @@ angular.module('primeapps')
                         if (sectionComponents['component' + component.module_id]) {
                             sectionComponents.push(component);
 
-                        } else {
+                        }
+                        else {
                             sectionComponents['component' + component.module_id] = [];
                             sectionComponents['component' + component.module_id].push(component);
                             // console.log(sectionComponents['component' + component.module_id][0].content);
                         }
                         return;
                     }
-                     
 
                     componentContent.app.templateUrl = replaceDynamicValues(componentContent.app.templateUrl);
 

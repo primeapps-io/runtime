@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using PrimeApps.App.Jobs.Messaging;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Resources;
@@ -78,128 +79,97 @@ namespace PrimeApps.App.Helpers
             _serviceScopeFactory = serviceScopeFactory;
 
             var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+
             previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
             string tmpl = "",
                    appUrl = "",
+                   appTitle = "",
+                   appDescription = "",
                    appName = "",
                    appCodeUrl = "",
                    appColor = "",
-                appLogo = "",
+                   appLogo = "",
                    socialMediaIcons = "",
                    footer = "",
                    resourceTypeName = "";
+
 
 
             dataRegex = new Regex(dataPattern);
             templateRegex = new Regex(templatePattern);
             resourceTypeName = GetResourceTypeName(resourceType);
 
-            LanguageType language = culture.Contains("tr") ? LanguageType.Tr : LanguageType.En;
+            var language = appUser.Language.ToEnum<LanguageType>();
             Template templateEntity;
+            Model.Entities.Platform.App appInfo;
+            Model.Entities.Platform.AppTemplate appEmailTemplate;
 
             using (var scope = _serviceScopeFactory.CreateScope())
             {
-                var tdbCtx = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                var platformDbContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 
-                using (TemplateRepository tRepo = new TemplateRepository(tdbCtx, configuration))
+                var tenantDBContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+
+                using (var applicationRepository = new ApplicationRepository(platformDbContext, _configuration))
+                using (var platformRepository = new PlatformRepository(platformDbContext, _configuration))
+
+                using (TemplateRepository tRepo = new TemplateRepository(tenantDBContext, configuration))
                 {
+                    appInfo = applicationRepository.GetAppById(appId);
+
+                    var appTheme = JToken.Parse(appInfo.Setting.AppTheme);
+
+                    appEmailTemplate = platformRepository.GetTemplateBySystemCode(appId, resourceTypeName, appUser.Language);
+
+                    appUrl = appTheme["logo"].ToString();
+                    appCodeUrl = appInfo.Setting.AppDomain;
+                    appName = appInfo.Label;
+                    appColor = appTheme["color"].ToString();
+                    socialMediaIcons = "true";
+                    footer = appInfo.Label;
+                    appLogo = appTheme["logo"].ToString();
+                    appTitle = appTheme["title"].ToString();
+
 
                     tRepo.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
 
                     templateEntity = tRepo.GetByCode(resourceTypeName, language);
                 }
 
-                switch (appId)
-                {
-                    case 1:
-                        appUrl = "http://www.ofisim.com/mail/crm/logo.png";
-                        appCodeUrl = "http://www.ofisim.com/crm/";
-                        appName = "Ofisim CRM";
-                        appColor = "2560f6";
-                        socialMediaIcons = "true";
-                        footer = "Ofisim.com";
-                        appLogo = "";
-                        break;
-                    case 2:
-                        appUrl = "http://www.ofisim.com/mail/kobi/logo.png";
-                        appCodeUrl = "http://www.ofisim.com/kobi/";
-                        appName = "Ofisim KOBİ";
-                        appColor = "20cb9a";
-                        socialMediaIcons = "true";
-                        footer = "Ofisim.com";
-                        appLogo = "";
-                        break;
-                    case 3:
-                        appUrl = "http://www.ofisim.com/mail/asistan/logo.png";
-                        appCodeUrl = "http://www.ofisim.com/asistan/";
-                        appName = "Ofisim ASİSTAN";
-                        appColor = "ef604e";
-                        socialMediaIcons = "true";
-                        footer = "Ofisim.com";
-                        appLogo = "";
-                        break;
-                    case 4:
-                        appUrl = "http://www.ofisim.com/mail/ik/logo.png";
-                        appCodeUrl = "http://www.ofisim.com/ik/";
-                        appName = "Ofisim İK";
-                        appColor = "454191";
-                        socialMediaIcons = "true";
-                        footer = "Ofisim.com";
-                        appLogo = "";
-                        break;
-                    case 5:
-                        appUrl = "http://www.ofisim.com/mail/cagri/logo.png";
-                        appCodeUrl = "http://www.ofisim.com/cagri/";
-                        appName = "Ofisim ÇAĞRI";
-                        appColor = "79a7fd";
-                        socialMediaIcons = "true";
-                        footer = "Ofisim.com";
-                        appLogo = "";
-                        break;
-                    default:
-                        appUrl = "http://www.ofisim.com/mail/crm/logo.png";
-                        appCodeUrl = "http://www.ofisim.com/crm/";
-                        appName = "Perapol APP";
-                        appColor = "2560f6";
-                        socialMediaIcons = "true";
-                        footer = "Perapole";
-                        appLogo = "";
-                        break;
-
-                }
 
                 var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-
-                using (TenantRepository tRepo = new TenantRepository(pdbCtx, configuration))//, cacheHelper))
+                using (TenantRepository tRepo = new TenantRepository(pdbCtx, configuration))
                 {
                     var instance = tRepo.Get(appUser.TenantId);
 
                     if (!string.IsNullOrEmpty(instance.Setting?.MailSenderName) && !string.IsNullOrEmpty(instance.Setting?.MailSenderEmail))
                     {
                         appUrl = instance.Setting.Logo;
-                        appCodeUrl = "#";
+                        appCodeUrl = instance.Setting.CustomDomain;
                         appName = instance.Setting.MailSenderName;
+                        appTitle = instance.Setting.CustomTitle;
                         socialMediaIcons = "none";
                         footer = instance.Setting.MailSenderName;
+                        appLogo = instance.Setting.Logo;
+                        appDescription = instance.Setting.CustomDescription;
 
-                        if (instance.Setting.MailSenderEmail.Contains("@etiya.com"))
-                        {
-                            appLogo = "none";
-                        }
                     }
                 }
             }
 
-            tmpl = templateEntity.Content;
+
+
+            tmpl = !string.IsNullOrEmpty(appEmailTemplate?.Content) ? appEmailTemplate.Content : templateEntity.Content;
             tmpl = tmpl.Replace("{{URL}}", appUrl);
             tmpl = tmpl.Replace("{{APP_URL}}", appCodeUrl);
             tmpl = tmpl.Replace("{{APP_COLOR}}", appColor);
             tmpl = tmpl.Replace("{{SOCIAL_ICONS}}", socialMediaIcons);
             tmpl = tmpl.Replace("{{FOOTER}}", footer);
             tmpl = tmpl.Replace("{{APP_LOGO}}", appLogo);
+            tmpl = tmpl.Replace("{{APP_TITLE}}", appTitle);
+            tmpl = tmpl.Replace("{{APP_DESCRIPTION}}", appDescription);
             int startIndex = tmpl.IndexOf("{{F}}");
             int lastIndex = tmpl.IndexOf("{{/F}}");
 
@@ -217,10 +187,11 @@ namespace PrimeApps.App.Helpers
             tmpl = FillData(tmpl, dataFields);
 
             this.Template = tmpl;
-            this.Subject = templateEntity.Subject; /*lcl.GetString("Subject");*/
+            this.Subject = !string.IsNullOrEmpty(appEmailTemplate?.Subject) ? appEmailTemplate.Subject : templateEntity.Subject; /*lcl.GetString("Subject");*/
 
             /// fill subject with data if there are any data fields.
             this.Subject = FillData(this.Subject, dataFields);
+
         }
 
         /// <summary>
@@ -229,9 +200,10 @@ namespace PrimeApps.App.Helpers
         /// <param name="resourceType">Type of the resource.</param>
         /// <param name="culture">The culture (tr-TR / en-US).</param>
         /// <param name="dataFields">The data fields of email</param>
-        public Email(string subject, string templateData, IConfiguration configuration)
+        public Email(string subject, string templateData, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
         {
             _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
             this.Template = templateData;
             this.Subject = subject;
         }
@@ -338,8 +310,6 @@ namespace PrimeApps.App.Helpers
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
                     var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                    var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
-
 
                     using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration))//, cacheHelper))
                     {

@@ -8,7 +8,9 @@ data:
   TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
   PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
   StudioDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=studio;command timeout=0;keepalive=30;"
-  RedisConnection: "cache-redis-master.cache:6379,password=pr!m€Appsi0r,defaultDatabase=1"
+  TenantDBConnectionTest: "	server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
+  PlatformDBConnectionTest: "	server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+  RedisConnection: "cache-redis-master.cache:6379,password=pr!m€Appsi0r,defaultDatabase=1,syncTimeout=30000"
   StorageUrl: "https://storage.primeapps.io"
   StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
   StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
@@ -45,6 +47,23 @@ metadata:
   namespace: primeapps
 type: Opaque
 ---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: studio-data-volume-claim
+  namespace: primeapps
+  labels:
+    k8s-app: "primeapps"
+  annotations:
+    volume.alpha.kubernetes.io/storage-class: gp2
+    failure-domain.beta.kubernetes.io/zone: eu-west-1c
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -68,6 +87,9 @@ spec:
         - name: "self-signed-ssl"
           secret:
             secretName: primeapps-auth-test-selfsigned-ssl
+        - name: studio-data-volume
+          persistentVolumeClaim:
+            claimName: studio-data-volume-claim
       imagePullSecrets:
         - name: image-pull-secret
       containers:
@@ -76,6 +98,8 @@ spec:
           volumeMounts:
             - mountPath: "/etc/self-signed-ssl"
               name: self-signed-ssl
+            - mountPath: "/data"
+              name: studio-data-volume
           env:
             - name: ASPNETCORE_Kestrel__Certificates__Default__Path
               value: /etc/self-signed-ssl/aspnetapp.pfx
@@ -94,6 +118,16 @@ spec:
                 configMapKeyRef:
                   name: primeapps-studio-config
                   key: StudioDBConnection
+            - name: ConnectionStrings__TenantDBConnectionTest
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: TenantDBConnectionTest
+            - name: ConnectionStrings__PlatformDBConnectionTest
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: PlatformDBConnectionTest
             - name: ConnectionStrings__RedisConnection
               valueFrom:
                 configMapKeyRef:
@@ -229,6 +263,16 @@ spec:
                 configMapKeyRef:
                   name: primeapps-studio-config
                   key: SentryDsn
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 1
 ---
 kind: Service
 apiVersion: v1
@@ -252,6 +296,7 @@ metadata:
   namespace: primeapps
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
     nginx.ingress.kubernetes.io/server-snippet: |-
       add_header X-Robots-Tag "noindex, nofollow"
 spec:

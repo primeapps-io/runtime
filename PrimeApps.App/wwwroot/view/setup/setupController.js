@@ -35,6 +35,31 @@ angular.module('primeapps')
                     $scope.menuItems = $filter('orderBy')(allMenuItemsAdmin, 'order');
                 }
 
+                if (!helper.hasAdminRights()) {
+                    if ($rootScope.customProfilePermissions && $rootScope.customProfilePermissions.length > 0) {
+                        for (var i = 0; i < $rootScope.customProfilePermissions.length; i++) {
+                            var profilePermission = $rootScope.customProfilePermissions[i];
+                            if (profilePermission.profileId == $rootScope.user.profile.id) {
+                                var customPermissionMenuItems = [];
+                                for (var j = 0; j < profilePermission.permissions.length; j++) {
+                                    var permission = profilePermission.permissions[j];
+                                    if (permission == 'users')
+                                        customPermissionMenuItems.push({ link: '#/app/setup/users', label: 'Setup.Nav.Users', order: 2, app: 'crm' })
+
+                                    if (permission == 'general')
+                                        customPermissionMenuItems.push({ link: '#/app/setup/general', label: 'Setup.Nav.System', order: 8, app: 'crm' })
+
+                                    if (permission == 'organization')
+                                        customPermissionMenuItems.push({ link: '#/app/setup/organization', label: 'Setup.Nav.OrganizationSettings', order: 3, app: 'crm' })
+                                }
+                                var allMenuItems = $scope.menuItems.concat(customPermissionMenuItems);
+                                $scope.menuItems = $filter('orderBy')(allMenuItems, 'order');
+
+                            }
+                        }
+                    }
+                }
+
                 // Disabled due to removal of license and payment system
                 //if (!$rootScope.licenseStatus.License.IsSingleWorkgroupLimited) {
                 //    var menuItemsMember = [

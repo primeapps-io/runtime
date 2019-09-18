@@ -316,7 +316,7 @@
                                                     <span class="badge" ng-if="notesCount">{{notesCount}}</span></a>
                                             </li>
                                             <li ng-class="{'active':tab === 'document'}"
-                                                ng-show="hasDocumentsPermission(operations.read)">
+                                                ng-show="hasDocumentsPermission(operations.read) && showAttachments !=='false'">
                                                 <a href
                                                     ng-click="tab = 'document';dropdownHide();">{{'Common.Attachments' | translate}}
                                                     <span class="badge"
@@ -351,7 +351,7 @@
                                                     ng-if="notesCount">{{notesCount}}</span></a>
                                         </li>
                                         <li ng-class="{'active':tab === 'document'}"
-                                            ng-show="hasDocumentsPermission(operations.read)">
+                                            ng-show="hasDocumentsPermission(operations.read) && showAttachments !=='false'">
                                             <a class="module-tab-link" href
                                                 ng-click="$parent.tab = 'document'">{{'Common.Attachments' | translate}} <span
                                                     class="badge"
@@ -471,6 +471,7 @@
                                                                                     class="fa fa-pencil"></i></span>
                                                                         </a>
                                                                     </div>
+                                                                    <a href ng-click="showEMailModal(false,record[field.name])" class="link" ng-if="field.data_type === 'email' && !field.show_lock && record[field.name]" ng-show="!editLookup[field.name]"><i class="fa fa-envelope-o"></i></a>
                                                                     <a href
                                                                         ng-click="showEMailModal(false,record[field.name])"
                                                                         class="link"
@@ -1100,7 +1101,7 @@
                                         </div>
                                     </div>
                                     <div class="subpanel"
-                                        ng-show="hasDocumentsPermission(operations.read) && tab === 'document' || !tabconfig">
+                                        ng-show="(hasDocumentsPermission(operations.read) && tab === 'document' || !tabconfig) && showAttachments !=='false'">
                                         <h5 class="subpanel-heading" ng-show="!tabconfig">
                                             {{ 'Common.Attachments' | translate }}</h5>
                                         <div class="subpanel-body">

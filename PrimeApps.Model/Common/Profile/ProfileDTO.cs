@@ -49,6 +49,8 @@ namespace PrimeApps.Model.Common.Profile
 		[DataMember]
         public string StartPage { get; set; }
         [DataMember]
+        public string SystemCode { get; set; }
+        [DataMember]
         public bool IsPersistent { get; set; }
         [DataMember]
         public int ParentId { get; set; }

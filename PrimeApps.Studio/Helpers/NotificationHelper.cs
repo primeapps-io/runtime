@@ -174,10 +174,9 @@ namespace PrimeApps.Studio.Helpers
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+
                 using (var _platformUserRepository = new PlatformUserRepository(databaseContext, _configuration))//, cacheHelper))
                 {
-
                     PlatformUser newOwner = await _platformUserRepository.Get(Convert.ToInt32(newOwnerId)),
                     oldOwner = await _platformUserRepository.Get(Convert.ToInt32(oldOwnerId));
 
@@ -209,7 +208,6 @@ namespace PrimeApps.Studio.Helpers
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
                 using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))//, cacheHelper))
                 using (var _recordRepository = new RecordRepository(databaseContext, _configuration))

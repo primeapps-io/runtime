@@ -144,6 +144,7 @@ namespace PrimeApps.Studio.Helpers
             {
                 appTemplate.Name = appTemplateModel.Name;
                 appTemplate.Subject = appTemplateModel.Subject;
+				appTemplate.Settings = appTemplateModel.Settings;
                 appTemplate.Content = appTemplateModel.Content;
                 appTemplate.Language = appTemplateModel.Language;
                 appTemplate.Active = appTemplateModel.Active;

@@ -34,54 +34,56 @@ namespace PrimeApps.App.Helpers
         public async Task<bool> ProcessScriptFiles(ICollection<ActionButtonViewModel> actionButtons, IComponentRepository componentRepository)
         {
             var environment = !string.IsNullOrEmpty(_configuration.GetValue("AppSettings:Environment", string.Empty)) ? _configuration.GetValue("AppSettings:Environment", string.Empty) : "development";
-
             var globalConfig = await _moduleHelper.GetGlobalConfig(componentRepository);
-
             var appConfigs = globalConfig?[environment] != null && !globalConfig[environment].IsNullOrEmpty() ? (JObject)globalConfig[environment] : null;
 
             foreach (var actionButton in actionButtons)
             {
-                if (actionButton.ActionType != ActionButtonEnum.ActionType.Scripting)
-                    continue;
-
-                actionButton.Template = _moduleHelper.ReplaceDynamicValues(actionButton.Template, appConfigs);
-
-                if (actionButton.Template.StartsWith("http"))
+                if (actionButton.ActionType == ActionButtonEnum.ActionType.Scripting)
                 {
-                    if (!_moduleHelper.IsTrustedUrl(actionButton.Template, appConfigs))
-                    {
-                        actionButton.Template = "console.error('" + actionButton.Template + " is not a trusted url.');";
-                        continue;
-                    }
+                    actionButton.Template = _moduleHelper.ReplaceDynamicValues(actionButton.Template, appConfigs);
 
-                    try
+                    if (actionButton.Template.StartsWith("http"))
                     {
-                        using (var httpClient = new HttpClient())
+                        if (!_moduleHelper.IsTrustedUrl(actionButton.Template, appConfigs))
                         {
-                            httpClient.DefaultRequestHeaders.Accept.Clear();
-                            var response = await httpClient.GetAsync(actionButton.Template);
-                            var content = await response.Content.ReadAsStringAsync();
+                            actionButton.Template = "console.error('" + actionButton.Template + " is not a trusted url.');";
+                            continue;
+                        }
 
-                            if (!response.IsSuccessStatusCode)
+                        try
+                        {
+                            using (var httpClient = new HttpClient())
                             {
-                                actionButton.Template = "console.error('" + actionButton.Template + " response error. Http Status Code: " + response.StatusCode + "');";
-                                continue;
-                            }
+                                httpClient.DefaultRequestHeaders.Accept.Clear();
+                                var response = await httpClient.GetAsync(actionButton.Template);
+                                var content = await response.Content.ReadAsStringAsync();
 
-                            if (string.IsNullOrWhiteSpace(content))
-                            {
-                                actionButton.Template = "console.warn('" + actionButton.Template + " has empty content.');";
-                                continue;
-                            }
+                                if (!response.IsSuccessStatusCode)
+                                {
+                                    actionButton.Template = "console.error('" + actionButton.Template + " response error. Http Status Code: " + response.StatusCode + "');";
+                                    continue;
+                                }
 
-                            actionButton.Template = content;
+                                if (string.IsNullOrWhiteSpace(content))
+                                {
+                                    actionButton.Template = "console.warn('" + actionButton.Template + " has empty content.');";
+                                    continue;
+                                }
+
+                                actionButton.Template = content;
+                            }
+                        }
+                        catch
+                        {
+                            actionButton.Template = "console.error('" + actionButton.Template + " has connection error. Please check the url.');";
+                            continue;
                         }
                     }
-                    catch
-                    {
-                        actionButton.Template = "console.error('" + actionButton.Template + " has connection error. Please check the url.');";
-                        continue;
-                    }
+                }
+                else if (actionButton.ActionType == ActionButtonEnum.ActionType.Webhook)
+                {
+                    actionButton.Url = _moduleHelper.ReplaceDynamicValues(actionButton.Url, appConfigs);
                 }
             }
 

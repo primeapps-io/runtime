@@ -834,6 +834,52 @@ namespace PrimeApps.Studio.Helpers
                         }
                     }
                     break;
+                case "setting":
+                    if (requestType == RequestTypeEnum.View)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Create)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Update)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    else if (requestType == RequestTypeEnum.Delete)
+                    {
+                        if (profile == ProfileEnum.Viewer)
+                        {
+                            hasPermission = false;
+                        }
+                        else if (profile == ProfileEnum.Developer)
+                        {
+                            hasPermission = true;
+                        }
+                    }
+                    break;
             }
 
             return hasPermission;

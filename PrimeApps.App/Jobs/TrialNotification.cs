@@ -36,7 +36,6 @@ namespace PrimeApps.App.Jobs
 			using (var scope = _serviceScopeFactory.CreateScope())
 			{
 				var platformDBContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-				var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
 				using (var tenantRepository = new TenantRepository(platformDBContext, _configuration))//, cacheHelper))
 				{

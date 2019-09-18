@@ -332,7 +332,7 @@ angular.module('primeapps')
                 var templates = response.data;
                 ProfilesService.getAllBasic().then(function (response) {
                     //$scope.newProfiles = response.data;
-                    $scope.profiles = ProfilesService.getProfiles(response.data, $rootScope.appModules, false); 
+                    $scope.profiles = ProfilesService.getProfiles(response.data, $rootScope.appModules, false);
                 });
                 angular.forEach(templates, function (template) {
                     template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
@@ -402,7 +402,9 @@ angular.module('primeapps')
                 template.content = $scope.newtemplate.tinymce_content;
                 template.sharing_type = $scope.newtemplate.sharing_type;
                 template.permissions = [];
-                if ($scope.newtemplate.permissions) {
+
+                if ($scope.newtemplate.permissions && $scope.newtemplate.permissions.length > 0) {
+                    template.sharing_type == 'custom';
 
                     for (var i = 0; i < $scope.newtemplate.permissions.length; i++) {
                         var newPermissions = {
@@ -413,6 +415,9 @@ angular.module('primeapps')
                         template.permissions.push(newPermissions);
                     }
                 }
+                else
+                    template.sharing_type == 'everybody';
+
                 template.template_type = 2;
                 template.active = true;
 

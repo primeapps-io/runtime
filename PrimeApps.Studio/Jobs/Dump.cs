@@ -37,9 +37,10 @@ namespace PrimeApps.Studio.Jobs
             {
                 var notification = new Helpers.Email(_configuration, null, "app" + appId + " Error", "app" + appId + " has error");
                 notification.AddRecipient(request["notification_email"].ToString());
-                notification.AddToQueue("notifications@primeapps.io", "PrimeApps", null, null, ex.Message + appId + " Error", "app" + appId + " has error");
+                notification.AddToQueue("notifications@primeapps.io", "PrimeApps", null, null, ex.Message + ". app" + appId + " Error", "app" + appId + " has error");
 
                 ErrorHandler.LogError(ex);
+                return;
             }
 
             if (!request["notification_email"].IsNullOrEmpty())
@@ -55,22 +56,27 @@ namespace PrimeApps.Studio.Jobs
         {
             var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);
             var postgresPath = _configuration.GetValue("AppSettings:PostgresPath", string.Empty);
-            var dbConnection = _configuration.GetConnectionString("PlatformDBConnection");
+            var connectionStringName = (string)request["environment"] == "test" ? "PlatformDBConnectionTest" : "PlatformDBConnection";
+
+            var dbConnection = _configuration.GetConnectionString(connectionStringName);
 
             var appId = (int)request["app_id"];
-            var appIdTarget = !request["app_id_target"].IsNullOrEmpty() ? (int)request["app_id_target"] : 0;
 
             try
             {
                 PosgresHelper.Restore(dbConnection, $"app{appId}", postgresPath, dumpDirectory, appIdTarget > 0 ? $"app{appIdTarget}" : "", dumpDirectory);
+                PosgresHelper.Create(dbConnection, $"app{appId}_new");
+                PosgresHelper.Restore(dbConnection, $"app{appId}", dumpDirectory, $"app{appId}_new", dumpDirectory);
+                PosgresHelper.Template(dbConnection, $"app{appId}");
             }
             catch (Exception ex)
             {
                 var notification = new Helpers.Email(_configuration, null, "app" + appId + " Error", "app" + appId + " has error");
                 notification.AddRecipient((string)request["notification_email"]);
-                notification.AddToQueue("notifications@primeapps.io", "PrimeApps", null, null, ex.Message + appId + " Error", "app" + appId + " has error");
+                notification.AddToQueue("notifications@primeapps.io", "PrimeApps", null, null, ex.Message + ". app" + appId + " Error", "app" + appId + " has error");
 
                 ErrorHandler.LogError(ex);
+                return;
             }
 
             if (!request["notification_email"].IsNullOrEmpty())

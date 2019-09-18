@@ -125,7 +125,7 @@ angular.module('primeapps')
                     },
                     {
                         name: $filter('translate')('Setup.Modules.List'),
-                        value: 3
+                        value: 4
                     },
                     {
                         name: $filter('translate')('Setup.Modules.Relation'),
@@ -411,7 +411,7 @@ angular.module('primeapps')
                 parameter.selectedField = addItem.selectedField;
 
                 if (parameter.parameterName && parameter.selectedModules && parameter.selectedField) {
-                    if ($scope.hookParameters.length <= 10) {
+                    if ($scope.hookParameters.length <= 20) {
                         $scope.hookParameters.push(parameter);
                     } else {
                         toastr.warning($filter('translate')('Setup.Workflow.MaximumHookWarning'));

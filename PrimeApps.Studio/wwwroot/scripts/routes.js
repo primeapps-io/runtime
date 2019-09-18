@@ -1630,7 +1630,7 @@ angular.module('primeapps')
                     url: '/appEmailTemplates',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/manage/appemailtemplates/appEmailTemplates.html',
+                            templateUrl: cdnUrl + 'view/app/templates/appemailtemplates/appEmailTemplates.html',
                             controller: 'AppEmailTemplatesController'
                         }
                     },
@@ -1645,8 +1645,8 @@ angular.module('primeapps')
                         }],
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/manage/appemailtemplates/appEmailTemplatesController.js',
-                                cdnUrl + 'view/app/manage/appemailtemplates/appEmailTemplatesService.js'
+                                cdnUrl + 'view/app/templates/appemailtemplates/appEmailTemplatesController.js',
+                                cdnUrl + 'view/app/templates/appemailtemplates/appEmailTemplatesService.js'
                             ]);
                         }]
                     }
@@ -1703,6 +1703,33 @@ angular.module('primeapps')
                             ]);
                         }]
                     }
+                })
+
+                .state('studio.app.customSettings', {
+                    url: '/customsettings?:id',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/manage/custom/settings.html',
+                            controller: 'SettingController'
+                        }
+                    },
+                    resolve: {
+                        customSettings: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
+                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
+                                $state.go('studio.app.overview', {
+                                    orgId: $rootScope.currentOrgId,
+                                    appId: $rootScope.currentAppId
+                                });
+                            }
+                        }], 
+                        plugins: ['$$animateJs', '$ocLazyLoad', 'app', function ($$animateJs, $ocLazyLoad, app) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/manage/custom/settingsService.js',
+                                cdnUrl + 'view/app/manage/custom/settingController.js'
+                            ]);
+                        }]
+                    }
+
                 })
 
                 //settings

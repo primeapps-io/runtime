@@ -9,7 +9,7 @@ global:
     secretName: ""
 
 image:
-  tag: "1.19.239.1-debian"
+  tag: "1.19.248.1-debian"
   pullPolicy: "IfNotPresent"
 
 auth:
@@ -31,13 +31,13 @@ postgresoperator:
   password: "pAssW0rd987d"
   storage:
     backup:
-      class: "standard"
+      class: "default"
       size: "20Gi"
     primary:
-      class: "standard"
+      class: "default"
       size: "20Gi"
     secondary:
-      class: "standard"
+      class: "default"
       size: "20Gi"
   serverName: "pre"
 
@@ -46,7 +46,7 @@ redis:
   usePassword: "true"
   password: "pAssW0rd987c"
   global:
-    storageClass: "standard"
+    storageClass: "default"
   master:
     persistence:
       size: "20Gi"
@@ -60,5 +60,5 @@ minio:
   accessKey: "AKIAIOSFODNN7EXAMPLE"
   secretKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
   persistence:
-    storageClass: "standard"
+    storageClass: "default"
     size: "50Gi"

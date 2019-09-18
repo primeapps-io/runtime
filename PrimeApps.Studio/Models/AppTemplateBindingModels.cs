@@ -4,7 +4,7 @@ namespace PrimeApps.Studio.Models
 {
 	public class AppTemplateBindingModel
 	{
-		[Required]
+		
 		public int AppId { get; set; }
 
 		[Required, StringLength(200)]
@@ -20,8 +20,14 @@ namespace PrimeApps.Studio.Models
 		public string Language { get; set; }
 
 		public bool Active { get; set; }
+		
 		public bool Deleted { get; set; }
+		
+		[Required]
 		public string Settings { get; set; }
+
+		[Required, StringLength(200)]
+		public string AppName { get; set; }
 
 	}
 }
