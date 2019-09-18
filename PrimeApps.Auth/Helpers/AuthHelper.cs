@@ -58,8 +58,17 @@ namespace PrimeApps.Auth.UI
 
             var previewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);
             var preview = !string.IsNullOrEmpty(previewMode) && previewMode == "app";
-            var defaultTheme = JObject.Parse(app.Setting.AuthTheme);
 
+            JObject defaultTheme = null;
+
+            try
+            {
+                defaultTheme = JObject.Parse(app.Setting.AuthTheme);
+            }
+            catch (Exception e)
+            {
+                defaultTheme = JObject.Parse(JsonConvert.DeserializeObject(app.Setting.AuthTheme).ToString());
+            }
             if (preview)
             {
                 var previewAppId = GetQueryValue(returnUrl, "preview_app_id");
@@ -94,8 +103,17 @@ namespace PrimeApps.Auth.UI
 
             if (!multiLanguage)
                 language = app.Setting.Language;
+            
+            JObject theme = null;
 
-            var theme = JObject.Parse(app.Setting.AuthTheme);
+            try
+            {
+                theme = JObject.Parse(app.Setting.AuthTheme);
+            }
+            catch (Exception e)
+            {
+                theme = JObject.Parse(JsonConvert.DeserializeObject(app.Setting.AuthTheme).ToString());
+            }
 
             //Preview mode'ta eğer ilgili app'e ait branding ayarları yoksa defaultta Primeapps
             if (theme["title"].IsNullOrEmpty())

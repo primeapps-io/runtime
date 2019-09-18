@@ -142,7 +142,6 @@ namespace PrimeApps.Studio.Helpers
                         var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
 
                         using (var packageRepository = new PackageRepository(databaseContext, _configuration))
-                        using (var appDraftRepository = new AppDraftRepository(databaseContext, _configuration))
                         {
                             var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
@@ -152,7 +151,7 @@ namespace PrimeApps.Studio.Helpers
                             /*if (releaseOptions["type"].ToString() == "publish")
                                 app = await appDraftRepository.Get(appId);*/
 
-                            using (var fs = new FileStream(Path.Combine(path, "releases", dbName, package.Version, "log.txt"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                            using (var fs = new FileStream(Path.Combine(path, "packages", dbName, package.Version, "log.txt"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                             using (var sr = new StreamReader(fs, Encoding.Default))
                             {
                                 text = ConvertHelper.ASCIIToHTML(sr.ReadToEnd());

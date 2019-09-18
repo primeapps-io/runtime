@@ -138,7 +138,7 @@ namespace PrimeApps.Auth.UI
             Response.Cookies.Append(
                 CookieRequestCultureProvider.DefaultCookieName,
                 CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(language)),
-                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+                new CookieOptions {Expires = DateTimeOffset.UtcNow.AddYears(1)}
             );
 
             return Redirect(returnUrl);
@@ -167,7 +167,7 @@ namespace PrimeApps.Auth.UI
 
             if (cookieLang != vm.Language)
                 return RedirectToAction(nameof(AccountController.ChangeLanguage), "Account",
-                    new { language = vm.Language, returnUrl = vm.ReturnUrl });
+                    new {language = vm.Language, returnUrl = vm.ReturnUrl});
 
             if (vm.IsExternalLoginOnly)
             {
@@ -368,7 +368,7 @@ namespace PrimeApps.Auth.UI
 
             if (cookieLang != vm.Language)
                 return RedirectToAction(nameof(AccountController.ChangeLanguage), "Account",
-                    new { language = vm.Language, returnUrl = vm.ReturnUrl });
+                    new {language = vm.Language, returnUrl = vm.ReturnUrl});
 
             /*
             * If you want to make the user email field read only. Set true to ReadOnly variable.
@@ -543,7 +543,7 @@ namespace PrimeApps.Auth.UI
                     }, application, "");
 
             if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
-                return BadRequest(new { ErrorMessage = createUserRespone["Error"].ToString() });
+                return BadRequest(new {ErrorMessage = createUserRespone["Error"].ToString()});
 
             var response = new JObject();
 
@@ -596,7 +596,7 @@ namespace PrimeApps.Auth.UI
 
             if (cookieLang != vm.Language)
                 return RedirectToAction(nameof(AccountController.ChangeLanguage), "Account",
-                    new { language = ViewBag.Language, returnUrl = Request.Path.Value + Request.QueryString.Value });
+                    new {language = ViewBag.Language, returnUrl = Request.Path.Value + Request.QueryString.Value});
 
             //vm.ReadOnly = false;
 
@@ -741,7 +741,7 @@ namespace PrimeApps.Auth.UI
 
                         if (externalLoginResetPasswordResult.IsSuccessStatusCode)
                             return RedirectToAction("Login", "Account",
-                                new { vm.ReturnUrl, Success = "PasswordChanged" });
+                                new {vm.ReturnUrl, Success = "PasswordChanged"});
                         else
                         {
                             vm.Error = "InvalidToken";
@@ -753,7 +753,7 @@ namespace PrimeApps.Auth.UI
                     }
                 }
 
-                return RedirectToAction("Login", "Account", new { vm.ReturnUrl, Success = "PasswordChanged" });
+                return RedirectToAction("Login", "Account", new {vm.ReturnUrl, Success = "PasswordChanged"});
             }
 
             vm.Error = "InvalidToken";
@@ -809,8 +809,8 @@ namespace PrimeApps.Auth.UI
                     RedirectUri = Url.Action("ExternalLoginCallback"),
                     Items =
                     {
-                        { "returnUrl", returnUrl },
-                        { "scheme", provider },
+                        {"returnUrl", returnUrl},
+                        {"scheme", provider},
                     }
                 };
                 return Challenge(props, provider);
@@ -861,7 +861,18 @@ namespace PrimeApps.Auth.UI
                     var appInfo = await _applicationRepository.GetByNameAsync(clientId);
                     var userApp = platformUser?.TenantsAsUser.Where(x => x.Tenant.AppId == appInfo.Id);
 
-                    var theme = JObject.Parse(appInfo.Setting.AuthTheme);
+
+                    JObject theme = null;
+
+                    try
+                    {
+                        theme = JObject.Parse(appInfo.Setting.AuthTheme);
+                    }
+                    catch (Exception e)
+                    {
+                        theme = JObject.Parse(JsonConvert.DeserializeObject(appInfo.Setting.AuthTheme).ToString());
+                    }
+
 
                     var _language = !string.IsNullOrEmpty(Request.Cookies[".AspNetCore.Culture"])
                         ? Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1]
@@ -993,10 +1004,10 @@ namespace PrimeApps.Auth.UI
                 // build a return URL so the upstream provider will redirect back
                 // to us after the user has logged out. this allows us to then
                 // complete our single sign-out processing.
-                string url = Url.Action("Logout", new { logoutId = vm.LogoutId });
+                string url = Url.Action("Logout", new {logoutId = vm.LogoutId});
 
                 // this triggers a redirect to the external provider for sign-out
-                return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
+                return SignOut(new AuthenticationProperties {RedirectUri = url}, vm.ExternalAuthenticationScheme);
             }
 
             if (!string.IsNullOrEmpty(model.Error))
@@ -1234,7 +1245,7 @@ namespace PrimeApps.Auth.UI
                     ReturnUrl = returnUrl,
                     Username = context?.LoginHint,
                     ExternalProviders = new ExternalProvider[]
-                        { new ExternalProvider { AuthenticationScheme = context.IdP } },
+                        {new ExternalProvider {AuthenticationScheme = context.IdP}},
                     ApplicationInfo = applicationInfo,
                     Language = applicationInfo.Language,
                     Success = success,
@@ -1296,7 +1307,7 @@ namespace PrimeApps.Auth.UI
         private async Task<LogoutViewModel> BuildLogoutViewModelAsync(string logoutId, string returnUrl, string error = null)
         {
             var vm = new LogoutViewModel
-                { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt, Error = error };
+                {LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt, Error = error};
 
             vm.ReturnUrl = returnUrl;
 
@@ -1372,8 +1383,8 @@ namespace PrimeApps.Auth.UI
                     RedirectUri = Url.Action("ExternalLoginCallback"),
                     Items =
                     {
-                        { "returnUrl", returnUrl },
-                        { "scheme", AccountOptions.WindowsAuthenticationSchemeName },
+                        {"returnUrl", returnUrl},
+                        {"scheme", AccountOptions.WindowsAuthenticationSchemeName},
                     }
                 };
 
@@ -1522,7 +1533,7 @@ namespace PrimeApps.Auth.UI
             var id_token = externalResult.Properties.GetTokenValue("id_token");
             if (id_token != null)
             {
-                localSignInProps.StoreTokens(new[] { new AuthenticationToken { Name = "id_token", Value = id_token } });
+                localSignInProps.StoreTokens(new[] {new AuthenticationToken {Name = "id_token", Value = id_token}});
             }
         }
 
@@ -1668,7 +1679,7 @@ namespace PrimeApps.Auth.UI
                 if (applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Tenant)
                 {
                     var tenant1 = _platformRepository.GetTenant(1);
-                    
+
                     Tenant tenant = null;
                     //var tenantId = 2032;
                     try
@@ -1707,13 +1718,13 @@ namespace PrimeApps.Auth.UI
                             applicationInfo.Id);
 
                         _userRepository.CurrentUser = new CurrentUser
-                            { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                            {TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant"};
                         _profileRepository.CurrentUser = new CurrentUser
-                            { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                            {TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant"};
                         _roleRepository.CurrentUser = new CurrentUser
-                            { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                            {TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant"};
                         _recordRepository.CurrentUser = new CurrentUser
-                            { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                            {TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant"};
 
                         _profileRepository.TenantId = _roleRepository.TenantId =
                             _userRepository.TenantId = _recordRepository.TenantId = tenantId;
@@ -1741,7 +1752,7 @@ namespace PrimeApps.Auth.UI
                         if (platformUser.TenantsAsUser == null)
                             platformUser.TenantsAsUser = new List<UserTenant>();
 
-                        platformUser.TenantsAsUser.Add(new UserTenant { Tenant = tenant, PlatformUser = platformUser });
+                        platformUser.TenantsAsUser.Add(new UserTenant {Tenant = tenant, PlatformUser = platformUser});
 
                         //user.TenantId = user.Id;
                         //tenant.License.HasAnalyticsLicense = true;

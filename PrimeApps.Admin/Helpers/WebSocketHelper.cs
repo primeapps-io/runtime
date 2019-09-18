@@ -111,14 +111,14 @@ namespace PrimeApps.Admin.Helpers
 
                 var dbName = previewMode + (previewMode == "tenant" ? tenantId : appId);
 
-                /*var releaseIdResult = int.TryParse(wsParameters["package_id"].ToString(), out var releaseId);
+                var releaseIdResult = int.TryParse(wsParameters["release_id"].ToString(), out var releaseId);
 
                 if (!releaseIdResult)
                 {
                     await wSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
                     await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
                     throw new Exception("Release id not found.");
-                }*/
+                }
 
                 while (result.MessageType != WebSocketMessageType.Close)
                 {
@@ -129,10 +129,24 @@ namespace PrimeApps.Admin.Helpers
 
                         using (var releaseRepository = new ReleaseRepository(databaseContext, _configuration))
                         {
-                            var processActive = await releaseRepository.IsThereRunningProcess(appId);
+                            if (releaseId != 0)
+                            {
+                                var appProcessActive = await releaseRepository.Get(releaseId);
 
-                            if (!processActive)
-                                await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
+                                if (appProcessActive != null && appProcessActive.Status != ReleaseStatus.Running)
+                                {
+                                    var processActive = await releaseRepository.IsThereRunningProcess(appId);
+
+                                    if (!processActive)
+                                        await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
+                                }
+                            }
+                            else
+                            {
+                                var processActive = await releaseRepository.IsThereRunningProcess(appId);
+                                if (!processActive)
+                                    await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
+                            }
                         }
                     }
 

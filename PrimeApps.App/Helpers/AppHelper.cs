@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.App;
 using System.Web;
+using Newtonsoft.Json;
 using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.App.Helpers
@@ -40,7 +41,16 @@ namespace PrimeApps.App.Helpers
 				cdnUrlStatic = cdnUrl + "/" + versionStatic;
 			}
 
-			var defaultTheme = JObject.Parse(app.Setting.AppTheme);
+			JObject defaultTheme = null;
+
+			try
+			{
+				defaultTheme = JObject.Parse(app.Setting.AppTheme);
+			}
+			catch (Exception e)
+			{
+				defaultTheme = JObject.Parse(JsonConvert.DeserializeObject(app.Setting.AppTheme).ToString());
+			}
 
 			if (preview)
 			{
@@ -74,7 +84,16 @@ namespace PrimeApps.App.Helpers
 			if (!multiLanguage)
 				language = app.Setting.Language;
 
-			var theme = JObject.Parse(app.Setting.AppTheme);
+			JObject theme = null;
+
+			try
+			{
+				theme = JObject.Parse(app.Setting.AppTheme);
+			}
+			catch (Exception e)
+			{
+				theme = JObject.Parse(JsonConvert.DeserializeObject(app.Setting.AppTheme).ToString());
+			}
 			//Preview mode'ta eğer ilgili app'e ait branding ayarları yoksa defaultta Primeapps
 			if (theme["title"].IsNullOrEmpty())
 			{
@@ -100,6 +119,7 @@ namespace PrimeApps.App.Helpers
 			{
 				Id = app.Id,
 				Name = app.Name,
+				Description = app.Description,
 				Title = theme["title"].ToString(),
 				MultiLanguage = string.IsNullOrEmpty(app.Setting.Language),
 				Logo = theme["logo"].ToString(),

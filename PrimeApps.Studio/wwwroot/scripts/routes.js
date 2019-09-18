@@ -1009,8 +1009,8 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.app.releases', {
-                    url: '/releases',
+                .state('studio.app.packages', {
+                    url: '/packages',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/manage/package/package.html',

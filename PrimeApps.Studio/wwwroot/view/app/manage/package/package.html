@@ -40,7 +40,8 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="release in releases" ui-sref="studio.app.releaseDetail({id:release.id})">
+        <!--<tr ng-repeat="release in packages" ui-sref="studio.app.releaseDetail({id:release.id})">-->
+        <tr ng-repeat="release in packages">
             <td>{{release.version}}</td>
             <td>{{getTime(release.start_time)}}</td>
             <td>{{getTime(release.end_time)}}</td>

@@ -13,7 +13,7 @@ angular.module('primeapps')
             if (!$scope.releaseId) {
                 toastr.warning("Release not found.");
 
-                $state.go('studio.app.releases', {
+                $state.go('studio.app.packages', {
                     orgId: $rootScope.currentOrgId,
                     appId: $rootScope.currentAppId
                 });

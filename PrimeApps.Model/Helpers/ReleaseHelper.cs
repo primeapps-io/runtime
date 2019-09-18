@@ -35,10 +35,10 @@ namespace PrimeApps.Model.Helpers
             var postgresPath = configuration.GetValue("AppSettings:PostgresPath", string.Empty);
             var root = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
-            var path = Path.Combine(root, "releases", dbName, version);
+            var path = Path.Combine(root, "packages", dbName, version);
 
             if (Directory.Exists(path))
-                Directory.Delete(path);
+                Directory.Delete(path, true);
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -93,8 +93,7 @@ namespace PrimeApps.Model.Helpers
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Dynamic tables clearing..." + Environment.NewLine);
                 //var arrayResult = ReleaseHelper.GetAllDynamicTables(PDEConnectionString, dbName);
 
-                var readResult = PosgresHelper.Read(PDEConnectionString, dbName, GetAllDynamicTablesSql());
-                var arrayResult = readResult.ResultToJArray();
+                var arrayResult = PosgresHelper.Read(PDEConnectionString, dbName, GetAllDynamicTablesSql(), "array");
 
                 if (arrayResult != null)
                 {
@@ -145,7 +144,7 @@ namespace PrimeApps.Model.Helpers
 
                 try
                 {
-                    ZipFile.CreateFromDirectory(path, path = Path.Combine(root, "releases", dbName, $"{dbName}.zip"));
+                    ZipFile.CreateFromDirectory(path, path = Path.Combine(root, "packages", dbName, $"{dbName}.zip"));
                 }
                 catch (Exception e)
                 {
@@ -197,7 +196,7 @@ namespace PrimeApps.Model.Helpers
                     PublishHelper.Create(configuration, storage, app, dbName, version, studioSecret, app["status"].ToString() != "published");*/
                 /*else
                 {
-                    var bucketName = UnifiedStorage.GetPath("releases", null, int.Parse(app["id"].ToString()), "/" + version + "/");
+                    var bucketName = UnifiedStorage.GetPath("packages", null, int.Parse(app["id"].ToString()), "/" + version + "/");
                     await storage.UploadDirAsync(bucketName, path);
                     Directory.Delete(path);
                 }*/
@@ -217,7 +216,7 @@ namespace PrimeApps.Model.Helpers
         {
             var root = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
 
-            var path = Path.Combine(root, "releases", dbName, version);
+            var path = Path.Combine(root, "packages", dbName, version);
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -242,7 +241,7 @@ namespace PrimeApps.Model.Helpers
                         try
                         {
                             AddScript(scriptPath, table.CommandText);
-                            AddScript(scriptPath, $"INSERT INTO public.history_database (id, command_text, table_name, command_id, executed_at, created_by, deleted, tag) VALUES ({table.Id}, '{table.CommandText.Replace("'", "''")}', '{table.TableName ?? "NULL"}', '{table.CommandId}', '{table.ExecutedAt}', '{table.CreatedByEmail}', '{table.Deleted}', {(!string.IsNullOrEmpty(table.Tag) ? "'" + table.Tag + "'" : "NULL")});");
+                            AddScript(scriptPath, $"INSERT INTO public.history_database (id, command_text, table_name, command_id, executed_at, created_by, deleted, tag) VALUES ({table.Id}, '{table.CommandText.Replace("'", "''")}', '{table.TableName ?? "NULL"}', '{table.CommandId}', '{Convert.ToDateTime(table.ExecutedAt).ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture)}', '{table.CreatedByEmail}', '{table.Deleted}', {(!string.IsNullOrEmpty(table.Tag) ? "'" + table.Tag + "'" : "NULL")});");
                         }
                         catch (Exception e)
                         {
@@ -254,14 +253,14 @@ namespace PrimeApps.Model.Helpers
 
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Storage scripts creating..." + Environment.NewLine);
 
-                var bucketName = UnifiedStorage.GetPath("releases", "app", int.Parse(app["id"].ToString()), version + "/");
+                var bucketName = UnifiedStorage.GetPath("packages", "app", int.Parse(app["id"].ToString()), version + "/");
 
                 if (historyStorages != null)
                 {
                     foreach (var (value, index) in historyStorages.Select((v, i) => (v, i)))
                     {
                         AddScript(storagePath, (index == 0 ? "[" : "") + new JObject {["mime_type"] = value.MimeType, ["operation"] = value.Operation, ["file_name"] = value.FileName, ["unique_name"] = value.UniqueName, ["path"] = value.Path}.ToJsonString() + (index != historyStorages.Count() - 1 ? "," : "]"));
-                        AddScript(scriptPath, $"INSERT INTO public.history_storage (id, mime_type, operation, file_name, unique_name, path, executed_at, created_by, deleted, tag) VALUES ({value.Id}, '{value.MimeType}', '{value.Operation}', '{value.FileName}', '{value.UniqueName}', '{value.Path}', '{value.ExecutedAt}', '{value.CreatedByEmail}', '{value.Deleted}', {(!string.IsNullOrEmpty(value.Tag) ? "'" + value.Tag + "'" : "NULL")});");
+                        AddScript(scriptPath, $"INSERT INTO public.history_storage (id, mime_type, operation, file_name, unique_name, path, executed_at, created_by, deleted, tag) VALUES ({value.Id}, '{value.MimeType}', '{value.Operation}', '{value.FileName}', '{value.UniqueName}', '{value.Path}', '{Convert.ToDateTime(value.ExecutedAt).ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture)}', '{value.CreatedByEmail}', '{value.Deleted}', {(!string.IsNullOrEmpty(value.Tag) ? "'" + value.Tag + "'" : "NULL")});");
                         //await storage.Download(bucketName, value.UniqueName, value.FileName);
                         var file = await storage.GetObject(value.Path, value.UniqueName);
 
@@ -273,11 +272,11 @@ namespace PrimeApps.Model.Helpers
                     }
                 }
 
-                //var bucketName = UnifiedStorage.GetPath("releases", "app", int.Parse(app["id"].ToString()), version + "/");
+                //var bucketName = UnifiedStorage.GetPath("packages", "app", int.Parse(app["id"].ToString()), version + "/");
 
                 try
                 {
-                    ZipFile.CreateFromDirectory(path, path = Path.Combine(root, "releases", dbName, $"{dbName}.zip"));
+                    ZipFile.CreateFromDirectory(path, path = Path.Combine(root, "packages", dbName, $"{dbName}.zip"));
                 }
                 catch (Exception e)
                 {
@@ -549,29 +548,27 @@ namespace PrimeApps.Model.Helpers
         {
             var sqls = new JArray();
 
-            var dropCommand = PosgresHelper.Read(connectionString, dbName, GetAllSystemTablesSql());
-            var tableData = dropCommand.ResultToJArray();
+            var dropCommand = PosgresHelper.Read(connectionString, dbName, GetAllSystemTablesSql(), "array");
+            var tableData = dropCommand;
 
             if (!tableData.HasValues) return null;
 
             foreach (var t in tableData)
             {
                 var table = t["table_name"];
-                dropCommand = PosgresHelper.Read(connectionString, dbName, GetUserFKColumnsSql(table.ToString()));
-                var columns = dropCommand.ResultToJArray();
+                var columns = PosgresHelper.Read(connectionString, dbName, GetUserFKColumnsSql(table.ToString()), "array");
 
                 if (!columns.HasValues) continue;
 
-                dropCommand = PosgresHelper.Read(connectionString, dbName, ColumnIsExistsSql(table.ToString(), "id"));
+                dropCommand = PosgresHelper.Read(connectionString, dbName, ColumnIsExistsSql(table.ToString(), "id"), "hasRows");
                 var idColumnIsExists = dropCommand;
                 var idExists = true;
 
                 var fkColumns = (JArray)columns.DeepClone();
 
-                if (!idColumnIsExists.HasRows)
+                if (!idColumnIsExists)
                 {
-                    dropCommand = PosgresHelper.Read(connectionString, dbName, GetAllColumnNamesSql(table.ToString()));
-                    columns = dropCommand.ResultToJArray();
+                    columns = PosgresHelper.Read(connectionString, dbName, GetAllColumnNamesSql(table.ToString()), "array");
 
                     idExists = false;
                 }
@@ -580,8 +577,7 @@ namespace PrimeApps.Model.Helpers
                     columns.Add(new JObject {["column_name"] = "id"});
                 }
 
-                dropCommand = PosgresHelper.Read(connectionString, dbName, GetAllRecordsWithColumnsSql(table.ToString(), columns));
-                var records = dropCommand.ResultToJArray();
+                var records = PosgresHelper.Read(connectionString, dbName, GetAllRecordsWithColumnsSql(table.ToString(), columns), "array");
 
                 foreach (var record in records)
                 {
@@ -794,7 +790,7 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static bool ChangeTemplateDatabaseStatus(string connectionString, string dbName, bool open = false, string scriptPath = null)
+        public static bool ChangeTemplateDatabaseStatus(string connectionString, string dbName, bool open = false)
         {
             try
             {
@@ -820,9 +816,6 @@ namespace PrimeApps.Model.Helpers
 
                 foreach (var sql in sqls)
                 {
-                    if (!string.IsNullOrEmpty(scriptPath))
-                        File.AppendAllText(scriptPath, sql + Environment.NewLine);
-
                     PosgresHelper.Run(connectionString, "postgres", sql.ToString());
                 }
 
@@ -879,14 +872,11 @@ namespace PrimeApps.Model.Helpers
             return $"INSERT INTO \"public\".\"settings\"(\"type\", \"user_id\", \"key\", \"value\", \"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\") VALUES (1, 1, 'app', '" + name + "', 1, NULL, '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) + "', NULL, 'f');";
         }
 
-        public static bool CreateSettingsAppName(string connectionString, string name, string dbName, string scriptPath = null)
+        public static bool CreateSettingsAppName(string connectionString, string name, string dbName)
         {
             try
             {
                 var sql = CreateSettingsAppNameSql(name);
-
-                if (!string.IsNullOrEmpty(scriptPath))
-                    File.AppendAllText(scriptPath, sql + Environment.NewLine);
 
                 /*if (run)
                 {
@@ -925,14 +915,14 @@ namespace PrimeApps.Model.Helpers
             var sqls = new JArray
             {
                 $"UPDATE public.apps SET created_by = 1, updated_by = 1, created_at = '2019-05-24 07:15:15.699988', updated_at = '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) + "', label = '" + app["label"] + "', description = '" + app["description"] + "', logo = '" + app["logo"] + "', use_tenant_settings = '" + app["use_tenant_settings"] + "', app_draft_id = 0 WHERE id = " + app["id"] + ";",
-                $"UPDATE public.app_settings SET " + (!string.IsNullOrEmpty(appUrl) ? $"app_domain = '{appUrl}'" : "") + (!string.IsNullOrEmpty(authUrl) ? $"auth_domain = '{authUrl}'" : "") + " currency = " + (!string.IsNullOrEmpty(app["setting"]["currency"].ToString()) ? "'" + app["setting"]["currency"] + "'" : "NULL") + ", culture = " + (!string.IsNullOrEmpty(app["setting"]["culture"].ToString()) ? "'" + app["setting"]["culture"] + "'" : "NULL") + ", time_zone = " + (!string.IsNullOrEmpty(app["setting"]["time_zone"].ToString()) ? "'" + app["setting"]["time_zone"] + "'" : "NULL") + ", language = " + (!string.IsNullOrEmpty(app["setting"]["language"].ToString()) ? "'" + app["setting"]["language"] + "'" : "NULL") + ", auth_theme = " + (!string.IsNullOrEmpty(app["setting"]["auth_theme"].ToString()) ? "'" + app["setting"]["auth_theme"].ToJsonString() + "'" : "NULL") + ", app_theme = " + (!string.IsNullOrEmpty(app["setting"]["app_theme"].ToString()) ? "'" + app["setting"]["app_theme"].ToJsonString() + "'" : "NULL") + ", mail_sender_name = " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_name"].ToString()) ? "'" + app["setting"]["mail_sender_name"] + "'" : "NULL") + ", mail_sender_email = " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_email"].ToString()) ? "'" + app["setting"]["mail_sender_email"] + "'" : "NULL") + ", google_analytics_code = " + (!string.IsNullOrEmpty(app["setting"]["google_analytics_code"].ToString()) ? "'" + app["setting"]["google_analytics_code"] + "'" : "NULL") + ", tenant_operation_webhook = " + (!string.IsNullOrEmpty(app["setting"]["tenant_operation_webhook"].ToString()) ? "'" + app["setting"]["tenant_operation_webhook"] + "'" : "NULL") + ", external_auth = " + (!string.IsNullOrEmpty(app["setting"]["external_auth"].ToString()) ? "'" + app["setting"]["external_auth"].ToJsonString() + "'" : "NULL") + ", registration_type = 2, enable_registration = '" + options["enable_registration"].ToString().Substring(0, 1).ToLower() + "' WHERE app_id = " + app["id"] + ";"
+                $"UPDATE public.app_settings SET " + (!string.IsNullOrEmpty(appUrl) ? $"app_domain = '{appUrl}'" : "") + (!string.IsNullOrEmpty(authUrl) ? $"auth_domain = '{authUrl}'" : "") + " currency = " + (!string.IsNullOrEmpty(app["setting"]["currency"].ToString()) ? "'" + app["setting"]["currency"] + "'" : "NULL") + ", culture = " + (!string.IsNullOrEmpty(app["setting"]["culture"].ToString()) ? "'" + app["setting"]["culture"] + "'" : "NULL") + ", time_zone = " + (!string.IsNullOrEmpty(app["setting"]["time_zone"].ToString()) ? "'" + app["setting"]["time_zone"] + "'" : "NULL") + ", language = " + (!string.IsNullOrEmpty(app["setting"]["language"].ToString()) ? "'" + app["setting"]["language"] + "'" : "NULL") + ", auth_theme = " + (!string.IsNullOrEmpty(app["setting"]["auth_theme"].ToString()) ? "'" + app["setting"]["auth_theme"].ToJsonString() + "'" : "NULL") + ", app_theme = " + (!string.IsNullOrEmpty(app["setting"]["app_theme"].ToString()) ? "'" + app["setting"]["app_theme"].ToJsonString() + "'" : "NULL") + ", mail_sender_name = " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_name"].ToString()) ? "'" + app["setting"]["mail_sender_name"] + "'" : "NULL") + ", mail_sender_email = " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_email"].ToString()) ? "'" + app["setting"]["mail_sender_email"] + "'" : "NULL") + ", google_analytics_code = " + (!string.IsNullOrEmpty(app["setting"]["google_analytics_code"].ToString()) ? "'" + app["setting"]["google_analytics_code"] + "'" : "NULL") + ", tenant_operation_webhook = " + (!string.IsNullOrEmpty(app["setting"]["tenant_operation_webhook"].ToString()) ? "'" + app["setting"]["tenant_operation_webhook"] + "'" : "NULL") + ", registration_type = 2, enable_registration = '" + options["enable_registration"].ToString().Substring(0, 1).ToLower() + "' WHERE app_id = " + app["id"] + ";"
             };
 
             //app["templates"].Aggregate(sql, (current, template) => current + ($"INSERT INTO \"public\".\"app_templates\"(\"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\", \"app_id\", \"name\", \"subject\", \"content\", \"language\", \"type\", \"system_code\", \"active\", \"settings\") VALUES (1, NULL, '2018-10-01 11:41:02.829818', NULL, '" + template["deleted"] + "', " + app["id"] + ", '" + template["name"] + "', '" + template["subject"] + "', '" + template["content"] + "', '" + template["language"] + "', " + template["type"] + ", '" + template["system_code"] + "', '" + template["active"] + "', '" + template["settings"] + "');" + Environment.NewLine));
             return sqls;
         }
 
-        public static bool CreatePlatformApp(string connectionString, JObject app, string secret, string appUrl, string authUrl, string scriptPath = null)
+        public static bool CreatePlatformApp(string connectionString, JObject app, string secret, string appUrl, string authUrl)
         {
             try
             {
@@ -940,9 +930,6 @@ namespace PrimeApps.Model.Helpers
 
                 foreach (var sql in sqls)
                 {
-                    if (!string.IsNullOrEmpty(scriptPath))
-                        File.AppendAllText(scriptPath, sql.ToString() + Environment.NewLine);
-
                     PosgresHelper.Run(connectionString, "platform", sql.ToString());
                 }
 
@@ -954,7 +941,7 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static bool UpdatePlatformApp(string connectionString, JObject app, string appUrl, string authUrl, string scriptPath = null)
+        public static bool UpdatePlatformApp(string connectionString, JObject app, string appUrl, string authUrl)
         {
             try
             {
@@ -962,9 +949,6 @@ namespace PrimeApps.Model.Helpers
 
                 foreach (var sql in sqls)
                 {
-                    if (!string.IsNullOrEmpty(scriptPath))
-                        File.AppendAllText(scriptPath, sql.ToString() + Environment.NewLine);
-
                     PosgresHelper.Run(connectionString, "platform", sql.ToString());
                 }
 

@@ -70,7 +70,7 @@ namespace PrimeApps.Admin.Controllers
             base.OnActionExecuting(context);
         }
 
-        public async Task<IActionResult> Index(int? appId, int? orgId, bool applying = false)
+        public async Task<IActionResult> Index(int? appId, int? orgId, int? release, bool applying = false)
         {
             var user = _platformUserRepository.Get(HttpContext.User.FindFirst("email").Value);
             var token = await HttpContext.GetTokenAsync("access_token");
@@ -100,6 +100,8 @@ namespace PrimeApps.Admin.Controllers
                 else
                     ViewBag.ProcessActive = applying;
 
+                ViewBag.ReleaseId = release ?? 0;
+
                 return View();
             }
 
@@ -116,42 +118,45 @@ namespace PrimeApps.Admin.Controllers
             if (runningPublish)
                 throw new Exception($"Already have a running publish for app{id} database!");
 
+            var lastRecord = await _releaseRepository.GetLast();
+            var currentReleaseId = lastRecord?.Id ?? 0;
+
             Queue.QueueBackgroundWorkItem(x => _publish.PackageApply(id, orgId, token, AppUser.Id, appUrl, authUrl, false));
 
-            return Ok();
+            return Ok(currentReleaseId + 1);
         }
 
-        [Route("update_tenants")]
-        public async Task<IActionResult> UpdateTenants(int appId, int orgId)
+        [Route("updatetenants")]
+        public async Task<IActionResult> UpdateTenants(int id, int orgId)
         {
-            if (appId < 0)
+            if (id < 0)
                 return RedirectToAction("Index", "Package");
 
             var token = await HttpContext.GetTokenAsync("access_token");
-            var studioClient = new StudioClient(_configuration, token, appId, orgId);
-            var app = await studioClient.AppDraftGetById(appId);
+            var studioClient = new StudioClient(_configuration, token, id, orgId);
+            var app = await studioClient.AppDraftGetById(id);
 
             if (app == null)
                 return BadRequest();
 
-            var available = await _releaseRepository.IsThereRunningProcess(appId);
+            var available = await _releaseRepository.IsThereRunningProcess(id);
 
             if (available)
                 return BadRequest($"There is another process for application {app.Name}");
 
-            var checkButton = await _publishHelper.IsActiveUpdateButton(appId);
+            var checkButton = await _publishHelper.IsActiveUpdateButton(id);
 
             if (!checkButton)
                 return BadRequest();
 
-            var tenantIds = await _tenantRepository.GetByAppId(appId);
+            var tenantIds = await _tenantRepository.GetByAppId(id);
 
             if (tenantIds.Count < 1)
                 return NotFound();
 
-            Queue.QueueBackgroundWorkItem(x => _publish.UpdateTenants(appId, orgId, AppUser.Id, tenantIds, token));
+            Queue.QueueBackgroundWorkItem(x => _publish.UpdateTenants(id, orgId, AppUser.Id, tenantIds, token));
 
-            return RedirectToAction("Index", "Package", new {appId = appId, orgId = orgId, applying = true});
+            return Ok();
         }
 
         [Route("log")]
@@ -171,10 +176,10 @@ namespace PrimeApps.Admin.Controllers
             var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
             var text = "";
 
-            if (!System.IO.File.Exists(Path.Combine(path, "releases", dbName, package.Version, "log.txt")))
+            if (!System.IO.File.Exists(Path.Combine(path, "packages", dbName, package.Version, "log.txt")))
                 return Ok("Your logs have been deleted...");
 
-            using (var fs = new FileStream(Path.Combine(path, "releases", dbName, package.Version, "log.txt"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var fs = new FileStream(Path.Combine(path, "packages", dbName, package.Version, "log.txt"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             using (var sr = new StreamReader(fs, Encoding.Default))
             {
                 text = ConvertHelper.ASCIIToHTML(sr.ReadToEnd());

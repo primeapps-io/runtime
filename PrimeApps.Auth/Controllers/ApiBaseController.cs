@@ -18,8 +18,13 @@ namespace PrimeApps.Auth.Controllers
         {
             var email = HttpContext.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress").Value;
 
-            if (string.IsNullOrEmpty(email) || !email.EndsWith("@primeapps.io"))
-                ctx.Result = new UnauthorizedResult();
+            var enableApiValidation = Configuration.GetValue("AppSettings:EnableApiValidation", string.Empty);
+
+            if (!string.IsNullOrEmpty(enableApiValidation) && bool.Parse(enableApiValidation))
+            {
+                if (string.IsNullOrEmpty(email) || !email.EndsWith("@primeapps.io"))
+                    ctx.Result = new UnauthorizedResult();
+            }
 
             base.OnActionExecuting(ctx);
         }

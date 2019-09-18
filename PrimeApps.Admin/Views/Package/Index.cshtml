@@ -1,10 +1,12 @@
 ﻿@using PrimeApps.Model.Common.Organization
+@using PrimeApps.Model.Enums
 @{
     var organizations = ViewBag.Organizations as List<OrganizationModel>;
     var apps = organizations?.FirstOrDefault(x => x.Id == int.Parse(ViewBag.ActiveOrganizationId))?.Apps;
     var currentApp = ViewBag.CurrentApp;
     var publishedBefore = ViewBag.LastRelease != null;
     var processActive = ViewBag.ProcessActive.ToString().ToLower();
+    var releaseId = ViewBag.ReleaseId;
 }
 <div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
     <div class="container-fluid">
@@ -28,7 +30,7 @@
                                     </div>
                                     <div class="col-auto">
                                         @*<button class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="Click for Publish!" disabled="@ViewBag.Applying" onclick="publish(@ViewBag.lastPackage.Id,@ViewBag.CurrentApp.Id,@ViewBag.ActiveOrganizationId);">*@
-                                        <button disabled="@(ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version)" class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="@(ViewBag.LastPackage == null ? "" : ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version ? "Already up to date" : ViewBag.ProcessActive ? "There is an another process. Please wait for it..." : "Click for publish!")" onclick="apply()">
+                                        <button disabled="@(ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed)" class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="@(ViewBag.LastPackage == null ? "" : ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version ? "Already up to date" : ViewBag.ProcessActive ? "There is an another process. Please wait for it..." : "Click for publish!")" onclick="apply()">
                                             @if (ViewBag.ProcessActive)
                                             {
                                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -131,8 +133,10 @@
                             appUrl: appUrl,
                             authUrl: authUrl
                         }
-                    }).done(function() {
-                        window.location.href = updateQueryStringParameter(window.location.href, 'applying', true);
+                    }).done(function(data) {
+                        var url = updateQueryStringParameter(window.location.href, 'applying', true);
+                        url = updateQueryStringParameter(url, 'release', data);
+                        window.location.href = url;
                     });
                 }
 
@@ -144,8 +148,10 @@
                     id: @ViewBag.CurrentApp.Id,
                     orgId: @ViewBag.ActiveOrganizationId
                 }
-            }).done(function() {
-                window.location.href = updateQueryStringParameter(window.location.href, 'applying', true);
+            }).done(function(data) {
+                var url = updateQueryStringParameter(window.location.href, 'applying', true);
+                url = updateQueryStringParameter(url, 'release', data);
+                window.location.href = url;
             });
         }
     }
@@ -164,28 +170,30 @@
         if (!packageId || !appId || !orgId)
             return;
 
-        var http = new XMLHttpRequest();
+        /*var http = new XMLHttpRequest();
         http.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 logData.innerHTML = this.responseText;
             }
-        };
+        };/*/
 
-        http.open('GET',
-            window.location.origin + '/update_tenants?id=' + packageId + '&appId=' + appId + '&orgId=' + orgId,
-            true);
-        http.setRequestHeader("Content-Type", 'application/json');
-        http.send();
-
-        logEditor.hidden = false;
-
+        $.ajax({
+            url: '@Url.Action("updatetenants", "Package")',
+            data: {
+                id: @ViewBag.CurrentApp.Id,
+                orgId: @ViewBag.ActiveOrganizationId
+            }
+        }).done(function(data) {
+            var url = updateQueryStringParameter(window.location.href, 'applying', true);
+            window.location.href = url;
+        });
     };
 
     if (appyling === true) {
         setTimeout(function() {
                 openWS();
             },
-            5000);
+            3000);
 
     }
 
@@ -198,8 +206,8 @@
             socket.send(JSON.stringify({
                 'X-App-Id': @ViewBag.CurrentApp.Id,
                 'X-Tenant-Id': 1,
-                'X-Organization-Id': @ViewBag.ActiveOrganizationId
-                //'package_id': id
+                'X-Organization-Id': @ViewBag.ActiveOrganizationId,
+                'release_id': @releaseId
             }));
         };
 

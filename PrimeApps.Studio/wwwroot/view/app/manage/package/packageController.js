@@ -8,8 +8,8 @@ angular.module('primeapps')
             $scope.activePage = 1;
 
             $scope.$parent.activeMenu = 'app';
-            $scope.$parent.activeMenuItem = 'releases';
-            $rootScope.breadcrumblist[2].title = 'Releases';
+            $scope.$parent.activeMenuItem = 'packages';
+            $rootScope.breadcrumblist[2].title = 'Packages';
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
@@ -17,6 +17,10 @@ angular.module('primeapps')
                     $scope.placeholderArray[i] = i;
                 }
             };
+
+            $scope.$on('package-created', function (event, args) {
+                $scope.reload();
+            });
 
             $scope.generator(10);
 
@@ -38,7 +42,7 @@ angular.module('primeapps')
 
                         PackageService.find($scope.requestModel)
                             .then(function (response) {
-                                $scope.releases = response.data;
+                                $scope.packages = response.data;
                                 $scope.loading = false;
                             });
                     });
@@ -60,7 +64,6 @@ angular.module('primeapps')
             };
 
             $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage);
                 $scope.changePage($scope.activePage);
             };
 

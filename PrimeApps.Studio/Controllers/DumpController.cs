@@ -88,7 +88,7 @@ namespace PrimeApps.Studio.Controllers
         {
             var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);
 
-            return PhysicalFile(Path.Combine(dumpDirectory, $"app{appId}.dmp"), "text/plain", $"app{appId}.dmp");
+            return PhysicalFile(Path.Combine(dumpDirectory, $"app{appId}.tar"), "text/plain", $"app{appId}.tar");
         }
 
         [Route("test"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
@@ -117,7 +117,6 @@ namespace PrimeApps.Studio.Controllers
         [Route("publish"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
         public IActionResult Publish([FromBody]JObject request)
         {
-
             var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);
 
             if (request["app"].IsNullOrEmpty())
@@ -143,10 +142,7 @@ namespace PrimeApps.Studio.Controllers
             }
 
 
-
             return Ok();
-
         }
-
     }
 }

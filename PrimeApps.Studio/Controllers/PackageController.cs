@@ -82,10 +82,10 @@ namespace PrimeApps.Studio.Controllers
             var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
             var text = "";
 
-            if (!System.IO.File.Exists(Path.Combine(path, "releases", dbName, package.Version, "log.txt")))
+            if (!System.IO.File.Exists(Path.Combine(path, "packages", dbName, package.Version, "log.txt")))
                 return Ok("Your logs have been deleted...");
 
-            using (var fs = new FileStream(Path.Combine(path, "releases", dbName, package.Version, "log.txt"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (var fs = new FileStream(Path.Combine(path, "packages", dbName, package.Version, "log.txt"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             using (var sr = new StreamReader(fs, Encoding.Default))
             {
                 text = ConvertHelper.ASCIIToHTML(sr.ReadToEnd());
@@ -254,9 +254,9 @@ namespace PrimeApps.Studio.Controllers
         {
             try
             {
-                var bucketName = UnifiedStorage.GetPath("releases", PreviewMode, PreviewMode == "tenant" ? (int)TenantId : (int)AppId);
+                var bucketName = UnifiedStorage.GetPath("packages", PreviewMode, PreviewMode == "tenant" ? (int)TenantId : (int)AppId);
 
-                var withouts = new string[] {"releases"};
+                var withouts = new string[] {"packages"};
                 await _storage.CopyBucket(bucketName + "/" + id + "/files", $"app{AppId}", withouts);
 
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;

@@ -43,7 +43,8 @@ namespace PrimeApps.Util.Storage
             NONE,
             APPLOGO,
             APPTEMPLATE,
-            RELEASES
+            RELEASES,
+            PACKAGES
         }
 
         static readonly Dictionary<ObjectType, string> pathMap = new Dictionary<ObjectType, string>
@@ -60,7 +61,8 @@ namespace PrimeApps.Util.Storage
             {ObjectType.NONE, ""},
             {ObjectType.APPLOGO, "/app_logo/"},
             {ObjectType.APPTEMPLATE, "/app_template/"},
-            {ObjectType.RELEASES, "/releases/"}
+            {ObjectType.RELEASES, "/releases/"},
+            {ObjectType.PACKAGES, "/packages/"}
         };
 
 
@@ -129,7 +131,7 @@ namespace PrimeApps.Util.Storage
         public UnifiedStorage(IAmazonS3 client, IConfiguration configuration)
         {
             _client = client;
-            ((AmazonS3Config) (_client.Config)).ForcePathStyle = true;
+            ((AmazonS3Config)(_client.Config)).ForcePathStyle = true;
             _configuration = configuration;
         }
 
@@ -685,14 +687,14 @@ namespace PrimeApps.Util.Storage
         /// <returns></returns>
         public static string GetPath(string type, string mode, int id, string extraPath = "")
         {
-            ObjectType objectType = (ObjectType) System.Enum.Parse(typeof(ObjectType), type, true);
+            ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
 
             return $"{mode}{id}{pathMap[objectType]}{extraPath}";
         }
 
         public static string GetPathPictures(string type, int userId, string extraPath = "")
         {
-            ObjectType objectType = (ObjectType) System.Enum.Parse(typeof(ObjectType), type, true);
+            ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
 
             return $"profile-pictures{pathMap[objectType]}{"user" + userId}{extraPath}";
         }
@@ -704,7 +706,7 @@ namespace PrimeApps.Util.Storage
 
         public static ObjectType GetType(string type)
         {
-            return (ObjectType) System.Enum.Parse(typeof(ObjectType), type, true);
+            return (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
         }
 
         public string GetDownloadFolderPath()

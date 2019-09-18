@@ -51,11 +51,9 @@ namespace PrimeApps.Admin.Jobs
 
                 using (var releaseRepository = new ReleaseRepository(platformDbContext, _configuration)) //, cacheHelper))
                 using (var platformRepository = new PlatformRepository(platformDbContext, _configuration)) //, cacheHelper))
+                using (var applicationRepository = new ApplicationRepository(platformDbContext, _configuration)) //, cacheHelper))
                 {
-                    platformRepository.CurrentUser = releaseRepository.CurrentUser = new CurrentUser {UserId = userId};
-
-                    var studioClientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
-                    var studioApp = await platformRepository.AppGetByName(studioClientId);
+                    applicationRepository.CurrentUser = platformRepository.CurrentUser = releaseRepository.CurrentUser = new CurrentUser {UserId = userId};
 
                     var app = await studioClient.AppDraftGetById(appId);
 
@@ -91,33 +89,44 @@ namespace PrimeApps.Admin.Jobs
 
                     var lastRecord = await releaseRepository.GetLast();
                     var firstRelease = await releaseRepository.FirstTime(appId);
+                    var platformApp = await applicationRepository.Get(appId);
 
                     var currentReleaseId = lastRecord?.Id ?? 0;
 
 
-                    var releaseModel = new Release
-                    {
-                        Id = currentReleaseId + 1,
-                        Status = ReleaseStatus.Running,
-                        AppId = appId,
-                        Version = ""
-                    };
+                    /*   var releaseModel = new Release
+                       {
+                           Id = currentReleaseId + 1,
+                           Status = ReleaseStatus.Running,
+                           AppId = appId,
+                           Version = ""
+                       };
+   
+                       try
+                       {
+                           await releaseRepository.Create(releaseModel);
+                       }
+                       catch (Exception e)
+                       {
+                           Console.WriteLine(e);
+                           throw;
+                       }*/
 
-                    await releaseRepository.Create(releaseModel);
 
-                    var releases = await PublishHelper.ApplyVersions(_configuration, _storage, JObject.Parse(appString), orgId, $"app{appId}", versions, CryptoHelper.Decrypt(studioApp.Secret), firstRelease, currentReleaseId, token, appUrl, authUrl, useSsl);
+                    var releases = await PublishHelper.ApplyVersions(_configuration, _storage, JObject.Parse(appString), orgId, $"app{appId}", versions, platformApp == null, firstRelease, currentReleaseId, token, appUrl, authUrl, useSsl);
 
                     foreach (var release in releases)
                     {
-                        if (release.Id == currentReleaseId + 1)
-                        {
-                            releaseModel.Version = release.Version;
-                            releaseModel.EndTime = release.EndTime;
-                            releaseModel.Status = release.Status;
-                            await releaseRepository.Update(releaseModel);
-                        }
-                        else
-                            await releaseRepository.Create(release);
+                        /* if (release.Id == currentReleaseId + 1)
+                         {
+                             releaseModel.Version = release.Version;
+                             releaseModel.EndTime = release.EndTime;
+                             releaseModel.Status = release.Status;
+                             await releaseRepository.Update(releaseModel);
+                         }
+                         else*/
+
+                        await releaseRepository.Create(release);
                     }
                 }
             }
@@ -145,17 +154,14 @@ namespace PrimeApps.Admin.Jobs
 
                     foreach (var tenantObj in tenants.OfType<object>().Select((id, index) => new {id, index}))
                     {
+                        versions = new List<string>();
                         foreach (var package in packages)
                         {
-                            versions = new List<string>();
-
                             if (package.Version != lastPackageVersion)
                             {
                                 var release = await releaseRepository.Get(appId, package.Version, int.Parse(tenantObj.id.ToString()));
                                 if (release == null)
                                     versions.Add(package.Version);
-                                else
-                                    break;
                             }
                         }
 
@@ -170,34 +176,40 @@ namespace PrimeApps.Admin.Jobs
 
                             if (release == null)
                             {
-                                var releaseId = await releaseRepository.Create(new Release()
+                                var releaseModel = new Release()
                                 {
                                     Status = ReleaseStatus.Running,
                                     TenantId = int.Parse(tenantObj.id.ToString()),
                                     StartTime = DateTime.Now,
                                     Version = version,
                                     AppId = appId
-                                });
+                                };
+
+                                try
+                                {
+                                    await releaseRepository.Create(releaseModel);
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine(e);
+                                    throw;
+                                }
 
                                 var result = await PublishHelper.UpdateTenant(version, dbName, _configuration, _storage, appId, orgId, lastRecord?.Id ?? 0, token);
 
                                 if (result)
                                 {
-                                    await releaseRepository.Update(new Release()
-                                    {
-                                        Id = releaseId,
-                                        EndTime = DateTime.Now,
-                                        Status = ReleaseStatus.Succeed
-                                    });
+                                    releaseModel.EndTime = DateTime.Now;
+                                    releaseModel.Status = ReleaseStatus.Succeed;
+
+                                    await releaseRepository.Update(releaseModel);
                                 }
                                 else
                                 {
-                                    await releaseRepository.Update(new Release()
-                                    {
-                                        Id = releaseId,
-                                        EndTime = DateTime.Now,
-                                        Status = ReleaseStatus.Failed
-                                    });
+                                    releaseModel.EndTime = DateTime.Now;
+                                    releaseModel.Status = ReleaseStatus.Failed;
+
+                                    await releaseRepository.Update(releaseModel);
                                     break;
                                 }
                             }
@@ -224,7 +236,7 @@ namespace PrimeApps.Admin.Jobs
                     }
 
                     var rootPath = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
-                    Directory.Delete(Path.Combine(rootPath, "releases", $"app{appId}"), true);
+                    Directory.Delete(Path.Combine(rootPath, "packages", $"app{appId}"), true);
                 }
             }
         }

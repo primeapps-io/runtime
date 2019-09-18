@@ -86,13 +86,31 @@ namespace PrimeApps.Studio.Helpers
                         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                     });
 
-                    var result = await Model.Helpers.ReleaseHelper.All(JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), clearAllRecords, dbName, version, _configuration, _storage, historyStorages);
+                    var result = false;
+
+                    try
+                    {
+                        result = await Model.Helpers.ReleaseHelper.All(JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), clearAllRecords, dbName, version, _configuration, _storage, historyStorages);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        throw;
+                    }
 
                     var package = await packageRepository.Get(packageId);
                     package.Status = result ? ReleaseStatus.Succeed : ReleaseStatus.Failed;
                     package.EndTime = DateTime.Now;
                     await packageRepository.Update(package);
 
+
+                    /*
+                      * TODO BC
+                      * Burada da bir sorun gerçekleşebilir.
+                      * Böyle bir durumun önüne geçmek için burayıda try catch bloklarının içine alıp
+                      * Bir sorun olma durumunda historey_database tablosunda atılan versiyon tag ını eski haline getirmek gerekiyor.
+                      * Aynı zaman da packages tablosunda oluşan kaydıda düzeltmek gerekiyor.
+                      */
                     UploadPackage(appId, dbName, package.Version);
                 }
             }
@@ -131,14 +149,31 @@ namespace PrimeApps.Studio.Helpers
 
                     //var missingScripts = await CheckMissingScripts(version, appId);
                     //var missingFiles = await CheckMissingFiles(version, appId);
+                    var result = false;
 
-                    var result = await Model.Helpers.ReleaseHelper.Diffs(historyDatabases, historyStorages, JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), dbName, version, packageId, _configuration, _storage);
+                    try
+                    {
+                        result = await Model.Helpers.ReleaseHelper.Diffs(historyDatabases, historyStorages, JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), dbName, version, packageId, _configuration, _storage);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        throw;
+                    }
+
 
                     var package = await packageRepository.Get(packageId);
                     package.Status = result ? ReleaseStatus.Succeed : ReleaseStatus.Failed;
                     package.EndTime = DateTime.Now;
                     await packageRepository.Update(package);
 
+                    /*
+                     * TODO BC
+                     * Burada da bir sorun gerçekleşebilir.
+                     * Böyle bir durumun önüne geçmek için burayıda try catch bloklarının içine alıp
+                     * Bir sorun olma durumunda historey_database tablosunda atılan versiyon tag ını eski haline getirmek gerekiyor.
+                     * Aynı zaman da packages tablosunda oluşan kaydıda düzeltmek gerekiyor.
+                     */
                     UploadPackage(appId, dbName, package.Version);
                     /*var deployment = await deploymentRepository.Get(deploymentId);
 
@@ -171,7 +206,7 @@ namespace PrimeApps.Studio.Helpers
 
                     if (result == null)
                     {
-                        var bucketName = UnifiedStorage.GetPath("releases", "app", appId, version + "/");
+                        var bucketName = UnifiedStorage.GetPath("packages", "app", appId, version + "/");
 
 
                         //var objects = await _storage.GetObject(bucketName, "scripts.txt");
@@ -213,7 +248,7 @@ namespace PrimeApps.Studio.Helpers
 
                 if (result == null)
                 {
-                    var bucketName = UnifiedStorage.GetPath("releases", "app", appId, version + "/");
+                    var bucketName = UnifiedStorage.GetPath("packages", "app", appId, version + "/");
                     //var objects = await _storage.GetObject(bucketName, "scripts.txt");
                     using (var response = await _storage.GetObject(bucketName, "scripts.txt"))
                     using (var responseStream = response.ResponseStream)
@@ -276,10 +311,13 @@ namespace PrimeApps.Studio.Helpers
         public async void UploadPackage(int appId, string dbName, string version)
         {
             var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
-            var bucketName = UnifiedStorage.GetPath("releases", "app", appId, version + "/");
+            var bucketName = UnifiedStorage.GetPath("packages", "app", appId, version + "/");
+
+            await _storage.CreateBucketIfNotExists(bucketName);
+
             try
             {
-                using (var fileStream = new FileStream(Path.Combine(path, "releases", dbName, $"{dbName}.zip"), FileMode.OpenOrCreate))
+                using (var fileStream = new FileStream(Path.Combine(path, "packages", dbName, $"{dbName}.zip"), FileMode.OpenOrCreate))
                 {
                     var request = new PutObjectRequest()
                     {
@@ -298,8 +336,8 @@ namespace PrimeApps.Studio.Helpers
                 throw e;
             }
 
-            Directory.Delete(Path.Combine(path, "releases", dbName, version), true);
-            File.Delete(Path.Combine(path, "releases", dbName, $"{dbName}.zip"));
+            Directory.Delete(Path.Combine(path, "packages", dbName, version), true);
+            File.Delete(Path.Combine(path, "packages", dbName, $"{dbName}.zip"));
         }
     }
 }

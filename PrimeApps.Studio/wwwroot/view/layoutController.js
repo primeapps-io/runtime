@@ -106,8 +106,9 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     LayoutService.createPackage(null)
                         .then(function (response) {
                             $scope.loading = false;
+                            $scope.packageId = response.data;
                             $rootScope.openWS(response.data);
-                            $state.go('studio.app.releases');
+                            $state.go('studio.app.packages');
                         })
                         .catch(function (response) {
                             $scope.loading = false;
@@ -150,8 +151,14 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 }));
             };
             $scope.socket.onclose = function (e) {
+                var packagesPageActive = $location.$$path.contains('/packages');
+
                 if ($rootScope.goLive && $rootScope.goLive.logs && $rootScope.goLive.logs.contains('********** Package Created **********')) {
                     toastr.success("Your package is ready.");
+
+                    if (packagesPageActive) {
+                        $rootScope.$broadcast('package-created');
+                    }
 
                     $rootScope.goLive.status = false;
                     $scope.$apply();
@@ -160,15 +167,24 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     LayoutService.getPackage(id)
                         .then(function (response) {
                             if (response.data) {
-                                if (response.data.status === 'succeed') {
-                                    toastr.success("Your package is ready.");
+                                if (response.data.status !== 'running') {
+                                    if (response.data.status === 'succeed') {
+                                        toastr.success("Your package is ready.");
+                                    }
+                                    else {
+                                        toastr.success("An unexpected error occurred while creating a package.");
+                                    }
+
+                                    if (packagesPageActive) {
+                                        $rootScope.$broadcast('package-created');
+                                    }
+                                    $rootScope.goLive.status = false;
+                                    $scope.$apply();
+
                                 }
                                 else {
-                                    toastr.success("An unexpected error occurred while creating a package.");
+                                    $rootScope.openWS($scope.packageId);
                                 }
-
-                                $rootScope.goLive.status = false;
-                                $scope.$apply();
                             }
                         });
                 }
