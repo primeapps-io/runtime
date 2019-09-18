@@ -23,10 +23,10 @@ create_and_restore_databases(){
 main(){
 echo -e "${GREEN}Checking Cluster...${NC}"
 if pg_isready; then
-    echo -e "${GREEN}Cluster is ready...${NC}"
+    echo -e "${GREEN}Cluster is ready.${NC}"
     echo -e "${GREEN}Checking databases...${NC}"
     if psql -lqt | cut -d \| -f 1 | grep -qw platform; then
-        echo -e "${GREEN}Databases are ready...${NC}"
+        echo -e "${GREEN}Databases are ready.${NC}"
     else
         create_and_restore_databases
     fi
