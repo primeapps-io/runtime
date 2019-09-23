@@ -56,6 +56,7 @@ namespace PrimeApps.Auth.Helpers
                     ["login_name"] = email,
                     ["password"] = password,
                     ["send_notify"] = false,
+                    ["must_change_password"] = false,
                     ["source_id"] = 0,
                     ["username"] = userName
                 };
@@ -178,7 +179,7 @@ namespace PrimeApps.Auth.Helpers
                     ["name"] = "primeapps"
                 };
 
-                SetHeaders(client: httpClient, type: "basic", email: email, password: password);
+                SetHeaders(client: httpClient, type: "basic", email: email);
 
                 var giteaUrl = _configuration.GetValue("AppSettings:GiteaUrl", string.Empty);
                 var response = new HttpResponseMessage();
