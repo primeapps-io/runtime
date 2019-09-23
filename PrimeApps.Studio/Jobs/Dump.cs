@@ -64,8 +64,7 @@ namespace PrimeApps.Studio.Jobs
 
             try
             {
-                PosgresHelper.Restore(dbConnection, $"app{appId}", postgresPath, dumpDirectory, appIdTarget > 0 ? $"app{appIdTarget}" : "", dumpDirectory);
-                PosgresHelper.Create(dbConnection, $"app{appId}_new");
+                PosgresHelper.Create(dbConnection, $"app{appId}_new", postgresPath);
                 PosgresHelper.Restore(dbConnection, $"app{appId}", dumpDirectory, $"app{appId}_new", dumpDirectory);
                 PosgresHelper.Template(dbConnection, $"app{appId}");
             }

@@ -485,6 +485,11 @@ namespace PrimeApps.App.Controllers
 
         public void FileUploaded(string bucket, string key, string fileName)
         {
+            var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+
+            if (string.IsNullOrEmpty(previewMode) || previewMode != "app")
+                return;
+
             var email = _context?.HttpContext?.User?.FindFirst("email").Value;
             var currentUser = UserHelper.GetCurrentUser(_context, _configuration);
             _queue.QueueBackgroundWorkItem(token => _historyHelper.Storage(fileName, key, "PUT", bucket, email, currentUser));

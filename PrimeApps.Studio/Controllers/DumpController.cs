@@ -19,7 +19,7 @@ namespace PrimeApps.Studio.Controllers
         private IConfiguration _configuration;
         private IAppDraftRepository _appDraftRepository;
 
-        public DumpController(IConfiguration configuration, IAppDraftRepository appDraftRepository, IHostingEnvironment hostingEnvironment)
+        public DumpController(IConfiguration configuration, IAppDraftRepository appDraftRepository)
         {
             _configuration = configuration;
             _appDraftRepository = appDraftRepository;
