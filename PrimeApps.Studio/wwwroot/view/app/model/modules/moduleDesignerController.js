@@ -2,10 +2,14 @@
 
 angular.module('primeapps')
 
-    .controller('moduleDesignerController', ['$rootScope', '$scope', '$filter', '$location', '$state', '$q', '$popover', '$modal', 'helper', '$timeout', 'dragularService', 'defaultLabels', '$interval', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleService', 'LayoutService', '$element',
-        function ($rootScope, $scope, $filter, $location, $state, $q, $popover, $modal, helper, $timeout, dragularService, defaultLabels, $interval, $cache, systemRequiredFields, systemReadonlyFields, ModuleService, LayoutService, $element) {
+    .controller('moduleDesignerController', ['$rootScope', '$scope', '$filter', '$location', '$state', '$q', '$popover', '$modal', 'helper', '$timeout', 'dragularService', 'defaultLabels', '$interval', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleService', 'LayoutService', '$element', 'operators',
+        function ($rootScope, $scope, $filter, $location, $state, $q, $popover, $modal, helper, $timeout, dragularService, defaultLabels, $interval, $cache, systemRequiredFields, systemReadonlyFields, ModuleService, LayoutService, $element, operators) {
 
             $scope.moduleChange = false;
+            $scope.fieldActiveSection = "properties";
+            $scope.filters = [];
+            $scope.loadingFilter = false;
+
             $scope.$on('$locationChangeStart', function (event) {
                 if ($scope.moduleChange) {
 
@@ -67,6 +71,20 @@ angular.module('primeapps')
                 { name: 'left', value: $filter('translate')('Common.Left') },
                 { name: 'right', value: $filter('translate')('Common.Right') }
             ];
+
+            var setFilters = function () {
+                $scope.filters = [];
+
+                var filter = {};
+                filter.operator = null;
+                filter.field = null;
+                filter.lookupModule = null;
+                filter.value = null;
+
+                $scope.filters.push(filter);
+            };
+
+            setFilters();
             var module = {};
 
             $scope.dragger = function () {
@@ -666,9 +684,82 @@ angular.module('primeapps')
                 }
 
                 $scope.currentField = field;
+                //For the lookup filter
+                $scope.lookupTypeChanged();
                 $scope.currentFieldState = angular.copy(field);
                 $scope.showAdvancedOptions = false;
                 $scope.currentField.dataType = $filter('filter')($scope.dataTypes, { name: $scope.currentField.data_type }, true)[0];
+
+
+                if ($scope.currentField.filters && $scope.currentField.filters.length > 0) {
+                    $scope.loadingFilter = true;
+                    $timeout(function () {
+
+                        $scope.filters = [];
+
+                        angular.forEach($scope.currentField.filters, function (item) {
+                            var filter = {};
+
+                            filter.id = item.id;
+                            filter.operator = operators[item.operator];
+                            filter.deleted = item.deleted;
+                            var filterMatch = item.filter_field.match(/^\W+(.+)]/i);
+
+                            if (filterMatch) {
+                                var fieldArray = filterMatch[1].split('.');
+
+                                if (fieldArray.length > 0) {
+                                    filter.fieldToFilter = $filter('filter')($scope.currentLookupFields, { name: fieldArray[0] }, true)[0];
+                                    filter.field = filter.fieldToFilter;
+
+                                    $scope.selectFieldToFilter(filter, filter.fieldToFilter, 'lookupModule');
+                                    $timeout(function () {
+                                        filter.lookupField = $filter('filter')(filter.lookupModule.fields, { name: fieldArray[2] }, true)[0];
+
+                                        if (filter.lookupField)
+                                            filter.field = filter.lookupField;
+
+                                    }, 3000);
+                                }
+                            }
+                            else {
+                                filter.fieldToFilter = $filter('filter')($scope.currentLookupFields, { name: item.filter_field }, true)[0];
+                                filter.field = filter.fieldToFilter;
+                            }
+
+                            var valueMatch = item.value.match(/^\W+(.+)]/i);
+
+                            if (valueMatch) {
+                                filter.type = true;
+                                var valueArray = valueMatch[1].split('.');
+
+                                if (valueArray.length > 0) {
+                                    filter.targetField = $filter('filter')($scope.pureModule.fields, { name: valueArray[0] }, true)[0];
+
+                                    if (valueArray[1]) {
+                                        if (valueArray[1] !== 'labelStr') {
+                                            $scope.selectFieldToFilter(filter, filter.targetField, 'targetLookupModule');
+
+                                            $timeout(function () {
+                                                filter.targetLookupField = $filter('filter')(filter.targetLookupModule.fields, { name: valueArray[1] }, true)[0];
+                                                $scope.loadingFilter = false;
+                                            }, 2000);
+                                        }
+                                    }
+                                }
+                            }
+                            else {
+                                filter.value = item.value;
+                                filter.type = false;
+                                $scope.loadingFilter = false;
+                            }
+
+                            $scope.filters.push(filter);
+                            $scope.loadingFilter = false;
+                        });
+                    }, 3000);
+                }
+
 
                 $scope.setMultilineDataType();
                 var url = angular.copy(window.location.hash);
@@ -789,8 +880,26 @@ angular.module('primeapps')
 
                     ModuleService.getModuleFields(lookupModule.name, filterArray).then(function (result) {
                         $scope.currentField.lookupModulePrimaryField = $filter('filter')(result.data, { primary: true }, true)[0];
-
+                        $scope.currentLookupFields = ModuleService.getFieldsOperator({ fields: result.data }).fields;
                     });
+
+                }
+                else {
+                    var lookupModuleName = $scope.currentField.lookupType.value;
+
+                    switch (lookupModuleName) {
+                        case 'users':
+                            $scope.currentLookupFields = ModuleService.getFieldsOperator(getFakeUserModule()).fields;
+                            break;
+                        case 'roles':
+                            $scope.currentLookupFields = ModuleService.getFieldsOperator(getFakeRoleModule()).fields;
+                            break;
+                        case 'profiles':
+                            $scope.currentLookupFields = ModuleService.getFieldsOperator(getFakeProfileModule()).fields;
+                            break;
+                        default:
+                            break;
+                    }
 
                 }
             };
@@ -1081,6 +1190,65 @@ angular.module('primeapps')
                 else
                     $scope.currentField.lookup_search_type = "starts_with"
 
+                //FOR LOOKUP FÝLTER
+                if ($scope.currentField.data_type === 'lookup' && $scope.filters.length > 0) {
+                    var newFilters = [];
+
+                    angular.forEach($scope.filters, function (filter) {
+                        var newFilter = {};
+
+                        newFilter.deleted = filter.deleted ? filter.deleted : false;
+                        newFilter.id = filter.id;
+
+                        if ($scope.currentField.id)
+                            newFilter.field_id = $scope.currentField.id;
+
+                        if (filter.fieldToFilter) {
+                            newFilter.filter_field = filter.fieldToFilter.name;
+                            newFilter.operator = filter.operator.name;
+
+                            if (filter.fieldToFilter.data_type === 'lookup')
+                                //if (filter.lookupField.data_type === 'picklist')
+                                //    newFilter.filter_field = '[' + filter.fieldToFilter.name + '.' + filter.fieldToFilter.lookup_type + '.' + filter.lookupField.name + '.labelStr]';
+                                //else
+                                newFilter.filter_field = '[' + filter.fieldToFilter.name + '.' + filter.fieldToFilter.lookup_type + '.' + filter.lookupField.name + ']';
+                        }
+
+                        if (filter.type) {
+                            if (filter.targetField) {
+                                if (filter.targetField.data_type === 'picklist')
+                                    newFilter.value = '[' + filter.targetField.name + '.labelStr]';
+                                else if (filter.targetField.data_type === 'lookup') {
+                                    if (filter.targetLookupField) {
+                                        if (filter.targetLookupField.data_type === 'picklist')
+                                            newfilter.value = '[' + filter.targetField.name + '.' + filter.targetLookupField.name + '.labelStr]';
+                                        else
+                                            newFilter.value = '[' + filter.targetField.name + '.' + filter.targetLookupField.name + ']';
+                                    }
+                                }
+                                else
+                                    newFilter.value = '[' + filter.targetField.name + ']';
+                            }
+                        }
+                        else {
+                            if (filter.value) {
+                                if (filter.fieldToFilter.data_type == 'picklist') {
+                                    newFilter.value = filter.value.labelStr;
+                                }
+                                else
+                                    newFilter.value = filter.value;
+                            }
+                        }
+
+                        if (newFilter.filter_field && newFilter.value && newFilter.operator)
+                            newFilters.push(newFilter);
+
+                    });
+
+                    $scope.currentField.filters = angular.copy(newFilters);
+                }
+                //FOR LOOKUP FÝLTER
+
                 $scope.fieldModal.hide();
 
                 setTimeout(function () {
@@ -1192,6 +1360,7 @@ angular.module('primeapps')
                     $scope.currentField[key] = $scope.currentFieldState[key];
                 });
 
+                setFilters();
                 $scope.fieldModal.hide();
             };
 
@@ -1535,5 +1704,478 @@ angular.module('primeapps')
             $scope.reloadLookupType = function () {
                 getLookupTypes(false);
             }
+
+            $scope.selectFieldToFilter = function (filter, selectedField, param) {
+                if (!selectedField)
+                    return;
+
+                if (selectedField.data_type !== 'lookup') {
+                    var lookupModule = { fields: $scope.currentLookupFields };
+                    lookupModule = ModuleService.getFieldsOperator(lookupModule);
+                    filter[param] = lookupModule.fields;
+                    return;
+                }
+
+                var lookType = selectedField.lookup_type;
+                var skip = false;
+
+                switch (lookType) {
+                    case 'users':
+                        filter[param] = getFakeUserModule();
+                        break;
+                    case 'roles':
+                        filter[param] = getFakeRoleModule();
+                        break;
+                    case 'profiles':
+                        filter[param] = getFakeProfileModule();
+                        break;
+                    default:
+                        ModuleService.getModuleFields(lookType)
+                            .then(function (response) {
+                                if (response.data) {
+                                    skip = true;
+                                    filter[param] = {};
+                                    filter[param].fields = response.data;
+                                    filter[param] = ModuleService.getFieldsOperator(filter[param]);
+
+                                }
+                            })
+                            .catch(function (e) {
+                                filter[param] = {};
+                                filter[param].fields = null;
+                            });
+                        break;
+                }
+
+                if (filter[param] && !skip)
+                    filter[param] = ModuleService.getFieldsOperator(filter[param]);
+            };
+
+            $scope.changeFieldFilter = function (filter, change) {
+                if (!filter)
+                    return;
+
+                filter.field = change;
+                filter.operator = null;
+                filter.value = null;
+                filter.lookupField = null;
+                filter.targetField = null;
+
+
+                if (filter.field.data_type === 'picklist') {
+                    $scope.getModulePicklist(filter.field.module);
+                }
+            };
+
+            $scope.changeLookField = function (filter, change) {
+                if (!filter)
+                    return;
+
+                filter.field = change;
+                filter.operator = null;
+                filter.value = null;
+                filter.targetField = null;
+
+
+                if (filter.field.data_type === 'picklist') {
+                    $scope.getModulePicklist(filter.field.module);
+                }
+            };
+
+            $scope.targetFieldChanged = function (filter, change) {
+
+            };
+
+            $scope.getModulePicklist = function (module) {
+                if (!module)
+                    module = $scope.pureModule;
+
+                if (!module.fields) {
+                    ModuleService.getModuleFields(module.name)
+                        .then(function (response) {
+                            if (response.data) {
+                                module.fields = response.data;
+                                ModuleService.getPickItemsLists(module)
+                                    .then(function (picklists) {
+                                        $scope.modulePicklists = picklists;
+                                    });
+                            }
+                        });
+                }
+
+            };
+
+            $scope.filterAdd = function (filter) {
+                if (filter.fieldToFilter && filter.operator && (filter.value || filter.targetField)) {
+                    var newFilter = {};
+                    newFilter.fieldToFilter = null;
+                    newFilter.operator = null;
+                    newFilter.value = null;
+                    $scope.filters.push(newFilter);
+                }
+                else {
+                    toastr.error($filter('translate')('Module.RequiredError'));
+                }
+
+            };
+
+            $scope.filterRemove = function (filter) {
+                if (filter.id) {
+                    filter.deleted = true;
+                }
+                else {
+                    var index = $scope.filters.indexOf(filter);
+                    $scope.filters.splice(index, 1);
+                }
+            };
+
+            var getFakeProfileModule = function () {
+                var profileModule = {};
+                profileModule.id = 998;
+                profileModule.name = 'profiles';
+                profileModule.system_type = 'system';
+                profileModule.order = 998;
+                profileModule.display = false;
+                profileModule.label_en_singular = 'Profile';
+                profileModule.label_en_plural = 'Profiles';
+                profileModule.label_tr_singular = 'Profil';
+                profileModule.label_tr_plural = 'Profiller';
+                profileModule.menu_icon = 'fa fa-profile';
+                profileModule.sections = [];
+                profileModule.fields = [];
+
+                var fieldName = {};
+                fieldName.name = 'name';
+                fieldName.system_type = 'system';
+                fieldName.data_type = 'text_single';
+                fieldName.order = 1;
+                fieldName.section = 1;
+                fieldName.section_column = 1;
+                fieldName.primary = true;
+                fieldName.inline_edit = true;
+                fieldName.editable = true;
+                fieldName.show_label = true;
+                fieldName.label_en = 'Name';
+                fieldName.label_tr = 'Ad';
+                fieldName.display_list = true;
+                fieldName.display_form = true;
+                fieldName.display_detail = true;
+                profileModule.fields.push(fieldName);
+
+                return profileModule;
+            };
+
+            var getFakeRoleModule = function () {
+                var roleModule = {};
+                roleModule.id = 997;
+                roleModule.name = 'roles';
+                roleModule.system_type = 'system';
+                roleModule.order = 997;
+                roleModule.display = false;
+                roleModule.label_en_singular = 'Role';
+                roleModule.label_en_plural = 'Roles';
+                roleModule.label_tr_singular = 'Rol';
+                roleModule.label_tr_plural = 'Roller';
+                roleModule.menu_icon = 'fa fa-role';
+                roleModule.sections = [];
+                roleModule.fields = [];
+
+                var label_en = {};
+                label_en.name = 'label_en';
+                label_en.system_type = 'system';
+                label_en.data_type = 'text_single';
+                label_en.order = 1;
+                label_en.section = 1;
+                label_en.section_column = 1;
+                label_en.primary = true;
+                label_en.inline_edit = true;
+                label_en.editable = true;
+                label_en.show_label = true;
+                label_en.label_en = 'Label';
+                label_en.label_tr = 'Etiket';
+                label_en.display_list = true;
+                label_en.display_form = true;
+                label_en.display_detail = true;
+                roleModule.fields.push(label_en);
+
+                return roleModule;
+            };
+
+            var getFakeUserModule = function () {
+                var userModule = {};
+                userModule.id = 999;
+                userModule.name = 'users';
+                userModule.system_type = 'system';
+                userModule.order = 999;
+                userModule.display = false;
+                userModule.label_en_singular = 'User';
+                userModule.label_en_plural = 'Users';
+                userModule.label_tr_singular = 'Kullanýcý';
+                userModule.label_tr_plural = 'Kullanýcýlar';
+                userModule.menu_icon = 'fa fa-users';
+                userModule.sections = [];
+                userModule.fields = [];
+
+                var section = {};
+                section.name = 'user_information';
+                section.system_type = 'system';
+                section.order = 1;
+                section.column_count = 1;
+                section.label_en = 'User Information';
+                section.label_tr = 'Kullanýcý Bilgisi';
+                section.display_form = true;
+                section.display_detail = true;
+
+                var fieldEmail = {};
+                fieldEmail.name = 'email';
+                fieldEmail.system_type = 'system';
+                fieldEmail.data_type = 'email';
+                fieldEmail.order = 2;
+                fieldEmail.section = 1;
+                fieldEmail.section_column = 1;
+                fieldEmail.primary = false;
+                fieldEmail.inline_edit = true;
+                fieldEmail.label_en = 'Email';
+                fieldEmail.label_tr = 'Eposta';
+                fieldEmail.display_list = true;
+                fieldEmail.display_form = true;
+                fieldEmail.display_detail = true;
+                userModule.fields.push(fieldEmail);
+
+                var fieldFirstName = {};
+                fieldFirstName.name = 'first_name';
+                fieldFirstName.system_type = 'system';
+                fieldFirstName.data_type = 'text_single';
+                fieldFirstName.order = 3;
+                fieldFirstName.section = 1;
+                fieldFirstName.section_column = 1;
+                fieldFirstName.primary = false;
+                fieldFirstName.inline_edit = true;
+                fieldFirstName.editable = true;
+                fieldFirstName.show_label = true;
+                fieldFirstName.label_en = 'First Name';
+                fieldFirstName.label_tr = 'Adý';
+                fieldFirstName.display_list = true;
+                fieldFirstName.display_form = true;
+                fieldFirstName.display_detail = true;
+                userModule.fields.push(fieldFirstName);
+
+                var fieldLastName = {};
+                fieldLastName.name = 'last_name';
+                fieldLastName.system_type = 'system';
+                fieldLastName.data_type = 'text_single';
+                fieldLastName.order = 4;
+                fieldLastName.section = 1;
+                fieldLastName.section_column = 1;
+                fieldLastName.primary = false;
+                fieldLastName.inline_edit = true;
+                fieldLastName.editable = true;
+                fieldLastName.show_label = true;
+                fieldLastName.label_en = 'Last Name';
+                fieldLastName.label_tr = 'Soyadý';
+                fieldLastName.display_list = true;
+                fieldLastName.display_form = true;
+                fieldLastName.display_detail = true;
+                userModule.fields.push(fieldLastName);
+
+                var fieldFullName = {};
+                fieldFullName.name = 'full_name';
+                fieldFullName.system_type = 'system';
+                fieldFullName.data_type = 'text_single';
+                fieldFullName.order = 5;
+                fieldFullName.section = 1;
+                fieldFullName.section_column = 1;
+                fieldFullName.primary = true;
+                fieldFullName.inline_edit = true;
+                fieldFullName.editable = true;
+                fieldFullName.show_label = true;
+                fieldFullName.label_en = 'Name';
+                fieldFullName.label_tr = 'Adý Soyadý';
+                fieldFullName.display_list = true;
+                fieldFullName.display_form = true;
+                fieldFullName.display_detail = true;
+                fieldFullName.combination = {};
+                fieldFullName.combination.field_1 = 'first_name';
+                fieldFullName.combination.field_2 = 'last_name';
+                userModule.fields.push(fieldFullName);
+
+                var fieldPhone = {};
+                fieldPhone.name = 'phone';
+                fieldPhone.system_type = 'system';
+                fieldPhone.data_type = 'text_single';
+                fieldPhone.order = 6;
+                fieldPhone.section = 1;
+                fieldPhone.section_column = 1;
+                fieldPhone.primary = false;
+                fieldPhone.inline_edit = true;
+                fieldPhone.label_en = 'Phone';
+                fieldPhone.label_tr = 'Telefon';
+                fieldPhone.display_list = true;
+                fieldPhone.display_form = true;
+                fieldPhone.display_detail = true;
+                userModule.fields.push(fieldPhone);
+
+                var fieldProfileId = {};
+                fieldProfileId.name = 'profile_id';
+                fieldProfileId.system_type = 'system';
+                fieldProfileId.data_type = 'number';
+                fieldProfileId.order = 6;
+                fieldProfileId.section = 1;
+                fieldProfileId.section_column = 1;
+                fieldProfileId.primary = false;
+                fieldProfileId.inline_edit = true;
+                fieldProfileId.editable = true;
+                fieldProfileId.show_label = true;
+                fieldProfileId.label_en = 'Profile Id';
+                fieldProfileId.label_tr = 'Profile Id';
+                fieldProfileId.display_list = true;
+                fieldProfileId.display_form = true;
+                fieldProfileId.display_detail = true;
+                userModule.fields.push(fieldProfileId);
+
+                var fieldRoleId = {};
+                fieldRoleId.name = 'role_id';
+                fieldRoleId.system_type = 'system';
+                fieldRoleId.data_type = 'number';
+                fieldRoleId.order = 7;
+                fieldRoleId.section = 1;
+                fieldRoleId.section_column = 1;
+                fieldRoleId.primary = false;
+                fieldRoleId.inline_edit = true;
+                fieldRoleId.editable = true;
+                fieldRoleId.show_label = true;
+                fieldRoleId.label_en = 'Role Id';
+                fieldRoleId.label_tr = 'Role Id';
+                fieldRoleId.display_list = true;
+                fieldRoleId.display_form = true;
+                fieldRoleId.display_detail = true;
+                userModule.fields.push(fieldRoleId);
+
+                return userModule;
+            };
+
+            $scope.costumeDate = "this_day()";
+            $scope.dateFormat = [
+                {
+                    label: $filter('translate')('View.Second'),
+                    value: "s"
+                },
+                {
+                    label: $filter('translate')('View.Minute'),
+                    value: "m"
+                },
+                {
+                    label: $filter('translate')('View.Hour'),
+                    value: "h"
+                },
+                {
+                    label: $filter('translate')('View.Day'),
+                    value: "D"
+                },
+                {
+                    label: $filter('translate')('View.Week'),
+                    value: "W"
+                },
+                {
+                    label: $filter('translate')('View.Month'),
+                    value: "M"
+                },
+                {
+                    label: $filter('translate')('View.Year'),
+                    value: "Y"
+                }
+            ];
+
+            $scope.costumeDateFilter = [
+                {
+                    name: "thisNow",
+                    label: $filter('translate')('View.Now'),
+                    value: "now()"
+                },
+                {
+                    name: "thisToday",
+                    label: $filter('translate')('View.StartOfTheDay'),
+                    value: "today()"
+                },
+                {
+                    name: "thisWeek",
+                    label: $filter('translate')('View.StartOfThisWeek'),
+                    value: "this_week()"
+                },
+                {
+                    name: "thisMonth",
+                    label: $filter('translate')('View.StartOfThisMonth'),
+                    value: "this_month()"
+                },
+                {
+                    name: "thisYear",
+                    label: $filter('translate')('View.StartOfThisYear'),
+                    value: "this_year()"
+                },
+                {
+                    name: "year",
+                    label: $filter('translate')('View.NowYear'),
+                    value: "year()"
+                },
+                {
+                    name: "month",
+                    label: $filter('translate')('View.NowMonth'),
+                    value: "month()"
+                },
+                {
+                    name: "day",
+                    label: $filter('translate')('View.NowDay'),
+                    value: "day()"
+                },
+                {
+                    name: "costume",
+                    label: $filter('translate')('View.CustomDate'),
+                    value: "costume"
+                },
+                {
+                    name: "todayNextPrev",
+                    label: $filter('translate')('View.FromTheBeginningOfTheDay'),
+                    value: "costumeN",
+                    nextprevdatetype: "D"
+                },
+                {
+                    name: "weekNextPrev",
+                    label: $filter('translate')('View.FromTheBeginningOfTheWeek'),
+                    value: "costumeW",
+                    nextprevdatetype: "M"
+                },
+                {
+                    name: "monthNextPrev",
+                    label: $filter('translate')('View.FromTheBeginningOfTheMonth'),
+                    value: "costumeM",
+                    nextprevdatetype: "M"
+                },
+                {
+                    name: "yearNextPrev",
+                    label: $filter('translate')('View.FromTheBeginningOfTheYear'),
+                    value: "costumeY",
+                    nextprevdatetype: "Y"
+                }
+            ];
+
+            $scope.dateChange = function (filter) {
+                if (filter.costumeDate !== 'costume' && filter.costumeDate !== 'costumeN' && filter.costumeDate !== 'costumeW' && filter.costumeDate !== 'costumeM' && filter.costumeDate !== 'costumeY') {
+                    filter.value = filter.costumeDate;
+                }
+                if (filter.costumeDate === 'costumeN' || filter.costumeDate === 'costumeW' || filter.costumeDate === 'costumeM' || filter.costumeDate === 'costumeY') {
+                    filter.value = "";
+                    filter.valueX = "";
+                    filter.nextprevdatetype = "";
+
+                }
+
+            };
+
+            $scope.nextPrevDateChange = function (filter) {
+                $scope.setCostumDate(filter);
+            };
+            $scope.nextPrevDateTypeChange = function (filter) {
+                $scope.setCostumDate(filter);
+            };
         }
     ]);
