@@ -6,15 +6,23 @@ a.navbar-brand {
   text-align: center;
   word-break: break-all;
 }
-
+.navbar-brand svg{
+  width: 100%;
+}
+.st0{fill:#FAAC2C;}
+.st1{fill:#EF6A33;}
+.st2{fill:#E89626;}
+.st3{fill:#0A6FAA;}
+.st4{fill:#24356E;}
+.st5{fill:#505050;}
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
   font-size: 14px;
 }
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
+@media (max-width: 768px) {
+  .navbar-brand svg{
+    max-width: 120px;
   }
 }
 
@@ -39,7 +47,6 @@ button.accept-policy {
 html {
   position: relative;
   min-height: 100%;
-  background: linear-gradient(87deg, #5e72e4 0, #825ee4 100%) !important
 }
 
 body {
@@ -59,3 +66,113 @@ body {
 .b-card {
   margin-bottom: 20px;
 }
+.avatar-oval{
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.25);
+  color: #FFF;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50em;
+}
+.avatar-oval i{
+  font-size: 14px;
+}
+.avatar-oval img{
+  width: 100%;
+}
+.avatar-oval.avatar-oval-lg{
+  width: 60px;
+  height: 60px;
+  border-radius: 5px;
+}
+
+.appbox2 {
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
+  position: relative;
+  border-radius: 5px;
+  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+  background-color: #ffffff;
+  padding: 10px;
+  cursor: pointer;
+  margin-bottom: 30px;
+}
+
+
+.appicon2 {
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff;
+  padding: 20px;
+  line-height: 60px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 35px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+}
+
+.apptext {
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.apptext > div {
+  width: 100%;
+}
+
+.apptext h3, .apptext h4 {
+  line-height: 20px;
+  font-size: 20px;
+  color: rgba(0, 0, 0, 0.5);
+  font-weight: bold;
+  margin: 0px;
+  padding: 0px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  text-align: center;
+}
+
+.apptext h4 {
+  font-size: 14px;
+  line-height: 15px;
+  font-weight: 400;
+}
+
+.appbox2:hover {
+  box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
+}
+.appbox2:hover h3, .appbox2:hover h4 {
+  color: #0D6FAA;
+}
+
+
+.appicon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50px;
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff;
+  padding: 5px;
+  line-height: 30px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 15px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+}
+

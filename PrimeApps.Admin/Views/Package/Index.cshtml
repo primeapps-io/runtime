@@ -8,79 +8,82 @@
     var processActive = ViewBag.ProcessActive.ToString().ToLower();
     var releaseId = ViewBag.ReleaseId;
 }
-<div class="header bg-gradient-primary pb-8 pt-5 pt-md-8">
-    <div class="container-fluid">
-        <div class="header-body">
-            @if (ViewBag.LastPackage != null)
-            {
-                <div class="row">
-                    <div class="col-xl-5 col-lg-10 b-card">
-                        <div class="card card-stats mb-4 mb-xl-0">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col">
-                                        <h5 class="card-title text-uppercase text-muted mb-0">Application Name</h5>
-                                        <span class="h2 font-weight-bold mb-0">@ViewBag.CurrentApp.Label</span>
-                                        <p class="mt-3 mb-0 text-muted text-sm">
-                                            <span class="text-nowrap">
-                                                Last Release Version :
-                                            </span>
-                                            <span class="text-success mr-2"> @(ViewBag.LastPackage != null ? ViewBag.LastPackage.Version : "Please create a package firstly.")</span>
-                                        </p>
-                                    </div>
-                                    <div class="col-auto">
-                                        @*<button class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="Click for Publish!" disabled="@ViewBag.Applying" onclick="publish(@ViewBag.lastPackage.Id,@ViewBag.CurrentApp.Id,@ViewBag.ActiveOrganizationId);">*@
-                                        <button disabled="@(ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed)" class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="@(ViewBag.LastPackage == null ? "" : ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version ? "Already up to date" : ViewBag.ProcessActive ? "There is an another process. Please wait for it..." : "Click for publish!")" onclick="apply()">
-                                            @if (ViewBag.ProcessActive)
-                                            {
-                                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                                <span class="btn-inner--text">Please wait...</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="btn-inner--icon">
-                                                    <i class="ni ni-cloud-upload-96"></i>
-                                                </span>
-                                                <span class="btn-inner--text">@(ViewBag.LastRelease != null ? "Update" : "Publish")</span>
-                                            }
 
-                                        </button>
-
-                                        @if (!ViewBag.ProcessActive && ViewBag.UpdateButtonActive != null && ViewBag.UpdateButtonActive == true)
-                                        {
-                                            <button class="btn ifn-icon btn-3 btn-warning btn-md" type="button" title="Click for Update Tenants!" onclick="tenantUpdate(@ViewBag.LastPackage?.Id, @ViewBag.CurrentApp.Id, @ViewBag.ActiveOrganizationId)">
-                                                <span class="btn-inner--icon">
-                                                    <i class="ni ni-cloud-upload-96"></i>
-                                                </span>
-                                                <span class="btn-inner--text">Update Tenants</span>
-                                            </button>
-                                        }
-                                    </div>
+<div class="container-fluid pt-5">
+    <div class="header-body">
+        @if (ViewBag.LastPackage != null)
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered" style="background: white;">
+                    <thead>
+                        <tr>
+                            <th width="100%">Name</th>
+                            <th>Last Release Version</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="align-middle">
+                                <div class="appicon" style="background-color: @ViewBag.CurrentApp.Color">
+                                    <i class="@(ViewBag.CurrentApp.Icon ?? "fas fa-box-open")"></i>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <div style="padding: 15px; background-color: #d9534f; box-shadow: 2px sol; -webkit-box-shadow: 13px 13px 17px -10px rgba(0, 0, 0, 0.75); -moz-box-shadow: 13px 13px 17px -10px rgba(0, 0, 0, 0.75); box-shadow: 13px 13px 17px -10px rgba(0, 0, 0, 0.75);">
-                    <h3 style="color: white; font-family: unset;">Please create a package firstly !</h3>
-                </div>
-            }
-            @*<div class="row" id="log" hidden>
-                <div class="col-xl-5 col-lg-10 b-card">
-                    <div class="card card-stats mb-4 mb-xl-0">
-                        <div class="card-body">
-                            <div class="tab-content table-responsive">
-                                <pre style="color: white !important; padding-left: 10px !important; padding-top: 10px !important; padding-bottom: 10px !important; background-color: black !important;" data-ng-bind-html="goLive.logs" id="logData"></pre>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>*@
+                                <h3 class="pl-2 d-inline-block">@ViewBag.CurrentApp.Label</h3>
+                            </td>
+                            <td class="align-middle">
+                                <h3 class="mb-0">@(ViewBag.LastPackage != null ? ViewBag.LastPackage.Version : "Please create a package firstly.")</h3
+                            </td>
+                            <td class="align-middle">
+                                <button disabled="@(ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed)" class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="@(ViewBag.LastPackage == null ? "" : ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version ? "Already up to date" : ViewBag.ProcessActive ? "There is an another process. Please wait for it..." : "Click for publish!")" onclick="apply()">
+                                    @if (ViewBag.ProcessActive)
+                                    {
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        <span class="btn-inner--text">Please wait...</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="btn-inner--icon">
+                                            <i class="ni ni-cloud-upload-96"></i>
+                                        </span>
+                                        <span class="btn-inner--text">@(ViewBag.LastRelease != null ? "Update" : "Publish")</span>
+                                    }
 
-        </div>
+                                </button>
+
+                                @if (!ViewBag.ProcessActive && ViewBag.UpdateButtonActive != null && ViewBag.UpdateButtonActive == true)
+                                {
+                                    <button class="btn ifn-icon btn-3 btn-warning btn-md" type="button" title="Click for Update Tenants!" onclick="tenantUpdate(@ViewBag.LastPackage?.Id, @ViewBag.CurrentApp.Id, @ViewBag.ActiveOrganizationId)">
+                                        <span class="btn-inner--icon">
+                                            <i class="ni ni-cloud-upload-96"></i>
+                                        </span>
+                                        <span class="btn-inner--text">Update Tenants</span>
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning alert-dismissible">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              Please create a package firstly !
+            </div>
+        }
+        @*<div class="row" id="log" hidden>
+            <div class="col-xl-5 col-lg-10 b-card">
+                <div class="card card-stats mb-4 mb-xl-0">
+                    <div class="card-body">
+                        <div class="tab-content table-responsive">
+                            <pre style="color: white !important; padding-left: 10px !important; padding-top: 10px !important; padding-bottom: 10px !important; background-color: black !important;" data-ng-bind-html="goLive.logs" id="logData"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
     </div>
 </div>
 
