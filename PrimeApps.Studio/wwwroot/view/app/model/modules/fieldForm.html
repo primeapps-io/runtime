@@ -703,13 +703,13 @@
                             </style>
                             <div class="section" id="filter" ng-show="fieldActiveSection === 'filter' && currentField.dataType.name === 'lookup' && !currentField.systemReadonly">
                                 <h4>Filter</h4>
-                                <div class="panel table-responsive" style="overflow:hidden;">
-                                    <div ng-if="loadingFilter" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-                                    <div class="form-group">
-                                        <table class="table filter">
+                                <div class="panel">
+                                    <div ng-if="loadingFilter" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                    <div class="table-responsive" ng-show="!loadingFilter">
+                                        <table class="filter-table">
                                             <tbody>
                                                 <tr ng-repeat="filter in filters | filter:{deleted:'!true'}">
-                                                    <td style="padding: 5px !important;">
+                                                    <td class="form-group" style="padding: 5px !important;">
                                                         <label class="thField">Field to Filter</label>
                                                         <select class="form-control"
                                                                 name="filterField"
@@ -720,7 +720,7 @@
                                                             <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
                                                         </select>
                                                     </td>
-                                                    <td style="padding: 5px !important;" ng-if="filter.fieldToFilter.data_type === 'lookup'">
+                                                    <td class="form-group" style="padding: 5px !important;" ng-if="filter.fieldToFilter.data_type === 'lookup'">
                                                         <label class="thField">Fields of Lookup Module</label>
                                                         <select class="form-control"
                                                                 name="fieldOfLookup"
@@ -731,7 +731,7 @@
                                                             <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
                                                         </select>
                                                     </td>
-                                                    <td style="padding: 5px !important;">
+                                                    <td class="form-group" style="padding: 5px !important;">
                                                         <label class="thField">Operator</label>
                                                         <select id="operator"
                                                                 name="operator"
@@ -755,7 +755,7 @@
                                                         </select>
                                                     </td>
 
-                                                    <td style="padding: 5px !important;" ng-if="((filter.fieldToFilter || filter.lookupField) && filter.field ) && !filter.type">
+                                                    <td class="form-group" style="padding: 5px !important;" ng-if="((filter.fieldToFilter || filter.lookupField) && filter.field ) && !filter.type">
                                                         <label class="thField">Value</label>
                                                         <input type="text"
                                                                class="form-control ng-animate-disabled"
@@ -976,7 +976,7 @@
                                                         </select>
 
                                                     </td>
-                                                    <td style="padding: 5px !important;" ng-if="filter.type">
+                                                    <td class="form-group" style="padding: 5px !important;" ng-if="filter.type">
                                                         <label class="thField">Value</label>
                                                         <select class="form-control  ng-animate-disabled"
                                                                 name="targetField"
@@ -1000,16 +1000,16 @@
                                                             <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
                                                         </select>
                                                     </td>
-                                                    <td style="padding: 5px !important;">
-                                                        <label class="thField">Get Other Field</label> <br />
-                                                        <center style="margin-top: 5px;">
+                                                    <td class="form-group" style="padding: 5px !important;">
+                                                        <label class="thField" style="line-height:initial  !important">Get Other Field</label> <br />
+                                                        <center>
                                                             <label class="checkbox-inline newinput">
                                                                 <input clas="form-control  ng-animate-disabled" ng-change="filter.disabled=filter.type;" ng-model="filter.type" type="checkbox" value="true" />
                                                                 <span></span>
                                                             </label>
                                                         </center>
                                                     </td>
-                                                    <td>
+                                                    <td class="form-group">
                                                         <a class="action-button2-delete" style="position: unset;" href ng-show="filters.length > 1" ng-click="filterRemove(filter)"><i class="fas fa-trash"></i></a>
                                                         <a class="action-button2-plus" style="position: unset;" href ng-show="$last" ng-click="filterAdd(filter)"><i class="fas fa-plus"></i></a>
                                                     </td>

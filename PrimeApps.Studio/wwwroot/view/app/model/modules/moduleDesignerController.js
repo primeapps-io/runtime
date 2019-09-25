@@ -717,7 +717,7 @@ angular.module('primeapps')
                                         filter.lookupField = $filter('filter')(filter.lookupModule.fields, { name: fieldArray[2] }, true)[0];
 
                                         if (filter.lookupField)
-                                            filter.field = filter.lookupField;
+                                            filter.field = filter.lookupField; 
 
                                     }, 3000);
                                 }
@@ -741,8 +741,7 @@ angular.module('primeapps')
                                             $scope.selectFieldToFilter(filter, filter.targetField, 'targetLookupModule');
 
                                             $timeout(function () {
-                                                filter.targetLookupField = $filter('filter')(filter.targetLookupModule.fields, { name: valueArray[1] }, true)[0];
-                                                $scope.loadingFilter = false;
+                                                filter.targetLookupField = $filter('filter')(filter.targetLookupModule.fields, { name: valueArray[1] }, true)[0]; 
                                             }, 2000);
                                         }
                                     }
@@ -750,13 +749,13 @@ angular.module('primeapps')
                             }
                             else {
                                 filter.value = item.value;
-                                filter.type = false;
-                                $scope.loadingFilter = false;
-                            }
+                                filter.type = false; 
+                            } 
 
-                            $scope.filters.push(filter);
-                            $scope.loadingFilter = false;
+                            $scope.filters.push(filter); 
                         });
+
+                        $scope.loadingFilter = false;
                     }, 3000);
                 }
 
@@ -1826,6 +1825,18 @@ angular.module('primeapps')
                 else {
                     var index = $scope.filters.indexOf(filter);
                     $scope.filters.splice(index, 1);
+                }
+
+                var count = $filter('filter')($scope.filters, { deleted: false }, true);
+
+                if ($scope.filters.length <= 0 || !count || count.length <= 0) {
+                    var newFilter = {};
+                    newFilter.operator = null;
+                    newFilter.field = null;
+                    newFilter.lookupModule = null;
+                    newFilter.value = null;
+
+                    $scope.filters.push(newFilter);
                 }
             };
 
