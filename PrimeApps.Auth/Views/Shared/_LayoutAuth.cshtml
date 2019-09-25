@@ -5,7 +5,7 @@
     var title = Model.ApplicationInfo.Theme["title"].ToString();
     var color = Model.ApplicationInfo.Theme["color"].ToString();
     var cdnUrlStatic = Model.ApplicationInfo?.CdnUrl;
-    var favicon = Model.ApplicationInfo?.Theme["favicon"].ToString();
+    var favicon = Model.ApplicationInfo?.Favicon.ToString();
     var banner = Model.ApplicationInfo?.Theme["banner"];
     var bannerImage = HttpUtility.HtmlDecode(banner[0]["image"].ToString());
 }

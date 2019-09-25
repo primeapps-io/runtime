@@ -2,6 +2,7 @@
     var token = ViewBag.Token;
     var previewUrl = ViewBag.PreviewUrl;
     var giteaUrl = ViewBag.GiteaUrl;
+    var blobUrl = !string.IsNullOrWhiteSpace(ViewBag.BlobUrl) ? ViewBag.BlobUrl : "";
 }
 
 <!DOCTYPE html>
@@ -19,7 +20,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <script>
-//        var version = '0.8';
+        //        var version = '0.8';
 //        if ('serviceWorker' in navigator) {
 //
 //            window.addEventListener('load',
@@ -71,7 +72,7 @@
     var version = '@typeof(ControllerContext).Assembly.GetName().Version';
     var cdnUrl = '@ViewBag.CdnUrlDynamic';
     var token = '@token';
-    var blobUrl = '';
+    var blobUrl = '@blobUrl';
     var functionUrl = '';
     var tenantId = '0';
     var components = '';
