@@ -246,8 +246,6 @@ namespace PrimeApps.App.Jobs.Email
                 string appDomain = "",
                     appLogo = "",
                   appTitle = "",
-                  appDescription = "",
-                  appCodeUrl = "",
                   appColor = "";
 
                 using (var applicationRepository = new ApplicationRepository(platformDatabaseContext, _configuration))

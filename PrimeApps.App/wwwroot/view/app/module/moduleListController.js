@@ -23,7 +23,7 @@ angular.module('primeapps')
             $scope.hasViewPermission = false;
 
             if (!$scope.isAdmin) {
-                if (!helper.hasCustomProfilePermission('view')) {
+                if (helper.hasCustomProfilePermission('view')) {
                     $scope.hasViewPermission = true;
                 }
             }

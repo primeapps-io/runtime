@@ -404,8 +404,8 @@ angular.module('primeapps')
 									if ($scope.parentModule === 'calisanlar') {
 										lookupRecord['e_posta'] = parent.data['e_posta'];
 									}
-									if ($rootScope.isEmployee && $scope.parentModule === $rootScope.isEmployee) {
-										lookupRecord['work_e_mail'] = parent.data['work_e_mail'];
+									if ($rootScope.isEmployee && $scope.parentModule === $rootScope.isEmployee && $rootScope.newEpostaFieldName) {
+										lookupRecord[$rootScope.newEpostaFieldName] = parent.data[$rootScope.newEpostaFieldName];
 									}
 									//TODO:COMPONENT --> 
 
@@ -675,10 +675,10 @@ angular.module('primeapps')
 					return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, null, false, $scope.customFilters);
 				else if ($scope.currentLookupField.lookup_type === 'calisanlar')
 					return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['e_posta'], false, $scope.customFilters);
-				else if ($rootScope.isEmployee && $scope.currentLookupField.lookup_type === $rootScope.isEmployee)
-					return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['work_e_mail'], false, $scope.customFilters);
-                else
-                    return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record,null, false, $scope.customFilters);
+				else if ($rootScope.isEmployee && $scope.currentLookupField.lookup_type === $rootScope.isEmployee && $rootScope.newEpostaFieldName)
+					return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, [$rootScope.newEpostaFieldName], false, $scope.customFilters);
+				else
+					return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, null, false, $scope.customFilters);
 
 			};
 
@@ -757,7 +757,7 @@ angular.module('primeapps')
 				}
 
 				//Sisteme kayıtlı bir user ile kullanıcı oluşturmak istenildiğinde yapılan user kontrolü.
-				ModuleService.getUserEmailControl($rootScope.isEmployee ? $scope.record.work_e_mail : $scope.record.e_posta)
+				ModuleService.getUserEmailControl($rootScope.isEmployee && $rootScope.newEpostaFieldName ? $scope.record[$rootScope.newEpostaFieldName] : $scope.record.e_posta)
 					.then(function (response) {
 						var userEmail = response.data === 'Available';
 						if (!userEmail) {
@@ -786,9 +786,9 @@ angular.module('primeapps')
 
 							var createUser = function (roleId, profileId, record) {
 								var inviteModel = {};
-								inviteModel.email = $rootScope.isEmployee ? $scope.record.work_e_mail : $scope.record.e_posta;
-								inviteModel.first_name = $scope.record.ad;
-								inviteModel.last_name = $scope.record.soyad;
+								inviteModel.email = $rootScope.isEmployee && $rootScope.newEpostaFieldName ? $scope.record[$rootScope.newEpostaFieldName] : $scope.record.e_posta;
+								inviteModel.first_name = $rootScope.newAdFieldName ? $scope.record[$rootScope.newAdFieldName] : $scope.record.ad;
+								inviteModel.last_name = $rootScope.newSoyadFieldName ? $scope.record[$rootScope.newSoyadFieldName] : $scope.record.soyad;
 								inviteModel.profile = profileId;
 								inviteModel.role = roleId;
 								inviteModel.full_name = inviteModel.first_name + " " + inviteModel.last_name;
@@ -808,7 +808,7 @@ angular.module('primeapps')
 										if (response.data) {
 											//User Lisans ve şifre bilgilerinin setlenmesi.
 											$scope.userCreatePassword = response.data.password;
-											$scope.userCreateEmail = $rootScope.isEmployee ? $scope.record.work_e_mail : $scope.record.e_posta;
+											$scope.userCreateEmail = $rootScope.isEmployee && $rootScope.newEpostaFieldName ? $scope.record[$rootScope.newEpostaFieldName] : $scope.record.e_posta;
 											$scope.userLicenseAvailable = $scope.userLicenseKalan - 1;
 											$scope.userLicensesBought = $scope.userLicenseControl.total;
 											$scope.userAdded = true;
