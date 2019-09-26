@@ -95,7 +95,7 @@
                 {
                     <li class="@(organization.Id.ToString() == ViewBag.ActiveOrganizationId ? "active" : "")">
                         <a href="@Url.Action("Index", "Home", new {id = organization.Id})">
-                            <i class="@(@organization.Icon ?? "ni ni-planet")" style="background: @organization.Color"></i> <span>@organization.Name</span>
+                            <i class="@(@organization.Icon ?? "ni ni-planet")" style="background: @organization.Color"></i> <span>@organization.Label</span>
                         </a>
                     </li>
                 }
