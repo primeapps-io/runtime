@@ -700,6 +700,9 @@ angular.module('primeapps')
                         angular.forEach($scope.currentField.filters, function (item) {
                             var filter = {};
 
+                            if (item.deleted)
+                                return;
+
                             filter.id = item.id;
                             filter.operator = operators[item.operator];
                             filter.deleted = item.deleted;
@@ -717,7 +720,7 @@ angular.module('primeapps')
                                         filter.lookupField = $filter('filter')(filter.lookupModule.fields, { name: fieldArray[2] }, true)[0];
 
                                         if (filter.lookupField)
-                                            filter.field = filter.lookupField; 
+                                            filter.field = filter.lookupField;
 
                                     }, 3000);
                                 }
@@ -741,7 +744,7 @@ angular.module('primeapps')
                                             $scope.selectFieldToFilter(filter, filter.targetField, 'targetLookupModule');
 
                                             $timeout(function () {
-                                                filter.targetLookupField = $filter('filter')(filter.targetLookupModule.fields, { name: valueArray[1] }, true)[0]; 
+                                                filter.targetLookupField = $filter('filter')(filter.targetLookupModule.fields, { name: valueArray[1] }, true)[0];
                                             }, 2000);
                                         }
                                     }
@@ -749,11 +752,19 @@ angular.module('primeapps')
                             }
                             else {
                                 filter.value = item.value;
-                                filter.type = false; 
-                            } 
+                                filter.type = false;
+                            }
 
-                            $scope.filters.push(filter); 
+                            $scope.filters.push(filter);
                         });
+
+                        if ($scope.filters.length < 1) {
+                            var filter = {};
+                            filter.fieldToFilter = null;
+                            filter.operator = null;
+                            filter.value = null;
+                            $scope.filters.push(filter);
+                        }
 
                         $scope.loadingFilter = false;
                     }, 3000);
@@ -1828,13 +1839,15 @@ angular.module('primeapps')
                 }
 
                 var count = $filter('filter')($scope.filters, { deleted: false }, true);
+                var deletedCount = $filter('filter')($scope.filters, { deleted: true }, true);
 
-                if ($scope.filters.length <= 0 || !count || count.length <= 0) {
+                if (($scope.filters.length <= 0 || $scope.filters.length === deletedCount.length) && (!count || count.length <= 0)) {
                     var newFilter = {};
                     newFilter.operator = null;
                     newFilter.field = null;
                     newFilter.lookupModule = null;
                     newFilter.value = null;
+                    newFilter.deleted = false;
 
                     $scope.filters.push(newFilter);
                 }

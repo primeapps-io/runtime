@@ -709,34 +709,35 @@
                                         <table class="filter-table">
                                             <tbody>
                                                 <tr ng-repeat="filter in filters | filter:{deleted:'!true'}">
-                                                    <td class="form-group" style="padding: 5px !important;">
+                                                    <td class="form-group" style="padding: 5px !important;"  ng-class="{'has-error': fieldForm.$submitted && fieldForm.filterField.$invalid}">
                                                         <label class="thField">Field to Filter</label>
                                                         <select class="form-control"
                                                                 name="filterField"
-                                                                tabindex="1"
+                                                                tabindex="1" 
                                                                 ng-model="filter.fieldToFilter"
                                                                 ng-change="selectFieldToFilter(filter,filter.fieldToFilter,'lookupModule');changeFieldFilter(filter,filter.fieldToFilter);"
                                                                 ng-options="o as o['label_' + language] for o in currentLookupFields | filter:{deleted:'!true'} | orderBy:'order' track by o.name">
                                                             <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
                                                         </select>
                                                     </td>
-                                                    <td class="form-group" style="padding: 5px !important;" ng-if="filter.fieldToFilter.data_type === 'lookup'">
+                                                    <td class="form-group" style="padding: 5px !important;" ng-if="filter.fieldToFilter.data_type === 'lookup'"  ng-class="{'has-error': fieldForm.$submitted && fieldForm.fieldOfLookup.$invalid}">
                                                         <label class="thField">Fields of Lookup Module</label>
                                                         <select class="form-control"
                                                                 name="fieldOfLookup"
                                                                 tabindex="2"
+                                                                ng-required="filter.fieldToFilter.data_type === 'lookup'"
                                                                 ng-model="filter.lookupField"
                                                                 ng-change="changeLookField(filter,filter.lookupField);"
                                                                 ng-options="o as o['label_' + language] for o in filter.lookupModule.fields| filter:{deleted:'!true',data_type:'!lookup'} | orderBy:'order' track by o.name">
                                                             <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
                                                         </select>
                                                     </td>
-                                                    <td class="form-group" style="padding: 5px !important;">
+                                                    <td class="form-group" style="padding: 5px !important;"  ng-class="{'has-error': fieldForm.$submitted && fieldForm.operator.$invalid}">
                                                         <label class="thField">Operator</label>
                                                         <select id="operator"
                                                                 name="operator"
                                                                 tabindex="3"
-                                                                required
+                                                                ng-required=" filter.lookupField"
                                                                 class="form-control ng-animate-disabled"
                                                                 ng-options="o as o.label[language] for o in filter.lookupField.operators  | orderBy:'order' track by o.order"
                                                                 ng-if=" filter.lookupField"
@@ -746,7 +747,7 @@
                                                         <select id="operator"
                                                                 name="operator"
                                                                 tabindex="3"
-                                                                required
+                                                                ng-required="filter.fieldToFilter"
                                                                 class="form-control ng-animate-disabled"
                                                                 ng-options="o as o.label[language] for o in filter.fieldToFilter.operators  | orderBy:'order' track by o.order"
                                                                 ng-if="!filter.lookupField"
