@@ -56,6 +56,10 @@
                                                 <a href id="transactionButtons" ng-click="showTransactionButtons()" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.NewTransaction' | translate}}</a>
                                             </li>
                                             <li role="separator" class="divider"></li>
+                                            <li ng-if="custombutton.action_type === 'ModalFrame' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)" style="text-align: center;" ng-repeat="custombutton in actionButtons" class="{{custombutton.css_class}}">
+                                                <a href id="transactionButtons" ng-click="showModuleFrameModal(custombutton.url)"><i ng-class="custombutton.icon"></i> {{custombutton.name}}</a>
+                                            </li>
+                                            <li role="separator" class="divider"></li>
                                             <li>
                                                 <a ng-click="sendToProcessApproval()"
                                                    ng-show="hasManuelProcess && (record.owner.id === currentUser.id || hasProcessRights) && !record.process_id && module.name != 'timetrackers'"
@@ -90,8 +94,8 @@
                                             </li>
                                             <li>
                                                 <h4 style="display: inline-block;">
-                                <span class="label label-info"
-                                      ng-if="waitingForApproval && !isApproved && record.process_status == 1">{{'Setup.Workflow.ApprovelProcess.Waiting' | translate}}({{record.process_status_order}}.{{'Setup.Workflow.ApprovelProcess.Level' | translate}})</span>
+                                                    <span class="label label-info"
+                                                          ng-if="waitingForApproval && !isApproved && record.process_status == 1">{{'Setup.Workflow.ApprovelProcess.Waiting' | translate}}({{record.process_status_order}}.{{'Setup.Workflow.ApprovelProcess.Level' | translate}})</span>
                                                     <span class="label label-danger" ng-if="record.process_status == 3">{{'Setup.Workflow.ApprovelProcess.Rejected' | translate}}</span>
                                                     <span class="label label-success" ng-if="isApproved">{{'Setup.Workflow.ApprovelProcess.Approved' | translate}}</span>
                                                 </h4>
