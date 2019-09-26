@@ -12,7 +12,7 @@
             {
                 foreach (var app in apps)
                 {
-                    <div class="col-12 col-sm-4 col-md-3 col-lg-3 ">
+                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 ">
                         <div class="appbox2 text-center"  onclick="location.href = '@Url.Action("Index", "Package", new {appId = app.Id, orgId = ViewBag.ActiveOrganizationId})'">
                             <div class="appicon2" style="background-color: @app.Color">
                                 <i class="@(app.Icon ?? "fas fa-box-open")"></i>

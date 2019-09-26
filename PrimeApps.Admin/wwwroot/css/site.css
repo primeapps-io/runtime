@@ -5,24 +5,106 @@ a.navbar-brand {
   white-space: normal;
   text-align: center;
   word-break: break-all;
+  max-width: 170px;
 }
 .navbar-brand svg{
   width: 100%;
 }
 .st0{fill:#FAAC2C;}
 .st1{fill:#EF6A33;}
-.st2{fill:#E89626;}
-.st3{fill:#0A6FAA;}
-.st4{fill:#24356E;}
-.st5{fill:#505050;}
+.st2{fill:transparent;}
+.st3{fill:transparent;}
+.st4{fill:rgba(255,255,255,1);}
+.st5{fill:rgba(255,255,255,.75);}
+.st6{fill:rgba(255,255,255,.5);}
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
   font-size: 14px;
 }
+@media (min-width: 768px) {
+  #sidenav-main{
+    background-image: url(../img/menu_background.png);
+    background-repeat: repeat;
+    padding: 0px;
+  }
+  #sidenav-main #sidenav-collapse-main,#sidenav-main #sidenav-collapse-main:before {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .logo-out{
+    padding: 10px 20px;
+  }
+}
+
+
+
+.main-content #navbar-main{
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.07);
+}
+.organisation-list li{
+  cursor: pointer;
+  margin-bottom: 2px;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
+}
+.organisation-list a {
+  font-weight: bold;
+  font-size: 14px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  color: #FFF;
+}
+.organisation-list a:hover{
+  color: #FFF;
+}
+
+.organisation-list a i {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  font-size: 14px;
+  padding: 10px;
+  background: #0D6FAA;
+  border-radius: 50%;
+  margin-right: 10px;
+  color: #FFF;
+}
+
+.organisation-list li.active,.organisation-list li:hover{
+  background: #121212;
+}
+
 @media (max-width: 768px) {
   .navbar-brand svg{
     max-width: 120px;
+  }
+  #sidenav-main{
+    background:white;
+  }
+  .st0{fill:#FAAC2C;}
+  .st1{fill:#EF6A33;}
+  .st2{fill:#E89626;}
+  .st3{fill:#0A6FAA;}
+  .st4{fill:#0A6FAA;}
+  .st5{fill:#24356E;}
+  .st6{fill:#505050;}
+  .organisation-list li.active, .organisation-list li:hover {
+    background: #f6f9fc;
+  }
+  .organisation-list a {
+    color: #16181b;
+  }
+  .organisation-list a:hover {
+    color: #0A6FAA;
   }
 }
 
