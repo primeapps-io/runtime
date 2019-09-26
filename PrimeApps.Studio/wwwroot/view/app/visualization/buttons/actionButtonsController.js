@@ -11,7 +11,7 @@ angular.module('primeapps')
 
             $rootScope.breadcrumblist[2].title = 'Buttons';
             $scope.$parent.activeMenuItem = 'buttons';
-            $scope.environments = ActionButtonsService.getEnvironments();
+            $scope.environments = angular.copy(ActionButtonsService.getEnvironments());
 
             $scope.environmentChange = function (env, index, otherValue = false) {
                 if (!env || index === 0) {
@@ -115,8 +115,10 @@ angular.module('primeapps')
                     parameter.parameterName = null;
                     parameter.selectedModules = $scope.hookModules;
                     parameter.selectedField = null;
-                    $scope.hookParameters.push(parameter);
+                    emptyEnvironment();
                     $scope.environments[0].selected = true;
+                    $scope.hookParameters.push(parameter);
+
                     setWebHookHeaders();
 
                 } else {
@@ -130,9 +132,12 @@ angular.module('primeapps')
                     else
                         $scope.currentActionButton.environments = actionButton.environment;
 
-                    angular.forEach($scope.currentActionButton.environments, function (envValue) {
-                        $scope.environmentChange($scope.environments[envValue - 1], envValue - 1, true);
-                    });
+                    if ($scope.currentActionButton.environments === '' || !$scope.currentActionButton.environments)
+                        emptyEnvironment();
+                    else
+                        angular.forEach($scope.currentActionButton.environments, function (envValue) {
+                            $scope.environmentChange($scope.environments[envValue - 1], envValue - 1, true);
+                        });
 
                     $scope.moduleChanged(false, actionButton);
                 }
@@ -412,9 +417,14 @@ angular.module('primeapps')
                 angular.forEach($scope.currentActionButton, function (value, key) {
                     $scope.currentActionButton[key] = $scope.currentActionButtonState[key];
                 });
-
+                emptyEnvironment();
                 $scope.formModal.hide();
             };
+
+            var emptyEnvironment = function () {
+                $scope.environments = [];
+                $scope.environments = angular.copy(ActionButtonsService.getEnvironments());
+            }
 
             //Webhook
             var webhookParameters = function (isNew, actionButton) {
