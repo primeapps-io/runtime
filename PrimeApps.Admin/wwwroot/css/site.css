@@ -19,9 +19,43 @@ a.navbar-brand {
 .st6{fill:rgba(255,255,255,.5);}
 /* Sticky footer styles
 -------------------------------------------------- */
-html {
+html,body {
   font-size: 14px;
+  background: #f6f5f2 !important;
 }
+.own-table{
+  border-radius: 5px;
+  background: #FFF;
+  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+  border-color: transparent !important;
+}
+.own-table .table{
+  margin-bottom: 0;
+}
+.own-table .table thead th{
+  line-height: 15px !important;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+  font-weight: 400 !important;
+  color: rgba(0, 0, 0, 0.5) !important;
+  padding: 20px !important;
+  text-align: inherit;
+  background: transparent;
+  text-transform: none;
+  letter-spacing: inherit;
+  border: none;
+  
+}
+.own-table .table tbody tr td:first-child{
+  border-left: none;
+}
+.own-table .table tbody tr td:last-child{
+  border-right: none;
+}
+.own-table .table tbody tr:last-child td{
+  border-bottom: none;
+}
+
 @media (min-width: 768px) {
   #sidenav-main{
     background-image: url(../img/menu_background.png);
