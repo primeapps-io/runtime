@@ -160,6 +160,7 @@ namespace PrimeApps.Model.Context
         public DbSet<StudioUser> Users { get; set; }
         public DbSet<AppDraft> Apps { get; set; }
         public DbSet<AppDraftSetting> AppSettings { get; set; }
+        public DbSet<AppDraftTemplate> AppTemplates { get; set; }
         public DbSet<Package> Packages { get; set; }
         public DbSet<AppCollaborator> AppCollaborators { get; set; }
         public DbSet<Organization> Organizations { get; set; }
