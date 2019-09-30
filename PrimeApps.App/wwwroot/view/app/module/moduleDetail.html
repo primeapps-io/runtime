@@ -59,6 +59,9 @@
                                             <li ng-if="custombutton.action_type === 'ModalFrame' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)" style="text-align: center;" ng-repeat="custombutton in actionButtons" class="{{custombutton.css_class}}">
                                                 <a href id="transactionButtons" ng-click="showModuleFrameModal(custombutton.url)"><i ng-class="custombutton.icon"></i> {{custombutton.name}}</a>
                                             </li>
+                                            <li data-spinner-color="#666" type="button" ng-if="custombutton.action_type === 'Scripting' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)" style="text-align: center;" ladda="running" custom-scripting="{{custombutton.template}}" ng-repeat="custombutton in actionButtons" class="{{custombutton.css_class}}">
+                                                <a href id="transactionButtons"><i ng-class="custombutton.icon"></i> {{custombutton.name}}</a>
+                                            </li>
                                             <li role="separator" class="divider"></li>
                                             <li>
                                                 <a ng-click="sendToProcessApproval()"
