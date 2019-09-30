@@ -2912,6 +2912,9 @@ namespace PrimeApps.App.Helpers
 												{
 													var currentUserRoleId = await CreateMissingSchema(missingSchema, roleId, roleRepository, appUser);
 													var user = await userRepository.GetByEmail(record[newEpostaFieldName.Value].ToString());
+													/*User update etme sebebimiz employeeya da çalışan şube yöneticisi değilse roleId'yi CreateMissingSchema metodundan sonra güncellemeliyiz*/
+													user.RoleId = currentUserRoleId;
+													await userRepository.UpdateAsync(user);
 													await UpdateUserRoleAndProfile(user.Id, profileId, (int)currentUserRoleId, roleRepository, profileRepository);
 													await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
 												}
