@@ -23,11 +23,12 @@ namespace PrimeApps.Studio.Controllers
 		private readonly IUserRepository _userRepository;
 		private readonly IRecordRepository _recordRepository;
 		private readonly IModuleRepository _moduleRepository;
+		private readonly IAppDraftRepository _appDraftRepository;
 		private IConfiguration _configuration;
 		private IPlatformRepository _platformRepository;
 		private IPermissionHelper _permissionHelper;
 
-		public TemplateController(ITemplateRepository templateRepostory, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IConfiguration configuration, IPlatformRepository platformRepository, IPermissionHelper permissionHelper)
+		public TemplateController(ITemplateRepository templateRepostory, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IConfiguration configuration, IPlatformRepository platformRepository, IPermissionHelper permissionHelper, IAppDraftRepository appDraftRepository)
 		{
 			_templateRepostory = templateRepostory;
 			_userRepository = userRepository;
@@ -36,6 +37,7 @@ namespace PrimeApps.Studio.Controllers
 			_configuration = configuration;
 			_platformRepository = platformRepository;
 			_permissionHelper = permissionHelper;
+			_appDraftRepository = appDraftRepository;
 		}
 
 		public override void OnActionExecuting(ActionExecutingContext context)
@@ -44,6 +46,7 @@ namespace PrimeApps.Studio.Controllers
 			SetCurrentUser(_userRepository, PreviewMode, TenantId, AppId);
 			SetCurrentUser(_templateRepostory, PreviewMode, TenantId, AppId);
 			SetCurrentUser(_platformRepository);
+			SetCurrentUser(_appDraftRepository);
 			base.OnActionExecuting(context);
 		}
 
@@ -194,9 +197,9 @@ namespace PrimeApps.Studio.Controllers
 
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
-			
+
 			var templateEntity = TemplateHelper.CreateEntityAppTemplate(template, template.AppId);
-			var result = await _platformRepository.CreateAppTemplate(templateEntity);
+			var result = await _appDraftRepository.CreateAppTemplate(templateEntity);
 
 			if (result < 1)
 				throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
@@ -216,13 +219,13 @@ namespace PrimeApps.Studio.Controllers
 
 			if (!template.Deleted)
 			{
-				var templateEntity = await _platformRepository.GetAppTemplateById(id);
+				var templateEntity = await _appDraftRepository.GetAppTemplateById(id);
 
 				if (templateEntity == null)
 					return NotFound();
 
 				TemplateHelper.UpdateEntity(null, null, null, template, templateEntity, true);
-				await _platformRepository.UpdateAppTemplate(templateEntity);
+				await _appDraftRepository.UpdateAppTemplate(templateEntity);
 				return Ok(templateEntity);
 			}
 			else
@@ -235,8 +238,8 @@ namespace PrimeApps.Studio.Controllers
 			if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
 				return StatusCode(403);
 
-			var app = await _platformRepository.AppGetByName(currentAppName.ToLower());
-			var count = app != null ? _platformRepository.Count(app.Id) : 0;
+			var app = await _appDraftRepository.AppGetByName(currentAppName.ToLower());
+			var count = app != null ? _appDraftRepository.Count(app.Id) : 0;
 
 			return Ok(count);
 		}
@@ -247,8 +250,8 @@ namespace PrimeApps.Studio.Controllers
 			if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
 				return StatusCode(403);
 
-			var app = await _platformRepository.AppGetByName(currentAppName.ToLower());
-			var templates = app != null ? await _platformRepository.Find(paginationModel, app.Id) : null;
+			var app = await _appDraftRepository.AppGetByName(currentAppName.ToLower());
+			var templates = app != null ? await _appDraftRepository.Find(paginationModel, app.Id) : null;
 
 			return Ok(templates);
 		}

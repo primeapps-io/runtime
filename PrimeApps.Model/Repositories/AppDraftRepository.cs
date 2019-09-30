@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PrimeApps.Model.Entities.Studio;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -159,5 +160,63 @@ namespace PrimeApps.Model.Repositories
                 .Where(x => x.AppId == appId && !x.Deleted)
                 .ToListAsync();
         }
-    }
+
+		public async Task<int> CreateAppTemplate(AppDraftTemplate template)
+		{
+			DbContext.AppTemplates.Add(template);
+
+			return await DbContext.SaveChangesAsync();
+		}
+
+		public async Task<int> UpdateAppTemplate(AppDraftTemplate template)
+		{
+			return await DbContext.SaveChangesAsync();
+		}
+		public async Task<AppDraft> AppGetByName(string appName)
+		{
+			var app = DbContext.Apps.FirstOrDefaultAsync(x => !x.Deleted && x.Name == appName);
+
+			return await app;
+		}
+		public async Task<ICollection<AppDraftTemplate>> Find(PaginationModel paginationModel, int? appId)
+		{
+			var templates = DbContext.AppTemplates
+				.Where(x => !x.Deleted && x.Type == AppTemplateType.Email && x.AppId == appId)
+				.OrderByDescending(x => x.Id) //&& x.Active
+				.Skip(paginationModel.Offset * paginationModel.Limit)
+				.Take(paginationModel.Limit);
+
+			if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+			{
+				var propertyInfo = typeof(AppDraftTemplate).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
+
+				if (paginationModel.OrderType == "asc")
+				{
+					templates = templates.OrderBy(x => propertyInfo.GetValue(x, null));
+				}
+				else
+				{
+					templates = templates.OrderByDescending(x => propertyInfo.GetValue(x, null));
+				}
+
+			}
+
+			return await templates.ToListAsync();
+		}
+
+		public int Count(int appId)
+		{
+			var count = DbContext.AppTemplates
+			   .Where(x => !x.Deleted && x.Type == AppTemplateType.Email && x.AppId == appId).Count();
+
+			return count;
+		}
+
+		public async Task<AppDraftTemplate> GetAppTemplateById(int id)
+		{
+			var template = await DbContext.AppTemplates.FirstOrDefaultAsync(x => x.Id == id);
+
+			return template;
+		}
+	}
 }

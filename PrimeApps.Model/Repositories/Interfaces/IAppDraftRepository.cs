@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using PrimeApps.Model.Entities.Studio;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
@@ -25,5 +26,11 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<AppDraftSetting> GetAuthTheme(int id);
         Task<int> UpdateAppTheme(int id, JObject model);
         Task<AppDraftSetting> GetAppTheme(int id);
-    }
+		Task<int> CreateAppTemplate(AppDraftTemplate template);
+		Task<int> UpdateAppTemplate(AppDraftTemplate template);
+		Task<AppDraft> AppGetByName(string appName);
+		Task<ICollection<AppDraftTemplate>> Find(PaginationModel paginationModel, int? appId);
+		int Count(int appId);
+		Task<AppDraftTemplate> GetAppTemplateById(int id);
+	}
 }
