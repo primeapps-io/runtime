@@ -29,6 +29,9 @@ angular.module('primeapps')
                 create: function (model) {
                     return $http.post(config.apiUrl + 'picklist/create', model);
                 },
+                import: function (id, model) {
+                    return $http.post(config.apiUrl + 'picklist/import/' + id, model);
+                },
                 createItem: function (id, model) {
                     return $http.post(config.apiUrl + 'picklist/add_item/' + id, model);
                 },

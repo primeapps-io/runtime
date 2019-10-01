@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('PicklistsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'PicklistsService', '$modal', 'dragularService', '$timeout', '$interval', 'helper',
-        function ($rootScope, $scope, $filter, $state, $stateParams, PicklistsService, $modal, dragularService, $timeout, $interval, helper) {
+    .controller('PicklistsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'PicklistsService', '$modal', 'dragularService', '$timeout', '$interval', 'helper', 'FileUploader',
+        function ($rootScope, $scope, $filter, $state, $stateParams, PicklistsService, $modal, dragularService, $timeout, $interval, helper, FileUploader) {
             $scope.$parent.activeMenuItem = 'picklists';
             $rootScope.breadcrumblist[2].title = 'Picklists';
             $scope.loading = true;
@@ -11,21 +11,26 @@ angular.module('primeapps')
             $scope.addItem = false;
             $scope.editItem = false;
             $scope.orderChanged = false;
+            $scope.excelMode = false;
             $scope.pageOfItem;
             $scope.itemModel = {};
+            $scope.fieldMap = {};
+            $scope.fixedField = {};
             $scope.activePage = 1;
             $scope.picklistModel = {};
-
+            $scope.wizardStep = 0;
             $scope.requestModel = { //default page value
                 limit: "10",
                 offset: 0,
                 order_column: "label_en"
             };
 
-            $scope.systemTypes = [
-                { name: "System", order: 3 },
-                { name: "Custom", order: 2 },
-                { name: "Component", order: 1 }];
+            $scope.fields = [
+                { name: "name", label: "Name", required: true, order: 1 },
+                { name: "system_code", label: "System Code", required: true, order: 2 },
+                { name: "value", label: "Value-1", required: false, order: 3 },
+                { name: "value2", label: "Value-2", required: false, order: 4 },
+                { name: "value3", label: "Value-3", required: false, order: 5 }];
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
@@ -164,16 +169,24 @@ angular.module('primeapps')
 
             //Modal Cancel Function
             $scope.cancel = function () {
-                $scope.picklistFormModal.hide();
-                $scope.orderChanged = false;
 
-                $timeout(function () {
-                    $scope.picklist = {};
-                    $scope.picklistModel = {};
-                    $scope.itemModel = {};
-                    $scope.addItem = false;
-                    $scope.id = null;
-                }, 300);
+                if ($scope.excelMode) {
+                    $scope.excelMode = false;
+                    $scope.wizardStep = 0;
+                    $scope.clear();
+                }
+                else {
+                    $scope.picklistFormModal.hide();
+                    $scope.orderChanged = false;
+
+                    $timeout(function () {
+                        $scope.picklist = {};
+                        $scope.picklistModel = {};
+                        $scope.itemModel = {};
+                        $scope.addItem = false;
+                        $scope.id = null;
+                    }, 300);
+                }
             };
 
             $scope.addMode = function (state) {
@@ -275,11 +288,17 @@ angular.module('primeapps')
                         .then(function (response) {
                             if (response.data) {
                                 toastr.success($filter('translate')('Picklist.SaveSuccess'));
+                                $scope.createdPicklist = response.data;
                             }
-
                             $scope.saving = false;
                             $scope.cancel();
                             $scope.changeOffset();
+
+                            if (response.data) {
+                                $timeout(function () {
+                                    $scope.showFormModal($scope.createdPicklist, false);
+                                }, 1500);
+                            }
 
                         }).catch(function (reason) {
                             $scope.saving = false;
@@ -519,5 +538,323 @@ angular.module('primeapps')
                     }
                 }, 100);
             };
+
+
+            //Excel  import Area
+
+            var readExcel = function (file, retry) {
+                var fileReader = new FileReader();
+
+                fileReader.onload = function (evt) {
+                    if (!evt || evt.target.error) {
+                        $timeout(function () {
+                            toastr.warning($filter('translate')('Module.ExportUnsupported'));
+                        });
+                        return;
+                    }
+
+                    try {
+                        $scope.workbook = XLS.read(evt.target.result, { type: 'binary' });
+                        $scope.sheets = $scope.workbook.SheetNames;
+
+                        $timeout(function () {
+                            $scope.selectedSheet = $scope.selectedSheet || $scope.sheets[0];
+                            $scope.selectSheet(retry);
+
+                        });
+                    }
+                    catch (ex) {
+                        $timeout(function () {
+                            toastr.warning($filter('translate')('Data.Import.InvalidExcel'));
+                        });
+                    }
+                };
+
+                fileReader.readAsBinaryString(file);
+            };
+
+            $scope.selectSheet = function (retry) {
+                $scope.rowsBase = XLSX.utils.sheet_to_json($scope.workbook.Sheets[$scope.selectedSheet], { header: 'A' });
+                $scope.rows = XLSX.utils.sheet_to_json($scope.workbook.Sheets[$scope.selectedSheet], { raw: true, header: 'A' });
+                $scope.headerRow = angular.copy($scope.rows[0]);
+                $scope.rows.shift();
+                $scope.cells = [];
+
+                if ($scope.rows.length > 3000) {
+                    toastr.warning($filter('translate')('Data.Import.CountError'));
+                    return;
+                }
+
+                angular.forEach($scope.headerRow, function (value, key) {
+                    var cellName = value + $filter('translate')('Data.Import.ColumnIndex', { index: key });
+                    $scope.cells.push({ column: key, name: cellName, used: false });
+                });
+
+                if (retry) {
+                    $scope.saveMapping();
+                    return;
+                }
+
+                //$timeout(function () {
+                //    if (!$scope.selectedMapping.name) {
+                //        $scope.fieldMap = {};
+                //        $scope.fixedValue = {};
+                //        $scope.fixedValueFormatted = {};
+
+                //        angular.forEach($scope.headerRow, function (value, key) {
+                //            var used = false;
+
+                //            if ($rootScope.language === 'tr') {
+                //                angular.forEach($scope.module.fields, function (field) {
+                //                    if (field.deleted)
+                //                        return;
+
+                //                    if (field.label_tr.toLowerCaseTurkish() === value.trim().toLowerCaseTurkish()) {
+                //                        used = true;
+                //                        $scope.fieldMap[field.name] = key;
+                //                    }
+                //                });
+                //            }
+                //            else {
+                //                angular.forEach($scope.module.fields, function (field) {
+                //                    if (field.deleted)
+                //                        return;
+
+                //                    if (field.label_tr.toLowerCase() === value.trim().toLowerCase()) {
+                //                        used = true;
+                //                        $scope.fieldMap[field.name] = key;
+                //                    }
+                //                    else {
+                //                        if (field && field.default_value) {
+                //                            if (field.data_type === 'picklist') {
+                //                                $scope.fieldMap[field.name] = 'fixed';
+                //                                var picklistValue = $filter('filter')($scope.picklistsModule[field.picklist_id], { id: field.default_value })[0];
+                //                                $scope.fixedValue[field.name] = picklistValue;
+                //                                $scope.fixedValueFormatted[field.name] = $rootScope.language === 'tr' ? picklistValue.label_tr : picklistValue.label_en;
+                //                            }
+                //                            else {
+                //                                $scope.fieldMap[field.name] = 'fixed';
+                //                                $scope.fixedValue[field.name] = field.default_value;
+                //                                $scope.fixedValueFormatted[field.name] = field.default_value;
+                //                            }
+                //                        }
+                //                    }
+                //                });
+                //            }
+
+                //            var cell = $filter('filter')($scope.cells, { column: key }, true)[0];
+
+                //            if (cell)
+                //                cell.used = used;
+                //        });
+                //    }
+                //});
+            };
+
+            var uploader = $scope.uploader = new FileUploader({
+                queueLimit: 1
+            });
+
+            uploader.onAfterAddingFile = function (fileItem) {
+                readExcel(fileItem._file);
+
+            };
+
+            uploader.onWhenAddingFileFailed = function (item, filter, options) {
+                switch (filter.name) {
+                    case 'excelFilter':
+                        toastr.warning($filter('translate')('Data.Import.FormatError'));
+                        break;
+                    case 'sizeFilter':
+                        toastr.warning($filter('translate')('Data.Import.SizeError'));
+                        break;
+                }
+            };
+
+            uploader.onBeforeUploadItem = function (item) {
+                item.url = 'storage/upload_import_excel?import_id=' + $scope.importResponse.id;
+            };
+
+            uploader.filters.push({
+                name: 'excelFilter',
+                fn: function (item, options) {
+                    var extension = helper.getFileExtension(item.name);
+                    return (extension === 'xls' || extension === 'xlsx');
+                }
+            });
+
+            uploader.filters.push({
+                name: 'sizeFilter',
+                fn: function (item) {
+                    return item.size < 2097152;//2 mb
+                }
+            });
+
+
+            $scope.clear = function () {
+                uploader.clearQueue();
+                $scope.uploader.clearQueue();
+                $scope.rows = null;
+                $scope.cells = null;
+                $scope.sheets = null;
+                $scope.fieldMap = null;
+                $scope.fixedField = null;
+            };
+
+            $scope.prepareItems = function () {
+                var items = [];
+                $scope.preparing = true;
+
+                var getRecordFieldValue = function (cellValue, field, rowNo, cellName) {
+                    var recordValue = '';
+
+                    if (cellValue)
+                        recordValue = cellValue.toString().trim();
+
+                    $scope.error = {};
+                    $scope.error.rowNo = rowNo;
+                    $scope.error.cellName = cellName;
+                    $scope.error.cellValue = cellValue;
+                    $scope.error.fieldLabel = field['label'];
+
+                    if (recordValue != null && recordValue != undefined) {
+
+                        if (recordValue.toString().length > 100) {
+                            $scope.error.message = $filter('translate')('Data.Import.Validation.MaxLength', { maxLength: field.validation.max_length });
+                            recordValue = null;
+                        }
+
+                        if (recordValue != null && recordValue != undefined)
+                            $scope.error = null;
+
+                        return recordValue;
+                    }
+                };
+
+                for (var i = 0; i < $scope.rows.length; i++) {
+                    var item = {};
+                    var row = $scope.rows[i];
+                    $scope.error = null;
+
+                    for (var fieldMapKey in $scope.fieldMap) {
+                        if ($scope.fieldMap.hasOwnProperty(fieldMapKey)) {
+                            var fieldMapValue = $scope.fieldMap[fieldMapKey];
+
+                            if (fieldMapValue === 'fixed') {
+                                item[fieldMapKey] = $scope.fixedField[fieldMapKey];
+                            }
+                            else {
+                                var field = angular.copy($filter('filter')($scope.fields, { name: fieldMapKey }, true)[0]);
+                                var cellValue = row[fieldMapValue];
+
+                                if (field && field.required && !cellValue) {
+                                    $scope.error = {};
+                                    $scope.error.rowNo = i + 2;
+                                    $scope.error.cellName = fieldMapValue;
+                                    $scope.error.cellValue = cellValue;
+                                    $scope.error.fieldLabel = field['label'];
+                                    $scope.error.message = $filter('translate')('Data.Import.Error.Required');
+                                    break;
+                                }
+
+                                if (!cellValue)
+                                    continue;
+
+                                var recordFieldValue = getRecordFieldValue(cellValue, field, i + 2, fieldMapValue);
+
+                                if (angular.isUndefined(recordFieldValue))
+                                    break;
+
+                                item[fieldMapKey] = recordFieldValue;
+                            }
+
+                            ////if (fieldMapKey === 'system_code') {
+                            ////    PicklistsService.isUniqueCheck(recordFieldValue)
+                            ////        .then(function (response) {
+                            ////            if (!response.data) {
+                            ////                $scope.error = {};
+                            ////                $scope.error.rowNo = i + 2;
+                            ////                $scope.error.cellName = fieldMapValue;
+                            ////                $scope.error.cellValue = cellValue;
+                            ////                $scope.error.fieldLabel = field['label'];
+                            ////                $scope.error.message = $filter('translate')('Data.Import.Error.Unique1', { field1: fieldMapKey }); 
+                            ////                $socpe.errorUnique
+                            ////            }
+                            ////        });  
+                            ////}
+                        }
+                    }
+
+                    if ($scope.error)
+                        break;
+
+                    items.push(item);
+                }
+
+                $scope.preparing = false;
+                return items;
+            };
+
+            $scope.saveMapping = function () {
+                $scope.items = $scope.prepareItems();
+            };
+
+            $scope.tryAgain = function () {
+                $scope.trying = true;
+                $scope.error = null;
+                $scope.errorUnique = null;
+                var file = uploader.queue[0]._file;
+                readExcel(file, true);
+                $scope.trying = false;
+            };
+
+            $scope.importValidStep = function (step, ignore) {
+                if (!$scope.importForm)
+                    return false;
+
+                $scope.importForm.$submitted = true;
+
+                if (!$scope.selectedSheet || !uploader.queue.length) {
+                    toastr.warning($filter('translate')('Data.Import.Error.Required'));
+                    return false;
+                }
+
+                if (!$scope.importForm.$valid && !ignore) {
+                    toastr.warning($filter('translate')('Data.Import.Error.Required'));
+                    return false;
+                }
+
+                $scope.importForm.$submitted = false;
+                $scope.wizardStep = step;
+                return true;
+            }
+
+            $scope.saveImport = function () {
+                $scope.saving = true;
+                if ($scope.error || !$scope.items || $scope.items.length <= 0)
+                    return false;
+
+                PicklistsService.import($scope.id, $scope.items)
+                    .then(function (response) {
+                        toastr.success("Picklist items are saved successfully.");
+                        $scope.cancel();
+                        $scope.selectPicklist(picklist.id);
+                        $scope.saving = false;
+                    })
+                    .catch(function (error) {
+                        //console.log(error);
+                        if (error.data) {
+                            $scope.error = {};
+                            $scope.error.rowNo = error.data.row + 2;
+                            $scope.error.cellValue = error.data.system_code;
+                            $scope.error.fieldLabel = error.data.field;
+                            $scope.error.message = 'Duplicate value on System Code field is not allowed.';
+                        }
+                        $scope.saving = false;
+
+                    });
+            };
+            //Excel  import Area
+
         }
     ]);
