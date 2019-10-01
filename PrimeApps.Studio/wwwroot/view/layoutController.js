@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scope', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'operations', 'blockUI', '$cache', 'helps', 'LayoutService', 'AuthService', '$sessionStorage', '$sce', '$modal', 'FileUploader',
-    function ($rootScope, $scope, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, $popover, entityTypes, guidEmpty, component, convert, helper, operations, blockUI, $cache, helps, LayoutService, AuthService, $sessionStorage, $sce, $modal, FileUploader) {
+angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scope', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'operations', 'blockUI', '$cache', 'helps', 'LayoutService', 'AuthService', '$sessionStorage', '$sce', '$modal', 'FileUploader', '$timeout',
+    function ($rootScope, $scope, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, $popover, entityTypes, guidEmpty, component, convert, helper, operations, blockUI, $cache, helps, LayoutService, AuthService, $sessionStorage, $sce, $modal, FileUploader, $timeout) {
         $rootScope.checkUserProfile = helper.checkUserProfile;
 
         angular.element($window).on('load resize', function () {
@@ -161,7 +161,9 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     }
 
                     $rootScope.goLive.status = false;
-                    $scope.$apply();
+                    $timeout(function() {
+                        $scope.$apply();
+                    });
                 }
                 else {
                     LayoutService.getPackage(id)
@@ -172,15 +174,16 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                                         toastr.success("Your package is ready.");
                                     }
                                     else {
-                                        toastr.success("An unexpected error occurred while creating a package.");
+                                        toastr.error("An unexpected error occurred while creating a package.");
                                     }
 
                                     if (packagesPageActive) {
                                         $rootScope.$broadcast('package-created');
                                     }
                                     $rootScope.goLive.status = false;
-                                    $scope.$apply();
-
+                                    $timeout(function() {
+                                        $scope.$apply();
+                                    });
                                 }
                                 else {
                                     $rootScope.openWS($scope.packageId);
@@ -190,15 +193,16 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 }
             };
             $scope.socket.onerror = function (e) {
-                //$scope.publishError = e.data;
-                //$scope.$apply();
                 console.log(e);
                 toastr.error($filter('translate')('Common.Error'));
                 $scope.loading = false;
             };
             $scope.socket.onmessage = function (e) {
                 $rootScope.goLive.logs = e.data;
-                $scope.$apply();
+                $timeout(function() {
+                    $scope.$apply();
+                });
+                
             };
         };
 

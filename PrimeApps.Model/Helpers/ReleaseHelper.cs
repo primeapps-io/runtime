@@ -112,6 +112,7 @@ namespace PrimeApps.Model.Helpers
                 result = ReleaseHelper.SetRecordsIsSampleSql();
 
                 AddScript(scriptPath, result);
+                AddScript(scriptPath, $"INSERT INTO \"public\".\"dashboard\"(\"id\", \"name\", \"description\", \"user_id\", \"profile_id\", \"is_active\", \"sharing_type\", \"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\") VALUES (1, 'Default Dashboard', NULL, NULL, NULL, 'f', 1, 1, NULL, '2018-02-18 23:14:26.377005', NULL, 'f');");
 
                 /*if (!result)
                     File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while marking records as sample... \u001b[39m" + Environment.NewLine);
@@ -134,7 +135,7 @@ namespace PrimeApps.Model.Helpers
                     {
                         AddScript(storagePath, (index == 0 ? "[" : "") + new JObject {["mime_type"] = value.MimeType, ["operation"] = value.Operation, ["file_name"] = value.FileName, ["unique_name"] = value.UniqueName, ["path"] = value.Path}.ToJsonString() + (index != historyStorages.Count() - 1 ? "," : "]"));
 
-                        var file = await storage.GetObject($"app{app["id"]}/templates/", value.UniqueName);
+                        var file = await storage.GetObject(value.Path, value.UniqueName);
                         using (var fileStream = File.Create(Path.Combine(storageFilesPath, value.FileName)))
                         {
                             file.ResponseStream.CopyTo(fileStream);

@@ -38,6 +38,13 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<bool> IsFirstPackage(int appId)
+        {
+            return await DbContext.Packages
+                       .Where(x => !x.Deleted && x.AppId == appId && x.Status == ReleaseStatus.Succeed)
+                       .FirstOrDefaultAsync() == null;
+        }
+
         public async Task<List<Package>> GetAll(int appId)
         {
             return await DbContext.Packages

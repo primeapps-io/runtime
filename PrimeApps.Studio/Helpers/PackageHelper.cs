@@ -27,15 +27,14 @@ using PrimeApps.Util.Storage;
 
 namespace PrimeApps.Studio.Helpers
 {
-    public interface IReleaseHelper
+    public interface IPackageHelper
     {
         Task All(int appId, bool clearAllRecords, string dbName, string version, int packageId, List<HistoryStorage> historyStorages);
 
         Task Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, int appId, string dbName, string version, int packageId);
-        Task<bool> IsFirstRelease(int version);
     }
 
-    public class ReleaseHelper : IReleaseHelper
+    public class PackageHelper : IPackageHelper
     {
         private CurrentUser _currentUser;
         private IConfiguration _configuration;
@@ -43,7 +42,7 @@ namespace PrimeApps.Studio.Helpers
         private IHttpContextAccessor _context;
         private IUnifiedStorage _storage;
 
-        public ReleaseHelper(IConfiguration configuration,
+        public PackageHelper(IConfiguration configuration,
             IServiceScopeFactory serviceScopeFactory,
             IHttpContextAccessor context,
             IUnifiedStorage storage)
@@ -61,13 +60,16 @@ namespace PrimeApps.Studio.Helpers
             {
                 var studioDbContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
                 var platformDbContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                var tenantDbContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 
                 using (var platformRepository = new PlatformRepository(platformDbContext, _configuration))
                     //using (var deploymentRepository = new DeploymentRepository(studioDbContext, _configuration))
                 using (var appDraftRepository = new AppDraftRepository(studioDbContext, _configuration))
                 using (var packageRepository = new PackageRepository(studioDbContext, _configuration))
+                using (var historyDatabaseRepository = new HistoryDatabaseRepository(tenantDbContext, _configuration))
+                using (var historyStorageRepository = new HistoryStorageRepository(tenantDbContext, _configuration))
                 {
-                    packageRepository.CurrentUser = platformRepository.CurrentUser = appDraftRepository.CurrentUser = _currentUser;
+                    historyStorageRepository.CurrentUser = historyDatabaseRepository.CurrentUser = packageRepository.CurrentUser = platformRepository.CurrentUser = appDraftRepository.CurrentUser = _currentUser;
 
                     var studioClientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
 
@@ -103,6 +105,22 @@ namespace PrimeApps.Studio.Helpers
                     package.EndTime = DateTime.Now;
                     await packageRepository.Update(package);
 
+                    if (package.Status == ReleaseStatus.Failed)
+                    {
+                        var dbHistory = await historyDatabaseRepository.GetLast();
+                        if (dbHistory != null && dbHistory.Tag == version)
+                        {
+                            dbHistory.Tag = null;
+                            await historyDatabaseRepository.Update(dbHistory);
+                        }
+
+                        var storageHistory = await historyStorageRepository.GetLast();
+                        if (storageHistory != null && storageHistory.Tag == version)
+                        {
+                            storageHistory.Tag = null;
+                            await historyDatabaseRepository.Update(dbHistory);
+                        }
+                    }
 
                     /*
                       * TODO BC
@@ -122,13 +140,16 @@ namespace PrimeApps.Studio.Helpers
             {
                 var studioDbContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
                 var platformDbContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                var tenantDbContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 
                 using (var platformRepository = new PlatformRepository(platformDbContext, _configuration))
                     //using (var deploymentRepository = new DeploymentRepository(studioDbContext, _configuration))
                 using (var appDraftRepository = new AppDraftRepository(studioDbContext, _configuration))
                 using (var packageRepository = new PackageRepository(studioDbContext, _configuration))
+                using (var historyDatabaseRepository = new HistoryDatabaseRepository(tenantDbContext, _configuration))
+                using (var historyStorageRepository = new HistoryStorageRepository(tenantDbContext, _configuration))
                 {
-                    packageRepository.CurrentUser = platformRepository.CurrentUser = appDraftRepository.CurrentUser = _currentUser;
+                    historyStorageRepository.CurrentUser = historyDatabaseRepository.CurrentUser = packageRepository.CurrentUser = platformRepository.CurrentUser = appDraftRepository.CurrentUser = _currentUser;
 
                     var studioClientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
 
@@ -158,7 +179,6 @@ namespace PrimeApps.Studio.Helpers
                     catch (Exception e)
                     {
                         Console.WriteLine(e);
-                        throw;
                     }
 
 
@@ -166,6 +186,23 @@ namespace PrimeApps.Studio.Helpers
                     package.Status = result ? ReleaseStatus.Succeed : ReleaseStatus.Failed;
                     package.EndTime = DateTime.Now;
                     await packageRepository.Update(package);
+
+                    if (package.Status == ReleaseStatus.Failed)
+                    {
+                        var dbHistory = await historyDatabaseRepository.GetLast();
+                        if (dbHistory != null && dbHistory.Tag == version)
+                        {
+                            dbHistory.Tag = null;
+                            await historyDatabaseRepository.Update(dbHistory);
+                        }
+
+                        var storageHistory = await historyStorageRepository.GetLast();
+                        if (storageHistory != null && storageHistory.Tag == version)
+                        {
+                            storageHistory.Tag = null;
+                            await historyDatabaseRepository.Update(dbHistory);
+                        }
+                    }
 
                     /*
                      * TODO BC
@@ -281,32 +318,6 @@ namespace PrimeApps.Studio.Helpers
 
             return scripts;
         }*/
-
-        public async Task<bool> IsFirstRelease(int version)
-        {
-            version = version - 1;
-
-            if (version == 0)
-                return true;
-
-            using (var scope = _serviceScopeFactory.CreateScope())
-            {
-                var studioDbContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
-
-                using (var packageRepository = new PackageRepository(studioDbContext, _configuration))
-                {
-                    var release = await packageRepository.GetByVersion(version);
-
-                    if (release == null)
-                        return true;
-
-                    if (release.Status == ReleaseStatus.Succeed)
-                        return false;
-
-                    return await IsFirstRelease(version);
-                }
-            }
-        }
 
         public async void UploadPackage(int appId, string dbName, string version)
         {

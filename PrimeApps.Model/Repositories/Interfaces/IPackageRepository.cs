@@ -11,6 +11,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<Package> GetLastPackage(int appId);
         Task<int> Count(int appId);
         Task<Package> Get(int id);
+        Task<bool> IsFirstPackage(int appId);
         Task<List<Package>> GetAll(int appId);
         Task<Package> GetByVersion(int version);
         Task<Package> GetActiveProcess(int appId);

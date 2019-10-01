@@ -77,9 +77,7 @@ namespace PrimeApps.Studio
             services.AddScoped<Warehouse, Warehouse>();
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
             services.AddScoped<IReportHelper, ReportHelper>();
-            services.AddScoped<IReleaseHelper, Helpers.ReleaseHelper>();
-
-            services.AddTransient<IUnifiedStorage, UnifiedStorage>();
+            services.AddScoped<IPackageHelper, Helpers.PackageHelper>();
 
             services.TryAddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.TryAddSingleton<IHistoryHelper, HistoryHelper>();

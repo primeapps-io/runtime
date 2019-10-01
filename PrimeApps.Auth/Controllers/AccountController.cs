@@ -1801,6 +1801,7 @@ namespace PrimeApps.Auth.UI
 
                         // Add storage policy to make all uploaded objects reachable within app domain.
                         await _storage.CreateBucketPolicy($"tenant{tenant.Id}", baseUrl, UnifiedStorage.PolicyType.TenantPolicy);
+                        await _storage.AddHttpReferrerUrlToBucket($"app{applicationInfo.Id}", baseUrl, UnifiedStorage.PolicyType.StudioPolicy);
 
                         Queue.QueueBackgroundWorkItem(x => AuthHelper.TenantOperationWebhook(applicationInfo, tenant, tenantUser));
 
@@ -1859,7 +1860,6 @@ namespace PrimeApps.Auth.UI
                                 "Studio user create failed. StatusCode: " + userCreatedResponse.StatusCode + ", Url: " +
                                 url + ", Request: " + requestModel.ToJsonString());
                         }
-
 
                         Queue.QueueBackgroundWorkItem(x => AuthHelper.StudioOperationWebhook(applicationInfo, platformUser));
                     }

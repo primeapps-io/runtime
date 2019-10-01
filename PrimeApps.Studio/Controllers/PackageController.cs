@@ -33,11 +33,11 @@ namespace PrimeApps.Studio.Controllers
         private IHistoryDatabaseRepository _historyDatabaseRepository;
         private IHistoryStorageRepository _historyStorageRepository;
         private IPermissionHelper _permissionHelper;
-        private IReleaseHelper _releaseHelper;
+        private IPackageHelper _packageHelper;
         private IUnifiedStorage _storage;
 
         public PackageController(IConfiguration configuration,
-            IReleaseHelper releaseHelper,
+            IPackageHelper packageHelper,
             IPackageRepository packageRepository,
             IAppDraftRepository appDraftRepository,
             IHistoryDatabaseRepository historyDatabaseRepository,
@@ -47,7 +47,7 @@ namespace PrimeApps.Studio.Controllers
             IBackgroundTaskQueue queue)
         {
             _configuration = configuration;
-            _releaseHelper = releaseHelper;
+            _packageHelper = packageHelper;
             _packageRepository = packageRepository;
             _historyDatabaseRepository = historyDatabaseRepository;
             _historyStorageRepository = historyStorageRepository;
@@ -187,23 +187,23 @@ namespace PrimeApps.Studio.Controllers
              */
 
             var dbHistory = await _historyDatabaseRepository.GetLast();
-            if (dbHistory != null && dbHistory.Tag != (int.Parse(packageModel.Version) - 1).ToString())
+            if (dbHistory != null && dbHistory.Tag == null)
             {
                 dbHistory.Tag = packageModel.Version;
                 await _historyDatabaseRepository.Update(dbHistory);
             }
 
             var storageHistory = await _historyStorageRepository.GetLast();
-            if (storageHistory != null && storageHistory.Tag != (int.Parse(packageModel.Version) - 1).ToString())
+            if (storageHistory != null && storageHistory.Tag == null)
             {
                 storageHistory.Tag = packageModel.Version;
                 await _historyStorageRepository.Update(storageHistory);
             }
 
-            if (await _releaseHelper.IsFirstRelease(version))
+            if (await _packageRepository.IsFirstPackage((int)AppId))
             {
                 var historyStorages = await _historyStorageRepository.GetAll();
-                _queue.QueueBackgroundWorkItem(token => _releaseHelper.All((int)AppId, (bool)appOptions["clear_all_records"], dbName, version.ToString(), packageModel.Id, historyStorages));
+                _queue.QueueBackgroundWorkItem(token => _packageHelper.All((int)AppId, (bool)appOptions["clear_all_records"], dbName, version.ToString(), packageModel.Id, historyStorages));
             }
             else
             {
@@ -216,7 +216,7 @@ namespace PrimeApps.Studio.Controllers
                 if (storageHistory != null && storageHistory.Tag != (int.Parse(packageModel.Version) - 1).ToString())
                     historyStorages = await _historyStorageRepository.GetDiffs(currentBuildNumber.ToString());
 
-                _queue.QueueBackgroundWorkItem(token => _releaseHelper.Diffs(historyDatabase, historyStorages, (int)AppId, dbName, version.ToString(), packageModel.Id));
+                _queue.QueueBackgroundWorkItem(token => _packageHelper.Diffs(historyDatabase, historyStorages, (int)AppId, dbName, version.ToString(), packageModel.Id));
             }
 
             return Ok(packageModel.Id);

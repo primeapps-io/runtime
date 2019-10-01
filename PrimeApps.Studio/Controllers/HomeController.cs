@@ -77,7 +77,7 @@ namespace PrimeApps.Studio.Controllers
             if (!string.IsNullOrEmpty(previewUrl))
                 ViewBag.PreviewUrl = previewUrl;
 
-            var blobUrl = _configuration.GetValue("AppSettings:BlobUrl", string.Empty);
+            var blobUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
 
             if (!string.IsNullOrEmpty(blobUrl))
                 ViewBag.BlobUrl = blobUrl;

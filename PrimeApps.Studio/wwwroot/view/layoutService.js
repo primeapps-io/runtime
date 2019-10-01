@@ -25,6 +25,10 @@ angular.module('primeapps')
                         if (!$rootScope.breadcrumblist) {
                             $rootScope.breadcrumblist = [{}, {}, {}];
                         }
+
+                        config['storage_host'] = blobUrl + '/';
+                        $rootScope.config = config;
+                        
                         def.resolve($rootScope.organizations);
                         helper.hideLoader();
                     });

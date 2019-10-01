@@ -14,6 +14,7 @@ using PrimeApps.Studio.Constants;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
 using PrimeApps.Studio.Services;
+using PrimeApps.Util.Storage;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -28,6 +29,7 @@ namespace PrimeApps.Studio.Controllers
         private IOrganizationRepository _organizationRepository;
         private IPermissionHelper _permissionHelper;
         private IGiteaHelper _giteaHelper;
+        private IUnifiedStorage _storage;
 
         public AppController(IConfiguration configuration,
             IBackgroundTaskQueue queue,
@@ -36,7 +38,8 @@ namespace PrimeApps.Studio.Controllers
             ICollaboratorsRepository collaboratorRepository,
             IOrganizationRepository organizationRepository,
             IPermissionHelper permissionHelper,
-            IGiteaHelper giteaHelper)
+            IGiteaHelper giteaHelper,
+            IUnifiedStorage storage)
         {
             Queue = queue;
             _configuration = configuration;
@@ -46,6 +49,7 @@ namespace PrimeApps.Studio.Controllers
             _organizationRepository = organizationRepository;
             _permissionHelper = permissionHelper;
             _giteaHelper = giteaHelper;
+            _storage = storage;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -82,17 +86,6 @@ namespace PrimeApps.Studio.Controllers
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
-            var authTheme = new JArray();
-            authTheme.Add(new JObject
-            {
-                ["image"] = "/images/banner.svg",
-                ["descriptions"] = new JObject
-                {
-                    ["en"] = "Welcome to PrimeApps",
-                    ["tr"] = "PrimeApps’e Hoşgeldiniz"
-                }
-            });
-
             var app = new AppDraft
             {
                 Name = model.Name,
@@ -113,18 +106,14 @@ namespace PrimeApps.Studio.Controllers
                     Language = "en",
                     AuthTheme = new JObject()
                     {
-                        ["logo"] = "/images/logo.png",
                         ["color"] = "#555198",
                         ["title"] = "PrimeApps",
-                        ["banner"] = authTheme,
-                        ["favicon"] = "/images/primeapps.ico"
+                        ["banner"] = new JArray {new JObject {["image"] = "", ["descriptions"] = ""}},
                     }.ToJsonString(),
                     AppTheme = new JObject()
                     {
-                        ["logo"] = "/images/logo.jpg",
                         ["color"] = "#555198",
                         ["title"] = "PrimeApps",
-                        ["favicon"] = "images/favicon/primeapps.ico"
                     }.ToJsonString(),
                     MailSenderName = "PrimeApps",
                     MailSenderEmail = "app@primeapps.io",
@@ -158,6 +147,8 @@ namespace PrimeApps.Studio.Controllers
                 model.TempletId);
             Queue.QueueBackgroundWorkItem(token =>
                 _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser));
+
+            await _storage.CreateBucketPolicy($"app{app.Id}", Request.Scheme + "://" + Request.Host.Value, UnifiedStorage.PolicyType.StudioPolicy);
 
             return Ok(app);
         }

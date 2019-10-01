@@ -33,6 +33,7 @@ namespace PrimeApps.Util.Storage
         Task<bool> FolderExists(string bucket);
         Task<bool> ObjectExists(string bucket, string key);
         Task<PutACLResponse> CreateACL(string bucket, string key, S3CannedACL cannedACL);
+        Task AddHttpReferrerUrlToBucket(string bucketName, string url, PolicyType type);
         Task<PutBucketPolicyResponse> CreateBucketPolicy(string bucket, string domainName, PolicyType policyType, bool CreateBucketIfNotExists = true);
         event FileUploaded FileUploadedEvent;
         string GetDownloadFolderPath();

@@ -227,6 +227,9 @@ namespace PrimeApps.Model.Helpers
                         else
                             File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while creating app client... Error: " + addClientResult + " \u001b[39m" + Environment.NewLine);
                     }
+
+                    //Add auth url to amazon s3 bucket policy.
+                    await storage.AddHttpReferrerUrlToBucket($"app{app["id"]}", useSsl ? "https://" : "http://" + authUrl, UnifiedStorage.PolicyType.StudioPolicy);
                 }
                 else if (!createPlatformApp && obj.index == 0)
                 {

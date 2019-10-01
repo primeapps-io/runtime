@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
+using Microsoft.CodeAnalysis.CSharp;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace PrimeApps.Util.Storage
 {
@@ -121,11 +124,37 @@ namespace PrimeApps.Util.Storage
                                     "  ]" +
                                     "}";
 
+        const string StudioPolicy = "{" +
+                                    "  \"Version\":\"2012-10-17\"," +
+                                    "  \"Id\":\"{bucketName}_policy\"," +
+                                    "  \"Statement\":[" +
+                                    "    {" +
+                                    "      \"Sid\":\"http_referrer\"," +
+                                    "      \"Effect\":\"Allow\"," +
+                                    "      \"Principal\":\"*\"," +
+                                    "      \"Action\":\"s3:GetObject\"," +
+                                    "      \"Resource\":\"arn:aws:s3:::{bucketName}/*\"," +
+                                    "      \"Condition\":{" +
+                                    "        \"StringLike\":{\"aws:Referer\":[\"{domainName}/*\"]}" +
+                                    "      }" +
+                                    "    }, " +
+                                    "    {" +
+                                    "      \"Sid\":\"public_read_email\"," +
+                                    "      \"Effect\":\"Allow\"," +
+                                    "      \"Principal\": \"*\"," +
+                                    "      \"Action\":[\"s3:GetObject\"]," +
+                                    "      \"Resource\":[\"arn:aws:s3:::{bucketName}/mail/*\"]" +
+                                    "    }" +
+                                    "  ]" +
+                                    "}";
+
+
         public enum PolicyType
         {
             HTTPReferrer,
             PublicRead,
-            TenantPolicy
+            TenantPolicy,
+            StudioPolicy
         }
 
         public UnifiedStorage(IAmazonS3 client, IConfiguration configuration)
@@ -347,6 +376,29 @@ namespace PrimeApps.Util.Storage
             return await _client.PutACLAsync(request);
         }
 
+        public async Task AddHttpReferrerUrlToBucket(string bucketName, string url, PolicyType type)
+        {
+            var bucketPolicy = await _client.GetBucketPolicyAsync(bucketName);
+
+            if (bucketPolicy == null)
+                await CreateBucketPolicy(bucketName, url, type);
+            else
+            {
+                var obj = JObject.Parse(bucketPolicy.Policy);
+                var httpReferrer = obj["Statement"].FirstOrDefault(jt => (string)jt["Sid"] == "http_referrer");
+                var index = ((JArray)obj["Statement"]).IndexOf(httpReferrer);
+                ((JArray)(obj["Statement"][index]["Condition"]["StringLike"]["aws:Referer"])).Add(url + "/*");
+
+                var putRequest = new PutBucketPolicyRequest
+                {
+                    BucketName = bucketName,
+                    Policy = JsonConvert.SerializeObject(obj)
+                };
+
+                await _client.PutBucketPolicyAsync(putRequest);
+            }
+        }
+
         public async Task<PutBucketPolicyResponse> CreateBucketPolicy(string bucket, string domainName,
             PolicyType policyType, bool createBucketIfNotExists = true)
         {
@@ -362,6 +414,9 @@ namespace PrimeApps.Util.Storage
                     break;
                 case PolicyType.TenantPolicy:
                     policy = TenantPolicy;
+                    break;
+                case PolicyType.StudioPolicy:
+                    policy = StudioPolicy;
                     break;
             }
 

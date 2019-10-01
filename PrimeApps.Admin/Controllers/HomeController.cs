@@ -57,7 +57,7 @@ namespace PrimeApps.Admin.Controllers
                 if (selectedOrg == null)
                 {
                     ViewBag.ActiveOrganizationId = organizations[0].Id.ToString();
-                    return RedirectToAction("Index", new { id = organizations[0].Id });
+                    return RedirectToAction("Index", new {id = organizations[0].Id});
                 }
 
                 ViewBag.Title = selectedOrg.Name + " - " + titleText;
@@ -75,7 +75,6 @@ namespace PrimeApps.Admin.Controllers
             var result = await _organizationHelper.ReloadOrganization();
 
             return RedirectToAction("Index", "Home");
-
         }
 
         [Route("Logout")]
@@ -90,7 +89,7 @@ namespace PrimeApps.Admin.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
         }
     }
 }
