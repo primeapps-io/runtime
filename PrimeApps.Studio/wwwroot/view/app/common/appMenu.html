@@ -137,10 +137,16 @@
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/templatesEmail" data-trigger="hover" data-type="info"
                    data-title="Email" bs-tooltip data-placement="right">
                     <i class="fas fa-envelope"></i>
-                    <span>E-mail</span>
+                    <span>E-mail (Modules)</span>
                 </a>
             </li>
-         
+            <li ng-class="activeMenuItem ==='appEmailTemplates' ? 'active' :''">
+                <a href="/#/org/{{orgId}}/app/{{appId}}/appEmailTemplates" data-trigger="hover" data-type="info"
+                   data-title="App Email Templates" bs-tooltip data-placement="right">
+                    <i class="fas fa-envelope"></i>
+                    <span>E-mail (App)</span>
+                </a>
+            </li>
             <li ng-class="activeMenuItem ==='templatesWord' ? 'active' :''">
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/templatesWord" data-trigger="hover" data-type="info"
                    data-title="Word Templates" bs-tooltip data-placement="right">
@@ -155,15 +161,6 @@
                     <span>Spreadsheet </span>
                 </a>
             </li>
-            
-            <li ng-class="activeMenuItem ==='appEmailTemplates' ? 'active' :''">
-                <a href="/#/org/{{orgId}}/app/{{appId}}/appEmailTemplates" data-trigger="hover" data-type="info"
-                   data-title="App Email Templates" bs-tooltip data-placement="right">
-                    <i class="fas fa-at"></i>
-                    <span>App Email Templates</span>
-                </a>
-            </li>
-
         </ul>
     </li>
     <li ng-click="openSubMenu('');$event.stopPropagation();" ng-class="activeMenuItem ==='components' ? 'active' :''">
