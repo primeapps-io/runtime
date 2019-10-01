@@ -1,32 +1,61 @@
-<div class="modal setup-modal" ng-class="id ? 'modal-1100':'modal-600'" tabindex="-1" role="dialog">
+<div class="modal setup-modal" ng-class="picklist.id ? 'modal-1100':'modal-600'" tabindex="-1" role="dialog">
     <div class="modal-header">
         <div class="flex-between">
-            <h4 ng-if="id" class="modal-title">
+            <h4 ng-if="picklist.id" class="modal-title">
                 {{'Picklist.PicklistItem' | translate:{name:picklist['label_'+language]} }}
             </h4>
-            <h4 ng-if="!id" class="modal-title">{{'Picklist.AddNew' | translate }} </h4>
+            <h4 ng-if="!picklist.id" class="modal-title">{{'Picklist.AddNew' | translate }} </h4>
             <div>
                 <ul class="list-unstyled list-inline">
                     <li>
                         <button type="button" class="btn add-button btn-radius btn-gray"
                                 ng-click="cancel();">
-                            <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
+                            <i class="fas fa-times"></i>{{$parent.$parent.excelMode ? 'Cancel Excel Import':'Common.Cancel' | translate}}
                         </button>
                     </li>
-                    <li>
-                        <button type="button" ng-if="picklist.id" ng-click="addMode(true);"
+                    <!--Excel import mode Button START-->
+                    <li ng-show="wizardStep !== 0 && $parent.$parent.excelMode">
+                        <button type="button"
+                                class="btn btn-radius btn-blue "
+                                ng-click="importValidStep(wizardStep-1,true);">
+                            <i class="fas fa-angle-left"></i> {{'Common.Previous' | translate}}
+                        </button>
+                    </li>
+
+                    <li ng-show="wizardStep !== 2  && $parent.$parent.excelMode">
+                        <button type="button" class="btn btn-radius btn-blue "
+                                ng-click="importValidStep(wizardStep+1,false) ? saveMapping():false">
+                            {{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>
+                        </button>
+                    </li>
+                    <li ng-show="wizardStep === 2  && $parent.$parent.excelMode">
+                        <button type="submit" ng-click="saveImport();"
+                                ng-disabled="error"
+                                class="btn add-button btn-radius btn-blue" ladda="saving">
+                            <i class="fas fa-save"></i>Import Data
+                        </button>
+                    </li>
+                    <!--Excel import mode Button END-->
+                    <li ng-show="picklist.id && !$parent.$parent.excelMode">
+                        <button type="button" class="btn add-button btn-radius btn-warning"
+                                ng-click="$parent.$parent.excelMode = true">
+                            <i class="fas fa-file-import"></i>Import Excel
+                        </button>
+                    </li>
+                    <li ng-show="picklist.id && !$parent.$parent.excelMode">
+                        <button type="button" ng-click="addMode(true);"
                                 class="btn add-button btn-radius btn-blue">
                             <i class="fas fa-plus"></i>{{'Common.Add' | translate}}
                         </button>
                     </li>
-                    <li>
-                        <button type="button" ng-if="!picklist.id" ng-click="save($parent.picklistForm);"
+                    <li ng-show="!picklist.id && !$parent.$parent.excelMode">
+                        <button type="button" ng-click="save($parent.picklistForm);"
                                 class="btn add-button btn-radius btn-blue" ladda="saving">
                             <i class="fas fa-save"></i>{{'Common.Save' | translate}}
                         </button>
                     </li>
-                    <li>
-                        <button type="button" ng-if="orderChanged" ng-click="orderSave();"
+                    <li ng-show="orderChanged && !$parent.$parent.excelMode">
+                        <button type="button" ng-click="orderSave();"
                                 class="btn add-button btn-radius btn-blue" ladda="saving">
                             <i class="fas fa-save"></i>{{'Picklist.SaveSortOrder' | translate}}
                         </button>
@@ -35,7 +64,7 @@
             </div>
         </div>
     </div>
-    <div class="modal-dialog scroll-style-4">
+    <div class="modal-dialog scroll-style-4" ng-show="!$parent.$parent.excelMode">
         <div ng-show="!picklist.id" class="form-group">
             <form name="picklistForm" class="form-horizontal form-custom">
 
@@ -74,6 +103,9 @@
             </form>
         </div>
         <div ng-show="picklist.id" class="form-group">
+
+
+
             <!--<label class="required-field">{{'Setup.Modules.PicklistOptions' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>-->
             <div id="rightTopBar" class="scrollBar"></div>
             <div id="picklistOptionContainer" class="tab-content tab-content2 table-responsive">
@@ -234,6 +266,139 @@
                 <!--  <button type="button" class="btn btn-xs btn-w-sm btn-custom" style="margin-left: 5px" ng-click="newOption(picklistForm); fieldForm.$setValidity('picklist', true);"><i class="fa fa-plus pull-left"></i> {{'Setup.Modules.NewOption' | translate}}</button>-->
             </div>
             <div id="rightBottomBar" class="scrollBar"></div>
+        </div>
+    </div>
+
+    <div class="modal-dialog" ng-show="picklist.id && $parent.$parent.excelMode">
+        <div class="modal-content view-form">
+            <div class="modal-body">
+                <div class="megalist">
+                    <div class="modal-menu">
+                        <ul class="list-unstyled">
+                            <li>
+                                <a ng-class="{'active':wizardStep == 0}"
+                                   ng-click="importValidStep(0,true);">File Selection</a>
+                            </li>
+                            <li>
+                                <a ng-class="{'active':wizardStep == 1}"
+                                   ng-click="importValidStep(1,wizardStep===0 ?false:true );">Mapping</a>
+                            </li>
+                            <li>
+                                <a ng-class="{'active':wizardStep == 2}"
+                                   ng-disabled="!fieldMap ||!fieldMap[name] || !fieldMap.system_code"
+                                   ng-click="importValidStep(2,false) ? saveMapping():false">Finish</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <form name="$parent.$parent.importForm" class="form-horizontal form-custom" ng-submit="" autocomplete="off" novalidate>
+                            <div class="section" id="section2" ng-show="wizardStep === 0">
+                                <div class="panel">
+
+                                    <div class="form-group" ng-class="{'has-error': $parent.$parent.importForm.$submitted && !uploader.queue.length}">
+                                        <label class="control-label col-sm-12">File Selection</label>
+
+                                        <span class="file-input btn btn-custom btn-sm btn-file" ng-disabled="uploader.queue.length">
+                                            {{'Data.Import.ChooseFiles' | translate}} <input type="file" class="form-control" name="excelFile" ng-required="!uploader.queue.length" nv-file-select uploader="uploader">
+                                        </span>
+
+                                        <span ng-show="uploader.queue.length">{{uploader.queue[0].file.name}}</span>
+                                        <button type="reset" class="btn add-button btn-radius btn-red" ng-show="uploader.queue.length" ng-click="clear()"><i class="fa fa-times-circle"></i></button>
+
+                                    </div>
+                                    <div class="form-group" ng-show="sheets" ng-class="{'has-error': $parent.$parent.importForm.$submitted && !selectedSheet}">
+                                        <label class="control-label col-sm-12">{{'Data.Import.SelectSheet' | translate}}</label>
+                                        <label class="radio-inline newinput" ng-repeat="sheet in sheets">
+                                            <input type="radio" name="selectedSheet" ng-value="sheet" ng-required="!selectedSheet" ng-model="selectedSheet" ng-click="selectSheet()">{{sheet}}
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="callout callout-info">
+                                            <p><label class="bold">{{'Data.Import.Info.Title1' | translate}}</label></p>
+                                            <p>
+                                                <ul>
+                                                    <li>{{'Data.Import.Info.Info1' | translate}}</li>
+                                                    <li>{{'Data.Import.Info.Info2' | translate}}</li>
+                                                    <li>{{'Data.Import.Info.Info3' | translate}}</li>
+                                                </ul>
+                                            </p>
+                                            <p><label class="bold">{{'Data.Import.Info.Title2' | translate}}</label></p>
+                                            <p>
+                                                <ul>
+                                                    <li>{{'Data.Import.Info.Info4' | translate}}</li>
+                                                </ul>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="section" id="section3" ng-show="wizardStep === 1">
+                                <div class="panel">
+                                    <div class="form-group" ng-repeat="field in fields | orderBy:'order'"
+                                         ng-class="{'has-error': $parent.$parent.importForm.$submitted && $parent.$parent.importForm[field.name].$invalid}">
+                                        <label class="control-label col-sm-12">
+                                            {{field.label}}
+                                            <span class="required-label">{{field.required ? '(required)':''}}</span>
+                                        </label>
+                                        <select class="form-control ng-animate-disabled"
+                                                name="{{field.name}}"
+                                                tabindex="{{field.order}}"
+                                                ng-required="field.required && selectedSheet && wizardStep === 1"
+                                                ng-model="fieldMap[field.name]">
+                                            <option value="">{{'Common.Select' | translate}}</option>
+                                            <option value="{{cell.column}}" ng-repeat="cell in cells track by cell.column" class="free-cell" ng-class="{'used-cell': cell.used}">{{cell.name}}</option>
+                                            <option value="fixed" style="background-color: #fbf7dd;">Fixed Value</option>
+                                        </select>
+                                        <input type="text"
+                                               name="{{field.name}}_fixed"
+                                               class="form-control ng-animate-disabled"
+                                               style="margin-top:5px;"
+                                               maxlength="100"
+                                               ng-if="fieldMap[field.name] === 'fixed'"
+                                               ng-model="fixedField[field.name]"
+                                               ng-required="field.required && fieldMap[field.name] === 'fixed'" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="section" id="section4" ng-show="wizardStep === 2">
+                                <div class="subpanel">
+                                    <h5 class="subpanel-heading">{{'Data.Import.Step3' | translate}}</h5>
+                                    <div class="subpanel-body">
+                                        <div ng-show="preparing" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                        <div ng-show="!preparing">
+                                            <div class="callout callout-success" ng-show="!error && !errorUnique && !trying">{{'Data.Import.ReadyToTransfer' | translate:{count:rows.length} }}</div>
+                                            <div ng-show="error">
+                                                <p>{{'Data.Import.FixErrorFirst' | translate}}</p>
+                                                <div class="callout callout-danger">
+                                                    <p><span class="bold">{{'Data.Import.ErrorMessage' | translate}}:</span> {{error.message}}</p>
+                                                    <p><span class="bold">{{'Data.Import.Row' | translate}}:</span> {{error.rowNo}}</p>
+                                                    <p><span class="bold">{{'Data.Import.Column' | translate}}:</span> {{error.cellName}} ({{error.fieldLabel}})</p>
+                                                    <p><span class="bold">{{'Data.Import.Value' | translate}}:</span> {{error.cellValue}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="callout callout-danger" ng-show="errorUnique">
+                                                <span ng-if="!errorUnique.field2">{{'Data.Import.Error.Unique1' | translate:{field1:errorUnique.field} }}</span>
+                                                <span ng-if="errorUnique.field2">{{'Data.Import.Error.Unique2' | translate:{field1:errorUnique.field, field2:errorUnique.field2} }}</span>
+                                            </div>
+                                            <div ng-show="error || errorUnique">
+                                                <p>{{'Data.Import.TryAgainMessage' | translate}}</p>
+                                                <p>
+                                                    <button type="button" class="btn btn-custom btn-w-lg" ladda="trying" ng-click="tryAgain()"><i class="fa fa-repeat pull-left"></i> {{'Data.Import.TryAgain' | translate}}</button>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                </div>
+            </div>
         </div>
     </div>
 </div>
