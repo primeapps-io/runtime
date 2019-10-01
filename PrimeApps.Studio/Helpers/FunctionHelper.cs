@@ -290,8 +290,8 @@ namespace PrimeApps.Studio.Helpers
             switch (runtime)
             {
                 case FunctionRuntime.Dotnetcore20:
-                    return string.Format(@"using System;" +
-                                         "using Kubeless.Functions;" + Environment.NewLine +
+                    return string.Format(@"using System;" + Environment.NewLine +
+                                         "using Kubeless.Functions;" + Environment.NewLine + Environment.NewLine +
                                          "public class {0}{{" + Environment.NewLine +
                                          "\tpublic object {1}(Event k8Event, Context k8Context)" + Environment.NewLine +
                                          "\t{{" + Environment.NewLine +

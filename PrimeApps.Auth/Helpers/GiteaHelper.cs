@@ -56,6 +56,7 @@ namespace PrimeApps.Auth.Helpers
                     ["login_name"] = email,
                     ["password"] = password,
                     ["send_notify"] = false,
+                    ["must_change_password"] = false,
                     ["source_id"] = 0,
                     ["username"] = userName,
                     ["must_change_password"] = false

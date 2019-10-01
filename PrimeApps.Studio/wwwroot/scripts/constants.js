@@ -76,7 +76,8 @@ angular.module('primeapps')
         before_form_submit: 26,
         before_form_submit_result: 27,
         sub_list_loaded: 28,
-        before_import: 29
+        before_import: 29,
+        empty_list: 30
     })
     .constant('componentPlaces', [
         { name: 'Field Change', value: 1 },
@@ -107,7 +108,9 @@ angular.module('primeapps')
         { name: 'Before Form Submit', value: 26 },
         { name: 'Before Form Submit Result', value: 27 },
         { name: 'Sublist Loaded', value: 28 },
-        { name: 'Before Import', value: 29 }
+        { name: 'Before Import', value: 29 },
+        { name: 'Empty List', value: 30 }
+
 
 
     ])
