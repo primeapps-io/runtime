@@ -1772,7 +1772,7 @@ angular.module('primeapps')
                 filter.targetField = null;
 
 
-                if (filter.field.data_type === 'picklist') {
+                if (filter.field && filter.field.data_type === 'picklist') {
                     $scope.getModulePicklist(filter.field.module);
                 }
             };
@@ -1815,7 +1815,7 @@ angular.module('primeapps')
 
             };
 
-            $scope.filterAdd = function (filter) {
+            $scope.filterAdd = function (filter) { 
                 if (filter.fieldToFilter && filter.operator && (filter.value || filter.targetField)) {
                     var newFilter = {};
                     newFilter.fieldToFilter = null;
