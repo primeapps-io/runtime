@@ -31,7 +31,7 @@ namespace PrimeApps.Studio.Jobs
 
             try
             {
-                PosgresHelper.Dump(dbConnection, $"app{appId}", postgresPath, dumpDirectory, dumpDirectory);
+                PostgresHelper.Dump(dbConnection, $"app{appId}", postgresPath, dumpDirectory, dumpDirectory);
             }
             catch (Exception ex)
             {
@@ -64,9 +64,9 @@ namespace PrimeApps.Studio.Jobs
 
             try
             {
-                PosgresHelper.Create(dbConnection, $"app{appId}_new", postgresPath);
-                PosgresHelper.Restore(dbConnection, $"app{appId}", dumpDirectory, $"app{appId}_new", dumpDirectory);
-                PosgresHelper.Template(dbConnection, $"app{appId}");
+                PostgresHelper.Create(dbConnection, $"app{appId}_new", postgresPath);
+                PostgresHelper.Restore(dbConnection, $"app{appId}", dumpDirectory, $"app{appId}_new", dumpDirectory);
+                PostgresHelper.Template(dbConnection, $"app{appId}");
             }
             catch (Exception ex)
             {

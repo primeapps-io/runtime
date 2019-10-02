@@ -58,7 +58,7 @@ namespace PrimeApps.Model.Helpers
 
                 //var sqlDump = ReleaseHelper.GetSqlDump(PDEConnectionString, dbName, $"{path}\\dumpSql.txt");
 
-                var sqlDumpResult = PosgresHelper.Dump(PDEConnectionString, dbName, postgresPath, $"{path}/");
+                var sqlDumpResult = PostgresHelper.Dump(PDEConnectionString, dbName, postgresPath, $"{path}/");
 
                 if (!sqlDumpResult)
                     File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While creating sql dump script." + "\u001b[39m" + Environment.NewLine);
@@ -93,7 +93,7 @@ namespace PrimeApps.Model.Helpers
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Dynamic tables clearing..." + Environment.NewLine);
                 //var arrayResult = ReleaseHelper.GetAllDynamicTables(PDEConnectionString, dbName);
 
-                var arrayResult = PosgresHelper.Read(PDEConnectionString, dbName, GetAllDynamicTablesSql(), "array");
+                var arrayResult = PostgresHelper.Read(PDEConnectionString, dbName, GetAllDynamicTablesSql(), "array");
 
                 if (arrayResult != null)
                 {
@@ -549,7 +549,7 @@ namespace PrimeApps.Model.Helpers
         {
             var sqls = new JArray();
 
-            var dropCommand = PosgresHelper.Read(connectionString, dbName, GetAllSystemTablesSql(), "array");
+            var dropCommand = PostgresHelper.Read(connectionString, dbName, GetAllSystemTablesSql(), "array");
             var tableData = dropCommand;
 
             if (!tableData.HasValues) return null;
@@ -557,11 +557,11 @@ namespace PrimeApps.Model.Helpers
             foreach (var t in tableData)
             {
                 var table = t["table_name"];
-                var columns = PosgresHelper.Read(connectionString, dbName, GetUserFKColumnsSql(table.ToString()), "array");
+                var columns = PostgresHelper.Read(connectionString, dbName, GetUserFKColumnsSql(table.ToString()), "array");
 
                 if (!columns.HasValues) continue;
 
-                dropCommand = PosgresHelper.Read(connectionString, dbName, ColumnIsExistsSql(table.ToString(), "id"), "hasRows");
+                dropCommand = PostgresHelper.Read(connectionString, dbName, ColumnIsExistsSql(table.ToString(), "id"), "hasRows");
                 var idColumnIsExists = dropCommand;
                 var idExists = true;
 
@@ -569,7 +569,7 @@ namespace PrimeApps.Model.Helpers
 
                 if (!idColumnIsExists)
                 {
-                    columns = PosgresHelper.Read(connectionString, dbName, GetAllColumnNamesSql(table.ToString()), "array");
+                    columns = PostgresHelper.Read(connectionString, dbName, GetAllColumnNamesSql(table.ToString()), "array");
 
                     idExists = false;
                 }
@@ -578,7 +578,7 @@ namespace PrimeApps.Model.Helpers
                     columns.Add(new JObject {["column_name"] = "id"});
                 }
 
-                var records = PosgresHelper.Read(connectionString, dbName, GetAllRecordsWithColumnsSql(table.ToString(), columns), "array");
+                var records = PostgresHelper.Read(connectionString, dbName, GetAllRecordsWithColumnsSql(table.ToString(), columns), "array");
 
                 foreach (var record in records)
                 {
@@ -763,8 +763,8 @@ namespace PrimeApps.Model.Helpers
         {
             try
             {
-                PosgresHelper.Run(connectionString, "postgres", $"DROP DATABASE IF EXISTS {dbName};");
-                PosgresHelper.Run(connectionString, "postgres", $"CREATE DATABASE {dbName};");
+                PostgresHelper.Run(connectionString, "postgres", $"DROP DATABASE IF EXISTS {dbName};");
+                PostgresHelper.Run(connectionString, "postgres", $"CREATE DATABASE {dbName};");
 
                 return true;
             }
@@ -783,7 +783,7 @@ namespace PrimeApps.Model.Helpers
                 if (!string.IsNullOrEmpty(scriptPath))
                     File.AppendAllText(scriptPath, sql + Environment.NewLine);
 
-                return PosgresHelper.Run(connectionString, "postgres", sql);
+                return PostgresHelper.Run(connectionString, "postgres", sql);
             }
             catch (Exception ex)
             {
@@ -817,7 +817,7 @@ namespace PrimeApps.Model.Helpers
 
                 foreach (var sql in sqls)
                 {
-                    PosgresHelper.Run(connectionString, "postgres", sql.ToString());
+                    PostgresHelper.Run(connectionString, "postgres", sql.ToString());
                 }
 
                 return true;
@@ -931,7 +931,7 @@ namespace PrimeApps.Model.Helpers
 
                 foreach (var sql in sqls)
                 {
-                    PosgresHelper.Run(connectionString, "platform", sql.ToString());
+                    PostgresHelper.Run(connectionString, "platform", sql.ToString());
                 }
 
                 return true;
@@ -950,7 +950,7 @@ namespace PrimeApps.Model.Helpers
 
                 foreach (var sql in sqls)
                 {
-                    PosgresHelper.Run(connectionString, "platform", sql.ToString());
+                    PostgresHelper.Run(connectionString, "platform", sql.ToString());
                 }
 
                 return true;
@@ -971,9 +971,9 @@ namespace PrimeApps.Model.Helpers
                 {
                     try
                     {
-                        PosgresHelper.Run(connectionString, "postgres", $"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{dbName}_copy' AND pid <> pg_backend_pid();");
-                        PosgresHelper.Run(connectionString, "postgres", $"ALTER DATABASE {dbName}_copy RENAME TO {dbName};");
-                        PosgresHelper.Run(connectionString, "postgres", $"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{dbName}' AND pid <> pg_backend_pid();");
+                        PostgresHelper.Run(connectionString, "postgres", $"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{dbName}_copy' AND pid <> pg_backend_pid();");
+                        PostgresHelper.Run(connectionString, "postgres", $"ALTER DATABASE {dbName}_copy RENAME TO {dbName};");
+                        PostgresHelper.Run(connectionString, "postgres", $"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{dbName}' AND pid <> pg_backend_pid();");
                         ChangeTemplateDatabaseStatus(connectionString, dbName, true);
                     }
                     catch (Exception e)
@@ -998,7 +998,7 @@ namespace PrimeApps.Model.Helpers
             {
                 ChangeTemplateDatabaseStatus(connectionString, dbName, true);
 
-                PosgresHelper.Run(connectionString, "postgres", $"DROP DATABASE {dbName};");
+                PostgresHelper.Run(connectionString, "postgres", $"DROP DATABASE {dbName};");
 
 
                 return true;

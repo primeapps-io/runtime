@@ -35,7 +35,7 @@ namespace PrimeApps.Model.Helpers
             if (!Directory.Exists(root))
                 Directory.CreateDirectory(root);
 
-            var available = PosgresHelper.Read(PREConnectionString, dbName, $"SELECT 1 FROM history_database WHERE tag = '{version}';", "hasRows");
+            var available = PostgresHelper.Read(PREConnectionString, dbName, $"SELECT 1 FROM history_database WHERE tag = '{version}';", "hasRows");
 
             if (available)
                 return true;
@@ -94,7 +94,7 @@ namespace PrimeApps.Model.Helpers
 
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." + Environment.NewLine);
 
-                var result = PosgresHelper.RunAll(PREConnectionString, dbName, sqls);
+                var result = PostgresHelper.RunAll(PREConnectionString, dbName, sqls);
 
                 if (!result)
                 {
@@ -309,7 +309,7 @@ namespace PrimeApps.Model.Helpers
                             break;
                         }
 
-                        var restoreResult = PosgresHelper.Restore(PREConnectionString, dbName, postgresPath, $"{path}");
+                        var restoreResult = PostgresHelper.Restore(PREConnectionString, dbName, postgresPath, $"{path}");
 
                         if (!restoreResult)
                         {
@@ -361,7 +361,7 @@ namespace PrimeApps.Model.Helpers
                             {
                                 /*var tableName = ReleaseHelper.GetTableName(sql).Replace("public.", "");
                                 PosgresHelper.Run(PREConnectionString, dbName, $"SELECT SETVAL('{tableName}_id_seq', (SELECT MAX(id) FROM {tableName}));");*/
-                                var restoreResult = PosgresHelper.Run(PREConnectionString, dbName, sql);
+                                var restoreResult = PostgresHelper.Run(PREConnectionString, dbName, sql);
 
                                 if (!restoreResult)
                                     File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While applying script. Script is : (" + sql + ")" + "\u001b[39m" + Environment.NewLine);
