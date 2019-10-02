@@ -477,7 +477,7 @@ namespace PrimeApps.App.Helpers
             if (!record.IsNullOrEmpty() && !record["process_id"].IsNullOrEmpty())
             {
                 var process = await processRepository.GetById((int)record["process_id"]);
-                process = await _environmentHelper.DataFilter(process);
+                process = _environmentHelper.DataFilter(process);
 
                 record["freeze"] = true;
 

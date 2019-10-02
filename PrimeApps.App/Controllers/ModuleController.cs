@@ -95,7 +95,7 @@ namespace PrimeApps.App.Controllers
             foreach (var module in modules)
             {
                 if (module.Components != null && module.Components.Count > 0)
-                    module.Components = await _environmentHelper.DataFilter(module.Components.ToList());
+                    module.Components = _environmentHelper.DataFilter(module.Components.ToList());
             }
 
             if (previewMode == "tenant")

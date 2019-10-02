@@ -55,7 +55,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> Get(int id)
         {
             var processEntity = await _processRepository.GetAllById(id);
-            processEntity = await _environmentHelper.DataFilter(processEntity);
+            processEntity = _environmentHelper.DataFilter(processEntity);
 
             if (processEntity == null)
                 return NotFound();
@@ -70,7 +70,7 @@ namespace PrimeApps.App.Controllers
         {
             var processEntities = await _processRepository.GetAllBasic();
 
-            processEntities = await _environmentHelper.DataFilter(processEntities.ToList());
+            processEntities = _environmentHelper.DataFilter(processEntities.ToList());
 
             return Ok(processEntities);
         }
@@ -120,7 +120,7 @@ namespace PrimeApps.App.Controllers
         public async Task<dynamic> Update(int id, [FromBody]ProcessBindingModel process)
         {
             var processEntity = await _processRepository.GetById(id);
-            processEntity = await _environmentHelper.DataFilter(processEntity);
+            processEntity = _environmentHelper.DataFilter(processEntity);
 
             if (processEntity == null)
                 return NotFound();

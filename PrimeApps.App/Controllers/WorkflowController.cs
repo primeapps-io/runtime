@@ -48,7 +48,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> Get(int id)
         {
             var workflowEntity = await _workflowRepository.GetById(id);
-            workflowEntity = await _environmentHelper.DataFilter(workflowEntity);
+            workflowEntity = _environmentHelper.DataFilter(workflowEntity);
 
             if (workflowEntity == null)
                 return NotFound();
@@ -72,7 +72,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> GetAll()
         {
             var worflowEntities = await _workflowRepository.GetAllBasic(); 
-            worflowEntities = await _environmentHelper.DataFilter(worflowEntities.ToList());
+            worflowEntities = _environmentHelper.DataFilter(worflowEntities.ToList());
 
             return Ok(worflowEntities);
         }
@@ -101,7 +101,7 @@ namespace PrimeApps.App.Controllers
         public async Task<dynamic> Update(int id, [FromBody]WorkflowBindingModel workflow)
         {
             var workflowEntity = await _workflowRepository.GetById(id);
-            workflowEntity = await _environmentHelper.DataFilter(workflowEntity);
+            workflowEntity = _environmentHelper.DataFilter(workflowEntity);
 
             if (workflowEntity == null)
                 return NotFound();

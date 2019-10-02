@@ -70,9 +70,9 @@ namespace PrimeApps.Admin.Controllers
             return View();
         }
 
-        public async Task<IActionResult> ReloadCahce()
+        public IActionResult ReloadCahce()
         {
-            var result = await _organizationHelper.ReloadOrganization();
+            var result = _organizationHelper.ReloadOrganization();
 
             return RedirectToAction("Index", "Home");
         }

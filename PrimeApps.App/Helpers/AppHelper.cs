@@ -98,7 +98,7 @@ namespace PrimeApps.App.Helpers
             {
                 theme = JObject.Parse(app.Setting.AppTheme);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 theme = JObject.Parse(JsonConvert.DeserializeObject(app.Setting.AppTheme).ToString());
             }

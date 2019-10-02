@@ -920,7 +920,7 @@ namespace PrimeApps.App.Helpers
         public async Task<JObject> GetGlobalConfig(IComponentRepository componentRepository)
         {
             var globalConfigEntity = await componentRepository.GetGlobalConfig();
-            globalConfigEntity = await _environmentHelper.DataFilter(globalConfigEntity);
+            globalConfigEntity = _environmentHelper.DataFilter(globalConfigEntity);
 
             if (globalConfigEntity == null || string.IsNullOrWhiteSpace(globalConfigEntity.Content))
                 return null;

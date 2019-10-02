@@ -9,9 +9,9 @@ namespace PrimeApps.App.Helpers
 {
     public interface IEnvironmentHelper
     {
-        Task<List<T>> DataFilter<T>(List<T> data);
-        Task<T> DataFilter<T>(T data);
-        Task<string> GetEnvironmentValue();
+        List<T> DataFilter<T>(List<T> data);
+        T DataFilter<T>(T data);
+        string GetEnvironmentValue();
     }
 
     public class EnvironmentHelper : IEnvironmentHelper
@@ -23,12 +23,12 @@ namespace PrimeApps.App.Helpers
             _configuration = configuration;
         }
 
-        public async Task<List<T>> DataFilter<T>(List<T> data)
+        public List<T> DataFilter<T>(List<T> data)
         {
             if (data == null || data.Count < 1)
                 return data;
 
-            var environmentType = await GetEnvironmentValue();
+            var environmentType = GetEnvironmentValue();
 
             var prop = typeof(T).GetProperty("Environment");
             var newData = new List<T>();
@@ -50,12 +50,12 @@ namespace PrimeApps.App.Helpers
             return newData;
         }
 
-        public async Task<T> DataFilter<T>(T data)
+        public T DataFilter<T>(T data)
         {
             if (data == null)
                 return default(T);
 
-            var environmentType = await GetEnvironmentValue();
+            var environmentType = GetEnvironmentValue();
 
             var prop = typeof(T).GetProperty("Environment");
 
@@ -68,10 +68,9 @@ namespace PrimeApps.App.Helpers
                 return data;
             else
                 return default(T);
-
         }
 
-        public async Task<string> GetEnvironmentValue()
+        public string GetEnvironmentValue()
         { 
             var environment = !string.IsNullOrEmpty(_configuration.GetValue("AppSettings:Environment", string.Empty)) ? _configuration.GetValue("AppSettings:Environment", string.Empty) : "development";
             string value = null;

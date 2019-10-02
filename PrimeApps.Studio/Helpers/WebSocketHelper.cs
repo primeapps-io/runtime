@@ -174,7 +174,7 @@ namespace PrimeApps.Studio.Helpers
                     Thread.Sleep(2000);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
             }
         }

@@ -17,7 +17,6 @@ namespace PrimeApps.Admin.Helpers
         private HttpClient _client;
         private int AppId;
         private int OrgId;
-        private int TenantId;
 
         public StudioClient(IConfiguration configuration, string token, int appId = 0, int orgId = 0)
         {

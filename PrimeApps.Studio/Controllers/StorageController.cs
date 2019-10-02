@@ -434,7 +434,7 @@ namespace PrimeApps.Studio.Controllers
         //    return NotFound();
         //}
 
-        public async void FileUploaded(string bucket, string key, string fileName)
+        public void FileUploaded(string bucket, string key, string fileName)
         {
             var email = _context?.HttpContext?.User?.FindFirst("email").Value;
             var currentUser = UserHelper.GetCurrentUser(_context);

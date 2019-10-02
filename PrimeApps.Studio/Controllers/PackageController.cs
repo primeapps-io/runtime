@@ -297,7 +297,7 @@ namespace PrimeApps.Studio.Controllers
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
         }

@@ -94,7 +94,7 @@ namespace PrimeApps.App.Helpers
 
 
                     var processes = await _processRepository.GetAll(module.Id, appUser.Id, true);
-                    processes = await _environmentHelper.DataFilter(processes.ToList());
+                    processes = _environmentHelper.DataFilter(processes.ToList());
                     processes = processes.Where(x => x.OperationsArray.Contains(operationType.ToString())).ToList();
                     var culture = CultureInfo.CreateSpecificCulture(appUser.TenantLanguage == "tr" ? "tr-TR" : "en-US");
 
@@ -959,7 +959,7 @@ namespace PrimeApps.App.Helpers
                     _moduleRepository.CurrentUser = _processRepository.CurrentUser = _userRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser = _settingRepository.CurrentUser = _currentUser;
 
                     var process = await _processRepository.GetById(request.ProcessId);
-                    process = await _environmentHelper.DataFilter(process);
+                    process = _environmentHelper.DataFilter(process);
 
                     //request.UpdatedById = appUser.LocalId;
                     request.UpdatedAt = DateTime.Now;
@@ -1387,7 +1387,7 @@ namespace PrimeApps.App.Helpers
 
 
                     var process = await _processRepository.GetById(request.ProcessId);
-                    process = await _environmentHelper.DataFilter(process);
+                    process = _environmentHelper.DataFilter(process);
                     var record = _recordRepository.GetById(process.Module, request.RecordId);
 
                     //recorddaki ilgili process fieldlerini güncellemek için field kontrolü
@@ -1558,7 +1558,7 @@ namespace PrimeApps.App.Helpers
                     oldExpense = oldExpenseSetting != null;
 
                     var process = await _processRepository.GetById(request.ProcessId);
-                    process = await _environmentHelper.DataFilter(process);
+                    process = _environmentHelper.DataFilter(process);
 
                     request.ProcessStatusOrder++;
                     request.Status = Model.Enums.ProcessStatus.Waiting;
@@ -1829,7 +1829,7 @@ namespace PrimeApps.App.Helpers
                 {
                     _recordRepository.CurrentUser = _processRepository.CurrentUser = _currentUser;
                     var process = await _processRepository.GetById(request.ProcessId);
-                    process = await _environmentHelper.DataFilter(process);
+                    process = _environmentHelper.DataFilter(process);
 
                     var record = _recordRepository.GetById(process.Module, request.RecordId, false);
                     await _workflowHelper.Run(request.OperationType, record, process.Module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate);

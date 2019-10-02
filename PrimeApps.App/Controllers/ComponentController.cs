@@ -37,7 +37,7 @@ namespace PrimeApps.App.Controllers
         {
             var components = await _componentRepository.GetByType(type);
 
-            components = await _environmentHelper.DataFilter(components.ToList());
+            components = _environmentHelper.DataFilter(components.ToList());
 
             return Ok(components);
         }

@@ -131,7 +131,7 @@ namespace PrimeApps.Auth.UI
             {
                 theme = JObject.Parse(app.Setting.AuthTheme);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 theme = JObject.Parse(JsonConvert.DeserializeObject(app.Setting.AuthTheme).ToString());
             }

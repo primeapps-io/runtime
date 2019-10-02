@@ -122,7 +122,6 @@ namespace PrimeApps.Admin.Helpers
 
                 while (result.MessageType != WebSocketMessageType.Close)
                 {
-                    string text;
                     using (var scope = _serviceScopeFactory.CreateScope())
                     {
                         var databaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
@@ -154,7 +153,7 @@ namespace PrimeApps.Admin.Helpers
                     Thread.Sleep(2000);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
             }
         }

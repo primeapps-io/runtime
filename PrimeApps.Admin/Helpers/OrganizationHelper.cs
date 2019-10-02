@@ -11,7 +11,7 @@ namespace PrimeApps.Admin.Helpers
     public interface IOrganizationHelper
     {
         Task<List<OrganizationModel>> Get(int userId, string token);
-        Task<bool> ReloadOrganization();
+        bool ReloadOrganization();
     }
 
     public class OrganizationHelper : IOrganizationHelper
@@ -41,7 +41,7 @@ namespace PrimeApps.Admin.Helpers
             return organizations;
         }
 
-        public async Task<bool> ReloadOrganization()
+        public bool ReloadOrganization()
         {
             var organizationString = _redisHelper.Get(_organizationRedisKey);
 

@@ -215,10 +215,10 @@ namespace PrimeApps.App.Controllers
             scriptRepository.CurrentUser = componentRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
 
             var components = await componentRepository.GetByType(ComponentType.Component);
-            components = await _environmentHelper.DataFilter(components.ToList());
+            components = _environmentHelper.DataFilter(components.ToList());
 
             var globalSettings = await scriptRepository.GetGlobalSettings();
-            globalSettings = await _environmentHelper.DataFilter(globalSettings);
+            globalSettings = _environmentHelper.DataFilter(globalSettings);
 
             if (components.Count > 0)
                 jsonString = JsonConvert.SerializeObject(components);
