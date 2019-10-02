@@ -658,7 +658,7 @@ namespace PrimeApps.Util.Storage
             {
                 return await _client.DoesS3BucketExistAsync(bucket);
             }
-            catch (Amazon.S3.AmazonS3Exception e)
+            catch (Amazon.S3.AmazonS3Exception)
             {
                 return false;
             }
@@ -804,7 +804,7 @@ namespace PrimeApps.Util.Storage
                 await directoryTransferUtility.DownloadDirectoryAsync(bucketName, directory, destinationPath);
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -821,7 +821,7 @@ namespace PrimeApps.Util.Storage
                 await directoryTransferUtility.DownloadAsync(filePath, bucketName, key);
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

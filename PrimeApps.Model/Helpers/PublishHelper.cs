@@ -124,7 +124,7 @@ namespace PrimeApps.Model.Helpers
                                         {
                                             await storage.Upload(file["file_name"].ToString(), bucketName, file["unique_name"].ToString(), fileStream);
                                         }
-                                        catch (Exception e)
+                                        catch (Exception)
                                         {
                                             File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + $" : File {file["file_name"]} not uploaded. Unique name is {file["unique_name"]}..." + Environment.NewLine);
                                         }
@@ -398,7 +398,7 @@ namespace PrimeApps.Model.Helpers
                                             {
                                                 await storage.Upload(file["file_name"].ToString(), bucketName, file["unique_name"].ToString(), fileStream);
                                             }
-                                            catch (Exception e)
+                                            catch (Exception)
                                             {
                                                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + $" : File {file["file_name"]} not uploaded. Unique name is {file["unique_name"]}..." + Environment.NewLine);
                                             }
@@ -417,7 +417,7 @@ namespace PrimeApps.Model.Helpers
                     releaseList.Last().Status = ReleaseStatus.Succeed;
                     releaseList.Last().EndTime = DateTime.Now;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     Directory.Delete(Path.Combine(rootPath, "packages", dbName), true);
                     File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Error - Unhandle exception \u001b[39m" + Environment.NewLine);
@@ -560,7 +560,7 @@ namespace PrimeApps.Model.Helpers
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -585,7 +585,7 @@ namespace PrimeApps.Model.Helpers
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
