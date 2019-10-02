@@ -111,9 +111,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<string>("Currency")
                         .HasColumnName("currency");
 
-                    b.Property<bool>("EnableRegistration")
-                        .HasColumnName("enable_registration");
-
                     b.Property<string>("ExternalAuth")
                         .HasColumnName("external_auth")
                         .HasColumnType("jsonb");
@@ -389,69 +386,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.ToTable("warehouses");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Release", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
-
-                    b.Property<int>("AppId")
-                        .HasColumnName("app_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnName("created_by");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnName("deleted");
-
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnName("end_time");
-
-                    b.Property<string>("Settings")
-                        .HasColumnName("settings")
-                        .HasColumnType("jsonb");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnName("start_time");
-
-                    b.Property<int>("Status")
-                        .HasColumnName("status");
-
-                    b.Property<int?>("TenantId")
-                        .HasColumnName("tenant_id");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnName("updated_at");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnName("updated_by");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnName("version");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("EndTime");
-
-                    b.HasIndex("StartTime");
-
-                    b.HasIndex("Status");
-
-                    b.HasIndex("TenantId");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("releases");
-                });
-
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Tenant", b =>
                 {
                     b.Property<int>("Id")
@@ -683,27 +617,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .WithMany()
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Release", b =>
-                {
-                    b.HasOne("PrimeApps.Model.Entities.Platform.App", "App")
-                        .WithMany()
-                        .HasForeignKey("AppId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId");
 
                     b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "UpdatedBy")
                         .WithMany()
