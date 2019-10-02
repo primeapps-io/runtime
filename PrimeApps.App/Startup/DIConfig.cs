@@ -81,7 +81,6 @@ namespace PrimeApps.App
             services.AddScoped<Jobs.Messaging.EMail.EMailClient, Jobs.Messaging.EMail.EMailClient>();
             services.AddScoped<Jobs.Messaging.SMS.SMSClient, Jobs.Messaging.SMS.SMSClient>();
             services.AddScoped<Jobs.Reminder.Activity, Jobs.Reminder.Activity>();
-            services.AddScoped<Jobs.ExchangeRate, Jobs.ExchangeRate>();
             services.AddScoped<Jobs.TrialNotification, Jobs.TrialNotification>();
             services.AddScoped<Jobs.AccountDeactivate, Jobs.AccountDeactivate>();
             services.AddScoped<Jobs.UpdateLeave, Jobs.UpdateLeave>();

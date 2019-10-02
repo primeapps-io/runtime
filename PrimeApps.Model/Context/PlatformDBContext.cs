@@ -163,12 +163,6 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<AppTemplate>().HasIndex(x => x.SystemCode);
             modelBuilder.Entity<AppTemplate>().HasIndex(x => x.Active);
 
-            //ExchangeRate
-            modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Date);
-            modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Year);
-            modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Month);
-            modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Day);
-
             //PlatformWarehouse
             modelBuilder.Entity<PlatformWarehouse>().HasIndex(x => x.DatabaseName);
             modelBuilder.Entity<PlatformWarehouse>().HasIndex(x => x.Completed);
@@ -211,7 +205,6 @@ namespace PrimeApps.Model.Context
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<TenantSetting> TenantSettings { get; set; }
         public DbSet<TenantLicense> TenantLicenses { get; set; }
-        public DbSet<ExchangeRate> ExchangeRates { get; set; }
         public DbSet<PlatformWarehouse> Warehouses { get; set; }
         public DbSet<UserTenant> UserTenants { get; set; }
     }
