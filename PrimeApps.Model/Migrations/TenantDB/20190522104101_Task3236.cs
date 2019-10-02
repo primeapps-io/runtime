@@ -7,12 +7,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(
-                name: "IX_picklists_label_en",
+                name: "picklists_IX_label_en",
                 schema: "public",
                 table: "picklists");
 
             migrationBuilder.DropIndex(
-                name: "IX_picklists_label_tr",
+                name: "picklists_IX_label_tr",
                 schema: "public",
                 table: "picklists");
         }
@@ -20,14 +20,14 @@ namespace PrimeApps.Model.Migrations.TenantDB
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateIndex(
-                name: "IX_picklists_label_en",
+                name: "picklists_IX_label_en",
                 schema: "public",
                 table: "picklists",
                 column: "label_en",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_picklists_label_tr",
+                name: "picklists_IX_label_tr",
                 schema: "public",
                 table: "picklists",
                 column: "label_tr",
