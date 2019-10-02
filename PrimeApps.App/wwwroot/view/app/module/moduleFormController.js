@@ -1811,9 +1811,7 @@ angular.module('primeapps')
 
 			$scope.setDropdownData = function (field) {
 				if (field.filters && field.filters.length > 0)
-					$scope.dropdownFieldDatas[field.name] = null;
-				else if ($scope.dropdownFieldDatas[field.name] && $scope.dropdownFieldDatas[field.name].length > 0)
-					return;
+					$scope.dropdownFieldDatas[field.name] = null;			
 
 				$scope.currentLookupField = field;
 				$scope.lookup()
