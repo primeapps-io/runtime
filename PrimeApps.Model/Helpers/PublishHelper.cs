@@ -191,7 +191,7 @@ namespace PrimeApps.Model.Helpers
 
                     var secret = Guid.NewGuid().ToString().Replace("-", string.Empty);
                     var secretEncrypt = CryptoHelper.Encrypt(secret);
-                    result = ReleaseHelper.CreatePlatformApp(PREConnectionString, app, secretEncrypt, appUrl, authUrl);
+                    result = PublishHelper.CreatePlatformApp(PREConnectionString, app, secretEncrypt, appUrl, authUrl);
 
                     if (!result)
                         File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while creating platform app... \u001b[39m" + Environment.NewLine);
@@ -233,7 +233,7 @@ namespace PrimeApps.Model.Helpers
                 }
                 else if (!createPlatformApp && obj.index == 0)
                 {
-                    result = ReleaseHelper.UpdatePlatformApp(PREConnectionString, app, appUrl, authUrl);
+                    result = PublishHelper.UpdatePlatformApp(PREConnectionString, app, appUrl, authUrl);
 
                     if (!result)
                         File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while updating platform app... \u001b[39m" + Environment.NewLine);
@@ -299,7 +299,7 @@ namespace PrimeApps.Model.Helpers
 
                         File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Restoring your database..." + Environment.NewLine);
 
-                        var createDbResult = ReleaseHelper.CreateDatabaseIfNotExists(PREConnectionString, dbName);
+                        var createDbResult = PostgresHelper.CreateDatabaseIfNotExists(PREConnectionString, dbName);
 
                         if (!createDbResult)
                         {
@@ -323,9 +323,9 @@ namespace PrimeApps.Model.Helpers
                     {
                         if (!templateCopied)
                         {
-                            ReleaseHelper.RemoveTemplateDatabase(PREConnectionString, $"{dbName}_copy");
+                            PostgresHelper.RemoveTemplateDatabase(PREConnectionString, $"{dbName}_copy");
                             File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Template database copying template database..." + Environment.NewLine);
-                            result = ReleaseHelper.CopyDatabase(PREConnectionString, dbName);
+                            result = PostgresHelper.CopyDatabase(PREConnectionString, dbName);
 
                             if (!result)
                             {
@@ -371,7 +371,7 @@ namespace PrimeApps.Model.Helpers
 
                     File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Database marking as template..." + Environment.NewLine);
 
-                    result = ReleaseHelper.ChangeTemplateDatabaseStatus(PREConnectionString, dbName, false);
+                    result = PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, dbName, false);
 
                     if (!result)
                         File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while marking database as template... \u001b[39m" + Environment.NewLine);
@@ -436,7 +436,7 @@ namespace PrimeApps.Model.Helpers
             if (templateCopied)
             {
                 File.AppendAllText(Path.Combine(root, $"releases-{currentReleaseId}-log.txt"), "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Template database swapping..." + Environment.NewLine);
-                result = ReleaseHelper.SwapCopyDatabase(PREConnectionString, databaseName);
+                result = PostgresHelper.SwapDatabase(PREConnectionString, $"{databaseName}_copy", databaseName);
 
                 if (!result)
                     File.AppendAllText(Path.Combine(root, $"release-{currentReleaseId}-log.txt"), "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Error - Unhandle exception while swapping database... \u001b[39m" + Environment.NewLine);
@@ -538,6 +538,56 @@ namespace PrimeApps.Model.Helpers
                 }
 
                 return null;
+            }
+        }
+
+        public static bool CreatePlatformApp(string connectionString, JObject app, string secret, string appUrl, string authUrl)
+        {
+            try
+            {
+                var options = JObject.Parse(app["setting"]["options"].ToString());
+                var sqls = new JArray
+                {
+                    $"INSERT INTO \"public\".\"apps\"(\"id\", \"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\", \"name\", \"label\", \"description\", \"logo\", \"use_tenant_settings\", \"app_draft_id\", \"secret\") VALUES (" + app["id"] + ", 1, NULL, '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) + "', NULL, 'f', '" + app["name"] + "', '" + app["label"] + "', '" + app["description"] + "', '" + app["logo"] + "', '" + app["use_tenant_settings"] + "', 0, '" + secret + "');",
+                    $"INSERT INTO \"public\".\"app_settings\"(\"app_id\", \"app_domain\", \"auth_domain\", \"currency\", \"culture\", \"time_zone\", \"language\", \"auth_theme\", \"app_theme\", \"mail_sender_name\", \"mail_sender_email\", \"google_analytics_code\", \"tenant_operation_webhook\", \"registration_type\", \"enable_registration\") VALUES (" + app["id"] + ", '" + appUrl + "', '" + authUrl + "', " + (!string.IsNullOrEmpty(app["setting"]["currency"].ToString()) ? "'" + app["setting"]["currency"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["culture"].ToString()) ? "'" + app["setting"]["culture"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["time_zone"].ToString()) ? "'" + app["setting"]["time_zone"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["language"].ToString()) ? "'" + app["setting"]["language"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["auth_theme"].ToString()) ? "'" + app["setting"]["auth_theme"].ToJsonString() + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["app_theme"].ToString()) ? "'" + app["setting"]["app_theme"].ToJsonString() + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_name"].ToString()) ? "'" + app["setting"]["mail_sender_name"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_email"].ToString()) ? "'" + app["setting"]["mail_sender_email"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["google_analytics_code"].ToString()) ? "'" + app["setting"]["google_analytics_code"] + "'" : "NULL") + ", " + (!string.IsNullOrEmpty(app["setting"]["tenant_operation_webhook"].ToString()) ? "'" + app["setting"]["tenant_operation_webhook"] + "'" : "NULL") + ", 2, '" + options["enable_registration"].ToString().Substring(0, 1).ToLower() + "');"
+                };
+
+
+                foreach (var sql in sqls)
+                {
+                    PostgresHelper.Run(connectionString, "platform", sql.ToString());
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public static bool UpdatePlatformApp(string connectionString, JObject app, string appUrl, string authUrl)
+        {
+            try
+            {
+                var options = JObject.Parse(app["setting"]["options"].ToString());
+                var sqls = new JArray
+                {
+                    $"UPDATE public.apps SET created_by = 1, updated_by = 1, created_at = '2019-05-24 07:15:15.699988', updated_at = '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) + "', label = '" + app["label"] + "', description = '" + app["description"] + "', logo = '" + app["logo"] + "', use_tenant_settings = '" + app["use_tenant_settings"] + "', app_draft_id = 0 WHERE id = " + app["id"] + ";",
+                    $"UPDATE public.app_settings SET " + (!string.IsNullOrEmpty(appUrl) ? $"app_domain = '{appUrl}'" : "") + (!string.IsNullOrEmpty(authUrl) ? $"auth_domain = '{authUrl}'" : "") + " currency = " + (!string.IsNullOrEmpty(app["setting"]["currency"].ToString()) ? "'" + app["setting"]["currency"] + "'" : "NULL") + ", culture = " + (!string.IsNullOrEmpty(app["setting"]["culture"].ToString()) ? "'" + app["setting"]["culture"] + "'" : "NULL") + ", time_zone = " + (!string.IsNullOrEmpty(app["setting"]["time_zone"].ToString()) ? "'" + app["setting"]["time_zone"] + "'" : "NULL") + ", language = " + (!string.IsNullOrEmpty(app["setting"]["language"].ToString()) ? "'" + app["setting"]["language"] + "'" : "NULL") + ", auth_theme = " + (!string.IsNullOrEmpty(app["setting"]["auth_theme"].ToString()) ? "'" + app["setting"]["auth_theme"].ToJsonString() + "'" : "NULL") + ", app_theme = " + (!string.IsNullOrEmpty(app["setting"]["app_theme"].ToString()) ? "'" + app["setting"]["app_theme"].ToJsonString() + "'" : "NULL") + ", mail_sender_name = " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_name"].ToString()) ? "'" + app["setting"]["mail_sender_name"] + "'" : "NULL") + ", mail_sender_email = " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_email"].ToString()) ? "'" + app["setting"]["mail_sender_email"] + "'" : "NULL") + ", google_analytics_code = " + (!string.IsNullOrEmpty(app["setting"]["google_analytics_code"].ToString()) ? "'" + app["setting"]["google_analytics_code"] + "'" : "NULL") + ", tenant_operation_webhook = " + (!string.IsNullOrEmpty(app["setting"]["tenant_operation_webhook"].ToString()) ? "'" + app["setting"]["tenant_operation_webhook"] + "'" : "NULL") + ", registration_type = 2, enable_registration = '" + options["enable_registration"].ToString().Substring(0, 1).ToLower() + "' WHERE app_id = " + app["id"] + ";"
+                };
+
+
+                foreach (var sql in sqls)
+                {
+                    PostgresHelper.Run(connectionString, "platform", sql.ToString());
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
             }
         }
     }

@@ -158,7 +158,7 @@ namespace PrimeApps.Studio.Helpers
 
                                 if (text.Contains("Error"))
                                     await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
-                                
+
                                 sr.Close();
                                 fs.Close();
                             }
@@ -176,7 +176,6 @@ namespace PrimeApps.Studio.Helpers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
             }
         }
     }

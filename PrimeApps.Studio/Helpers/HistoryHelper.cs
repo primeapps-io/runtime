@@ -54,7 +54,7 @@ namespace PrimeApps.Studio.Helpers
 
         public async Task Database(string sql, DateTime executedAt, string createdByEmail, CurrentUser currentUser, Guid commandId)
         {
-            var tableName = Model.Helpers.ReleaseHelper.GetTableName(sql);
+            var tableName = Model.Helpers.PackageHelper.GetTableName(sql);
 
             using (var scope = _serviceScopeFactory.CreateScope())
             {

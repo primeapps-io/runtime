@@ -156,7 +156,6 @@ namespace PrimeApps.Admin.Helpers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
             }
         }
     }
