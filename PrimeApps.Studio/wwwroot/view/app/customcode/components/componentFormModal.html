@@ -43,24 +43,23 @@
                                 </div>
 
                                 <!--<div class="form-group"
-                                     ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.type.$invalid}">
-                                    <label class="col-sm-4 required-field">Type <span class="required-label">({{'Common.Required' | translate }})</span></label>
-                                    <select
-                                            name="type"
-                                            class="form-control ng-animate-disabled col-sm-8"
-                                            required
-                                            ng-model="component.type"
-                                            ng-disabled="editing"
-                                            ng-options="o.value as o.name for o in componentTypes">
-                                        <option value="">Select Type</option>
-                                    </select>
-                                </div>-->
+         ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.type.$invalid}">
+        <label class="col-sm-4 required-field">Type <span class="required-label">({{'Common.Required' | translate }})</span></label>
+        <select
+                name="type"
+                class="form-control ng-animate-disabled col-sm-8"
+                required
+                ng-model="component.type"
+                ng-disabled="editing"
+                ng-options="o.value as o.name for o in componentTypes">
+            <option value="">Select Type</option>
+        </select>
+    </div>-->
 
                                 <div class="form-group"
                                      ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.module_id.$invalid}">
                                     <label class="col-sm-4 required-field">Module <span class="required-label">({{'Common.Required' | translate }})</span></label>
-                                    <select
-                                            name="module_id"
+                                    <select name="module_id"
                                             class="form-control ng-animate-disabled col-sm-8"
                                             required
                                             ng-model="component.module"
@@ -73,8 +72,7 @@
                                      ng-if="component.type === 1"
                                      ng-class="{'has-error': componentFormValidation.$submitted && componentFormValidation.place.$invalid}">
                                     <label class="col-sm-4 required-field">Place <span class="required-label">({{'Common.Required' | translate }})</span></label>
-                                    <select
-                                            name="place"
+                                    <select name="place"
                                             class="form-control ng-animate-disabled col-sm-8"
                                             required
                                             ng-model="component.place"
@@ -91,6 +89,17 @@
                                            name="order"
                                            class="form-control ng-animate-disabled col-sm-8"
                                            ng-model="component.order">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-12"> Environment </label>
+                                    <div ng-repeat="env in environments">
+                                        <label class="newinput checkbox-inline">
+                                            <input type="checkbox" name="env{{$index}}" ng-model="env.selected" ng-change="environmentChange(env,$index)" ng-disabled="env.disabled" value="{{env.value}}" title="{{env.name}}" />{{env.name}}
+                                            <span></span>
+                                        </label>
+                                        <br />
+                                    </div>
                                 </div>
                             </div>
                         </div>

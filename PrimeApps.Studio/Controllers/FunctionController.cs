@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -165,6 +166,16 @@ namespace PrimeApps.Studio.Controllers
             if (!checkName)
                 return Conflict("Function name already exist !");
 
+            if (function.Environments == null)
+            {
+                function.Environments = new List<EnvironmentType>()
+                {
+                    EnvironmentType.Development
+                };
+            }
+            else if (function.Environments.Count < 1)
+                function.Environments.Add(EnvironmentType.Development);
+
             var functionObj = new Function()
             {
                 Name = function.Name,
@@ -174,7 +185,8 @@ namespace PrimeApps.Studio.Controllers
                 ContentType = function.ContentType != FunctionContentType.NotSet ? function.ContentType : FunctionContentType.Text,
                 Runtime = function.Runtime,
                 Handler = function.Handler,
-                Status = PublishStatusType.Draft
+                Status = PublishStatusType.Draft,
+                Environment = function.EnvironmentValues
             };
 
             function.Name = functionName;
@@ -224,6 +236,16 @@ namespace PrimeApps.Studio.Controllers
             if (func == null)
                 return BadRequest("Function not found.");
 
+            if (function.Environments == null)
+            {
+                function.Environments = new List<EnvironmentType>()
+                {
+                    EnvironmentType.Development
+                };
+            }
+            else if (function.Environments.Count < 1)
+                function.Environments.Add(EnvironmentType.Development);
+
             func.Name = function.Name;
             func.Label = function.Label;
             func.Dependencies = function.Dependencies;
@@ -232,6 +254,7 @@ namespace PrimeApps.Studio.Controllers
             //func.Runtime = function.Runtime;
             //func.Handler = function.Handler;
             func.Status = function.Status;
+            func.Environment = function.EnvironmentValues;
 
             var updateResult = await _functionRepository.Update(func);
 

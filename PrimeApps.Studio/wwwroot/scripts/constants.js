@@ -3353,6 +3353,24 @@ angular.module('primeapps')
             { "value": "fas fa-yin-yang", "label": "<i class=\"fas fa-yin-yang\"> Yin-Yang" }
         ]
     })
+    .constant('environments', {
+        data: [{
+            name: 'Development',
+            value: 'development',
+            selected: false,
+            disabled: false
+        }, {
+            name: 'Test',
+            value: 'test',
+            selected: false,
+            disabled: false
+        }, {
+            name: 'Product',
+            value: 'product',
+            selected: false,
+            disabled: false
+        }]
+    })
     .value('guidEmpty', '00000000-0000-0000-0000-000000000000')
 
     .value('emailRegex', /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);

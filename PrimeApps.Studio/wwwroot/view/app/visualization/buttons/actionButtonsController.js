@@ -11,6 +11,33 @@ angular.module('primeapps')
 
             $rootScope.breadcrumblist[2].title = 'Buttons';
             $scope.$parent.activeMenuItem = 'buttons';
+            $scope.environments = angular.copy(ActionButtonsService.getEnvironments());
+
+            $scope.environmentChange = function (env, index, otherValue = false) {
+                if (!env || index === 0) {
+                    $scope.environments[0].selected = env.selected || otherValue;
+                    return;
+                }
+
+                if (index === 1) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[1].selected = otherValue;
+                    }
+                }
+                else if (index === 2) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+                    $scope.environments[1].disabled = env.selected || otherValue;
+                    $scope.environments[1].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[2].selected = otherValue;
+                    }
+                }
+            };
 
             $scope.actionButtons = [];
             $scope.generator = function (limit) {
@@ -88,7 +115,10 @@ angular.module('primeapps')
                     parameter.parameterName = null;
                     parameter.selectedModules = $scope.hookModules;
                     parameter.selectedField = null;
+                    emptyEnvironment();
+                    $scope.environments[0].selected = true;
                     $scope.hookParameters.push(parameter);
+
                     setWebHookHeaders();
 
                 } else {
@@ -96,17 +126,34 @@ angular.module('primeapps')
                     $scope.currentActionButton.action_button_name = actionButton.name;
                     $scope.currentActionButton.action_button_url = actionButton.url;
                     $scope.currentActionButton.module = actionButton.parent_module;
+
+                    if (actionButton.environment && actionButton.environment.indexOf(',') > -1)
+                        $scope.currentActionButton.environments = actionButton.environment.split(',');
+                    else
+                        $scope.currentActionButton.environments = actionButton.environment;
+
+                    if ($scope.currentActionButton.environments === '' || !$scope.currentActionButton.environments)
+                        emptyEnvironment();
+                    else
+                        angular.forEach($scope.currentActionButton.environments, function (envValue) {
+                            $scope.environmentChange($scope.environments[envValue - 1], envValue - 1, true);
+                        });
+
                     $scope.moduleChanged(false, actionButton);
                 }
                 $scope.currentActionButtonState = angular.copy($scope.currentActionButton);
                 $scope.actionButtonTypes = [
                     {
-                        type: "Modal",
-                        value: 3
+                        type: "Script",
+                        value: 1
                     },
                     {
                         type: "Webhook",
                         value: 2
+                    },
+                    {
+                        type: "Modal",
+                        value: 3
                     }
                 ];
 
@@ -134,12 +181,12 @@ angular.module('primeapps')
                 ];
 
                 $scope.formModal = $scope.formModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/visualization/buttons/actionButtonForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/visualization/buttons/actionButtonForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.formModal.$promise.then(function () {
                     $scope.formModal.show();
@@ -215,7 +262,6 @@ angular.module('primeapps')
 
                 actionButton.module_id = $scope.module.id;
                 actionButton.template = 'template';
-
                 actionButton.trigger = actionButton.triggerType;
 
                 delete actionButton.triggerType;
@@ -269,6 +315,15 @@ angular.module('primeapps')
                     actionButton.method_type = null;
                 }
 
+                actionButton.environments = [];
+                angular.forEach($scope.environments, function (env) {
+                    if (env.selected)
+                        actionButton.environments.push(env.value);
+                });
+
+                delete actionButton.environment;
+                delete actionButton.environment_list;
+
                 //TODOOO
 
                 if (!actionButton.id) {
@@ -290,13 +345,13 @@ angular.module('primeapps')
 
 
                         }).catch(function () {
-                        $scope.actionButtons = $scope.actionbuttonState;
+                            $scope.actionButtons = $scope.actionbuttonState;
 
-                        if ($scope.formModal) {
-                            $scope.formModal.hide();
-                            $scope.saving = false;
-                        }
-                    });
+                            if ($scope.formModal) {
+                                $scope.formModal.hide();
+                                $scope.saving = false;
+                            }
+                        });
                 } else {
                     ModuleService.updateActionButton(actionButton)
                         .then(function (response) {
@@ -306,13 +361,13 @@ angular.module('primeapps')
                             toastr.success($filter('translate')('Setup.Modules.ActionButtonSaveSuccess'));
 
                         }).catch(function () {
-                        $scope.actionButtons = $scope.actionbuttonState;
+                            $scope.actionButtons = $scope.actionbuttonState;
 
-                        if ($scope.formModal) {
-                            $scope.formModal.hide();
-                            $scope.saving = false;
-                        }
-                    });
+                            if ($scope.formModal) {
+                                $scope.formModal.hide();
+                                $scope.saving = false;
+                            }
+                        });
                 }
             };
 
@@ -362,9 +417,14 @@ angular.module('primeapps')
                 angular.forEach($scope.currentActionButton, function (value, key) {
                     $scope.currentActionButton[key] = $scope.currentActionButtonState[key];
                 });
-
+                emptyEnvironment();
                 $scope.formModal.hide();
             };
+
+            var emptyEnvironment = function () {
+                $scope.environments = [];
+                $scope.environments = angular.copy(ActionButtonsService.getEnvironments());
+            }
 
             //Webhook
             var webhookParameters = function (isNew, actionButton) {
@@ -462,6 +522,9 @@ angular.module('primeapps')
             };
 
             var conditions = function (actionButton) {
+
+                if (actionButton.action_type === 'Scripting')
+                    actionButton.type = 1;
 
                 if (actionButton.action_type === 'Webhook')
                     actionButton.type = 2;

@@ -44,7 +44,7 @@
             <div class="bs-docs-section">
                 <div class="bs-example" append-source>
                     <div bs-active-pane="tabManage.activeTab" bs-tabs>
-                        <div data-title="Overview" name="overview" bs-pane>
+                        <div data-title="Overview" name="overview" bs-pane ng-if="!script.custom_url">
                             <div ng-if="!loading" class="tab-content" style="padding: 20px;">
                                 <div class="setup-title" style="justify-content: normal;">
                                     <p style="float: left;padding: 5px;background: #0d6faa;border-radius: 9px;color: white;font-size: 15px;padding-left: 10px;padding-right: 10px;margin-right: 5px;">1</p>
@@ -82,56 +82,56 @@ git push</code>
                                 </div>
                             </div>
                         </div>
-                        <div data-title="Deployments" name="deployment" bs-pane>
+                        <div data-title="Deployments" name="deployment" bs-pane ng-if="!script.custom_url">
 
                             <div class="tab-content">
                                 <table class="table" ng-show="loadingDeployments">
                                     <thead>
-                                    <tr>
-                                        <th>Start Time</th>
-                                        <th>End Time</th>
-                                        <th>Version</th>
-                                        <th>Status</th>
-                                        <th width="50"></th>
-                                    </tr>
+                                        <tr>
+                                            <th>Start Time</th>
+                                            <th>End Time</th>
+                                            <th>Version</th>
+                                            <th>Status</th>
+                                            <th width="50"></th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                    <tr>
-                                    <tr ng-repeat="item in placeholderArray">
-                                        <td>
-                                            <div class="animated-background"></div>
-                                        </td>
-                                        <td>
-                                            <div class="animated-background"></div>
-                                        </td>
-                                        <td>
-                                            <div class="animated-background"></div>
-                                        </td>
-                                        <td>
-                                            <div class="animated-background"></div>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="animated-background"></div>
-                                        </td>
-                                    </tr>
+                                        <tr>
+                                        <tr ng-repeat="item in placeholderArray">
+                                            <td>
+                                                <div class="animated-background"></div>
+                                            </td>
+                                            <td>
+                                                <div class="animated-background"></div>
+                                            </td>
+                                            <td>
+                                                <div class="animated-background"></div>
+                                            </td>
+                                            <td>
+                                                <div class="animated-background"></div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="animated-background"></div>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                                 <table class="table" ng-if="!loadingDeployments && deployments.length !== 0">
                                     <thead>
-                                    <tr>
-                                        <th>Start Time</th>
-                                        <th>End Time</th>
-                                        <th>Version</th>
-                                        <th>Status</th>
-                                    </tr>
+                                        <tr>
+                                            <th>Start Time</th>
+                                            <th>End Time</th>
+                                            <th>Version</th>
+                                            <th>Status</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                    <tr ng-repeat="deployment in deployments">
-                                        <td>{{getTime(deployment.start_time)}}</td>
-                                        <td>{{getTime(deployment.end_time)}}</td>
-                                        <td>{{deployment.version}}</td>
-                                        <td style="text-align: center;" ng-bind-html="getIcon(deployment.status)"></td>
-                                    </tr>
+                                        <tr ng-repeat="deployment in deployments">
+                                            <td>{{getTime(deployment.start_time)}}</td>
+                                            <td>{{getTime(deployment.end_time)}}</td>
+                                            <td>{{deployment.version}}</td>
+                                            <td style="text-align: center;" ng-bind-html="getIcon(deployment.status)"></td>
+                                        </tr>
                                     </tbody>
                                 </table>
                                 <div class="table-pagination">
@@ -181,7 +181,7 @@ git push</code>
                                 </button>
                             </div>
                         </div>
-                        <div data-title="Settings" name="settings" bs-pane>
+                        <div data-title="Settings" name="settings" bs-pane ng-if="true">
                             <form ng-if="!modalLoading" name="scriptForm" style="margin-top: 20px;" class="form-horizontal form-custom" ng-submit="save(scriptForm);" autocomplete="off"
                                   novalidate>
 
@@ -197,7 +197,7 @@ git push</code>
                                                    required
                                                    maxlength="100"
                                                    focus="true"
-                                                   ng-model="script.label"/>
+                                                   ng-model="script.label" />
                                         </div>
                                         <div class="form-group"
                                              style="position: relative;"
@@ -210,7 +210,7 @@ git push</code>
                                                    maxlength="100"
                                                    ng-disabled="true"
                                                    ng-trim="false"
-                                                   ng-model="script.name"/>
+                                                   ng-model="script.name" />
                                         </div>
                                         <div class="form-group"
                                              ng-class="{'has-error': scriptForm.$submitted && scriptForm.module_id.$invalid}">
@@ -233,6 +233,24 @@ git push</code>
                                                     ng-options="o.value as o.name for o in componentPlaces">
                                                 <option value="">Select Event</option>
                                             </select>
+                                        </div>
+                                        <div class="form-group"
+                                             ng-class="{'has-error': scriptForm.$submitted && scriptForm.custom_url.$invalid}">
+                                            <label class="col-sm-12">Custom Url</label>
+                                            <input type="url"
+                                                   name="custom_url"
+                                                   class="form-control ng-animate-disabled col-sm-12"
+                                                   ng-model="script.custom_url" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-12"> Environment </label>
+                                            <div ng-repeat="env in environments">
+                                                <label class="newinput checkbox-inline" style="margin-bottom:5px;">
+                                                    <input type="checkbox" name="env{{$index}}" ng-model="env.selected" ng-change="environmentChange(env,$index)" ng-disabled="env.disabled" value="{{env.value}}" title="{{env.name}}" />{{env.name}}
+                                                    <span></span>
+                                                </label>
+                                                <br />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

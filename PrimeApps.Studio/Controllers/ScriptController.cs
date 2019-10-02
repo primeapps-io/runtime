@@ -125,6 +125,16 @@ namespace PrimeApps.Studio.Controllers
             if (checkName)
                 return Conflict();
 
+            if (model.Environments == null)
+            {
+                model.Environments = new List<EnvironmentType>()
+                {
+                    EnvironmentType.Development
+                };
+            }
+            else if (model.Environments.Count < 1)
+                model.Environments.Add(EnvironmentType.Development);
+
             var script = new Component
             {
                 Name = scriptName,
@@ -134,13 +144,18 @@ namespace PrimeApps.Studio.Controllers
                 Place = model.Place,
                 Order = model.Order,
                 Status = PublishStatusType.Draft,
-                Label = model.Label
+                Label = model.Label,
+                Environment = model.EnvironmentValues,
+                CustomUrl = model.CustomUrl
             };
 
-            var sampleCreated = await _componentHelper.CreateSampleScript((int)AppId, model, OrganizationId);
+            if (string.IsNullOrEmpty(model.CustomUrl))
+            {
+                var sampleCreated = await _componentHelper.CreateSampleScript((int)AppId, model, OrganizationId);
 
-            if (!sampleCreated)
-                return BadRequest("Script not created.");
+                if (!sampleCreated)
+                    return BadRequest("Script not created.");
+            }
 
             var result = await _scriptRepository.Create(script);
 
@@ -164,6 +179,17 @@ namespace PrimeApps.Studio.Controllers
             if (script == null)
                 return Forbid("Script not found!");
 
+
+            if (model.Environments == null)
+            {
+                model.Environments = new List<EnvironmentType>()
+                {
+                    EnvironmentType.Development
+                };
+            }
+            else if (model.Environments.Count < 1)
+                model.Environments.Add(EnvironmentType.Development);
+
             script.Content = model.Content ?? script.Content;
             script.ModuleId = model.ModuleId != 0 ? model.ModuleId : script.ModuleId;
             script.Type = ComponentType.Script;
@@ -171,6 +197,8 @@ namespace PrimeApps.Studio.Controllers
             script.Order = model.Order != 0 ? model.Order : script.Order;
             script.Status = model.Status;
             script.Label = model.Label;
+            script.Environment = model.EnvironmentValues;
+            script.CustomUrl = model.CustomUrl;
 
             var result = await _scriptRepository.Update(script);
 

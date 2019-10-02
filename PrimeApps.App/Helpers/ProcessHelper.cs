@@ -43,8 +43,11 @@ namespace PrimeApps.App.Helpers
         private IServiceScopeFactory _serviceScopeFactory;
         private IConfiguration _configuration;
         private IModuleHelper _moduleHelper;
+        private IEnvironmentHelper _environmentHelper;
 
-        public ProcessHelper(IWorkflowHelper workflowHelper, ICalculationHelper calculationHelper, IHttpContextAccessor context, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, IModuleHelper moduleHelper)
+        public ProcessHelper(IWorkflowHelper workflowHelper, ICalculationHelper calculationHelper, IHttpContextAccessor context,
+            IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, IModuleHelper moduleHelper,
+            IEnvironmentHelper environmentHelper)
         {
             _context = context;
             _currentUser = UserHelper.GetCurrentUser(_context, configuration);
@@ -53,6 +56,7 @@ namespace PrimeApps.App.Helpers
             _serviceScopeFactory = serviceScopeFactory;
             _calculationHelper = calculationHelper;
             _moduleHelper = moduleHelper;
+            _environmentHelper = environmentHelper;
         }
 
         public ProcessHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser)
@@ -61,7 +65,8 @@ namespace PrimeApps.App.Helpers
             _serviceScopeFactory = serviceScopeFactory;
 
             _currentUser = currentUser;
-            _workflowHelper = new WorkflowHelper(configuration, serviceScopeFactory, currentUser, _moduleHelper);
+            _environmentHelper = new EnvironmentHelper(_configuration);
+            _workflowHelper = new WorkflowHelper(configuration, serviceScopeFactory, currentUser, _moduleHelper, _environmentHelper);
             _calculationHelper = new CalculationHelper(configuration, serviceScopeFactory, currentUser);
         }
 
@@ -89,6 +94,7 @@ namespace PrimeApps.App.Helpers
 
 
                     var processes = await _processRepository.GetAll(module.Id, appUser.Id, true);
+                    processes = await _environmentHelper.DataFilter(processes.ToList());
                     processes = processes.Where(x => x.OperationsArray.Contains(operationType.ToString())).ToList();
                     var culture = CultureInfo.CreateSpecificCulture(appUser.TenantLanguage == "tr" ? "tr-TR" : "en-US");
 
@@ -953,6 +959,8 @@ namespace PrimeApps.App.Helpers
                     _moduleRepository.CurrentUser = _processRepository.CurrentUser = _userRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser = _settingRepository.CurrentUser = _currentUser;
 
                     var process = await _processRepository.GetById(request.ProcessId);
+                    process = await _environmentHelper.DataFilter(process);
+
                     //request.UpdatedById = appUser.LocalId;
                     request.UpdatedAt = DateTime.Now;
 
@@ -1379,6 +1387,7 @@ namespace PrimeApps.App.Helpers
 
 
                     var process = await _processRepository.GetById(request.ProcessId);
+                    process = await _environmentHelper.DataFilter(process);
                     var record = _recordRepository.GetById(process.Module, request.RecordId);
 
                     //recorddaki ilgili process fieldlerini güncellemek için field kontrolü
@@ -1549,6 +1558,7 @@ namespace PrimeApps.App.Helpers
                     oldExpense = oldExpenseSetting != null;
 
                     var process = await _processRepository.GetById(request.ProcessId);
+                    process = await _environmentHelper.DataFilter(process);
 
                     request.ProcessStatusOrder++;
                     request.Status = Model.Enums.ProcessStatus.Waiting;
@@ -1819,6 +1829,7 @@ namespace PrimeApps.App.Helpers
                 {
                     _recordRepository.CurrentUser = _processRepository.CurrentUser = _currentUser;
                     var process = await _processRepository.GetById(request.ProcessId);
+                    process = await _environmentHelper.DataFilter(process);
 
                     var record = _recordRepository.GetById(process.Module, request.RecordId, false);
                     await _workflowHelper.Run(request.OperationType, record, process.Module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate);

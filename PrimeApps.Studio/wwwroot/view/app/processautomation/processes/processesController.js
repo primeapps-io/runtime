@@ -25,15 +25,19 @@ angular.module('primeapps')
             $scope.$parent.collapsed = true;
             $scope.allowEdit = true;
             $scope.workflowModel = {};
+            $scope.workflowForm = {};
             $scope.workflowModel.active = true;
             $scope.workflowModel.frequency = 'continuous';
             $scope.workflowModel.trigger_time = 'instant';
             $scope.processModules = [];
             $scope.filteredModules = [];
+            $scope.environments = ProcessesService.getEnvironments();
+
             var requestModel = {
                 limit: 1000,
                 offset: 0
-            }
+            };
+
             ProcessesService.findUsers(requestModel)
                 .then(function (response) {
                     $scope.approvers = response.data;
@@ -61,6 +65,31 @@ angular.module('primeapps')
                 order_column: "name"
             };
 
+            $scope.environmentChange = function (env, index, otherValue = false) {
+                if (!env || index === 0) {
+                    $scope.environments[0].selected = env.selected || otherValue;
+                    return;
+                }
+
+                if (index === 1) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[1].selected = otherValue;
+                    }
+                }
+                else if (index === 2) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+                    $scope.environments[1].disabled = env.selected || otherValue;
+                    $scope.environments[1].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[2].selected = otherValue;
+                    }
+                }
+            };
 
             ProcessesService.find($scope.requestModel, $rootScope.currentOrgId).then(function (response) {
                 if (response.data) {
@@ -171,6 +200,7 @@ angular.module('primeapps')
                     $scope.filteredModules = $scope.processModules;
                     $scope.loading = false;
                     $scope.modalLoading = false;
+                    $scope.environments[0].selected = true;
                     ModuleService.getAllProcess()
                         .then(function (response) {
                             var processes = response.data;
@@ -213,7 +243,7 @@ angular.module('primeapps')
 
                                         $scope.filters.push(filter);
                                     }
-                                   // $scope.filteredModules = $scope.processModules;
+                                    // $scope.filteredModules = $scope.processModules;
                                     $scope.filteredModules = $rootScope.appModules;
                                     $scope.picklistsModule = picklists;
                                     $scope.getDynamicProcessModules($scope.module, workflow, true);
@@ -224,6 +254,20 @@ angular.module('primeapps')
                                     $scope.firstApproverLookupChange(true, workflow);
                                     $scope.secondApproverLookupChange(true, workflow);
                                     $scope.prepareFilters();
+
+                                    //if (workflow.environment) {
+                                    if (workflow.environment && workflow.environment.indexOf(',') > -1)
+                                        $scope.workflowModel.environments = workflow.environment.split(',');
+                                    else
+                                        $scope.workflowModel.environments = workflow.environment;
+
+                                    angular.forEach($scope.workflowModel.environments, function (envValue) {
+                                        $scope.environmentChange($scope.environments[envValue - 1], envValue - 1, true);
+                                    });
+                                    //}
+                                    //else {
+                                    //    $scope.environments = ProcessesService.getEnvironments();
+                                    //}
                                     //$scope.isEdit = true;
                                     //$scope.lastStepClicked = true;
                                     $scope.loading = false;
@@ -239,8 +283,8 @@ angular.module('primeapps')
 
             $scope.selectModule = function (module) {
                 if (module) {
-                $scope.modalLoading = true;
-                $scope.isChosenModule = false;
+                    $scope.modalLoading = true;
+                    $scope.isChosenModule = false;
                     ModuleService.getModuleFields(module.name)
                         .then(function (response) {
                             if (response) {
@@ -255,7 +299,7 @@ angular.module('primeapps')
                                     moduleNameList.push(item);
                                 });
 
-                                var moduleWithField = ModuleService.getFieldsOperator( $scope.workflowModel.module, $rootScope.appModules, 0);
+                                var moduleWithField = ModuleService.getFieldsOperator($scope.workflowModel.module, $rootScope.appModules, 0);
 
                                 $scope.module = angular.copy(moduleWithField);
                                 $scope.workflowModel.module = angular.copy(moduleWithField);
@@ -349,8 +393,8 @@ angular.module('primeapps')
             };
 
             $scope.validate = function (tabClick) {
-              //  if (!$scope.workflowForm)
-                    $scope.workflowForm =  tabClick ;
+                //  if (!$scope.workflowForm)
+                $scope.workflowForm = tabClick;
 
                 $scope.workflowForm.$submitted = true;
                 $scope.validateOperations();
@@ -360,10 +404,10 @@ angular.module('primeapps')
                     return false;
                 }
 
-                if ($scope.wizardStep === 2 && !tabClick.approverType.$valid )
+                if ($scope.wizardStep === 2 && !tabClick.approverType.$valid)
                     return false;
 
-                if ($scope.wizardStep === 2 && tabClick.approverType.$valid ) {
+                if ($scope.wizardStep === 2 && tabClick.approverType.$valid) {
                     if ($scope.workflowModel.approver_type !== 'dynamicApprover' && !$scope.hookParameters[0].approver)
                         return false;
                 }
@@ -488,7 +532,7 @@ angular.module('primeapps')
             $scope.validateActions = function (tabClick) {
                 if (!$scope.lastStepClicked) {
                     $scope.workflowForm.$submitted = false;
-                   // $scope.wizardStep += next ? $scope.wizardStep === 3 ? 0 : 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
+                    // $scope.wizardStep += next ? $scope.wizardStep === 3 ? 0 : 1 : $scope.wizardStep > 0 ? -1 : $scope.wizardStep;
                     if ($scope.wizardStep === 3) {
                         $scope.getSummary();
                     }
@@ -808,8 +852,10 @@ angular.module('primeapps')
                     $scope.workflowModel.second_approver_field = null;
             };
 
-            $scope.save = function () {
-                console.log($scope)
+            $scope.save = function (workflowForm) {
+                if (!$scope.workflowForm)
+                    $scope.workflowForm = workflowForm
+
                 if ($scope.workflowForm.workflowName.$error.required || $scope.workflowForm.module.$error.required || $scope.workflowForm.user.$error.required) {
                     toastr.error($filter('translate')('Module.RequiredError'));
 
@@ -860,6 +906,15 @@ angular.module('primeapps')
                     }
                 };
 
+                process.environments = [];
+                angular.forEach($scope.environments, function (env) {
+                    if (env.selected)
+                        process.environments.push(env.value);
+                });
+
+                delete process.environment;
+                delete process.environment_list;
+
                 if (!$scope.id) {
                     ProcessesService.create(process)
                         .then(function () {
@@ -905,10 +960,10 @@ angular.module('primeapps')
                                 dangerMode: true
                             }).then(function (value) {
                                 if (value) {
-                                    
+
                                     var elem = angular.element(event.srcElement);
                                     angular.element(elem.closest('tr')).addClass('animated-background');
-                                    
+
                                     ProcessesService.delete(id)
                                         .then(function () {
                                             $scope.pageTotal--;
@@ -939,6 +994,8 @@ angular.module('primeapps')
                     $scope.isNew = true;
                     $scope.isEdit = false;
                     $scope.modalLoading = false;
+                    $scope.environments = ProcessesService.getEnvironments();
+                    $scope.environments[0].selected = true;
                 }
 
                 $scope.prosessFormModal = $scope.prosessFormModal || $modal({

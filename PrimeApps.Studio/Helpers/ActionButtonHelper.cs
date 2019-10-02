@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Studio.Models;
@@ -9,6 +10,14 @@ namespace PrimeApps.Studio.Helpers
     {
         public static ActionButton CreateEntity(ActionButtonBindingModel actionButtonModel)
         {
+            if (actionButtonModel.Environments == null)
+            {
+                actionButtonModel.Environments = new List<Model.Enums.EnvironmentType>();
+                actionButtonModel.Environments.Add(Model.Enums.EnvironmentType.Development);
+            }
+            else if (actionButtonModel.Environments.Count < 1)
+                actionButtonModel.Environments.Add(Model.Enums.EnvironmentType.Development);
+
             var actionbutton = new ActionButton
             {
                 Name = actionButtonModel.ActionButtonName,
@@ -20,7 +29,8 @@ namespace PrimeApps.Studio.Helpers
                 ModuleId = actionButtonModel.ModuleId,
                 MethodType = actionButtonModel.MethodType,
                 Parameters = actionButtonModel.Parameters,
-                Headers=actionButtonModel.Headers
+                Headers = actionButtonModel.Headers,
+                Environment = actionButtonModel.EnvironmentValues
             };
 
             if (actionButtonModel.Permissions != null && actionButtonModel.Permissions.Count > 0)
@@ -44,6 +54,14 @@ namespace PrimeApps.Studio.Helpers
 
         public static void UpdateEntity(ActionButtonBindingModel actionButtonModel, ActionButton actionButton)
         {
+            if (actionButtonModel.Environments == null)
+            {
+                actionButtonModel.Environments = new List<Model.Enums.EnvironmentType>();
+                actionButtonModel.Environments.Add(Model.Enums.EnvironmentType.Development);
+            }
+            else if (actionButtonModel.Environments.Count < 1)
+                actionButtonModel.Environments.Add(Model.Enums.EnvironmentType.Development);
+
             actionButton.Name = actionButtonModel.ActionButtonName;
             actionButton.Type = actionButtonModel.Type;
             actionButton.Trigger = actionButtonModel.Trigger;
@@ -54,6 +72,7 @@ namespace PrimeApps.Studio.Helpers
             actionButton.MethodType = actionButtonModel.MethodType;
             actionButton.Parameters = actionButtonModel.Parameters;
             actionButton.Headers = actionButtonModel.Headers;
+            actionButton.Environment = actionButtonModel.EnvironmentValues;
 
             if (actionButtonModel.Permissions != null && actionButtonModel.Permissions.Count > 0)
             {

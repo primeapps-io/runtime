@@ -2,8 +2,11 @@
     <h2>{{'Setup.Nav.ApprovelProcess' | translate}}</h2>
     <ul class="list-unstyled list-inline">
         <li>
-            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>{{'Setup.Workflow.ApprovelProcess.NewApprovelProcess'
-                | translate}}
+            <button class="btn add-button" ng-click="showFormModal()">
+                <i class="fas fa-plus"></i>{{
+'Setup.Workflow.ApprovelProcess.NewApprovelProcess'
+                | translate
+                }}
             </button>
         </li>
     </ul>
@@ -11,59 +14,65 @@
 <div class="tab-content table-responsive">
     <table class="table" ng-show="loading">
         <thead>
-        <tr>
-            <th>{{'Setup.Workflow.ApprovelProcess.Name' | translate}}</th>
-            <th>{{'Setup.Workflow.Module' | translate}}</th>
-            <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
-            <th>{{'Setup.Workflow.Status' | translate}}</th>
-            <th style="width: 70px;"></th>
-        </tr>
+            <tr>
+                <th>{{'Setup.Workflow.ApprovelProcess.Name' | translate}}</th>
+                <th>{{'Setup.Workflow.Module' | translate}}</th>
+                <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
+                <th>{{'Setup.Workflow.Status' | translate}}</th>
+                <th>Environment</th>
+                <th style="width: 70px;"></th>
+            </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="item in placeholderArray">
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-        </tr>
+            <tr ng-repeat="item in placeholderArray">
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
         </tbody>
     </table>
     <table class="table" ng-show="!loading">
         <thead>
-        <tr>
-            <th>{{'Setup.Workflow.ApprovelProcess.Name' | translate}}</th>
-            <th>{{'Setup.Workflow.Module' | translate}}</th>
-            <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
-            <th>{{'Common.Active' | translate}}</th>
-            <th style="width: 70px;"></th>
-        </tr>
+            <tr>
+                <th>{{'Setup.Workflow.ApprovelProcess.Name' | translate}}</th>
+                <th>{{'Setup.Workflow.Module' | translate}}</th>
+                <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
+                <th>{{'Common.Active' | translate}}</th>
+                <th>Environment</th>
+                <th style="width: 70px;"></th>
+            </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="process in processes" ng-click="showFormModal(process.id)">
-            <td ng-click="showFormModal(process.id)" style="cursor:pointer;">{{process.name}}</td>
-            <td>{{process.module['label_'+language+'_plural']}}</td>
-            <td>{{process.operations}}</td>
-            <td>{{process.active ? 'Common.Active':'Common.Passive' | translate}}</td>
-            <td class="text-center">
-                <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation(); delete(process.id);" type="button"
-                            class="action-buttons-delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </td>
-        </tr>
+            <tr ng-repeat="process in processes" ng-click="showFormModal(process.id)">
+                <td ng-click="showFormModal(process.id)" style="cursor:pointer;">{{process.name}}</td>
+                <td>{{process.module['label_'+language+'_plural']}}</td>
+                <td>{{process.operations}}</td>
+                <td>{{process.active ? 'Common.Active':'Common.Passive' | translate}}</td>
+                <td class="text-capitalize">{{process.environment_list.toString()}}</td>
+                <td class="text-center">
+                    <div class="action-buttons-block">
+                        <button ng-click="$event.stopPropagation(); delete(process.id);" type="button"
+                                class="action-buttons-delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
         </tbody>
     </table>
     <div class="table-pagination">

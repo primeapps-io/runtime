@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -98,6 +99,16 @@ namespace PrimeApps.Studio.Controllers
             if (component != null)
                 return Conflict();
 
+            if (model.Environments == null)
+            {
+                model.Environments = new List<EnvironmentType>()
+                {
+                    EnvironmentType.Development
+                };
+            }
+            else if (model.Environments.Count < 1)
+                model.Environments.Add(EnvironmentType.Development);
+
             component = new Component
             {
                 Name = componentName,
@@ -107,7 +118,8 @@ namespace PrimeApps.Studio.Controllers
                 Place = model.Place,
                 Order = model.Order,
                 Status = PublishStatusType.Draft,
-                Label = model.Label
+                Label = model.Label,
+                Environment = model.EnvironmentValues
             };
 
             var sampleCreated = await _componentHelper.CreateSample((int)AppId, model, OrganizationId);
@@ -137,6 +149,14 @@ namespace PrimeApps.Studio.Controllers
             if (component == null)
                 return Forbid("Component not found!");
 
+            if (model.Environments == null)
+            {
+                model.Environments = new List<EnvironmentType>();
+                model.Environments.Add(Model.Enums.EnvironmentType.Development);
+            }
+            else if (model.Environments.Count < 1)
+                model.Environments.Add(EnvironmentType.Development);
+
             component.Name = model.Name ?? component.Name;
             component.Content = model.Content ?? component.Content;
             component.ModuleId = model.ModuleId != 0 ? model.ModuleId : component.ModuleId;
@@ -145,6 +165,10 @@ namespace PrimeApps.Studio.Controllers
             component.Order = model.Order != 0 ? model.Order : component.Order;
             component.Status = model.Status;
             component.Label = model.Label;
+            component.Environment = model.EnvironmentValues;
+
+
+
 
             await _componentRepository.Update(component);
 

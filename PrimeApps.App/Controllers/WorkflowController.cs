@@ -21,30 +21,34 @@ namespace PrimeApps.App.Controllers
         private IModuleRepository _moduleRepository;
         private IPicklistRepository _picklistRepository;
 
-	    private IWorkflowHelper _workflowHelper;
+        private IWorkflowHelper _workflowHelper;
+        private IEnvironmentHelper _environmentHelper;
 
-        public WorkflowController(IWorkflowRepository workflowRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IWorkflowHelper workflowHelper)
+        public WorkflowController(IWorkflowRepository workflowRepository, IModuleRepository moduleRepository,
+            IPicklistRepository picklistRepository, IWorkflowHelper workflowHelper, IEnvironmentHelper environmentHelper)
         {
             _workflowRepository = workflowRepository;
             _moduleRepository = moduleRepository;
             _picklistRepository = picklistRepository;
-	        _workflowHelper = workflowHelper;
+            _workflowHelper = workflowHelper;
+            _environmentHelper = environmentHelper; 
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_workflowRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_picklistRepository, PreviewMode, TenantId, AppId);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_workflowRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_picklistRepository, PreviewMode, TenantId, AppId);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("get/{id:int}"), HttpGet]
+        [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
             var workflowEntity = await _workflowRepository.GetById(id);
+            workflowEntity = await _environmentHelper.DataFilter(workflowEntity);
 
             if (workflowEntity == null)
                 return NotFound();
@@ -67,7 +71,8 @@ namespace PrimeApps.App.Controllers
         [Route("get_all"), HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var worflowEntities = await _workflowRepository.GetAllBasic();
+            var worflowEntities = await _workflowRepository.GetAllBasic(); 
+            worflowEntities = await _environmentHelper.DataFilter(worflowEntities.ToList());
 
             return Ok(worflowEntities);
         }
@@ -86,16 +91,17 @@ namespace PrimeApps.App.Controllers
 
             if (result < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-			var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme+ "://" + uri.Authority + "/api/view/get/" + workflowEntity.Id, workflowEntity);
+            var uri = new Uri(Request.GetDisplayUrl());
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + workflowEntity.Id, workflowEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]
         public async Task<dynamic> Update(int id, [FromBody]WorkflowBindingModel workflow)
         {
             var workflowEntity = await _workflowRepository.GetById(id);
+            workflowEntity = await _environmentHelper.DataFilter(workflowEntity);
 
             if (workflowEntity == null)
                 return NotFound();
@@ -113,6 +119,7 @@ namespace PrimeApps.App.Controllers
         [Route("delete/{id:int}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
+            //TODO ENV
             var workflowEntity = await _workflowRepository.GetById(id);
 
             if (workflowEntity == null)

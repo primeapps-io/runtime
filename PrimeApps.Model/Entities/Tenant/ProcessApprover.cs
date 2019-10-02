@@ -22,7 +22,7 @@ namespace PrimeApps.Model.Entities.Tenant
 
         [Column("order")]
         public short Order { get; set; }
-
+         
         public virtual Process Process { get; set; }
 
         public virtual TenantUser User { get; set; }

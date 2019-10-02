@@ -46,12 +46,15 @@ namespace PrimeApps.App.Helpers
     {
         private IConfiguration _configuration;
         private IAuditLogHelper _auditLogHelper;
+        private IEnvironmentHelper _environmentHelper;
         public IBackgroundTaskQueue Queue { get; }
 
 
-        public ModuleHelper(IAuditLogHelper auditLogHelper, IBackgroundTaskQueue queue, IConfiguration configuration)
+        public ModuleHelper(IAuditLogHelper auditLogHelper, IEnvironmentHelper environmentHelper, IBackgroundTaskQueue queue,
+            IConfiguration configuration)
         {
             _auditLogHelper = auditLogHelper;
+            _environmentHelper = environmentHelper;
             _configuration = configuration;
             Queue = queue;
         }
@@ -871,9 +874,9 @@ namespace PrimeApps.App.Helpers
 
                     component.Content = ReplaceDynamicValues(component.Content, appConfigs);
 
-                    if (component.Content.StartsWith("http"))
+                    if (!string.IsNullOrEmpty(component.CustomUrl))
                     {
-                        if (!IsTrustedUrl(component.Content, appConfigs))
+                        if (!IsTrustedUrl(component.CustomUrl, appConfigs))
                         {
                             component.Content = "console.error('" + component.Content + " is not a trusted url.');";
                             continue;
@@ -884,18 +887,18 @@ namespace PrimeApps.App.Helpers
                             using (var httpClient = new HttpClient())
                             {
                                 httpClient.DefaultRequestHeaders.Accept.Clear();
-                                var response = await httpClient.GetAsync(component.Content);
+                                var response = await httpClient.GetAsync(component.CustomUrl);
                                 var content = await response.Content.ReadAsStringAsync();
 
                                 if (!response.IsSuccessStatusCode)
                                 {
-                                    component.Content = "console.error('" + component.Content + " response error. Http Status Code: " + response.StatusCode + "');";
+                                    component.Content = "console.error('" + component.CustomUrl + " response error. Http Status Code: " + response.StatusCode + "');";
                                     continue;
                                 }
 
                                 if (string.IsNullOrWhiteSpace(content))
                                 {
-                                    component.Content = "console.warn('" + component.Content + " has empty content.');";
+                                    component.Content = "console.warn('" + component.CustomUrl + " has empty content.');";
                                     continue;
                                 }
 
@@ -917,6 +920,7 @@ namespace PrimeApps.App.Helpers
         public async Task<JObject> GetGlobalConfig(IComponentRepository componentRepository)
         {
             var globalConfigEntity = await componentRepository.GetGlobalConfig();
+            globalConfigEntity = await _environmentHelper.DataFilter(globalConfigEntity);
 
             if (globalConfigEntity == null || string.IsNullOrWhiteSpace(globalConfigEntity.Content))
                 return null;

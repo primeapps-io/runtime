@@ -34,6 +34,35 @@ namespace PrimeApps.Studio.Models
         public List<Filter> Filters { get; set; }
 
         public ActionsBindingModel Actions { get; set; }
+        
+        public List<EnvironmentType> Environments { get; set; }
+
+        public string EnvironmentValues
+        {
+            get
+            {
+                var list = new List<string>();
+
+                foreach (var env in Environments)
+                {
+                    var value = (int)env;
+                    list.Add(value.ToString());
+                }
+
+                return string.Join(",", list);
+            }
+
+            set
+            {
+                var list = value.Split(",");
+
+                foreach (var env in list)
+                {
+                    Environments.Add((EnvironmentType)Enum.Parse(typeof(EnvironmentType), env));
+                }
+
+            }
+        }
     }
 
     public class ActionsBindingModel

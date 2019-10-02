@@ -13,7 +13,7 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = $scope.currentApp.label;
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'functions';
-
+            $scope.environments = FunctionsService.getEnvironments();
             $scope.app = $rootScope.currentApp;
             $scope.tabManage = {
                 activeTab: "overview"
@@ -24,6 +24,32 @@ angular.module('primeapps')
             }
 
             $scope.deployments = [];
+
+            $scope.environmentChange = function (env, index, otherValue = false) {
+                if (!env || index === 0) {
+                    $scope.environments[0].selected = env.selected || otherValue;
+                    return;
+                }
+
+                if (index === 1) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[1].selected = otherValue;
+                    }
+                }
+                else if (index === 2) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+                    $scope.environments[1].disabled = env.selected || otherValue;
+                    $scope.environments[1].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[2].selected = otherValue;
+                    }
+                }
+            };
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
@@ -86,15 +112,15 @@ angular.module('primeapps')
             };
 
             $scope.runtimes = [
-                {id: 1, name: "dotnetcore (2.0)", value: "dotnetcore2.0", type: "cs", editor: "csharp", editorDependencySample: "<Project Sdk=\"Microsoft.NET.Sdk\">\n\n  <PropertyGroup>\n    <TargetFramework>netstandard2.0</TargetFramework>\n  </PropertyGroup>\n\n  <ItemGroup>\n    <PackageReference Include=\"Kubeless.Functions\" Version=\"0.1.1\" />\n  </ItemGroup>\n\n</Project>", editorCodeSample: "using System;\r\nusing Kubeless.Functions;\r\nusing Newtonsoft.Json.Linq;\r\n\r\npublic class {{handler.class}}\r\n{\r\n    public object {{handler.method}}(Event k8Event, Context k8Context)\r\n    {\r\n        var obj = new JObject();\r\n        obj[\"data\"] = k8Event.Data.ToString();\r\n        \r\n        return obj;\r\n    }\r\n}"},
-                {id: 2, name: "python (2.7)", value: "python2.7", type: "py", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  "},
-                {id: 3, name: "python (3.4)", value: "python3.4", type: "py", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  "},
-                {id: 4, name: "python (3.6)", value: "python3.6", type: "py", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  "},
-                {id: 5, name: "nodejs (6)", value: "nodejs6", type: "js", editor: "javascript", editorDependencySample: "{\n    \"name\": \"hellonodejs\",\n    \"version\": \"0.0.1\",\n    \"dependencies\": {\n        \"end-of-stream\": \"^1.4.1\",\n        \"from2\": \"^2.3.0\",\n        \"lodash\": \"^4.17.5\"\n    }\n}", editorCodeSample: "'use strict';\r\n\r\nconst _ = require('lodash');\r\n\r\nmodule.exports = {\r\n    {{handler.method}}: (event, context) => {\r\n        _.assign(event.data, {date: new Date().toTimeString()})\r\n        return JSON.stringify(event.data);\r\n    },\r\n};"},
-                {id: 6, name: "nodejs (8)", value: "nodejs8", type: "js", editor: "javascript", editorDependencySample: "{\n    \"name\": \"hellonodejs\",\n    \"version\": \"0.0.1\",\n    \"dependencies\": {\n        \"end-of-stream\": \"^1.4.1\",\n        \"from2\": \"^2.3.0\",\n        \"lodash\": \"^4.17.5\"\n    }\n}", editorCodeSample: "'use strict';\r\n\r\nconst _ = require('lodash');\r\n\r\nmodule.exports = {\r\n    {{handler.method}}: (event, context) => {\r\n        _.assign(event.data, {date: new Date().toTimeString()})\r\n        return JSON.stringify(event.data);\r\n    },\r\n};"},
-                {id: 7, name: "ruby (2.4)", value: "ruby2.4", type: "rb", editor: "ruby", editorDependencySample: "source 'https://rubygems.org'\n\ngem 'logging'", editorCodeSample: "require 'logging'\r\n\r\ndef {{handler.method}}(event, context)\r\n  logging = Logging.logger(STDOUT)\r\n  logging.info \"it works!\"\r\n  \"hello world\"\r\nend"},
-                {id: 8, name: "php (7.2)", value: "php7.2", type: "php", editor: "php", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "\n<?php\n\nfunction {{handler.method}}($event, $context) {\n  return \"Hello World\";\n}\n"},
-                {id: 9, name: "go (1.10)", value: "go1.10", type: "go", editor: "golang", editorDependencySample: "\n[[constraint]]\n  name = \"github.com/sirupsen/logrus\"\n  branch = \"master\"", editorCodeSample: "package kubeless\r\n\r\nimport (\r\n\t\"github.com/kubeless/kubeless/pkg/functions\"\r\n\t\"github.com/sirupsen/logrus\"\r\n)\r\n\r\n// Hello sample function with dependencies\r\nfunc {{handler.method}}(event functions.Event, context functions.Context) (string, error) {\r\n\tlogrus.Info(event.Data)\r\n\treturn \"Hello world!\", nil\r\n}"},
+                { id: 1, name: "dotnetcore (2.0)", value: "dotnetcore2.0", type: "cs", editor: "csharp", editorDependencySample: "<Project Sdk=\"Microsoft.NET.Sdk\">\n\n  <PropertyGroup>\n    <TargetFramework>netstandard2.0</TargetFramework>\n  </PropertyGroup>\n\n  <ItemGroup>\n    <PackageReference Include=\"Kubeless.Functions\" Version=\"0.1.1\" />\n  </ItemGroup>\n\n</Project>", editorCodeSample: "using System;\r\nusing Kubeless.Functions;\r\nusing Newtonsoft.Json.Linq;\r\n\r\npublic class {{handler.class}}\r\n{\r\n    public object {{handler.method}}(Event k8Event, Context k8Context)\r\n    {\r\n        var obj = new JObject();\r\n        obj[\"data\"] = k8Event.Data.ToString();\r\n        \r\n        return obj;\r\n    }\r\n}" },
+                { id: 2, name: "python (2.7)", value: "python2.7", type: "py", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  " },
+                { id: 3, name: "python (3.4)", value: "python3.4", type: "py", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  " },
+                { id: 4, name: "python (3.6)", value: "python3.6", type: "py", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  " },
+                { id: 5, name: "nodejs (6)", value: "nodejs6", type: "js", editor: "javascript", editorDependencySample: "{\n    \"name\": \"hellonodejs\",\n    \"version\": \"0.0.1\",\n    \"dependencies\": {\n        \"end-of-stream\": \"^1.4.1\",\n        \"from2\": \"^2.3.0\",\n        \"lodash\": \"^4.17.5\"\n    }\n}", editorCodeSample: "'use strict';\r\n\r\nconst _ = require('lodash');\r\n\r\nmodule.exports = {\r\n    {{handler.method}}: (event, context) => {\r\n        _.assign(event.data, {date: new Date().toTimeString()})\r\n        return JSON.stringify(event.data);\r\n    },\r\n};" },
+                { id: 6, name: "nodejs (8)", value: "nodejs8", type: "js", editor: "javascript", editorDependencySample: "{\n    \"name\": \"hellonodejs\",\n    \"version\": \"0.0.1\",\n    \"dependencies\": {\n        \"end-of-stream\": \"^1.4.1\",\n        \"from2\": \"^2.3.0\",\n        \"lodash\": \"^4.17.5\"\n    }\n}", editorCodeSample: "'use strict';\r\n\r\nconst _ = require('lodash');\r\n\r\nmodule.exports = {\r\n    {{handler.method}}: (event, context) => {\r\n        _.assign(event.data, {date: new Date().toTimeString()})\r\n        return JSON.stringify(event.data);\r\n    },\r\n};" },
+                { id: 7, name: "ruby (2.4)", value: "ruby2.4", type: "rb", editor: "ruby", editorDependencySample: "source 'https://rubygems.org'\n\ngem 'logging'", editorCodeSample: "require 'logging'\r\n\r\ndef {{handler.method}}(event, context)\r\n  logging = Logging.logger(STDOUT)\r\n  logging.info \"it works!\"\r\n  \"hello world\"\r\nend" },
+                { id: 8, name: "php (7.2)", value: "php7.2", type: "php", editor: "php", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "\n<?php\n\nfunction {{handler.method}}($event, $context) {\n  return \"Hello World\";\n}\n" },
+                { id: 9, name: "go (1.10)", value: "go1.10", type: "go", editor: "golang", editorDependencySample: "\n[[constraint]]\n  name = \"github.com/sirupsen/logrus\"\n  branch = \"master\"", editorCodeSample: "package kubeless\r\n\r\nimport (\r\n\t\"github.com/kubeless/kubeless/pkg/functions\"\r\n\t\"github.com/sirupsen/logrus\"\r\n)\r\n\r\n// Hello sample function with dependencies\r\nfunc {{handler.method}}(event functions.Event, context functions.Context) (string, error) {\r\n\tlogrus.Info(event.Data)\r\n\treturn \"Hello world!\", nil\r\n}" },
                 {
                     id: 10,
                     name: "java (1.8)",
@@ -113,7 +139,7 @@ angular.module('primeapps')
             $scope.functionForm = {};
             $scope.loading = true;
             //var currentOrganization = $localStorage.get("currentApp");
-            $scope.organization = $filter('filter')($rootScope.organizations, {id: $scope.orgId})[0];
+            $scope.organization = $filter('filter')($rootScope.organizations, { id: $scope.orgId })[0];
             $scope.giteaUrl = giteaUrl;
 
             /*$scope.aceOption = {
@@ -140,6 +166,16 @@ angular.module('primeapps')
                     $scope.functionCopy = angular.copy(response.data);
                     $scope.function = response.data;
 
+                    if ($scope.function.environment && $scope.function.environment.indexOf(',') > -1)
+                        $scope.function.environments = $scope.function.environment.split(',');
+                    else
+                        $scope.function.environments = $scope.function.environment;
+
+                    angular.forEach($scope.function.environments, function (envValue) {
+                        $scope.environmentChange($scope.environments[envValue - 1], envValue - 1, true);
+                    });
+
+
                     FunctionsDeploymentService.count($scope.function.id)
                         .then(function (response) {
                             $scope.pageTotal = response.data;
@@ -163,7 +199,7 @@ angular.module('primeapps')
             });
 
             $scope.getFileType = function () {
-                return $filter('filter')($scope.runtimes, {value: $scope.function.runtime})[0].type;
+                return $filter('filter')($scope.runtimes, { value: $scope.function.runtime })[0].type;
             };
 
             $scope.closeModal = function () {
@@ -245,9 +281,9 @@ angular.module('primeapps')
                                             $scope.logsLoading = false;
                                         }
                                     }).catch(function () {
-                                    toastr.error('An error occurred while getting the logs!');
-                                    $scope.refreshLogs = false;
-                                })
+                                        toastr.error('An error occurred while getting the logs!');
+                                        $scope.refreshLogs = false;
+                                    })
                             }
                         }
                         else {
@@ -281,6 +317,15 @@ angular.module('primeapps')
                     return;
 
                 $scope.saving = true;
+
+                $scope.function.environments = [];
+                angular.forEach($scope.environments, function (env) {
+                    if (env.selected)
+                        $scope.function.environments.push(env.value);
+                });
+
+                delete $scope.function.environment;
+                delete $scope.function.environment_list;
 
                 FunctionsService.update($scope.name, $scope.function)
                     .then(function (response) {

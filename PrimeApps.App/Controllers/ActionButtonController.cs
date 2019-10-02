@@ -12,6 +12,9 @@ using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.App.Extensions;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Enums;
+using PrimeApps.Model.Common.ActionButton;
+using System.Linq;
 
 namespace PrimeApps.App.Controllers
 {
@@ -21,13 +24,16 @@ namespace PrimeApps.App.Controllers
     {
         private IActionButtonRepository _actionButtonRepository;
         private IActionButtonHelper _actionButtonHelper;
+        private IEnvironmentHelper _environmentHelper;
         private IComponentRepository _componentRepository;
         private IConfiguration _configuration;
 
-        public ActionButtonController(IActionButtonRepository actionButtonRepository, IActionButtonHelper actionButtonHelper, IComponentRepository componentRepository, IConfiguration configuration)
+        public ActionButtonController(IActionButtonRepository actionButtonRepository, IActionButtonHelper actionButtonHelper, IEnvironmentHelper environmentHelper,
+            IComponentRepository componentRepository, IConfiguration configuration)
         {
             _actionButtonRepository = actionButtonRepository;
             _actionButtonHelper = actionButtonHelper;
+            _environmentHelper = environmentHelper;
             _componentRepository = componentRepository;
             _configuration = configuration;
         }
@@ -48,8 +54,9 @@ namespace PrimeApps.App.Controllers
             var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
             previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
-       
-           if (previewMode == "tenant")
+            actionButtons = await _environmentHelper.DataFilter(actionButtons.ToList());
+
+            if (previewMode == "tenant")
                 await _actionButtonHelper.ProcessScriptFiles(actionButtons, _componentRepository);
 
             return Ok(actionButtons);

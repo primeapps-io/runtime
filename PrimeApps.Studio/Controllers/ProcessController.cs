@@ -86,7 +86,7 @@ namespace PrimeApps.Studio.Controllers
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "process", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var processEntity = await _processRepository.GetAllById(id);
+            var processEntity = await _processRepository.GetAllById(id); 
 
             if (processEntity == null)
                 return NotFound();

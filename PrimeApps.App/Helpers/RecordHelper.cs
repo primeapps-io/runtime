@@ -73,10 +73,14 @@ namespace PrimeApps.App.Helpers
         private IWorkflowHost _workflowHost;
         private IModuleRepository _moduleRepository;
         private IModuleHelper _moduleHelper;
+        private IEnvironmentHelper _environmentHelper;
 
         public IBackgroundTaskQueue Queue { get; }
 
-        public RecordHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IAuditLogHelper auditLogHelper, INotificationHelper notificationHelper, IWorkflowHelper workflowHelper, IProcessHelper processHelper, ICalculationHelper calculationHelper, IBpmHelper bpmHelper, IBackgroundTaskQueue queue, IHttpContextAccessor context, IWorkflowHost workflowHost, IModuleRepository moduleRepository, IModuleHelper moduleHelper)
+        public RecordHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IAuditLogHelper auditLogHelper,
+            INotificationHelper notificationHelper, IWorkflowHelper workflowHelper, IProcessHelper processHelper, ICalculationHelper calculationHelper,
+            IBpmHelper bpmHelper, IBackgroundTaskQueue queue, IHttpContextAccessor context, IWorkflowHost workflowHost, IModuleRepository moduleRepository,
+            IModuleHelper moduleHelper, IEnvironmentHelper environmentHelper)
         {
             _context = context;
             _serviceScopeFactory = serviceScopeFactory;
@@ -91,6 +95,7 @@ namespace PrimeApps.App.Helpers
             _workflowHost = workflowHost;
             _moduleRepository = moduleRepository;
             _moduleHelper = moduleHelper;
+            _environmentHelper = environmentHelper;
 
             Queue = queue;
         }
@@ -102,7 +107,8 @@ namespace PrimeApps.App.Helpers
             _currentUser = currentUser;
             _auditLogHelper = new AuditLogHelper(configuration, serviceScopeFactory, currentUser);
             _notificationHelper = new NotificationHelper(configuration, serviceScopeFactory, currentUser);
-            _workflowHelper = new WorkflowHelper(configuration, serviceScopeFactory, currentUser, _moduleHelper);
+            _environmentHelper = new EnvironmentHelper(_configuration);
+            _workflowHelper = new WorkflowHelper(configuration, serviceScopeFactory, currentUser, _moduleHelper, _environmentHelper);
             _processHelper = new ProcessHelper(configuration, serviceScopeFactory, currentUser);
             _calculationHelper = new CalculationHelper(configuration, serviceScopeFactory, currentUser);
             _bpmHelper = new BpmHelper(configuration, serviceScopeFactory, currentUser);
@@ -471,6 +477,8 @@ namespace PrimeApps.App.Helpers
             if (!record.IsNullOrEmpty() && !record["process_id"].IsNullOrEmpty())
             {
                 var process = await processRepository.GetById((int)record["process_id"]);
+                process = await _environmentHelper.DataFilter(process);
+
                 record["freeze"] = true;
 
                 if (appUser.HasAdminProfile)

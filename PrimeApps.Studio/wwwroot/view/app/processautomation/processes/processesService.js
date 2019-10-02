@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('ProcessesService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', 'operators', '$cache', 'dataTypes', 'systemFields', 'ModuleService',
-        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, operators, $cache, dataTypes, systemFields, ModuleService) {
+    .factory('ProcessesService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', 'operators', '$cache', 'dataTypes', 'systemFields', 'ModuleService', 'environments',
+        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, operators, $cache, dataTypes, systemFields, ModuleService, environments) {
             return {
                 find: function (model) {
                     return $http.post(config.apiUrl + 'process/find/', model);
@@ -42,6 +42,9 @@ angular.module('primeapps')
                 },
                 findUsers: function (model) {
                     return $http.post(config.apiUrl + 'app_draft_user/find', model);
+                },
+                getEnvironments: function () {
+                    return environments.data;
                 },
                 process: function (workflows, modules) {
                     angular.forEach(workflows, function (workflow) {
@@ -113,7 +116,7 @@ angular.module('primeapps')
                     return dueDateItems;
                 },
 
-                processWorkflow: function (workflow, module, modules, picklistsModule, filters, scheduleItems, dueDateItems, picklistsActivity,  picklistUpdateModule, dynamicprocessModules) {
+                processWorkflow: function (workflow, module, modules, picklistsModule, filters, scheduleItems, dueDateItems, picklistsActivity, picklistUpdateModule, dynamicprocessModules) {
 
                     var workflowModel = {};
                     workflowModel.id = workflow.id;
@@ -354,10 +357,10 @@ angular.module('primeapps')
                         });
                     }
 
-                    if(workflowModel.approver_type === 'dynamicApprover' && !workflowModel.approvers){
+                    if (workflowModel.approver_type === 'dynamicApprover' && !workflowModel.approvers) {
                         workflow.approvers = [];
                     }
-                    
+
                     if (workflowModel.approvers) {
 
                         workflow.approvers = workflowModel.approvers;

@@ -40,7 +40,7 @@
                                            focus="true"
                                            ng-model-options="{ debounce: 200 }"
                                            ng-change="identifierCreate();"
-                                           ng-model="function.label"/>
+                                           ng-model="function.label" />
                                 </div>
                                 <div class="form-group"
                                      style="position: relative;"
@@ -54,7 +54,7 @@
                                            ng-blur="functionNameBlur($parent.$parent.function)"
                                            ng-change="checkFunctionName($parent.$parent.function)"
                                            ng-disabled="true"
-                                           ng-model="function.name"/>
+                                           ng-model="function.name" />
                                     <div ng-if="functionNameChecking">
                                         <i class="fa fa-spinner fa-spin"
                                            style="font-size:24px;position: absolute;bottom: 8px;right: 8px;"></i>
@@ -89,7 +89,7 @@
                                         <div class="panel-heading" role="tab">
                                             <h4 class="panel-title" style="padding-left: 0px;">
                                                 <a bs-collapse-toggle style="text-transform: none;cursor: pointer;text-decoration: none;">
-                                                   Advanced Settings
+                                                    Advanced Settings
                                                 </a>
                                                 <i style="font-size: 12px;" ng-class="{'fas fa-chevron-down': panels.activePanel === 0, 'fas fa-chevron-right': panels.activePanel !== 0}"></i>
                                             </h4>
@@ -106,7 +106,7 @@
                                                            required
                                                            placeholder="(for c# and java) module.handler, (others) handler"
                                                            ng-change="checkFunctionHandler($parent.$parent.function)"
-                                                           ng-model="function.handler"/>
+                                                           ng-model="function.handler" />
                                                 </div>
 
                                                 <div class="form-group"
@@ -120,6 +120,16 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-12"> Environment </label>
+                                    <div ng-repeat="env in environments">
+                                        <label class="newinput checkbox-inline">
+                                            <input type="checkbox" name="env{{$index}}" ng-model="env.selected" ng-change="environmentChange(env,$index)" ng-disabled="env.disabled" value="{{env.value}}" title="{{env.name}}" />{{env.name}}
+                                            <span></span>
+                                        </label>
+                                        <br />
                                     </div>
                                 </div>
                             </div>

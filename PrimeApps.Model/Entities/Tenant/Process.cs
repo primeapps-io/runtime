@@ -1,4 +1,5 @@
-﻿using PrimeApps.Model.Enums;
+﻿using Newtonsoft.Json;
+using PrimeApps.Model.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -57,6 +58,9 @@ namespace PrimeApps.Model.Entities.Tenant
             }
         }
 
+        [Column("environment"), MaxLength(10)]
+        public string Environment { get; set; }
+
         public virtual Module Module { get; set; }
 
         public virtual ICollection<ProcessFilter> Filters { get; set; }
@@ -97,6 +101,32 @@ namespace PrimeApps.Model.Entities.Tenant
             set
             {
                 _profileList = value;
+            }
+        }
+
+        [NotMapped]
+        public ICollection<EnvironmentType> EnvironmentList
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Environment))
+                    return null;
+
+                var list = Environment.Split(",");
+                var data = new List<EnvironmentType>();
+
+                foreach (var item in list)
+                {
+                    var value = (EnvironmentType)Enum.Parse(typeof(EnvironmentType), item);
+                    data.Add(value);
+                }
+
+                return data;
+            }
+
+            set
+            {
+                Environment = string.Join(",", value.Select(x => (int)x));
             }
         }
     }

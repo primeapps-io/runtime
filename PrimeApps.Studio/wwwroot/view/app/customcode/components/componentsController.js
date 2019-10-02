@@ -17,6 +17,7 @@ angular.module('primeapps')
              $state.go('studio.apps', { organizationId: $scope.orgId });
              }*/
 
+            $scope.environments = ComponentsService.getEnvironments();
             $scope.modules = $filter('filter')($rootScope.appModules, { system_type: 'component' }, true);
 
             $scope.component = {};
@@ -26,6 +27,7 @@ angular.module('primeapps')
             $scope.componentTypes = componentTypes;
             $rootScope.breadcrumblist[2].title = 'Components';
             $scope.page = 1;
+
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
                 for (var i = 0; i < limit; i++) {
@@ -64,6 +66,32 @@ angular.module('primeapps')
 
             $scope.reload();
 
+            $scope.environmentChange = function (env, index, otherValue = false) {
+                if (!env || index === 0) {
+                    $scope.environments[0].selected = env.selected || otherValue;
+                    return;
+                }
+
+                if (index === 1) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[1].selected = otherValue;
+                    }
+                }
+                else if (index === 2) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+                    $scope.environments[1].disabled = env.selected || otherValue;
+                    $scope.environments[1].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[2].selected = otherValue;
+                    }
+                }
+            };
+
             $scope.changePage = function (page) {
                 $scope.loading = true;
                 var requestModel = angular.copy($scope.requestModel);
@@ -83,12 +111,12 @@ angular.module('primeapps')
 
             $scope.openModal = function () {
                 $scope.createFormModal = $scope.createFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/customcode/components/componentFormModal.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/customcode/components/componentFormModal.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
                 $scope.createFormModal.$promise.then(function () {
                     $scope.createFormModal.show();
                 });
@@ -109,7 +137,13 @@ angular.module('primeapps')
                 $scope.component.order = 0;
                 $scope.component.name = module.name.replace(/_/g, '');
                 $scope.component.module_id = module.id;
+                $scope.component.environments = [];
 
+                angular.forEach($scope.environments, function (env) {
+                    if (env.selected)
+                        $scope.component.environments.push(env.value);
+                });
+                  
                 ComponentsService.create($scope.component)
                     .then(function (response) {
                         $scope.saving = false;

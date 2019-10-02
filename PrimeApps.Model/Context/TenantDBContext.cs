@@ -246,7 +246,8 @@ namespace PrimeApps.Model.Context
 
         public void BuildIndexes(ModelBuilder modelBuilder)
         {
-            //ActionButton
+            //ActionButton 
+            modelBuilder.Entity<ActionButton>().HasIndex(x => x.Environment);
             modelBuilder.Entity<ActionButton>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<ActionButton>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<ActionButton>().HasIndex(x => x.Deleted);
@@ -280,6 +281,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Chart>().HasIndex(x => x.Deleted);
 
             //Components
+            modelBuilder.Entity<Component>().HasIndex(x => x.Environment); 
             modelBuilder.Entity<Component>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Component>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Component>().HasIndex(x => x.Deleted);
@@ -288,6 +290,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Function>().HasIndex(x => x.Name).IsUnique();
             modelBuilder.Entity<Function>().HasIndex(x => x.Label);
             modelBuilder.Entity<Function>().HasIndex(x => x.Runtime);
+            modelBuilder.Entity<Function>().HasIndex(x => x.Environment);
             modelBuilder.Entity<Function>().HasIndex(x => x.Deleted);
 
             //ConversionMapping
@@ -386,6 +389,7 @@ namespace PrimeApps.Model.Context
             //Process
             modelBuilder.Entity<Process>().HasIndex(x => x.ModuleId);
             modelBuilder.Entity<Process>().HasIndex(x => x.Active);
+            modelBuilder.Entity<Process>().HasIndex(x => x.Environment);
             modelBuilder.Entity<Process>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Process>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Process>().HasIndex(x => x.Deleted);
@@ -502,10 +506,11 @@ namespace PrimeApps.Model.Context
 
             //Workflow
             modelBuilder.Entity<Workflow>().HasIndex(x => x.Active);
+            modelBuilder.Entity<Workflow>().HasIndex(x => x.Environment);
             modelBuilder.Entity<Workflow>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Workflow>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Workflow>().HasIndex(x => x.Deleted);
-
+             
             //WorkflowFilter
             modelBuilder.Entity<WorkflowFilter>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<WorkflowFilter>().HasIndex(x => x.UpdatedAt);

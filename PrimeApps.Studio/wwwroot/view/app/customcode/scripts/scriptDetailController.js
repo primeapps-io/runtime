@@ -28,8 +28,9 @@ angular.module('primeapps')
             $scope.activePage = 1;
 
             $scope.app = $rootScope.currentApp;
-            $scope.organization = $filter('filter')($rootScope.organizations, {id: $scope.orgId})[0];
+            $scope.organization = $filter('filter')($rootScope.organizations, { id: $scope.orgId })[0];
             $scope.giteaUrl = giteaUrl;
+            $scope.environments = ScriptsService.getEnvironments();
 
             if (!$scope.name) {
                 $state.go('studio.app.scripts');
@@ -49,6 +50,33 @@ angular.module('primeapps')
             };
 
             $scope.generator(10);
+
+            $scope.environmentChange = function (env, index, otherValue = false) {
+                if (!env || index === 0) {
+                    $scope.environments[0].selected = env.selected || otherValue;
+                    return;
+                }
+
+
+                if (index === 1) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[1].selected = otherValue;
+                    }
+                }
+                else if (index === 2) {
+                    $scope.environments[0].disabled = env.selected || otherValue;
+                    $scope.environments[0].selected = env.selected || otherValue;
+                    $scope.environments[1].disabled = env.selected || otherValue;
+                    $scope.environments[1].selected = env.selected || otherValue;
+
+                    if (otherValue) {
+                        $scope.environments[2].selected = otherValue;
+                    }
+                }
+            };
 
             $scope.requestModel = {
                 limit: "10",
@@ -107,8 +135,12 @@ angular.module('primeapps')
                         toastr.error('Script Not Found !');
                         $state.go('studio.app.scripts');
                     }
+
                     $scope.scriptCopy = angular.copy(response.data);
                     $scope.script = response.data;
+
+                    if ($scope.script.custom_url)
+                        $scope.tabManage.activeTab = 'settings';
 
                     ScriptsDeploymentService.count($scope.script.id)
                         .then(function (response) {
@@ -117,6 +149,15 @@ angular.module('primeapps')
 
                     if (!$scope.script.place_value)
                         $scope.script.place_value = $scope.script.place;
+
+                    if ($scope.script.environment && $scope.script.environment.indexOf(',') > -1)
+                        $scope.script.environments = $scope.script.environment.split(',');
+                    else
+                        $scope.script.environments = $scope.script.environment;
+
+                    angular.forEach($scope.script.environments, function (envValue) {
+                        $scope.environmentChange($scope.environments[envValue - 1], envValue - 1, true);
+                    });
 
                     $scope.script.place = $scope.componentPlaceEnums[$scope.script.place_value];
                     $scope.changePage(1);
@@ -198,12 +239,25 @@ angular.module('primeapps')
             };
 
             $scope.save = function (FormValidation) {
-                if (!FormValidation.$valid){
-                    toastr.error($filter('translate')('Setup.Modules.RequiredError'));
+                if (!FormValidation.$valid) {
+                    if (FormValidation.custom_url.$invalid)
+                        toastr.error("Please enter a valid url.");
+                    else
+                        toastr.error($filter('translate')('Setup.Modules.RequiredError'));
+
                     return;
                 }
-                
+
                 $scope.saving = true;
+
+                $scope.script.environments = [];
+                angular.forEach($scope.environments, function (env) {
+                    if (env.selected)
+                        $scope.script.environments.push(env.value);
+                });
+
+                delete $scope.script.environment;
+                delete $scope.script.environment_list;
 
                 ScriptsService.update($scope.script)
                     .then(function (response) {

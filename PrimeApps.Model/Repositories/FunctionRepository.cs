@@ -21,6 +21,7 @@ namespace PrimeApps.Model.Repositories
                .Where(x => !x.Deleted)
                .CountAsync();
         }
+
         public async Task<bool> IsFunctionNameAvailable(string name)
         {
             return await DbContext.Functions
@@ -84,7 +85,5 @@ namespace PrimeApps.Model.Repositories
             organization.Deleted = true;
             return await DbContext.SaveChangesAsync();
         }
-
-
     }
 }
