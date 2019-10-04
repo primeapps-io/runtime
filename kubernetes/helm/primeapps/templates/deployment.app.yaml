@@ -149,6 +149,6 @@ spec:
             - name: CO_APISERVER_URL
               value: https://{{.Release.Name}}-pgo.{{.Release.Namespace}}.svc:8443
             - name: PGHOST
-              value: {{.Release.Name}}-database.{{.Release.Namespace}}.svc
+              value: {{.Values.postgresoperator.serverName}}.{{.Release.Namespace}}.svc
             - name: PGPASSWORD
               value: {{.Values.postgresoperator.password}}
