@@ -143,7 +143,7 @@ spec:
                   key: SentryDsn
       initContainers:
        - name: "{{.Release.Name}}-init"
-         image: "primeapps/primeapps-init:{{.Values.image.tag}}"
+         image: primeapps/primeapps-init:{{.Values.image.tag | trimSuffix "-debian" | trimSuffix "-centos" | trimSuffix "-redhat" }}
          imagePullPolicy: "{{.Values.image.pullPolicy}}"
          env:
             - name: CO_APISERVER_URL
