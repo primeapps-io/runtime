@@ -4,6 +4,7 @@
 
 # global values can be accessed from any chart
 global:
+  modsecurity: true
   tls:
     type: "letsencrypt"
     secretName: ""
