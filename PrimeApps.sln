@@ -1,21 +1,20 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2005
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.App", "PrimeApps.App\PrimeApps.App.csproj", "{2DE85C0D-8FD0-47FD-A0E2-38B5EF9E7EF7}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Auth", "PrimeApps.Auth\PrimeApps.Auth.csproj", "{F0497B05-D72D-4E08-954C-7ACE090586F1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Studio", "PrimeApps.Studio\PrimeApps.Studio.csproj", "{E73A5813-A39C-4739-9BED-2EF9AC96EE87}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.CLI", "PrimeApps.CLI\PrimeApps.CLI.csproj", "{783021F3-EB68-41A8-98CE-6AF8436D7523}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Model", "PrimeApps.Model\PrimeApps.Model.csproj", "{618C5D45-32AD-4F59-8D8E-D3258CE09033}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.App", "PrimeApps.App\PrimeApps.App.csproj", "{2DE85C0D-8FD0-47FD-A0E2-38B5EF9E7EF7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Util", "PrimeApps.Util\PrimeApps.Util.csproj", "{1BE049AB-A18E-46BC-A2BE-12A9FE185729}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeApps.Admin", "PrimeApps.Admin\PrimeApps.Admin.csproj", "{E589AF4B-D46D-4301-AA11-0338B65D2A03}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.CLI", "PrimeApps.CLI\PrimeApps.CLI.csproj", "{783021F3-EB68-41A8-98CE-6AF8436D7523}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
