@@ -103,6 +103,5 @@ namespace PrimeApps.Model.Helpers
 
             return true;
         }
-
     }
 }

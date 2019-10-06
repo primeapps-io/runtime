@@ -108,7 +108,7 @@ namespace PrimeApps.Studio.Controllers
                     {
                         ["color"] = "#555198",
                         ["title"] = "PrimeApps",
-                        ["banner"] = new JArray {new JObject {["image"] = "", ["descriptions"] = ""}},
+                        ["banner"] = new JArray { new JObject { ["image"] = "", ["descriptions"] = "" } },
                     }.ToJsonString(),
                     AppTheme = new JObject()
                     {
@@ -143,10 +143,8 @@ namespace PrimeApps.Studio.Controllers
             if (resultUpdate < 0)
                 return BadRequest("An error occurred while creating an app");
 
-            await Postgres.CreateDatabaseWithTemplet(_configuration.GetConnectionString("TenantDBConnection"), app.Id,
-                model.TempletId);
-            Queue.QueueBackgroundWorkItem(token =>
-                _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser));
+            await Postgres.CreateDatabaseWithTemplet(_configuration.GetConnectionString("TenantDBConnection"), app.Id, model.TempletId);
+            Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser));
 
             await _storage.CreateBucketPolicy($"app{app.Id}", Request.Scheme + "://" + Request.Host.Value, UnifiedStorage.PolicyType.StudioPolicy);
 

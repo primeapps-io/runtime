@@ -26,17 +26,9 @@ namespace PrimeApps.Model.Helpers
             builder.ConnectionString = string.IsNullOrWhiteSpace(externalConnectionString) ? connectionString : externalConnectionString;
 
             if (tenantId < 0)
-            {
-                //TODO: Added temporarily for Azure PostgreSQL bullshits. Delete this.
-                if (builder.ConnectionString.Contains("database.azure.com") || builder.ConnectionString.Contains("rds.amazonaws.com"))
-                    builder["database"] = "postgres";
-                else
-                    builder.Remove("database");
-            }
+                builder["database"] = "postgres";
             else
-            {
                 builder["database"] = database;
-            }
 
             return builder.ConnectionString;
         }
@@ -88,8 +80,7 @@ namespace PrimeApps.Model.Helpers
 
         public static async Task<bool> CreateDatabaseWithTemplate(string connectionString, string databaseName, string templateDbName, string previewMode)
         {
-            bool result = false;
-            int intResult = 0;
+            bool result;
 
             try
             {
@@ -99,13 +90,9 @@ namespace PrimeApps.Model.Helpers
 
                     using (var command = connection.CreateCommand())
                     {
-                        //TODO: Added temporarily for Azure PostgreSQL "permission denied for relation pg_database" bullshit. Delete this.
-                        if (connection.ConnectionString.Contains("database.azure.com") || connection.ConnectionString.Contains("rds.amazonaws.com"))
-                            command.CommandText = $"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{templateDbName}' AND pid <> pg_backend_pid(); CREATE DATABASE \"{databaseName}\" ENCODING \"UTF8\" TEMPLATE \"{templateDbName}\";";
-                        else
-                            command.CommandText = $"CREATE DATABASE \"{databaseName}\" ENCODING \"UTF8\" TEMPLATE \"{templateDbName}\";";
+                        command.CommandText = $"CREATE DATABASE \"{databaseName}\" ENCODING \"UTF8\" TEMPLATE \"{templateDbName}\";";
 
-                        intResult = await command.ExecuteNonQueryAsync();
+                        var intResult = await command.ExecuteNonQueryAsync();
                         result = intResult < 0;
                     }
 
