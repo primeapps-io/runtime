@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,21 +8,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using PrimeApps.Admin.Helpers;
 using PrimeApps.Admin.Jobs;
 using PrimeApps.Admin.Services;
-using PrimeApps.Model.Entities.Studio;
-using PrimeApps.Model.Helpers;
-using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Util.Storage;
-using PublishHelper = PrimeApps.Admin.Helpers.PublishHelper;
 
 namespace PrimeApps.Admin.Controllers
 {
@@ -31,31 +21,27 @@ namespace PrimeApps.Admin.Controllers
     public class PackageController : BaseController
     {
         private readonly IConfiguration _configuration;
-        private readonly IHttpContextAccessor _context;
         private readonly IOrganizationHelper _organizationHelper;
         private readonly IPublishHelper _publishHelper;
         private readonly IPlatformRepository _platformRepository;
         private readonly IPlatformUserRepository _platformUserRepository;
         private readonly IReleaseRepository _releaseRepository;
         private readonly ITenantRepository _tenantRepository;
-        private readonly IUnifiedStorage _storage;
-        private IBackgroundTaskQueue Queue;
+        private IBackgroundTaskQueue _queue;
         private readonly IPublish _publish;
 
-        public PackageController(IBackgroundTaskQueue _queue, IConfiguration configuration, IHttpContextAccessor context, IOrganizationHelper organizationHelper, IPublishHelper publishHelper,
-            IPlatformRepository platformRepository, IUnifiedStorage storage, IPlatformUserRepository platformUserRepository, IReleaseRepository releaseRepository, ITenantRepository tenantRepository,
+        public PackageController(IBackgroundTaskQueue queue, IConfiguration configuration, IOrganizationHelper organizationHelper, IPublishHelper publishHelper,
+            IPlatformRepository platformRepository, IPlatformUserRepository platformUserRepository, IReleaseRepository releaseRepository, ITenantRepository tenantRepository,
             IPublish publish)
         {
-            Queue = _queue;
+            _queue = queue;
             _configuration = configuration;
-            _context = context;
             _organizationHelper = organizationHelper;
             _publishHelper = publishHelper;
             _platformUserRepository = platformUserRepository;
             _platformRepository = platformRepository;
             _releaseRepository = releaseRepository;
             _tenantRepository = tenantRepository;
-            _storage = storage;
             _publish = publish;
         }
 
@@ -121,7 +107,7 @@ namespace PrimeApps.Admin.Controllers
             var lastRecord = await _releaseRepository.GetLast();
             var currentReleaseId = lastRecord?.Id ?? 0;
 
-            Queue.QueueBackgroundWorkItem(x => _publish.PackageApply(id, orgId, token, AppUser.Id, appUrl, authUrl, false));
+            _queue.QueueBackgroundWorkItem(x => _publish.PackageApply(id, orgId, token, AppUser.Id, appUrl, authUrl, false));
 
             return Ok(currentReleaseId + 1);
         }
@@ -154,7 +140,7 @@ namespace PrimeApps.Admin.Controllers
             if (tenantIds.Count < 1)
                 return NotFound();
 
-            Queue.QueueBackgroundWorkItem(x => _publish.UpdateTenants(id, orgId, AppUser.Id, tenantIds, token));
+            _queue.QueueBackgroundWorkItem(x => _publish.UpdateTenants(id, orgId, AppUser.Id, tenantIds, token));
 
             return Ok();
         }

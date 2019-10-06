@@ -58,6 +58,7 @@ namespace PrimeApps.Admin.Helpers
 
                 var wsParameters = JObject.Parse(incomingMessage);
 
+                /* TODO: StudioDbContext admin app'inde olmayacagi icin buraya cozum bulunmali
                 var email = hContext.User?.FindFirst("email")?.Value;
 
                 if (string.IsNullOrEmpty(email))
@@ -110,6 +111,7 @@ namespace PrimeApps.Admin.Helpers
                 }
 
                 var dbName = previewMode + (previewMode == "tenant" ? tenantId : appId);
+                */
 
                 var releaseIdResult = int.TryParse(wsParameters["release_id"].ToString(), out var releaseId);
 

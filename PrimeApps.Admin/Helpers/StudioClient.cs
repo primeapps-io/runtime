@@ -7,25 +7,20 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace PrimeApps.Admin.Helpers
 {
     public class StudioClient : IDisposable
     {
-        private IConfiguration _configuration;
         private HttpClient _client;
-        private int AppId;
-        private int OrgId;
+        private int _appId;
+        private int _orgId;
 
         public StudioClient(IConfiguration configuration, string token, int appId = 0, int orgId = 0)
         {
-            _configuration = configuration;
-            var apiBaseUrl = _configuration.GetValue("AppSettings:StudioUrl", string.Empty) + "/api/";
-            HttpClientHandler handler = new HttpClientHandler();
+            var apiBaseUrl = configuration.GetValue("AppSettings:StudioUrl", string.Empty) + "/api/";
 
-            var client = new HttpClient(handler, true);
-
+            var client = new HttpClient();
             client.DefaultRequestHeaders.Accept.Clear();
             client.BaseAddress = new Uri(apiBaseUrl);
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
@@ -34,18 +29,15 @@ namespace PrimeApps.Admin.Helpers
             if (orgId > 0)
             {
                 client.DefaultRequestHeaders.Add("X-Organization-Id", orgId.ToString());
-                OrgId = orgId;
+                _orgId = orgId;
             }
 
             if (appId > 0)
             {
                 client.DefaultRequestHeaders.Add("X-App-Id", appId.ToString());
-                AppId = appId;
+                _appId = appId;
             }
-
-            //client.DefaultRequestHeaders.Add("X-Tenant-Id", tenantId);
-
-            //TenantId = tenantId;
+            
             _client = client;
         }
 
@@ -60,7 +52,7 @@ namespace PrimeApps.Admin.Helpers
 
                 var errorData = await response.Content.ReadAsStringAsync();
 
-                throw new Exception($"Method of Get Package result {response.StatusCode}. Application Id: {AppId}, Organization Id: {OrgId}, Response: {errorData}");
+                throw new Exception($"Method of Get Package result {response.StatusCode}. Application Id: {_appId}, Organization Id: {_orgId}, Response: {errorData}");
             }
 
             var data = await response.Content.ReadAsAsync<Package>();
@@ -79,7 +71,7 @@ namespace PrimeApps.Admin.Helpers
 
                 var errorData = await response.Content.ReadAsStringAsync();
 
-                throw new Exception($"Method of Get Last Package result {response.StatusCode}. Application Id: {AppId}, Organization Id: {OrgId}, Response: {errorData}");
+                throw new Exception($"Method of Get Last Package result {response.StatusCode}. Application Id: {_appId}, Organization Id: {_orgId}, Response: {errorData}");
             }
 
             var data = await response.Content.ReadAsAsync<Package>();
@@ -89,7 +81,7 @@ namespace PrimeApps.Admin.Helpers
 
         public async Task<List<Package>> PackageGetAll()
         {
-            var response = await _client.GetAsync($"package/get_all/{AppId}");
+            var response = await _client.GetAsync($"package/get_all/{_appId}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -98,7 +90,7 @@ namespace PrimeApps.Admin.Helpers
 
                 var errorData = await response.Content.ReadAsStringAsync();
 
-                throw new Exception($"Method of Get Packages List result {response.StatusCode}. Application Id: {AppId}, Organization Id: {OrgId}, Response: {errorData}");
+                throw new Exception($"Method of Get Packages List result {response.StatusCode}. Application Id: {_appId}, Organization Id: {_orgId}, Response: {errorData}");
             }
 
             var data = await response.Content.ReadAsAsync<List<Package>>();
@@ -117,7 +109,7 @@ namespace PrimeApps.Admin.Helpers
 
                 var errorData = await response.Content.ReadAsStringAsync();
 
-                throw new Exception($"Method of Get Organizations List result {response.StatusCode}. Application Id: {AppId}, Organization Id: {OrgId}, Response: {errorData}");
+                throw new Exception($"Method of Get Organizations List result {response.StatusCode}. Application Id: {_appId}, Organization Id: {_orgId}, Response: {errorData}");
             }
 
             var data = await response.Content.ReadAsAsync<List<OrganizationModel>>();
@@ -136,9 +128,9 @@ namespace PrimeApps.Admin.Helpers
 
                 var errorData = await response.Content.ReadAsStringAsync();
 
-                throw new Exception($"Method of Get App Draft result {response.StatusCode}. Application Id: {AppId}, Organization Id: {OrgId}, Response: {errorData}");
-
+                throw new Exception($"Method of Get App Draft result {response.StatusCode}. Application Id: {_appId}, Organization Id: {_orgId}, Response: {errorData}");
             }
+
             var data = await response.Content.ReadAsAsync<AppDraft>();
 
             return data;

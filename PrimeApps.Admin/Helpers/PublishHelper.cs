@@ -1,17 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-using PrimeApps.Model.Entities.Platform;
-using PrimeApps.Model.Entities.Studio;
-using PrimeApps.Model.Helpers;
-using PrimeApps.Model.Repositories.Interfaces;
-using PrimeApps.Util.Storage;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using PrimeApps.Model.Repositories.Interfaces;
 using System.Threading.Tasks;
 
 namespace PrimeApps.Admin.Helpers
@@ -26,12 +13,12 @@ namespace PrimeApps.Admin.Helpers
         private readonly IReleaseRepository _releaseRepository;
         private readonly ITenantRepository _tenantRepository;
 
-        public PublishHelper(IReleaseRepository releaseRepository,
-            ITenantRepository tenantRepository)
+        public PublishHelper(IReleaseRepository releaseRepository, ITenantRepository tenantRepository)
         {
             _releaseRepository = releaseRepository;
             _tenantRepository = tenantRepository;
         }
+
         public async Task<bool> IsActiveUpdateButton(int appId)
         {
             var tenantIds = await _tenantRepository.GetByAppId(appId);

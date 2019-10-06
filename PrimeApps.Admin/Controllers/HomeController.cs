@@ -3,38 +3,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using PrimeApps.Admin.Helpers;
 using PrimeApps.Admin.Models;
 using PrimeApps.Model.Repositories.Interfaces;
-using PrimeApps.Util.Storage;
 
 namespace PrimeApps.Admin.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
-        private readonly IHttpContextAccessor _context;
         private readonly IOrganizationHelper _organizationHelper;
         private readonly IApplicationRepository _applicationRepository;
-        private readonly IUnifiedStorage _storage;
-        private readonly IAppDraftRepository _appDraftRepository;
-        private readonly IConfiguration _configuration;
-        private readonly IPlatformRepository _platformRepository;
         private readonly IPlatformUserRepository _platformUserRepository;
 
-        public HomeController(IHttpContextAccessor context, IOrganizationHelper organizationHelper, IApplicationRepository applicationRepository,
-            IUnifiedStorage storage, IAppDraftRepository appDraftRepository, IConfiguration configuration, IPlatformRepository platformRepository, IPlatformUserRepository platformUserRepository)
+        public HomeController(IOrganizationHelper organizationHelper, IApplicationRepository applicationRepository, IPlatformUserRepository platformUserRepository)
         {
-            _context = context;
             _organizationHelper = organizationHelper;
             _applicationRepository = applicationRepository;
-            _storage = storage;
-            _appDraftRepository = appDraftRepository;
-            _configuration = configuration;
-            _platformRepository = platformRepository;
             _platformUserRepository = platformUserRepository;
         }
 
