@@ -368,6 +368,7 @@ angular.module('primeapps')
 
                         ModuleService.deleteRecord($scope.module.name, id)
                             .then(function () {
+                                components.run('AfterDelete', 'Script', $scope, $scope.record);
                                 $cache.remove(cacheKey);
                                 $scope.tableParams.reload();
 
