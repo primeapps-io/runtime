@@ -591,6 +591,7 @@ angular.module('primeapps')
                                                     .then(function (response) {
                                                         var record = ModuleService.processRecordSingle(response.data, $scope.$parent.$parent.module, $scope.$parent.$parent.picklistsModule);
                                                         ModuleService.formatRecordFieldValues(record, $scope.$parent.$parent.module, $scope.$parent.$parent.picklistsModule);
+                                                        components.run('AfterDelete', 'Script', $scope, record);
                                                         $scope.$parent.$parent.$parent.record = record;
                                                         var parentCacheKey = $scope.parentModule + '_' + $scope.parentModule;
                                                         $cache.remove(parentCacheKey);
