@@ -844,5 +844,20 @@ namespace PrimeApps.App.Controllers
 					return "image/jpeg";
 			}
 		}
-	}
+
+        [Route("download_document"),HttpGet]
+        public async Task<FileStreamResult> DownloadDocument([FromQuery(Name = "fileId")]int fileId)
+        {
+            var doc = await _documentRepository.GetById(fileId);
+            if (doc != null)
+            {
+                return await _storage.Download(UnifiedStorage.GetPath("attachment", AppUser.TenantId), doc.UniqueName, doc.Name);
+            }
+            else
+            {
+                //there is no such file, return
+                throw new Exception("Document does not exist in the storage!");
+            }
+        }
+    }
 }
