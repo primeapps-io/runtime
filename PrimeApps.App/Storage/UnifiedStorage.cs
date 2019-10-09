@@ -262,6 +262,14 @@ namespace PrimeApps.App.Storage
             return preSignedUrl;
         }
 
+        public string GetDocUrl(GetPreSignedUrlRequest request)
+        {
+
+            var docUrl = _client.GetPreSignedURL(request);
+
+            return docUrl;
+        }
+
         /// <summary>
         /// Copies objects from one bucket to another.
         /// </summary>
