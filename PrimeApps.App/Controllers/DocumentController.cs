@@ -849,7 +849,7 @@ namespace PrimeApps.App.Controllers
             }
         }
 
-        [Route("document_url"), HttpPost]
+        [Route("upload_document"), HttpPost]
         public async Task<IActionResult> UploadDocument([FromBody]JObject data)
         {
             StringValues bucketName = UnifiedStorage.GetPath("attachment", AppUser.TenantId);
