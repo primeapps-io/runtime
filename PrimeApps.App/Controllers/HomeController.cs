@@ -55,6 +55,7 @@ namespace PrimeApps.App.Controllers
             if (preview != null)
             {
                 var previewApp = AppHelper.GetPreviewApp(preview);
+
                 if (!string.IsNullOrEmpty(previewApp))
                 {
                     if (previewApp.Contains("app"))
@@ -162,19 +163,19 @@ namespace PrimeApps.App.Controllers
         {
             var appInfo = await _applicationRepository.Get(Request.Host.Value);
 
-			return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Register?ReturnUrl=/connect/authorize/callback?client_id=" + appInfo.Name + "%26redirect_uri=" + Request.Scheme + "%3A%2F%2F" + appInfo.Setting.AppDomain + "%2Fsignin-oidc%26response_type=code%20id_token&scope=openid%20profile%20api1%20email&response_mode=form_post");
-		}
-		
-		[HttpGet, Route("healthz")]
-		public IActionResult Healthz()
-		{
-			return Ok();
-		}
+            return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Register?ReturnUrl=/connect/authorize/callback?client_id=" + appInfo.Name + "%26redirect_uri=" + Request.Scheme + "%3A%2F%2F" + appInfo.Setting.AppDomain + "%2Fsignin-oidc%26response_type=code%20id_token&scope=openid%20profile%20api1%20email&response_mode=form_post");
+        }
 
-		private async Task SetValues(int userId, Model.Entities.Platform.App app, int? tenantId, int? appId, bool preview = false)
-		{
-			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
-			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+        [HttpGet, Route("healthz")]
+        public IActionResult Healthz()
+        {
+            return Ok();
+        }
+
+        private async Task SetValues(int userId, Model.Entities.Platform.App app, int? tenantId, int? appId, bool preview = false)
+        {
+            var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+            previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
             ViewBag.Token = await HttpContext.GetTokenAsync("access_token");
 
@@ -211,17 +212,26 @@ namespace PrimeApps.App.Controllers
 
             var componentRepository = (IComponentRepository)HttpContext.RequestServices.GetService(typeof(IComponentRepository));
             var scriptRepository = (IScriptRepository)HttpContext.RequestServices.GetService(typeof(IScriptRepository));
+            var moduleRepository = (IModuleRepository)HttpContext.RequestServices.GetService(typeof(IModuleRepository));
 
-            scriptRepository.CurrentUser = componentRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
+            scriptRepository.CurrentUser = componentRepository.CurrentUser = moduleRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
 
             var components = await componentRepository.GetByType(ComponentType.Component);
             components = _environmentHelper.DataFilter(components.ToList());
 
-            var globalSettings = await scriptRepository.GetGlobalSettings();
-            globalSettings = _environmentHelper.DataFilter(globalSettings);
-
             if (components.Count > 0)
                 jsonString = JsonConvert.SerializeObject(components);
+
+            var globalSettings = await scriptRepository.GetGlobalSettings();
+            globalSettings = _environmentHelper.DataFilter(globalSettings);
+            
+            var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
+            var modules = await moduleRepository.GetAll();
+            var modulesJson = JsonConvert.SerializeObject(modules, serializerSettings);
+
+            //TODO: add all necessary objects here which are in appService.js getMyAccount method for increase performance
+            var account = new JObject();
+            account["modules"] = JArray.Parse(modulesJson);
 
             //TODO Account Suspended control !
             using (var _scope = _serviceScopeFactory.CreateScope())
@@ -246,6 +256,7 @@ namespace PrimeApps.App.Controllers
             ViewBag.EncryptedUserId = CryptoHelper.Encrypt(userId.ToString(), ".btA99KnTp+%','L");
             ViewBag.GlobalSettings = globalSettings != null ? globalSettings.Content : null;
             ViewBag.GoogleMapsApiKey = _configuration.GetValue("AppSettings:GoogleMapsApiKey", string.Empty);
+            ViewBag.Account = account;
         }
     }
 }

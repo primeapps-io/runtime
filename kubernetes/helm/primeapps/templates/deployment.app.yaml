@@ -143,12 +143,12 @@ spec:
                   key: SentryDsn
       initContainers:
        - name: "{{.Release.Name}}-init"
-         image: "primeapps/primeapps-init:{{.Values.image.tag}}"
+         image: primeapps/primeapps-init:{{.Values.image.tag | trimSuffix "-debian" | trimSuffix "-centos" | trimSuffix "-redhat" }}
          imagePullPolicy: "{{.Values.image.pullPolicy}}"
          env:
             - name: CO_APISERVER_URL
               value: https://{{.Release.Name}}-pgo.{{.Release.Namespace}}.svc:8443
             - name: PGHOST
-              value: {{.Release.Name}}-database.{{.Release.Namespace}}.svc
+              value: {{.Values.postgresoperator.serverName}}.{{.Release.Namespace}}.svc
             - name: PGPASSWORD
               value: {{.Values.postgresoperator.password}}
