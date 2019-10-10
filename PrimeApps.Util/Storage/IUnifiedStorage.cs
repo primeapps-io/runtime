@@ -39,5 +39,6 @@ namespace PrimeApps.Util.Storage
         string GetDownloadFolderPath();
         Task<bool> DownloadFolder(string bucketName, string directory, string destinationPath);
         Task<bool> DownloadByPath(string bucketName, string key, string filePath);
+        string GetDocUrl(GetPreSignedUrlRequest request);
     }
 }

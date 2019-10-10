@@ -826,5 +826,12 @@ namespace PrimeApps.Util.Storage
                 return false;
             }
         }
+        
+        public string GetDocUrl(GetPreSignedUrlRequest request)
+        {
+            var docUrl = _client.GetPreSignedURL(request);
+
+            return docUrl;
+        }
     }
 }
