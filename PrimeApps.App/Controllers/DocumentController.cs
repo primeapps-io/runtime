@@ -742,18 +742,16 @@ namespace PrimeApps.App.Controllers
             }
         }
 
-        [Route("upload_document_hex"), HttpPost]
+        [Route("upload_hex"), HttpPost]
         [DisableRequestSizeLimit]
-        public async Task<IActionResult> UploadDocument([FromBody]JObject data)
+        public async Task<IActionResult> UploadHex([FromBody]JObject data)
         {
-            StringValues bucketName = UnifiedStorage.GetPath("attachment", AppUser.TenantId);
-
             string file,
-               description,
-               moduleName,
-               moduleId,
-               recordId,
-               fileName;
+                description,
+                moduleName,
+                moduleId,
+                recordId,
+                fileName;
             moduleName = data["module_name"]?.ToString();
             file = data["file"]?.ToString();
             description = data["description"]?.ToString();
@@ -764,6 +762,7 @@ namespace PrimeApps.App.Controllers
             int parsedModuleId;
             Guid parsedInstanceId = Guid.NewGuid();
             int parsedRecordId;
+            byte[] fileBytes;
 
             if (string.IsNullOrEmpty(file))
                 return BadRequest("Please send file hex string.");
@@ -803,26 +802,35 @@ namespace PrimeApps.App.Controllers
             else
                 return BadRequest("Please send module_id or module_name paratemer.");
 
+            try
+            {
+                fileBytes = Enumerable.Range(0, file.Length)
+                    .Where(x => x % 2 == 0)
+                    .Select(x => Convert.ToByte(file.Substring(x, 2), 16))
+                    .ToArray();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Hex string is not valid. Exception is :" + ex.Message);
+            }
 
             var ext = Path.GetExtension(fileName);
             var uniqueName = Guid.NewGuid().ToString().Replace("-", "") + ext;
-            Byte[] fileByte = Convert.FromBase64String(file);
 
-            using (Stream stream = new MemoryStream(fileByte))
+            string uniqueStandardizedName = fileName.Replace(" ", "-");
+
+            uniqueStandardizedName = Regex.Replace(uniqueStandardizedName, @"[^\u0000-\u007F]", string.Empty);
+
+            string bucketPath = UnifiedStorage.GetPath("attachment", AppUser.TenantId);
+
+            using (MemoryStream bytesToStream = new MemoryStream(fileBytes))
             {
-                await _storage.Upload(bucketName, uniqueName, stream);
+                await _storage.Upload(bucketPath, uniqueName, bytesToStream);
             }
-
-            var result = new DocumentUploadResult
-            {
-                ContentType = UnifiedStorage.GetMimeType(ext),
-                UniqueName = uniqueName,
-                Chunks = 0
-            };
 
             Document currentDoc = new Document()
             {
-                FileSize = fileByte.Length,
+                FileSize = fileBytes.Length,
                 Description = description,
                 ModuleId = parsedModuleId,
                 Name = fileName,
@@ -838,9 +846,7 @@ namespace PrimeApps.App.Controllers
                 return Ok(currentDoc.Id.ToString());
             }
 
-            //return content type of the file to the client
-            return Ok(result);
-
+            return BadRequest("Couldn't Create Document!");
         }
 
         [Route("document_url"), HttpGet]
