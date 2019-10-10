@@ -849,8 +849,7 @@ namespace PrimeApps.App.Controllers
             }
         }
 
-        [HttpPost("upload_document")]
-        [DisableRequestSizeLimit]
+        [Route("document_url"), HttpPost]
         public async Task<IActionResult> UploadDocument([FromBody]JObject data)
         {
             StringValues bucketName = UnifiedStorage.GetPath("attachment", AppUser.TenantId);
