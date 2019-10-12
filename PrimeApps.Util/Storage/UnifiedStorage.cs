@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
+using System.Threading;
 using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -52,20 +53,20 @@ namespace PrimeApps.Util.Storage
 
         static readonly Dictionary<ObjectType, string> pathMap = new Dictionary<ObjectType, string>
         {
-            {ObjectType.ATTACHMENT, "/attachments/"},
-            {ObjectType.RECORD, "/records/"},
-            {ObjectType.TEMPLATE, "/templates/"},
-            {ObjectType.ANALYTIC, "/analytics/"},
-            {ObjectType.IMPORT, "/imports/"},
-            {ObjectType.NOTE, "/notes/"},
-            {ObjectType.LOGO, "/logos/"},
-            {ObjectType.MAIL, "/mail/"},
-            {ObjectType.PROFILEPICTURE, "/profile_pictures/"},
-            {ObjectType.NONE, ""},
-            {ObjectType.APPLOGO, "/app_logo/"},
-            {ObjectType.APPTEMPLATE, "/app_template/"},
-            {ObjectType.RELEASES, "/releases/"},
-            {ObjectType.PACKAGES, "/packages/"}
+            { ObjectType.ATTACHMENT, "/attachments/" },
+            { ObjectType.RECORD, "/records/" },
+            { ObjectType.TEMPLATE, "/templates/" },
+            { ObjectType.ANALYTIC, "/analytics/" },
+            { ObjectType.IMPORT, "/imports/" },
+            { ObjectType.NOTE, "/notes/" },
+            { ObjectType.LOGO, "/logos/" },
+            { ObjectType.MAIL, "/mail/" },
+            { ObjectType.PROFILEPICTURE, "/profile_pictures/" },
+            { ObjectType.NONE, "" },
+            { ObjectType.APPLOGO, "/app_logo/" },
+            { ObjectType.APPTEMPLATE, "/app_template/" },
+            { ObjectType.RELEASES, "/releases/" },
+            { ObjectType.PACKAGES, "/packages/" }
         };
 
 
@@ -387,7 +388,12 @@ namespace PrimeApps.Util.Storage
                 var obj = JObject.Parse(bucketPolicy.Policy);
                 var httpReferrer = obj["Statement"].FirstOrDefault(jt => (string)jt["Sid"] == "http_referrer");
                 var index = ((JArray)obj["Statement"]).IndexOf(httpReferrer);
-                ((JArray)(obj["Statement"][index]["Condition"]["StringLike"]["aws:Referer"])).Add(url + "/*");
+                var referers = (JArray)obj["Statement"][index]["Condition"]["StringLike"]["aws:Referer"];
+
+                if (referers.Any(x => (string)x == url + "/*"))
+                    return;
+
+                referers.Add(url + "/*");
 
                 var putRequest = new PutBucketPolicyRequest
                 {
@@ -826,7 +832,7 @@ namespace PrimeApps.Util.Storage
                 return false;
             }
         }
-        
+
         public string GetDocUrl(GetPreSignedUrlRequest request)
         {
             var docUrl = _client.GetPreSignedURL(request);

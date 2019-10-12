@@ -7,27 +7,27 @@
         <UserSecretsId>aspnet-PrimeApps.Auth-E3334482-F4FD-4012-89E8-5B510BCE02BF</UserSecretsId>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="IdentityServer.LdapExtension" Version="2.1.0"/>
-        <PackageReference Include="IdentityServer4" Version="2.3.2"/>
-        <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.3.0"/>
-        <PackageReference Include="IdentityServer4.EntityFramework" Version="2.3.2"/>
-        <PackageReference Include="Microsoft.AspNetCore.App"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.0" PrivateAssets="all"/>
-        <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0"/>
-        <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="4.4.2"/>
-        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" PrivateAssets="All"/>
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0"/>
+        <PackageReference Include="IdentityServer.LdapExtension" Version="2.1.0" />
+        <PackageReference Include="IdentityServer4" Version="2.3.2" />
+        <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.3.0" />
+        <PackageReference Include="IdentityServer4.EntityFramework" Version="2.3.2" />
+        <PackageReference Include="Microsoft.AspNetCore.App" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.0" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0" />
+        <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="4.4.2" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" PrivateAssets="All" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
         <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.100.1" />
-        <PackageReference Include="AWSSDK.S3" Version="3.3.101.13" />
-        <PackageReference Include="Sentry" Version="1.1.0"/>
-        <PackageReference Include="Sentry.AspNetCore" Version="1.1.0"/>
+        <PackageReference Include="AWSSDK.S3" Version="3.3.104.36" />
+        <PackageReference Include="Sentry" Version="1.1.0" />
+        <PackageReference Include="Sentry.AspNetCore" Version="1.1.0" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj"/>
+        <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
         <ProjectReference Include="..\PrimeApps.Util\PrimeApps.Util.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <EmbeddedResource Include="primeapps_id4.pfx"/>
+        <EmbeddedResource Include="primeapps_id4.pfx" />
     </ItemGroup>
     <ItemGroup>
         <Content Include="aspnetapp.pfx">
@@ -40,6 +40,6 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
-        <Content Update="appsettings.Development.json" CopyToPublishDirectory="false"/>
+        <Content Update="appsettings.Development.json" CopyToPublishDirectory="false" />
     </ItemGroup>
 </Project>
