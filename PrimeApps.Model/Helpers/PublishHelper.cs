@@ -90,7 +90,7 @@ namespace PrimeApps.Model.Helpers
                 var storagePath = Path.Combine(path, "storage.txt");
 
                 var scriptsText = File.ReadAllText(scriptPath, Encoding.UTF8);
-                var sqls = scriptsText.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+                var sqls = scriptsText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." + Environment.NewLine);
 
@@ -168,7 +168,7 @@ namespace PrimeApps.Model.Helpers
 
             var identityUrl = configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
 
-            foreach (var obj in versions.OfType<object>().Select((version, index) => new {version, index}))
+            foreach (var obj in versions.OfType<object>().Select((version, index) => new { version, index }))
             {
                 currentReleaseId += 1;
                 var version = obj.version;
@@ -309,7 +309,7 @@ namespace PrimeApps.Model.Helpers
                             break;
                         }
 
-                        var restoreResult = PostgresHelper.Restore(PREConnectionString, dbName, postgresPath, $"{path}");
+                        var restoreResult = PostgresHelper.Restore(PREConnectionString, dbName, postgresPath, $"{path}", logDirectory: $"{path}");
 
                         if (!restoreResult)
                         {
@@ -351,7 +351,7 @@ namespace PrimeApps.Model.Helpers
                     if (File.Exists(scriptPath))
                     {
                         var scriptsText = File.ReadAllText(scriptPath, Encoding.UTF8);
-                        var sqls = scriptsText.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+                        var sqls = scriptsText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
                         File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." + Environment.NewLine);
 
@@ -513,14 +513,14 @@ namespace PrimeApps.Model.Helpers
             {
                 var dict = new Dictionary<string, string>
                 {
-                    {"grant_type", "password"},
-                    {"username", integrationEmail},
-                    {"password", studioSecret},
-                    {"client_id", clientId},
-                    {"client_secret", studioSecret}
+                    { "grant_type", "password" },
+                    { "username", integrationEmail },
+                    { "password", studioSecret },
+                    { "client_id", clientId },
+                    { "client_secret", studioSecret }
                 };
 
-                var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token") {Content = new FormUrlEncodedContent(dict)};
+                var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token") { Content = new FormUrlEncodedContent(dict) };
                 var res = await httpClient.SendAsync(req);
 
                 if (res.IsSuccessStatusCode)
