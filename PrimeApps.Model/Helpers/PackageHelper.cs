@@ -26,7 +26,7 @@ namespace PrimeApps.Model.Helpers
         {
             var PDEConnectionString = configuration.GetConnectionString("StudioDBConnection");
             var postgresPath = configuration.GetValue("AppSettings:PostgresPath", string.Empty);
-            var root = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+            var root = configuration.GetValue("AppSettings:DataDirectory", string.Empty);
 
             var path = Path.Combine(root, "packages", dbName, version);
 
@@ -209,7 +209,7 @@ namespace PrimeApps.Model.Helpers
 
         public static async Task<bool> Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, JObject app, string studioSecret, string dbName, string version, int deploymentId, IConfiguration configuration, IUnifiedStorage storage)
         {
-            var root = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+            var root = configuration.GetValue("AppSettings:DataDirectory", string.Empty);
 
             var path = Path.Combine(root, "packages", dbName, version);
 

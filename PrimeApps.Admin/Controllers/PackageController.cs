@@ -159,7 +159,7 @@ namespace PrimeApps.Admin.Controllers
 
             var dbName = $"app{appId}";
 
-            var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+            var path = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
             var text = "";
 
             if (!System.IO.File.Exists(Path.Combine(path, "packages", dbName, package.Version, "log.txt")))

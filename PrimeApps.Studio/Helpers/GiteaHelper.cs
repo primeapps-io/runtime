@@ -306,7 +306,7 @@ namespace PrimeApps.Studio.Helpers
 
         public string CloneRepository(string cloneUrl, string folderName, bool deleteIfExist = true)
         {
-            var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+            var giteaDirectory = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
             if (string.IsNullOrEmpty(giteaDirectory))
                 return null;
 

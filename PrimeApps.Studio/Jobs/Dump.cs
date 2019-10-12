@@ -20,7 +20,7 @@ namespace PrimeApps.Studio.Jobs
         [QueueCustom]
         public void Create(JObject request)
         {
-            var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);
+            var dumpDirectory = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
             var postgresPath = _configuration.GetValue("AppSettings:PostgresPath", string.Empty);
             var dbConnection = _configuration.GetConnectionString("StudioDBConnection");
 
@@ -54,7 +54,7 @@ namespace PrimeApps.Studio.Jobs
         [QueueCustom]
         public void Restore(JObject request)
         {
-            var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);
+            var dumpDirectory = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
             var postgresPath = _configuration.GetValue("AppSettings:PostgresPath", string.Empty);
             var connectionStringName = (string)request["environment"] == "test" ? "PlatformDBConnectionTest" : "PlatformDBConnection";
 

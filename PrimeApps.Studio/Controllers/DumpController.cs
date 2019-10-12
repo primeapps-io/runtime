@@ -82,7 +82,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("download")]
         public IActionResult Download([FromQuery]int appId)
         {
-            var dumpDirectory = _configuration.GetValue("AppSettings:DumpDirectory", string.Empty);
+            var dumpDirectory = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
 
             return PhysicalFile(Path.Combine(dumpDirectory, $"app{appId}.tar"), "text/plain", $"app{appId}.tar");
         }

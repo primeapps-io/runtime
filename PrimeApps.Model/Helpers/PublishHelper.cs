@@ -29,7 +29,7 @@ namespace PrimeApps.Model.Helpers
             int appId, int orgId, int currentReleaseId, string token)
         {
             var PREConnectionString = configuration.GetConnectionString("PlatformDBConnection");
-            var rootPath = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+            var rootPath = configuration.GetValue("AppSettings:DataDirectory", string.Empty);
             var root = Path.Combine(rootPath, "tenant-update-logs");
 
             if (!Directory.Exists(root))
@@ -154,7 +154,7 @@ namespace PrimeApps.Model.Helpers
             var postgresPath = configuration.GetValue("AppSettings:PostgresPath", string.Empty);
             var studioUrl = configuration.GetValue("AppSettings:StudioUrl", string.Empty);
 
-            var rootPath = configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+            var rootPath = configuration.GetValue("AppSettings:DataDirectory", string.Empty);
             var dbName = databaseName;
             var templateCopied = false;
 

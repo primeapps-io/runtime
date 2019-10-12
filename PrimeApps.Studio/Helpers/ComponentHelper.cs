@@ -64,7 +64,7 @@ namespace PrimeApps.Studio.Helpers
                         {
                             var status = _giteaHelper.CloneRepository(repository["clone_url"].ToString(), repository["name"].ToString(), false);
 
-                            var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+                            var giteaDirectory = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
                             var localFolder = giteaDirectory + repository["name"];
 
                             var nameList = _giteaHelper.GetFileNames(localFolder, "components/" + componentName);

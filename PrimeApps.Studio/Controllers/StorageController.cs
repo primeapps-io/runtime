@@ -274,7 +274,7 @@ namespace PrimeApps.Studio.Controllers
         {
             if (await _storage.FolderExists(request["bucket_name"].ToString()))
             {
-                var tempPath = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+                var tempPath = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
 
                 var tmpFolder = Path.Combine(tempPath, "tmpVersionFolder");
                 var bucketName = request["bucket_name"].ToString();

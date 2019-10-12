@@ -143,7 +143,7 @@ namespace PrimeApps.Studio.Helpers
 
                         using (var packageRepository = new PackageRepository(databaseContext, _configuration))
                         {
-                            var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+                            var path = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
 
                             package = await packageRepository.Get(releaseId);
                             //releaseOptions = JObject.Parse(package.Settings);

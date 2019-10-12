@@ -321,7 +321,7 @@ namespace PrimeApps.Studio.Helpers
 
         public async void UploadPackage(int appId, string dbName, string version)
         {
-            var path = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+            var path = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
             var bucketName = UnifiedStorage.GetPath("packages", "app", appId, version + "/");
 
             await _storage.CreateBucketIfNotExists(bucketName);
