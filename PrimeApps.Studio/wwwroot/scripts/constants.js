@@ -3365,8 +3365,8 @@ angular.module('primeapps')
             selected: false,
             disabled: false
         }, {
-            name: 'Product',
-            value: 'product',
+            name: 'Production',
+            value: 'production',
             selected: false,
             disabled: false
         }]

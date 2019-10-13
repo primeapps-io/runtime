@@ -8,7 +8,7 @@ namespace PrimeApps.Model.Enums
         Development = 1,
         [EnumMember(Value = "test")]
         Test = 2,
-        [EnumMember(Value = "product")]
-        Product = 3
+        [EnumMember(Value = "production")]
+        Production = 3
     }
 }
