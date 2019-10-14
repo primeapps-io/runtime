@@ -3482,6 +3482,8 @@ angular.module('primeapps')
 															if (!scope.parentModule && !scope.viewid)
 																$cache.put(key, cacheItem);
 
+                                                            components.run('EmptyList', 'Script', scope);
+
 															var findRecords = function (findRequest, cacheItem) {
 																scope.listFindRequest = findRequest;
 																components.run('BeforeListRequest', 'Script', scope);
