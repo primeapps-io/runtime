@@ -168,10 +168,24 @@ namespace PrimeApps.App.Controllers
         {
             var instanceToUpdate = await _tenantRepository.GetAsync(AppUser.TenantId);
 
-            if (instanceToUpdate.OwnerId != AppUser.TenantId)
+            if (!AppUser.HasAdminProfile)
             {
-                return Forbid();
-                //return new ForbiddenResult(Request);
+                _settingRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = AppUser.TenantId, UserId = AppUser.Id };
+                var customProfileSetting = await _settingRepository.GetByKeyAsync("custom_profile_permissions");
+                if (customProfileSetting != null)
+                {
+                    JToken profileSetting = JObject.Parse(customProfileSetting.Value)["profilePermissions"].Where(x => (int)x["profileId"] == AppUser.ProfileId).FirstOrDefault();
+                    if (profileSetting != null)
+                    {
+                        var hasUserCreatePermission = profileSetting["permissions"].Any(x => x.Value<string>() == "organization");
+                        if (!hasUserCreatePermission)
+                            return Forbid();
+                    }
+                    else
+                        return Forbid();
+                }
+                else
+                    return Forbid();
             }
 
             instanceToUpdate.Setting.Logo = (string)logo["url"];
