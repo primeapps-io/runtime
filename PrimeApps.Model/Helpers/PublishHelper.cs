@@ -436,14 +436,14 @@ namespace PrimeApps.Model.Helpers
 
             if (templateCopied)
             {
-                File.AppendAllText(Path.Combine(root, $"releases-{currentReleaseId}-log.txt"), "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Template database swapping..." + Environment.NewLine);
+                File.AppendAllText(Path.Combine(root, $"release-{currentReleaseId}-log.txt"), "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Template database swapping..." + Environment.NewLine);
                 result = PostgresHelper.SwapDatabase(PREConnectionString, $"{databaseName}_copy", databaseName);
 
                 if (!result)
                     File.AppendAllText(Path.Combine(root, $"release-{currentReleaseId}-log.txt"), "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Error - Unhandle exception while swapping database... \u001b[39m" + Environment.NewLine);
             }
 
-            File.AppendAllText(Path.Combine(root, $"releases-{currentReleaseId}-log.txt"), "\u001b[92m" + "********** Apply Version End**********" + "\u001b[39m" + Environment.NewLine);
+            File.AppendAllText(Path.Combine(root, $"release-{currentReleaseId}-log.txt"), "\u001b[92m" + "********** Apply Version End**********" + "\u001b[39m" + Environment.NewLine);
             return releaseList;
         }
 
