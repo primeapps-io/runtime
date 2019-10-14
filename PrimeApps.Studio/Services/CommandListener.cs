@@ -121,7 +121,7 @@ namespace PrimeApps.Studio.Services
                     }
                     else if (parameter.DbType == DbType.Boolean)
                     {
-                        value = bool.Parse(value) ? "'t'" : "'f'";
+                        value = bool.Parse(value) ? "'true'" : "'false'";
                     }
                 }
 
