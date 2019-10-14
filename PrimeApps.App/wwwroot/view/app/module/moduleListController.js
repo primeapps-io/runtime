@@ -21,10 +21,14 @@ angular.module('primeapps')
             $scope.actionButtonDisabled = false;
             $scope.showExportButton = true;
             $scope.hasViewPermission = false;
+            $scope.hasBulkUpdatePermission = false;
 
             if (!$scope.isAdmin) {
                 if (helper.hasCustomProfilePermission('view')) {
                     $scope.hasViewPermission = true;
+                }
+                if (helper.hasCustomProfilePermission('bulk_update')) {
+                    $scope.hasBulkUpdatePermission = true;
                 }
             }
 
