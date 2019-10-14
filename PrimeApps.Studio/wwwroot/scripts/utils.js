@@ -199,7 +199,7 @@ angular.module('primeapps')
 
                     return false;
                 },
-                checkUserProfile: function (menu = null, page = null, operation = null) {
+                checkUserProfile: function (menu, page, operation) {
                     if (!$rootScope.currentApp)
                         return false;
 
