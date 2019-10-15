@@ -57,7 +57,7 @@ namespace PrimeApps.Admin.Controllers
         }
         
         [Route("Reload")]
-        public async Task<IActionResult> Reload()
+        public IActionResult Reload()
         {
             var result = _organizationHelper.ReloadOrganization();
 

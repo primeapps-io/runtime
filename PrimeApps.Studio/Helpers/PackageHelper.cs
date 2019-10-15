@@ -4,25 +4,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
-using PrimeApps.Studio.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Principal;
-using System.Text;
 using System.Threading.Tasks;
 using Amazon.S3.Model;
-using Hangfire.Common;
 using Newtonsoft.Json.Serialization;
 using PrimeApps.Model.Entities.Tenant;
-using PrimeApps.Studio.Storage;
 using PrimeApps.Util.Storage;
 
 namespace PrimeApps.Studio.Helpers

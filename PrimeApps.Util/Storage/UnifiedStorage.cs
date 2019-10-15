@@ -473,7 +473,7 @@ namespace PrimeApps.Util.Storage
             foreach (string path in paths)
             {
                 checkPath += $"{path}/";
-                bool exists = await AmazonS3Util.DoesS3BucketExistAsync(_client, checkPath);
+                bool exists = await AmazonS3Util.DoesS3BucketExistV2Async(_client, checkPath);
                 if (!exists)
                 {
                     await _client.PutBucketAsync(checkPath);

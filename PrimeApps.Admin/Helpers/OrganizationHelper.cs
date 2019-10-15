@@ -41,7 +41,7 @@ namespace PrimeApps.Admin.Helpers
             var studioClient = new StudioClient(_configuration, token);
             var organizations = await studioClient.OrganizationGetAllByUser();
 
-            _cacheHelper.SetAsync(_organizationKey, organizations);
+           await _cacheHelper.SetAsync(_organizationKey, organizations);
 
             return organizations;
         }
@@ -56,7 +56,7 @@ namespace PrimeApps.Admin.Helpers
             var studioClient = new StudioClient(_configuration, token);
             organizations = await studioClient.OrganizationGetAllByUser();
 
-            _cacheHelper.SetAsync(_organizationKey, organizations);
+            await _cacheHelper.SetAsync(_organizationKey, organizations);
 
             return organizations.FirstOrDefault(x => x.Id == id);
         }
