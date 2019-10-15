@@ -49,11 +49,11 @@ namespace PrimeApps.Admin.Jobs
             {
                 var platformDbContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 
-                using (var releaseRepository = new ReleaseRepository(platformDbContext, _configuration)) //, cacheHelper))
-                using (var platformRepository = new PlatformRepository(platformDbContext, _configuration)) //, cacheHelper))
-                using (var applicationRepository = new ApplicationRepository(platformDbContext, _configuration)) //, cacheHelper))
+                using (var releaseRepository = new ReleaseRepository(platformDbContext, _configuration))//, cacheHelper))
+                using (var platformRepository = new PlatformRepository(platformDbContext, _configuration))//, cacheHelper))
+                using (var applicationRepository = new ApplicationRepository(platformDbContext, _configuration))//, cacheHelper))
                 {
-                    applicationRepository.CurrentUser = platformRepository.CurrentUser = releaseRepository.CurrentUser = new CurrentUser {UserId = userId};
+                    applicationRepository.CurrentUser = platformRepository.CurrentUser = releaseRepository.CurrentUser = new CurrentUser { UserId = userId };
 
                     var app = await studioClient.AppDraftGetById(appId);
 
@@ -126,7 +126,18 @@ namespace PrimeApps.Admin.Jobs
                          }
                          else*/
 
-                        await releaseRepository.Create(release);
+                        var releaseNew = new Release
+                        {
+                            AppId = release.AppId,
+                            EndTime = release.EndTime,
+                            StartTime = release.StartTime,
+                            Status = release.Status,
+                            Settings = release.Settings,
+                            TenantId = release.TenantId,
+                            Version = release.Version
+                        };
+
+                        await releaseRepository.Create(releaseNew);
                     }
                 }
             }
@@ -140,10 +151,10 @@ namespace PrimeApps.Admin.Jobs
             {
                 var platformDbContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 
-                using (var releaseRepository = new ReleaseRepository(platformDbContext, _configuration)) //, cacheHelper))
-                using (var platformRepository = new PlatformRepository(platformDbContext, _configuration)) //, cacheHelper))
+                using (var releaseRepository = new ReleaseRepository(platformDbContext, _configuration))//, cacheHelper))
+                using (var platformRepository = new PlatformRepository(platformDbContext, _configuration))//, cacheHelper))
                 {
-                    platformRepository.CurrentUser = releaseRepository.CurrentUser = new CurrentUser {UserId = userId};
+                    platformRepository.CurrentUser = releaseRepository.CurrentUser = new CurrentUser { UserId = userId };
 
                     var packages = await studioClient.PackageGetAll();
                     var lastPackageVersion = packages.Last().Version;
@@ -152,7 +163,7 @@ namespace PrimeApps.Admin.Jobs
 
                     var lastRecord = await releaseRepository.GetLast();
 
-                    foreach (var tenantObj in tenants.OfType<object>().Select((id, index) => new {id, index}))
+                    foreach (var tenantObj in tenants.OfType<object>().Select((id, index) => new { id, index }))
                     {
                         versions = new List<string>();
                         foreach (var package in packages)
@@ -167,7 +178,7 @@ namespace PrimeApps.Admin.Jobs
 
                         versions.Add(lastPackageVersion);
 
-                        foreach (var versionObj in versions.OfType<object>().Select((value, index) => new {value, index}))
+                        foreach (var versionObj in versions.OfType<object>().Select((value, index) => new { value, index }))
                         {
                             var dbName = $"tenant{tenantObj.id}";
                             var version = versionObj.value.ToString();
