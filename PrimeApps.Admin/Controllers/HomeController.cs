@@ -30,7 +30,7 @@ namespace PrimeApps.Admin.Controllers
             var user = _platformUserRepository.Get(HttpContext.User.FindFirst("email").Value);
             var token = await HttpContext.GetTokenAsync("access_token");
 
-            var organizations = await _organizationHelper.Get(user.Id, token);
+            var organizations = await _organizationHelper.Get(token);
             var titleText = "PrimeApps Admin";
 
             ViewBag.Title = titleText;
@@ -55,8 +55,9 @@ namespace PrimeApps.Admin.Controllers
 
             return View();
         }
-
-        public IActionResult ReloadCahce()
+        
+        [Route("Reload")]
+        public async Task<IActionResult> Reload()
         {
             var result = _organizationHelper.ReloadOrganization();
 

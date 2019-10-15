@@ -22,6 +22,7 @@ namespace PrimeApps.Admin
             return WebHost.CreateDefaultBuilder(args)
                 .UseSetting("https_port", "444")
                 .UseStartup<Startup>()
+                .UseSentry()
                 .Build();
         }
     }

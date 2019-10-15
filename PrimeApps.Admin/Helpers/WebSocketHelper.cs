@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Hangfire.Common;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,7 +61,7 @@ namespace PrimeApps.Admin.Helpers
 
                 var wsParameters = JObject.Parse(incomingMessage);
 
-                /* TODO: StudioDbContext admin app'inde olmayacagi icin buraya cozum bulunmali
+                // TODO: StudioDbContext admin app'inde olmayacagi icin buraya cozum bulunmali
                 var email = hContext.User?.FindFirst("email")?.Value;
 
                 if (string.IsNullOrEmpty(email))
@@ -75,10 +78,12 @@ namespace PrimeApps.Admin.Helpers
                 if (string.IsNullOrEmpty(wsParameters["X-Organization-Id"].ToString()) || !int.TryParse(wsParameters["X-Organization-Id"].ToString(), out var organizationId))
                     throw new Exception("Organization not found.");
 
-                var organizationRepository = (IOrganizationRepository)hContext.RequestServices.GetService(typeof(IOrganizationRepository));
-                var check = organizationRepository.IsOrganizationAvaliable(platformUser.Id, organizationId);
+                var organizationHelper = (IOrganizationHelper)hContext.RequestServices.GetService(typeof(IOrganizationHelper));
+                var token = await hContext.GetTokenAsync("access_token");
 
-                if (!check)
+                var organization = await organizationHelper.GetById(organizationId, token);
+
+                if (organization == null)
                     throw new Exception("Authentication error.");
 
                 int.TryParse(wsParameters["X-App-Id"].ToString(), out appId);
@@ -87,15 +92,16 @@ namespace PrimeApps.Admin.Helpers
                 if (tenantId == 0 && appId == 0)
                     throw new Exception("Authentication error.");
 
-                var _appDraftRepository = (IAppDraftRepository)hContext.RequestServices.GetService(typeof(IAppDraftRepository));
-                var _tenantRepository = (ITenantRepository)hContext.RequestServices.GetService(typeof(ITenantRepository));
+                //var _appDraftRepository = (IAppDraftRepository)hContext.RequestServices.GetService(typeof(IAppDraftRepository));
+                var tenantRepository = (ITenantRepository)hContext.RequestServices.GetService(typeof(ITenantRepository));
 
-                var appIds = _appDraftRepository.GetAppIdsByOrganizationId(organizationId);
+                var appIds = organization.Apps.Select(app => app.Id).ToList();
+
                 var previewMode = "";
 
                 if (tenantId != 0)
                 {
-                    var tenant = _tenantRepository.Get(tenantId);
+                    var tenant = tenantRepository.Get(tenantId);
 
                     if (!appIds.Contains(tenant.AppId))
                         throw new Exception("Authentication error.");
@@ -111,7 +117,7 @@ namespace PrimeApps.Admin.Helpers
                 }
 
                 var dbName = previewMode + (previewMode == "tenant" ? tenantId : appId);
-                */
+
 
                 var releaseIdResult = int.TryParse(wsParameters["release_id"].ToString(), out var releaseId);
 

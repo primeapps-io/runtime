@@ -201,6 +201,7 @@ namespace PrimeApps.Model.Helpers
             catch (Exception e)
             {
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : " + "\u001b[31m" + " Error : " + e.Message + "\u001b[39m" + Environment.NewLine);
+                ErrorHandler.LogError(e, "PackageHelper All method error.");
 
                 //tw.WriteLine(e.Message);
                 return false;
@@ -293,6 +294,7 @@ namespace PrimeApps.Model.Helpers
             catch (Exception e)
             {
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : " + "\u001b[31m" + "Error : " + e.Message + "\u001b[39m" + Environment.NewLine);
+                ErrorHandler.LogError(e, "PackageHelper Diffs method error.");
 
                 return false;
             }

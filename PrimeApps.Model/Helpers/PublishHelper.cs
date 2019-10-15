@@ -10,6 +10,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Amazon.S3.Model;
+using Microsoft.Azure.KeyVault.Models;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -90,7 +91,7 @@ namespace PrimeApps.Model.Helpers
                 var storagePath = Path.Combine(path, "storage.txt");
 
                 var scriptsText = File.ReadAllText(scriptPath, Encoding.UTF8);
-                var sqls = scriptsText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                var sqls = scriptsText.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
 
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." + Environment.NewLine);
 
@@ -99,6 +100,7 @@ namespace PrimeApps.Model.Helpers
                 if (!result)
                 {
                     File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While applying script. \u001b[39m" + Environment.NewLine);
+                    File.AppendAllText(logPath, "\u001b[31m ********** Update Tenant Failed********** \u001b[39m" + Environment.NewLine);
                     return false;
                 }
 
@@ -144,6 +146,8 @@ namespace PrimeApps.Model.Helpers
             catch (Exception e)
             {
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Error - Unhandle exception - Message: " + e.Message + " \u001b[39m" + Environment.NewLine);
+                File.AppendAllText(logPath, "\u001b[31m ********** Update Tenant Failed********** \u001b[39m" + Environment.NewLine);
+                
                 return false;
             }
         }
@@ -168,7 +172,7 @@ namespace PrimeApps.Model.Helpers
 
             var identityUrl = configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
 
-            foreach (var obj in versions.OfType<object>().Select((version, index) => new { version, index }))
+            foreach (var obj in versions.OfType<object>().Select((version, index) => new {version, index}))
             {
                 currentReleaseId += 1;
                 var version = obj.version;
@@ -352,7 +356,7 @@ namespace PrimeApps.Model.Helpers
                     if (File.Exists(scriptPath))
                     {
                         var scriptsText = File.ReadAllText(scriptPath, Encoding.UTF8);
-                        var sqls = scriptsText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                        var sqls = scriptsText.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
 
                         File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." + Environment.NewLine);
 
@@ -418,11 +422,11 @@ namespace PrimeApps.Model.Helpers
                     releaseList.Last().Status = ReleaseStatus.Succeed;
                     releaseList.Last().EndTime = DateTime.Now;
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     Directory.Delete(Path.Combine(rootPath, "packages", dbName), true);
                     File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Error - Unhandle exception \u001b[39m" + Environment.NewLine);
-
+                    ErrorHandler.LogError(e, "PublishHelper ApplyVersions method error. AppId: " + app["id"] + " - Version: " + version);
                     releaseList.Last().Status = ReleaseStatus.Failed;
                     releaseList.Last().EndTime = DateTime.Now;
                     if (File.Exists(Path.Combine(rootPath, "packages", databaseName, version.ToString())))
@@ -486,7 +490,7 @@ namespace PrimeApps.Model.Helpers
                     ["require_consent"] = false,
                     ["client_secrets"] = secret,
                     ["redirect_uris"] = useSsl ? "https://" : "http://" + $"{appUrl}/signin-oidc",
-                    ["post_logout_redirect_uris"] = $"{appUrl}/signout-callback-oidc",
+                    ["post_logout_redirect_uris"] = useSsl ? "https://" : "http://" + $"{appUrl}/signout-callback-oidc",
                     ["allowed_scopes"] = "openid;profile;email;api1",
                     ["access_token_life_time"] = 864000
                 };
@@ -514,14 +518,14 @@ namespace PrimeApps.Model.Helpers
             {
                 var dict = new Dictionary<string, string>
                 {
-                    { "grant_type", "password" },
-                    { "username", integrationEmail },
-                    { "password", studioSecret },
-                    { "client_id", clientId },
-                    { "client_secret", studioSecret }
+                    {"grant_type", "password"},
+                    {"username", integrationEmail},
+                    {"password", studioSecret},
+                    {"client_id", clientId},
+                    {"client_secret", studioSecret}
                 };
 
-                var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token") { Content = new FormUrlEncodedContent(dict) };
+                var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token") {Content = new FormUrlEncodedContent(dict)};
                 var res = await httpClient.SendAsync(req);
 
                 if (res.IsSuccessStatusCode)
@@ -561,8 +565,9 @@ namespace PrimeApps.Model.Helpers
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                ErrorHandler.LogError(e, "PublishHelper CreatePlatformApp method error.");
                 return false;
             }
         }
@@ -586,8 +591,9 @@ namespace PrimeApps.Model.Helpers
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                ErrorHandler.LogError(e, "PublishHelper UpdatePlatformApp method error.");
                 return false;
             }
         }

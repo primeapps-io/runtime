@@ -60,7 +60,7 @@ namespace PrimeApps.Admin.Controllers
         {
             var user = _platformUserRepository.Get(HttpContext.User.FindFirst("email").Value);
             var token = await HttpContext.GetTokenAsync("access_token");
-            var organizations = await _organizationHelper.Get(user.Id, token);
+            var organizations = await _organizationHelper.Get(token);
 
             ViewBag.Organizations = organizations;
             ViewBag.User = user;
