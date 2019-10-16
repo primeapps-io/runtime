@@ -10,7 +10,7 @@
                     <li>
                         <button type="button" class="btn add-button btn-radius btn-gray"
                                 ng-click="cancel();">
-                            <i class="fas fa-times"></i>{{$parent.$parent.excelMode ? 'Cancel Excel Import':'Common.Cancel' | translate}}
+                            <i class="fas fa-times"></i>{{$parent.$parent.excelMode ? 'Cancel Import':'Common.Cancel' | translate}}
                         </button>
                     </li>
                     <!--Excel import mode Button START-->
@@ -39,7 +39,7 @@
                     <li ng-show="picklist.id && !$parent.$parent.excelMode">
                         <button type="button" class="btn add-button btn-radius btn-warning"
                                 ng-click="$parent.$parent.excelMode = true">
-                            <i class="fas fa-file-import"></i>Import Excel
+                            <i class="fas fa-file-import"></i>Import
                         </button>
                     </li>
                     <li ng-show="picklist.id && !$parent.$parent.excelMode">
@@ -117,7 +117,7 @@
                             <th>{{'Picklist.Items.Name' | translate}}</th>
                             <th>{{'Picklist.Items.SystemCode' | translate}}</th>
                             <th>{{'Picklist.Items.Value' | translate}}</th>
-                            <th>{{'Picklist.Items.Value2' | translate}}</</th>
+                            <th>{{'Picklist.Items.Value2' | translate}}</th>
                             <th>{{'Picklist.Items.Value3' | translate}}</th>
                             <th width="120"></th>
                         </tr>
@@ -142,7 +142,7 @@
                             <th>{{'Picklist.Items.Name' | translate}}</th>
                             <th>{{'Picklist.Items.SystemCode' | translate}}</th>
                             <th>{{'Picklist.Items.Value' | translate}}</th>
-                            <th>{{'Picklist.Items.Value2' | translate}}</</th>
+                            <th>{{'Picklist.Items.Value2' | translate}}</th>
                             <th>{{'Picklist.Items.Value3' | translate}}</th>
                             <th width="120"></th>
                         </tr>
