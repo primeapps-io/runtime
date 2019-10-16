@@ -1433,7 +1433,9 @@
       "TemplateGuide15": " include in the list from the newly opened box on the left and stick them on the corresponding column on the table.)",
       "AddNewEmailTemplate": " New Email Template",
       "AddNewExcelTemplate": " New Spreadsheet",
-      "AddNewWordTemplate": " New Document"
+      "AddNewWordTemplate": " New Document",
+      "EmailTemplatesApp": "Email (App)",
+      "EmailTemplatesModule": "Email (Module)"
     },
     "Workflow": {
       "Title": "Business Rules",
