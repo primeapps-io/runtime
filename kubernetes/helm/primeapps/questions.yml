@@ -10,7 +10,7 @@ questions:
   group: "Container Images"
   subquestions:
   - variable: image.tag
-    default: "1.19.248.1-debian"
+    default: "1.19.277.1-debian"
     description: "PrimeApps Docker image tag. https://hub.docker.com/u/primeapps"
     type: string
     label: Image Tag

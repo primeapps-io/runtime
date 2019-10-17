@@ -20,11 +20,11 @@ var replaceDynamicValues = function (str) {
     return str;
 };
 
-var loadSectionComponents = function (rootScope, filter, moduleName, files) {
+var loadSectionComponents = function (filter, moduleName, files) {
     currentSectionComponentsTemplate = [];
 
-    if (rootScope.modules) {
-        var moduleId = filter('filter')(rootScope.modules, {name: moduleName}, true)[0].id;
+    if (account.modules) {
+        var moduleId = filter('filter')(account.modules, {name: moduleName}, true)[0].id;
 
         if (sectionComponents['component' + moduleId]) {
             var sectionComponent = sectionComponents['component' + moduleId];
@@ -163,19 +163,9 @@ angular.module('primeapps')
                                 }
                             }
 
-                            if (moduleName) {
-                                if ($rootScope.modules) {
-                                    loadSectionComponents($rootScope, $filter, moduleName, files);
-                                }
-                                else {
-                                    AppService.getMyAccount()
-                                        .then(function () {
-                                            loadSectionComponents($rootScope, $filter, moduleName, files);
-                                            return $ocLazyLoad.load(files);
-                                        });
-                                }
-                            }
-
+                            if (moduleName)
+                                loadSectionComponents($filter, moduleName, files);
+                            
                             return $ocLazyLoad.load(files);
                         }]
                     }
@@ -205,26 +195,15 @@ angular.module('primeapps')
                                 }
                             }
 
-
                             if (googleMapsApiKey && googleMapsApiKey !== 'your-google-maps-api-key') {
                                 files.push({
                                     type: 'js',
                                     path: 'https://maps.googleapis.com/maps/api/js?key=' + googleMapsApiKey + '&libraries=places'
                                 });
                             }
-                            
-                            if (moduleName) {
-                                if ($rootScope.modules) {
-                                    loadSectionComponents($rootScope, $filter, moduleName, files);
-                                }
-                                else {
-                                    AppService.getMyAccount()
-                                        .then(function () {
-                                            loadSectionComponents($rootScope, $filter, moduleName, files);
-                                            return $ocLazyLoad.load(files);
-                                        });
-                                }
-                            }
+
+                            if (moduleName)
+                                loadSectionComponents($filter, moduleName, files);
 
                             return $ocLazyLoad.load(files);
                         }]

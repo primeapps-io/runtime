@@ -19,14 +19,16 @@ namespace PrimeApps.App.Controllers
         private Warehouse _warehouse;
         private ITenantRepository _tenantRepository;
         private IPlatformUserRepository _platformUserRepository;
+        private ISettingRepository _settingRepository;
         private IConfiguration _configuration;
 
-        public InstanceController(IUserRepository userRepository, Warehouse warehouse, ITenantRepository tenantRepository, IPlatformUserRepository platformUserRepository, IConfiguration configuration)
+        public InstanceController(IUserRepository userRepository, Warehouse warehouse, ITenantRepository tenantRepository, IPlatformUserRepository platformUserRepository, IConfiguration configuration, ISettingRepository settingRepository)
         {
             _userRepository = userRepository;
             _warehouse = warehouse;
             _tenantRepository = tenantRepository;
             _platformUserRepository = platformUserRepository;
+            _settingRepository = settingRepository;
             _configuration = configuration;
         }
 
@@ -52,10 +54,24 @@ namespace PrimeApps.App.Controllers
             //check if the tenant id is valid, within the current session's context.
             var tenantToUpdate = await _tenantRepository.GetAsync(AppUser.TenantId);
 
-            if (tenantToUpdate.OwnerId != AppUser.Id)
+            if (!AppUser.HasAdminProfile)
             {
-                //it is an unauthorized request, block it by sending forbidden status code.
-                return Forbid();
+                _settingRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = AppUser.TenantId, UserId = AppUser.Id };
+                var customProfileSetting = await _settingRepository.GetByKeyAsync("custom_profile_permissions");
+                if (customProfileSetting != null)
+                {
+                    JToken profileSetting = JObject.Parse(customProfileSetting.Value)["profilePermissions"].Where(x => (int)x["profileId"] == AppUser.ProfileId).FirstOrDefault();
+                    if (profileSetting != null)
+                    {
+                        var hasUserCreatePermission = profileSetting["permissions"].Any(x => x.Value<string>() == "organization");
+                        if (!hasUserCreatePermission)
+                            return Forbid();
+                    }
+                    else
+                        return Forbid();
+                }
+                else
+                    return Forbid();
                 //return new ForbiddenResult(Request);
             }
 
@@ -152,10 +168,24 @@ namespace PrimeApps.App.Controllers
         {
             var instanceToUpdate = await _tenantRepository.GetAsync(AppUser.TenantId);
 
-            if (instanceToUpdate.OwnerId != AppUser.TenantId)
+            if (!AppUser.HasAdminProfile)
             {
-                return Forbid();
-                //return new ForbiddenResult(Request);
+                _settingRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = AppUser.TenantId, UserId = AppUser.Id };
+                var customProfileSetting = await _settingRepository.GetByKeyAsync("custom_profile_permissions");
+                if (customProfileSetting != null)
+                {
+                    JToken profileSetting = JObject.Parse(customProfileSetting.Value)["profilePermissions"].Where(x => (int)x["profileId"] == AppUser.ProfileId).FirstOrDefault();
+                    if (profileSetting != null)
+                    {
+                        var hasUserCreatePermission = profileSetting["permissions"].Any(x => x.Value<string>() == "organization");
+                        if (!hasUserCreatePermission)
+                            return Forbid();
+                    }
+                    else
+                        return Forbid();
+                }
+                else
+                    return Forbid();
             }
 
             instanceToUpdate.Setting.Logo = (string)logo["url"];

@@ -101,6 +101,8 @@ namespace PrimeApps.App.Helpers
 						var record = recordRepository.GetById(module, recordId, true, null, true);
 						var isBranch = await settingRepository.GetByKeyAsync("branch");
 						var isEmployee = await settingRepository.GetByKeyAsync("employee");
+						/*Branch yapısında modül üzerindeki bazı fieldler dinamik hale getirildi*/
+						var newEpostaFieldName = await settingRepository.GetByKeyAsync("e_posta");
 						int calisanUserId = 0;
 
 						module = await moduleRepository.GetByIdFullModule(module.Id);
@@ -2847,9 +2849,9 @@ namespace PrimeApps.App.Helpers
 								* Tenant da şube yapısı kullanılıyor mu diye kontrol ediliyor.
 								*/
 								calisanUserId = 0;
-								if (isBranch != null && isBranch.Value == "t")
+								if (isBranch != null && isBranch.Value == "t" && newEpostaFieldName != null)
 								{
-									calisanUserId = await ChangeRecordOwner(record["work_e_mail"].ToString(), record, module, recordRepository, moduleRepository);
+									calisanUserId = await ChangeRecordOwner(record[newEpostaFieldName.Value].ToString(), record, module, recordRepository, moduleRepository);
 									if (calisanUserId > 0)
 										record["owner"] = calisanUserId;
 
@@ -2895,21 +2897,21 @@ namespace PrimeApps.App.Helpers
                                              * Yeni bir çalışan oluşturulurken.
                                              * Çalışan seçilen şubenin sorumlusu ise
                                              */
-											if ((bool)record["branch_manager"])
+											if ((bool)record["branch_manager"] && newEpostaFieldName != null)
 											{
 												/*
                                                  * User ı email yardımıyla çekerek rol unü update ediyoruz.
                                                  */
-												var user = await userRepository.GetByEmail(record["work_e_mail"].ToString());
+												var user = await userRepository.GetByEmail(record[newEpostaFieldName.Value].ToString());
 												await UpdateUserRoleAndProfile(user.Id, profileId, roleId, roleRepository, profileRepository);
 												await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
 											}
 											else
 											{
-												if (missingSchema.Count > 0)
+												if (missingSchema.Count > 0 && newEpostaFieldName != null)
 												{
 													var currentUserRoleId = await CreateMissingSchema(missingSchema, roleId, roleRepository, appUser);
-													var user = await userRepository.GetByEmail(record["work_e_mail"].ToString());
+													var user = await userRepository.GetByEmail(record[newEpostaFieldName.Value].ToString());
 													await UpdateUserRoleAndProfile(user.Id, profileId, (int)currentUserRoleId, roleRepository, profileRepository);
 													await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
 												}
@@ -2922,9 +2924,9 @@ namespace PrimeApps.App.Helpers
                                                      */
 													var branchRoleProfile = await roleRepository.GetWithCode("branch-" + roleId + "/profile-" + profileId);
 
-													if (branchRoleProfile != null)
+													if (branchRoleProfile != null && newEpostaFieldName != null)
 													{
-														var user = await userRepository.GetByEmail(record["work_e_mail"].ToString());
+														var user = await userRepository.GetByEmail(record[newEpostaFieldName.Value].ToString());
 														await UpdateUserRoleAndProfile(user.Id, profileId, branchRoleProfile.Id, roleRepository, profileRepository);
 														await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
 													}
@@ -2953,10 +2955,10 @@ namespace PrimeApps.App.Helpers
                                                  * Role ağacında ki dallar çalışan üzerinde role ve profil e göre uygun mu diye kontrol edilip eksik varsa bunları oluşturuyoruz.
                                                  * Role ağacı tamamlandığında çalışan üzerinde role ve profile göre oluşan son rolu ün id sini çalışana setliyoruz.
                                                  */
-												if (missingSchema.Count > 0 && !(bool)record["branch_manager"])
+												if (missingSchema.Count > 0 && !(bool)record["branch_manager"] && newEpostaFieldName != null)
 												{
 													var currentUserRoleId = await CreateMissingSchema(missingSchema, roleId, roleRepository, appUser);
-													var user = await userRepository.GetByEmail(record["work_e_mail"].ToString());
+													var user = await userRepository.GetByEmail(record[newEpostaFieldName.Value].ToString());
 													await UpdateUserRoleAndProfile(user.Id, profileId, (int)currentUserRoleId, roleRepository, profileRepository);
 													await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
 												}
@@ -3806,7 +3808,7 @@ namespace PrimeApps.App.Helpers
 
 			var getUser = recordRepository.Find("users", getUserEmail, false).FirstOrDefault();
 
-			if (getUser["email"].ToString() == (calisanModule.Name != "calisan" ? calisanRecord["work_e_mail"].ToString() : calisanRecord["e_posta"].ToString()))
+			if (getUser["email"].ToString() == (calisanModule.Name != "calisan" ? email : calisanRecord["e_posta"].ToString()))
 			{
 				var gelenData = new JObject();
 				gelenData["id"] = int.Parse(calisanRecord["id"].ToString());

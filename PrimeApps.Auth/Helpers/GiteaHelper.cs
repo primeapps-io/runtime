@@ -33,7 +33,7 @@ namespace PrimeApps.Auth.Helpers
             _serviceScopeFactory = serviceScopeFactory;
         }
 
-        
+
         public async Task CreateUser(string email, string password, string firstName, string lastName)
         {
             var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
@@ -56,6 +56,7 @@ namespace PrimeApps.Auth.Helpers
                     ["login_name"] = email,
                     ["password"] = password,
                     ["send_notify"] = false,
+                    ["must_change_password"] = false,
                     ["source_id"] = 0,
                     ["username"] = userName
                 };
