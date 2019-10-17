@@ -677,9 +677,7 @@ angular.module('primeapps')
                             var user = $filter('filter')($rootScope.users, { id: parseInt(field.encryption_authorized_users_list[k]) }, true)[0];
                             userList.push(user);
                         }
-                        console.log(userList)
                         field.encryption_authorized_users = userList;
-                        console.log(field)
                     }
                 }
 
@@ -1200,7 +1198,7 @@ angular.module('primeapps')
                 else
                     $scope.currentField.lookup_search_type = "starts_with"
 
-                //FOR LOOKUP FÝLTER
+                //FOR LOOKUP FILTER
                 if ($scope.currentField.data_type === 'lookup' && $scope.filters.length > 0) {
                     var newFilters = [];
 
@@ -1218,10 +1216,7 @@ angular.module('primeapps')
                             newFilter.operator = filter.operator.name;
 
                             if (filter.fieldToFilter.data_type === 'lookup')
-                                //if (filter.lookupField.data_type === 'picklist')
-                                //    newFilter.filter_field = '[' + filter.fieldToFilter.name + '.' + filter.fieldToFilter.lookup_type + '.' + filter.lookupField.name + '.labelStr]';
-                                //else
-                                newFilter.filter_field = '[' + filter.fieldToFilter.name + '.' + filter.fieldToFilter.lookup_type + '.' + filter.lookupField.name + ']';
+                                newFilter.filter_field = filter.fieldToFilter.name + '.' + filter.fieldToFilter.lookup_type + '.' + filter.lookupField.name;
                         }
 
                         if (filter.type) {
@@ -1257,7 +1252,7 @@ angular.module('primeapps')
 
                     $scope.currentField.filters = angular.copy(newFilters);
                 }
-                //FOR LOOKUP FÝLTER
+                //FOR LOOKUP Fï¿½LTER
 
                 $scope.fieldModal.hide();
 
@@ -1934,8 +1929,8 @@ angular.module('primeapps')
                 userModule.display = false;
                 userModule.label_en_singular = 'User';
                 userModule.label_en_plural = 'Users';
-                userModule.label_tr_singular = 'Kullanýcý';
-                userModule.label_tr_plural = 'Kullanýcýlar';
+                userModule.label_tr_singular = 'Kullanï¿½cï¿½';
+                userModule.label_tr_plural = 'Kullanï¿½cï¿½lar';
                 userModule.menu_icon = 'fa fa-users';
                 userModule.sections = [];
                 userModule.fields = [];
@@ -1946,7 +1941,7 @@ angular.module('primeapps')
                 section.order = 1;
                 section.column_count = 1;
                 section.label_en = 'User Information';
-                section.label_tr = 'Kullanýcý Bilgisi';
+                section.label_tr = 'Kullanï¿½cï¿½ Bilgisi';
                 section.display_form = true;
                 section.display_detail = true;
 
@@ -1978,7 +1973,7 @@ angular.module('primeapps')
                 fieldFirstName.editable = true;
                 fieldFirstName.show_label = true;
                 fieldFirstName.label_en = 'First Name';
-                fieldFirstName.label_tr = 'Adý';
+                fieldFirstName.label_tr = 'Adï¿½';
                 fieldFirstName.display_list = true;
                 fieldFirstName.display_form = true;
                 fieldFirstName.display_detail = true;
@@ -1996,7 +1991,7 @@ angular.module('primeapps')
                 fieldLastName.editable = true;
                 fieldLastName.show_label = true;
                 fieldLastName.label_en = 'Last Name';
-                fieldLastName.label_tr = 'Soyadý';
+                fieldLastName.label_tr = 'Soyadï¿½';
                 fieldLastName.display_list = true;
                 fieldLastName.display_form = true;
                 fieldLastName.display_detail = true;
@@ -2014,7 +2009,7 @@ angular.module('primeapps')
                 fieldFullName.editable = true;
                 fieldFullName.show_label = true;
                 fieldFullName.label_en = 'Name';
-                fieldFullName.label_tr = 'Adý Soyadý';
+                fieldFullName.label_tr = 'Adï¿½ Soyadï¿½';
                 fieldFullName.display_list = true;
                 fieldFullName.display_form = true;
                 fieldFullName.display_detail = true;
