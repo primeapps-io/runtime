@@ -5,9 +5,9 @@ angular.module('primeapps')
     .factory('PackageService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', '$cache', 'dataTypes', 'systemFields',
         function ($rootScope, $http, config, $filter, $q, helper, $cache, dataTypes, systemFields) {
             return {
-                /*create: function (request) {
-                    return $http.get(config.apiUrl + 'package/create', request);
-                },*/
+                create: function (data) {
+                    return $http.post(config.apiUrl + 'package/create', data);
+                },
                 count: function () {
                     return $http.get(config.apiUrl + 'package/count');
                 },
@@ -19,6 +19,9 @@ angular.module('primeapps')
                 },
                 log: function (id) {
                     return $http.get(config.apiUrl + 'package/log/' + id);
+                },
+                getActiveProcess: function () {
+                    return $http.get(config.apiUrl + 'package/get_active_process');
                 }
             };
         }]);

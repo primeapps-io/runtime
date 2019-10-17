@@ -1014,7 +1014,7 @@ angular.module('primeapps')
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/app/manage/package/package.html',
-                            controller: 'ReleaseController'
+                            controller: 'PackageController'
                         }
                     },
                     resolve: {

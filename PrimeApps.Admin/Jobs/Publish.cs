@@ -24,8 +24,8 @@ namespace PrimeApps.Admin.Jobs
 {
     public interface IPublish
     {
-        Task PackageApply(int appId, int orgId, string token, int userId, string appUrl, string authUrl, bool useSsl);
-        Task UpdateTenants(int appId, int orgId, int userId, IList<int> tenants, string token);
+        Task PackageApply(int appId, int orgId, string token, int newReleaseId, int userId, string appUrl, string authUrl, bool useSsl);
+        Task UpdateTenants(int appId, int orgId, int userId, IList<int> tenants, string token, int pointerReleaseId);
     }
 
     public class Publish : IPublish
@@ -42,18 +42,18 @@ namespace PrimeApps.Admin.Jobs
         }
 
         [QueueCustom]
-        public async Task PackageApply(int appId, int orgId, string token, int userId, string appUrl, string authUrl, bool useSsl)
+        public async Task PackageApply(int appId, int orgId, string token, int newReleaseId, int userId, string appUrl, string authUrl, bool useSsl)
         {
             var studioClient = new StudioClient(_configuration, token, appId, orgId);
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var platformDbContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 
-                using (var releaseRepository = new ReleaseRepository(platformDbContext, _configuration))//, cacheHelper))
-                using (var platformRepository = new PlatformRepository(platformDbContext, _configuration))//, cacheHelper))
-                using (var applicationRepository = new ApplicationRepository(platformDbContext, _configuration))//, cacheHelper))
+                using (var releaseRepository = new ReleaseRepository(platformDbContext, _configuration)) //, cacheHelper))
+                using (var platformRepository = new PlatformRepository(platformDbContext, _configuration)) //, cacheHelper))
+                using (var applicationRepository = new ApplicationRepository(platformDbContext, _configuration)) //, cacheHelper))
                 {
-                    applicationRepository.CurrentUser = platformRepository.CurrentUser = releaseRepository.CurrentUser = new CurrentUser { UserId = userId };
+                    applicationRepository.CurrentUser = platformRepository.CurrentUser = releaseRepository.CurrentUser = new CurrentUser {UserId = userId};
 
                     var app = await studioClient.AppDraftGetById(appId);
 
@@ -87,11 +87,10 @@ namespace PrimeApps.Admin.Jobs
 
                     versions.Add(lastPackageVersion);
 
-                    var lastRecord = await releaseRepository.GetLast();
                     var firstRelease = await releaseRepository.FirstTime(appId);
                     var platformApp = await applicationRepository.Get(appId);
 
-                    var currentReleaseId = lastRecord?.Id ?? 0;
+                    //var currentReleaseId = lastRecord?.Id ?? 0;
 
 
                     /*   var releaseModel = new Release
@@ -112,58 +111,68 @@ namespace PrimeApps.Admin.Jobs
                            throw;
                        }*/
 
-
-                    var releases = await PublishHelper.ApplyVersions(_configuration, _storage, JObject.Parse(appString), orgId, $"app{appId}", versions, platformApp == null, firstRelease, currentReleaseId, token, appUrl, authUrl, useSsl);
-
-                    foreach (var release in releases)
+                    if (versions.Count == 0)
                     {
-                        /* if (release.Id == currentReleaseId + 1)
-                         {
-                             releaseModel.Version = release.Version;
-                             releaseModel.EndTime = release.EndTime;
-                             releaseModel.Status = release.Status;
-                             await releaseRepository.Update(releaseModel);
-                         }
-                         else*/
+                        var newRelease = await releaseRepository.Get(newReleaseId);
 
-                        var releaseNew = new Release
+                        await releaseRepository.Delete(newRelease);
+                    }
+
+
+                    var releases = await PublishHelper.ApplyVersions(_configuration, _storage, JObject.Parse(appString), orgId, $"app{appId}", versions, platformApp == null, firstRelease, token, appUrl, authUrl, useSsl);
+
+                    foreach (var obj in releases.OfType<Release>().Select((release, index) => new {release, index}))
+                    {
+                        var release = obj.release;
+                        var index = obj.index;
+
+                        if (index == 0)
                         {
-                            AppId = release.AppId,
-                            EndTime = release.EndTime,
-                            StartTime = release.StartTime,
-                            Status = release.Status,
-                            Settings = release.Settings,
-                            TenantId = release.TenantId,
-                            Version = release.Version
-                        };
+                            var newRelease = await releaseRepository.Get(newReleaseId);
+                            newRelease.AppId = release.AppId;
+                            newRelease.Version = release.Version;
+                            newRelease.EndTime = release.EndTime;
+                            newRelease.Status = release.Status;
 
-                        await releaseRepository.Create(releaseNew);
+                            await releaseRepository.Update(newRelease);
+                        }
+                        else
+                        {
+                            var releaseNew = new Release
+                            {
+                                AppId = release.AppId,
+                                EndTime = release.EndTime,
+                                StartTime = release.StartTime,
+                                Status = release.Status,
+                                Settings = release.Settings,
+                                Version = release.Version
+                            };
+
+                            await releaseRepository.Create(releaseNew);
+                        }
                     }
                 }
             }
         }
 
         [QueueCustom]
-        public async Task UpdateTenants(int appId, int orgId, int userId, IList<int> tenants, string token)
+        public async Task UpdateTenants(int appId, int orgId, int userId, IList<int> tenants, string token, int pointerReleaseId)
         {
             var studioClient = new StudioClient(_configuration, token, appId, orgId);
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var platformDbContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 
-                using (var releaseRepository = new ReleaseRepository(platformDbContext, _configuration))//, cacheHelper))
-                using (var platformRepository = new PlatformRepository(platformDbContext, _configuration))//, cacheHelper))
+                using (var releaseRepository = new ReleaseRepository(platformDbContext, _configuration)) //, cacheHelper))
+                using (var platformRepository = new PlatformRepository(platformDbContext, _configuration)) //, cacheHelper))
                 {
-                    platformRepository.CurrentUser = releaseRepository.CurrentUser = new CurrentUser { UserId = userId };
+                    platformRepository.CurrentUser = releaseRepository.CurrentUser = new CurrentUser {UserId = userId};
 
                     var packages = await studioClient.PackageGetAll();
                     var lastPackageVersion = packages.Last().Version;
                     var versions = new List<string>();
 
-
-                    var lastRecord = await releaseRepository.GetLast();
-
-                    foreach (var tenantObj in tenants.OfType<object>().Select((id, index) => new { id, index }))
+                    foreach (var tenantObj in tenants.OfType<object>().Select((id, index) => new {id, index}))
                     {
                         versions = new List<string>();
                         foreach (var package in packages)
@@ -178,7 +187,7 @@ namespace PrimeApps.Admin.Jobs
 
                         versions.Add(lastPackageVersion);
 
-                        foreach (var versionObj in versions.OfType<object>().Select((value, index) => new { value, index }))
+                        foreach (var versionObj in versions.OfType<object>().Select((value, index) => new {value, index}))
                         {
                             var dbName = $"tenant{tenantObj.id}";
                             var version = versionObj.value.ToString();
@@ -196,17 +205,9 @@ namespace PrimeApps.Admin.Jobs
                                     AppId = appId
                                 };
 
-                                try
-                                {
-                                    await releaseRepository.Create(releaseModel);
-                                }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine(e);
-                                    throw;
-                                }
+                                await releaseRepository.Create(releaseModel);
 
-                                var result = await PublishHelper.UpdateTenant(version, dbName, _configuration, _storage, appId, orgId, lastRecord?.Id ?? 0, token);
+                                var result = await PublishHelper.UpdateTenant(version, dbName, _configuration, _storage, appId, orgId, token);
 
                                 if (result)
                                 {
@@ -228,7 +229,7 @@ namespace PrimeApps.Admin.Jobs
                             {
                                 if (release.Status == ReleaseStatus.Failed)
                                 {
-                                    var result = await PublishHelper.UpdateTenant(version, dbName, _configuration, _storage, appId, orgId, lastRecord?.Id ?? 0, token);
+                                    var result = await PublishHelper.UpdateTenant(version, dbName, _configuration, _storage, appId, orgId, token);
 
                                     if (result)
                                     {
@@ -245,6 +246,10 @@ namespace PrimeApps.Admin.Jobs
                             }
                         }
                     }
+
+                    var pointerRelease = await releaseRepository.Get(pointerReleaseId);
+                    pointerRelease.Status = ReleaseStatus.Succeed;
+                    await releaseRepository.Update(pointerRelease);
 
                     var rootPath = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
                     Directory.Delete(Path.Combine(rootPath, "packages", $"app{appId}"), true);

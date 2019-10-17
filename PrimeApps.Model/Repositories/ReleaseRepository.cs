@@ -47,7 +47,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<Release> GetLast(int appId)
         {
             return await DbContext.Releases
-                .Where(x => !x.Deleted && x.AppId == appId && x.TenantId == null)
+                .Where(x => !x.Deleted && x.AppId == appId && x.TenantId == null && x.Status == ReleaseStatus.Succeed)
                 .OrderByDescending(x => x.Id)
                 .FirstOrDefaultAsync();
         }

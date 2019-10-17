@@ -26,7 +26,7 @@ namespace PrimeApps.Model.Helpers
 {
     public class PublishHelper
     {
-        public static async Task<bool> UpdateTenant(string version, string dbName, IConfiguration configuration, IUnifiedStorage storage, int appId, int orgId, int currentReleaseId, string token)
+        public static async Task<bool> UpdateTenant(string version, string dbName, IConfiguration configuration, IUnifiedStorage storage, int appId, int orgId, string token)
         {
             var PREConnectionString = configuration.GetConnectionString("PlatformDBConnection");
             var rootPath = configuration.GetValue("AppSettings:DataDirectory", string.Empty);
@@ -77,7 +77,11 @@ namespace PrimeApps.Model.Helpers
                             new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
 
                         if (!response.IsSuccessStatusCode)
+                        {
                             File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Error - Unhandle exception. While downloading folder." + "\u001b[39m" + Environment.NewLine);
+                            File.AppendAllText(logPath, "\u001b[31m ********** Update Tenant Failed********** \u001b[39m" + Environment.NewLine);
+                            return false;
+                        }
 
                         var fileByte = await response.Content.ReadAsByteArrayAsync();
                         File.WriteAllBytes(Path.Combine(path, $"{version}.zip"), fileByte);
@@ -146,16 +150,15 @@ namespace PrimeApps.Model.Helpers
             }
             catch (Exception e)
             {
+                ErrorHandler.LogError(e, "PublishHelper UpdateTenant method error. AppId:" + appId + ", OrgId:" + orgId + ",dbName:" + dbName + ",version:" + version);
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Error - Unhandle exception - Message: " + e.Message + " \u001b[39m" + Environment.NewLine);
                 File.AppendAllText(logPath, "\u001b[31m ********** Update Tenant Failed********** \u001b[39m" + Environment.NewLine);
-
-                ErrorHandler.LogError(e, "PublishHelper UpdateTenant method error. AppId: " + appId + " - Version: " + version);
 
                 return false;
             }
         }
 
-        public static async Task<List<Release>> ApplyVersions(IConfiguration configuration, IUnifiedStorage storage, JObject app, int orgId, string databaseName, List<string> versions, bool createPlatformApp, bool firstTime, int currentReleaseId, string studioToken, string appUrl, string authUrl, bool useSsl)
+        public static async Task<List<Release>> ApplyVersions(IConfiguration configuration, IUnifiedStorage storage, JObject app, int orgId, string databaseName, List<string> versions, bool createPlatformApp, bool firstTime, string studioToken, string appUrl, string authUrl, bool useSsl)
         {
             var PREConnectionString = configuration.GetConnectionString("PlatformDBConnection");
             var postgresPath = configuration.GetValue("AppSettings:PostgresPath", string.Empty);
@@ -174,21 +177,21 @@ namespace PrimeApps.Model.Helpers
             bool result;
 
             var identityUrl = configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
-
-            foreach (var obj in versions.OfType<object>().Select((version, index) => new { version, index }))
+            var logFileName = "";
+            foreach (var obj in versions.OfType<object>().Select((version, index) => new {version, index}))
             {
-                currentReleaseId += 1;
                 var version = obj.version;
 
                 releaseList.Add(new Release
                 {
-                    Id = currentReleaseId,
                     AppId = int.Parse(app["id"].ToString()),
                     StartTime = DateTime.Now,
                     Version = version.ToString()
                 });
 
-                var logPath = Path.Combine(root, $"release-{currentReleaseId}-log.txt");
+                logFileName = $"release-app{app["id"]}-version{version}-{DateTime.Now:MM.dd.yyyy h-mm-ss}.txt";
+
+                var logPath = Path.Combine(root, logFileName);
 
                 File.AppendAllText(logPath, "\u001b[92m" + "********** Apply Version **********" + "\u001b[39m" + Environment.NewLine);
 
@@ -285,7 +288,13 @@ namespace PrimeApps.Model.Helpers
                             new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
 
                         if (!response.IsSuccessStatusCode)
+                        {
                             File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Error - Unhandle exception. While downloading folder." + "\u001b[39m" + Environment.NewLine);
+                            releaseList.Last().Status = ReleaseStatus.Failed;
+                            releaseList.Last().EndTime = DateTime.Now;
+                            ErrorHandler.LogError(new Exception(response.RequestMessage.ToString()), "Unhandle exception. While downloading package folder. Request: " + JsonConvert.SerializeObject(request));
+                            break;
+                        }
 
                         var fileByte = await response.Content.ReadAsByteArrayAsync();
                         File.WriteAllBytes(Path.Combine(path, $"{version}.zip"), fileByte);
@@ -443,14 +452,14 @@ namespace PrimeApps.Model.Helpers
 
             if (templateCopied)
             {
-                File.AppendAllText(Path.Combine(root, $"release-{currentReleaseId}-log.txt"), "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Template database swapping..." + Environment.NewLine);
+                File.AppendAllText(Path.Combine(root, logFileName), "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Template database swapping..." + Environment.NewLine);
                 result = PostgresHelper.SwapDatabase(PREConnectionString, $"{databaseName}_copy", databaseName);
 
                 if (!result)
-                    File.AppendAllText(Path.Combine(root, $"release-{currentReleaseId}-log.txt"), "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Error - Unhandle exception while swapping database... \u001b[39m" + Environment.NewLine);
+                    File.AppendAllText(Path.Combine(root, logFileName), "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Error - Unhandle exception while swapping database... \u001b[39m" + Environment.NewLine);
             }
 
-            File.AppendAllText(Path.Combine(root, $"release-{currentReleaseId}-log.txt"), "\u001b[92m" + "********** Apply Version End**********" + "\u001b[39m" + Environment.NewLine);
+            File.AppendAllText(Path.Combine(root, logFileName), "\u001b[92m" + "********** Apply Version End**********" + "\u001b[39m" + Environment.NewLine);
             return releaseList;
         }
 

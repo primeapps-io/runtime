@@ -229,6 +229,9 @@ namespace PrimeApps.Studio.Controllers
             if (!_permissionHelper.CheckUserProfile(UserProfile, "package", RequestTypeEnum.Create))
                 return StatusCode(403);
 
+            if (AppId == null)
+                return Ok();
+
             var process = await _packageRepository.GetActiveProcess((int)AppId);
 
             return Ok(process);

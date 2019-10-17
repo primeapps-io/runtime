@@ -24,7 +24,8 @@ angular.module('primeapps')
             if ($rootScope.organizations)
                 $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentOrgId)}, true)[0];
 
-            $rootScope.goLive = {};
+            if (!$rootScope.runningPackages)
+                $rootScope.runningPackages = {};
             $rootScope.breadcrumblist[0] = {title: $rootScope.currentOrganization.label};
             $rootScope.breadcrumblist[1] = {};
             $rootScope.breadcrumblist[2] = {};

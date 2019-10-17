@@ -78,8 +78,12 @@ namespace PrimeApps.Studio.Services
                     var rawQuery = GetGeneratedQuery(_command);
                     var executedAt = DateTime.Now;
                     var email = _context?.HttpContext?.User?.FindFirst("email").Value;
-                    var currenUser = CurrentUser;
-                    _queue.QueueBackgroundWorkItem(token => _historyHelper.Database(rawQuery, executedAt, email, currenUser, (Guid)_lastCommandId));
+
+                    if (command.Connection?.Database != CurrentUser.PreviewMode + CurrentUser.TenantId)
+                        _currentUser = null;
+
+                    var currentUser = CurrentUser;
+                    _queue.QueueBackgroundWorkItem(token => _historyHelper.Database(rawQuery, executedAt, email, currentUser, (Guid)_lastCommandId));
                 }
 
                 _hastExecuting = false;

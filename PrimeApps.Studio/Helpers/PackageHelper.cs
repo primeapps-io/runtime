@@ -87,8 +87,7 @@ namespace PrimeApps.Studio.Helpers
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e);
-                        throw;
+                        ErrorHandler.LogError(e, "Studio PackageHelper All method error.");
                     }
 
                     var package = await packageRepository.Get(packageId);

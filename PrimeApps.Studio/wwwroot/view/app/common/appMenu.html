@@ -72,13 +72,13 @@
                     <span>Scripts</span>
                 </a>
             </li>
-        <!--    <li ng-class="activeMenuItem ==='advancedWorkflows' ? 'active' :''">
-                <a href="/#/org/{{ orgId}}/app/{{ appId}}/advancedWorkflows" data-trigger="hover" data-type="info"
-                   data-title="Advanced Workflows" bs-tooltip data-placement="right">
-                    <i class="fas fa-project-diagram"></i>
-                    <span>Workflows</span>
-                </a>
-            </li>-->
+            <!--    <li ng-class="activeMenuItem ==='advancedWorkflows' ? 'active' :''">
+                    <a href="/#/org/{{ orgId}}/app/{{ appId}}/advancedWorkflows" data-trigger="hover" data-type="info"
+                       data-title="Advanced Workflows" bs-tooltip data-placement="right">
+                        <i class="fas fa-project-diagram"></i>
+                        <span>Workflows</span>
+                    </a>
+                </li>-->
             <li ng-class="activeMenuItem ==='functions' ? appLoading ? 'active blocked' : 'active' :''">
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/functions" data-trigger="hover" data-type="info"
                    data-title="Functions" bs-tooltip data-placement="right">
@@ -212,11 +212,11 @@
         </a>
         <ul ng-click="$event.stopPropagation();">
             <!--<li ng-class="activeMenuItem ==='appDetails' ? 'active' :''">-->
-                <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/appDetails" data-trigger="hover" data-type="info"-->
-                   <!--data-title="App Details" bs-tooltip data-placement="right">-->
-                    <!--<i class="fas fa-cog"></i>-->
-                    <!--<span>App Details</span>-->
-                <!--</a>-->
+            <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/appDetails" data-trigger="hover" data-type="info"-->
+            <!--data-title="App Details" bs-tooltip data-placement="right">-->
+            <!--<i class="fas fa-cog"></i>-->
+            <!--<span>App Details</span>-->
+            <!--</a>-->
             <!--</li>-->
             <li ng-class="activeMenuItem ==='appCollaborators' ? 'active' :''">
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/appCollaborators" data-trigger="hover" data-type="info"
@@ -286,11 +286,11 @@
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/packages" data-trigger="hover" data-type="info"
                    data-title="Packages" bs-tooltip data-placement="right">
                     <i class="fas fa-rocket"></i>
-                    <span>Releases Packages</span>
+                    <span>Packages</span>
                 </a>
             </li>
             <li ng-class="activeMenuItem ==='settings' ?  'active' :''">
-                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/settings" data-trigger="hover" data-type="info"
+                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/customsettings" data-trigger="hover" data-type="info"
                    data-title="Settings" bs-tooltip data-placement="right">
                     <i class="fas fa-cogs"></i>
                     <span>Settings</span>

@@ -5,12 +5,6 @@ angular.module('primeapps')
     .factory('LayoutService', ['$rootScope', '$http', '$localStorage', '$cache', '$q', '$filter', '$timeout', '$state', 'config', 'helper', 'entityTypes', 'taskDate', 'dataTypes', 'activityTypes', 'operators', 'systemRequiredFields', 'systemReadonlyFields', '$window', '$modal', '$sce', 'icons', 'icons2',
         function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce, icons, icons2) {
             return {
-                createPackage: function (data) {
-                    return $http.post(config.apiUrl + 'package/create', data);
-                },
-                getPackage: function (id) {
-                    return $http.get(config.apiUrl + 'package/get/' + id);
-                },
                 getAll: function () {
                     var promises = [];
                     var def = $q.defer();
@@ -287,7 +281,6 @@ angular.module('primeapps')
                     promises.push($http.get(config.apiUrl + 'profile/get_all_basic'));
                     promises.push($http.get(config.apiUrl + "app/get/" + $rootScope.currentAppId));
                     promises.push($http.get(config.apiUrl + 'app_collaborator/get_user_profile'));
-                    promises.push($http.get(config.apiUrl + 'package/get_active_process'));
                     return $q.all(promises)
                         .then(function (response) {
                             $rootScope.appModules = response[0].data;
@@ -295,13 +288,6 @@ angular.module('primeapps')
                             var result = response[2];
                             $rootScope.currentApp = result.data;
                             $rootScope.currentApp.user_profile = response[3].data;
-
-                            var activeProcess = response[4].data;
-
-                            if (activeProcess) {
-                                $rootScope.goLive = {status: true};
-                                $rootScope.openWS(activeProcess.id);
-                            }
 
                             $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentApp.organization_id)}, true)[0];
 

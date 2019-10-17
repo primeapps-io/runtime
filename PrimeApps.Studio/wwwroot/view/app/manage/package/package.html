@@ -1,7 +1,13 @@
 <div class="setup-title">
-    <h2>Release Packages</h2>
+    <h2>Packages</h2>
+    <ul class="list-unstyled list-inline">
+        <li>
+            <button class="btn add-button" ladda="runningPackages[currentApp.name].status" ng-click="createPackage()">
+                <i class="fas fa-plus"></i>New Package
+            </button>
+        </li>
+    </ul>
 </div>
-
 <div class="tab-content table-responsive">
     <table class="table" ng-if="loading">
         <thead>
@@ -86,7 +92,7 @@
     </div>
 </div>
 
-<div ng-if="!loading && goLive && goLive.status" class="function" id="logger" style="padding-top: 20px;">
+<div ng-if="!loading && runningPackages[app.name] && runningPackages[app.name].status" class="function" id="logger" style="padding-top: 20px;">
     <div style="" id="log-screen">
         <div class="tab-content">
             <div class="ui grid">

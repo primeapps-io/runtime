@@ -133,7 +133,7 @@ namespace PrimeApps.Studio.Helpers
 
                 while (result.MessageType != WebSocketMessageType.Close)
                 {
-                    string text;
+                    string text = "";
                     Package package;
                     //AppDraft app = null;
                     //JObject releaseOptions;
@@ -151,16 +151,23 @@ namespace PrimeApps.Studio.Helpers
                             /*if (releaseOptions["type"].ToString() == "publish")
                                 app = await appDraftRepository.Get(appId);*/
 
-                            using (var fs = new FileStream(Path.Combine(path, "packages", dbName, package.Version, "log.txt"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                            using (var sr = new StreamReader(fs, Encoding.Default))
+                            if (File.Exists(Path.Combine(path, "packages", dbName, package.Version, "log.txt")))
                             {
-                                text = ConvertHelper.ASCIIToHTML(sr.ReadToEnd());
+                                using (var fs = new FileStream(Path.Combine(path, "packages", dbName, package.Version, "log.txt"), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                                using (var sr = new StreamReader(fs, Encoding.Default))
+                                {
+                                    text = ConvertHelper.ASCIIToHTML(sr.ReadToEnd());
 
-                                if (text.Contains("Error"))
-                                    await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
+                                    if (text.Contains("Error"))
+                                        await wSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription, CancellationToken.None);
 
-                                sr.Close();
-                                fs.Close();
+                                    sr.Close();
+                                    fs.Close();
+                                }
+                            }
+                            else
+                            {
+                                text = ConvertHelper.ASCIIToHTML("\u001b[90m Waiting for queue... \u001b[39m");
                             }
                         }
                     }
@@ -174,7 +181,7 @@ namespace PrimeApps.Studio.Helpers
                     Thread.Sleep(2000);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
             }
         }

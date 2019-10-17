@@ -5,15 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Admin.Helpers;
 using PrimeApps.Admin.Jobs;
 using PrimeApps.Admin.Services;
+using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
-using PrimeApps.Util.Storage;
 
 namespace PrimeApps.Admin.Controllers
 {
@@ -56,7 +56,7 @@ namespace PrimeApps.Admin.Controllers
             base.OnActionExecuting(context);
         }
 
-        public async Task<IActionResult> Index(int? appId, int? orgId, int? release, bool applying = false)
+        public async Task<IActionResult> Index(int? appId, int? orgId)
         {
             var user = _platformUserRepository.Get(HttpContext.User.FindFirst("email").Value);
             var token = await HttpContext.GetTokenAsync("access_token");
@@ -81,12 +81,21 @@ namespace PrimeApps.Admin.Controllers
                 var lastPackage = await studioClient.PackageLastDeployment();
                 ViewBag.LastPackage = lastPackage;
 
-                if (!applying)
-                    ViewBag.ProcessActive = await _releaseRepository.IsThereRunningProcess((int)appId);
-                else
-                    ViewBag.ProcessActive = applying;
 
-                ViewBag.ReleaseId = release ?? 0;
+                var releaseId = HttpContext.Request.Cookies[$"app{appId}"];
+                if (!string.IsNullOrEmpty(releaseId))
+                {
+                    var release = await _releaseRepository.Get(int.Parse(releaseId));
+                    ViewBag.ProcessActive = release.Status == ReleaseStatus.Running;
+
+                    ViewBag.ReleaseId = int.Parse(releaseId);
+                }
+                else
+                {
+                    ViewBag.ProcessActive = false;
+                    ViewBag.ReleaseId = 0;
+                }
+
 
                 return View();
             }
@@ -95,7 +104,7 @@ namespace PrimeApps.Admin.Controllers
         }
 
         [Route("apply")]
-        public async Task<IActionResult> Apply(int id, int orgId, string appUrl, string authUrl)
+        public async Task<IActionResult> Apply(int id, int orgId, string appUrl, string authUrl, bool useSsl)
         {
             var token = await HttpContext.GetTokenAsync("access_token");
 
@@ -104,12 +113,18 @@ namespace PrimeApps.Admin.Controllers
             if (runningPublish)
                 throw new Exception($"Already have a running publish for app{id} database!");
 
-            var lastRecord = await _releaseRepository.GetLast();
-            var currentReleaseId = lastRecord?.Id ?? 0;
+            var newRelease = new Release
+            {
+                StartTime = DateTime.Now,
+                Status = ReleaseStatus.Running,
+                Version = ""
+            };
 
-            _queue.QueueBackgroundWorkItem(x => _publish.PackageApply(id, orgId, token, AppUser.Id, appUrl, authUrl, false));
+            await _releaseRepository.Create(newRelease);
 
-            return Ok(currentReleaseId + 1);
+            _queue.QueueBackgroundWorkItem(x => _publish.PackageApply(id, orgId, token, newRelease.Id, AppUser.Id, appUrl, authUrl, useSsl));
+
+            return Ok(newRelease.Id);
         }
 
         [Route("updatetenants")]
@@ -137,12 +152,22 @@ namespace PrimeApps.Admin.Controllers
 
             var tenantIds = await _tenantRepository.GetByAppId(id);
 
-            if (tenantIds.Count < 1)
+            if (tenantIds.Count == 0)
                 return NotFound();
 
-            _queue.QueueBackgroundWorkItem(x => _publish.UpdateTenants(id, orgId, AppUser.Id, tenantIds, token));
 
-            return Ok();
+            var newRelease = new Release
+            {
+                StartTime = DateTime.Now,
+                Status = ReleaseStatus.Running,
+                Version = "pointer"
+            };
+
+            await _releaseRepository.Create(newRelease);
+
+            _queue.QueueBackgroundWorkItem(x => _publish.UpdateTenants(id, orgId, AppUser.Id, tenantIds, token, newRelease.Id));
+
+            return Ok(newRelease.Id);
         }
 
         [Route("log")]

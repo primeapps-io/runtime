@@ -16,51 +16,51 @@
             <div class="table-responsive own-table">
                 <table class="table table-bordered">
                     <thead>
-                        <tr>
-                            <th width="100%">Name</th>
-                            <th>Last Release Version</th>
-                            <th></th>
-                        </tr>
+                    <tr>
+                        <th width="100%">Name</th>
+                        <th>Last Release Version</th>
+                        <th></th>
+                    </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="align-middle">
-                                <div class="appicon" style="background-color: @ViewBag.CurrentApp.Color">
-                                    <i class="@(ViewBag.CurrentApp.Icon ?? "fas fa-box-open")"></i>
-                                </div>
-                                <h3 class="pl-2 d-inline-block">@ViewBag.CurrentApp.Label</h3>
-                            </td>
-                            <td class="align-middle text-center">
-                                <h3 class="mb-0">@(ViewBag.LastPackage != null ? ViewBag.LastPackage.Version : "Please create a package firstly.")</h3>
-                            </td>
-                            <td class="align-middle">
-                                <button disabled="@(ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed)" class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="@(ViewBag.LastPackage == null ? "" : ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version ? "Already up to date" : ViewBag.ProcessActive ? "There is an another process. Please wait for it..." : "Click for publish!")" onclick="apply()">
-                                    @if (ViewBag.ProcessActive)
-                                    {
-                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                        <span class="btn-inner--text">Please wait...</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="btn-inner--icon">
-                                            <i class="ni ni-cloud-upload-96"></i>
-                                        </span>
-                                        <span class="btn-inner--text">@(ViewBag.LastRelease != null ? "Update" : "Publish")</span>
-                                    }
-
-                                </button>
-
-                                @if (!ViewBag.ProcessActive && ViewBag.UpdateButtonActive != null && ViewBag.UpdateButtonActive == true)
+                    <tr>
+                        <td class="align-middle">
+                            <div class="appicon" style="background-color: @ViewBag.CurrentApp.Color">
+                                <i class="@(ViewBag.CurrentApp.Icon ?? "fas fa-box-open")"></i>
+                            </div>
+                            <h3 class="pl-2 d-inline-block">@ViewBag.CurrentApp.Label</h3>
+                        </td>
+                        <td class="align-middle text-center">
+                            <h3 class="mb-0">@(ViewBag.LastPackage != null ? ViewBag.LastPackage.Version : "Please create a package firstly.")</h3>
+                        </td>
+                        <td class="align-middle">
+                            <button disabled="@(ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed)" class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="@(ViewBag.LastPackage == null ? "" : ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version ? "Already up to date" : ViewBag.ProcessActive ? "There is an another process. Please wait for it..." : "Click for publish!")" onclick="apply()">
+                                @if (ViewBag.ProcessActive)
                                 {
-                                    <button class="btn ifn-icon btn-3 btn-warning btn-md" type="button" title="Click for Update Tenants!" onclick="tenantUpdate(@ViewBag.LastPackage?.Id, @ViewBag.CurrentApp.Id, @ViewBag.ActiveOrganizationId)">
-                                        <span class="btn-inner--icon">
-                                            <i class="ni ni-cloud-upload-96"></i>
-                                        </span>
-                                        <span class="btn-inner--text">Update Tenants</span>
-                                    </button>
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    <span class="btn-inner--text">Please wait...</span>
                                 }
-                            </td>
-                        </tr>
+                                else
+                                {
+                                    <span class="btn-inner--icon">
+                                        <i class="ni ni-cloud-upload-96"></i>
+                                    </span>
+                                    <span class="btn-inner--text">@(ViewBag.LastRelease != null ? "Update" : "Publish")</span>
+                                }
+
+                            </button>
+
+                            @if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.UpdateButtonActive != null && ViewBag.UpdateButtonActive)
+                            {
+                                <button class="btn ifn-icon btn-3 btn-warning btn-md" type="button" title="Click for Update Tenants!" onclick="tenantUpdate(@ViewBag.CurrentApp.Id, @ViewBag.ActiveOrganizationId)">
+                                    <span class="btn-inner--icon">
+                                        <i class="ni ni-cloud-upload-96"></i>
+                                    </span>
+                                    <span class="btn-inner--text">Update Tenants</span>
+                                </button>
+                            }
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -68,8 +68,8 @@
         else
         {
             <div class="alert alert-warning alert-dismissible">
-              <button type="button" class="close" data-dismiss="alert">&times;</button>
-              Please create a package firstly !
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                Please create a package firstly !
             </div>
         }
         @*<div class="row" id="log" hidden>
@@ -94,9 +94,18 @@
         if (!publishedBefore) {
             swal.fire({
                 title: 'Submit to confirm',
-                html:
-                '<input id="auth-url" style="margin-bottom: 10px;" placeholder="Auth Url" class="form-control">' +
-                '<input id="app-url" placeholder="App Url" class="form-control">',
+                html: '<form>' +
+                    '<div class="form-group">' +
+                    '<input id="auth-url" style="margin-bottom: 10px;" placeholder="Auth Url" class="form-control">' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                    '<input id="app-url" placeholder="App Url" class="form-control">' +
+                    '</div>' +
+                    '<div class="form-group">' +
+                    '<input type="checkbox" class="form-check-input" id="use-ssl">' +
+                    '<label class="form-check-label" for="use-ssl">Use SSL</label>' +
+                    '</div>' +
+                    '</form>',
                 showCancelButton: true,
                 confirmButtonText: 'Confirm',
                 showLoaderOnConfirm: true,
@@ -107,6 +116,7 @@
                     return new Promise(function(resolve) {
                         var appUrl = $('#app-url').val();
                         var authUrl = $('#auth-url').val();
+                        var useSSL = $('#use-ssl').prop('checked');
 
                         if (!appUrl || !authUrl) {
                             Swal.showValidationMessage(
@@ -117,7 +127,8 @@
                         } else {
                             resolve([
                                 appUrl,
-                                authUrl
+                                authUrl,
+                                useSSL
                             ]);
                         }
                     });
@@ -125,8 +136,11 @@
                 allowOutsideClick: false
             }).then(function(data) {
                 if (data) {
+                    if (data.dismiss)
+                        return;
                     var appUrl = data.value[0];
                     var authUrl = data.value[1];
+                    var userSSL = data.value[2];
 
                     $.ajax({
                         url: '@Url.Action("apply", "Package")',
@@ -134,15 +148,18 @@
                             id: @ViewBag.CurrentApp.Id,
                             orgId: @ViewBag.ActiveOrganizationId,
                             appUrl: appUrl,
-                            authUrl: authUrl
+                            authUrl: authUrl,
+                            useSsl: userSSL
                         }
                     }).done(function(data) {
-                        var url = updateQueryStringParameter(window.location.href, 'applying', true);
-                        url = updateQueryStringParameter(url, 'release', data);
-                        window.location.href = url;
+                        //var url = updateQueryStringParameter(window.location.href, 'applying', true);
+                        //url = updateQueryStringParameter(url, 'release', data);
+                        if (data) {
+                            document.cookie = `app${@ViewBag.CurrentApp.Id}=${data}`;
+                        }
+                        window.location.href = window.location.href;
                     });
                 }
-
             }).catch(swal.noop);
         } else {
             $.ajax({
@@ -152,9 +169,12 @@
                     orgId: @ViewBag.ActiveOrganizationId
                 }
             }).done(function(data) {
-                var url = updateQueryStringParameter(window.location.href, 'applying', true);
-                url = updateQueryStringParameter(url, 'release', data);
-                window.location.href = url;
+                //var url = updateQueryStringParameter(window.location.href, 'applying', true);
+                if (data) {
+                    document.cookie = `app${@ViewBag.CurrentApp.Id}=${data}`;
+                }
+                //url = updateQueryStringParameter(url, 'release', data);
+                window.location.href = window.location.href;
             });
         }
     }
@@ -169,8 +189,8 @@
     var appyling = @Html.Raw(processActive);
     var lastPackage = @Html.Raw(Json.Serialize(ViewBag.LastPackage));
 
-    function tenantUpdate(packageId, appId, orgId) {
-        if (!packageId || !appId || !orgId)
+    function tenantUpdate(appId, orgId) {
+        if (!appId || !orgId)
             return;
 
         /*var http = new XMLHttpRequest();
@@ -187,8 +207,11 @@
                 orgId: @ViewBag.ActiveOrganizationId
             }
         }).done(function(data) {
-            var url = updateQueryStringParameter(window.location.href, 'applying', true);
-            window.location.href = url;
+            //var url = updateQueryStringParameter(window.location.href, 'applying', true);
+            if (data) {
+                document.cookie = `app${@ViewBag.CurrentApp.Id}=${data}`;
+            }
+            window.location.href = window.location.href;
         });
     };
 
@@ -215,10 +238,13 @@
         };
 
         socket.onclose = function(e) {
-            window.location.href = updateQueryStringParameter(window.location.href, 'applying', false);
+            document.cookie = `app${@ViewBag.CurrentApp.Id}= ; expires = Thu, 01 Jan 1970 00:00:00 GMT`;
+            console.log(e);
+            window.location.href = window.location.href;
         };
 
         socket.onerror = function(e) {
+            document.cookie = `app${@ViewBag.CurrentApp.Id}= ; expires = Thu, 01 Jan 1970 00:00:00 GMT`;
             console.log(e);
         };
 
@@ -240,4 +266,9 @@
         }
     }
 
+    function getCookie(name) {
+        var value = "; " + document.cookie;
+        var parts = value.split("; " + name + "=");
+        if (parts.length == 2) return parts.pop().split(";").shift();
+    }
 </script>

@@ -21,7 +21,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<Package> GetLastPackage(int appId)
         {
-            return await DbContext.Packages.OrderByDescending(x => x.Id).FirstOrDefaultAsync(x => x.AppId == appId);
+            return await DbContext.Packages.OrderByDescending(x => x.Id).FirstOrDefaultAsync(x => x.AppId == appId && x.Status == ReleaseStatus.Succeed);
         }
 
         public async Task<int> Count(int appId)
