@@ -26,5 +26,8 @@ namespace PrimeApps.App.Storage
 
         Task<PutACLResponse> CreateACL(string bucket, string key, S3CannedACL cannedACL);
 
+        string GetDocUrl(GetPreSignedUrlRequest request);
+
+
     }
 }

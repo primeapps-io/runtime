@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -29,7 +30,7 @@ namespace PrimeApps.Studio.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-            SetCurrentUser(_picklistRepository, PreviewMode, AppId, TenantId); 
+            SetCurrentUser(_picklistRepository, PreviewMode, AppId, TenantId);
 
             base.OnActionExecuting(context);
         }
@@ -134,7 +135,7 @@ namespace PrimeApps.Studio.Controllers
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var uri = new Uri(Request.GetDisplayUrl());
-            return Ok(result); //Created(uri.Scheme + "://" + uri.Authority + "/api/picklist/get/" + picklistEntity.Id, picklistEntity);
+            return Ok(picklistEntity); //Created(uri.Scheme + "://" + uri.Authority + "/api/picklist/get/" + picklistEntity.Id, picklistEntity);
             //return Created(Request.Scheme + "://" + Request.Host + "/api/picklist/get/" + picklistEntity.Id, picklistEntity);
         }
 
@@ -171,6 +172,55 @@ namespace PrimeApps.Studio.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
             return Ok(result);
+        }
+
+        [Route("import/{id:int}"), HttpPost]
+        public async Task<IActionResult> ImportItems(int id, [FromBody]List<PicklistItemViewModel> picklistItemsModel)
+        {
+            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "picklist", RequestTypeEnum.Create))
+                return StatusCode(403);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var picklist = await _picklistRepository.GetById(id);
+
+            if (picklist == null)
+                return NotFound();
+
+            var orderCount = new short();
+
+            if (picklist.Items.Count > 0)
+                orderCount = picklist.Items.Max(x => x.Order);
+
+
+            foreach (var item in picklistItemsModel)
+            {
+                var isUnique = await _picklistRepository.GetItemUniqueBySystemCode(item.SystemCode);
+
+                if (isUnique)
+                    return Conflict(new { name = item.Name, system_code = item.SystemCode, row = picklistItemsModel.IndexOf(item) });
+
+                orderCount++;
+
+                var itemEntity = new PicklistItem
+                {
+                    PicklistId = id,
+                    LabelEn = item.Name,
+                    LabelTr = item.Name,
+                    SystemCode = item.SystemCode,
+                    Value = item.Value,
+                    Value2 = item.Value2,
+                    Value3 = item.Value3,
+                    Order = orderCount
+                };
+
+                picklist.Items.Add(itemEntity);
+            }
+
+            await _picklistRepository.Update(picklist);
+
+            return Ok();
         }
 
         [Route("update/{id:int}"), HttpPut]

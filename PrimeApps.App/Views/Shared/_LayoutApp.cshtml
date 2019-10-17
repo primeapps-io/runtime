@@ -104,7 +104,7 @@
     var routeTemplateUrls = JSON.parse('@routeTemplateUrls');
     var googleMapsApiKey = '@googleMapsApiKey';
     var preview = '@preview'.toLowerCase() === 'true';
-
+    var account = @(new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Account)));
 
     var loaderDiv = document.getElementById('loader');
     loaderDiv.style.display = 'block';

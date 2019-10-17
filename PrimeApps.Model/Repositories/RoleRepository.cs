@@ -172,10 +172,11 @@ namespace PrimeApps.Model.Repositories
             var choosenRole = await DbContext.Roles.FindAsync(roleID);
             var user = await DbContext.Users.FindAsync(userId);
 
-            if (tenantId.HasValue)
-                choosenRole.UpdatedById = tenantId;
+            //if (tenantId.HasValue)
+            //    choosenRole.UpdatedById = tenantId;
 
             user.Role = choosenRole;
+			user.RoleId = roleID;
 
             string userIdString = userId.ToString();
             ICollection<string> userIdArray = new List<string>() {userIdString};

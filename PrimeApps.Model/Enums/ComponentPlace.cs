@@ -88,6 +88,12 @@ namespace PrimeApps.Model.Enums
         [EnumMember(Value = "before_import")]
         BeforeImport = 29,
 
+        [EnumMember(Value = "empty_list")]
+        EmptyList = 30,
+
+        [EnumMember(Value = "after_email")]
+        AfterEmail = 31,
+
         /*
          * Global Config
          */

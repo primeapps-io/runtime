@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('primeapps')
-    .controller('BulkEMailController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', 'ModuleService', 'TemplateService', '$cookies',
-        function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, ModuleService, TemplateService, $cookies) {
+    .controller('BulkEMailController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', 'ModuleService', 'TemplateService', '$cookies', 'components',
+        function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, ModuleService, TemplateService, $cookies, components) {
             $scope.loadingModal = true;
             $scope.module = $filter('filter')($rootScope.modules, { name: $stateParams.type }, true)[0];
             var uploadSuccessCallback,
@@ -117,7 +117,7 @@ angular.module('primeapps')
                     uploadProgress: function (uploader, file) {
                     },
                     fileUploaded: function (uploader, file, response) {
-                        uploader.settings.multipart_params.response_list="";
+                        uploader.settings.multipart_params.response_list = "";
                         uploader.settings.multipart_params.upload_id = 0;
 
                         tinymce.activeEditor.windowManager.close();
@@ -137,7 +137,7 @@ angular.module('primeapps')
                         }
                     },
                     error: function (file, error) {
-                        this.settings.multipart_params.response_list="";
+                        this.settings.multipart_params.response_list = "";
                         this.settings.multipart_params.upload_id = 0;
 
                         switch (error.code) {
@@ -322,12 +322,12 @@ angular.module('primeapps')
                     return;
 
                 $scope.addTemplatePopover = $scope.addTemplatePopover || $popover(angular.element(document.getElementById('addTemplate')), {
-                        templateUrl: 'view/app/email/addTemplate.html',
-                        placement: 'bottom-right',
-                        autoClose: true,
-                        scope: $scope,
-                        show: true
-                    });
+                    templateUrl: 'view/app/email/addTemplate.html',
+                    placement: 'bottom-right',
+                    autoClose: true,
+                    scope: $scope,
+                    show: true
+                });
             };
 
             $scope.addTemplate = function (type) {
@@ -372,6 +372,7 @@ angular.module('primeapps')
             };
 
             $scope.submitEMail = function () {
+
                 if (!$scope.emailModalForm.$valid)
                     return;
 
@@ -400,17 +401,19 @@ angular.module('primeapps')
                     emailProviderType,
                     dialog_uid,
                     $scope.Subject).then(function (response) {
-                    $scope.submittingModal = false;
-                    $scope.mailModal.hide();
-                    $scope.$parent.$parent.$parent.isAllSelected = false;
-                    $scope.templateSubject = $scope.Subject;
-                    $scope.$parent.$parent.$parent.selectedRecords = [];
-                    $scope.$parent.$parent.$parent.selectedRows = [];
-                    if ($scope.$parent.$parent.emailSent) {
-                        $scope.$parent.$parent.emailSent();
-                    }
-                    ngToast.create({ content: $filter('translate')('EMail.MessageQueued'), className: 'success' });
-                })
+                        components.run('AfterEmail', 'Script', $scope);
+                        $scope.submittingModal = false;
+                        $scope.mailModal.hide();
+                        $scope.$parent.$parent.$parent.isAllSelected = false;
+                        $scope.templateSubject = $scope.Subject;
+                        $scope.$parent.$parent.$parent.selectedRecords = [];
+                        $scope.$parent.$parent.$parent.selectedRows = [];
+                        if ($scope.$parent.$parent.emailSent) {
+                            $scope.$parent.$parent.emailSent();
+                        }
+                        ngToast.create({ content: $filter('translate')('EMail.MessageQueued'), className: 'success' });
+
+                    })
                     .catch(function () {
                         $scope.submittingModal = false;
                         $scope.mailModal.hide();
@@ -519,4 +522,4 @@ angular.module('primeapps')
             }
         }
     ])
-;
+    ;
