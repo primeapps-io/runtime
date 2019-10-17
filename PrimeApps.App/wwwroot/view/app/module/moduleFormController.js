@@ -1075,6 +1075,7 @@ angular.module('primeapps')
                             } else
                                 result(response.data);
 
+                            record.id = response.data.id;
                             components.run('AfterCreate', 'Script', $scope, record);
                         })
                         .catch(function onError(data) {
@@ -1155,6 +1156,8 @@ angular.module('primeapps')
                                                 });
                                         });
                                 }
+
+                                record.id = response.data.id;
                                 components.run('AfterCreate', 'Script', $scope, record);
                             })
                             .catch(function onError() {
