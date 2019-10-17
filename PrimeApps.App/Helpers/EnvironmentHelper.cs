@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.App.Helpers
 {
@@ -35,15 +36,18 @@ namespace PrimeApps.App.Helpers
 
             foreach (var item in data)
             {
-                if (prop.GetValue(item) != null)
+                if (prop.GetValue(item) == null)
                 {
-                    var value = prop.GetValue(item).ToString();
+                    newData.Add(item);
+                    continue;
+                }
 
-                    if (value != null)
-                    {
-                        if (value.Contains(environmentType))
-                            newData.Add(item);
-                    }
+                var value = prop.GetValue(item).ToString();
+
+                if (value != null)
+                {
+                    if (value.Contains(environmentType))
+                        newData.Add(item);
                 }
             }
 
@@ -60,35 +64,22 @@ namespace PrimeApps.App.Helpers
             var prop = typeof(T).GetProperty("Environment");
 
             if (prop.GetValue(data) == null)
-                return default(T);
+                return data;
 
             var value = prop.GetValue(data).ToString();
 
             if (value != null && value.Contains(environmentType))
                 return data;
-            else
-                return default(T);
+
+            return default(T);
         }
 
         public string GetEnvironmentValue()
-        { 
+        {
             var environment = !string.IsNullOrEmpty(_configuration.GetValue("AppSettings:Environment", string.Empty)) ? _configuration.GetValue("AppSettings:Environment", string.Empty) : "development";
-            string value = null;
+            var environmentValue = (int)environment.ToEnum<EnvironmentType>();
 
-            switch (environment)
-            {
-                case "development":
-                    value = "1";
-                    break;
-                case "test":
-                    value = "2";
-                    break;
-                case "product":
-                    value = "3";
-                    break;
-            }
-
-            return value;
+            return environmentValue.ToString();
         }
     }
 }

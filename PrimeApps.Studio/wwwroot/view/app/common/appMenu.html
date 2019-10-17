@@ -86,7 +86,13 @@
                     <span>Functions</span>
                 </a>
             </li>
-
+            <li ng-class="activeMenuItem ==='settings' ?  'active' :''">
+                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/customsettings" data-trigger="hover" data-type="info"
+                   data-title="Settings" bs-tooltip data-placement="right">
+                    <i class="fas fa-cogs"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
         </ul>
     </li>
     <li ng-class="subMenuOpen =='visualization' ? 'active sub-open':''"
@@ -113,7 +119,6 @@
                     <span>Reports</span>
                 </a>
             </li>
-
             <li ng-class="activeMenuItem ==='menus' ?'active' :''">
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/menus" data-trigger="hover" data-type="info"
                    data-title="Menus" bs-tooltip data-placement="right">
@@ -121,7 +126,6 @@
                     <span>Menus</span>
                 </a>
             </li>
-
         </ul>
     </li>
     <li ng-class="subMenuOpen =='templates' ? 'active sub-open':''"
@@ -287,13 +291,6 @@
                    data-title="Packages" bs-tooltip data-placement="right">
                     <i class="fas fa-rocket"></i>
                     <span>Packages</span>
-                </a>
-            </li>
-            <li ng-class="activeMenuItem ==='settings' ?  'active' :''">
-                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/customsettings" data-trigger="hover" data-type="info"
-                   data-title="Settings" bs-tooltip data-placement="right">
-                    <i class="fas fa-cogs"></i>
-                    <span>Settings</span>
                 </a>
             </li>
         </ul>

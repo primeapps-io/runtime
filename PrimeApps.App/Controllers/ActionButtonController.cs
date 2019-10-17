@@ -19,7 +19,6 @@ using System.Linq;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/action_button"), Authorize]
-
     public class ActionButtonController : ApiBaseController
     {
         private IActionButtonRepository _actionButtonRepository;
@@ -51,13 +50,9 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> GetActionButtons(int id)
         {
             var actionButtons = await _actionButtonRepository.GetByModuleId(id);
-            var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
-            previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
-
             actionButtons = _environmentHelper.DataFilter(actionButtons.ToList());
 
-            if (previewMode == "tenant")
-                await _actionButtonHelper.ProcessScriptFiles(actionButtons, _componentRepository);
+            await _actionButtonHelper.ProcessScriptFiles(actionButtons, _componentRepository);
 
             return Ok(actionButtons);
         }
