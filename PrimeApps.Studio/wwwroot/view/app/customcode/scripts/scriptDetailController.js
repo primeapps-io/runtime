@@ -51,7 +51,9 @@ angular.module('primeapps')
 
             $scope.generator(10);
 
-            $scope.environmentChange = function (env, index, otherValue = false) {
+            $scope.environmentChange = function (env, index, otherValue) {
+                otherValue = otherValue || false;
+
                 if (!env || index === 0) {
                     $scope.environments[0].selected = env.selected || otherValue;
                     return;

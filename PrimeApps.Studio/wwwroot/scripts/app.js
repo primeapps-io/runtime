@@ -60,7 +60,7 @@ angular.module('primeapps',
 
             //TODO: Delete this when multi-language support added
             window.localStorage.removeItem('NG_TRANSLATE_LANG_KEY');
-            
+
             $translateProvider.useStaticFilesLoader({
                 prefix: cdnUrl + 'locales/',
                 suffix: '.json'
@@ -140,7 +140,7 @@ angular.module('primeapps',
                     if (menuName)
                         menuName = menuName.split('/')[0];
 
-                    $rootScope.permission = helper.checkUserProfile(menuName, pageName);
+                    $rootScope.permission = helper.checkUserProfile(menuName, pageName, null);
 
                     if (!$rootScope.permission)
                         toastr.warning('You are not authorized for this operation.');
