@@ -104,7 +104,7 @@ namespace PrimeApps.Model.Helpers
                 result = PackageHelper.SetRecordsIsSampleSql();
 
                 AddScript(scriptPath, result);
-                AddScript(scriptPath, $"INSERT INTO \"public\".\"dashboard\"(\"id\", \"name\", \"description\", \"user_id\", \"profile_id\", \"is_active\", \"sharing_type\", \"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\") VALUES (1, 'Default Dashboard', NULL, NULL, NULL, 'f', 1, 1, NULL, '2018-02-18 23:14:26.377005', NULL, 'f');");
+                //AddScript(scriptPath, $"INSERT INTO \"public\".\"dashboard\"(\"id\", \"name\", \"description\", \"user_id\", \"profile_id\", \"is_active\", \"sharing_type\", \"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\") VALUES (1, 'Default Dashboard', NULL, NULL, NULL, 'f', 1, 1, NULL, '2018-02-18 23:14:26.377005', NULL, 'f');");
 
                 /*if (!result)
                     File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while marking records as sample... \u001b[39m" + Environment.NewLine);
@@ -470,10 +470,12 @@ namespace PrimeApps.Model.Helpers
                    "FROM information_schema.columns " +
                    "WHERE table_name='" + tableName + "' and column_name='" + columnName + "';";
         }
+
         public static string CreateSettingsAppNameSql(string name)
         {
             return $"INSERT INTO \"public\".\"settings\"(\"type\", \"user_id\", \"key\", \"value\", \"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\") VALUES (1, 1, 'app', '" + name + "', 1, NULL, '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) + "', NULL, 'f');";
         }
+
         public static void AddScript(string path, string sql)
         {
             if (!string.IsNullOrEmpty(path) && !string.IsNullOrEmpty(sql))
