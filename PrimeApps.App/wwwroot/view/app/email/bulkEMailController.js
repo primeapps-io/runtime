@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('primeapps')
-    .controller('BulkEMailController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', 'ModuleService', 'TemplateService', '$cookies',
-        function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, ModuleService, TemplateService, $cookies) {
+    .controller('BulkEMailController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', 'ModuleService', 'TemplateService', '$cookies', 'components',
+        function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, ModuleService, TemplateService, $cookies, components) {
             $scope.loadingModal = true;
             $scope.module = $filter('filter')($rootScope.modules, { name: $stateParams.type }, true)[0];
             var uploadSuccessCallback,
@@ -372,6 +372,7 @@ angular.module('primeapps')
             };
 
             $scope.submitEMail = function () {
+
                 if (!$scope.emailModalForm.$valid)
                     return;
 
@@ -400,6 +401,7 @@ angular.module('primeapps')
                     emailProviderType,
                     dialog_uid,
                     $scope.Subject).then(function (response) {
+                        components.run('AfterEmail', 'Script', $scope);
                         $scope.submittingModal = false;
                         $scope.mailModal.hide();
                         $scope.$parent.$parent.$parent.isAllSelected = false;
@@ -410,6 +412,7 @@ angular.module('primeapps')
                             $scope.$parent.$parent.emailSent();
                         }
                         ngToast.create({ content: $filter('translate')('EMail.MessageQueued'), className: 'success' });
+
                     })
                     .catch(function () {
                         $scope.submittingModal = false;
