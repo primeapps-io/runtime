@@ -5049,6 +5049,40 @@ button, select {
       }
     }
   }
+  .field-to-filter{
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    background: #FFF;
+    border-radius: 5px;
+    border: 1px solid rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    .field-to-filter-buttons{
+      display: flex;
+      border-left: 1px solid rgba(0,0,0,0.1);
+      align-items: center;
+      padding: 10px;
+      flex: 0;
+      .action-button2-delete{
+        margin-right: 5px;
+      }
+    }
+    >div {
+      padding: 20px 20px 10px 20px;
+      flex:1;
+      > div{
+        display: flex;
+        align-items: center;
+        >div{
+          margin-right: 20px;
+          flex: 1;
+          &:last-child{
+            margin-right: 0;
+          }
+        }
+      }
+    }
+  }
 }
 
 .placeholder {
