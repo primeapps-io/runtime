@@ -38,6 +38,9 @@ angular.module('primeapps')
                 getEnvironments: function () {
                     return environments.data;
                 },
+                getGlobalConfig: function () {
+                    return $http.get(config.apiUrl + 'component/get_global_config');
+                }
             };
         }]);
 

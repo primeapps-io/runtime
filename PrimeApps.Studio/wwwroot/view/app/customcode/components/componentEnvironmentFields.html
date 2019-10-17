@@ -1,0 +1,92 @@
+<form name="contentFormValidation" style="margin-top: 20px;" class="form-horizontal form-custom" ng-submit="save(contentFormValidation);" autocomplete="off" novalidate>
+
+	<div class="table-responsive c-settings-table">
+		<table class="table table-bordered">
+			<tbody>
+				<tr class="black5">
+					<td>Trusted Urls</td>
+					<td>Key</td>
+					<td>Value</td>
+				</tr>
+				<tr>
+					<td>Url</td>
+					<td><div class="form-group"><input class="form-control disabled" disabled value="url"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" name="url" maxlength="300" ng-model="content.trusted_urls.url"></div></td>
+				</tr>
+				<tr>
+					<td rowspan="2">Headers</td>
+					<td><div class="form-group"><input class="form-control disabled" disabled value="X-User-Id"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" name="x_user_id" maxlength="300" ng-model="content.trusted_urls.headers.x_user_id"></div></td>
+				</tr>
+				<tr>
+					<td><div class="form-group"><input class="form-control disabled" disabled value="X-Tenant-Id"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" name="x_tenant_id" maxlength="300" ng-model="content.trusted_urls.headers.x_tenant_id"></div></td>
+				</tr>
+				<tr class="black5">
+					<td>Route Template Urls</td>
+					<td>Key</td>
+					<td>Value</td>
+				</tr>
+				<tr>
+					<td>Route Template Urls</td>
+					<td><div class="form-group"><input class="form-control disabled" disabled value="route_template_urls"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" name="route_template_urls" maxlength="300" ng-model="content.route_template_urls"></div></td>
+				</tr>
+				<tr class="black5">
+					<td>Imports</td>
+					<td>Key</td>
+					<td>Value</td>
+				</tr>
+				<tr>
+					<td rowspan="2">Css</td>
+					<td><div class="form-group"><input class="form-control disabled" disabled value="before"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" name="css.before" placeholder="Separate with ;" maxlength="300" ng-model="content.imports.css.before"></div></td>
+				</tr>
+				<tr>
+					<td><div class="form-group"><input class="form-control disabled" disabled value="after"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" name="css.after" placeholder="Separate with ;" maxlength="300" ng-model="content.imports.css.after"></div></td>
+				</tr>
+				<tr>
+					<td rowspan="2">Js</td>
+					<td><div class="form-group"><input class="form-control disabled" disabled value="before"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" name="js.before" placeholder="Separate with ;" maxlength="300" ng-model="content.imports.js.before"></div></td>
+				</tr>
+				<tr>
+					<td><div class="form-group"><input class="form-control disabled" disabled value="after"></div></td>
+					<td><div class="form-group"><input type="text" class="form-control" name="js.after" placeholder="Separate with ;" maxlength="300" ng-model="content.imports.js.after"></div></td>
+				</tr>
+				<tr class="black5">
+					<td>Configs</td>
+					<td>Key</td>
+					<td>Value</td>
+				</tr>
+				<tr ng-repeat="parameter in configParameters">
+					<td ng-show="configParameters.length === 1"></td>
+					<td style="text-align: center" ng-show="configParameters.length > 1">
+						<a class="action-button2-delete" href ng-click="configParameterRemove(parameter)">
+							<i class="fas fa-trash"></i>
+						</a>
+					</td>
+					<td><div class="form-group"><input type="text" ng-model="parameter.key" tabindex="2" class="form-control" maxlength="500" /></div></td>
+					<td><div class="form-group"><input type="text" ng-model="parameter.value" tabindex="2" class="form-control" maxlength="500" /></div></td>
+				</tr>
+				<tr>
+					<td style="text-align: center">
+						<a class="btn btn-radius btn-blue" href ng-click="configParameterAdd(configParameters[configParameters.length-1])">
+							<i class="fas fa-plus"></i> Add New Parameter
+						</a>
+					</td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;">
+		<button ng-click="$parent.$parent.$parent.$parent.$parent.$parent.$parent.save(contentFormValidation);" ladda="saving" class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;">
+			<i class="fas fa-save"></i>{{'Common.Save' | translate}}
+		</button>
+	</div>
+
+</form>

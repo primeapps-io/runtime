@@ -4,7 +4,7 @@
   bottom: 2px;
   right: -5px;
   border: none;
-}
+} 
 
 @keyframes pagepointmove {
   from {
@@ -5011,6 +5011,41 @@ button, select {
     &:hover {
       .copy-button {
         visibility: visible;
+      }
+    }
+  }
+  .c-settings-table{
+    table{
+      margin-bottom: 20px;
+      
+      tbody{
+        tr{
+          cursor: default;
+          &:hover{
+            background: transparent;
+          }
+          &.black5{
+            background: rgba(0,0,0,0.05);
+            font-size: 90%;
+            
+            &:hover{
+              background: rgba(0,0,0,0.05);
+            }
+            td {
+              &:first-child {
+                color: $primeapps-color !important;
+                font-size: 110% !important;
+                font-weight: bold !important;
+              }
+            }
+          }
+          td{
+            cursor: default !important;
+          }
+        }
+      }
+      .form-group{
+        margin-bottom: 0px !important;
       }
     }
   }
