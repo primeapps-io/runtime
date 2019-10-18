@@ -76,7 +76,7 @@ namespace PrimeApps.Studio.Helpers
                             if (repository != null)
                             {
                                 var localPath = _giteaHelper.CloneRepository(repository["clone_url"].ToString(), repository["name"].ToString());
-                                var functionsPath = Path.Combine(localPath, "scripts");
+                                var functionsPath = Path.Combine(localPath, "functions");
                                 Directory.CreateDirectory(functionsPath);
                                 var fileName = Path.Combine(functionsPath, $"{function.Name}.{GetTypeWithRuntime(function.Runtime)}");
 
