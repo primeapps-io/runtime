@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace PrimeApps.CTL.Migration
+namespace PrimeApps.CLI.Migration
 {
     public interface IDatabaseService
     {
