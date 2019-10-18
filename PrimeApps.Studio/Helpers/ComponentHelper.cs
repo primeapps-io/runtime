@@ -99,25 +99,27 @@ namespace PrimeApps.Studio.Helpers
                             if (repository != null)
                             {
                                 var localPath = _giteaHelper.CloneRepository(repository["clone_url"].ToString(), repository["name"].ToString());
-                                if (!Directory.Exists(localPath + $"/components/{component.Name}"))
+                                var path = Path.Combine(localPath, "components", component.Name);
+
+                                if (!Directory.Exists(path))
                                 {
-                                    Directory.CreateDirectory(localPath + $"/components/{component.Name}");
+                                    Directory.CreateDirectory(path);
 
                                     var files = new JArray()
                                     {
                                         new JObject
                                         {
-                                            ["filePath"] = $"components/{component.Name}/sample.html",
+                                            ["filePath"] = Path.Combine(path, "sample.html"),
                                             ["type"] = "html"
                                         },
                                         new JObject
                                         {
-                                            ["filePath"] = $"components/{component.Name}/sampleController.js",
+                                            ["filePath"] = Path.Combine(path, "sampleController.js"),
                                             ["type"] = "controller"
                                         },
                                         new JObject
                                         {
-                                            ["filePath"] = $"components/{component.Name}/sampleService.js",
+                                            ["filePath"] = Path.Combine(path, "sampleService.js"),
                                             ["type"] = "service"
                                         }
                                     };
@@ -128,7 +130,7 @@ namespace PrimeApps.Studio.Helpers
                                         {
                                             var sample = GetSampleComponent(file["type"].ToString());
 
-                                            using (var fs = System.IO.File.Create(localPath + "/" + file["filePath"].ToString()))
+                                            using (var fs = System.IO.File.Create((string)file["filePath"]))
                                             {
                                                 var info = new UTF8Encoding(true).GetBytes(sample);
                                                 // Add some information to the file.
@@ -193,13 +195,15 @@ namespace PrimeApps.Studio.Helpers
                         if (repository != null)
                         {
                             var localPath = _giteaHelper.CloneRepository(repository["clone_url"].ToString(), repository["name"].ToString());
-                            var fileName = $"/scripts/{script.Name}.js";
+                            var scriptsPath = Path.Combine(localPath, "scripts");
+                            Directory.CreateDirectory(scriptsPath);
+                            var fileName = Path.Combine(scriptsPath, $"{script.Name}.js");
 
                             using (var repo = new Repository(localPath))
                             {
                                 var sample = "console.log('Hello World!');";
 
-                                using (var fs = System.IO.File.Create(localPath + fileName))
+                                using (var fs = System.IO.File.Create(fileName))
                                 {
                                     var info = new UTF8Encoding(true).GetBytes(sample);
                                     // Add some information to the file.

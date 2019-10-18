@@ -136,7 +136,7 @@ namespace PrimeApps.Studio.Helpers
                     var ownerName = repo["owner"]["username"].ToString();
                     var currentGiteaUsers = await GetRepositoryCollaborators(ownerName, app.Name);
 
-                    using (var platformUserRepository = new PlatformUserRepository(platformDbContext, _configuration)) //, cacheHelper))
+                    using (var platformUserRepository = new PlatformUserRepository(platformDbContext, _configuration))//, cacheHelper))
                     {
                         foreach (var id in userIds)
                         {
@@ -216,7 +216,7 @@ namespace PrimeApps.Studio.Helpers
                             }
                         }*/
 
-                        names.Add(new JObject() {["path"] = e.Path});
+                        names.Add(new JObject() { ["path"] = e.Path });
                     }
                 }
 
@@ -310,7 +310,7 @@ namespace PrimeApps.Studio.Helpers
             if (string.IsNullOrEmpty(giteaDirectory))
                 return null;
 
-            var localFolder = giteaDirectory + folderName;
+            var localFolder = Path.Combine(giteaDirectory, "git", folderName);
 
             if (Directory.Exists(localFolder))
             {
@@ -583,7 +583,7 @@ namespace PrimeApps.Studio.Helpers
 
         protected dynamic GetOptions(string type)
         {
-            var credential = new UsernamePasswordCredentials() {Username = Token, Password = String.Empty};
+            var credential = new UsernamePasswordCredentials() { Username = Token, Password = String.Empty };
             switch (type)
             {
                 case "fetch":

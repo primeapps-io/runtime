@@ -76,15 +76,16 @@ namespace PrimeApps.Studio.Helpers
                             if (repository != null)
                             {
                                 var localPath = _giteaHelper.CloneRepository(repository["clone_url"].ToString(), repository["name"].ToString());
-
-                                var fileName = $"functions/{function.Name}.{GetTypeWithRuntime(function.Runtime)}" ;
+                                var functionsPath = Path.Combine(localPath, "scripts");
+                                Directory.CreateDirectory(functionsPath);
+                                var fileName = Path.Combine(functionsPath, $"{function.Name}.{GetTypeWithRuntime(function.Runtime)}");
 
                                 if (!System.IO.File.Exists(fileName))
                                 {
                                     using (var repo = new Repository(localPath))
                                     {
                                         var sample = GetSampleFunction(function.Runtime, function.Handler);
-                                        using (var fs = System.IO.File.Create(localPath + "/" + fileName))
+                                        using (var fs = System.IO.File.Create(fileName))
                                         {
                                             var info = new UTF8Encoding(true).GetBytes(sample);
                                             // Add some information to the file.
@@ -386,7 +387,7 @@ namespace PrimeApps.Studio.Helpers
 
         public HttpClient SetClientOptions()
         {
-            var httpClientHandler = new HttpClientHandler {ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true};
+            var httpClientHandler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true };
             var client = new HttpClient(httpClientHandler);
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
