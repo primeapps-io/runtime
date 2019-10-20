@@ -11,35 +11,40 @@ namespace PrimeApps.Model.Migrations.TenantDB
                 schema: "public",
                 table: "workflows",
                 maxLength: 10,
-                nullable: true);
+                nullable: true,
+                defaultValue: "3");
 
             migrationBuilder.AddColumn<string>(
                 name: "environment",
                 schema: "public",
                 table: "processes",
                 maxLength: 10,
-                nullable: true);
+                nullable: true,
+                defaultValue: "3");
 
             migrationBuilder.AddColumn<string>(
                 name: "environment",
                 schema: "public",
                 table: "functions",
                 maxLength: 10,
-                nullable: true);
+                nullable: true,
+                defaultValue: "3");
 
             migrationBuilder.AddColumn<string>(
                 name: "environment",
                 schema: "public",
                 table: "components",
                 maxLength: 10,
-                nullable: true);
+                nullable: true,
+                defaultValue: "3");
 
             migrationBuilder.AddColumn<string>(
                 name: "environment",
                 schema: "public",
                 table: "action_buttons",
                 maxLength: 10,
-                nullable: true);
+                nullable: true,
+                defaultValue: "3");
 
             migrationBuilder.CreateIndex(
                 name: "IX_workflows_environment",
