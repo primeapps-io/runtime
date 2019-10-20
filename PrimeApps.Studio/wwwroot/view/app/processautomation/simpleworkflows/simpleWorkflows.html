@@ -12,13 +12,11 @@
                 <th>{{'Setup.Workflow.Module' | translate}}</th>
                 <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
                 <th>{{'Setup.Workflow.Status' | translate}}</th>
-                <th>Environment</th>
                 <th width="70"></th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="item in placeholderArray">
-                <td><div class="animated-background"></div></td>
                 <td><div class="animated-background"></div></td>
                 <td><div class="animated-background"></div></td>
                 <td><div class="animated-background"></div></td>
@@ -35,7 +33,6 @@
                 <th>{{'Setup.Workflow.Module' | translate}}</th>
                 <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
                 <th>{{'Setup.Workflow.Status' | translate}}</th>
-                <th>Environment</th>
                 <th width="70"></th>
             </tr>
         </thead>
@@ -45,7 +42,6 @@
                 <td>{{rule.module['label_'+language+'_plural']}}</td>
                 <td>{{rule.operations}}</td>
                 <td>{{rule.active ? 'Common.Active':'Common.Passive' | translate}}</td>
-                <td class="text-capitalize">{{rule.environment_list.toString()}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
                         <button ng-click="$event.stopPropagation(); delete(rule);" ladda="rule.deleting" type="button" class="action-buttons-delete">

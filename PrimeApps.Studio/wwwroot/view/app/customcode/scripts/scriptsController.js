@@ -17,25 +17,12 @@ angular.module('primeapps')
             $scope.activePage = 1;
             $scope.environments = ScriptsService.getEnvironments();
 
-            $scope.environmentChange = function (env, index, otherValue = false) {
-                if (!env || index === 0) {
-                    $scope.environments[0].selected = env.selected || otherValue;
-                    return;
-                }
+            $scope.environmentChange = function (env, index, otherValue) {
+                otherValue = otherValue || false;
 
-                if (index === 1) {
-                    $scope.environments[0].disabled = env.selected || otherValue;
-                    $scope.environments[0].selected = env.selected || otherValue;
-
-                    if (otherValue) {
-                        $scope.environments[1].selected = otherValue;
-                    }
-                }
-                else if (index === 2) {
-                    $scope.environments[0].disabled = env.selected || otherValue;
-                    $scope.environments[0].selected = env.selected || otherValue;
-                    $scope.environments[1].disabled = env.selected || otherValue;
-                    $scope.environments[1].selected = env.selected || otherValue;
+                if (index === 2) {
+                    $scope.environments[1].selected = true;
+                    $scope.environments[1].disabled = !!env.selected;
 
                     if (otherValue) {
                         $scope.environments[2].selected = otherValue;
@@ -106,7 +93,7 @@ angular.module('primeapps')
 
             var setModule = function (data) {
                 for (var i = 0; i < data.length; i++) {
-                    var module = $filter('filter')($scope.modules, { id: data[i].module_id }, true);
+                    var module = $filter('filter')($scope.modules, {id: data[i].module_id}, true);
                     if (module && module.length > 0)
                         data[i].module = angular.copy(module[0]);
                 }
@@ -155,16 +142,16 @@ angular.module('primeapps')
                         .then(function (response) {
                             if (response.data) {
                                 toastr.success("Script is created successfully.");
-                                $state.go('studio.app.scriptDetail', { name: $scope.scriptModel.name });
+                                $state.go('studio.app.scriptDetail', {name: $scope.scriptModel.name});
                                 $scope.cancel();
                                 $scope.saving = false;
                             }
                             $scope.saving = false;
                             //$scope.changeOffset(1);
                         }).catch(function (reason) {
-                            toastr.error($filter('translate')('Common.Error'));
-                            $scope.saving = false;
-                        });
+                        toastr.error($filter('translate')('Common.Error'));
+                        $scope.saving = false;
+                    });
                 }
             }
 
@@ -194,9 +181,9 @@ angular.module('primeapps')
                                 script.deleting = false;
                                 $scope.changeOffset();
                             }).catch(function (reason) {
-                                toastr.error($filter('translate')('Error'));
-                                script.deleting = false;
-                            });
+                            toastr.error($filter('translate')('Error'));
+                            script.deleting = false;
+                        });
                     }
                     else
                         script.deleting = false;
@@ -212,7 +199,6 @@ angular.module('primeapps')
                 $scope.scriptModel.name = helper.getSlug($scope.scriptModel.label, '-');
                 $scope.scriptNameBlur($scope.scriptModel);
             };
-
 
             $scope.scriptNameBlur = function (name) {
                 //if ($scope.isScriptNameBlur && $scope.scriptNameValid)
@@ -257,11 +243,9 @@ angular.module('primeapps')
                     });
             };
 
-
-
             $scope.showFormModal = function (script) {
                 if (script) {
-                    $scope.scriptModel = $filter('filter')($scope.scripts, { id: script.id }, true)[0];
+                    $scope.scriptModel = $filter('filter')($scope.scripts, {id: script.id}, true)[0];
 
                     if (!$scope.scriptModel.place_value)
                         $scope.scriptModel.place_value = $scope.scriptModel.place;

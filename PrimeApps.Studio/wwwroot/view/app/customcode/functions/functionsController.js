@@ -120,25 +120,12 @@ angular.module('primeapps')
              $state.go('studio.apps', { organizationId: $scope.orgId });
              }*/
 
-            $scope.environmentChange = function (env, index, otherValue = false) {
-                if (!env || index === 0) {
-                    $scope.environments[0].selected = env.selected || otherValue;
-                    return;
-                }
+            $scope.environmentChange = function (env, index, otherValue) {
+                otherValue = otherValue || false;
 
-                if (index === 1) {
-                    $scope.environments[0].disabled = env.selected || otherValue;
-                    $scope.environments[0].selected = env.selected || otherValue;
-
-                    if (otherValue) {
-                        $scope.environments[1].selected = otherValue;
-                    }
-                }
-                else if (index === 2) {
-                    $scope.environments[0].disabled = env.selected || otherValue;
-                    $scope.environments[0].selected = env.selected || otherValue;
-                    $scope.environments[1].disabled = env.selected || otherValue;
-                    $scope.environments[1].selected = env.selected || otherValue;
+                if (index === 2) {
+                    $scope.environments[1].selected = true;
+                    $scope.environments[1].disabled = !!env.selected;
 
                     if (otherValue) {
                         $scope.environments[2].selected = otherValue;

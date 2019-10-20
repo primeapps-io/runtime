@@ -3358,17 +3358,17 @@ angular.module('primeapps')
         data: [{
             name: 'Development',
             value: 'development',
-            selected: false,
-            disabled: false
+            selected: true,
+            disabled: true
         }, {
             name: 'Test',
             value: 'test',
-            selected: false,
-            disabled: false
+            selected: true,
+            disabled: true
         }, {
             name: 'Production',
             value: 'production',
-            selected: false,
+            selected: true,
             disabled: false
         }]
     })

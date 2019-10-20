@@ -24,15 +24,11 @@
                 <th>Label</th>
                 <th>Identifier</th>
                 <th>Module</th>
-                <th>Environment</th>
                 <th style="width: 70px;"></th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="item in placeholderArray">
-                <td>
-                    <div class="animated-background"></div>
-                </td>
                 <td>
                     <div class="animated-background"></div>
                 </td>
@@ -55,7 +51,6 @@
                 <th>Label</th>
                 <th>Identifier</th>
                 <th>Module</th>
-                <th>Environment</th>
                 <th style="width: 70px;"></th>
             </tr>
         </thead>
@@ -64,7 +59,6 @@
                 <td>{{component.label}}</td>
                 <td>{{component.name}}</td>
                 <td>{{getModuleName(component.module_id)}}</td>
-                <td class="text-capitalize">{{component.environment_list.toString()}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
                         <button ng-click="$event.stopPropagation();delete(component.id, $event)" type="button"

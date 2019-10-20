@@ -13,25 +13,12 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = 'buttons';
             $scope.environments = angular.copy(ActionButtonsService.getEnvironments());
 
-            $scope.environmentChange = function (env, index, otherValue = false) {
-                if (!env || index === 0) {
-                    $scope.environments[0].selected = env.selected || otherValue;
-                    return;
-                }
+            $scope.environmentChange = function (env, index, otherValue) {
+                otherValue = otherValue || false;
 
-                if (index === 1) {
-                    $scope.environments[0].disabled = env.selected || otherValue;
-                    $scope.environments[0].selected = env.selected || otherValue;
-
-                    if (otherValue) {
-                        $scope.environments[1].selected = otherValue;
-                    }
-                }
-                else if (index === 2) {
-                    $scope.environments[0].disabled = env.selected || otherValue;
-                    $scope.environments[0].selected = env.selected || otherValue;
-                    $scope.environments[1].disabled = env.selected || otherValue;
-                    $scope.environments[1].selected = env.selected || otherValue;
+                if (index === 2) {
+                    $scope.environments[1].selected = true;
+                    $scope.environments[1].disabled = !!env.selected;
 
                     if (otherValue) {
                         $scope.environments[2].selected = otherValue;
@@ -144,16 +131,16 @@ angular.module('primeapps')
                 $scope.currentActionButtonState = angular.copy($scope.currentActionButton);
                 $scope.actionButtonTypes = [
                     {
-                        type: "Script",
-                        value: 1
+                        type: "Modal",
+                        value: 3
                     },
                     {
                         type: "Webhook",
                         value: 2
                     },
                     {
-                        type: "Modal",
-                        value: 3
+                        type: "Script",
+                        value: 1
                     }
                 ];
 
@@ -167,16 +154,16 @@ angular.module('primeapps')
                         value: 2
                     },
                     {
-                        name: $filter('translate')('Setup.Modules.All'),
-                        value: 3
-                    },
-                    {
                         name: $filter('translate')('Setup.Modules.List'),
                         value: 4
                     },
                     {
                         name: $filter('translate')('Setup.Modules.Relation'),
                         value: 5
+                    },
+                    {
+                        name: $filter('translate')('Setup.Modules.All'),
+                        value: 3
                     }
                 ];
 

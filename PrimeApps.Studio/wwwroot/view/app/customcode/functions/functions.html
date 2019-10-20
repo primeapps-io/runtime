@@ -20,16 +20,12 @@
                 <th>Runtime</th>
                 <th>Handler</th>
                 <th>Creation Time</th>
-                <th>Environment</th>
                 <th width="50"></th>
             </tr>
         </thead>
         <tbody>
             <tr>
             <tr ng-repeat="item in placeholderArray">
-                <td>
-                    <div class="animated-background"></div>
-                </td>
                 <td>
                     <div class="animated-background"></div>
                 </td>
@@ -62,7 +58,6 @@
                 <th>Runtime</th>
                 <th>Handler</th>
                 <th>Creation Time</th>
-                <th>Environment</th>
                 <th width="50"></th>
             </tr>
         </thead>
@@ -73,7 +68,6 @@
                 <td>{{function.runtime}}</td>
                 <td>{{function.handler}}</td>
                 <td>{{getTime(function.created_at)}}</td>
-                <td class="text-capitalize">{{function.environment_list.toString()}}</td>
                 <td class="text-right">
                     <div class="action-buttons-block">
                         <button ng-click="$event.stopPropagation();$parent.$parent.delete(function.name, $event)"

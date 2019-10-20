@@ -16,15 +16,11 @@
                 <th>Label</th>
                 <th>Identifier</th>
                 <th>{{'Setup.Modules.Name' | translate}}</th> 
-                <th>Environment</th> 
                 <th style="width: 70px;"></th>
             </tr>
         </thead>
         <tbody> 
             <tr ng-repeat="item in placeholderArray">
-                <td>
-                    <div class="animated-background"></div>
-                </td>
                 <td>
                     <div class="animated-background"></div>
                 </td>
@@ -46,7 +42,6 @@
                 <th>Label</th>
                 <th>Identifier</th>
                 <th>{{'Setup.Modules.Name' | translate}}</th>
-                <th>Environments</th> 
                 <th width="50"></th>
             </tr>
         </thead>
@@ -55,7 +50,6 @@
                 <td>{{script.label}}</td>
                 <td>{{script.name}}</td>
                 <td>{{script.module ? script.module['label_' + language + '_singular']:'-'}}</td>
-                <td class="text-capitalize">{{script.environment_list.toString()}}</td>
                 <td class="text-right">
                     <div class="action-buttons-block">
                         <button ng-click="$event.stopPropagation(); delete(script);" type="button"

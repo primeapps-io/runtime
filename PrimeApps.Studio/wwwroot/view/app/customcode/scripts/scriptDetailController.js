@@ -28,7 +28,7 @@ angular.module('primeapps')
             $scope.activePage = 1;
 
             $scope.app = $rootScope.currentApp;
-            $scope.organization = $filter('filter')($rootScope.organizations, { id: $scope.orgId })[0];
+            $scope.organization = $filter('filter')($rootScope.organizations, {id: $scope.orgId})[0];
             $scope.giteaUrl = giteaUrl;
             $scope.environments = ScriptsService.getEnvironments();
 
@@ -54,25 +54,9 @@ angular.module('primeapps')
             $scope.environmentChange = function (env, index, otherValue) {
                 otherValue = otherValue || false;
 
-                if (!env || index === 0) {
-                    $scope.environments[0].selected = env.selected || otherValue;
-                    return;
-                }
-
-
-                if (index === 1) {
-                    $scope.environments[0].disabled = env.selected || otherValue;
-                    $scope.environments[0].selected = env.selected || otherValue;
-
-                    if (otherValue) {
-                        $scope.environments[1].selected = otherValue;
-                    }
-                }
-                else if (index === 2) {
-                    $scope.environments[0].disabled = env.selected || otherValue;
-                    $scope.environments[0].selected = env.selected || otherValue;
-                    $scope.environments[1].disabled = env.selected || otherValue;
-                    $scope.environments[1].selected = env.selected || otherValue;
+                if (index === 2) {
+                    $scope.environments[1].selected = true;
+                    $scope.environments[1].disabled = !!env.selected;
 
                     if (otherValue) {
                         $scope.environments[2].selected = otherValue;
