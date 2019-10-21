@@ -117,10 +117,11 @@ namespace PrimeApps.Model.Helpers
                         {
                             var files = JArray.Parse(storageText);
 
-                            var bucketName = UnifiedStorage.GetPath("template", "app", appId);
 
                             foreach (var file in files)
                             {
+                                var bucketName = (string)file["path"];
+
                                 if (!await storage.ObjectExists(bucketName, file["unique_name"].ToString()))
                                 {
                                     using (var fileStream = new FileStream(Path.Combine(path, "files", file["file_name"].ToString()), FileMode.OpenOrCreate))
@@ -402,11 +403,11 @@ namespace PrimeApps.Model.Helpers
                             try
                             {
                                 var files = JArray.Parse(storageText);
-
-                                var bucketName = UnifiedStorage.GetPath("template", "app", int.Parse(app["id"].ToString()));
-
+                                
                                 foreach (var file in files)
                                 {
+                                    var bucketName = (string)file["path"];
+                                    
                                     if (!await storage.ObjectExists(bucketName, file["unique_name"].ToString()))
                                     {
                                         using (var fileStream = new FileStream(Path.Combine(path, "files", file["file_name"].ToString()), FileMode.OpenOrCreate))
