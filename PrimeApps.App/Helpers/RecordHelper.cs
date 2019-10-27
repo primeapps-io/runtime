@@ -68,7 +68,7 @@ namespace PrimeApps.App.Helpers
         private IWorkflowHelper _workflowHelper;
         private IProcessHelper _processHelper;
         private ICalculationHelper _calculationHelper;
-        private IBpmHelper _bpmHelper;
+        //private IBpmHelper _bpmHelper;
         private IHttpContextAccessor _context;
         private IWorkflowHost _workflowHost;
         private IModuleRepository _moduleRepository;
@@ -76,7 +76,7 @@ namespace PrimeApps.App.Helpers
 
         public IBackgroundTaskQueue Queue { get; }
 
-        public RecordHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IAuditLogHelper auditLogHelper, INotificationHelper notificationHelper, IWorkflowHelper workflowHelper, IProcessHelper processHelper, ICalculationHelper calculationHelper, IBpmHelper bpmHelper, IBackgroundTaskQueue queue, IHttpContextAccessor context, IWorkflowHost workflowHost, IModuleRepository moduleRepository, IModuleHelper moduleHelper)
+        public RecordHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IAuditLogHelper auditLogHelper, INotificationHelper notificationHelper, IWorkflowHelper workflowHelper, IProcessHelper processHelper, ICalculationHelper calculationHelper, IBackgroundTaskQueue queue, IHttpContextAccessor context, IWorkflowHost workflowHost, IModuleRepository moduleRepository, IModuleHelper moduleHelper)
         {
             _context = context;
             _serviceScopeFactory = serviceScopeFactory;
@@ -87,7 +87,7 @@ namespace PrimeApps.App.Helpers
             _workflowHelper = workflowHelper;
             _processHelper = processHelper;
             _calculationHelper = calculationHelper;
-            _bpmHelper = bpmHelper;
+            //_bpmHelper = bpmHelper;
             _workflowHost = workflowHost;
             _moduleRepository = moduleRepository;
             _moduleHelper = moduleHelper;
@@ -105,7 +105,7 @@ namespace PrimeApps.App.Helpers
             _workflowHelper = new WorkflowHelper(configuration, serviceScopeFactory, currentUser, _moduleHelper);
             _processHelper = new ProcessHelper(configuration, serviceScopeFactory, currentUser);
             _calculationHelper = new CalculationHelper(configuration, serviceScopeFactory, currentUser);
-            _bpmHelper = new BpmHelper(configuration, serviceScopeFactory, currentUser);
+            //_bpmHelper = new BpmHelper(configuration, serviceScopeFactory, currentUser);
 
             Queue = new BackgroundTaskQueue();
         }
