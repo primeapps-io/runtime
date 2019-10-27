@@ -70,7 +70,7 @@ namespace PrimeApps.App.Helpers
         private ICalculationHelper _calculationHelper;
         //private IBpmHelper _bpmHelper;
         private IHttpContextAccessor _context;
-        private IWorkflowHost _workflowHost;
+        //private IWorkflowHost _workflowHost;
         private IModuleRepository _moduleRepository;
         private IModuleHelper _moduleHelper;
         private IEnvironmentHelper _environmentHelper;
@@ -79,7 +79,7 @@ namespace PrimeApps.App.Helpers
 
         public RecordHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IAuditLogHelper auditLogHelper,
             INotificationHelper notificationHelper, IWorkflowHelper workflowHelper, IProcessHelper processHelper, ICalculationHelper calculationHelper,
-             IBackgroundTaskQueue queue, IHttpContextAccessor context, IWorkflowHost workflowHost, IModuleRepository moduleRepository,
+             IBackgroundTaskQueue queue, IHttpContextAccessor context, IModuleRepository moduleRepository,
             IModuleHelper moduleHelper, IEnvironmentHelper environmentHelper)
         {
             _context = context;
@@ -92,7 +92,7 @@ namespace PrimeApps.App.Helpers
             _processHelper = processHelper;
             _calculationHelper = calculationHelper;
             //_bpmHelper = bpmHelper;
-            _workflowHost = workflowHost;
+            //_workflowHost = workflowHost;
             _moduleRepository = moduleRepository;
             _moduleHelper = moduleHelper;
             _environmentHelper = environmentHelper;
