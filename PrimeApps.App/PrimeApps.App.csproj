@@ -36,7 +36,6 @@
         <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.9" />
         <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
         <PackageReference Include="WorkflowCore" Version="1.9.3" />
-        <PackageReference Include="WorkflowCore.Persistence.PostgreSQL" Version="1.9.1" />
         <PackageReference Include="WorkflowCore.Providers.Redis" Version="1.9.1" />
     </ItemGroup>
     <ItemGroup>
