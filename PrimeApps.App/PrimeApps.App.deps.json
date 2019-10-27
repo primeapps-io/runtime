@@ -55,7 +55,6 @@
           "System.Linq.Dynamic.Core": "1.0.9",
           "WindowsAzure.Storage": "9.3.3",
           "WorkflowCore": "1.9.3",
-          "WorkflowCore.Persistence.PostgreSQL": "1.9.1",
           "WorkflowCore.Providers.Redis": "1.9.1"
         },
         "runtime": {
@@ -514,21 +513,6 @@
           "lib/netstandard1.3/Microsoft.CodeAnalysis.Workspaces.dll": {}
         }
       },
-      "Microsoft.EntityFrameworkCore.Relational.Design/1.1.2": {
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "2.2.0",
-          "NETStandard.Library": "2.0.3"
-        },
-        "runtime": {
-          "lib/netstandard1.3/Microsoft.EntityFrameworkCore.Relational.Design.dll": {
-            "assemblyVersion": "1.1.2.0",
-            "fileVersion": "1.1.2.30427"
-          }
-        },
-        "compile": {
-          "lib/netstandard1.3/Microsoft.EntityFrameworkCore.Relational.Design.dll": {}
-        }
-      },
       "Microsoft.Extensions.Caching.Redis/2.2.0": {
         "dependencies": {
           "Microsoft.Extensions.Caching.Abstractions": "2.2.0",
@@ -978,27 +962,6 @@
         },
         "compile": {
           "lib/netstandard2.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {}
-        }
-      },
-      "Npgsql.EntityFrameworkCore.PostgreSQL.Design/1.1.1": {
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore": "2.2.0",
-          "Microsoft.EntityFrameworkCore.Relational": "2.2.0",
-          "Microsoft.EntityFrameworkCore.Relational.Design": "1.1.2",
-          "Microsoft.Extensions.DependencyInjection": "2.2.0",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.2.0",
-          "NETStandard.Library": "2.0.3",
-          "Npgsql": "4.0.4",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "2.2.0"
-        },
-        "runtime": {
-          "lib/netstandard1.3/Npgsql.EntityFrameworkCore.PostgreSQL.Design.dll": {
-            "assemblyVersion": "1.1.1.0",
-            "fileVersion": "1.1.1.0"
-          }
-        },
-        "compile": {
-          "lib/netstandard1.3/Npgsql.EntityFrameworkCore.PostgreSQL.Design.dll": {}
         }
       },
       "NuGet.Frameworks/4.7.0": {
@@ -1653,42 +1616,6 @@
         },
         "compile": {
           "lib/netstandard1.3/WorkflowCore.dll": {}
-        }
-      },
-      "WorkflowCore.Persistence.EntityFramework/1.9.1": {
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore": "2.2.0",
-          "Microsoft.EntityFrameworkCore.Relational": "2.2.0",
-          "Newtonsoft.Json": "12.0.1",
-          "WorkflowCore": "1.9.3"
-        },
-        "runtime": {
-          "lib/netstandard2.0/WorkflowCore.Persistence.EntityFramework.dll": {
-            "assemblyVersion": "1.9.1.0",
-            "fileVersion": "1.9.1.0"
-          }
-        },
-        "compile": {
-          "lib/netstandard2.0/WorkflowCore.Persistence.EntityFramework.dll": {}
-        }
-      },
-      "WorkflowCore.Persistence.PostgreSQL/1.9.1": {
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Design": "2.2.0",
-          "Npgsql": "4.0.4",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "2.2.0",
-          "Npgsql.EntityFrameworkCore.PostgreSQL.Design": "1.1.1",
-          "WorkflowCore": "1.9.3",
-          "WorkflowCore.Persistence.EntityFramework": "1.9.1"
-        },
-        "runtime": {
-          "lib/netstandard2.0/WorkflowCore.Persistence.PostgreSQL.dll": {
-            "assemblyVersion": "1.9.1.0",
-            "fileVersion": "1.9.1.0"
-          }
-        },
-        "compile": {
-          "lib/netstandard2.0/WorkflowCore.Persistence.PostgreSQL.dll": {}
         }
       },
       "WorkflowCore.Providers.Redis/1.9.1": {
@@ -5089,13 +5016,6 @@
       "path": "microsoft.codeanalysis.workspaces.common/2.8.0",
       "hashPath": "microsoft.codeanalysis.workspaces.common.2.8.0.nupkg.sha512"
     },
-    "Microsoft.EntityFrameworkCore.Relational.Design/1.1.2": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-pu2Jxndzv3slY6Ch9mdqVfL3AFhH5XzM02Rrnf9h5lKoViprYx1O+nNqT3BxmGrPkYadY9OddG2b9+sUO3Xuzw==",
-      "path": "microsoft.entityframeworkcore.relational.design/1.1.2",
-      "hashPath": "microsoft.entityframeworkcore.relational.design.1.1.2.nupkg.sha512"
-    },
     "Microsoft.Extensions.Caching.Redis/2.2.0": {
       "type": "package",
       "serviceable": true,
@@ -5242,13 +5162,6 @@
       "sha512": "sha512-gUHdEtuJ8JR//bLMBzsu6WZOO858Jfli1BEoMcEv3ehgcU4ibdwEXUNt2b0Xs0MJmZ031wTDGasmdFEXH2KAjw==",
       "path": "npgsql.entityframeworkcore.postgresql/2.2.0",
       "hashPath": "npgsql.entityframeworkcore.postgresql.2.2.0.nupkg.sha512"
-    },
-    "Npgsql.EntityFrameworkCore.PostgreSQL.Design/1.1.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-UXgRNtmOIc/gw3bvdof4hZu4rL9xIUGeSWklasd+Oj9SF7EH+OTu43/Qsz6YYrqX2sem2qxd004LwtW/CWpVHg==",
-      "path": "npgsql.entityframeworkcore.postgresql.design/1.1.1",
-      "hashPath": "npgsql.entityframeworkcore.postgresql.design.1.1.1.nupkg.sha512"
     },
     "NuGet.Frameworks/4.7.0": {
       "type": "package",
@@ -5522,20 +5435,6 @@
       "sha512": "sha512-8q4KKV+fZl8nWu0dgzPFR4MGGNEH4G0b/WbD2iK12cMsXmHs7em34nhD8OCwHvPysigm5p6Yiagwo4IulHQu2Q==",
       "path": "workflowcore/1.9.3",
       "hashPath": "workflowcore.1.9.3.nupkg.sha512"
-    },
-    "WorkflowCore.Persistence.EntityFramework/1.9.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-DJebiN22IQYD46+uKhq2eUqhPptQLTLOgXPrqUPaNcImo71JUsxqV7kiweA7CGcIDOaI9ZdqiblQSzCMOcLYeA==",
-      "path": "workflowcore.persistence.entityframework/1.9.1",
-      "hashPath": "workflowcore.persistence.entityframework.1.9.1.nupkg.sha512"
-    },
-    "WorkflowCore.Persistence.PostgreSQL/1.9.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-RdPhTWPGuoZFvUtpt2F/b1olSjYT8JtD7Z+5pQnGk0yAwiz7FqDySecm9bsxdxj5dbPFru861sYBdfvNL2WRkg==",
-      "path": "workflowcore.persistence.postgresql/1.9.1",
-      "hashPath": "workflowcore.persistence.postgresql.1.9.1.nupkg.sha512"
     },
     "WorkflowCore.Providers.Redis/1.9.1": {
       "type": "package",
