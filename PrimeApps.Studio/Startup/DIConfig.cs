@@ -64,7 +64,7 @@ namespace PrimeApps.Studio
             services.AddScoped<IWorkflowHelper, WorkflowHelper>();
             services.AddScoped<IProcessHelper, ProcessHelper>();
             services.AddScoped<IDocumentHelper, DocumentHelper>();
-            services.AddScoped<IBpmHelper, BpmHelper>();
+            //services.AddScoped<IBpmHelper, BpmHelper>();
             services.AddScoped<IRoleHelper, RoleHelper>();
             services.AddScoped<IGiteaHelper, GiteaHelper>();
             services.AddScoped<INotificationHelper, NotificationHelper>();
