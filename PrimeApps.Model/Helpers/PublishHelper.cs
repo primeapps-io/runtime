@@ -94,7 +94,7 @@ namespace PrimeApps.Model.Helpers
                 var storagePath = Path.Combine(path, "storage.txt");
 
                 var scriptsText = File.ReadAllText(scriptPath, Encoding.UTF8);
-                var sqls = scriptsText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                var sqls = scriptsText.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
 
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." + Environment.NewLine);
 
@@ -336,6 +336,13 @@ namespace PrimeApps.Model.Helpers
                             File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Error - Unhandle exception. While restoring your database." + "\u001b[39m" + Environment.NewLine);
                             break;
                         }
+
+                        var seqTables = new List<string>() {"action_button_permissions_id_seq", "action_buttons_id_seq", "bpm_categories_id_seq", "bpm_record_filters_id_seq", "bpm_workflow_logs_id_seq", "bpm_workflows_id_seq", "calculations_id_seq", "charts_id_seq", "components_id_seq", "conversion_mappings_id_seq", "conversion_sub_modules_id_seq", "dashlets_id_seq", "dependencies_id_seq", "deployments_component_id_seq", "deployments_function_id_seq", "documents_id_seq", "field_filters_id_seq", "field_permissions_id_seq", "fields_id_seq", "functions_id_seq", "helps_id_seq", "import_maps_id_seq", "imports_id_seq", "menu_id_seq", "menu_items_id_seq", "module_profile_settings_id_seq", "modules_id_seq", "notes_id_seq", "notifications_id_seq", "picklist_items_id_seq", "picklists_id_seq", "process_approvers_id_seq", "process_filters_id_seq", "processes_id_seq", "profile_permissions_id_seq", "profiles_id_seq", "relations_id_seq", "reminders_id_seq", "report_aggregations_id_seq", "report_categories_id_seq", "report_fields_id_seq", "report_filters_id_seq", "reports_id_seq", "roles_id_seq", "section_permissions_id_seq", "sections_id_seq", "settings_id_seq", "tags_id_seq", "template_permissions_id_seq", "templates_id_seq", "view_fields_id_seq", "view_filters_id_seq", "views_id_seq", "widgets_id_seq", "workflow_filters_id_seq", "workflows_id_seq"};
+
+                        foreach (var seqTable in seqTables)
+                        {
+                            PostgresHelper.Run(PREConnectionString, dbName, $"SELECT setval('{seqTable}', 100000, true); ");
+                        }
                     }
                     else
                     {
@@ -369,7 +376,7 @@ namespace PrimeApps.Model.Helpers
                     if (File.Exists(scriptPath))
                     {
                         var scriptsText = File.ReadAllText(scriptPath, Encoding.UTF8);
-                        var sqls = scriptsText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                        var sqls = scriptsText.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
 
                         File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." + Environment.NewLine);
 
@@ -403,11 +410,11 @@ namespace PrimeApps.Model.Helpers
                             try
                             {
                                 var files = JArray.Parse(storageText);
-                                
+
                                 foreach (var file in files)
                                 {
                                     var bucketName = (string)file["path"];
-                                    
+
                                     if (!await storage.ObjectExists(bucketName, file["unique_name"].ToString()))
                                     {
                                         using (var fileStream = new FileStream(Path.Combine(path, "files", file["file_name"].ToString()), FileMode.OpenOrCreate))
@@ -531,14 +538,14 @@ namespace PrimeApps.Model.Helpers
             {
                 var dict = new Dictionary<string, string>
                 {
-                    { "grant_type", "password" },
-                    { "username", integrationEmail },
-                    { "password", studioSecret },
-                    { "client_id", clientId },
-                    { "client_secret", studioSecret }
+                    {"grant_type", "password"},
+                    {"username", integrationEmail},
+                    {"password", studioSecret},
+                    {"client_id", clientId},
+                    {"client_secret", studioSecret}
                 };
 
-                var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token") { Content = new FormUrlEncodedContent(dict) };
+                var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token") {Content = new FormUrlEncodedContent(dict)};
                 var res = await httpClient.SendAsync(req);
 
                 if (res.IsSuccessStatusCode)

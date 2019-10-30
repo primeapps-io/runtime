@@ -94,46 +94,47 @@
         if (!publishedBefore) {
             swal.fire({
                 title: 'Submit to confirm',
-                html: '<div style="z-index: 9999;border-bottom: 1px solid #d6d6d6;margin-bottom: 20px;" class="col-sm-12"></div><form class="">' +
-                    '<div class="form-row col-sm-12">' +
-                    '<div class="col-auto">' +
-                    '<div class="btn-group">' +
-                    '<button id="ssl" type="button" class="btn btn-primary">http://</button>' +
-                    '<button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
-                    '<span class="sr-only">Toggle Dropdown</span>' +
-                    '</button>' +
-                    '<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 37px, 0px);">' +
-                    '<a class="dropdown-item" href="#" onclick="setDropdown(\'http\')">http://</a>' +
-                    '<a class="dropdown-item" href="#" onclick="setDropdown(\'https\')">https://</a>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="col-auto col-sm-8">' +
-                    '<div class="input-group mb-4">' +
-                    '<input type="text" class="form-control " id="auth-url" placeholder="Auth Url">' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="form-row col-sm-12">' +
-                    '<div class="col-auto">' +
-                    '<div class="btn-group">' +
-                    '<button id="ssl" type="button" class="btn btn-primary">http://</button>' +
-                    '<button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
-                    '<span class="sr-only">Toggle Dropdown</span>' +
-                    '</button>' +
-                    '<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 37px, 0px); top: 0px; left: 0px; will-change: transform;">' +
-                    '<a class="dropdown-item" href="#" onclick="setDropdown(\'http\')">http://</a>' +
-                    '<a class="dropdown-item" href="#" onclick="setDropdown(\'https\')">https://</a>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '<div class="col-auto col-sm-8">' +
-                    '<div class="input-group mb-4">' +
-                    '<input type="text" class="form-control" id="app-url" placeholder="App Url">' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</form><div style="z-index: 9999;border-bottom: 1px solid #d6d6d6;" class="col-sm-12"></div>',
+                html:
+                    '<div style="z-index: 9999;border-bottom: 1px solid #d6d6d6;margin-bottom: 20px;" class="col-sm-12"></div><form class="">' +
+                        '<div class="form-row col-sm-12">' +
+                        '<div class="col-auto">' +
+                        '<div class="btn-group">' +
+                        '<button id="ssl" type="button" class="btn btn-light">http://</button>' +
+                        '<button type="button" class="btn btn-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                        '<span class="sr-only">Toggle Dropdown</span>' +
+                        '</button>' +
+                        '<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 37px, 0px);">' +
+                        '<a class="dropdown-item" href="#" onclick="setDropdown(\'http\')">http://</a>' +
+                        '<a class="dropdown-item" href="#" onclick="setDropdown(\'https\')">https://</a>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="col-auto col-sm-8">' +
+                        '<div class="input-group mb-4">' +
+                        '<input type="text" class="form-control " id="auth-url" placeholder="Auth Url">' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="form-row col-sm-12">' +
+                        '<div class="col-auto">' +
+                        '<div class="btn-group">' +
+                        '<button id="ssl" type="button" class="btn btn-light">http://</button>' +
+                        '<button type="button" class="btn btn-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                        '<span class="sr-only">Toggle Dropdown</span>' +
+                        '</button>' +
+                        '<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 37px, 0px); top: 0px; left: 0px; will-change: transform;">' +
+                        '<a class="dropdown-item" href="#" onclick="setDropdown(\'http\')">http://</a>' +
+                        '<a class="dropdown-item" href="#" onclick="setDropdown(\'https\')">https://</a>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="col-auto col-sm-8">' +
+                        '<div class="input-group mb-4">' +
+                        '<input type="text" class="form-control" id="app-url" placeholder="App Url">' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</form><div style="z-index: 9999;border-bottom: 1px solid #d6d6d6;z-index:0;" class="col-sm-12"></div>',
                 showCancelButton: true,
                 confirmButtonText: 'Confirm',
                 showLoaderOnConfirm: true,
@@ -299,7 +300,7 @@
         var parts = value.split("; " + name + "=");
         if (parts.length == 2) return parts.pop().split(";").shift();
     }
-    
+
     function setDropdown(data) {
         $('.btn-group #ssl').text(data + '://');
     }
