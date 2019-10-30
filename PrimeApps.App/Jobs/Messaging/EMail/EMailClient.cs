@@ -295,7 +295,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
 						using (var recordRepository = new RecordRepository(databaseContext, _configuration))
 						{
-							recordRepository.UserId = userId;
+							recordRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
 
 							var records = recordRepository.Find(module.Name, findRequest, false);
 
