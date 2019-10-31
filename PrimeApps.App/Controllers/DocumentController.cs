@@ -878,7 +878,7 @@ namespace PrimeApps.App.Controllers
         {
             var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
             var protocol = storageUrl.StartsWith("https") ? Protocol.HTTPS : Protocol.HTTP;
-            var shareLink = _storage.GetShareLink(UnifiedStorage.GetPath("record", AppUser.TenantId), fileName, DateTime.UtcNow.AddYears(100), protocol);
+            var shareLink = _storage.GetShareLink(UnifiedStorage.GetPath("record", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), fileName, DateTime.UtcNow.AddYears(100), protocol);
 
             return shareLink;
         }
