@@ -872,5 +872,15 @@ namespace PrimeApps.App.Controllers
                 throw new Exception("Document does not exist in the storage!");
             }
         }
+
+        [Route("share_record_file")]
+        public string ShareRecordFile([FromQuery(Name = "fileName")]string fileName)
+        {
+            var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
+            var protocol = storageUrl.StartsWith("https") ? Protocol.HTTPS : Protocol.HTTP;
+            var shareLink = _storage.GetShareLink(UnifiedStorage.GetPath("record", AppUser.TenantId), fileName, DateTime.UtcNow.AddYears(100), protocol);
+
+            return shareLink;
+        }
     }
 }

@@ -1079,6 +1079,8 @@ angular.module('primeapps')
 					});
 			};
 
+			$scope.getAttachments();
+
 			//Remove
 			// function getVatList() {
 			//     if (!$scope.record.vat_list)
@@ -1532,7 +1534,6 @@ angular.module('primeapps')
 			//     getVatList();
 			// }
 			//
-			// $scope.getAttachments();
 
 			$scope.showActivityButtons = function () {
 				$scope.activityButtonsPopover = $scope.activityButtonsPopover || $popover(angular.element(document.getElementById('activityButtons')), {
