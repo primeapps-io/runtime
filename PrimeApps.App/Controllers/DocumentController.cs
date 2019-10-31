@@ -130,8 +130,8 @@ namespace PrimeApps.App.Controllers
                 }
 
                 //declare chunk variables
-                int chunk = 0; //current chunk
-                int chunks = 1; //total chunk count
+                int chunk = 0;//current chunk
+                int chunks = 1;//total chunk count
 
                 string uniqueName = string.Empty;
                 string container = string.Empty;
@@ -204,7 +204,7 @@ namespace PrimeApps.App.Controllers
                     return BadRequest();
                 }
 
-                if (Utils.BytesToMegabytes(parser.FileContents.Length) > 5) // 5 MB maximum
+                if (Utils.BytesToMegabytes(parser.FileContents.Length) > 5)// 5 MB maximum
                 {
                     return BadRequest();
                 }
@@ -279,7 +279,7 @@ namespace PrimeApps.App.Controllers
 
 
                 var chunk = 0;
-                var chunks = 1; //one part chunk
+                var chunks = 1;//one part chunk
 
                 //send stream and parameters to storage upload helper method for temporary upload.
                 await AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", fullFileName, parser.ContentType, _configuration);
@@ -299,7 +299,7 @@ namespace PrimeApps.App.Controllers
                 {
                     var documentSearchHelper = new DocumentSearch();
 
-                    documentSearchHelper.CreateOrUpdateIndexOnDocumentBlobStorage(AppUser.TenantGuid.ToString(), moduleName, _configuration, false); //False because! 5 min auto index incremental change detection policy check which azure provided
+                    documentSearchHelper.CreateOrUpdateIndexOnDocumentBlobStorage(AppUser.TenantGuid.ToString(), moduleName, _configuration, false);//False because! 5 min auto index incremental change detection policy check which azure provided
                 }
 
                 //return content type of the file to the client
@@ -311,7 +311,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("remove_document"), HttpPost]
-        public async Task<IActionResult> RemoveModuleDocument([FromBody] JObject data)
+        public async Task<IActionResult> RemoveModuleDocument([FromBody]JObject data)
         {
             string tenantId,
                 module,
@@ -357,7 +357,7 @@ namespace PrimeApps.App.Controllers
         /// Validates and creates document record permanently after temporary upload process completed.
         /// </summary>
         /// <param name="document">The document.</param>
-        public async Task<IActionResult> Create([FromBody] DocumentDTO document)
+        public async Task<IActionResult> Create([FromBody]DocumentDTO document)
         {
             //get entity name if this document is uploading to a specific entity.
             string uniqueStandardizedName = document.FileName.Replace(" ", "-");
@@ -391,7 +391,7 @@ namespace PrimeApps.App.Controllers
         /// Validates and creates document record permanently after temporary upload process completed.
         /// </summary>
         /// <param name="document">The document.</param>
-        public async Task<IActionResult> ImageCreate([FromBody] JObject data)
+        public async Task<IActionResult> ImageCreate([FromBody]JObject data)
         {
             string UniqueFileName, MimeType, TenantId;
             UniqueFileName = data["UniqueFileName"]?.ToString();
@@ -417,7 +417,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="InstanceID">The instance identifier.</param>
         /// <returns>IList{DTO.DocumentResult}.</returns>
         [Route("GetEntityDocuments"), HttpPost]
-        public async Task<IActionResult> GetEntityDocuments([FromBody] DocumentBindingModel req)
+        public async Task<IActionResult> GetEntityDocuments([FromBody]DocumentBindingModel req)
         {
             //Get last 5 entity documents and return it to the client.
             var result = await _documentRepository.GetTopEntityDocuments(new DocumentRequest()
@@ -450,7 +450,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="TenantId">The instance identifier.</param>
         /// <returns>DocumentExplorerResult.</returns>
         [Route("GetDocuments"), HttpPost]
-        public async Task<IActionResult> GetDocuments([FromBody] DocumentRequest req)
+        public async Task<IActionResult> GetDocuments([FromBody]DocumentRequest req)
         {
             //validate the instance id by the session instances.
 
@@ -478,7 +478,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileID"></param>
         /// <returns></returns>
         [Route("GetDocument"), HttpPost]
-        public async Task<IActionResult> GetDocumentById([FromBody] int fileID)
+        public async Task<IActionResult> GetDocumentById([FromBody]int fileID)
         {
             //get the document record from database
             var doc = await _documentRepository.GetById(fileID);
@@ -496,7 +496,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileID"></param>
         /// <returns></returns>
         [Route("Download"), HttpGet]
-        public async Task<IActionResult> Download([FromQuery(Name = "file_id")] int fileID)
+        public async Task<IActionResult> Download([FromQuery(Name = "file_id")]int fileID)
         {
             //get the document record from database
             var doc = await _documentRepository.GetById(fileID);
@@ -542,7 +542,7 @@ namespace PrimeApps.App.Controllers
                 //}
 
 
-                Response.Headers.Add("Content-Disposition", "attachment; filename=" + publicName); // force download
+                Response.Headers.Add("Content-Disposition", "attachment; filename=" + publicName);// force download
                 await blob.DownloadToStreamAsync(Response.Body);
                 return new EmptyResult();
             }
@@ -559,7 +559,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileID"></param>
         /// <returns></returns>
         [Route("download_module_document"), HttpGet]
-        public async Task<IActionResult> DownloadModuleDocument([FromQuery(Name = "module")] string module, [FromQuery(Name = "fileName")] string fileName, [FromQuery(Name = "fileNameExt")] string fileNameExt, [FromQuery(Name = "fieldName")] string fieldName, [FromQuery(Name = "recordId")] string recordId)
+        public async Task<IActionResult> DownloadModuleDocument([FromQuery(Name = "module")]string module, [FromQuery(Name = "fileName")]string fileName, [FromQuery(Name = "fileNameExt")]string fileNameExt, [FromQuery(Name = "fieldName")]string fieldName, [FromQuery(Name = "recordId")]string recordId)
         {
             if (!string.IsNullOrEmpty(module) && !string.IsNullOrEmpty(fileNameExt) && !string.IsNullOrEmpty(fieldName))
             {
@@ -586,7 +586,7 @@ namespace PrimeApps.App.Controllers
                 //return await AzureStorage.DownloadToFileStreamResultAsync(blob, publicName);
 
 
-                Response.Headers.Add("Content-Disposition", "attachment; filename=" + docName); // force download
+                Response.Headers.Add("Content-Disposition", "attachment; filename=" + docName);// force download
                 await blob.DownloadToStreamAsync(Response.Body);
                 return new EmptyResult();
             }
@@ -602,7 +602,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="DocID">The document identifier.</param>
         [Route("Remove"), HttpPost]
-        public async Task<IActionResult> Remove([FromBody] DocumentDTO doc)
+        public async Task<IActionResult> Remove([FromBody]DocumentDTO doc)
         {
             //if the document is not null open a new session and transaction
             var result = await _documentRepository.RemoveAsync(doc.ID);
@@ -621,7 +621,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="document">The document.</param>
         [Route("Modify"), HttpPost]
-        public async Task<IActionResult> Modify([FromBody] DocumentDTO document)
+        public async Task<IActionResult> Modify([FromBody]DocumentDTO document)
         {
             var updatedDoc = await _documentRepository.UpdateAsync(new Document()
             {
@@ -641,7 +641,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("document_search"), HttpPost]
-        public IActionResult SearchDocument([FromBody] DocumentFilterRequest filterRequest)
+        public IActionResult SearchDocument([FromBody]DocumentFilterRequest filterRequest)
         {
             if (filterRequest != null && filterRequest.Filters.Count > 0)
             {
@@ -663,7 +663,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("find"), HttpPost]
-        public async Task<ICollection<DocumentResult>> Find([FromBody] DocumentFindRequest request)
+        public async Task<ICollection<DocumentResult>> Find([FromBody]DocumentFindRequest request)
         {
             var documents = await _documentRepository.GetDocumentsByLimit(request);
 
@@ -671,7 +671,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("count"), HttpPost]
-        public async Task<int> Count([FromBody] DocumentFindRequest request)
+        public async Task<int> Count([FromBody]DocumentFindRequest request)
         {
             return await _documentRepository.Count(request);
         }
@@ -871,6 +871,16 @@ namespace PrimeApps.App.Controllers
                 //there is no such file, return
                 throw new Exception("Document does not exist in the storage!");
             }
+        }
+
+        [Route("share_record_file")]
+        public string ShareRecordFile([FromQuery(Name = "fileName")]string fileName)
+        {
+            var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
+            var protocol = storageUrl.StartsWith("https") ? Protocol.HTTPS : Protocol.HTTP;
+            var shareLink = _storage.GetShareLink(UnifiedStorage.GetPath("record", AppUser.TenantId), fileName, DateTime.UtcNow.AddYears(100), protocol);
+
+            return shareLink;
         }
     }
 }
