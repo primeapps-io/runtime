@@ -186,7 +186,7 @@
                         if (data) {
                             document.cookie = `app${@ViewBag.CurrentApp.Id}=${data}`;
                         }
-                        window.location.href = window.location.href;
+                        location.reload();
                     });
                 }
             }).catch(swal.noop);
@@ -203,7 +203,7 @@
                     document.cookie = `app${@ViewBag.CurrentApp.Id}=${data}`;
                 }
                 //url = updateQueryStringParameter(url, 'release', data);
-                window.location.href = window.location.href;
+                location.reload();
             });
         }
     }
@@ -240,7 +240,7 @@
             if (data) {
                 document.cookie = `app${@ViewBag.CurrentApp.Id}=${data}`;
             }
-            window.location.href = window.location.href;
+            location.reload();
         });
     };
 
@@ -269,7 +269,7 @@
         socket.onclose = function(e) {
             document.cookie = `app${@ViewBag.CurrentApp.Id}= ; expires = Thu, 01 Jan 1970 00:00:00 GMT`;
             console.log(e);
-            window.location.href = window.location.href;
+            location.reload();
         };
 
         socket.onerror = function(e) {

@@ -198,6 +198,8 @@ namespace PrimeApps.Model.Helpers
 
                 if (firstTime && obj.index == 0 && createPlatformApp)
                 {
+                    await storage.CreateBucketIfNotExists(databaseName);
+
                     File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Platform application creating..." + Environment.NewLine);
 
                     var secret = Guid.NewGuid().ToString().Replace("-", string.Empty);
@@ -240,8 +242,8 @@ namespace PrimeApps.Model.Helpers
                     }
 
                     //Add auth and app url to amazon s3 bucket policy.
-                    await storage.AddHttpReferrerUrlToBucket($"app{app["id"]}", useSsl ? "https://" : "http://" + authUrl, UnifiedStorage.PolicyType.StudioPolicy);
-                    await storage.AddHttpReferrerUrlToBucket($"app{app["id"]}", useSsl ? "https://" : "http://" + appUrl, UnifiedStorage.PolicyType.StudioPolicy);
+                    await storage.AddHttpReferrerUrlToBucket($"app{app["id"]}", useSsl ? "https://" : "http://" + authUrl, UnifiedStorage.PolicyType.TenantPolicy);
+                    await storage.AddHttpReferrerUrlToBucket($"app{app["id"]}", useSsl ? "https://" : "http://" + appUrl, UnifiedStorage.PolicyType.TenantPolicy);
                 }
                 else if (!createPlatformApp && obj.index == 0)
                 {

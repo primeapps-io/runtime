@@ -92,7 +92,7 @@
     </div>
 </div>
 
-<div ng-if="!loading && runningPackages[app.name] && runningPackages[app.name].status" class="function" id="logger" style="padding-top: 20px;">
+<div ng-if="!loading && runningPackages[app.name] && runningPackages[app.name].status && (runningPackages[app.name].logs && runningPackages[app.name].logs  != '')" class="function" id="logger" style="padding-top: 20px;">
     <div style="" id="log-screen">
         <div class="tab-content">
             <div class="ui grid">

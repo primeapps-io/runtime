@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -75,6 +76,11 @@ namespace PrimeApps.Studio.Services
             {
                 if (_hastExecuting && _lastCommandId.HasValue)
                 {
+                    /*while (((RelationalDataReader)result).DbDataReader.Read())
+                    {
+                        Console.WriteLine("{0}\t", ((RelationalDataReader)result).DbDataReader.GetInt32(0));
+                    }*/
+
                     var rawQuery = GetGeneratedQuery(_command);
                     var executedAt = DateTime.Now;
                     var email = _context?.HttpContext?.User?.FindFirst("email").Value;
@@ -83,7 +89,55 @@ namespace PrimeApps.Studio.Services
                         _currentUser = null;
 
                     var currentUser = CurrentUser;
-                    _queue.QueueBackgroundWorkItem(token => _historyHelper.Database(rawQuery, executedAt, email, currentUser, (Guid)_lastCommandId));
+
+                    var sequences = new JObject();
+
+                    var sqls = rawQuery.Split(";\r\n");
+                    var newRawQuery = "";
+                    foreach (var obj in sqls.OfType<string>().Select((sql, index) => new {sql, index}))
+                    {
+                        var sql = obj.sql;
+                        var index = obj.index;
+
+                        if (sql.StartsWith("INSERT INTO"))
+                        {
+                            var tableName = Model.Helpers.PackageHelper.GetTableName(sql);
+                            var check = PostgresHelper.Read(_configuration.GetConnectionString("StudioDBConnection"), _command.Connection.Database, $"SELECT column_name FROM information_schema.columns WHERE table_name='{tableName.Split("public.")[1]}' and column_name='id';", "hasRows");
+
+                            if (check)
+                            {
+                                if (sequences[tableName] == null)
+                                {
+                                    var arrayResult = PostgresHelper.Read(_configuration.GetConnectionString("StudioDBConnection"), _command.Connection.Database, $"SELECT last_value FROM {tableName.Split("public.")[1]}_id_seq;", "array");
+                                    var value = 0;
+                                    if (arrayResult != null)
+                                    {
+                                        foreach (var table in arrayResult)
+                                        {
+                                            value = (int)table["last_value"];
+                                        }
+                                    }
+
+                                    var count = sqls.Count(x => x.Contains($"INSERT INTO {tableName}"));
+                                    sequences[tableName] = value - (count - 1);
+                                }
+                                else
+                                {
+                                    sequences[tableName] = (int)sequences[tableName] + 1;
+                                }
+
+                                sqls[index] = sql.Replace(tableName + " (", tableName + " (id,").Replace("VALUES (", $"VALUES ({sequences[tableName]},");
+                            }
+
+                            newRawQuery += sqls[index] + ";\r\n";
+                        }
+                        else
+                        {
+                            newRawQuery += sqls[index] + ";\r\n";
+                        }
+                    }
+
+                    _queue.QueueBackgroundWorkItem(token => _historyHelper.Database(newRawQuery, executedAt, email, currentUser, (Guid)_lastCommandId));
                 }
 
                 _hastExecuting = false;

@@ -96,14 +96,25 @@ namespace PrimeApps.Model.Helpers
                     }
                 }
 
+                // Delete all users without 1
+
+                AddScript(scriptPath, $"DELETE FROM users WHERE id != 1;");
+
                 /*if (!result)
                     File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while clearing dynamic tables... \u001b[39m" + Environment.NewLine);
                 */
 
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Records are marking as sample..." + Environment.NewLine);
-                result = PackageHelper.SetRecordsIsSampleSql();
+                arrayResult = PostgresHelper.Read(PDEConnectionString, dbName, PackageHelper.SetRecordsIsSampleSql(), "array");
 
-                AddScript(scriptPath, result);
+                if (arrayResult != null)
+                {
+                    foreach (var r in arrayResult)
+                    {
+                        AddScript(scriptPath, ((JObject)r)["?column?"].ToString());
+                    }
+                }
+
                 //AddScript(scriptPath, $"INSERT INTO \"public\".\"dashboard\"(\"id\", \"name\", \"description\", \"user_id\", \"profile_id\", \"is_active\", \"sharing_type\", \"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\") VALUES (1, 'Default Dashboard', NULL, NULL, NULL, 'f', 1, 1, NULL, '2018-02-18 23:14:26.377005', NULL, 'f');");
 
                 /*if (!result)
@@ -328,9 +339,9 @@ namespace PrimeApps.Model.Helpers
                    "DELETE FROM workflow_logs;" + Environment.NewLine;
         }
 
-        public static string GetAllSystemTablesSql()
+        public static string GetAllTablesSql()
         {
-            return $"SELECT table_name FROM information_schema.tables WHERE table_type != 'VIEW' AND table_schema = 'public' AND table_name NOT LIKE '%\\_d'";
+            return $"SELECT table_name FROM information_schema.tables WHERE table_type != 'VIEW' AND table_schema = 'public'";
         }
 
         public static string GetAllDynamicTablesSql()
@@ -342,7 +353,7 @@ namespace PrimeApps.Model.Helpers
         {
             var sqls = new JArray();
 
-            var dropCommand = PostgresHelper.Read(connectionString, dbName, GetAllSystemTablesSql(), "array");
+            var dropCommand = PostgresHelper.Read(connectionString, dbName, GetAllTablesSql(), "array");
             var tableData = dropCommand;
 
             if (!tableData.HasValues) return null;

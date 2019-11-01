@@ -53,20 +53,20 @@ namespace PrimeApps.Util.Storage
 
         static readonly Dictionary<ObjectType, string> pathMap = new Dictionary<ObjectType, string>
         {
-            { ObjectType.ATTACHMENT, "/attachments/" },
-            { ObjectType.RECORD, "/records/" },
-            { ObjectType.TEMPLATE, "/templates/" },
-            { ObjectType.ANALYTIC, "/analytics/" },
-            { ObjectType.IMPORT, "/imports/" },
-            { ObjectType.NOTE, "/notes/" },
-            { ObjectType.LOGO, "/logos/" },
-            { ObjectType.MAIL, "/mail/" },
-            { ObjectType.PROFILEPICTURE, "/profile_pictures/" },
-            { ObjectType.NONE, "" },
-            { ObjectType.APPLOGO, "/app_logo/" },
-            { ObjectType.APPTEMPLATE, "/app_template/" },
-            { ObjectType.RELEASES, "/releases/" },
-            { ObjectType.PACKAGES, "/packages/" }
+            {ObjectType.ATTACHMENT, "/attachments/"},
+            {ObjectType.RECORD, "/records/"},
+            {ObjectType.TEMPLATE, "/templates/"},
+            {ObjectType.ANALYTIC, "/analytics/"},
+            {ObjectType.IMPORT, "/imports/"},
+            {ObjectType.NOTE, "/notes/"},
+            {ObjectType.LOGO, "/logos/"},
+            {ObjectType.MAIL, "/mail/"},
+            {ObjectType.PROFILEPICTURE, "/profile_pictures/"},
+            {ObjectType.NONE, ""},
+            {ObjectType.APPLOGO, "/app_logo/"},
+            {ObjectType.APPTEMPLATE, "/app_template/"},
+            {ObjectType.RELEASES, "/releases/"},
+            {ObjectType.PACKAGES, "/packages/"}
         };
 
 
@@ -381,7 +381,7 @@ namespace PrimeApps.Util.Storage
         {
             var bucketPolicy = await _client.GetBucketPolicyAsync(bucketName);
 
-            if (bucketPolicy == null)
+            if (bucketPolicy == null || bucketPolicy.Policy == null)
                 await CreateBucketPolicy(bucketName, url, type);
             else
             {

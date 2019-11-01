@@ -169,7 +169,8 @@ angular.module('primeapps')
 										if (workgroup)
 											$rootScope.workgroup = workgroup;
 									}
-									config['imageUrl'] = account.imageUrl;
+									//config['imageUrl'] = account.imageUrl;
+									config['imageUrl'] = blobUrl + '/';
                                     config['storage_host'] = blobUrl + '/';
                                     
 									$rootScope.config = config;
