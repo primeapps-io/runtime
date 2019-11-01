@@ -2234,7 +2234,7 @@ angular.module('primeapps')
             }
             components.run('AfterDetailLoaded', 'script', $scope);
 
-            var markdownLinkRegex = /^\[([\w\s\d]+)\]\(((?:\/|https?:\/\/)[\w\d./?=#]+)\)$/;
+            var markdownLinkRegex = /\[([^\[\]]+)\]\(([^)]+)/;
 
             $scope.getUrlFieldText = function (fieldValue) {
                 if (!fieldValue)
