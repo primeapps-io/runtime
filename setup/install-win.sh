@@ -149,6 +149,8 @@ echo -e "${GREEN}Starting git instance..."
 net start "Gitea-PDE"
 
 echo -e "${GREEN}Creating admin user..."
+curl -s -L http://localhost:3000 > /dev/null
+sleep 5 # sleep 10 seconds for gitea wakeup
 ./gitea admin create-user --username=primeapps --password='123456' --email='admin@primeapps.io' --admin=true --must-change-password=false --config="$pathAppIni"
 
 echo -e "${GREEN}Creating template repository..."
