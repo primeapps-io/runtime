@@ -149,16 +149,18 @@ echo -e "${GREEN}Starting git instance..."
 net start "Gitea-PDE"
 
 echo -e "${GREEN}Creating admin user..."
-./gitea admin create-user --username=primeapps --password='pr!m€Appsi0g' --email='admin@primeapps.io' --admin=true --must-change-password=false --config="$pathAppIni"
+./gitea admin create-user --username=primeapps --password='123456' --email='admin@primeapps.io' --admin=true --must-change-password=false --config="$pathAppIni"
 
 echo -e "${GREEN}Creating template repository..."
-curl -X POST "http://localhost:3000/api/v1/admin/users/primeapps/repos" -H "accept: application/json" -H "authorization: Basic cHJpbWVhcHBzOnByIW3igqxBcHBzaTBn" -H "Content-Type: application/json" -d "{ \"auto_init\": false, \"name\": \"template\", \"private\": false}"
+curl -X POST "http://localhost:3000/api/v1/admin/users/primeapps/repos" -H "accept: application/json" -H "authorization: Basic cHJpbWVhcHBzOjEyMzQ1Ng==" -H "Content-Type: application/json" -d "{ \"auto_init\": false, \"name\": \"template\", \"private\": false}"
 
 cd $basePath
-mkdir temp
-cd temp
+cd ..
+cd ..
+mkdir temp_primeapps
+cd temp_primeapps
 
-git clone http://primeapps:pr!m€Appsi0g@localhost:3000/primeapps/template.git template
+git clone http://primeapps:123456@localhost:3000/primeapps/template.git template
 git clone https://git.primeapps.io/primeapps/template.git template-remote
 
 cd template
@@ -175,4 +177,6 @@ git commit -m "Initial commit"
 git push origin
 
 cd $basePath
-rm -rf temp
+cd ..
+cd ..
+rm -rf temp_primeapps
