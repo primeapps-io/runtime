@@ -2,7 +2,7 @@
 
 if [[ "$OSTYPE" == "msys" ]]
 then
-	./install-win.sh
+	./uninstall-win.sh
 else
-	./install-unix.sh
+	./uninstall-unix.sh
 fi
