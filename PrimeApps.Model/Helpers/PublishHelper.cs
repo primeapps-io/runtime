@@ -6,21 +6,14 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
-using Amazon.S3.Model;
-using Microsoft.Azure.KeyVault.Models;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Npgsql;
-using PrimeApps.Model.Common.Document;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
-using PrimeApps.Model.Repositories;
-using PrimeApps.Util.Storage;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Model.Helpers
 {

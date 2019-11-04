@@ -14,7 +14,7 @@ using PrimeApps.Model.Common.Warehouse;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
-using PrimeApps.Util.Storage;
+using PrimeApps.Model.Storage;
 using Microsoft.Extensions.Primitives;
 using System.IO;
 

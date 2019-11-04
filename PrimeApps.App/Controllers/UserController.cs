@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -9,7 +8,7 @@ using Npgsql;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.App.Services;
-using PrimeApps.Util.Storage;
+using PrimeApps.Model.Storage;
 using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Common.UserApps;
 using PrimeApps.Model.Entities.Platform;
@@ -17,26 +16,21 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using PrimeApps.Model.Repositories.Interfaces;
-using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.SqlServer.Management.Smo;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using User = PrimeApps.Model.Entities.Tenant.TenantUser;
-using Utils = PrimeApps.App.Helpers.Utils;
 
 namespace PrimeApps.App.Controllers
 {
-	[Route("api/User")]
+    [Route("api/User")]
 	public class UserController : ApiBaseController
 	{
 		private IUserRepository _userRepository;

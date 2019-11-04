@@ -15,7 +15,7 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
-using PrimeApps.Util.Storage;
+using PrimeApps.Model.Storage;
 using Document = PrimeApps.Model.Entities.Tenant.Document;
 
 namespace PrimeApps.Studio.Controllers

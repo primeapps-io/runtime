@@ -4,20 +4,16 @@ using Aspose.Words.MailMerging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MimeMapping;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Npgsql;
-using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
-using PrimeApps.Util.Storage;
-using PrimeApps.Util;
+using PrimeApps.Model.Storage;
 using PrimeApps.Model.Common.Note;
 using PrimeApps.Model.Common.Record;
-using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
@@ -28,13 +24,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PrimeApps.App.Models;
-using static PrimeApps.App.Controllers.DocumentController;
 
 namespace PrimeApps.App.Controllers
 {

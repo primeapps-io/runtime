@@ -11,7 +11,7 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
-using PrimeApps.Util.Storage;
+using PrimeApps.Model.Storage;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.Studio.Controllers
 {

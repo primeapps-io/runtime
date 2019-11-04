@@ -9,7 +9,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
-using PrimeApps.Util.Storage;
+using PrimeApps.Model.Storage;
 using PrimeApps.Model.Common.Document;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;

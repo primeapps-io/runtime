@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Model;
-using Microsoft.AspNetCore.Mvc;
-using static PrimeApps.Util.Storage.UnifiedStorage;
+using static PrimeApps.Model.Storage.UnifiedStorage;
 
-namespace PrimeApps.Util.Storage
+namespace PrimeApps.Model.Storage
 {
     public interface IUnifiedStorage
     {
@@ -20,7 +18,7 @@ namespace PrimeApps.Util.Storage
         Task CreateBucketIfNotExists(string bucket);
         Task DeleteBucket(string bucket);
         Task<DeleteObjectResponse> DeleteObject(string bucket, string key);
-        Task<FileStreamResult> Download(string bucket, string key, string fileName);
+        Task<GetObjectResponse> Download(string bucket, string key, string fileName);
         Task<string> InitiateMultipartUpload(string bucket, string key);
         Task UploadDirAsync(string bucket, string folderPath);
         Task Upload(string bucket, string key, Stream stream);

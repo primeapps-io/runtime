@@ -42,7 +42,7 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Common.App;
 using IdentityServer.LdapExtension.UserStore;
 using Microsoft.SqlServer.Management.Smo;
-using PrimeApps.Util.Storage;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Auth.UI
 {

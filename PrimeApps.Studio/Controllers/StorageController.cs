@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -15,7 +14,7 @@ using PrimeApps.Model.Common.Document;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
-using PrimeApps.Util.Storage;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Studio.Controllers
 {

@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.S3.Model;
-using Aspose.Words.Lists;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -17,9 +16,8 @@ using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
-using PrimeApps.Studio.Models;
 using PrimeApps.Studio.Services;
-using PrimeApps.Util.Storage;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Studio.Controllers
 {

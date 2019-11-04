@@ -9,7 +9,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
-namespace PrimeApps.Util.Storage
+namespace PrimeApps.Model.Storage
 {
 	/// <summary>
 	/// Main storage class for the Webservice.

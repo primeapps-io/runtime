@@ -4,19 +4,13 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Npgsql;
 using PrimeApps.Model.Entities.Tenant;
-using PrimeApps.Util.Storage;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Model.Helpers
 {

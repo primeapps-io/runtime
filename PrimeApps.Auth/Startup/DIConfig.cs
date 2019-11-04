@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using Amazon.S3;
-using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -17,10 +16,9 @@ using PrimeApps.Auth.Repositories;
 using PrimeApps.Auth.Repositories.IRepositories;
 using PrimeApps.Auth.Services;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
-using PrimeApps.Util.Storage;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Auth
 {

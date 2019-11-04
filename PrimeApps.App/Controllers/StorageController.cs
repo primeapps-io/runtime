@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Document;
-using PrimeApps.Util.Storage;
+using PrimeApps.Model.Storage;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Amazon.S3.Model;
@@ -14,12 +14,11 @@ using Microsoft.Extensions.Configuration;
 using System.Text.RegularExpressions;
 using Document = PrimeApps.Model.Entities.Tenant.Document;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Newtonsoft.Json.Linq;
-using PrimeApps.App.Extensions;
 using PrimeApps.App.Services;
 using PrimeApps.Studio.Helpers;
-using static PrimeApps.Util.Storage.UnifiedStorage;
-using PrimeApps.Util.Storage.Unified;
+using static PrimeApps.Model.Storage.UnifiedStorage;
+using PrimeApps.Model.Storage.Unified;
+using Microsoft.Net.Http.Headers;
 
 namespace PrimeApps.App.Controllers
 {
@@ -241,7 +240,16 @@ namespace PrimeApps.App.Controllers
         [Route("record_file_download")]
         public async Task<FileStreamResult> RecordFileDownload([FromQuery(Name = "fileName")]string fileName)
         {
-            return await _storage.Download(UnifiedStorage.GetPath("record", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), fileName, fileName);
+            var file = await _storage.Download(UnifiedStorage.GetPath("record", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), fileName, fileName);
+
+            var result = new FileStreamResult(file.ResponseStream, file.Headers.ContentType)
+            {
+                FileDownloadName = fileName,
+                LastModified = file.LastModified,
+                EntityTag = new EntityTagHeaderValue(file.ETag)
+            };
+
+            return result;
         }
 
         [HttpPost("upload_template")]
@@ -289,7 +297,16 @@ namespace PrimeApps.App.Controllers
             var doc = await _documentRepository.GetById(fileId);
             if (doc != null)
             {
-                return await _storage.Download(UnifiedStorage.GetPath("attachment", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), doc.UniqueName, doc.Name);
+                var file = await _storage.Download(UnifiedStorage.GetPath("record", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), doc.UniqueName, doc.Name);
+
+                var result = new FileStreamResult(file.ResponseStream, file.Headers.ContentType)
+                {
+                    FileDownloadName = doc.Name,
+                    LastModified = file.LastModified,
+                    EntityTag = new EntityTagHeaderValue(file.ETag)
+                };
+
+                return result;
             }
             else
             {
@@ -310,7 +327,16 @@ namespace PrimeApps.App.Controllers
             var temp = await _templateRepository.GetById(fileId);
             if (temp != null)
             {
-                return await _storage.Download(UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), temp.Content, temp.Name + type);
+                var file = await _storage.Download(UnifiedStorage.GetPath("record", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), temp.Content, temp.Name + type);
+
+                var result = new FileStreamResult(file.ResponseStream, file.Headers.ContentType)
+                {
+                    FileDownloadName = temp.Name + type,
+                    LastModified = file.LastModified,
+                    EntityTag = new EntityTagHeaderValue(file.ETag)
+                };
+
+                return result;
             }
             else
             {

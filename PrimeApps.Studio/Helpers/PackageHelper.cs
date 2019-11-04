@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using Amazon.S3.Model;
 using Newtonsoft.Json.Serialization;
 using PrimeApps.Model.Entities.Tenant;
-using PrimeApps.Util.Storage;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Studio.Helpers
 {

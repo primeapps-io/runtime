@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
 using MimeMapping;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -27,7 +28,7 @@ using PrimeApps.Model.Helpers.QueryTranslation;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
-using PrimeApps.Util.Storage;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -1842,7 +1843,16 @@ namespace PrimeApps.Studio.Controllers
             var temp = await _templateRepository.GetById(fileId);
             if (temp != null)
             {
-                return await _storage.Download(UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? (int)TenantId : (int)AppId), temp.Content, temp.Name + type);
+                var file = await _storage.Download(UnifiedStorage.GetPath("record", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), temp.Content, temp.Name + type);
+
+                var result = new FileStreamResult(file.ResponseStream, file.Headers.ContentType)
+                {
+                    FileDownloadName = temp.Name + type,
+                    LastModified = file.LastModified,
+                    EntityTag = new EntityTagHeaderValue(file.ETag)
+                };
+
+                return result;
             }
             else
             {

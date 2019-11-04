@@ -10,7 +10,7 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
-using PrimeApps.Util.Storage;
+using PrimeApps.Model.Storage;
 using PublishHelper = PrimeApps.Admin.Helpers.PublishHelper;
 
 namespace PrimeApps.Admin

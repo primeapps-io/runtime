@@ -33,6 +33,5 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
-        <ProjectReference Include="..\PrimeApps.Util\PrimeApps.Util.csproj" />
     </ItemGroup>
 </Project>

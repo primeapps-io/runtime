@@ -1,24 +1,17 @@
-﻿using Amazon;
-using Amazon.S3;
+﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Amazon.S3.Util;
-using Microsoft.Extensions.Primitives;
-using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Mvc;
-using System.Text;
-using System.Threading;
-using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace PrimeApps.Util.Storage
+namespace PrimeApps.Model.Storage
 {
     /// <summary>
     /// Unified Storage library based on Amazon S3
@@ -440,7 +433,7 @@ namespace PrimeApps.Util.Storage
 
             return await _client.PutBucketPolicyAsync(putRequest);
         }
-
+        
         /// <summary>
         /// Downloads files from S3 as FileStreamResult(Chunked)
         /// </summary>
@@ -448,16 +441,11 @@ namespace PrimeApps.Util.Storage
         /// <param name="key"></param>
         /// <param name="fileName"></param>
         /// <returns></returns>
-        public async Task<FileStreamResult> Download(string bucket, string key, string fileName)
+        public async Task<GetObjectResponse> Download(string bucket, string key, string fileName)
         {
-            GetObjectResponse file = await _client.GetObjectAsync(bucket, key);
-            FileStreamResult result = new FileStreamResult(file.ResponseStream, file.Headers.ContentType)
-            {
-                FileDownloadName = fileName,
-                LastModified = file.LastModified,
-                EntityTag = new EntityTagHeaderValue(file.ETag)
-            };
-            return result;
+            var file = await _client.GetObjectAsync(bucket, key);
+           
+            return file;
         }
 
         /// <summary>
