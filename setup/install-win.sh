@@ -9,6 +9,7 @@ cd ..
 basePath=$(pwd -W)
 filePostgres="http://get.enterprisedb.com/postgresql/postgresql-11.5-2-windows-x64-binaries.zip"
 fileMinio="https://dl.min.io/server/minio/release/windows-amd64/minio.exe"
+fileRedis="https://github.com/microsoftarchive/redis/releases/download/win-3.0.504/Redis-x64-3.0.504.zip"
 fileGitea="https://github.com/go-gitea/gitea/releases/download/v1.9.5/gitea-1.9.5-windows-4.0-amd64.exe"
 fileWinSW="https://github.com/kohsuke/winsw/releases/download/winsw-v2.2.0/WinSW.NET4.exe"
 postgresLocale="en-US"
@@ -30,6 +31,15 @@ postgresPath="$basePath/programs/pgsql/bin"
 # cd minio
 # echo -e "${GREEN}Downloading Minio...${NC}"
 # curl $fileMinio -L --output minio.exe
+
+# # Install Redis
+# cd "$basePath/programs"
+# mkdir redis
+# cd redis
+# echo -e "${GREEN}Downloading Redis...${NC}"
+# curl $fileRedis -L --output Redis-x64-3.0.504.zip
+# unzip Redis-x64-3.0.504.zip
+# rm Redis-x64-3.0.504.zip
 
 # # Install Gitea
 # cd "$basePath/programs"
@@ -56,7 +66,7 @@ echo -e "${GREEN}Initializing database instances...${NC}"
 echo -e "${GREEN}Registering database instances...${NC}"
 ./pg_ctl register -D "$basePath/data/pgsql_pre" -o "-F -p 5433" -N "Postgres-PRE"
 ./pg_ctl register -D "$basePath/data/pgsql_pde" -o "-F -p 5434" -N "Postgres-PDE"
-./pg_ctl register -D "$basePath/data/pgsql_pre_test" -o "-F -p 5435" -N "Postgres-PRE-Test"
+./pg_ctl register -D "$basePath/data/pgsql_pre_test" -o "-F -p 5435" -N "Postgres-PRE-Test" -S "demand"
 
 # Start database instances
 echo -e "${GREEN}Starting database instances...${NC}"
@@ -92,6 +102,9 @@ echo -e "${GREEN}Restoring databases...${NC}"
 echo -e "${GREEN}Setting templet0 db as template database...${NC}"
 ./psql -d postgres -p 5434 -c "UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'templet0'; UPDATE pg_database SET datallowconn = FALSE WHERE datname = 'templet0';"
 
+# Stop Postgres-PRE-Test, not required for now
+net stop "Postgres-PRE-Test"
+
 # Init storage instances
 echo -e "${GREEN}Initializing storage instances...${NC}"
 cd "$basePath/programs/minio"
@@ -110,6 +123,40 @@ echo -e "${GREEN}Starting storage instances...${NC}"
 net start "MinIO-PRE"
 net start "MinIO-PDE"
 net start "MinIO-PRE-Test"
+
+# Stop Minio-PRE-Test, not required for now
+sleep 3 # Sleep 3 seconds for minio wakeup
+net stop "MinIO-PRE-Test"
+
+# Init cache instance
+echo -e "${GREEN}Initializing cache instances...${NC}"
+cd "$basePath/programs/redis"
+cp "$basePath/programs/winsw/winsw.exe" redis-pre.exe
+cp "$basePath/programs/winsw/winsw.exe" redis-pde.exe
+cp "$basePath/programs/winsw/winsw.exe" redis-pre-test.exe
+cp "$basePath/setup/redis-pre.xml" redis-pre.xml
+cp "$basePath/setup/redis-pde.xml" redis-pde.xml
+cp "$basePath/setup/redis-pre-test.xml" redis-pre-test.xml
+
+mkdir "$basePath/data/redis_pre"
+mkdir "$basePath/data/redis_pde"
+mkdir "$basePath/data/redis_pre_test"
+cp redis.windows.conf "$basePath/data/redis_pre/redis.windows.conf"
+cp redis.windows.conf "$basePath/data/redis_pde/redis.windows.conf"
+cp redis.windows.conf "$basePath/data/redis_pre_test/redis.windows.conf"
+
+./redis-pre.exe install
+./redis-pde.exe install
+./redis-pre-test.exe install
+
+echo -e "${GREEN}Starting cache instances...${NC}"
+net start "Redis-PRE"
+net start "Redis-PDE"
+net start "Redis-PRE-Test"
+
+# Stop Redis-PRE-Test, not required for now
+sleep 3 # Sleep 3 seconds for redis wakeup
+net stop "Redis-PRE-Test"
 
 # Init git instance
 echo -e "${GREEN}Creating Gitea database...${NC}"
@@ -152,7 +199,7 @@ net start "Gitea-PDE"
 
 echo -e "${GREEN}Creating admin user...${NC}"
 curl -s -L http://localhost:3000 > /dev/null
-sleep 5 # Sleep 10 seconds for gitea wakeup
+sleep 5 # Sleep 5 seconds for gitea wakeup
 ./gitea admin create-user --username=primeapps --password='123456' --email='admin@primeapps.io' --admin=true --must-change-password=false --config="$pathAppIni"
 
 echo -e "${GREEN}Creating template repository...${NC}"
@@ -183,6 +230,8 @@ cd $basePath
 cd ..
 rm -rf temp_primeapps
 
+sleep 3 # Sleep 3 seconds for write database before backup
+
 # Backup
 echo -e "${GREEN}Compressing data folders...${NC}"
 cd "$basePath/data"
@@ -192,6 +241,9 @@ tar -czf pgsql_pre_test.tar.gz pgsql_pre_test
 tar -czf minio_pre.tar.gz minio_pre
 tar -czf minio_pde.tar.gz minio_pde
 tar -czf minio_pre_test.tar.gz minio_pre_test
+tar -czf redis_pre.tar.gz redis_pre
+tar -czf redis_pde.tar.gz redis_pde
+tar -czf redis_pre_test.tar.gz redis_pre_test
 tar -czf gitea.tar.gz gitea
 
 echo -e "${BLUE}Completed${NC}"

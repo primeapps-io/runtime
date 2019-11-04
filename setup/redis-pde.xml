@@ -1,0 +1,8 @@
+<service>
+  <id>Redis-PDE</id>
+  <name>Redis-PDE</name>
+  <description>Redis-PDE</description>
+  <executable>redis-server.exe</executable>
+  <arguments>"..\..\data\redis_pde\redis.windows.conf" --port 6382</arguments>
+  <logmode>rotate</logmode>
+</service>

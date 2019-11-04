@@ -7,4 +7,5 @@
   <env name="MINIO_SECRET_KEY" value="storage-secret-key"/>
   <arguments>server --address :9003 "..\..\data\minio_pre_test"</arguments>
   <logmode>rotate</logmode>
+  <startmode>Manual</startmode>
 </service>
