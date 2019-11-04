@@ -35,7 +35,7 @@ sc delete Gitea-PDE
 echo -e "${GREEN}Deleting $basePath/data...${NC}"
 rm -rf "$basePath/data"
 
-# echo -e "${GREEN}Deleting $basePath/programs...${NC}"
-# rm -rf "$basePath/programs"
+echo -e "${GREEN}Deleting $basePath/programs...${NC}"
+rm -rf "$basePath/programs"
 
 echo -e "${BLUE}Completed${NC}"

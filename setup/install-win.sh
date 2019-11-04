@@ -15,45 +15,45 @@ fileWinSW="https://github.com/kohsuke/winsw/releases/download/winsw-v2.2.0/WinSW
 postgresLocale="en-US"
 postgresPath="$basePath/programs/pgsql/bin"
 
-# # Create programs directory
-# mkdir programs
-# cd programs
+# Create programs directory
+mkdir programs
+cd programs
 
-# # Install PostgreSQL
-# echo -e "${GREEN}Downloading PostgreSQL...${NC}"
-# curl $filePostgres -L --output postgres.zip
-# unzip postgres.zip
-# rm postgres.zip
+# Install PostgreSQL
+echo -e "${GREEN}Downloading PostgreSQL...${NC}"
+curl $filePostgres -L --output postgres.zip
+unzip postgres.zip
+rm postgres.zip
 
-# # Install Minio
-# cd "$basePath/programs"
-# mkdir minio
-# cd minio
-# echo -e "${GREEN}Downloading Minio...${NC}"
-# curl $fileMinio -L --output minio.exe
+# Install Minio
+cd "$basePath/programs"
+mkdir minio
+cd minio
+echo -e "${GREEN}Downloading Minio...${NC}"
+curl $fileMinio -L --output minio.exe
 
-# # Install Redis
-# cd "$basePath/programs"
-# mkdir redis
-# cd redis
-# echo -e "${GREEN}Downloading Redis...${NC}"
-# curl $fileRedis -L --output Redis-x64-3.0.504.zip
-# unzip Redis-x64-3.0.504.zip
-# rm Redis-x64-3.0.504.zip
+# Install Redis
+cd "$basePath/programs"
+mkdir redis
+cd redis
+echo -e "${GREEN}Downloading Redis...${NC}"
+curl $fileRedis -L --output Redis-x64-3.0.504.zip
+unzip Redis-x64-3.0.504.zip
+rm Redis-x64-3.0.504.zip
 
-# # Install Gitea
-# cd "$basePath/programs"
-# mkdir gitea
-# cd gitea
-# echo -e "${GREEN}Downloading Gitea..${NC}."
-# curl $fileGitea -L --output gitea.exe
+# Install Gitea
+cd "$basePath/programs"
+mkdir gitea
+cd gitea
+echo -e "${GREEN}Downloading Gitea..${NC}."
+curl $fileGitea -L --output gitea.exe
 
-# # Download WinSW
-# cd "$basePath/programs"
-# mkdir winsw
-# cd winsw
-# echo -e "${GREEN}Downloading WinSW...${NC}"
-# curl $fileWinSW -L --output winsw.exe
+# Download WinSW
+cd "$basePath/programs"
+mkdir winsw
+cd winsw
+echo -e "${GREEN}Downloading WinSW...${NC}"
+curl $fileWinSW -L --output winsw.exe
 
 # Init database instances
 cd $postgresPath
