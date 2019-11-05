@@ -33,6 +33,7 @@ rm -rf redis_pre
 rm -rf redis_pde
 rm -rf redis_pre_test
 rm -rf gitea
+rm -rf primeapps
 
 tar -xzf pgsql_pre.tar.gz pgsql_pre
 tar -xzf pgsql_pde.tar.gz pgsql_pde
