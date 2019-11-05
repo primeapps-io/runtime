@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Entities.Tenant;
@@ -16,11 +17,11 @@ namespace PrimeApps.Model.Helpers
 {
     public class PackageHelper
     {
-        public static async Task<bool> All(JObject app, string studioSecret, bool clearAllRecords, string dbName, string version, IConfiguration configuration, IUnifiedStorage storage, List<HistoryStorage> historyStorages)
+        public static async Task<bool> All(JObject app, string studioSecret, bool clearAllRecords, string dbName, string version, IConfiguration configuration, IUnifiedStorage storage, List<HistoryStorage> historyStorages, IHostingEnvironment hostingEnvironment)
         {
             var PDEConnectionString = configuration.GetConnectionString("StudioDBConnection");
-            var postgresPath = configuration.GetValue("AppSettings:PostgresPath", string.Empty);
-            var root = configuration.GetValue("AppSettings:DataDirectory", string.Empty);
+            var postgresPath = PostgresHelper.GetPostgresBinaryPath(configuration, hostingEnvironment);
+            var root = DataHelper.GetDataDirectoryPath(configuration, hostingEnvironment);
 
             var path = Path.Combine(root, "packages", dbName, version);
 
@@ -213,9 +214,9 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static async Task<bool> Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, JObject app, string studioSecret, string dbName, string version, int deploymentId, IConfiguration configuration, IUnifiedStorage storage)
+        public static async Task<bool> Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, JObject app, string studioSecret, string dbName, string version, int deploymentId, IConfiguration configuration, IUnifiedStorage storage, IHostingEnvironment hostingEnvironment)
         {
-            var root = configuration.GetValue("AppSettings:DataDirectory", string.Empty);
+            var root = DataHelper.GetDataDirectoryPath(configuration, hostingEnvironment);
 
             var path = Path.Combine(root, "packages", dbName, version);
 

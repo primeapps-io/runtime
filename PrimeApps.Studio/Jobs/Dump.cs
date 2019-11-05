@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Helpers;
@@ -11,17 +12,19 @@ namespace PrimeApps.Studio.Jobs
     public class Dump
     {
         private IConfiguration _configuration;
+        private IHostingEnvironment _hostingEnvironment;
 
-        public Dump(IConfiguration configuration)
+        public Dump(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
         {
             _configuration = configuration;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         [QueueCustom]
         public void Create(JObject request)
         {
-            var dumpDirectory = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
-            var postgresPath = _configuration.GetValue("AppSettings:PostgresPath", string.Empty);
+            var dumpDirectory = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);;
+            var postgresPath = PostgresHelper.GetPostgresBinaryPath(_configuration, _hostingEnvironment);
             var dbConnection = _configuration.GetConnectionString("StudioDBConnection");
 
             var appId = (int)request["app_id"];
@@ -54,8 +57,8 @@ namespace PrimeApps.Studio.Jobs
         [QueueCustom]
         public void Restore(JObject request)
         {
-            var dumpDirectory = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
-            var postgresPath = _configuration.GetValue("AppSettings:PostgresPath", string.Empty);
+            var dumpDirectory = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);
+            var postgresPath = PostgresHelper.GetPostgresBinaryPath(_configuration, _hostingEnvironment);
             var connectionStringName = (string)request["environment"] == "test" ? "PlatformDBConnectionTest" : "PlatformDBConnection";
 
             var dbConnection = _configuration.GetConnectionString(connectionStringName);

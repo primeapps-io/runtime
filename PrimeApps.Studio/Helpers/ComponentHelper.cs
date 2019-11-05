@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LibGit2Sharp;
 using LibGit2Sharp.Handlers;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,14 +38,16 @@ namespace PrimeApps.Studio.Helpers
         private IConfiguration _configuration;
         private IGiteaHelper _giteaHelper;
         private CurrentUser _currentUser;
+        private IHostingEnvironment _hostingEnvironment;
 
-        public ComponentHelper(IHttpContextAccessor context, IConfiguration configuration, IGiteaHelper giteaHelper, IServiceScopeFactory serviceScopeFactory)
+        public ComponentHelper(IHttpContextAccessor context, IConfiguration configuration, IGiteaHelper giteaHelper, IServiceScopeFactory serviceScopeFactory, IHostingEnvironment hostingEnvironment)
         {
             _context = context;
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
             _giteaHelper = giteaHelper;
             _currentUser = UserHelper.GetCurrentUser(_context);
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public async Task<JArray> GetAllFileNames(int appId, string componentName, int organizationId)
@@ -83,7 +86,7 @@ namespace PrimeApps.Studio.Helpers
 
         public async Task<bool> CreateSample(int appId, ComponentModel component, int organizationId)
         {
-            var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
+            var enableGiteaIntegration = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);
 
             if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
             {

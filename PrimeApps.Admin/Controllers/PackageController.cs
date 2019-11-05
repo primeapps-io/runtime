@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -13,6 +14,7 @@ using PrimeApps.Admin.Jobs;
 using PrimeApps.Admin.Services;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.Admin.Controllers
@@ -29,10 +31,11 @@ namespace PrimeApps.Admin.Controllers
         private readonly ITenantRepository _tenantRepository;
         private IBackgroundTaskQueue _queue;
         private readonly IPublish _publish;
+        private IHostingEnvironment _hostingEnvironment;
 
         public PackageController(IBackgroundTaskQueue queue, IConfiguration configuration, IOrganizationHelper organizationHelper, IPublishHelper publishHelper,
             IPlatformRepository platformRepository, IPlatformUserRepository platformUserRepository, IReleaseRepository releaseRepository, ITenantRepository tenantRepository,
-            IPublish publish)
+            IPublish publish, IHostingEnvironment hostingEnvironment)
         {
             _queue = queue;
             _configuration = configuration;
@@ -43,6 +46,7 @@ namespace PrimeApps.Admin.Controllers
             _releaseRepository = releaseRepository;
             _tenantRepository = tenantRepository;
             _publish = publish;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -184,7 +188,7 @@ namespace PrimeApps.Admin.Controllers
 
             var dbName = $"app{appId}";
 
-            var path = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
+            var path = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);
             var text = "";
 
             if (!System.IO.File.Exists(Path.Combine(path, "packages", dbName, package.Version, "log.txt")))

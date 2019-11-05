@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -31,12 +32,14 @@ namespace PrimeApps.Admin.Jobs
         private IConfiguration _configuration;
         private IServiceScopeFactory _serviceScopeFactory;
         private readonly IUnifiedStorage _storage;
+        private IHostingEnvironment _hostingEnvironment;
 
-        public Publish(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IUnifiedStorage storage)
+        public Publish(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IUnifiedStorage storage, IHostingEnvironment hostingEnvironment)
         {
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
             _storage = storage;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         [QueueCustom]
@@ -117,7 +120,7 @@ namespace PrimeApps.Admin.Jobs
                     }
 
 
-                    var releases = await PublishHelper.ApplyVersions(_configuration, _storage, JObject.Parse(appString), orgId, $"app{appId}", versions, platformApp == null, firstRelease, token, appUrl, authUrl, useSsl);
+                    var releases = await PublishHelper.ApplyVersions(_configuration, _storage, JObject.Parse(appString), orgId, $"app{appId}", versions, platformApp == null, firstRelease, token, appUrl, authUrl, useSsl, _hostingEnvironment);
 
                     foreach (var obj in releases.OfType<Release>().Select((release, index) => new {release, index}))
                     {
@@ -205,7 +208,7 @@ namespace PrimeApps.Admin.Jobs
 
                                 await releaseRepository.Create(releaseModel);
 
-                                var result = await PublishHelper.UpdateTenant(version, dbName, _configuration, _storage, appId, orgId, token);
+                                var result = await PublishHelper.UpdateTenant(version, dbName, _configuration, _storage, appId, orgId, token, _hostingEnvironment);
 
                                 if (result)
                                 {
@@ -227,7 +230,7 @@ namespace PrimeApps.Admin.Jobs
                             {
                                 if (release.Status == ReleaseStatus.Failed)
                                 {
-                                    var result = await PublishHelper.UpdateTenant(version, dbName, _configuration, _storage, appId, orgId, token);
+                                    var result = await PublishHelper.UpdateTenant(version, dbName, _configuration, _storage, appId, orgId, token, _hostingEnvironment);
 
                                     if (result)
                                     {
@@ -249,7 +252,7 @@ namespace PrimeApps.Admin.Jobs
                     pointerRelease.Status = ReleaseStatus.Succeed;
                     await releaseRepository.Update(pointerRelease);
 
-                    var rootPath = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
+                    var rootPath = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);
                     Directory.Delete(Path.Combine(rootPath, "packages", $"app{appId}"), true);
                 }
             }

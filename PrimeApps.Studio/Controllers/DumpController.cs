@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -18,11 +19,13 @@ namespace PrimeApps.Studio.Controllers
         public static int OrganizationId { get; set; }
         private IConfiguration _configuration;
         private IAppDraftRepository _appDraftRepository;
+        private IHostingEnvironment _hostingEnvironment;
 
-        public DumpController(IConfiguration configuration, IAppDraftRepository appDraftRepository)
+        public DumpController(IConfiguration configuration, IAppDraftRepository appDraftRepository, IHostingEnvironment hostingEnvironment)
         {
             _configuration = configuration;
             _appDraftRepository = appDraftRepository;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -82,7 +85,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("download")]
         public IActionResult Download([FromQuery]int appId)
         {
-            var dumpDirectory = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
+            var dumpDirectory = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);
 
             return PhysicalFile(Path.Combine(dumpDirectory, $"app{appId}.tar"), "text/plain", $"app{appId}.tar");
         }

@@ -13,6 +13,7 @@ using IdentityModel.Client;
 using LibGit2Sharp;
 using LibGit2Sharp.Handlers;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,15 +59,18 @@ namespace PrimeApps.Studio.Helpers
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IHttpContextAccessor _context;
         private IConfiguration _configuration;
+        private IHostingEnvironment _hostingEnvironment;
 
         public GiteaHelper(IHttpContextAccessor context,
             IConfiguration configuration,
-            IServiceScopeFactory serviceScopeFactory)
+            IServiceScopeFactory serviceScopeFactory,
+            IHostingEnvironment hostingEnvironment)
         {
             _context = context;
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
             Token = SetToken();
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public async Task SyncCollaborators(int organizationId, string operation, int appId, int? teamId, int? userId)
@@ -306,7 +310,7 @@ namespace PrimeApps.Studio.Helpers
 
         public string CloneRepository(string cloneUrl, string folderName, bool deleteIfExist = true)
         {
-            var giteaDirectory = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
+            var giteaDirectory = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);
             if (string.IsNullOrEmpty(giteaDirectory))
                 return null;
 

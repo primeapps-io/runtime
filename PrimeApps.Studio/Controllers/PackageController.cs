@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.S3.Model;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +15,7 @@ using PrimeApps.Model.Common;
 using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
@@ -33,6 +35,7 @@ namespace PrimeApps.Studio.Controllers
         private IPermissionHelper _permissionHelper;
         private IPackageHelper _packageHelper;
         private IUnifiedStorage _storage;
+        private IHostingEnvironment _hostingEnvironment;
 
         public PackageController(IConfiguration configuration,
             IPackageHelper packageHelper,
@@ -42,7 +45,8 @@ namespace PrimeApps.Studio.Controllers
             IHistoryStorageRepository historyStorageRepository,
             IPermissionHelper permissionHelper,
             IUnifiedStorage storage,
-            IBackgroundTaskQueue queue)
+            IBackgroundTaskQueue queue,
+            IHostingEnvironment hostingEnvironment)
         {
             _configuration = configuration;
             _packageHelper = packageHelper;
@@ -53,6 +57,7 @@ namespace PrimeApps.Studio.Controllers
             _permissionHelper = permissionHelper;
             _storage = storage;
             _queue = queue;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -77,7 +82,7 @@ namespace PrimeApps.Studio.Controllers
 
             var dbName = PreviewMode + (PreviewMode == "tenant" ? TenantId : AppId);
 
-            var path = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
+            var path = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);
             var text = "";
 
             if (!System.IO.File.Exists(Path.Combine(path, "packages", dbName, package.Version, "log.txt")))

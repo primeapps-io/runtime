@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Document;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
@@ -33,8 +35,9 @@ namespace PrimeApps.Studio.Controllers
         private IHistoryHelper _historyHelper;
         private IBackgroundTaskQueue _queue;
         private IHttpContextAccessor _context;
+        private IHostingEnvironment _hostingEnvironment;
 
-        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IImportRepository importRepository, IUnifiedStorage storage, IConfiguration configuration, IHistoryHelper historyHelper, IBackgroundTaskQueue queue, IHttpContextAccessor context)
+        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IImportRepository importRepository, IUnifiedStorage storage, IConfiguration configuration, IHistoryHelper historyHelper, IBackgroundTaskQueue queue, IHttpContextAccessor context, IHostingEnvironment hostingEnvironment)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
@@ -49,6 +52,7 @@ namespace PrimeApps.Studio.Controllers
             _queue = queue;
             _context = context;
             _storage.FileUploadedEvent += FileUploaded;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -270,7 +274,7 @@ namespace PrimeApps.Studio.Controllers
         {
             if (await _storage.FolderExists(request["bucket_name"].ToString()))
             {
-                var tempPath = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
+                var tempPath = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);
 
                 var tmpFolder = Path.Combine(tempPath, "tmpVersionFolder");
                 var bucketName = request["bucket_name"].ToString();

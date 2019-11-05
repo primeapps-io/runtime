@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amazon.S3.Model;
 using Hangfire.Common;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,11 +31,13 @@ namespace PrimeApps.Studio.Helpers
     {
         private IConfiguration _configuration;
         private IServiceScopeFactory _serviceScopeFactory;
+        private IHostingEnvironment _hostingEnvironment;
 
-        public WebSocketHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+        public WebSocketHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IHostingEnvironment hostingEnvironment)
         {
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public ArraySegment<byte> CreateWSMessage(string message)
@@ -143,7 +146,7 @@ namespace PrimeApps.Studio.Helpers
 
                         using (var packageRepository = new PackageRepository(databaseContext, _configuration))
                         {
-                            var path = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
+                            var path = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);
 
                             package = await packageRepository.Get(releaseId);
                             //releaseOptions = JObject.Parse(package.Settings);

@@ -2,10 +2,13 @@
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
 using System.Collections.Generic;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.Model.Helpers
 {
-    public class DataHelpers
+    public class DataHelper
     {
         public static JArray LoadDataAsJson(TenantDBContext ctx, string sqlSelect, params object[] sqlParameters)
         {
@@ -76,6 +79,19 @@ namespace PrimeApps.Model.Helpers
             }
 
             return table;
+        }
+        
+        public static string GetDataDirectoryPath(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
+        {
+            var dataDirectoryPath = configuration.GetValue("AppSettings:DataDirectory", string.Empty);
+
+            if (string.IsNullOrWhiteSpace(dataDirectoryPath))
+            {
+                var root = Directory.GetParent(hostingEnvironment.ContentRootPath);
+                dataDirectoryPath = Path.Combine(root.FullName, "data", "primeapps");
+            }
+
+            return dataDirectoryPath;
         }
     }
 }

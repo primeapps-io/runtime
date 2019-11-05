@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Amazon.S3.Model;
+using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json.Serialization;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Storage;
@@ -32,17 +33,20 @@ namespace PrimeApps.Studio.Helpers
         private IServiceScopeFactory _serviceScopeFactory;
         private IHttpContextAccessor _context;
         private IUnifiedStorage _storage;
+        private IHostingEnvironment _hostingEnvironment;
 
         public PackageHelper(IConfiguration configuration,
             IServiceScopeFactory serviceScopeFactory,
             IHttpContextAccessor context,
-            IUnifiedStorage storage)
+            IUnifiedStorage storage, 
+            IHostingEnvironment hostingEnvironment)
         {
             _storage = storage;
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
             _context = context;
             _currentUser = UserHelper.GetCurrentUser(_context);
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public async Task All(int appId, bool clearAllRecords, string dbName, string version, int packageId, List<HistoryStorage> historyStorages)
@@ -83,7 +87,7 @@ namespace PrimeApps.Studio.Helpers
 
                     try
                     {
-                        result = await Model.Helpers.PackageHelper.All(JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), clearAllRecords, dbName, version, _configuration, _storage, historyStorages);
+                        result = await Model.Helpers.PackageHelper.All(JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), clearAllRecords, dbName, version, _configuration, _storage, historyStorages, _hostingEnvironment);
                     }
                     catch (Exception e)
                     {
@@ -164,7 +168,7 @@ namespace PrimeApps.Studio.Helpers
 
                     try
                     {
-                        result = await Model.Helpers.PackageHelper.Diffs(historyDatabases, historyStorages, JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), dbName, version, packageId, _configuration, _storage);
+                        result = await Model.Helpers.PackageHelper.Diffs(historyDatabases, historyStorages, JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), dbName, version, packageId, _configuration, _storage, _hostingEnvironment);
                     }
                     catch (Exception e)
                     {
@@ -311,7 +315,7 @@ namespace PrimeApps.Studio.Helpers
 
         public async void UploadPackage(int appId, string dbName, string version)
         {
-            var path = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
+            var path = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);
             var bucketName = UnifiedStorage.GetPath("packages", "app", appId, version + "/");
 
             await _storage.CreateBucketIfNotExists(bucketName);

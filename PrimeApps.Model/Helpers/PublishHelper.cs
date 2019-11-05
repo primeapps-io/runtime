@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -19,10 +20,10 @@ namespace PrimeApps.Model.Helpers
 {
     public class PublishHelper
     {
-        public static async Task<bool> UpdateTenant(string version, string dbName, IConfiguration configuration, IUnifiedStorage storage, int appId, int orgId, string token)
+        public static async Task<bool> UpdateTenant(string version, string dbName, IConfiguration configuration, IUnifiedStorage storage, int appId, int orgId, string token, IHostingEnvironment hostingEnvironment)
         {
             var PREConnectionString = configuration.GetConnectionString("PlatformDBConnection");
-            var rootPath = configuration.GetValue("AppSettings:DataDirectory", string.Empty);
+            var rootPath = DataHelper.GetDataDirectoryPath(configuration, hostingEnvironment);
             var root = Path.Combine(rootPath, "tenant-update-logs");
 
             if (!Directory.Exists(root))
@@ -152,13 +153,13 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static async Task<List<Release>> ApplyVersions(IConfiguration configuration, IUnifiedStorage storage, JObject app, int orgId, string databaseName, List<string> versions, bool createPlatformApp, bool firstTime, string studioToken, string appUrl, string authUrl, bool useSsl)
+        public static async Task<List<Release>> ApplyVersions(IConfiguration configuration, IUnifiedStorage storage, JObject app, int orgId, string databaseName, List<string> versions, bool createPlatformApp, bool firstTime, string studioToken, string appUrl, string authUrl, bool useSsl, IHostingEnvironment hostingEnvironment)
         {
             var PREConnectionString = configuration.GetConnectionString("PlatformDBConnection");
-            var postgresPath = configuration.GetValue("AppSettings:PostgresPath", string.Empty);
+            var postgresPath = PostgresHelper.GetPostgresBinaryPath(configuration, hostingEnvironment);
             var studioUrl = configuration.GetValue("AppSettings:StudioUrl", string.Empty);
 
-            var rootPath = configuration.GetValue("AppSettings:DataDirectory", string.Empty);
+            var rootPath = DataHelper.GetDataDirectoryPath(configuration, hostingEnvironment);
             var dbName = databaseName;
             var templateCopied = false;
 

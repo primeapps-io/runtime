@@ -77,7 +77,7 @@ namespace PrimeApps.Auth.Helpers
                     ErrorHandler.LogError(new Exception(resp), "Status Code: " + response.StatusCode + ", user: " + email + ", password: " + password);
                 }
 
-                await CreateAccessToken(email, password);
+                //await CreateAccessToken(email, password);
             }
         }
 
@@ -96,11 +96,17 @@ namespace PrimeApps.Auth.Helpers
                         var giteaUrl = _configuration.GetValue("AppSettings:GiteaUrl", string.Empty);
                         if (!string.IsNullOrEmpty(giteaUrl))
                         {
-                            var response = await httpClient.GetAsync(giteaUrl + "/api/v1/users/" + userName + "/tokens");
-                            var resp = await response.Content.ReadAsStringAsync();
-                            var giteaResponse = JArray.Parse(resp);
+                            var request = new JObject
+                            {
+                                ["name"] = "primeapps"
+                            };
+                            
+                            var response = await httpClient.PostAsync(giteaUrl + "/api/v1/users/" + userName + "/tokens", new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
 
-                            return giteaResponse.Count > 0 ? giteaResponse[0]["sha1"].ToString() : string.Empty;
+                            var resp = await response.Content.ReadAsStringAsync();
+                            var giteaResponse = JObject.Parse(resp);
+
+                            return (string)giteaResponse["sha1"];
                         }
                         else
                             return string.Empty;
