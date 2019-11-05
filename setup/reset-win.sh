@@ -47,13 +47,13 @@ tar -xzf gitea.tar.gz gitea
 
 echo -e "${GREEN}Starting services...${NC}"
 net start Postgres-PRE
-net start Postgres-PRE-Test
+#net start Postgres-PRE-Test
 net start Postgres-PDE
 net start MinIO-PRE
-net start MinIO-PRE-Test
+#net start MinIO-PRE-Test
 net start MinIO-PDE
 net start Redis-PRE
-net start Redis-PRE-Test
+#net start Redis-PRE-Test
 net start Redis-PDE
 net start Gitea-PDE
 
