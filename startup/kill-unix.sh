@@ -1,7 +1,7 @@
 #!/bin/bash
 
-PORTAUTH=5000
-PORTAPP=5001
+PORTAUTH=5020
+PORTAPP=5021
 
 for i in "$@"
 do

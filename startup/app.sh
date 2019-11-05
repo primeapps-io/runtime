@@ -2,9 +2,9 @@
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-PORTAUTH=5000
-PORTAPP=5001
-CLIENTID=sample
+PORTAUTH=5020
+PORTAPP=5021
+CLIENTID=primeapps_app
 
 for i in "$@"
 do
@@ -29,13 +29,9 @@ echo -e "${GREEN}app${NC}"
 cd ..
 cd PrimeApps.App
 
-dotnet publish "PrimeApps.App.csproj" --self-contained false -c Debug
-
-cd bin/Debug/netcoreapp2.2/publish
-
 export ASPNETCORE_ENVIRONMENT=Development
 export AppSettings__ClientId=$CLIENTID
 export AppSettings__ClientSecret=secret
 export AppSettings__AuthenticationServerURL="http://localhost:$PORTAUTH"
 
-dotnet PrimeApps.App.dll --urls="http://localhost:$PORTAPP"
+dotnet run --urls="http://localhost:$PORTAPP"

@@ -2,7 +2,7 @@
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-PORTAUTH=5000
+PORTAUTH=5020
 
 for i in "$@"
 do
@@ -21,11 +21,7 @@ echo -e "${GREEN}auth${NC}"
 cd ..
 cd PrimeApps.Auth
 
-dotnet publish "PrimeApps.Auth.csproj" --self-contained false -c Debug
-
-cd bin/Debug/netcoreapp2.2/publish
-
 export ASPNETCORE_ENVIRONMENT=Development
 export AppSettings__Authority="http://localhost:$PORTAUTH"
 
-dotnet PrimeApps.Auth.dll --urls="http://localhost:$PORTAUTH"
+dotnet run --urls="http://localhost:$PORTAUTH"
