@@ -230,6 +230,9 @@ cd $basePath
 cd ..
 rm -rf temp_primeapps
 
+# Create directory for dump, package, git, etc.
+mkdir "$basePath/data/primeapps"
+
 sleep 3 # Sleep 3 seconds for write database before backup
 
 # Backup
