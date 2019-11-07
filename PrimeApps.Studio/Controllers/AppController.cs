@@ -295,10 +295,7 @@ namespace PrimeApps.Studio.Controllers
 
             var app = await _appDraftRepository.GetAppTheme(id);
 
-            if (app != null)
-                return Ok(app.AppTheme);
-            else
-                return Ok(app);
+            return app != null ? Ok(app.AppTheme) : Ok(app);
         }
     }
 }

@@ -71,10 +71,10 @@ namespace PrimeApps.Model.Repositories
             return 0;
         }
 
-		public async Task<int> Update(App app)
+        public async Task<int> Update(App app)
         {
             //app.UserId = CurrentUser.UserId;
-			return await DbContext.SaveChangesAsync();
+            return await DbContext.SaveChangesAsync();
         }
 
         public int AppDeleteSoft(App app)
@@ -96,10 +96,7 @@ namespace PrimeApps.Model.Repositories
         public int Count(int appId)
         {
             //Only show Email templates
-            var count = DbContext.AppTemplates
-               .Where(x => !x.Deleted && x.Type == AppTemplateType.Email && x.AppId == appId).Count();
-
-            return count;
+            return DbContext.AppTemplates.Count(x => !x.Deleted && x.Type == AppTemplateType.Email && x.AppId == appId);
         }
 
         public async Task<ICollection<AppTemplate>> Find(PaginationModel paginationModel, int? appId)
@@ -122,7 +119,6 @@ namespace PrimeApps.Model.Repositories
                 {
                     templates = templates.OrderByDescending(x => propertyInfo.GetValue(x, null));
                 }
-
             }
 
             return await templates.ToListAsync();
@@ -130,9 +126,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<AppTemplate> GetAppTemplateById(int id)
         {
-            var template = await DbContext.AppTemplates.FirstOrDefaultAsync(x => x.Id == id);
-
-            return template;
+            return await DbContext.AppTemplates.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<int> UpdateAppTemplate(AppTemplate template)
@@ -149,23 +143,17 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<App> AppGetByName(string appName)
         {
-            var app = DbContext.Apps.FirstOrDefaultAsync(x => !x.Deleted && x.Name == appName);
-
-            return await app;
+            return await DbContext.Apps.FirstOrDefaultAsync(x => !x.Deleted && x.Name == appName);
         }
+
         public AppTemplate GetTemplateBySystemCode(int appId, string systemCode, string language)
         {
-            var template = DbContext.AppTemplates.FirstOrDefault(x => x.AppId == appId && x.Language == language && x.SystemCode == systemCode && x.Active);
-
-            return template;
+            return DbContext.AppTemplates.FirstOrDefault(x => x.AppId == appId && x.Language == language && x.SystemCode == systemCode && x.Active);
         }
 
         public AppSetting GetAppSettings(int appId)
         {
-            var appSettings = DbContext.AppSettings.Where(x => x.AppId == appId).SingleOrDefault();
-
-            return appSettings;
+            return DbContext.AppSettings.SingleOrDefault(x => x.AppId == appId);
         }
-
     }
 }

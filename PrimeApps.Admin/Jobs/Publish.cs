@@ -58,6 +58,9 @@ namespace PrimeApps.Admin.Jobs
 
                     var app = await studioClient.AppDraftGetById(appId);
 
+                    var appTemplates = await studioClient.GetAllAppTemplates();
+                    app.Templates = appTemplates;
+
                     var contractResolver = new DefaultContractResolver
                     {
                         NamingStrategy = new SnakeCaseNamingStrategy()

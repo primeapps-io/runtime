@@ -40,6 +40,7 @@ namespace PrimeApps.Model.Entities.Studio
         public virtual Templet Templet { get; set; }
         
         public virtual AppDraftSetting Setting { get; set; }
+        public virtual ICollection<AppDraftTemplate> Templates { get; set; }
 
         public virtual Organization Organization { get; set; }
         

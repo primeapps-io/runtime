@@ -37,7 +37,7 @@ namespace PrimeApps.Admin.Helpers
                 client.DefaultRequestHeaders.Add("X-App-Id", appId.ToString());
                 _appId = appId;
             }
-            
+
             _client = client;
         }
 
@@ -132,6 +132,25 @@ namespace PrimeApps.Admin.Helpers
             }
 
             var data = await response.Content.ReadAsAsync<AppDraft>();
+
+            return data;
+        }
+
+        public async Task<List<AppDraftTemplate>> GetAllAppTemplates()
+        {
+            var response = await _client.GetAsync($"template/get_all");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    throw new UnauthorizedAccessException();
+
+                var errorData = await response.Content.ReadAsStringAsync();
+
+                throw new Exception($"Method of Get App Draft Template result {response.StatusCode}. Application Id: {_appId}, Organization Id: {_orgId}, Response: {errorData}");
+            }
+
+            var data = await response.Content.ReadAsAsync<List<AppDraftTemplate>>();
 
             return data;
         }

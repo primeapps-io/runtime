@@ -14,6 +14,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         List<int> GetAppIdsByOrganizationId(int organizationId);
         Task<AppDraft> Get(string name);
         Task<AppDraft> Get(int id);
+        Task<AppDraft> GetByName(string appName);
         Task<List<AppDraft>> GetUserApps(int userId, int organizationId, string search = "", int page = 0);
         Task<AppDraft> GetWithPackages(int id);
         Task<int> Create(AppDraft app);
@@ -26,11 +27,5 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<AppDraftSetting> GetAuthTheme(int id);
         Task<int> UpdateAppTheme(int id, JObject model);
         Task<AppDraftSetting> GetAppTheme(int id);
-		Task<int> CreateAppTemplate(AppDraftTemplate template);
-		Task<int> UpdateAppTemplate(AppDraftTemplate template);
-		Task<AppDraft> AppGetByName(string appName);
-		Task<ICollection<AppDraftTemplate>> Find(PaginationModel paginationModel, int? appId);
-		int Count(int appId);
-		Task<AppDraftTemplate> GetAppTemplateById(int id);
-	}
+    }
 }

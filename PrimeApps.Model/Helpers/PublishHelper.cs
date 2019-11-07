@@ -203,6 +203,8 @@ namespace PrimeApps.Model.Helpers
                     if (!result)
                         File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while creating platform app... \u001b[39m" + Environment.NewLine);
 
+                    PublishHelper.CreateAppTemplates(PREConnectionString, app);
+
                     var token = "";
 
                     var enableAuthApiValidation = configuration.GetValue("AppSettings:EnableAuthApiValidation", string.Empty);
@@ -562,6 +564,67 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
+        public static bool CreateAppTemplates(string connectionString, JObject app)
+        {
+            try
+            {
+                var templates = JArray.Parse(app["templates"].ToString());
+
+                foreach (var template in templates)
+                {
+                    var sql = $"INSERT INTO \"public\".\"app_templates\"(\"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\", \"app_id\", \"name\", \"subject\", \"content\", \"language\", \"type\", \"system_code\", \"active\", \"settings\") VALUES (1, NULL,  '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) + "', NULL," + (bool.Parse(template["deleted"].ToString()) ? 't' : 'f') + ", " + app["id"] + ",'" + template["name"] + "', '" + template["subject"] + "', '" + template["content"] + "', '" + template["language"] + "', " + (int)template["type"] + ", '" + template["system_code"] + "', " + (bool.Parse(template["active"].ToString()) ? 't' : 'f') + ", '" + template["settings"] + "');";
+                    try
+                    {
+                        PostgresHelper.Run(connectionString, "platform", sql);
+                    }
+                    catch (Exception e)
+                    {
+                        ErrorHandler.LogError(e, $"PublishHelper CreatePlatformApp method error. AppId : {app["id"]}, Template: {template["settings"]}");
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                ErrorHandler.LogError(e, $"PublishHelper CreatePlatformApp method error. AppId : {app["id"]}");
+                return false;
+            }
+        }
+
+        public static bool UpdateAppTemplates(string connectionString, JObject app)
+        {
+            try
+            {
+                var templates = JArray.Parse(app["templates"].ToString());
+
+                foreach (var template in templates)
+                {
+                    var settings = JObject.Parse(template["settings"].ToString());
+
+                    if (string.IsNullOrEmpty(settings["id"].ToString()))
+                        continue;
+
+                    var sql = $"UPDATE public.app_templates SET created_by = 1, updated_by = 1, created_at = '" + template["created_at"] + "', updated_at = '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) + "', deleted = " + (bool.Parse(template["deleted"].ToString()) ? 't' : 'f') + ", name = '" + template["name"] + "', subject = '" + template["subject"] + "', content = '" + template["content"] + "', language = '" + template["language"] + "', type = " + (int)template["type"] + ", system_code = '" + template["system_code"] + "', active = " + (bool.Parse(template["active"].ToString()) ? 't' : 'f') + ", settings = '" + template["settings"] + "' WHERE settings->>'id' = '" + settings["id"] + "';";
+                    try
+                    {
+                        PostgresHelper.Run(connectionString, "platform", sql);
+                    }
+                    catch (Exception e)
+                    {
+                        ErrorHandler.LogError(e, $"PublishHelper CreatePlatformApp method error. AppId : {app["id"]}, Template: {template["settings"]}");
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                ErrorHandler.LogError(e, $"PublishHelper CreatePlatformApp method error. AppId : {app["id"]}");
+                return false;
+            }
+        }
+
         public static bool CreatePlatformApp(string connectionString, JObject app, string secret, string appUrl, string authUrl)
         {
             try
@@ -595,7 +658,7 @@ namespace PrimeApps.Model.Helpers
                 var options = JObject.Parse(app["setting"]["options"].ToString());
                 var sqls = new JArray
                 {
-                    $"UPDATE public.apps SET created_by = 1, updated_by = 1, created_at = '2019-05-24 07:15:15.699988', updated_at = '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) + "', label = '" + app["label"] + "', description = '" + app["description"] + "', logo = '" + app["logo"] + "', use_tenant_settings = '" + app["use_tenant_settings"] + "', app_draft_id = 0 WHERE id = " + app["id"] + ";",
+                    $"UPDATE public.apps SET created_by = 1, updated_by = 1, created_at = '" + app["created_at"] + "', updated_at = '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) + "', label = '" + app["label"] + "', description = '" + app["description"] + "', logo = '" + app["logo"] + "', use_tenant_settings = '" + app["use_tenant_settings"] + "', app_draft_id = 0 WHERE id = " + app["id"] + ";",
                     $"UPDATE public.app_settings SET " + (!string.IsNullOrEmpty(appUrl) ? $"app_domain = '{appUrl}'" : "") + (!string.IsNullOrEmpty(authUrl) ? $"auth_domain = '{authUrl}'" : "") + " currency = " + (!string.IsNullOrEmpty(app["setting"]["currency"].ToString()) ? "'" + app["setting"]["currency"] + "'" : "NULL") + ", culture = " + (!string.IsNullOrEmpty(app["setting"]["culture"].ToString()) ? "'" + app["setting"]["culture"] + "'" : "NULL") + ", time_zone = " + (!string.IsNullOrEmpty(app["setting"]["time_zone"].ToString()) ? "'" + app["setting"]["time_zone"] + "'" : "NULL") + ", language = " + (!string.IsNullOrEmpty(app["setting"]["language"].ToString()) ? "'" + app["setting"]["language"] + "'" : "NULL") + ", auth_theme = " + (!app["setting"]["auth_theme"].IsNullOrEmpty() ? "'" + app["setting"]["auth_theme"] + "'" : "NULL") + ", app_theme = " + (!app["setting"]["app_theme"].IsNullOrEmpty() ? "'" + app["setting"]["app_theme"] + "'" : "NULL") + ", mail_sender_name = " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_name"].ToString()) ? "'" + app["setting"]["mail_sender_name"] + "'" : "NULL") + ", mail_sender_email = " + (!string.IsNullOrEmpty(app["setting"]["mail_sender_email"].ToString()) ? "'" + app["setting"]["mail_sender_email"] + "'" : "NULL") + ", google_analytics_code = " + (!string.IsNullOrEmpty(app["setting"]["google_analytics_code"].ToString()) ? "'" + app["setting"]["google_analytics_code"] + "'" : "NULL") + ", tenant_operation_webhook = " + (!string.IsNullOrEmpty(app["setting"]["tenant_operation_webhook"].ToString()) ? "'" + app["setting"]["tenant_operation_webhook"] + "'" : "NULL") + ", registration_type = 2, enable_registration = '" + options["enable_registration"].ToString().Substring(0, 1).ToLower() + "' WHERE app_id = " + app["id"] + ";"
                 };
 
