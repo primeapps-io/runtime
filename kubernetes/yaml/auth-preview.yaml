@@ -5,9 +5,9 @@ metadata:
   name: primeapps-auth-preview-config
   namespace: primeapps
 data:
-  AuthDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=auth;command timeout=0;keepalive=30;"
-  TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
-  PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+  AuthDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=auth;command timeout=0;keepalive=30;maximum pool size=1000;"
+  TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;maximum pool size=1000;"
+  PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
   Authority: "https://auth-preview.primeapps.io"
   ForwardHeaders: "true"
   HttpsRedirection: "true"

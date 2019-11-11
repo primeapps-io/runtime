@@ -5,8 +5,8 @@ metadata:
   name: primeapps-app-config-test
   namespace: primeapps
 data:
-  TenantDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=test;command timeout=0;keepalive=30;"
-  PlatformDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+  TenantDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=test;command timeout=0;keepalive=30;maximum pool size=1000;"
+  PlatformDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
   RedisConnection: "cache-test-redis-master.cache:6379,password=pr!m€Appsi0r,defaultDatabase=1,syncTimeout=30000"
   StorageUrl: "https://storage-test.primeapps.io"
   StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
