@@ -16,8 +16,17 @@
             <div class="table-responsive own-table">
                 <table class="table table-bordered">
                     <thead>
+
                     <tr>
                         <th width="100%">Name</th>
+                        @if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.TenantIds != null && ViewBag.TenantIds.Count > 0)
+                        {
+                            <th>Tenant Ids</th>
+                        }
+                        @if (ViewBag.LastRelease != null)
+                        {
+                            <th>Current Release Version</th>
+                        }
                         <th>Last Release Version</th>
                         <th></th>
                     </tr>
@@ -30,6 +39,20 @@
                             </div>
                             <h3 class="pl-2 d-inline-block">@ViewBag.CurrentApp.Label</h3>
                         </td>
+
+                        @if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.TenantIds != null && ViewBag.TenantIds.Count > 0)
+                        {
+                            <td class="align-middle text-center">
+                                <h3 class="mb-0">@string.Join(", ", ViewBag.TenantIds) </h3>
+                            </td>
+                        }
+
+                        @if (ViewBag.LastRelease != null)
+                        {
+                            <td class="align-middle text-center">
+                                <h3 class="mb-0">@ViewBag.LastRelease?.Version</h3>
+                            </td>
+                        }
                         <td class="align-middle text-center">
                             <h3 class="mb-0">@(ViewBag.LastPackage != null ? ViewBag.LastPackage.Version : "Please create a package firstly.")</h3>
                         </td>
@@ -50,7 +73,7 @@
 
                             </button>
 
-                            @if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.UpdateButtonActive != null && ViewBag.UpdateButtonActive)
+                            @if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.TenantIds != null && ViewBag.TenantIds.Count > 0)
                             {
                                 <button class="btn ifn-icon btn-3 btn-warning btn-md" type="button" title="Click for Update Tenants!" onclick="tenantUpdate(@ViewBag.CurrentApp.Id, @ViewBag.ActiveOrganizationId)">
                                     <span class="btn-inner--icon">

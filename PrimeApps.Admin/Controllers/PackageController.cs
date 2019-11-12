@@ -71,7 +71,7 @@ namespace PrimeApps.Admin.Controllers
 
             if (appId != null)
             {
-                ViewBag.UpdateButtonActive = await _publishHelper.IsActiveUpdateButton((int)appId);
+                ViewBag.TenantIds = await _publishHelper.GetTenantIds((int)appId);
                 ViewBag.LastRelease = await _releaseRepository.GetLast((int)appId);
 
                 var selectedOrg = organizations.FirstOrDefault(x => x.Id == orgId);
@@ -149,9 +149,9 @@ namespace PrimeApps.Admin.Controllers
             if (available)
                 return BadRequest($"There is another process for application {app.Name}");
 
-            var checkButton = await _publishHelper.IsActiveUpdateButton(id);
+            var checkButton = await _publishHelper.GetTenantIds(id);
 
-            if (!checkButton)
+            if (checkButton.Count == 0)
                 return BadRequest();
 
             var tenantIds = await _tenantRepository.GetByAppId(id);

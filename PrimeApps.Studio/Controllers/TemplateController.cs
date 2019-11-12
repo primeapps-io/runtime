@@ -267,8 +267,8 @@ namespace PrimeApps.Studio.Controllers
         }
 
 
-        [Route("get_all"), HttpGet]
-        public async Task<IActionResult> GetAppTemplates()
+        [Route("get_all_by_app_id"), HttpGet]
+        public async Task<IActionResult> GetAllByAppId()
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);

@@ -203,8 +203,6 @@ namespace PrimeApps.Model.Helpers
                     if (!result)
                         File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while creating platform app... \u001b[39m" + Environment.NewLine);
 
-                    PublishHelper.CreateAppTemplates(PREConnectionString, app);
-
                     var token = "";
 
                     var enableAuthApiValidation = configuration.GetValue("AppSettings:EnableAuthApiValidation", string.Empty);
@@ -248,6 +246,10 @@ namespace PrimeApps.Model.Helpers
                     if (!result)
                         File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while updating platform app... \u001b[39m" + Environment.NewLine);
                 }
+                
+                File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Sync application templates ..." + Environment.NewLine);
+                
+                PublishHelper.SyncAppTemplates(PREConnectionString, app);
 
                 /*if (!File.Exists(logPath))
                     File.Create(logPath);*/
@@ -564,35 +566,7 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static bool CreateAppTemplates(string connectionString, JObject app)
-        {
-            try
-            {
-                var templates = JArray.Parse(app["templates"].ToString());
-
-                foreach (var template in templates)
-                {
-                    var sql = $"INSERT INTO \"public\".\"app_templates\"(\"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\", \"app_id\", \"name\", \"subject\", \"content\", \"language\", \"type\", \"system_code\", \"active\", \"settings\") VALUES (1, NULL,  '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) + "', NULL," + (bool.Parse(template["deleted"].ToString()) ? 't' : 'f') + ", " + app["id"] + ",'" + template["name"] + "', '" + template["subject"] + "', '" + template["content"] + "', '" + template["language"] + "', " + (int)template["type"] + ", '" + template["system_code"] + "', " + (bool.Parse(template["active"].ToString()) ? 't' : 'f') + ", '" + template["settings"] + "');";
-                    try
-                    {
-                        PostgresHelper.Run(connectionString, "platform", sql);
-                    }
-                    catch (Exception e)
-                    {
-                        ErrorHandler.LogError(e, $"PublishHelper CreatePlatformApp method error. AppId : {app["id"]}, Template: {template["settings"]}");
-                    }
-                }
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                ErrorHandler.LogError(e, $"PublishHelper CreatePlatformApp method error. AppId : {app["id"]}");
-                return false;
-            }
-        }
-
-        public static bool UpdateAppTemplates(string connectionString, JObject app)
+        public static bool SyncAppTemplates(string connectionString, JObject app)
         {
             try
             {
@@ -601,18 +575,24 @@ namespace PrimeApps.Model.Helpers
                 foreach (var template in templates)
                 {
                     var settings = JObject.Parse(template["settings"].ToString());
+                    var selectSql = $"SELECT id from app_templates WHERE settings->>'id' = '" + settings["id"] + "';";
+                    
+                    var exists = PostgresHelper.Read(connectionString, "platform", selectSql, "hasRows");
+                    var sql = "";
 
-                    if (string.IsNullOrEmpty(settings["id"].ToString()))
-                        continue;
+                    if (exists)
+                        sql = $"UPDATE public.app_templates SET created_by = 1, updated_by = 1, created_at = '" + template["created_at"] + "', updated_at = '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) + "', deleted = '" + (bool.Parse(template["deleted"].ToString()) ? "t" : "f") + "', name = '" + template["name"] + "', subject = '" + template["subject"] + "', content = '" + template["content"] + "', language = '" + template["language"] + "', type = " + (int)template["type"] + ", system_code = '" + template["system_code"] + "', active = '" + (bool.Parse(template["active"].ToString()) ? "t" : "f") + "', settings = '" + template["settings"] + "' WHERE settings->>'id' = '" + settings["id"] + "';";
 
-                    var sql = $"UPDATE public.app_templates SET created_by = 1, updated_by = 1, created_at = '" + template["created_at"] + "', updated_at = '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) + "', deleted = " + (bool.Parse(template["deleted"].ToString()) ? 't' : 'f') + ", name = '" + template["name"] + "', subject = '" + template["subject"] + "', content = '" + template["content"] + "', language = '" + template["language"] + "', type = " + (int)template["type"] + ", system_code = '" + template["system_code"] + "', active = " + (bool.Parse(template["active"].ToString()) ? 't' : 'f') + ", settings = '" + template["settings"] + "' WHERE settings->>'id' = '" + settings["id"] + "';";
+                    else
+                        sql = $"INSERT INTO \"public\".\"app_templates\"(\"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\", \"app_id\", \"name\", \"subject\", \"content\", \"language\", \"type\", \"system_code\", \"active\", \"settings\") VALUES (1, NULL,  '" + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) + "', NULL,'" + (bool.Parse(template["deleted"].ToString()) ? "t" : "f") + "', " + app["id"] + ",'" + template["name"] + "', '" + template["subject"] + "', '" + template["content"] + "', '" + template["language"] + "', " + (int)template["type"] + ", '" + template["system_code"] + "', '" + (bool.Parse(template["active"].ToString()) ? "t" : "f") + "', '" + template["settings"] + "');";
+
                     try
                     {
                         PostgresHelper.Run(connectionString, "platform", sql);
                     }
                     catch (Exception e)
                     {
-                        ErrorHandler.LogError(e, $"PublishHelper CreatePlatformApp method error. AppId : {app["id"]}, Template: {template["settings"]}");
+                        ErrorHandler.LogError(e, $"PublishHelper CreatePlatformApp method error. AppId : {app["id"]}, Template settings: {template["settings"]}");
                     }
                 }
 
@@ -624,7 +604,7 @@ namespace PrimeApps.Model.Helpers
                 return false;
             }
         }
-
+        
         public static bool CreatePlatformApp(string connectionString, JObject app, string secret, string appUrl, string authUrl)
         {
             try

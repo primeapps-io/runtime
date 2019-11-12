@@ -144,7 +144,13 @@ namespace PrimeApps.Studio.Controllers
             await Postgres.CreateDatabaseWithTemplet(_configuration.GetConnectionString("TenantDBConnection"), app.Id, model.TempletId);
             Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser));
 
-            await _storage.CreateBucketPolicy($"app{app.Id}", Request.Scheme + "://" + Request.Host.Value, UnifiedStorage.PolicyType.StudioPolicy);
+            if(Request.Host.Value.Contains("localhost"))
+                await _storage.CreateBucketPolicy($"app{app.Id}", $"{Request.Scheme}://localhost:*", UnifiedStorage.PolicyType.StudioPolicy);
+            else
+            {
+                await _storage.CreateBucketPolicy($"app{app.Id}", $"{Request.Scheme}://*.primeapps.io", UnifiedStorage.PolicyType.StudioPolicy);
+                await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}",$"{Request.Scheme}://*.primeapps.app", UnifiedStorage.PolicyType.StudioPolicy);
+            }
 
             return Ok(app);
         }

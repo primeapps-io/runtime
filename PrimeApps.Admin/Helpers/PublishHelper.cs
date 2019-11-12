@@ -1,11 +1,12 @@
-﻿using PrimeApps.Model.Repositories.Interfaces;
+﻿using System.Collections.Generic;
+using PrimeApps.Model.Repositories.Interfaces;
 using System.Threading.Tasks;
 
 namespace PrimeApps.Admin.Helpers
 {
     public interface IPublishHelper
     {
-        Task<bool> IsActiveUpdateButton(int appId);
+        Task<IList<int>> GetTenantIds(int appId);
     }
 
     public class PublishHelper : IPublishHelper
@@ -19,15 +20,12 @@ namespace PrimeApps.Admin.Helpers
             _tenantRepository = tenantRepository;
         }
 
-        public async Task<bool> IsActiveUpdateButton(int appId)
+        public async Task<IList<int>> GetTenantIds(int appId)
         {
             var tenantIds = await _tenantRepository.GetByAppId(appId);
             var firstTime = await _releaseRepository.FirstTime(appId);
 
-            if (firstTime)
-                return false;
-
-            return tenantIds != null && tenantIds.Count >= 1;
+            return firstTime ? null : tenantIds;
         }
     }
 }

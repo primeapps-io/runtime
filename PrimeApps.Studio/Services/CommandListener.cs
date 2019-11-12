@@ -29,7 +29,8 @@ namespace PrimeApps.Studio.Services
         private Guid? _lastCommandId = null;
         private CurrentUser CurrentUser => _currentUser ?? (_currentUser = UserHelper.GetCurrentUser(_context));
 
-        public CommandListener(IBackgroundTaskQueue queue, IHistoryHelper historyHelper, IHttpContextAccessor context, IConfiguration configuration)
+        public CommandListener(IBackgroundTaskQueue queue, IHistoryHelper historyHelper, IHttpContextAccessor context,
+            IConfiguration configuration)
         {
             _configuration = configuration;
             _context = context;
@@ -38,9 +39,12 @@ namespace PrimeApps.Studio.Services
         }
 
         [DiagnosticName("Microsoft.EntityFrameworkCore.Database.Command.CommandExecuting")]
-        public void OnCommandExecuting(DbCommand command, DbCommandMethod executeMethod, Guid commandId, Guid connectionId, bool async, DateTimeOffset startTime)
+        public void OnCommandExecuting(DbCommand command, DbCommandMethod executeMethod, Guid commandId,
+            Guid connectionId, bool async, DateTimeOffset startTime)
         {
-            if ((command.CommandText.StartsWith("INSERT", true, null) && !command.CommandText.Contains("public.history_database") && !command.CommandText.Contains("public.history_storage")) ||
+            if ((command.CommandText.StartsWith("INSERT", true, null) &&
+                 !command.CommandText.Contains("public.history_database") &&
+                 !command.CommandText.Contains("public.history_storage")) ||
                 command.CommandText.StartsWith("UPDATE", true, null) ||
                 command.CommandText.StartsWith("CREATE", true, null) ||
                 command.CommandText.StartsWith("DELETE", true, null) ||
@@ -63,10 +67,12 @@ namespace PrimeApps.Studio.Services
                 command = _command;
             else
             {
-                command = ((RelationalDataReader)result).DbCommand;
+                command = ((RelationalDataReader) result).DbCommand;
             }
 
-            if (command != null && command.Connection?.Database != "studio" && !command.CommandText.Contains("public.history_database") && !command.CommandText.Contains("public.history_storage") && (
+            if (command != null && command.Connection?.Database != "studio" &&
+                !command.CommandText.Contains("public.history_database") &&
+                !command.CommandText.Contains("public.history_storage") && (
                     command.CommandText.StartsWith("INSERT", true, null) ||
                     command.CommandText.StartsWith("UPDATE", true, null) ||
                     command.CommandText.StartsWith("CREATE", true, null) ||
@@ -102,19 +108,25 @@ namespace PrimeApps.Studio.Services
                         if (sql.StartsWith("INSERT INTO"))
                         {
                             var tableName = Model.Helpers.PackageHelper.GetTableName(sql);
-                            var check = PostgresHelper.Read(_configuration.GetConnectionString("StudioDBConnection"), _command.Connection.Database, $"SELECT column_name FROM information_schema.columns WHERE table_name='{tableName.Split("public.")[1]}' and column_name='id';", "hasRows");
+                            var check = PostgresHelper.Read(_configuration.GetConnectionString("StudioDBConnection"),
+                                _command.Connection.Database,
+                                $"SELECT column_name FROM information_schema.columns WHERE table_name='{tableName.Split("public.")[1]}' and column_name='id';",
+                                "hasRows");
 
                             if (check)
                             {
                                 if (sequences[tableName] == null)
                                 {
-                                    var arrayResult = PostgresHelper.Read(_configuration.GetConnectionString("StudioDBConnection"), _command.Connection.Database, $"SELECT last_value FROM {tableName.Split("public.")[1]}_id_seq;", "array");
+                                    var arrayResult = PostgresHelper.Read(
+                                        _configuration.GetConnectionString("StudioDBConnection"),
+                                        _command.Connection.Database,
+                                        $"SELECT last_value FROM {tableName.Split("public.")[1]}_id_seq;", "array");
                                     var value = 0;
                                     if (arrayResult != null)
                                     {
                                         foreach (var table in arrayResult)
                                         {
-                                            value = (int)table["last_value"];
+                                            value = (int) table["last_value"];
                                         }
                                     }
 
@@ -123,10 +135,11 @@ namespace PrimeApps.Studio.Services
                                 }
                                 else
                                 {
-                                    sequences[tableName] = (int)sequences[tableName] + 1;
+                                    sequences[tableName] = (int) sequences[tableName] + 1;
                                 }
 
-                                sqls[index] = sql.Replace(tableName + " (", tableName + " (id,").Replace("VALUES (", $"VALUES ({sequences[tableName]},");
+                                sqls[index] = sql.Replace(tableName + " (", tableName + " (id,")
+                                    .Replace("VALUES (", $"VALUES ({sequences[tableName]},");
                             }
 
                             newRawQuery += sqls[index] + ";\r\n";
@@ -137,7 +150,8 @@ namespace PrimeApps.Studio.Services
                         }
                     }
 
-                    _queue.QueueBackgroundWorkItem(token => _historyHelper.Database(newRawQuery, executedAt, email, currentUser, (Guid)_lastCommandId));
+                    _queue.QueueBackgroundWorkItem(token =>
+                        _historyHelper.Database(newRawQuery, executedAt, email, currentUser, (Guid) _lastCommandId));
                 }
 
                 _hastExecuting = false;
@@ -150,7 +164,8 @@ namespace PrimeApps.Studio.Services
             var currenUser = CurrentUser;
 
             if (_lastCommandId.HasValue && _hastExecuting)
-                _queue.QueueBackgroundWorkItem(token => _historyHelper.DeleteDbRecord(currenUser, (Guid)_lastCommandId));
+                _queue.QueueBackgroundWorkItem(
+                    token => _historyHelper.DeleteDbRecord(currenUser, (Guid) _lastCommandId));
         }
 
         public string GetGeneratedQuery(DbCommand dbCommand)
@@ -197,6 +212,11 @@ namespace PrimeApps.Studio.Services
                 {
                     // End of query parameters
                     query = query.Replace(parameter.ParameterName + ")", value + ")");
+                }
+                else if (query.Contains("= " + parameter.ParameterName + "\r\n"))
+                {
+                    // End of query parameters
+                    query = query.Replace("= " + parameter.ParameterName + "\r\n", "= " + value + "\r\n");
                 }
                 else if (query.Contains("= " + parameter.ParameterName))
                 {

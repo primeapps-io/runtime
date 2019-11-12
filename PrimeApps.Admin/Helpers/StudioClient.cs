@@ -138,7 +138,7 @@ namespace PrimeApps.Admin.Helpers
 
         public async Task<List<AppDraftTemplate>> GetAllAppTemplates()
         {
-            var response = await _client.GetAsync($"template/get_all");
+            var response = await _client.GetAsync($"template/get_all_by_app_id");
 
             if (!response.IsSuccessStatusCode)
             {

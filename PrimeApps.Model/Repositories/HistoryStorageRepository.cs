@@ -24,14 +24,14 @@ namespace PrimeApps.Model.Repositories
         {
             var current = await DbContext.HistoryStorages.FirstOrDefaultAsync(x => x.Tag == min);
             if (current != null)
-                return await DbContext.HistoryStorages.Where(x => x.Id > current.Id).ToListAsync();
+                return await DbContext.HistoryStorages.Where(x => x.Id > current.Id).OrderBy(x => x.Id).ToListAsync();
 
             current = await DbContext.HistoryStorages.FirstOrDefaultAsync(x => x.Tag == (int.Parse(min) + 1).ToString());
 
             if (current == null)
                 return null;
 
-            return await DbContext.HistoryStorages.Where(x => !x.Deleted).ToListAsync();
+            return await DbContext.HistoryStorages.Where(x => !x.Deleted).OrderBy(x => x.Id).ToListAsync();
         }
 
         public async Task<HistoryStorage> GetLast()
