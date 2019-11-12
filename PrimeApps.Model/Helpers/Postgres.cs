@@ -6,6 +6,7 @@ using System.Configuration;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Sentry;
 
 namespace PrimeApps.Model.Helpers
 {
@@ -112,8 +113,9 @@ namespace PrimeApps.Model.Helpers
                     connection.Close();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                SentrySdk.CaptureException(ex);
                 result = false;
             }
 
