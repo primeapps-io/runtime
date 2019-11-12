@@ -94,12 +94,18 @@ angular.module('primeapps')
             }
 
             if (!$scope.id && !$scope.hasPermission($scope.type, $scope.operations.write)) {
-                if (helper.hasCustomProfilePermission('bulk_update'))
-                    return;
 
-                ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                $state.go('app.dashboard');
-                return;
+                var notAccess = function () {
+                    ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
+                    $state.go('app.dashboard');
+                    return;
+                }
+
+                if (!$scope.$parent.selectedRows)
+                    notAccess();
+
+                if (!helper.hasCustomProfilePermission('bulk_update'))
+                    notAccess();
             }
 
 
