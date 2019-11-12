@@ -100,10 +100,7 @@ angular.module('primeapps')
                     $state.go('app.dashboard');
                     return;
                 }
-
-                if (!$scope.$parent.selectedRows)
-                    notAccess();
-
+                 
                 if (!helper.hasCustomProfilePermission('bulk_update'))
                     notAccess();
             }
