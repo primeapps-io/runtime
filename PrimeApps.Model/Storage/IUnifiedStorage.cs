@@ -13,8 +13,8 @@ namespace PrimeApps.Model.Storage
         Task AbortMultipartUpload(string bucket, string key, string uploadId);
         Task<CompleteMultipartUploadResponse> CompleteMultipartUpload(string bucket, string key, string eTags, string finalETag, string uploadId);
         Task<CopyObjectResponse> CopyObject(string sourceBucket, string key, string destinationBucket, string destinationKey);
-        Task<Amazon.S3.Model.ListObjectsResponse> GetListObject(string sourceBucket);
-        Task CopyBucket(string sourceBucket, string destinationBucket, string[] withouts = null);
+        Task<ListObjectsV2Response> GetListObject(string bucket, string folder);
+        Task CopyBucket(string sourceBucket, string sourceFolder, string destinationBucket, string destinationFolder, string[] withouts = null);
         Task CreateBucketIfNotExists(string bucket);
         Task DeleteBucket(string bucket);
         Task<DeleteObjectResponse> DeleteObject(string bucket, string key);

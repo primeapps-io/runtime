@@ -171,13 +171,15 @@ namespace PrimeApps.App.Controllers
             }
 
             Aspose.Words.Document doc;
+            var memoryStream = new MemoryStream();
 
             // Open a template document.
             using (var template = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), templateEntity.Content, null))
             {
-                doc = new Aspose.Words.Document(template);
+                template.CopyTo(memoryStream);
+                doc = new Aspose.Words.Document(memoryStream);
             }
-
+            
             // Add related module records.
             await AddRelatedModuleRecords(relatedModuleRecords, notes, moduleEntity, lookupModules, doc, record, module, id, currentCulture, timezoneOffset);
 
@@ -224,7 +226,7 @@ namespace PrimeApps.App.Controllers
             outputStream.Position = 0;
             var mimeType = MimeUtility.GetMimeMapping(fileName);
             string publicFileName = Guid.NewGuid().ToString().Replace("-", "") + "." + format;
-            string publicPath = UnifiedStorage.GetPath("public", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
+            string publicPath = UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId);
             if (save)
             {
 
@@ -317,169 +319,180 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-            // Get related module records.
-            foreach (Relation relation in moduleEntity.Relations.Where(x => !x.Deleted && x.RelationType != RelationType.ManyToMany).ToList())
+            if (moduleEntity.Relations != null)
             {
-                if (!doc.Range.Text.Contains("{{#foreach " + relation.RelatedModule + "}}"))
+                // Get related module records.
+                foreach (Relation relation in moduleEntity.Relations.Where(x => !x.Deleted && x.RelationType != RelationType.ManyToMany).ToList())
                 {
-                    continue;
-                }
-
-                var sortField = "created_at";
-                var sortDirection = SortDirection.Asc;
-
-                if (relationSorts.Count > 0)
-                {
-                    if (relationSorts.ContainsKey(relation.RelatedModule))
+                    if (!doc.Range.Text.Contains("{{#foreach " + relation.RelatedModule + "}}"))
                     {
-                        var relationSort = relationSorts[relation.RelatedModule].Split(',');
-
-                        sortField = relationSort[0];
-                        sortDirection = (SortDirection)Enum.Parse(typeof(SortDirection), relationSort[1]);
+                        continue;
                     }
-                }
 
-                var fields = await _recordHelper.GetAllFieldsForFindRequest(relation.RelatedModule);
+                    var sortField = "created_at";
+                    var sortDirection = SortDirection.Asc;
 
-                var findRequest = new FindRequest
-                {
-                    Fields = fields,
-                    Filters = new List<Filter>
+                    if (relationSorts.Count > 0)
                     {
-                        new Filter
+                        if (relationSorts.ContainsKey(relation.RelatedModule))
                         {
-                            Field = relation.RelationField,
-                            Operator = Operator.Equals,
-                            No = 1,
-                            Value = recordId.ToString()
+                            var relationSort = relationSorts[relation.RelatedModule].Split(',');
+
+                            sortField = relationSort[0];
+                            sortDirection = (SortDirection)Enum.Parse(typeof(SortDirection), relationSort[1]);
                         }
-                    },
-                    SortField = sortField,
-                    SortDirection = sortDirection,
-                    Limit = 1000,
-                    Offset = 0
-                };
+                    }
 
-                if (relation.RelatedModule == "activities")
-                {
-                    findRequest.Filters = new List<Filter>
+                    var fields = await _recordHelper.GetAllFieldsForFindRequest(relation.RelatedModule);
+
+                    var findRequest = new FindRequest
                     {
-                        new Filter
+                        Fields = fields,
+                        Filters = new List<Filter>
                         {
-                            Field = "related_to",
-                            Operator = Operator.Equals,
-                            No = 1,
-                            Value = recordId.ToString()
+                            new Filter
+                            {
+                                Field = relation.RelationField,
+                                Operator = Operator.Equals,
+                                No = 1,
+                                Value = recordId.ToString()
+                            }
                         },
-                        new Filter
-                        {
-                            Field = "related_module",
-                            Operator = Operator.Is,
-                            No = 2,
-                            Value = AppUser.TenantLanguage.Contains("tr") ? moduleEntity.LabelTrSingular : moduleEntity.LabelEnSingular
-                        }
+                        SortField = sortField,
+                        SortDirection = sortDirection,
+                        Limit = 1000,
+                        Offset = 0
                     };
-                }
 
-                var records = _recordRepository.Find(relation.RelatedModule, findRequest);
-                Module relatedModuleEntity;
-                ICollection<Module> relatedLookupModules;
-
-                if (moduleEntity.Name == relation.RelatedModule)
-                {
-                    relatedModuleEntity = moduleEntity;
-                    relatedLookupModules = lookupModules;
-                }
-                else
-                {
-                    relatedModuleEntity = await _moduleRepository.GetByNameBasic(relation.RelatedModule);
-                    relatedLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(relatedModuleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
-                }
-
-                var recordsFormatted = new JArray();
-                var secondLevel = secondLevels.SingleOrDefault(x => x.RelationId == relation.Id);
-
-                foreach (JObject recordItem in records)
-                {
-                    var recordFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(relatedModuleEntity, recordItem, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, relatedLookupModules);
-
-                    if (secondLevel != null)
+                    if (relation.RelatedModule == "activities")
                     {
-                        await AddSecondLevelRecords(recordFormatted, secondLevel.Module, secondLevel.SubRelation, (int)recordItem["id"], secondLevel.SubModule, currentCulture, timezoneOffset);
+                        findRequest.Filters = new List<Filter>
+                        {
+                            new Filter
+                            {
+                                Field = "related_to",
+                                Operator = Operator.Equals,
+                                No = 1,
+                                Value = recordId.ToString()
+                            },
+                            new Filter
+                            {
+                                Field = "related_module",
+                                Operator = Operator.Is,
+                                No = 2,
+                                Value = AppUser.TenantLanguage.Contains("tr") ? moduleEntity.LabelTrSingular : moduleEntity.LabelEnSingular
+                            }
+                        };
                     }
 
-                    recordsFormatted.Add(recordFormatted);
+                    var records = _recordRepository.Find(relation.RelatedModule, findRequest);
+                    Module relatedModuleEntity;
+                    ICollection<Module> relatedLookupModules;
+
+                    if (moduleEntity.Name == relation.RelatedModule)
+                    {
+                        relatedModuleEntity = moduleEntity;
+                        relatedLookupModules = lookupModules;
+                    }
+                    else
+                    {
+                        relatedModuleEntity = await _moduleRepository.GetByNameBasic(relation.RelatedModule);
+                        relatedLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(relatedModuleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
+                    }
+
+                    var recordsFormatted = new JArray();
+                    var secondLevel = secondLevels.SingleOrDefault(x => x.RelationId == relation.Id);
+
+                    foreach (JObject recordItem in records)
+                    {
+                        var recordFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(relatedModuleEntity, recordItem, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, relatedLookupModules);
+
+                        if (secondLevel != null)
+                        {
+                            await AddSecondLevelRecords(recordFormatted, secondLevel.Module, secondLevel.SubRelation, (int)recordItem["id"], secondLevel.SubModule, currentCulture, timezoneOffset);
+                        }
+
+                        recordsFormatted.Add(recordFormatted);
+                    }
+
+                    relatedModuleRecords.Add(relation.RelatedModule, recordsFormatted);
                 }
 
-                relatedModuleRecords.Add(relation.RelatedModule, recordsFormatted);
             }
 
-            // Many to many related module records
-            foreach (Relation relation in moduleEntity.Relations.Where(x => !x.Deleted && x.RelationType == RelationType.ManyToMany).ToList())
+            if (moduleEntity.Relations != null)
             {
-                if (!doc.Range.Text.Contains("{{#foreach " + relation.RelatedModule + "}}"))
+                // Many to many related module records
+                foreach (Relation relation in moduleEntity.Relations.Where(x => !x.Deleted && x.RelationType == RelationType.ManyToMany).ToList())
                 {
-                    continue;
-                }
-
-                var fields = await _recordHelper.GetAllFieldsForFindRequest(relation.RelatedModule, false);
-                var fieldsManyToMany = new List<string>();
-
-                foreach (var field in fields)
-                {
-                    fieldsManyToMany.Add(relation.RelatedModule + "_id." + relation.RelatedModule + "." + field);
-                }
-
-                var records = _recordRepository.Find(relation.RelatedModule, new FindRequest
-                {
-                    Fields = fieldsManyToMany,
-                    Filters = new List<Filter>
+                    if (!doc.Range.Text.Contains("{{#foreach " + relation.RelatedModule + "}}"))
                     {
-                        new Filter
-                        {
-                            Field = moduleEntity.Name + "_id",
-                            Operator = Operator.Equals,
-                            No = 1,
-                            Value = recordId.ToString()
-                        }
-                    },
-                    ManyToMany = moduleEntity.Name,
-                    SortField = relation.RelatedModule + "_id." + relation.RelatedModule + ".created_at",
-                    SortDirection = SortDirection.Asc,
-                    Limit = 1000,
-                    Offset = 0
-                });
-
-                Module relatedModuleEntity;
-                ICollection<Module> relatedLookupModules;
-
-                if (moduleEntity.Name == relation.RelatedModule)
-                {
-                    relatedModuleEntity = moduleEntity;
-                    relatedLookupModules = new List<Module> { moduleEntity };
-                }
-                else
-                {
-                    relatedModuleEntity = await _moduleRepository.GetByNameBasic(relation.RelatedModule);
-                    relatedLookupModules = new List<Module> { relatedModuleEntity };
-                }
-
-                var recordsFormatted = new JArray();
-                var secondLevel = secondLevels.SingleOrDefault(x => x.RelationId == relation.Id);
-
-                foreach (JObject recordItem in records)
-                {
-                    var recordFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(relatedModuleEntity, recordItem, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, relatedLookupModules);
-
-                    if (secondLevel != null)
-                    {
-                        await AddSecondLevelRecords(recordFormatted, secondLevel.Module, secondLevel.SubRelation, (int)recordItem[relation.RelatedModule + "_id"], secondLevel.SubModule, currentCulture, timezoneOffset);
+                        continue;
                     }
 
-                    recordsFormatted.Add(recordFormatted);
-                }
+                    var fields = await _recordHelper.GetAllFieldsForFindRequest(relation.RelatedModule, false);
+                    var fieldsManyToMany = new List<string>();
 
-                relatedModuleRecords.Add(relation.RelatedModule, recordsFormatted);
+                    foreach (var field in fields)
+                    {
+                        fieldsManyToMany.Add(relation.RelatedModule + "_id." + relation.RelatedModule + "." + field);
+                    }
+
+                    var records = _recordRepository.Find(relation.RelatedModule, new FindRequest
+                    {
+                        Fields = fieldsManyToMany,
+                        Filters = new List<Filter>
+                        {
+                            new Filter
+                            {
+                                Field = moduleEntity.Name + "_id",
+                                Operator = Operator.Equals,
+                                No = 1,
+                                Value = recordId.ToString()
+                            }
+                        },
+                        ManyToMany = moduleEntity.Name,
+                        SortField = relation.RelatedModule + "_id." + relation.RelatedModule + ".created_at",
+                        SortDirection = SortDirection.Asc,
+                        Limit = 1000,
+                        Offset = 0
+                    });
+
+                    Module relatedModuleEntity;
+                    ICollection<Module> relatedLookupModules;
+
+                    if (moduleEntity.Name == relation.RelatedModule)
+                    {
+                        relatedModuleEntity = moduleEntity;
+                        relatedLookupModules = new List<Module> {moduleEntity};
+                    }
+                    else
+                    {
+                        relatedModuleEntity = await _moduleRepository.GetByNameBasic(relation.RelatedModule);
+                        relatedLookupModules = new List<Module> {relatedModuleEntity};
+                    }
+
+                    var recordsFormatted = new JArray();
+                    var secondLevel = secondLevels.SingleOrDefault(x => x.RelationId == relation.Id);
+
+                    foreach (JObject recordItem in records)
+                    {
+                        var recordFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(relatedModuleEntity,
+                            recordItem, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid,
+                            AppUser.TenantLanguage, currentCulture, timezoneOffset, relatedLookupModules);
+
+                        if (secondLevel != null)
+                        {
+                            await AddSecondLevelRecords(recordFormatted, secondLevel.Module, secondLevel.SubRelation,
+                                (int) recordItem[relation.RelatedModule + "_id"], secondLevel.SubModule, currentCulture,
+                                timezoneOffset);
+                        }
+
+                        recordsFormatted.Add(recordFormatted);
+                    }
+
+                    relatedModuleRecords.Add(relation.RelatedModule, recordsFormatted);
+                }
             }
 
             // Get notes of the record.

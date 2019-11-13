@@ -154,7 +154,7 @@ namespace PrimeApps.Model.Storage
         public UnifiedStorage(IAmazonS3 client, IConfiguration configuration)
         {
             _client = client;
-            ((AmazonS3Config)(_client.Config)).ForcePathStyle = true;
+            ((AmazonS3Config) (_client.Config)).ForcePathStyle = true;
             _configuration = configuration;
         }
 
@@ -379,11 +379,11 @@ namespace PrimeApps.Model.Storage
             else
             {
                 var obj = JObject.Parse(bucketPolicy.Policy);
-                var httpReferrer = obj["Statement"].FirstOrDefault(jt => (string)jt["Sid"] == "http_referrer");
-                var index = ((JArray)obj["Statement"]).IndexOf(httpReferrer);
-                var referers = (JArray)obj["Statement"][index]["Condition"]["StringLike"]["aws:Referer"];
+                var httpReferrer = obj["Statement"].FirstOrDefault(jt => (string) jt["Sid"] == "http_referrer");
+                var index = ((JArray) obj["Statement"]).IndexOf(httpReferrer);
+                var referers = (JArray) obj["Statement"][index]["Condition"]["StringLike"]["aws:Referer"];
 
-                if (referers.Any(x => (string)x == url + "/*"))
+                if (referers.Any(x => (string) x == url + "/*"))
                     return;
 
                 referers.Add(url + "/*");
@@ -433,7 +433,7 @@ namespace PrimeApps.Model.Storage
 
             return await _client.PutBucketPolicyAsync(putRequest);
         }
-        
+
         /// <summary>
         /// Downloads files from S3 as FileStreamResult(Chunked)
         /// </summary>
@@ -444,7 +444,7 @@ namespace PrimeApps.Model.Storage
         public async Task<GetObjectResponse> Download(string bucket, string key, string fileName)
         {
             var file = await _client.GetObjectAsync(bucket, key);
-           
+
             return file;
         }
 
@@ -555,9 +555,21 @@ namespace PrimeApps.Model.Storage
         /// Get buckets object list
         /// </summary>
         /// <param name="sourceBucket"></param>
-        public async Task<Amazon.S3.Model.ListObjectsResponse> GetListObject(string sourceBucket)
+        public async Task<ListObjectsV2Response> GetListObject(string bucket, string folder)
         {
-            return await _client.ListObjectsAsync(sourceBucket);
+            var request = new ListObjectsV2Request
+            {
+                Prefix = folder,
+                BucketName = bucket
+            };
+
+            ListObjectsV2Response response;
+
+            response = await _client.ListObjectsV2Async(request);
+            
+            return response;
+
+            //return await _client.ListObjectsAsync(sourceBucket);
         }
 
         /// <summary>
@@ -566,10 +578,10 @@ namespace PrimeApps.Model.Storage
         /// <param name="sourceBucket"></param>
         /// <param name="destinationBucket"></param>
         /// <param name="isRecursive"></param>
-        public async Task CopyBucket(string sourceBucket, string destinationBucket, string[] withouts = null)
+        public async Task CopyBucket(string sourceBucket, string sourceFolder, string destinationBucket, string destinationFolder, string[] withouts = null)
         {
-            await CreateBucketIfNotExists(destinationBucket);
-            var listOfObjects = await GetListObject(sourceBucket);
+            await CreateBucketIfNotExists($"{destinationBucket}/{destinationFolder}");
+            var listOfObjects = await GetListObject(sourceBucket, sourceFolder);
             foreach (var obj in listOfObjects.S3Objects)
             {
                 if (withouts != null && withouts.Contains(obj.Key))
@@ -736,14 +748,14 @@ namespace PrimeApps.Model.Storage
         /// <returns></returns>
         public static string GetPath(string type, string mode, int id, string extraPath = "")
         {
-            ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
+            ObjectType objectType = (ObjectType) System.Enum.Parse(typeof(ObjectType), type, true);
 
             return $"{mode}{id}{pathMap[objectType]}{extraPath}";
         }
 
         public static string GetPathPictures(string type, int userId, string extraPath = "")
         {
-            ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
+            ObjectType objectType = (ObjectType) System.Enum.Parse(typeof(ObjectType), type, true);
 
             return $"profile-pictures{pathMap[objectType]}{"user" + userId}{extraPath}";
         }
@@ -755,7 +767,7 @@ namespace PrimeApps.Model.Storage
 
         public static ObjectType GetType(string type)
         {
-            return (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
+            return (ObjectType) System.Enum.Parse(typeof(ObjectType), type, true);
         }
 
         public string GetDownloadFolderPath()
