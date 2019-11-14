@@ -230,11 +230,13 @@ namespace PrimeApps.App.Models
 
     public class UpdateUserBindingModel
     {
+        [Required, JsonProperty("id")]
+        public int Id { get; set; }
 
-        [Required, JsonProperty("currency")]
+        [JsonProperty("currency")]
         public string Currency { get; set; }
 
-        [Required, JsonProperty("culture")]
+        [JsonProperty("culture")]
         public string Culture { get; set; }
     }
 }

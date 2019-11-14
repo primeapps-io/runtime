@@ -411,8 +411,8 @@ namespace PrimeApps.App.Controllers
         [Route("update_user_currency_culture"), HttpPost]
         public async Task<IActionResult> UpdateUserCurrencyCulture([FromBody]UpdateUserBindingModel User)
         {
-            PlatformUser userToEdit = await _platformUserRepository.GetSettings(AppUser.Id);
-            User tenantUserToEdit = _userRepository.GetById(AppUser.Id);
+            PlatformUser userToEdit = await _platformUserRepository.GetSettings(User.Id);
+            User tenantUserToEdit = _userRepository.GetById(User.Id);
 
             userToEdit.Setting.Culture = User.Culture;
             userToEdit.Setting.Currency = User.Currency;
@@ -420,11 +420,14 @@ namespace PrimeApps.App.Controllers
             tenantUserToEdit.Culture = User.Culture;
             tenantUserToEdit.Currency = User.Currency;
 
+            //Set warehouse database name
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
             await _platformUserRepository.HardCodedUpdateUser(userToEdit);
+            //update users record.
             await _userRepository.UpdateAsync(tenantUserToEdit);
 
-            return Ok(AppUser.Id);
+            return Ok();
+
         }
 
         [Route("send_user_password"), HttpPost]
