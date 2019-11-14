@@ -91,8 +91,11 @@ namespace PrimeApps.Model.Enums
         [EnumMember(Value = "empty_list")]
         EmptyList = 30,
 
-        [EnumMember(Value = "after_email")]
-        AfterEmail = 31,
+        [EnumMember(Value = "after_bulk_email")]
+        AfterBulkEmail = 31,
+
+        [EnumMember(Value = "before_bulk_email")]
+        BeforeBulkEmail = 32,
 
         /*
          * Global Config
