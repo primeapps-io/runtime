@@ -30,7 +30,7 @@ namespace PrimeApps.Studio.Controllers
         private IRelationRepository _relationRepository;
         private IUserRepository _userRepository;
         private IProfileRepository _profileRepository;
-        private ISettingRepository _settingRepository; 
+        private ISettingRepository _settingRepository;
         private IConfiguration _configuration;
         private Warehouse _warehouse;
         private IModuleHelper _moduleHelper;
@@ -83,7 +83,7 @@ namespace PrimeApps.Studio.Controllers
             var user = await _userRepository.GetByEmail(userModel.Email);
 
             if (user != null)
-                return BadRequest(new {message = "User already exist"});
+                return BadRequest(new { message = "User already exist" });
 
             var clientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
             string password = "";
@@ -92,7 +92,7 @@ namespace PrimeApps.Studio.Controllers
             {
                 var appInfo = await _applicationRepository.GetByNameAsync(clientId);
                 var organization = await _organizationRepository.Get(OrganizationId);
-                
+
                 using (var httpClient = new HttpClient())
                 {
                     var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_app_draft_user";
@@ -134,7 +134,7 @@ namespace PrimeApps.Studio.Controllers
                 }
             }
 
-            return StatusCode(201, new {password = password});
+            return StatusCode(201, new { password = password });
         }
 
         /// <summary>
@@ -180,6 +180,7 @@ namespace PrimeApps.Studio.Controllers
                 return BadRequest();
 
             user.IsActive = false;
+            user.Deleted = true;
             await _userRepository.UpdateAsync(user);
             var platformUser = await _platformUserRepository.Get(user.Id);
             var tenantUser = platformUser.TenantsAsUser.FirstOrDefault(x => x.TenantId == 1 & x.UserId == user.Id);
