@@ -538,7 +538,7 @@ namespace PrimeApps.App.Controllers
 
             _recordHelper.AfterDelete(moduleEntity, record, AppUser, _warehouse);
 
-            return Ok();
+            return Ok(id);
         }
 
         [Route("create_bulk/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
