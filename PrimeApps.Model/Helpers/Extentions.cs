@@ -255,7 +255,7 @@ namespace PrimeApps.Model.Helpers
 
         public static string EscapeSimilarTo(this string value)
         {
-            return Regex.Replace(value, "[\\(%|_\\)]", x => string.Format(@"\{0}", x.Value));
+            return Regex.Replace(value, "[\\()\\[\\]%|+*?_]", x => string.Format(@"\{0}", x.Value));
         }
 
         public static T To<T>(this JToken token)
