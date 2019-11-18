@@ -637,7 +637,19 @@ namespace PrimeApps.App.Controllers
             var moduleEntity = await _moduleRepository.GetByNameWithDependencies(module);
             var ids = (JArray)request["ids"];
             var record = (JObject)request["record"];
+            var customProfileSetting = await _settingRepository.GetByKeyAsync("custom_profile_permissions");
+            var customBulkUpdatePermission = false;
 
+            if (customProfileSetting != null)
+            {
+                JToken profileSetting = JObject.Parse(customProfileSetting.Value)["profilePermissions"].Where(x => (int)x["profileId"] == AppUser.ProfileId).FirstOrDefault();
+                if (!profileSetting.IsNullOrEmpty())
+                {
+                    var hasBulkUpdatePermision = profileSetting["permissions"].Any(x => x.Value<string>() == "bulk_update");
+                    customBulkUpdatePermission = hasBulkUpdatePermision;
+                }
+            }
+            
             foreach (var id in ids)
             {
                 int recordId;
@@ -646,11 +658,12 @@ namespace PrimeApps.App.Controllers
 
                 var currentRecord = _recordRepository.GetById(moduleEntity, (int)id, AppUser.HasAdminProfile);
                 var recordUpdate = (JObject)record.DeepClone();
+                recordUpdate["id"] = recordId;
 
                 if (currentRecord.IsNullOrEmpty())
                     return BadRequest("Record not found!");
 
-                var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, recordUpdate, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, true, currentRecord, AppUser);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, recordUpdate, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, true, currentRecord, AppUser, customBulkUpdatePermission);
 
                 if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
                     return StatusCode(resultBefore, ModelState);
@@ -662,7 +675,6 @@ namespace PrimeApps.App.Controllers
 
                 try
                 {
-                    recordUpdate["id"] = recordId;
                     resultUpdate = await _recordRepository.Update(recordUpdate, moduleEntity);
 
                     // If module is opportunities update stage history
