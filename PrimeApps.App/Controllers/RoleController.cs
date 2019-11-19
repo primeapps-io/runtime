@@ -22,13 +22,15 @@ namespace PrimeApps.App.Controllers
         private IRoleRepository _roleRepository;
         private IUserRepository _userRepository;
         private IRoleHelper _roleHelper;
+        private ISettingRepository _settingRepository;
         private Warehouse _warehouse;
 
-        public RoleController(IRoleRepository roleRepository, IUserRepository userRespository, IRoleHelper roleHelper, Warehouse warehouse)
+        public RoleController(IRoleRepository roleRepository, IUserRepository userRespository, IRoleHelper roleHelper, ISettingRepository settingRepository, Warehouse warehouse)
         {
             _roleRepository = roleRepository;
             _userRepository = userRespository;
             _roleHelper = roleHelper;
+            _settingRepository = settingRepository;
             _warehouse = warehouse;
         }
 
@@ -37,6 +39,7 @@ namespace PrimeApps.App.Controllers
             SetContext(context);
             SetCurrentUser(_userRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_roleRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_settingRepository, PreviewMode, TenantId, AppId);
 
             base.OnActionExecuting(context);
         }
@@ -79,7 +82,20 @@ namespace PrimeApps.App.Controllers
         {
             var user = _userRepository.GetById(AppUser.Id);
 
-            if (!user.Profile.HasAdminRights)
+            var customProfileSetting = await _settingRepository.GetByKeyAsync("custom_profile_permissions");
+            var customRolePermission = false;
+
+            if (customProfileSetting != null)
+            {
+                JToken profileSetting = JObject.Parse(customProfileSetting.Value)["profilePermissions"].Where(x => (int)x["profileId"] == AppUser.ProfileId).FirstOrDefault();
+                if (!profileSetting.IsNullOrEmpty())
+                {
+                    var hasBulkUpdatePermision = profileSetting["permissions"].Any(x => x.Value<string>() == "users");
+                    customRolePermission = hasBulkUpdatePermision;
+                }
+            }
+
+            if (!user.Profile.HasAdminRights && !customRolePermission)
                 return;
 
             Role roleToUpdate = await _roleRepository.GetByIdAsyncWithUsers(role.Id);
@@ -98,8 +114,20 @@ namespace PrimeApps.App.Controllers
         public async Task Delete([FromQuery(Name = "id")]int id, [FromQuery(Name = "transferRoleId")]int transferRoleId)
         {
             var user = _userRepository.GetById(AppUser.Id);
+            var customProfileSetting = await _settingRepository.GetByKeyAsync("custom_profile_permissions");
+            var customRolePermission = false;
 
-            if (!user.Profile.HasAdminRights)
+            if (customProfileSetting != null)
+            {
+                JToken profileSetting = JObject.Parse(customProfileSetting.Value)["profilePermissions"].Where(x => (int)x["profileId"] == AppUser.ProfileId).FirstOrDefault();
+                if (!profileSetting.IsNullOrEmpty())
+                {
+                    var hasBulkUpdatePermision = profileSetting["permissions"].Any(x => x.Value<string>() == "users");
+                    customRolePermission = hasBulkUpdatePermision;
+                }
+            }
+
+            if (!user.Profile.HasAdminRights && !customRolePermission)
                 return;
 
             await _roleRepository.RemoveAsync(id, transferRoleId);
@@ -110,7 +138,20 @@ namespace PrimeApps.App.Controllers
         {
             var user = _userRepository.GetById(AppUser.Id);
 
-            if (!user.Profile.HasAdminRights)
+            var customProfileSetting = await _settingRepository.GetByKeyAsync("custom_profile_permissions");
+            var customRolePermission = false;
+
+            if (customProfileSetting != null)
+            {
+                JToken profileSetting = JObject.Parse(customProfileSetting.Value)["profilePermissions"].Where(x => (int)x["profileId"] == AppUser.ProfileId).FirstOrDefault();
+                if (!profileSetting.IsNullOrEmpty())
+                {
+                    var hasBulkUpdatePermision = profileSetting["permissions"].Any(x => x.Value<string>() == "users");
+                    customRolePermission = hasBulkUpdatePermision;
+                }
+            }
+
+            if (!user.Profile.HasAdminRights && !customRolePermission)
                 return;
 
             if (user.RoleId.HasValue)
@@ -124,11 +165,24 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update_user_role_bulk"), HttpPut]
-        public void UpdateUserRoleBulk()
+        public async void UpdateUserRoleBulk()
         {
             var user = _userRepository.GetById(AppUser.Id);
 
-            if (!user.Profile.HasAdminRights)
+            var customProfileSetting = await _settingRepository.GetByKeyAsync("custom_profile_permissions");
+            var customRolePermission = false;
+
+            if (customProfileSetting != null)
+            {
+                JToken profileSetting = JObject.Parse(customProfileSetting.Value)["profilePermissions"].Where(x => (int)x["profileId"] == AppUser.ProfileId).FirstOrDefault();
+                if (!profileSetting.IsNullOrEmpty())
+                {
+                    var hasBulkUpdatePermision = profileSetting["permissions"].Any(x => x.Value<string>() == "users");
+                    customRolePermission = hasBulkUpdatePermision;
+                }
+            }
+
+            if (!user.Profile.HasAdminRights && !customRolePermission)
                 return;
 
             BackgroundJob.Enqueue(() => _roleHelper.UpdateUserRoleBulkAsync(_warehouse, AppUser));
@@ -139,7 +193,20 @@ namespace PrimeApps.App.Controllers
         {
             var user = _userRepository.GetById(AppUser.Id);
 
-            if (!user.Profile.HasAdminRights)
+            var customProfileSetting = await _settingRepository.GetByKeyAsync("custom_profile_permissions");
+            var customRolePermission = false;
+
+            if (customProfileSetting != null)
+            {
+                JToken profileSetting = JObject.Parse(customProfileSetting.Value)["profilePermissions"].Where(x => (int)x["profileId"] == AppUser.ProfileId).FirstOrDefault();
+                if (!profileSetting.IsNullOrEmpty())
+                {
+                    var hasBulkUpdatePermision = profileSetting["permissions"].Any(x => x.Value<string>() == "users");
+                    customRolePermission = hasBulkUpdatePermision;
+                }
+            }
+
+            if (!user.Profile.HasAdminRights && !customRolePermission)
                 return;
 
             Role role = await _roleRepository.GetByIdAsyncWithUsers(id);
@@ -151,7 +218,20 @@ namespace PrimeApps.App.Controllers
         {
             var user = _userRepository.GetById(AppUser.Id);
 
-            if (!user.Profile.HasAdminRights)
+            var customProfileSetting = await _settingRepository.GetByKeyAsync("custom_profile_permissions");
+            var customRolePermission = false;
+
+            if (customProfileSetting != null)
+            {
+                JToken profileSetting = JObject.Parse(customProfileSetting.Value)["profilePermissions"].Where(x => (int)x["profileId"] == AppUser.ProfileId).FirstOrDefault();
+                if (!profileSetting.IsNullOrEmpty())
+                {
+                    var hasBulkUpdatePermision = profileSetting["permissions"].Any(x => x.Value<string>() == "users");
+                    customRolePermission = hasBulkUpdatePermision;
+                }
+            }
+
+            if (!user.Profile.HasAdminRights && !customRolePermission)
                 return;
 
             Role role = await _roleRepository.GetByIdAsyncWithUsers(id);
