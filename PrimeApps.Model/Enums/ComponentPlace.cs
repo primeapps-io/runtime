@@ -97,6 +97,9 @@ namespace PrimeApps.Model.Enums
         [EnumMember(Value = "before_bulk_email")]
         BeforeBulkEmail = 32,
 
+        [EnumMember(Value = "before_modal_load")]
+        BeforeModalLoad = 33,
+
         /*
          * Global Config
          */

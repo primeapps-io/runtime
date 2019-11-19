@@ -79,7 +79,9 @@ angular.module('primeapps')
         before_import: 29,
         empty_list: 30,
         after_bulk_email: 31,
-        before_bulk_email: 32
+        before_bulk_email: 32,
+        before_modal_load: 33
+
     })
     .constant('componentPlaces', [
         { name: 'Field Change', value: 1 },

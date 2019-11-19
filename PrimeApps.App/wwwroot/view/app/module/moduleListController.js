@@ -596,6 +596,7 @@ angular.module('primeapps')
             };
 
             $scope.showEMailModal = function () {
+                $scope.executeCode = false;
                 if (!$rootScope.system.messaging.SystemEMail && !$rootScope.system.messaging.PersonalEMail) {
                     ngToast.create({ content: $filter('translate')('EMail.NoProvider'), className: 'warning' });
                     return;
@@ -605,6 +606,7 @@ angular.module('primeapps')
                     ngToast.create({ content: $filter('translate')('Module.NoRecordSelected'), className: 'warning' });
                     return;
                 }
+
                 /*Generates and displays modal form for the mail*/
                 $scope.mailModal = $scope.mailModal || $modal({
                     scope: $scope,
@@ -613,7 +615,10 @@ angular.module('primeapps')
                     show: false
                 });
 
-                $scope.mailModal.$promise.then($scope.mailModal.show);
+                components.run('BeforeModalLoad', 'Script', $scope);
+
+                if (!$scope.executeCode)
+                    $scope.mailModal.$promise.then($scope.mailModal.show);
             };
 
             $scope.showSMSModal = function () {
