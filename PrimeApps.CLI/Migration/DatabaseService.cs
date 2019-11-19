@@ -133,7 +133,10 @@ namespace PrimeApps.CLI.Migration
 
                 foreach (var databaseName in dbs)
                 {
-                    tenantDatabaseContext.SetConnectionDatabaseName(databaseName, _configuration, externalConnectionString);
+                    var newDatabaseName = databaseName + "_new";
+                    tenantDatabaseContext.SetConnectionDatabaseName(newDatabaseName, _configuration, externalConnectionString);
+                    
+                    Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, externalConnectionString);
 
                     if (string.IsNullOrEmpty(targetVersion))
                     {
@@ -143,7 +146,6 @@ namespace PrimeApps.CLI.Migration
                         {
                             try
                             {
-                                Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, externalConnectionString);
 
                                 foreach (var targetMigration in pendingMigrations)
                                 {
