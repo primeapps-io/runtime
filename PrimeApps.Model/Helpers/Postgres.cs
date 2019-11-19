@@ -203,7 +203,7 @@ namespace PrimeApps.Model.Helpers
 
                     using (var command = connection.CreateCommand())
                     {
-                        command.CommandText = "SELECT datname FROM pg_database WHERE datname LIKE 'app%' OR datname AND datistemplate=true LIKE 'templet%' ORDER BY datname";
+                        command.CommandText = "SELECT datname FROM pg_database WHERE datname LIKE 'app%' AND datistemplate=true";
 
                         using (NpgsqlDataReader dataReader = command.ExecuteReader())
                         {
@@ -226,7 +226,7 @@ namespace PrimeApps.Model.Helpers
             JArray dbs = new JArray();
             List<string> dbList = new List<string>();
 
-            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1, externalConnectionString)))
+            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, null, externalConnectionString)))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
