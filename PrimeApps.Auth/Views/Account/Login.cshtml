@@ -15,10 +15,10 @@
 }
 <div class="col-md-4 login-sec">
     <img class="logo-img" src="@Model.ApplicationInfo.Logo"/>
-    @if (!preview) //(!customDomain)
-    {
+@*     @if (!preview) //(!customDomain) *@
+@*     { *@
         @Html.Raw(headLine)
-    }
+    @* } *@
 
     <form asp-route="Login" class="login-form" role="form" id="login-form">
         <input type="hidden" asp-for="@Model.ReturnUrl"/>
