@@ -164,7 +164,7 @@ namespace PrimeApps.CLI
                             case "-app":
                                 result = databaseMigration.RunSqlTenantDatabases("app", param1, param2, param3);
                                 break;
-                            default:
+                            case "-tenant":
                                 result = databaseMigration.RunSqlTenantDatabases("tenant", param1, param2, param3);
                                 break;
                         }

@@ -324,7 +324,7 @@ namespace PrimeApps.Model.Helpers
         {
             JArray result;
 
-            using (var connection = new NpgsqlConnection(GetConnectionString(databaseName, externalConnectionString)))
+            using (var connection = new NpgsqlConnection(GetConnectionString(externalConnectionString, databaseName)))
             {
                 connection.Open();
 
