@@ -190,7 +190,7 @@ namespace PrimeApps.Model.Helpers
 
                     using (var command = connection.CreateCommand())
                     {
-                        command.CommandText = "SELECT datname FROM pg_database WHERE datname LIKE 'app%' AND datistemplate=true";
+                        command.CommandText = "SELECT datname FROM pg_database WHERE (datname LIKE 'app%' OR datname LIKE 'templet%') AND datistemplate=true";
 
                         using (NpgsqlDataReader dataReader = command.ExecuteReader())
                         {
