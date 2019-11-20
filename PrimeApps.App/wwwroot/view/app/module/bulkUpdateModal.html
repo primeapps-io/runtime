@@ -243,8 +243,7 @@
                                                 placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
                                                 replace-spaces-with-dashes="false"
                                                 add-from-autocomplete-only="true"
-                                                ng-if="!bulkUpdate.field.lookupModulePrimaryField ? bulkUpdate.field.data_type === 'multiselect' : bulkUpdate.field.lookupModulePrimaryField.data_type === 'multiselect'"
-                                    ">
+                                                ng-if="!bulkUpdate.field.lookupModulePrimaryField ? bulkUpdate.field.data_type === 'multiselect' : bulkUpdate.field.lookupModulePrimaryField.data_type === 'multiselect'">
                                     <auto-complete source="UpdateMultiselect($query, bulkUpdate.field)"
                                                    min-length="0"
                                                    load-on-focus="true"

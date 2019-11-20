@@ -6,6 +6,7 @@ using System.Configuration;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Sentry;
 
 namespace PrimeApps.Model.Helpers
 {
@@ -99,8 +100,9 @@ namespace PrimeApps.Model.Helpers
                     connection.Close();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                SentrySdk.CaptureException(ex);
                 result = false;
             }
 
@@ -188,7 +190,7 @@ namespace PrimeApps.Model.Helpers
 
                     using (var command = connection.CreateCommand())
                     {
-                        command.CommandText = "SELECT datname FROM pg_database WHERE datname LIKE 'app%' OR datname AND datistemplate=true LIKE 'templet%' ORDER BY datname";
+                        command.CommandText = "SELECT datname FROM pg_database WHERE (datname LIKE 'app%' OR datname LIKE 'templet%') AND datistemplate=true";
 
                         using (NpgsqlDataReader dataReader = command.ExecuteReader())
                         {
@@ -211,7 +213,7 @@ namespace PrimeApps.Model.Helpers
             JArray dbs = new JArray();
             List<string> dbList = new List<string>();
 
-            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1, externalConnectionString)))
+            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, null, externalConnectionString)))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -309,7 +311,7 @@ namespace PrimeApps.Model.Helpers
         {
             JArray result;
 
-            using (var connection = new NpgsqlConnection(GetConnectionString(databaseName, externalConnectionString)))
+            using (var connection = new NpgsqlConnection(GetConnectionString(externalConnectionString, databaseName)))
             {
                 connection.Open();
 

@@ -74,6 +74,11 @@ namespace PrimeApps.CLI
                                 result = databaseMigration.MigrateTenantDatabases("tenant", param1);
                                 break;
                             case "-all-deploy":
+                                /*
+                                 * Verdiğini database connectiona göre tüm tenant databaslerine migration varsa uyguluyor
+                                 * example  tenantUpdate -all-deploy "server=localhost;port=5432;username=postgres;password=123456;database=dev;command timeout=0;keepalive=30;" 
+                                 */
+                                
                                 deploy = true;
                                 if (!string.IsNullOrWhiteSpace(param1) && param1.Contains("server="))
                                 {
@@ -159,7 +164,7 @@ namespace PrimeApps.CLI
                             case "-app":
                                 result = databaseMigration.RunSqlTenantDatabases("app", param1, param2, param3);
                                 break;
-                            default:
+                            case "-tenant":
                                 result = databaseMigration.RunSqlTenantDatabases("tenant", param1, param2, param3);
                                 break;
                         }

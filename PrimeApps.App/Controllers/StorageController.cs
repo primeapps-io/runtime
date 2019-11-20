@@ -211,6 +211,7 @@ namespace PrimeApps.App.Controllers
                 var ext = Path.GetExtension(parser.Filename);
 
                 var fileName = Path.GetFileNameWithoutExtension(parser.Filename);
+                fileName = fileName.Replace(" ", "_");
 
                 var uniqueName = fileName + "_" + DateTime.UtcNow.ToFileTimeUtc() + ext;
 

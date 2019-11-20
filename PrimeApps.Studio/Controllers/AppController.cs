@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -267,7 +269,7 @@ namespace PrimeApps.Studio.Controllers
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
-            var app = await _appDraftRepository.GetAuthTheme(id);
+            var app = await _appDraftRepository.GetSettings(id);
 
             if (app != null)
                 return Ok(app.AuthTheme);
@@ -299,9 +301,28 @@ namespace PrimeApps.Studio.Controllers
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
-            var app = await _appDraftRepository.GetAppTheme(id);
+            var app = await _appDraftRepository.GetSettings(id);
 
             return app != null ? Ok(app.AppTheme) : Ok(app);
+        }
+        
+        [Route("migration/{id:int}"), HttpGet]
+        public async Task<IActionResult> Migration(int id)
+        {
+            var app = await _appDraftRepository.Get(id);
+
+            if (!string.IsNullOrEmpty(app.Logo))
+            {
+                var regex = new Regex(@"[\w-]+.(jpg|png|jpeg)");
+                var match = regex.Match(app.Logo);
+                if (match.Success)
+                {
+                    Console.WriteLine("MATCH VALUE: " + match.Value);
+                }
+                
+            }
+                
+            return app != null ? Ok(app.Setting.AppTheme) : Ok(app);
         }
     }
 }

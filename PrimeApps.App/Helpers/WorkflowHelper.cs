@@ -717,6 +717,7 @@ namespace PrimeApps.App.Helpers
                                     client.DefaultRequestHeaders.TryAddWithoutValidation("X-App-Id", appUser.AppId.ToString());
                                     client.DefaultRequestHeaders.TryAddWithoutValidation("X-Tenant-Id", appUser.TenantId.ToString());
                                     client.DefaultRequestHeaders.TryAddWithoutValidation("X-User-Id", appUser.Id.ToString());
+                                    client.DefaultRequestHeaders.TryAddWithoutValidation("X-Tenant-Language", appUser.Language);
 
                                     if (webHook.Parameters != null)
                                     {

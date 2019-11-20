@@ -164,6 +164,7 @@ namespace PrimeApps.Model.Repositories
 		{
 			var tenantIds = await DbContext.Tenants
 				.Include(x => x.License)
+				.Include(x => x.Setting)
 				.Where(x => !x.License.IsDeactivated && x.AppId == appId)
 				.OrderBy(x => x.Id)
 				.Select(x => x.Id)

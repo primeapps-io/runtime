@@ -227,4 +227,16 @@ namespace PrimeApps.App.Models
         [JsonProperty("tenant_id")]
         public int TenantId { get; set; }
     }
+
+    public class UpdateUserBindingModel
+    {
+        [Required, JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("currency")]
+        public string Currency { get; set; }
+
+        [JsonProperty("culture")]
+        public string Culture { get; set; }
+    }
 }

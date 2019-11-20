@@ -24,8 +24,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<List<AppDraft>> GetAllByUserId(int userId, string search = "", int page = 0);
         Task<List<AppCollaborator>> GetAppCollaborators(int appId);
         Task<int> UpdateAuthTheme(int id, JObject model);
-        Task<AppDraftSetting> GetAuthTheme(int id);
         Task<int> UpdateAppTheme(int id, JObject model);
-        Task<AppDraftSetting> GetAppTheme(int id);
+        Task<AppDraftSetting> GetSettings(int id);
     }
 }
