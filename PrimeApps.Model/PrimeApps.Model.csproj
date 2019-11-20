@@ -31,7 +31,4 @@
         <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.9" />
         <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
     </ItemGroup>
-    <ItemGroup>
-        <EmbeddedResource Include="devart.key" />
-    </ItemGroup>
 </Project>
