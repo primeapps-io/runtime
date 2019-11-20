@@ -50,10 +50,13 @@ namespace PrimeApps.Model.Common.Component
             {
                 var list = new List<string>();
 
-                foreach (var env in Environments)
+                if (Environments != null)
                 {
-                    var value = (int)env;
-                    list.Add(value.ToString());
+                    foreach (var env in Environments)
+                    {
+                        var value = (int) env;
+                        list.Add(value.ToString());
+                    }
                 }
 
                 return string.Join(",", list);
