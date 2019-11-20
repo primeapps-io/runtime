@@ -143,8 +143,13 @@ namespace PrimeApps.Studio.Controllers
 
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
-
-			var component = await _componentRepository.Get(id);
+			
+			var component = new Component();
+			
+			if (model.Place == ComponentPlace.GlobalConfig)
+				component = await _componentRepository.GetGlobalConfig();		
+			else
+			 component = await _componentRepository.Get(id);
 
 			if (component == null)
 				return Forbid("Component not found!");
