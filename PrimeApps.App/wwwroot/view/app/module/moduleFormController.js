@@ -94,12 +94,11 @@ angular.module('primeapps')
             }
 
             if (!$scope.id && !$scope.hasPermission($scope.type, $scope.operations.write)) {
-                if (helper.hasCustomProfilePermission('bulk_update'))
+                if (!helper.hasCustomProfilePermission('bulk_update')) {
+                    ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
+                    $state.go('app.dashboard');
                     return;
-
-                ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                $state.go('app.dashboard');
-                return;
+                }
             }
 
 

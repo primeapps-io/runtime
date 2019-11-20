@@ -1713,9 +1713,12 @@ namespace PrimeApps.Auth.UI
                         platformUser.TenantsAsOwner.Add(tenant);
                         await _platformUserRepository.UpdateAsync(platformUser);
 
-                        await Postgres.CreateDatabaseWithTemplate(
+                        var resultDatabaseCreate = await Postgres.CreateDatabaseWithTemplate(
                             _tenantRepository.DbContext.Database.GetDbConnection().ConnectionString, tenantId,
                             applicationInfo.Id);
+
+                        if (!resultDatabaseCreate)
+                            throw new Exception("Database cannot be created!");
 
                         _userRepository.CurrentUser = new CurrentUser
                             {TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant"};

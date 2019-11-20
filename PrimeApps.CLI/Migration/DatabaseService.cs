@@ -133,7 +133,10 @@ namespace PrimeApps.CLI.Migration
 
                 foreach (var databaseName in dbs)
                 {
-                    tenantDatabaseContext.SetConnectionDatabaseName(databaseName, _configuration, externalConnectionString);
+                    var newDatabaseName = databaseName + "_new";
+                    tenantDatabaseContext.SetConnectionDatabaseName(newDatabaseName, _configuration, externalConnectionString);
+
+                    Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, externalConnectionString);
 
                     if (string.IsNullOrEmpty(targetVersion))
                     {
@@ -143,8 +146,6 @@ namespace PrimeApps.CLI.Migration
                         {
                             try
                             {
-                                Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, externalConnectionString);
-
                                 foreach (var targetMigration in pendingMigrations)
                                 {
                                     migrator.Migrate(targetMigration);
@@ -259,27 +260,11 @@ namespace PrimeApps.CLI.Migration
 
         private bool CheckDatabaseApp(string databaseName, int appId, string externalConnectionString = null)
         {
-            switch (appId)
-            {
-                case 1:
-                    var sqlCrm = "SELECT * FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'leads_d'";
-                    var resultCrm = Postgres.ExecuteReader(databaseName, sqlCrm, externalConnectionString);
+            var tenantId = int.Parse(databaseName.Replace("tenant", ""));
+            var sql = $"SELECT * FROM tenants WHERE app_id={appId} AND id={tenantId};";
+            var result = Postgres.ExecuteReader("platform", sql, externalConnectionString);
 
-                    if (!resultCrm.IsNullOrEmpty())
-                        return true;
-
-                    break;
-                case 4:
-                    var sqlIk = "SELECT * FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'calisanlar_d'";
-                    var resultIk = Postgres.ExecuteReader(databaseName, sqlIk, externalConnectionString);
-
-                    if (!resultIk.IsNullOrEmpty())
-                        return true;
-
-                    break;
-            }
-
-            return false;
+            return !result.IsNullOrEmpty();
         }
     }
 }

@@ -101,6 +101,7 @@ namespace PrimeApps.App.Helpers
 						var record = recordRepository.GetById(module, recordId, true, null, true);
 						var isBranch = await settingRepository.GetByKeyAsync("branch");
 						var isEmployee = await settingRepository.GetByKeyAsync("employee");
+						var title = await settingRepository.GetByKeyAsync("title");
 						/*Branch yapısında modül üzerindeki bazı fieldler dinamik hale getirildi*/
 						var newEpostaFieldName = await settingRepository.GetByKeyAsync("e_posta");
 						int calisanUserId = 0;
@@ -2855,13 +2856,17 @@ namespace PrimeApps.App.Helpers
 
 									var branchModule = await moduleRepository.GetByName("branches");
 									var calisanlar = await moduleRepository.GetByName(module.Name);
-
+									var branchRecord = new JObject();
+									var roleId = new int();
+									var profileId = new int();
+									var missingSchema = new List<Profile>();
 									var calisanRecord = recordRepository.GetById(calisanlar, recordId);
-									if (!calisanRecord["profile"].IsNullOrEmpty() && !calisanRecord["branch"].IsNullOrEmpty())
+
+									if (!calisanRecord["profile"].IsNullOrEmpty() && !calisanRecord["branch"].IsNullOrEmpty() && title == null)
 									{
-										var profileId = int.Parse(calisanRecord["profile"].ToString());
-										var branchRecord = recordRepository.GetById(branchModule, int.Parse(calisanRecord["branch"].ToString()));
-										var roleId = branchRecord != null && !branchRecord["branch"].IsNullOrEmpty() ? (int)branchRecord["branch"] : 0;
+										profileId = int.Parse(calisanRecord["profile"].ToString());
+										branchRecord = recordRepository.GetById(branchModule, int.Parse(calisanRecord["branch"].ToString()));
+										roleId = branchRecord != null && !branchRecord["branch"].IsNullOrEmpty() ? (int)branchRecord["branch"] : 0;
 
 										List<Profile> profileSchema = new List<Profile>();
 
@@ -2887,90 +2892,101 @@ namespace PrimeApps.App.Helpers
 										var profile = await profileRepository.GetProfileById(profileId);
 										await GetCurrentProfileSchema(profile, profileSchema, profileRepository);
 
-										var missingSchema = await MissingProfileSchema(profileSchema, roleId, roleId, profileRepository, roleRepository);
+										missingSchema = await MissingProfileSchema(profileSchema, roleId, roleId, profileRepository, roleRepository, null);
+									}
+									else if (title != null && title.Value == "t" && !calisanRecord["sub_branch"].IsNullOrEmpty() && !calisanRecord["branch"].IsNullOrEmpty())
+									{
+										var subBranchRecord = recordRepository.GetById(branchModule, int.Parse(calisanRecord["sub_branch"].ToString()));
+										branchRecord = recordRepository.GetById(branchModule, int.Parse(calisanRecord["branch"].ToString()));
+										branchRecord = (bool)record["branch_manager"] ? branchRecord : subBranchRecord;
+										roleId = branchRecord != null && !branchRecord["branch"].IsNullOrEmpty() ? (int)branchRecord["branch"] : 0;
+										missingSchema = await MissingProfileSchema(new List<Profile>() { new Profile() { Name = (string)branchRecord["name"] } }, roleId, roleId, profileRepository, roleRepository, title);
+									}
+									else break;
 
-										if (operationType == OperationType.insert)
+									if (operationType == OperationType.insert)
+									{
+										/*
+										 * Yeni bir çalışan oluşturulurken.
+										 * Çalışan seçilen şubenin sorumlusu ise
+										 */
+										if ((bool)record["branch_manager"] && newEpostaFieldName != null)
 										{
 											/*
-                                             * Yeni bir çalışan oluşturulurken.
-                                             * Çalışan seçilen şubenin sorumlusu ise
-                                             */
-											if ((bool)record["branch_manager"] && newEpostaFieldName != null)
+											 * User ı email yardımıyla çekerek rol unü update ediyoruz.
+											 */
+											var user = await userRepository.GetByEmail(record[newEpostaFieldName.Value].ToString());
+											await UpdateUserRoleAndProfile(user.Id, profileId, roleId, roleRepository, profileRepository);
+											await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
+										}
+										else
+										{
+											if (missingSchema.Count > 0 && newEpostaFieldName != null)
 											{
-												/*
-                                                 * User ı email yardımıyla çekerek rol unü update ediyoruz.
-                                                 */
+												var currentUserRoleId = await CreateMissingSchema(missingSchema, roleId, roleRepository, appUser, title);
 												var user = await userRepository.GetByEmail(record[newEpostaFieldName.Value].ToString());
-												await UpdateUserRoleAndProfile(user.Id, profileId, roleId, roleRepository, profileRepository);
+												await UpdateUserRoleAndProfile(user.Id, profileId, (int)currentUserRoleId, roleRepository, profileRepository);
 												await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
 											}
 											else
 											{
-												if (missingSchema.Count > 0 && newEpostaFieldName != null)
-												{
-													var currentUserRoleId = await CreateMissingSchema(missingSchema, roleId, roleRepository, appUser);
-													var user = await userRepository.GetByEmail(record[newEpostaFieldName.Value].ToString());
-													await UpdateUserRoleAndProfile(user.Id, profileId, (int)currentUserRoleId, roleRepository, profileRepository);
-													await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
-												}
-												else
-												{
-													/*
-                                                     * Eğer yeni eklenen çalışan için tüm roller ağaçta zaten mevcut ise
-                                                     * Eklenen çalışanın rolünü direk olarak güncelliyoruz.
-                                                     * Burası Silinecek sistem bunu otomatik yapıyor olması gerekiyor.
-                                                     */
-													var branchRoleProfile = await roleRepository.GetWithCode("branch-" + roleId + "/profile-" + profileId);
+												/*
+												 * Eğer yeni eklenen çalışan için tüm roller ağaçta zaten mevcut ise
+												 * Eklenen çalışanın rolünü direk olarak güncelliyoruz.
+												 * Burası Silinecek sistem bunu otomatik yapıyor olması gerekiyor.
+												 */
+												var branchRoleProfile = await roleRepository.GetWithCode("branch-" + roleId + (title == null ? "/profile-" + profileId : "/title"));
 
-													if (branchRoleProfile != null && newEpostaFieldName != null)
-													{
-														var user = await userRepository.GetByEmail(record[newEpostaFieldName.Value].ToString());
-														await UpdateUserRoleAndProfile(user.Id, profileId, branchRoleProfile.Id, roleRepository, profileRepository);
-														await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
-													}
+												if (branchRoleProfile != null && newEpostaFieldName != null)
+												{
+													var user = await userRepository.GetByEmail(record[newEpostaFieldName.Value].ToString());
+													await UpdateUserRoleAndProfile(user.Id, profileId, branchRoleProfile.Id, roleRepository, profileRepository);
+													await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
 												}
 											}
 										}
-										else if (operationType == OperationType.update)
+									}
+									else if (operationType == OperationType.update)
+									{
+										/*
+										 * Kayıt update edilirken değişen dataları bulmak için eski ve yeni kayıtı GetDifferences methoduna yolluyoruz.
+										 * Eğer branch_manager checkbox ında bir değişiklik varsa
+										 * ve true olarak setlenmişse çalışan üzerinde ki seçili olan şubeyi (rolü) user a setliyoruz.
+										 */
+										var differences = GetDifferences(record, currentRecord);
+
+										if (!differences["branch_manager"].IsNullOrEmpty() && (bool)differences["branch_manager"])
+										{
+											var user = await userRepository.GetByEmail(record[newEpostaFieldName.Value].ToString());
+											await roleRepository.RemoveUserAsync(user.Id, user.RoleId.Value);
+											await UpdateUserRoleAndProfile(user.Id, profileId, roleId, roleRepository, profileRepository);
+											await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);											
+										}
+										else if (!differences["branch"].IsNullOrEmpty() || !differences["sub_branch"].IsNullOrEmpty() || !differences["profile"].IsNullOrEmpty() || !differences["branch_manager"].IsNullOrEmpty())
 										{
 											/*
-                                             * Kayıt update edilirken değişen dataları bulmak için eski ve yeni kayıtı GetDifferences methoduna yolluyoruz.
-                                             * Eğer branch_manager checkbox ında bir değişiklik varsa
-                                             * ve true olarak setlenmişse çalışan üzerinde ki seçili olan şubeyi (rolü) user a setliyoruz.
-                                             */
-											var differences = GetDifferences(record, currentRecord);
-
-											if (!differences["branch_manager"].IsNullOrEmpty() && (bool)differences["branch_manager"])
+											 * Eğer branch_manager true dan false a çekilmiş ise
+											 * Role ağacında ki dallar çalışan üzerinde role ve profil e göre uygun mu diye kontrol edilip eksik varsa bunları oluşturuyoruz.
+											 * Role ağacı tamamlandığında çalışan üzerinde role ve profile göre oluşan son rolu ün id sini çalışana setliyoruz.
+											 */
+											if (missingSchema.Count > 0 && !(bool)record["branch_manager"] && newEpostaFieldName != null)
 											{
-												var user = await userRepository.GetByEmail(record["e_posta"].ToString());
-												await UpdateUserRoleAndProfile(user.Id, profileId, roleId, roleRepository, profileRepository);
+												var currentUserRoleId = await CreateMissingSchema(missingSchema, roleId, roleRepository, appUser, title);
+												var user = await userRepository.GetByEmail(record[newEpostaFieldName.Value].ToString());
+												await UpdateUserRoleAndProfile(user.Id, profileId, (int)currentUserRoleId, roleRepository, profileRepository);
 												await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
 											}
-											else if (!differences["branch"].IsNullOrEmpty() || !differences["profile"].IsNullOrEmpty() || !differences["branch_manager"].IsNullOrEmpty())
+											else
 											{
 												/*
-                                                 * Eğer branch_manager true dan false a çekilmiş ise
-                                                 * Role ağacında ki dallar çalışan üzerinde role ve profil e göre uygun mu diye kontrol edilip eksik varsa bunları oluşturuyoruz.
-                                                 * Role ağacı tamamlandığında çalışan üzerinde role ve profile göre oluşan son rolu ün id sini çalışana setliyoruz.
-                                                 */
-												if (missingSchema.Count > 0 && !(bool)record["branch_manager"] && newEpostaFieldName != null)
-												{
-													var currentUserRoleId = await CreateMissingSchema(missingSchema, roleId, roleRepository, appUser);
-													var user = await userRepository.GetByEmail(record[newEpostaFieldName.Value].ToString());
-													await UpdateUserRoleAndProfile(user.Id, profileId, (int)currentUserRoleId, roleRepository, profileRepository);
-													await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
-												}
-												else
-												{
-													/*
-                                                     * Role ağacında eksik yoksa çalışan üzerinde ki role ve profile id ile birlikte kullanıcının eklenmek istediği rolu ü buluyoruz.
-                                                     * Bulunan role ün id sini çalışana setleyip kaydediyoruz.
-                                                     */
-													var role = await roleRepository.GetWithCode("branch-" + roleId + "/profile-" + profileId);
-													var user = await userRepository.GetByEmail(record["e_posta"].ToString());
-													await UpdateUserRoleAndProfile(user.Id, profileId, (bool)record["branch_manager"] ? roleId : role.Id, roleRepository, profileRepository);
-													await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
-												}
+												 * Role ağacında eksik yoksa çalışan üzerinde ki role ve profile id ile birlikte kullanıcının eklenmek istediği rolu ü buluyoruz.
+												 * Bulunan role ün id sini çalışana setleyip kaydediyoruz.
+												 */
+												var role = await roleRepository.GetWithCode("branch-" + roleId + (title == null ? "/profile-" + profileId : "/title"));
+												var user = await userRepository.GetByEmail(record[newEpostaFieldName.Value].ToString());
+												await roleRepository.RemoveUserAsync(user.Id, user.RoleId.Value);
+												await UpdateUserRoleAndProfile(user.Id, profileId, (bool)record["branch_manager"] ? roleId : role.Id, roleRepository, profileRepository);
+												await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
 											}
 										}
 									}
@@ -3680,7 +3696,9 @@ namespace PrimeApps.App.Helpers
 		public static async Task UpdateUserRoleAndProfile(int userId, int profileId, int roleId, RoleRepository roleRepository, ProfileRepository profileRepository)
 		{
 			await roleRepository.AddUserAsync(userId, roleId);
-			await profileRepository.AddUserAsync(userId, profileId);
+			/*Profile olmayabilir, burada title kullanılmış olabilir*/
+			if (profileId > 0)
+				await profileRepository.AddUserAsync(userId, profileId);
 		}
 
 		public static async Task SetAdvanceSharingWithOwners(int roleId, int branchRecordId, Module branchModule, RecordRepository recordRepository, RoleRepository roleRepository)
@@ -3703,44 +3721,64 @@ namespace PrimeApps.App.Helpers
 			}
 		}
 
-		public static async Task<int?> CreateMissingSchema(List<Profile> missingSchema, int roleId, RoleRepository roleRepository, UserItem appUser)
+		public static async Task<int?> CreateMissingSchema(List<Profile> missingSchema, int roleId, RoleRepository roleRepository, UserItem appUser, Setting title)
 		{
 			int? parentId = null;
+
 			for (var i = missingSchema.Count - 1; i > -1; i--)
 			{
-				/*
-				 * Eksik role leri oluşturmak için missingSchema objesi içinde dönüyoruz.
-				 * Eğer yeni eklenecek role bi şubeye direk bağlıysa (Ex: Gayrettepe Şubesi > Satış Sorumlusu)
-				 * GetWithCode methodu boş dönücektir.
-				 * Fakat daha bir şubeye değil de role ağacında ki başka bir profilin altına eklenecek ise (Ex : Satış Sorumlusu > Satış Destek)
-				 * O zaman GetWithCode methoduyla Satış sorumlusunun role unu çekiyoruz.
-				 * Ve yeni eklenecek dalın bu role e bağlanması için parentId si olarak bu rolun id sini setliyoruz.
-				 *
-				 */
 				var schemaItem = missingSchema[i];
-				var parent = await roleRepository.GetWithCode("branch-" + roleId + "/profile-" + schemaItem.ParentId);
-				parentId = parent?.Id;
 
-				/*
-				 * Eğer rol ağacına eklenecek yeni profilin parentId si 0 ise bu profile şemasında en üstte olduğu anlamına gelir.
-				 * Bu yüzden direk olarak seçilen şube ReportToId olarak setlenerek role ağacına eklenecek profilin direk şubeye bağlanması sağlanır.
-				 * missingSchema nın Count u bir den fazla ise role ağacına ilk kayıt eklendikten sonra eklenen kayıtın id si alınır.
-				 * Bir sonra ki eklenen kayıt bu yeni eklenen role ün altında olucağı için 2. kayıt eklenirken bir önceki kayıtın id si
-				 * 2. kayıta ReportToId olarak atanır.
-				 */
-
-				parentId = await roleRepository.CreateAsync(new Role()
+				if (title == null)
 				{
-					LabelEn = schemaItem.Name,
-					LabelTr = schemaItem.Name,
-					DescriptionEn = null,
-					DescriptionTr = null,
-					Master = false,
-					OwnersList = new List<string>(),
-					ReportsToId = schemaItem.ParentId == 0 ? roleId : parentId,
-					ShareData = false,
-					SystemCode = "branch-" + roleId + "/profile-" + schemaItem.Id.ToString()
-				}, appUser.TenantLanguage);
+					/*
+					 * Eksik role leri oluşturmak için missingSchema objesi içinde dönüyoruz.
+					 * Eğer yeni eklenecek role bi şubeye direk bağlıysa (Ex: Gayrettepe Şubesi > Satış Sorumlusu)
+					 * GetWithCode methodu boş dönücektir.
+					 * Fakat daha bir şubeye değil de role ağacında ki başka bir profilin altına eklenecek ise (Ex : Satış Sorumlusu > Satış Destek)
+					 * O zaman GetWithCode methoduyla Satış sorumlusunun role unu çekiyoruz.
+					 * Ve yeni eklenecek dalın bu role e bağlanması için parentId si olarak bu rolun id sini setliyoruz.
+					 *
+					 */
+					var parent = await roleRepository.GetWithCode("branch-" + roleId + "/profile-" + schemaItem.ParentId);
+					parentId = parent?.Id;
+
+					/*
+					 * Eğer rol ağacına eklenecek yeni profilin parentId si 0 ise bu profile şemasında en üstte olduğu anlamına gelir.
+					 * Bu yüzden direk olarak seçilen şube ReportToId olarak setlenerek role ağacına eklenecek profilin direk şubeye bağlanması sağlanır.
+					 * missingSchema nın Count u bir den fazla ise role ağacına ilk kayıt eklendikten sonra eklenen kayıtın id si alınır.
+					 * Bir sonra ki eklenen kayıt bu yeni eklenen role ün altında olucağı için 2. kayıt eklenirken bir önceki kayıtın id si
+					 * 2. kayıta ReportToId olarak atanır.
+					 */
+
+					parentId = await roleRepository.CreateAsync(new Role()
+					{
+						LabelEn = schemaItem.Name,
+						LabelTr = schemaItem.Name,
+						DescriptionEn = null,
+						DescriptionTr = null,
+						Master = false,
+						OwnersList = new List<string>(),
+						ReportsToId = schemaItem.ParentId == 0 ? roleId : parentId,
+						ShareData = false,
+						SystemCode = "branch-" + roleId + "/profile-" + schemaItem.Id.ToString()
+					}, appUser.TenantLanguage);
+				}
+				else
+				{
+					parentId = await roleRepository.CreateAsync(new Role()
+					{
+						LabelEn = "Standard-" + schemaItem.Name,
+						LabelTr = "Standart-" + schemaItem.Name,
+						DescriptionEn = null,
+						DescriptionTr = null,
+						Master = false,
+						OwnersList = new List<string>(),
+						ReportsToId = roleId,
+						ShareData = false,
+						SystemCode = "branch-" + roleId + "/title"
+					}, appUser.TenantLanguage);
+				}
 			}
 
 			return parentId;
@@ -3772,7 +3810,7 @@ namespace PrimeApps.App.Helpers
 			}
 		}
 
-		public static async Task<List<Profile>> MissingProfileSchema(List<Profile> profileSchema, int branchId, int parentId, ProfileRepository profileRepository, RoleRepository roleRepository)
+		public static async Task<List<Profile>> MissingProfileSchema(List<Profile> profileSchema, int branchId, int parentId, ProfileRepository profileRepository, RoleRepository roleRepository, Setting title)
 		{
 			var subBranchs = await roleRepository.GetByReportsToId(parentId);
 
@@ -3780,12 +3818,12 @@ namespace PrimeApps.App.Helpers
 			{
 				for (var i = 0; i < subBranchs.Count; i++)
 				{
-					var subBranch = subBranchs.FirstOrDefault(y => y.SystemCode == "branch-" + branchId + "/profile-" + profileSchema[profileSchema.Count - 1].Id);
+					var subBranch = subBranchs.FirstOrDefault(y => y.SystemCode == "branch-" + branchId + (profileSchema.Count > 0 && title == null ? "/profile-" + profileSchema[profileSchema.Count - 1].Id : "/title"));
 
 					if (subBranch != null)
 					{
 						profileSchema.Remove(profileSchema[profileSchema.Count - 1]);
-						await MissingProfileSchema(profileSchema, branchId, subBranch.Id, profileRepository, roleRepository);
+						await MissingProfileSchema(profileSchema, branchId, subBranch.Id, profileRepository, roleRepository, title);
 						break;
 					}
 				}

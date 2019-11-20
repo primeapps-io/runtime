@@ -49,6 +49,9 @@ angular.module('primeapps')
                                 case 'x-branch-id':
                                 case 'branch_id':
                                     return $rootScope.branchAvailable ? $rootScope.user.branchId : '';
+                                case 'X-Tenant-Language':
+                                case 'x-tenant-tanguage':
+                                    return $rootScope.user.tenant_language ? $rootScope.user.tenant_language : '';
                             }
                         };
 
@@ -104,21 +107,21 @@ angular.module('primeapps')
 
                     if (rejection.status === 403) {
                         $window.location.href = '#/app/dashboard';
-                        ngToast.create({content: $filter('translate')('Common.Forbidden'), className: 'danger'});
+                        ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'danger' });
                         return $q.reject(rejection);
                     }
 
                     if (rejection.status === 404) {
                         if (!rejection.config.ignoreNotFound) {
                             $window.location.href = '#/app/dashboard';
-                            ngToast.create({content: $filter('translate')(rejection.config.url.indexOf('/module') > -1 ? 'Common.NotFoundRecord' : 'Common.NotFound'), className: 'warning'});
+                            ngToast.create({ content: $filter('translate')(rejection.config.url.indexOf('/module') > -1 ? 'Common.NotFoundRecord' : 'Common.NotFound'), className: 'warning' });
                         }
 
                         return $q.reject(rejection);
                     }
 
                     if (!navigator.onLine || rejection.status === 421 || rejection.status === 429) {
-                        ngToast.create({content: $filter('translate')('Common.NetworkError'), className: 'warning'});
+                        ngToast.create({ content: $filter('translate')('Common.NetworkError'), className: 'warning' });
                         return $q.reject(rejection);
                     }
 
@@ -126,7 +129,7 @@ angular.module('primeapps')
                         return $q.reject(rejection);
                     }
 
-                    ngToast.create({content: $filter('translate')('Common.Error'), className: 'danger'});
+                    ngToast.create({ content: $filter('translate')('Common.Error'), className: 'danger' });
 
                     return $q.reject(rejection);
                 }

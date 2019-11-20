@@ -388,6 +388,8 @@ angular.module('primeapps')
                 $scope.submittingModal = true;
                 var emailProviderType = $scope.senderAlias.type == "System" ? 1 : 3; //1 = System, 3=Personal
 
+                components.run('BeforeBulkEmail', 'Script', $scope);
+
                 ModuleService.sendEMail($scope.$parent.$parent.module.id,
                     selectedIds,
                     $scope.queryRequest.query || null,
@@ -401,7 +403,7 @@ angular.module('primeapps')
                     emailProviderType,
                     dialog_uid,
                     $scope.Subject).then(function (response) {
-                        components.run('AfterEmail', 'Script', $scope);
+                        components.run('AfterBulkEmail', 'Script', $scope);
                         $scope.submittingModal = false;
                         $scope.mailModal.hide();
                         $scope.$parent.$parent.$parent.isAllSelected = false;
