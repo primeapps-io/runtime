@@ -416,7 +416,7 @@ namespace PrimeApps.Model.Helpers
                             break;
                         }
 
-                        var seqTables = new List<string>()
+                        var seqTables = new List<string>
                         {
                             "action_button_permissions_id_seq", "action_buttons_id_seq", "bpm_categories_id_seq",
                             "bpm_record_filters_id_seq", "bpm_workflow_logs_id_seq", "bpm_workflows_id_seq",
@@ -438,8 +438,7 @@ namespace PrimeApps.Model.Helpers
 
                         foreach (var seqTable in seqTables)
                         {
-                            PostgresHelper.Run(PREConnectionString, dbName,
-                                $"SELECT setval('{seqTable}', 100000, true); ");
+                            PostgresHelper.Run(PREConnectionString, dbName,$"SELECT setval('{seqTable}', 500000, true); ");
                         }
                     }
                     else

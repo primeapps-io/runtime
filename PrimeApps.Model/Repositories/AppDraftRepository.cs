@@ -100,7 +100,7 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<AppDraftSetting> GetAuthTheme(int id)
+        public async Task<AppDraftSetting> GetSettings(int id)
         {
             return await DbContext.AppSettings
                 .Where(x => x.AppId == id).FirstOrDefaultAsync();
@@ -113,12 +113,6 @@ namespace PrimeApps.Model.Repositories
             appSettings.AuthTheme = jsonData;
 
             return await DbContext.SaveChangesAsync();
-        }
-
-        public async Task<AppDraftSetting> GetAppTheme(int id)
-        {
-            return await DbContext.AppSettings
-                .Where(x => x.AppId == id).FirstOrDefaultAsync();
         }
 
         public async Task<int> UpdateAppTheme(int id, JObject model)
@@ -163,6 +157,14 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.AppCollaborators
                 .Where(x => x.AppId == appId && !x.Deleted)
+                .ToListAsync();
+        }
+        
+        public async Task<List<AppDraft>> GetAll()
+        {
+            return await DbContext.Apps
+                .Include(x => x.Setting)
+                .Where(x => !x.Deleted)
                 .ToListAsync();
         }
 	}

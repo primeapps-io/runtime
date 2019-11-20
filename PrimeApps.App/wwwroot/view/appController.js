@@ -10,7 +10,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.bottomlinks = angular.element(document.getElementsByClassName('sidebar-bottom-link'));
         $scope.appLauncher = angular.element(document.getElementById('app-launcher'));
         $scope.appId = $location.search().app || 1;
-        $scope.appLogo = $rootScope.workgroup.logo_url ? $rootScope.workgroup.logo_url : appLogo;
+        $scope.appLogo = $rootScope.workgroup.logo_url ? blobUrl + '/'+ $rootScope.workgroup.logo_url : appLogo;
         $scope.addingApp = false;
         $scope.tenants = $rootScope.multiTenant;
         $scope.isTimetrackerExist = false;

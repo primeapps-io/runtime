@@ -67,5 +67,10 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.Setting)
                 .FirstOrDefaultAsync(x => x.Setting.AppDomain == domain);
         }
+        
+        public async Task<int> Update(App app)
+        {
+            return await DbContext.SaveChangesAsync();
+        }
     }
 }

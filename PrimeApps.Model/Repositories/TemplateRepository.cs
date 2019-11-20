@@ -26,11 +26,16 @@ namespace PrimeApps.Model.Repositories
 
         public Template GetByCode(string code, LanguageType language = LanguageType.Tr)
         {
-            var template = DbContext.Templates.FirstOrDefault(x => x.Code == code && x.Language == language);
-             
-            return template;
+            return DbContext.Templates.FirstOrDefault(x => x.Code == code && x.Language == language);
         }
 
+        public async Task<ICollection<Template>> GetByType(TemplateType templateType)
+        {
+            return await DbContext.Templates
+                .Where(x => x.TemplateType == templateType && x.Deleted == false)
+                .ToListAsync();
+        }
+        
         public async Task<ICollection<Template>> GetAll(TemplateType templateType, string moduleName = "")
         {
             var templates = DbContext.Templates
