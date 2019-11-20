@@ -916,7 +916,13 @@ angular.module('primeapps')
 
 					return deferred.promise;
 				},
-
+				moduleFieldsConvertByKey:function(fields){
+					var newFields=[];
+					for (var i = 0; i <fields.length ; i++) {
+						newFields[fields[i].name] = fields[i]
+					}
+					return newFields;
+				},
                 lookup: function (searchTerm, field, record, additionalFields, exactMatch, customFilters) {
 					var deferred = $q.defer();
 					var lookupType = field.lookup_type;
@@ -1007,7 +1013,9 @@ angular.module('primeapps')
 					if (lookupModule.name === 'users') {
 						findRequest.filters.push({ field: 'email', operator: 'not_contain', value: "integration_", no: filterOrderNo + 1 });
 					}
-
+					
+					var lookupModuleFields = that.moduleFieldsConvertByKey(lookupModule.fields) ;
+					
 					//lookup field filters (from field_filters table)
 					if (field.filters) {
 						var no = findRequest.filters.length;
@@ -1034,6 +1042,17 @@ angular.module('primeapps')
 								}
 
 							} else {
+
+								var field = lookupModuleFields[filter.filter_field];
+
+								switch (field.data_type) {
+									case "picklist":
+									case "multiselect":
+													filter.value = filter.value.split("|");
+									 break;
+
+								}			
+								
 								findRequest.filters.push({ field: filter.filter_field, operator: filter.operator, value: filter.value, no: no });
 								findRequest.fields.push(filter.filter_field);
 							}
