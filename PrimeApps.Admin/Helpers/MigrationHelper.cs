@@ -378,6 +378,12 @@ namespace PrimeApps.Admin.Helpers
                     foreach (var id in tenantIds)
                     {
                         var tenant = await tenantRepository.GetAsync(id);
+                        var PREConnectionString = _configuration.GetConnectionString("PlatformDBConnection");
+
+                        var exists = PostgresHelper.Read(PREConnectionString, $"platform",$"SELECT 1 AS result FROM pg_database WHERE datname='tenant{tenant.Id}'", "hasRows");
+
+                        if (!exists)
+                            continue;
                         
                         _currentUser = new CurrentUser {PreviewMode = "tenant", TenantId = tenant.Id, UserId = 1};
 
@@ -403,7 +409,6 @@ namespace PrimeApps.Admin.Helpers
 
                         await _storage.AddHttpReferrerUrlToBucket($"tenant{tenant.Id}", url, UnifiedStorage.PolicyType.TenantPolicy);
                         
-                        var PREConnectionString = _configuration.GetConnectionString("PlatformDBConnection");
                         var seqTables = new List<string>
                         {
                             "action_button_permissions_id_seq", "action_buttons_id_seq", "bpm_categories_id_seq",
