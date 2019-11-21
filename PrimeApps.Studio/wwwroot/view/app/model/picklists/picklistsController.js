@@ -699,6 +699,7 @@ angular.module('primeapps')
                 $scope.sheets = null;
                 $scope.fieldMap = null;
                 $scope.fixedField = null;
+                $scope.selectedSheet = null;
             };
 
             $scope.prepareItems = function () {
@@ -838,7 +839,7 @@ angular.module('primeapps')
                     .then(function (response) {
                         toastr.success("Picklist items are saved successfully.");
                         $scope.cancel();
-                        $scope.selectPicklist(picklist.id);
+                        $scope.selectPicklist($scope.id);
                         $scope.saving = false;
                     })
                     .catch(function (error) {

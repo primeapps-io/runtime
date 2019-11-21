@@ -346,7 +346,7 @@
                                                 name="{{field.name}}"
                                                 tabindex="{{field.order}}"
                                                 ng-required="field.required && selectedSheet && wizardStep === 1"
-                                                ng-model="fieldMap[field.name]">
+                                                ng-model="$parent.$parent.$parent.fieldMap[field.name]">
                                             <option value="">{{'Common.Select' | translate}}</option>
                                             <option value="{{cell.column}}" ng-repeat="cell in cells track by cell.column" class="free-cell" ng-class="{'used-cell': cell.used}">{{cell.name}}</option>
                                             <option value="fixed" style="background-color: #fbf7dd;">Fixed Value</option>
@@ -356,7 +356,7 @@
                                                class="form-control ng-animate-disabled"
                                                style="margin-top:5px;"
                                                maxlength="100"
-                                               ng-if="fieldMap[field.name] === 'fixed'"
+                                               ng-if="$parent.$parent.$parent.fieldMap[field.name] === 'fixed'"
                                                ng-model="fixedField[field.name]"
                                                ng-required="field.required && fieldMap[field.name] === 'fixed'" />
                                     </div>
