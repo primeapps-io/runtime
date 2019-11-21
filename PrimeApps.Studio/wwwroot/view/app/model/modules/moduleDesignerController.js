@@ -9,6 +9,7 @@ angular.module('primeapps')
             $scope.fieldActiveSection = "properties";
             $scope.filters = [];
             $scope.loadingFilter = false;
+            $scope.modules = $rootScope.appModules;
 
             $scope.$on('$locationChangeStart', function (event) {
                 if ($scope.moduleChange) {
@@ -607,6 +608,7 @@ angular.module('primeapps')
                     $scope.currentFieldState = angular.copy(field);
 
                     if (field.default_value && field.data_type === 'lookup') {
+
                         if (field.lookup_type !== 'users') {
                             var lookupId = parseInt(field.default_value);
 
@@ -691,6 +693,7 @@ angular.module('primeapps')
 
                 if ($scope.currentField.filters && $scope.currentField.filters.length > 0) {
                     $scope.loadingFilter = true;
+
                     $timeout(function () {
 
                         $scope.filters = [];
@@ -704,24 +707,21 @@ angular.module('primeapps')
                             filter.id = item.id;
                             filter.operator = operators[item.operator];
                             filter.deleted = item.deleted;
-                            var filterMatch = item.filter_field.match(/^\W+(.+)]/i);
 
-                            if (filterMatch) {
-                                var fieldArray = filterMatch[1].split('.');
+                            var fieldArray = item.filter_field.split('.');
 
-                                if (fieldArray.length > 0) {
-                                    filter.fieldToFilter = $filter('filter')($scope.currentLookupFields, { name: fieldArray[0] }, true)[0];
-                                    filter.field = filter.fieldToFilter;
+                            if (fieldArray && fieldArray.length > 1) {
+                                filter.fieldToFilter = $filter('filter')($scope.currentLookupFields, { name: fieldArray[0] }, true)[0];
+                                filter.field = filter.fieldToFilter;
 
-                                    $scope.selectFieldToFilter(filter, filter.fieldToFilter, 'lookupModule');
-                                    $timeout(function () {
-                                        filter.lookupField = $filter('filter')(filter.lookupModule.fields, { name: fieldArray[2] }, true)[0];
+                                $scope.selectFieldToFilter(filter, filter.fieldToFilter, 'lookupModule');
+                                $timeout(function () {
+                                    filter.lookupField = $filter('filter')(filter.lookupModule.fields, { name: fieldArray[2] }, true)[0];
 
-                                        if (filter.lookupField)
-                                            filter.field = filter.lookupField;
+                                    if (filter.lookupField)
+                                        filter.field = filter.lookupField;
 
-                                    }, 3000);
-                                }
+                                }, 1000);
                             }
                             else {
                                 filter.fieldToFilter = $filter('filter')($scope.currentLookupFields, { name: item.filter_field }, true)[0];
@@ -743,13 +743,37 @@ angular.module('primeapps')
 
                                             $timeout(function () {
                                                 filter.targetLookupField = $filter('filter')(filter.targetLookupModule.fields, { name: valueArray[1] }, true)[0];
-                                            }, 2000);
+                                            }, 1000);
                                         }
                                     }
                                 }
                             }
                             else {
-                                filter.value = item.value;
+                                switch (filter.field.data_type) {
+                                    case "picklist":
+                                        var value = $filter('filter')($scope.modulePicklists[filter.field.picklist_id], { labelStr: item.value }, true)[0];
+                                        filter.value = value;
+                                        break;
+                                    case "multiselect":
+                                    case "tag":
+                                        var valueArray = item.value.split("|");
+                                        filter.value = [];
+
+                                        for (var i = 0; i < valueArray.length; i++) {
+                                            var value = $filter('filter')($scope.modulePicklists[filter.field.picklist_id], { labelStr: valueArray[i] }, true)[0];
+                                            filter.value.push(value);
+                                        }
+                                        break;
+                                    case 'checkbox':
+                                        var value = $filter('filter')($scope.modulePicklists["yes_no"], { system_code: item.value }, true)[0];
+                                        filter.value = value;
+                                        break;
+                                    default:
+                                        filter.value = item.value;
+                                        break;
+
+                                }
+
                                 filter.type = false;
                             }
 
@@ -889,6 +913,8 @@ angular.module('primeapps')
                     ModuleService.getModuleFields(lookupModule.name, filterArray).then(function (result) {
                         $scope.currentField.lookupModulePrimaryField = $filter('filter')(result.data, { primary: true }, true)[0];
                         $scope.currentLookupFields = ModuleService.getFieldsOperator({ fields: result.data }).fields;
+                        lookupModule.fields = result.data;
+                        $scope.getModulePicklist(lookupModule);
                     });
 
                 }
@@ -1237,11 +1263,22 @@ angular.module('primeapps')
                         }
                         else {
                             if (filter.value) {
-                                if (filter.fieldToFilter.data_type == 'picklist') {
-                                    newFilter.value = filter.value.labelStr;
+                                switch (filter.fieldToFilter.data_type) {
+                                    case 'picklist':
+                                        newFilter.value = filter.value.labelStr;
+                                        break;
+                                    case 'multiselect':
+                                    case 'tag':
+                                        newFilter.value = filter.value.map(function (obj) { return obj.labelStr; }).join('|');
+                                        break;
+                                    case 'checkbox':
+                                        newFilter.value = filter.value.system_code;
+                                        break;
+                                    default:
+                                        newFilter.value = filter.value;
+                                        break;
+
                                 }
-                                else
-                                    newFilter.value = filter.value;
                             }
                         }
 
@@ -1252,7 +1289,7 @@ angular.module('primeapps')
 
                     $scope.currentField.filters = angular.copy(newFilters);
                 }
-                //FOR LOOKUP F�LTER
+                //FOR LOOKUP FILTER
 
                 $scope.fieldModal.hide();
 
@@ -1396,7 +1433,7 @@ angular.module('primeapps')
             $scope.multiselect = function (searchTerm, field) {
                 var picklistItems = [];
 
-                angular.forEach($scope.picklistsModule[field.picklist_id], function (picklistItem) {
+                angular.forEach($scope.modulePicklists[field.picklist_id], function (picklistItem) {
                     if (picklistItem.inactive || picklistItem.hidden)
                         return;
 
@@ -1664,9 +1701,9 @@ angular.module('primeapps')
                     var deletedFieldsIds = [];
                     $scope.currentDeletedFields.forEach(function (deletedField) {
 
-                        var fieldDeleted = $filter('filter')($scope.module.fields, { name: deletedField.name }, true);
+                        var fieldDeleted = $filter('filter')($scope.module.fields, { name: deletedField.name }, true)[0];
                         if (fieldDeleted) {
-                            fieldDeleted[0].deleted = true;
+                            fieldDeleted.deleted = true;
                         }
 
                         deletedFieldsIds.push(deletedField.id);
@@ -1767,7 +1804,7 @@ angular.module('primeapps')
                 filter.targetField = null;
 
 
-                if (filter.field && filter.field.data_type === 'picklist') {
+                if (filter.field && filter.field.data_type === 'picklist' || filter.field.data_type === 'multiselect') {
                     $scope.getModulePicklist(filter.field.module);
                 }
             };
@@ -1782,7 +1819,7 @@ angular.module('primeapps')
                 filter.targetField = null;
 
 
-                if (filter.field.data_type === 'picklist') {
+                if (filter.field.data_type === 'picklist' || filter.field.data_type === 'multiselect') {
                     $scope.getModulePicklist(filter.field.module);
                 }
             };
@@ -1807,10 +1844,16 @@ angular.module('primeapps')
                             }
                         });
                 }
+                else {
+                    ModuleService.getPickItemsLists(module)
+                        .then(function (picklists) {
+                            $scope.modulePicklists = picklists;
+                        });
+                }
 
             };
 
-            $scope.filterAdd = function (filter) { 
+            $scope.filterAdd = function (filter) {
                 if (filter.fieldToFilter && filter.operator && (filter.value || filter.targetField)) {
                     var newFilter = {};
                     newFilter.fieldToFilter = null;

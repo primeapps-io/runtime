@@ -428,17 +428,17 @@ namespace PrimeApps.Studio.Helpers
 
                             if (filter.Id.HasValue)
                             {
-                                var filterEntity = fieldEntity.Filters.Where(x => x.Id == filter.Id).FirstOrDefault();
+                                var filterEntity = fieldEntity.Filters.Where(x => x.Id == filter.Id && !x.Deleted).FirstOrDefault();
 
                                 if (filterEntity == null)
                                     continue;
 
+                                filterEntity.FilterField = filter.FilterField;
                                 filterEntity.FieldId = filter.FieldId;
                                 filterEntity.Operator = filter.Operator;
                                 filterEntity.Value = filter.Value;
                                 filterEntity.Deleted = filter.Deleted;
                                 filterEntity.No = 1;
-
                             }
                             else
                             {

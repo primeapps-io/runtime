@@ -61,6 +61,8 @@ namespace PrimeApps.App.Controllers
             SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_picklistRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_profileRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_processRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_tagRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_settingRepository, PreviewMode, TenantId, AppId);
             base.OnActionExecuting(context);
         }

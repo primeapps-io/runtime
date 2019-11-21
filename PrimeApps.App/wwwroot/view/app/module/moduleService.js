@@ -1021,12 +1021,13 @@ angular.module('primeapps')
 						var no = findRequest.filters.length;
 						for (var z = 0; z < field.filters.length; z++) {
 							var filter = field.filters[z];
-							no++;
+                            no++;
+                            var findRecordValue;
+
 							var filterMatch = filter.value.match(/^\W+(.+)]/i);
 							if (filterMatch !== null && field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles') {
 								var recordMatch = filterMatch[1].split('.');
-								var findRecordValue;
-
+								
 								if (recordMatch.length === 1 && record[recordMatch[0]])
 									findRecordValue = record[recordMatch[0]];
 
@@ -1043,17 +1044,20 @@ angular.module('primeapps')
 
 							} else {
 
-								var field = lookupModuleFields[filter.filter_field];
+								var filterField = lookupModuleFields[filter.filter_field];
 
-								switch (field.data_type) {
-									case "picklist":
+                                switch (filterField.data_type) { 
 									case "multiselect":
-													filter.value = filter.value.split("|");
-									 break;
+                                    case "tag":
+                                        findRecordValue = filter.value.split("|"); 
+                                        break; 
+                                    default:
+                                        findRecordValue = filter.value;
+                                        break;
 
 								}			
 								
-								findRequest.filters.push({ field: filter.filter_field, operator: filter.operator, value: filter.value, no: no });
+                                findRequest.filters.push({ field: filter.filter_field, operator: filter.operator, value: findRecordValue, no: no });
 								findRequest.fields.push(filter.filter_field);
 							}
 

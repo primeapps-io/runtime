@@ -41,7 +41,7 @@
                                     <a ng-class="fieldActiveSection ==='permissions' ? 'active':''"
                                        href="javascript:void(0)">Permissions</a>
                                 </li>
-                                <li ng-click="fieldActiveSection = 'filter';tabClick();getModulePicklist(pureModule);" ng-show="currentField.dataType.name === 'lookup' && !currentField.systemReadonly" style="min-width: 150px !important;">
+                                <li ng-click="fieldActiveSection = 'filter';tabClick();" ng-show="currentField.dataType.name === 'lookup' && !currentField.systemReadonly" style="min-width: 150px !important;">
                                     <a ng-class="fieldActiveSection ==='filter' ? 'active':''"
                                        href="javascript:void(0);">Filters</a>
                                 </li>
@@ -850,17 +850,17 @@
 
                                     <div ng-show="!loadingFilter">
 
-                                        <div class="field-to-filter" ng-repeat="filter in filters | filter:{deleted:'!true'}">
+                                        <div class="field-to-filter" ng-repeat="filter in filters | filter:{deleted:'!true'} | orderBy:'id'">
                                             <div>
                                                 <div>
                                                     <div class="form-group" ng-class="{'has-error': filterForm.$submitted && filterForm.filterField.$invalid}">
                                                         <label>Field to Filter</label>
-                                                        <select class="form-control"
+                                                        <select class="form-control text-capitalize"
                                                                 name="filterField"
                                                                 tabindex="1"
                                                                 ng-model="filter.fieldToFilter"
                                                                 ng-change="selectFieldToFilter(filter,filter.fieldToFilter,'lookupModule');changeFieldFilter(filter,filter.fieldToFilter);"
-                                                                ng-options="o as o['label_' + language] for o in currentLookupFields | filter:{deleted:'!true'} | orderBy:'order' track by o.name">
+                                                                ng-options="o as  o.data_type === 'lookup' ? o['label_' + language]+' ('+ o.lookup_type +')':o['label_' + language] for o in currentLookupFields | filter:{deleted:'!true'} | orderBy:'order' track by o.name">
                                                             <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
                                                         </select>
                                                     </div>
@@ -1130,18 +1130,18 @@
                                                     </div>
                                                     <div class="form-group" ng-if="filter.type">
                                                         <label>Field (This Module)</label>
-                                                        <select class="form-control  ng-animate-disabled"
+                                                        <select class="form-control  ng-animate-disabled text-capitalize"
                                                                 name="targetField"
                                                                 tabindex="4"
                                                                 required
                                                                 ng-model="filter.targetField"
                                                                 ng-change="selectFieldToFilter(filter,filter.targetField,'targetLookupModule');"
-                                                                ng-options="o as o['label_' + language] for o in pureModule.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.name">
+                                                                ng-options="o as o.data_type === 'lookup' ? o['label_' + language]+' ('+ o.lookup_type +')':o['label_' + language] for o in pureModule.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.name">
                                                             <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
                                                         </select>
 
                                                     </div>
-                                                    <div class="form-group" ng-if="filter.targetField && filter.targetField.data_type === 'lookup'">
+                                                    <div class="form-group" ng-if="filter.targetField && filter.targetField.data_type === 'lookup' && filter.type">
                                                         <label>Fields of Lookup</label>
                                                         <select class="form-control  ng-animate-disabled"
                                                                 name="targetLookupField"
