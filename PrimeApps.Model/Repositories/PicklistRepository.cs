@@ -272,5 +272,13 @@ namespace PrimeApps.Model.Repositories
 
             return picklist;
         }
+        
+        public async  Task<PicklistItem> GetPicklistItemBySystemCode (string systemcode)
+        {
+            var picklistItem = await DbContext.PicklistItems              
+                .SingleAsync(x => !x.Deleted && x.SystemCode == systemcode);     
+
+            return picklistItem;
+        }
     }
 }
