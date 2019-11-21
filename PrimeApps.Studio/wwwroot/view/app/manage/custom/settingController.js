@@ -10,7 +10,7 @@ angular.module('primeapps')
             $scope.settings = [];
             $scope.loading = true;
             $scope.modalLoading = false;
-            $scope.settingModel = {};
+            $scope.settingModel = {}; 
 
             $scope.generator = function (limit) {
                 $scope.placeholderArray = [];
@@ -100,6 +100,8 @@ angular.module('primeapps')
             };
 
             $scope.closeModal = function () {
+                $scope.settingForm.$submitted = false;
+                $scope.settingForm.$error = {};
                 $scope.settingFormModal.hide();
                 $scope.editing = false;
                 $scope.settingModel = {};
@@ -117,6 +119,7 @@ angular.module('primeapps')
                 }
 
                 $scope.saving = true;
+                settingForm.$submitted = false;
 
                 if ($scope.editing) {
                     SettingsService.update($scope.settingModel.id, $scope.settingModel)
