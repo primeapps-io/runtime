@@ -42,6 +42,7 @@ namespace PrimeApps.Admin
             services.TryAddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.TryAddSingleton<IPublish, Publish>();
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
+            services.AddScoped<IMigrationHelper, MigrationHelper>();
         }
     }
 }

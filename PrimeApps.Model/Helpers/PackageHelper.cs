@@ -91,10 +91,6 @@ namespace PrimeApps.Model.Helpers
                     }
                 }
 
-                // Delete all users without 1
-
-                AddScript(scriptPath, $"DELETE FROM users WHERE id != 1;");
-
                 /*if (!result)
                     File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while clearing dynamic tables... \u001b[39m" + Environment.NewLine);
                 */
@@ -141,6 +137,9 @@ namespace PrimeApps.Model.Helpers
                         }
                     }
                 }
+                
+                // Delete all users without 1
+                AddScript(scriptPath, $"DELETE FROM users WHERE id != 1;");
 
                 try
                 {

@@ -1,4 +1,5 @@
-﻿using Amazon.Runtime;
+﻿using System.Diagnostics;
+using Amazon.Runtime;
 using Amazon.S3;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
@@ -17,6 +18,11 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Amazon;
 using PrimeApps.App.Logging;
 using Hangfire.Redis;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using PrimeApps.App.Helpers;
+using PrimeApps.App.Services;
+using PrimeApps.Model.Context;
 
 namespace PrimeApps.App
 {
@@ -125,7 +131,23 @@ namespace PrimeApps.App
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
+            
+            var previewMode = Configuration.GetValue("AppSettings:PreviewMode", string.Empty);
 
+            if (previewMode == "app")
+            {
+                using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+                {
+                    var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                    var queue = app.ApplicationServices.GetService<IBackgroundTaskQueue>();
+                    var context = app.ApplicationServices.GetService<IHttpContextAccessor>();
+                    var tracerHelper = app.ApplicationServices.GetService<IHistoryHelper>();
+
+                    var listener = databaseContext.GetService<DiagnosticSource>();
+                    (listener as DiagnosticListener).SubscribeWithAdapter(new CommandListener(queue, tracerHelper, context, Configuration));
+                }
+            }
+            
             var forwardHeaders = Configuration.GetValue("AppSettings:ForwardHeaders", string.Empty);
 
             if (!string.IsNullOrEmpty(forwardHeaders) && bool.Parse(forwardHeaders))

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Admin.Helpers;
 using PrimeApps.Admin.Models;
+using PrimeApps.Admin.Services;
 using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.Admin.Controllers
@@ -16,12 +17,16 @@ namespace PrimeApps.Admin.Controllers
         private readonly IOrganizationHelper _organizationHelper;
         private readonly IApplicationRepository _applicationRepository;
         private readonly IPlatformUserRepository _platformUserRepository;
-
-        public HomeController(IOrganizationHelper organizationHelper, IApplicationRepository applicationRepository, IPlatformUserRepository platformUserRepository)
+        private IBackgroundTaskQueue _queue;
+        private IMigrationHelper _migrationHelper;
+        
+        public HomeController(IOrganizationHelper organizationHelper,IBackgroundTaskQueue queue,IMigrationHelper migrationHelper, IApplicationRepository applicationRepository, IPlatformUserRepository platformUserRepository)
         {
             _organizationHelper = organizationHelper;
             _applicationRepository = applicationRepository;
             _platformUserRepository = platformUserRepository;
+            _queue = queue;
+            _migrationHelper = migrationHelper;
         }
 
         [Route("")]
@@ -77,6 +82,15 @@ namespace PrimeApps.Admin.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
+        }
+        
+        [Route("migration")]
+        public IActionResult Migration([FromQuery] string ids)
+        {
+            var isLocal = Request.Host.Value.Contains("localhost");
+            var schema = Request.Scheme;
+            _queue.QueueBackgroundWorkItem(token => _migrationHelper.AppMigration(schema, isLocal, ids.Split(",")));
+            return Ok();
         }
     }
 }

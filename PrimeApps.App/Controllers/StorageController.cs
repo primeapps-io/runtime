@@ -15,7 +15,6 @@ using System.Text.RegularExpressions;
 using Document = PrimeApps.Model.Entities.Tenant.Document;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.App.Services;
-using PrimeApps.Studio.Helpers;
 using static PrimeApps.Model.Storage.UnifiedStorage;
 using PrimeApps.Model.Storage.Unified;
 using Microsoft.Net.Http.Headers;

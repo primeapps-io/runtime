@@ -15,14 +15,16 @@ namespace PrimeApps.Model.Context
 
         public int? UserId { get; set; }
 
-        public TenantDBContext(DbContextOptions<TenantDBContext> options) : base(options)
+        private IConfiguration _configuration;
+
+        public TenantDBContext(DbContextOptions<TenantDBContext> options, IConfiguration configuration) : base(options)
         {
+            _configuration = configuration;
         }
 
         public TenantDBContext(int tenantId, IConfiguration configuration)
         {
             TenantId = tenantId;
-
             var dbConnection = Database.GetDbConnection();
 
             if (dbConnection.State != System.Data.ConnectionState.Open)
@@ -70,6 +72,9 @@ namespace PrimeApps.Model.Context
 
             System.Collections.Generic.IEnumerable<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry> entities = ChangeTracker.Entries().Where(x => x.Entity is BaseEntity && (x.State == EntityState.Added || x.State == EntityState.Modified));
 
+            var previewMode = "";
+            if(_configuration != null)
+                previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
             foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entity in entities)
             {
                 if (entity.State == EntityState.Added)
@@ -81,7 +86,7 @@ namespace PrimeApps.Model.Context
 
                     if (((BaseEntity)entity.Entity).CreatedById < 1 && currentUserId > 0)
                     {
-                        ((BaseEntity)entity.Entity).CreatedById = currentUserId;
+                        ((BaseEntity)entity.Entity).CreatedById = previewMode == "app" ? 1 : currentUserId;
                     }
                 }
                 else
@@ -93,7 +98,7 @@ namespace PrimeApps.Model.Context
 
                     if (!((BaseEntity)entity.Entity).UpdatedById.HasValue && currentUserId > 0)
                     {
-                        ((BaseEntity)entity.Entity).UpdatedById = currentUserId;
+                        ((BaseEntity)entity.Entity).UpdatedById = previewMode == "app" ? 1 : currentUserId;
                     }
                 }
             }

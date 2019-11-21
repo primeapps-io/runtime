@@ -7,16 +7,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
+using PrimeApps.Studio.Services;
 
 namespace PrimeApps.Studio.Controllers
 {
     public class HomeController : Controller
     {
         private IConfiguration _configuration;
-
-        public HomeController(IConfiguration configuration)
+        private IBackgroundTaskQueue _queue;
+        private IMigrationHelper _migrationHelper;
+        public HomeController(IConfiguration configuration,IBackgroundTaskQueue queue,IMigrationHelper migrationHelper)
         {
             _configuration = configuration;
+            _queue = queue;
+            _migrationHelper = migrationHelper;
         }
 
         [Authorize]
@@ -53,6 +57,15 @@ namespace PrimeApps.Studio.Controllers
         [HttpGet, Route("healthz")]
         public IActionResult Healthz()
         {
+            return Ok();
+        }
+        
+        [HttpGet, Route("migration")]
+        public IActionResult Migration()
+        {
+            var isLocal = Request.Host.Value.Contains("localhost");
+            var schema = Request.Scheme;
+            _queue.QueueBackgroundWorkItem(token => _migrationHelper.Apply(schema, isLocal));
             return Ok();
         }
         

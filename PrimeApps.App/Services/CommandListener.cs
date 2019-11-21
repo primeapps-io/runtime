@@ -1,21 +1,18 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DiagnosticAdapter;
 using Newtonsoft.Json.Linq;
+using PrimeApps.App.Helpers;
 using PrimeApps.Model.Helpers;
-using PrimeApps.Studio.Helpers;
+using PrimeApps.App.Helpers;
 
-namespace PrimeApps.Studio.Services
+namespace PrimeApps.App.Services
 {
     public class CommandListener
     {
@@ -27,7 +24,7 @@ namespace PrimeApps.Studio.Services
         private DbCommand _command;
         private bool _hastExecuting = false;
         private Guid? _lastCommandId = null;
-        private CurrentUser CurrentUser => _currentUser ?? (_currentUser = UserHelper.GetCurrentUser(_context));
+        private CurrentUser CurrentUser => _currentUser ?? (_currentUser = UserHelper.GetCurrentUser(_context, _configuration));
 
         public CommandListener(IBackgroundTaskQueue queue, IHistoryHelper historyHelper, IHttpContextAccessor context,
             IConfiguration configuration)
@@ -42,9 +39,8 @@ namespace PrimeApps.Studio.Services
         public void OnCommandExecuting(DbCommand command, DbCommandMethod executeMethod, Guid commandId,
             Guid connectionId, bool async, DateTimeOffset startTime)
         {
-            if ((command.CommandText.StartsWith("INSERT", true, null) &&
-                 !command.CommandText.Contains("public.history_database") &&
-                 !command.CommandText.Contains("public.history_storage")) ||
+            if ((command.CommandText.Contains("public.dashboard") || command.CommandText.Contains("public.dashlets") || command.CommandText.Contains("public.widgets")) &&
+                command.CommandText.StartsWith("INSERT", true, null) ||
                 command.CommandText.StartsWith("UPDATE", true, null) ||
                 command.CommandText.StartsWith("CREATE", true, null) ||
                 command.CommandText.StartsWith("DELETE", true, null) ||
@@ -70,7 +66,7 @@ namespace PrimeApps.Studio.Services
                 command = ((RelationalDataReader) result).DbCommand;
             }
 
-            if (command != null && command.Connection?.Database != "studio" &&
+            if (command != null && (command.CommandText.Contains("public.dashboard") || command.CommandText.Contains("public.dashlets") || command.CommandText.Contains("public.widgets")) &&
                 !command.CommandText.Contains("public.history_database") &&
                 !command.CommandText.Contains("public.history_storage") && (
                     command.CommandText.StartsWith("INSERT", true, null) ||
@@ -106,12 +102,12 @@ namespace PrimeApps.Studio.Services
                         var index = obj.index;
 
                         if(string.IsNullOrEmpty(sql))
-                            continue;
+                           continue;
                         
                         if (sql.StartsWith("INSERT INTO"))
                         {
                             var tableName = Model.Helpers.PackageHelper.GetTableName(sql);
-                            var check = PostgresHelper.Read(_configuration.GetConnectionString("StudioDBConnection"),
+                            var check = PostgresHelper.Read(_configuration.GetConnectionString("TenantDBConnection"),
                                 _command.Connection.Database,
                                 $"SELECT column_name FROM information_schema.columns WHERE table_name='{tableName.Split("public.")[1]}' and column_name='id';",
                                 "hasRows");
@@ -121,7 +117,7 @@ namespace PrimeApps.Studio.Services
                                 if (sequences[tableName] == null)
                                 {
                                     var arrayResult = PostgresHelper.Read(
-                                        _configuration.GetConnectionString("StudioDBConnection"),
+                                        _configuration.GetConnectionString("TenantDBConnection"),
                                         _command.Connection.Database,
                                         $"SELECT last_value FROM {tableName.Split("public.")[1]}_id_seq;", "array");
                                     var value = 0;

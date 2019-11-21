@@ -11,7 +11,7 @@ using System.Reflection;
 using PrimeApps.App.Bpm.Steps;
 using WarehouseHelper = PrimeApps.App.Jobs.Warehouse;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using PrimeApps.Studio.Helpers;
+using PrimeApps.App.Helpers;
 using PrimeApps.Model.Storage;
 
 namespace PrimeApps.App

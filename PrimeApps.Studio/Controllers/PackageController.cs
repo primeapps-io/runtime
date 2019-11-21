@@ -160,6 +160,11 @@ namespace PrimeApps.Studio.Controllers
 
             if (anyProcess != null)
                 return Conflict("Already have a running publish.");
+            
+            var dbHistory = await _historyDatabaseRepository.GetLast();
+            
+            if(dbHistory?.Tag != null)
+                return Conflict("Please make a change to create a new package.");
 
             var dbName = PreviewMode + (PreviewMode == "tenant" ? TenantId : AppId);
 
@@ -189,7 +194,6 @@ namespace PrimeApps.Studio.Controllers
              * Set version number to history_database and history_storage tables tag column.
              */
 
-            var dbHistory = await _historyDatabaseRepository.GetLast();
             if (dbHistory != null && dbHistory.Tag == null)
             {
                 dbHistory.Tag = packageModel.Version;

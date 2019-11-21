@@ -167,10 +167,10 @@ angular.module('primeapps')
                     confirmButtonText: ' Create '
                 }).then(function (evt) {
                     if (evt.value) {
-                        toastr.success("Package creation started.");
 
                         PackageService.create(null)
                             .then(function (response) {
+                                toastr.success("Package creation started.");
                                 $scope.loading = false;
                                 $scope.packageId = response.data;
                                 $scope.openWS(response.data);
