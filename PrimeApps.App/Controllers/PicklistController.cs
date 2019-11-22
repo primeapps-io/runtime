@@ -129,9 +129,9 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> GetPicklistItemBySystemCode([FromQuery]string systemcode)
         {
             if (systemcode == null)
-                return NotFound("systemcode is required");   
+                return NotFound("Systemcode required");   
             
-            var picklistItem = await _picklistRepository.GetPicklistItemBySystemCode(systemcode);
+            var picklistItem = await _picklistRepository.GetItemBySystemCode(systemcode);
 
             if (picklistItem == null)
                 return NotFound();   
