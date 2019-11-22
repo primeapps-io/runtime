@@ -796,49 +796,49 @@
                                 <div class="panel table-responsive">
                                     <table class="table">
                                         <thead>
-                                        <tr>
-                                            <th>{{'Setup.Modules.Profile' | translate}}</th>
-                                            <th class="text-center">{{'Setup.Modules.PermissionFull' | translate}}</th>
-                                            <th class="text-center">
-                                                {{'Setup.Modules.PermissionReadOnly' | translate}}
-                                            </th>
-                                            <th class="text-center">{{'Setup.Modules.PermissionNone' | translate}}</th>
-                                        </tr>
+                                            <tr>
+                                                <th>{{'Setup.Modules.Profile' | translate}}</th>
+                                                <th class="text-center">{{'Setup.Modules.PermissionFull' | translate}}</th>
+                                                <th class="text-center">
+                                                    {{'Setup.Modules.PermissionReadOnly' | translate}}
+                                                </th>
+                                                <th class="text-center">{{'Setup.Modules.PermissionNone' | translate}}</th>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                        <tr ng-repeat="permission in currentField.permissions | orderBy:'profile_id'">
-                                            <td>{{permission.profile_name}}</td>
-                                            <td class="text-center user-not-select ">
-                                                <label class="radio-inline newinput">
-                                                    <input type="radio"
-                                                           ng-model="permission.type"
-                                                           value="full" />
-                                                    <span></span>
-                                                </label>
+                                            <tr ng-repeat="permission in currentField.permissions | orderBy:'profile_id'">
+                                                <td>{{permission.profile_name}}</td>
+                                                <td class="text-center user-not-select ">
+                                                    <label class="radio-inline newinput">
+                                                        <input type="radio"
+                                                               ng-model="permission.type"
+                                                               value="full" />
+                                                        <span></span>
+                                                    </label>
 
-                                            </td>
-                                            <td class="text-center user-not-select">
-                                                <label class="radio-inline newinput">
-                                                    <input type="radio"
-                                                           ng-model="permission.type"
-                                                           value="read_only"
-                                                           ng-disabled="permission.profile_is_admin"
-                                                           title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (currentField.validation.required ? ('Setup.Modules.PermissionDisabledInfo2' | translate) : '')}}" />
-                                                    <span></span>
-                                                </label>
-                                            </td>
-                                            <td class="text-center user-not-select">
-                                                <label class="radio-inline newinput">
-                                                    <input type="radio"
-                                                           ng-model="permission.type"
-                                                           value="none"
-                                                           ng-disabled="permission.profile_is_admin"
-                                                           title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (currentField.validation.required ? ('Setup.Modules.PermissionDisabledInfo2' | translate) : '')}}" />
-                                                    <span></span>
-                                                </label>
+                                                </td>
+                                                <td class="text-center user-not-select">
+                                                    <label class="radio-inline newinput">
+                                                        <input type="radio"
+                                                               ng-model="permission.type"
+                                                               value="read_only"
+                                                               ng-disabled="permission.profile_is_admin"
+                                                               title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (currentField.validation.required ? ('Setup.Modules.PermissionDisabledInfo2' | translate) : '')}}" />
+                                                        <span></span>
+                                                    </label>
+                                                </td>
+                                                <td class="text-center user-not-select">
+                                                    <label class="radio-inline newinput">
+                                                        <input type="radio"
+                                                               ng-model="permission.type"
+                                                               value="none"
+                                                               ng-disabled="permission.profile_is_admin"
+                                                               title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (currentField.validation.required ? ('Setup.Modules.PermissionDisabledInfo2' | translate) : '')}}" />
+                                                        <span></span>
+                                                    </label>
 
-                                            </td>
-                                        </tr>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -860,7 +860,7 @@
                                                                 tabindex="1"
                                                                 ng-model="filter.fieldToFilter"
                                                                 ng-change="selectFieldToFilter(filter,filter.fieldToFilter,'lookupModule');changeFieldFilter(filter,filter.fieldToFilter);"
-                                                                ng-options="o as  o.data_type === 'lookup' ? o['label_' + language]+' ('+ o.lookup_type +')':o['label_' + language] for o in currentLookupFields | filter:{deleted:'!true'} | orderBy:'order' track by o.name">
+                                                                ng-options="o as  o.data_type === 'lookup' ? o['label_' + language]+' ('+ o.lookup_type +')':o['label_' + language] for o in currentLookupFields | filter: lookupFieldFilter | orderBy:'order' track by o.name">
                                                             <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
                                                         </select>
                                                     </div>
@@ -1159,7 +1159,7 @@
                                                 <a class="action-button2-delete" style="position: unset;" href ng-show="filters.length > 1" ng-click="filterRemove(filter)"><i class="fas fa-trash"></i></a>
                                                 <a class="action-button2-plus" style="position: unset;" href ng-show="$last" ng-click="filterAdd(filter)"><i class="fas fa-plus"></i></a>
                                             </div>
-                                             
+
                                         </div>
                                     </div>
 

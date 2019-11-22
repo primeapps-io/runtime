@@ -1891,6 +1891,10 @@ angular.module('primeapps')
                 }
             };
 
+            $scope.lookupFieldFilter = function (item) {
+                return !item.deleted && (!item.lookup_type || item.lookup_type !== $scope.module.name);
+            };
+
             var getFakeProfileModule = function () {
                 var profileModule = {};
                 profileModule.id = 998;
