@@ -23,8 +23,8 @@ namespace PrimeApps.Model.Entities.Tenant
         [JsonProperty("place"), Column("place")]
         public ComponentPlace Place { get; set; }
 
-        [JsonProperty("module_id"), Column("module_id"), ForeignKey("Module"), Required]
-        public int ModuleId { get; set; }
+        [JsonProperty("module_id"), Column("module_id"), ForeignKey("Module")]
+        public int? ModuleId { get; set; }
 
         [JsonProperty("order"), Column("order")]
         public int Order { get; set; }
