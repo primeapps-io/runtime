@@ -408,16 +408,34 @@ angular.module('primeapps')
             $scope.deleteItem = function (item) {
                 item.deletingItem = true;
                 if ($scope.picklist && item.id) {
-                    PicklistsService.deleteItem(item.id)
-                        .then(function (response) {
-                            if (response.data) {
-                                toastr.success($filter('translate')('Picklist.DeleteItemSuccess'));
+
+                    var willDelete =
+                        swal({
+                            title: "Are you sure?",
+                            text: " ",
+                            icon: "warning",
+                            buttons: ['Cancel', 'Yes'],
+                            dangerMode: true
+                        }).then(function (value) {
+                            if (value) {
+
+                                PicklistsService.deleteItem(item.id)
+                                    .then(function (response) {
+                                        if (response.data) {
+                                            toastr.success($filter('translate')('Picklist.DeleteItemSuccess'));
+                                            item.deletingItem = false;
+                                            $scope.selectPicklist($scope.picklist.id);
+                                        }
+                                    }).catch(function (reason) {
+                                    item.deletingItem = false;
+                                });
+
+                            }else{
                                 item.deletingItem = false;
-                                $scope.selectPicklist($scope.picklist.id);
                             }
-                        }).catch(function (reason) {
-                            item.deletingItem = false;
                         });
+                    
+
                 }
             };
 

@@ -185,7 +185,7 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr ng-repeat="picklistItem in picklist.items track by picklistItem.order"
+                        <tr ng-repeat="picklistItem in picklist.items track by picklistItem.id"
                             ng-class="{'has-error': picklistForm.$submitted && picklistForm[picklistItem.order].$invalid}">
                             <td ng-class="picklistItem.edit ? 'text-center':'option-dragging option-handle text-center'">
                                 <i ng-show="!picklistItem.edit" class="fa fa-arrows option-dragging option-handle"></i>
