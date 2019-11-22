@@ -7,11 +7,10 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using static System.String;
 
-namespace PrimeApps.App.Helpers
+namespace PrimeApps.Auth.Helpers
 {
     /// <summary>
     /// This class contains miscellaneous extension methods.
@@ -19,7 +18,7 @@ namespace PrimeApps.App.Helpers
     public static class Extensions
     {
         private const string NullIpAddress = "::1";
-
+        
         /// <summary>
         /// This is an extension method for byte search.
         /// </summary>
@@ -51,7 +50,6 @@ namespace PrimeApps.App.Helpers
                         {
                             return -1;
                         }
-
                         index = 0;
                     }
                 }
@@ -59,7 +57,6 @@ namespace PrimeApps.App.Helpers
 
             return -1;
         }
-
         /// <summary>
         /// This is an extension method for streams, it converts streams to byte array.
         /// </summary>
@@ -159,7 +156,6 @@ namespace PrimeApps.App.Helpers
                     buffer = new byte[totalBytesRead];
                     Buffer.BlockCopy(readBuffer, 0, buffer, 0, totalBytesRead);
                 }
-
                 return buffer;
             }
             finally
@@ -252,37 +248,16 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        /// <summary>
-        /// Retrieve the raw body as a string from the Request.Body stream
-        /// </summary>
-        /// <param name="request">Request instance to apply to</param>
-        /// <param name="encoding">Optional - Encoding, defaults to UTF8</param>
-        /// <returns></returns>
-        public static async Task<Stream> ReadAsStreamAsync(this HttpRequest request, Encoding encoding = null)
-        {
-            if (encoding == null)
-                encoding = Encoding.UTF8;
-
-            using (StreamReader reader = new StreamReader(request.Body, encoding))
-            {
-                var result = await reader.ReadToEndAsync();
-                // convert string to stream
-                byte[] byteArray = Encoding.UTF8.GetBytes(result);
-                //byte[] byteArray = Encoding.ASCII.GetBytes(contents);
-                return new MemoryStream(byteArray);
-            }
-        }
-
         public static bool IsLocal(this HttpRequest req)
         {
             var connection = req.HttpContext.Connection;
-
+            
             if (connection.RemoteIpAddress.IsSet())
             {
                 //We have a remote address set up
-                return connection.LocalIpAddress.IsSet()
+                return connection.LocalIpAddress.IsSet() 
                     //Is local is same as remote, then we are local
-                    ? connection.RemoteIpAddress.Equals(connection.LocalIpAddress)
+                    ? connection.RemoteIpAddress.Equals(connection.LocalIpAddress) 
                     //else we are remote if the remote IP address is not a loopback address
                     : IPAddress.IsLoopback(connection.RemoteIpAddress);
             }

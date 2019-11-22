@@ -10,7 +10,6 @@ using Microsoft.Extensions.DiagnosticAdapter;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Helpers;
-using PrimeApps.App.Helpers;
 
 namespace PrimeApps.App.Services
 {

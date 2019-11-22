@@ -1,19 +1,11 @@
-using System;
-using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
-using PrimeApps.App.Models;
 using PrimeApps.Model.Repositories.Interfaces;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
-using PrimeApps.App.Extensions;
 using Microsoft.Extensions.Configuration;
-using PrimeApps.Model.Enums;
-using PrimeApps.Model.Common.ActionButton;
 using System.Linq;
 
 namespace PrimeApps.App.Controllers
