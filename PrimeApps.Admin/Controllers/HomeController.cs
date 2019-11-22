@@ -84,6 +84,12 @@ namespace PrimeApps.Admin.Controllers
             return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
         }
         
+        [HttpGet, Route("healthz")]
+        public IActionResult Healthz()
+        {
+            return Ok();
+        }
+        
         [Route("migration")]
         public IActionResult Migration([FromQuery] string ids)
         {
