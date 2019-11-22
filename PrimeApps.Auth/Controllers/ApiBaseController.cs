@@ -1,10 +1,9 @@
-using System;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PrimeApps.Auth.Helpers;
 
 namespace PrimeApps.Auth.Controllers
 {
@@ -16,15 +15,8 @@ namespace PrimeApps.Auth.Controllers
 
         public override void OnActionExecuting(ActionExecutingContext ctx)
         {
-            var email = HttpContext.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress").Value;
-
-            var enableApiValidation = Configuration.GetValue("AppSettings:EnableApiValidation", string.Empty);
-
-            if (!string.IsNullOrEmpty(enableApiValidation) && bool.Parse(enableApiValidation))
-            {
-                if (string.IsNullOrEmpty(email) || !email.EndsWith("@primeapps.io"))
-                    ctx.Result = new UnauthorizedResult();
-            }
+            if (!ctx.HttpContext.Request.IsLocal())
+                ctx.Result = new UnauthorizedResult();
 
             base.OnActionExecuting(ctx);
         }

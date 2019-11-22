@@ -97,14 +97,14 @@ namespace PrimeApps.Model.Helpers
                 var scriptPath = Path.Combine(path, "scripts.txt");
                 var storagePath = Path.Combine(path, "storage.txt");
                 var scriptsText = "";
-                
-                if(File.Exists(scriptPath))
+
+                if (File.Exists(scriptPath))
                     scriptsText = File.ReadAllText(scriptPath, Encoding.UTF8);
 
-                var sqls = new string[]{};
-                
-                if(!string.IsNullOrEmpty(scriptsText))
-                    sqls = scriptsText.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+                var sqls = new string[] { };
+
+                if (!string.IsNullOrEmpty(scriptsText))
+                    sqls = scriptsText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
                 File.AppendAllText(logPath,
                     "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." + Environment.NewLine);
@@ -134,7 +134,7 @@ namespace PrimeApps.Model.Helpers
 
                             foreach (var file in files)
                             {
-                                var bucketName = (string) file["path"];
+                                var bucketName = (string)file["path"];
 
                                 if (bucketName.Contains("templates") && bucketName.Contains($"app{appId}"))
                                     bucketName = bucketName.Replace($"app{appId}", dbName);
@@ -216,7 +216,7 @@ namespace PrimeApps.Model.Helpers
 
             var identityUrl = configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
             var logFileName = "";
-            foreach (var obj in versions.OfType<object>().Select((version, index) => new {version, index}))
+            foreach (var obj in versions.OfType<object>().Select((version, index) => new { version, index }))
             {
                 var version = obj.version;
 
@@ -252,26 +252,7 @@ namespace PrimeApps.Model.Helpers
                             " : \u001b[93m Unhandle exception while creating platform app... \u001b[39m" +
                             Environment.NewLine);
 
-                    var token = "";
-
-                    var enableAuthApiValidation =
-                        configuration.GetValue("AppSettings:EnableAuthApiValidation", string.Empty);
-
-                    if (!string.IsNullOrEmpty(enableAuthApiValidation) && bool.Parse(enableAuthApiValidation))
-                    {
-                        var authIntegrationEmail =
-                            configuration.GetValue("AppSettings:AuthIntegrationEmail", string.Empty);
-                        var authIntegrationPassword =
-                            configuration.GetValue("AppSettings:AuthIntegrationPassword", string.Empty);
-                        var clientId = configuration.GetValue("AppSettings:ClientId", string.Empty);
-
-                        token = await GetAuthToken(identityUrl, authIntegrationPassword, authIntegrationEmail,
-                            clientId);
-                    }
-                    else
-                    {
-                        token = studioToken;
-                    }
+                    var token = studioToken;
 
                     if (!string.IsNullOrEmpty(token))
                     {
@@ -460,9 +441,9 @@ namespace PrimeApps.Model.Helpers
                     {
                         var scriptsText = File.ReadAllText(scriptPath, Encoding.UTF8);
                         var sqls = new string[] { };
-                        
-                        if(!string.IsNullOrEmpty(scriptsText))
-                            sqls = scriptsText.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+
+                        if (!string.IsNullOrEmpty(scriptsText))
+                            sqls = scriptsText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
                         File.AppendAllText(logPath,
                             "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." +
@@ -509,7 +490,7 @@ namespace PrimeApps.Model.Helpers
 
                         foreach (var seqTable in seqTables)
                         {
-                            PostgresHelper.Run(PREConnectionString, dbName,$"SELECT setval('{seqTable}', 500000, true); ");
+                            PostgresHelper.Run(PREConnectionString, dbName, $"SELECT setval('{seqTable}', 500000, true); ");
                         }
                     }
 
@@ -537,7 +518,7 @@ namespace PrimeApps.Model.Helpers
 
                                 foreach (var file in files)
                                 {
-                                    var bucketName = (string) file["path"];
+                                    var bucketName = (string)file["path"];
 
                                     if (!await storage.ObjectExists(bucketName, file["unique_name"].ToString()))
                                     {
@@ -685,15 +666,15 @@ namespace PrimeApps.Model.Helpers
             {
                 var dict = new Dictionary<string, string>
                 {
-                    {"grant_type", "password"},
-                    {"username", integrationEmail},
-                    {"password", studioSecret},
-                    {"client_id", clientId},
-                    {"client_secret", studioSecret}
+                    { "grant_type", "password" },
+                    { "username", integrationEmail },
+                    { "password", studioSecret },
+                    { "client_id", clientId },
+                    { "client_secret", studioSecret }
                 };
 
                 var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token")
-                    {Content = new FormUrlEncodedContent(dict)};
+                    { Content = new FormUrlEncodedContent(dict) };
                 var res = await httpClient.SendAsync(req);
 
                 if (res.IsSuccessStatusCode)
@@ -735,7 +716,7 @@ namespace PrimeApps.Model.Helpers
                               "', deleted = '" + (bool.Parse(template["deleted"].ToString()) ? "t" : "f") +
                               "', name = '" + template["name"] + "', subject = '" + template["subject"] +
                               "', content = '" + template["content"] + "', language = '" + template["language"] +
-                              "', type = " + (int) template["type"] + ", system_code = '" + template["system_code"] +
+                              "', type = " + (int)template["type"] + ", system_code = '" + template["system_code"] +
                               "', active = '" + (bool.Parse(template["active"].ToString()) ? "t" : "f") +
                               "', settings = '" + template["settings"] + "' WHERE settings->>'id' = '" +
                               settings["id"] + "';";
@@ -746,7 +727,7 @@ namespace PrimeApps.Model.Helpers
                             DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) +
                             "', NULL,'" + (bool.Parse(template["deleted"].ToString()) ? "t" : "f") + "', " + app["id"] +
                             ",'" + template["name"] + "', '" + template["subject"] + "', '" + template["content"] +
-                            "', '" + template["language"] + "', " + (int) template["type"] + ", '" +
+                            "', '" + template["language"] + "', " + (int)template["type"] + ", '" +
                             template["system_code"] + "', '" + (bool.Parse(template["active"].ToString()) ? "t" : "f") +
                             "', '" + template["settings"] + "');";
 
