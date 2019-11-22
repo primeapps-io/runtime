@@ -145,7 +145,7 @@ angular.module('primeapps')
                         '<div style="    padding-top: 15px;\n' +
                         '    text-align: left;\n' +
                         '    font-weight: 600;\n' +
-                        '    font-size: 13px;">We\'ll go ahead and prepare a release package for you. You can track the status of your release packages at Manage - Packages. </br> </br>' +
+                        '    font-size: 13px;">We\'ll create a release package for you. You can publish your app using this package. Packaging process and logs will be shown in the list.</br> </br>' +
                         '<div class="form-group" ng-controller="PackageController">' +
                         '<div class="row">' +
                         //'<div class="col-sm-12" style="padding-left: 14px;">' +
