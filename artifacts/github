@@ -6,8 +6,10 @@ NC='\033[0m' # No Color
 rm -rf pre
 rm -rf PrimeApps.Auth
 rm -rf PrimeApps.App
+rm -rf PrimeApps.Admin
 rm PrimeApps.Auth.zip
 rm PrimeApps.App.zip
+rm PrimeApps.Admin.zip
 
 git clone https://github.com/primeapps-io/pre.git
 
@@ -15,6 +17,7 @@ LATEST_RELEASE=$(curl -L -s -H 'Accept: application/json' https://github.com/pri
 LATEST_VERSION=$(echo $LATEST_RELEASE | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/')
 AUTH_URL="https://github.com/primeapps-io/pre/releases/download/$LATEST_VERSION/PrimeApps.Auth.zip"
 APP_URL="https://github.com/primeapps-io/pre/releases/download/$LATEST_VERSION/PrimeApps.App.zip"
+ADMIN_URL="https://github.com/primeapps-io/pre/releases/download/$LATEST_VERSION/PrimeApps.Admin.zip"
 
 echo "Downloading $AUTH_URL"
 wget $AUTH_URL
@@ -22,14 +25,21 @@ wget $AUTH_URL
 echo "Downloading $APP_URL"
 wget $APP_URL
 
+echo "Downloading $ADMIN_URL"
+wget $ADMIN_URL
+
 echo "Unzipping PrimeApps.Auth.zip"
 unzip PrimeApps.Auth.zip -d PrimeApps.Auth
 
 echo "Unzipping PrimeApps.App.zip"
 unzip PrimeApps.App.zip -d PrimeApps.App
 
+echo "Unzipping PrimeApps.Admin.zip"
+unzip PrimeApps.Admin.zip -d PrimeApps.Admin
+
 cp -R PrimeApps.Auth/. pre/PrimeApps.Auth
 cp -R PrimeApps.App/. pre/PrimeApps.App
+cp -R PrimeApps.Admin/. pre/PrimeApps.Admin
 
 cd pre
 
@@ -45,5 +55,7 @@ cd ..
 rm -rf pre
 rm -rf PrimeApps.Auth
 rm -rf PrimeApps.App
+rm -rf PrimeApps.Admin
 rm PrimeApps.Auth.zip
 rm PrimeApps.App.zip
+rm PrimeApps.Admin.zip
