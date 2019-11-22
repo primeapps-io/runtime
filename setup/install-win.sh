@@ -4,8 +4,9 @@ YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Variables
 cd ..
+
+# Variables
 basePath=$(pwd -W)
 filePostgres="http://get.enterprisedb.com/postgresql/postgresql-11.5-2-windows-x64-binaries.zip"
 fileMinio="https://dl.min.io/server/minio/release/windows-amd64/minio.exe"
