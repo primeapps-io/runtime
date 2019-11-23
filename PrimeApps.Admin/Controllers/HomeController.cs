@@ -36,9 +36,7 @@ namespace PrimeApps.Admin.Controllers
             var token = await HttpContext.GetTokenAsync("access_token");
 
             var organizations = await _organizationHelper.Get(token);
-            var titleText = "PrimeApps Admin";
 
-            ViewBag.Title = titleText;
             ViewBag.Organizations = organizations;
             ViewBag.User = user;
 
@@ -51,7 +49,6 @@ namespace PrimeApps.Admin.Controllers
                     return RedirectToAction("Index", new {id = organizations[0].Id});
                 }
 
-                ViewBag.Title = selectedOrg.Name + " - " + titleText;
                 ViewBag.ActiveOrganizationId = id.ToString();
             }
 
