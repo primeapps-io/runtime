@@ -1,114 +1,63 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.IO;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
-using System;
-using System.IO;
-using System.Linq;
 
-namespace PrimeApps.CLI.Migration
+namespace PrimeApps.Migrator.Helpers
 {
-    public class DatabaseService : IDatabaseService
+    public interface IMigrationHelper
+    {
+        JObject MigrateTemplateDatabases(string externalConnectionString = null);
+        JObject MigrateTenantOrAppDatabases(string prefix, string externalConnectionString = null);
+        JObject RunSqlTenantDatabases(string sqlFile, string externalConnectionString = null, string app = null);
+        JObject RunSqlAppDatabases(string sqlFile, string externalConnectionString = null);
+        JObject RunSqlTemplateDatabases(string sqlFile, string externalConnectionString = null);
+    }
+
+    public class MigrationHelper : IMigrationHelper
     {
         private readonly IConfiguration _configuration;
         private IServiceScopeFactory _serviceScopeFactory;
 
-        public DatabaseService(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+        public MigrationHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
         {
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
         }
 
-        public JObject MigrateDatabase(string databaseName, string targetVersion = null, string externalConnectionString = null)
-        {
-            var dbStatus = new JObject();
-
-            try
-            {
-                using (var scope = _serviceScopeFactory.CreateScope())
-                {
-                    var connectionString = string.IsNullOrWhiteSpace(externalConnectionString) ? _configuration.GetConnectionString("TenantDBConnection") : externalConnectionString;
-                    var tenantDatabaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-                    var migrator = tenantDatabaseContext.Database.GetService<IMigrator>();
-
-                    tenantDatabaseContext.Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
-
-                    if (string.IsNullOrEmpty(targetVersion))
-                    {
-                        var pendingMigrations = tenantDatabaseContext.Database.GetPendingMigrations().ToList();
-
-                        if (pendingMigrations.Any())
-                        {
-                            foreach (var targetMigration in pendingMigrations)
-                            {
-                                migrator.Migrate(targetMigration);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        migrator.Migrate(targetVersion);
-                    }
-                }
-
-                dbStatus["name"] = databaseName;
-                dbStatus["result"] = "Successful";
-            }
-            catch (Exception ex)
-            {
-                dbStatus["name"] = databaseName;
-                dbStatus["result"] = ex.Message;
-            }
-
-            return dbStatus;
-        }
-
-        public JObject MigrateTenantDatabases(string prefix, string targetVersion = null, string externalConnectionString = null)
+        public JObject MigrateTenantOrAppDatabases(string prefix, string externalConnectionString = null)
         {
             var result = new JObject { ["successful"] = new JArray(), ["failed"] = new JArray() };
 
-            var dbs = Postgres.GetTenantDatabases(_configuration.GetConnectionString("TenantDBConnection"), prefix, externalConnectionString);
+            var dbs = Postgres.GetTenantOrAppDatabases(_configuration.GetConnectionString("TenantDBConnection"), prefix, externalConnectionString);
 
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var tenantDatabaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-
-                var migrator = tenantDatabaseContext.Database.GetService<IMigrator>();
+                var migrator = tenantDatabaseContext.Database.GetService<Microsoft.EntityFrameworkCore.Migrations.IMigrator>();
 
                 foreach (var databaseName in dbs)
                 {
                     tenantDatabaseContext.SetConnectionDatabaseName(databaseName, _configuration, externalConnectionString);
 
-                    if (string.IsNullOrEmpty(targetVersion))
-                    {
-                        var pendingMigrations = tenantDatabaseContext.Database.GetPendingMigrations().ToList();
+                    var pendingMigrations = tenantDatabaseContext.Database.GetPendingMigrations().ToList();
 
-                        if (pendingMigrations.Any())
-                        {
-                            try
-                            {
-                                foreach (var targetMigration in pendingMigrations)
-                                {
-                                    migrator.Migrate(targetMigration);
-                                }
-
-                                ((JArray)result["successful"]).Add(new JObject { ["name"] = databaseName, ["result"] = "success" });
-                            }
-                            catch (Exception ex)
-                            {
-                                ((JArray)result["failed"]).Add(new JObject { ["name"] = databaseName, ["result"] = ex.Message });
-                            }
-                        }
-                    }
-                    else
+                    if (pendingMigrations.Any())
                     {
                         try
                         {
-                            migrator.Migrate(targetVersion);
+                            foreach (var targetMigration in pendingMigrations)
+                            {
+                                migrator.Migrate(targetMigration);
+                            }
+
+                            ((JArray)result["successful"]).Add(new JObject { ["name"] = databaseName, ["result"] = "success" });
                         }
                         catch (Exception ex)
                         {
@@ -121,7 +70,7 @@ namespace PrimeApps.CLI.Migration
             return result;
         }
 
-        public JObject MigrateTemplateDatabases(string targetVersion = null, string externalConnectionString = null)
+        public JObject MigrateTemplateDatabases(string externalConnectionString = null)
         {
             var result = new JObject { ["successful"] = new JArray(), ["failed"] = new JArray() };
             var dbs = Postgres.GetTemplateDatabases(_configuration.GetConnectionString("TenantDBConnection"), externalConnectionString);
@@ -129,46 +78,28 @@ namespace PrimeApps.CLI.Migration
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var tenantDatabaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-                var migrator = tenantDatabaseContext.Database.GetService<IMigrator>();
+                var migrator = tenantDatabaseContext.Database.GetService<Microsoft.EntityFrameworkCore.Migrations.IMigrator>();
 
                 foreach (var databaseName in dbs)
                 {
                     tenantDatabaseContext.SetConnectionDatabaseName(databaseName, _configuration, externalConnectionString);
 
-                    if (string.IsNullOrEmpty(targetVersion))
-                    {
-                        var pendingMigrations = tenantDatabaseContext.Database.GetPendingMigrations().ToList();
+                    var pendingMigrations = tenantDatabaseContext.Database.GetPendingMigrations().ToList();
 
-                        if (pendingMigrations.Any())
-                        {
-                            try
-                            {
-                                Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, externalConnectionString);
-
-                                foreach (var targetMigration in pendingMigrations)
-                                {
-                                    migrator.Migrate(targetMigration);
-                                }
-
-                                Postgres.FinalizeTemplateDatabaseUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, externalConnectionString);
-
-                                ((JArray)result["successful"]).Add(new JObject { ["name"] = databaseName, ["result"] = "success" });
-                            }
-                            catch (Exception ex)
-                            {
-                                ((JArray)result["failed"]).Add(new JObject { ["name"] = databaseName, ["result"] = ex.Message });
-                            }
-                        }
-                    }
-                    else
+                    if (pendingMigrations.Any())
                     {
                         try
                         {
                             Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, externalConnectionString);
 
-                            migrator.Migrate(targetVersion);
+                            foreach (var targetMigration in pendingMigrations)
+                            {
+                                migrator.Migrate(targetMigration);
+                            }
 
                             Postgres.FinalizeTemplateDatabaseUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, externalConnectionString);
+
+                            ((JArray)result["successful"]).Add(new JObject { ["name"] = databaseName, ["result"] = "success" });
                         }
                         catch (Exception ex)
                         {
@@ -181,14 +112,17 @@ namespace PrimeApps.CLI.Migration
             return result;
         }
 
-        public JObject RunSqlTenantDatabases(string prefix, string sqlFilePath, string externalConnectionString = null, string app = null)
+        public JObject RunSqlTenantDatabases(string sqlFile, string externalConnectionString = null, string app = null)
         {
+            if (string.IsNullOrEmpty(sqlFile))
+                throw new Exception("sqlFilePath cannot be null.");
+
             var result = new JObject();
             result["successful"] = new JArray();
             result["failed"] = new JArray();
 
-            var sql = File.ReadAllText(sqlFilePath);
-            var dbs = Postgres.GetTenantDatabases(_configuration.GetConnectionString("TenantDBConnection"), prefix, externalConnectionString);
+            var sql = File.ReadAllText(sqlFile);
+            var dbs = Postgres.GetTenantOrAppDatabases(_configuration.GetConnectionString("TenantDBConnection"), "tenant", externalConnectionString);
 
             var appId = 0;
 
@@ -221,13 +155,51 @@ namespace PrimeApps.CLI.Migration
             return result;
         }
 
-        public JObject RunSqlTemplateDatabases(string sqlFilePath, string externalConnectionString = null)
+        public JObject RunSqlAppDatabases(string sqlFile, string externalConnectionString = null)
         {
+            if (string.IsNullOrEmpty(sqlFile))
+                throw new Exception("sqlFilePath cannot be null.");
+
             var result = new JObject();
             result["successful"] = new JArray();
             result["failed"] = new JArray();
 
-            var sql = File.ReadAllText(sqlFilePath);
+            var sql = File.ReadAllText(sqlFile);
+            var dbs = Postgres.GetTenantOrAppDatabases(_configuration.GetConnectionString("TenantDBConnection"), "app", externalConnectionString);
+
+            foreach (var databaseName in dbs)
+            {
+                try
+                {
+                    var rslt = Postgres.ExecuteNonQuery(_configuration.GetConnectionString("TenantDBConnection"), databaseName, sql, externalConnectionString);
+
+                    var dbStatus = new JObject();
+                    dbStatus["name"] = databaseName;
+                    dbStatus["result"] = "success. result: " + rslt;
+                    ((JArray)result["successful"]).Add(dbStatus);
+                }
+                catch (Exception ex)
+                {
+                    var dbStatus = new JObject();
+                    dbStatus["name"] = databaseName;
+                    dbStatus["result"] = ex.Message;
+                    ((JArray)result["failed"]).Add(dbStatus);
+                }
+            }
+
+            return result;
+        }
+
+        public JObject RunSqlTemplateDatabases(string sqlFile, string externalConnectionString = null)
+        {
+            if (string.IsNullOrEmpty(sqlFile))
+                throw new Exception("sqlFilePath cannot be null.");
+
+            var result = new JObject();
+            result["successful"] = new JArray();
+            result["failed"] = new JArray();
+
+            var sql = File.ReadAllText(sqlFile);
             var dbs = Postgres.GetTemplateDatabases(_configuration.GetConnectionString("TenantDBConnection"), externalConnectionString);
 
             foreach (var databaseName in dbs)

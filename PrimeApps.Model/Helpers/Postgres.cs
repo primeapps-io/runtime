@@ -2,7 +2,6 @@
 using Npgsql;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
@@ -150,7 +149,7 @@ namespace PrimeApps.Model.Helpers
             return result;
         }
 
-        public static IEnumerable<string> GetTenantDatabases(string connectionString, string prefix = "tenant", string externalConnectionString = null)
+        public static IEnumerable<string> GetTenantOrAppDatabases(string connectionString, string prefix = "tenant", string externalConnectionString = null)
         {
             JArray dbs = new JArray();
             try
@@ -210,21 +209,18 @@ namespace PrimeApps.Model.Helpers
 
         public static void PrepareTemplateDatabaseForUpgrade(string connectionString, string dbName, string externalConnectionString = null)
         {
-            JArray dbs = new JArray();
-            List<string> dbList = new List<string>();
-
-            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, null, externalConnectionString)))
+            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1, externalConnectionString)))
             {
                 connection.Open();
+
                 using (var command = connection.CreateCommand())
                 {
-                    int intResult = 0;
-
                     command.CommandText = $"CREATE DATABASE \"{dbName}_new\" ENCODING \"UTF8\" TEMPLATE \"{dbName}\"";
 
-                    intResult = command.ExecuteNonQuery();
+                    var intResult = command.ExecuteNonQuery();
 
-                    if (intResult > -1) throw new Exception($"Template DB cannot be prepared for upgrade:{dbName}");
+                    if (intResult > -1)
+                        throw new Exception($"Template DB cannot be prepared for upgrade:{dbName}");
                 }
 
                 connection.Close();
@@ -236,51 +232,55 @@ namespace PrimeApps.Model.Helpers
             using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1, externalConnectionString)))
             {
                 connection.Open();
+
                 using (var command = connection.CreateCommand())
                 {
-                    int intResult = 0;
+                    command.CommandText = $"UPDATE pg_database SET datistemplate=true, datallowconn=false WHERE datname='{dbName}_new';";
+
+                    var intResult = command.ExecuteNonQuery();
+
+                    if (intResult < 1)
+                        throw new Exception($"Template DB cannot set as a template database:{dbName}");
 
 
-                    command.CommandText = $"update pg_database set datistemplate=true, datallowconn=false  where datname='{dbName}_new';";
-
-                    intResult = command.ExecuteNonQuery();
-
-                    if (intResult < 1) throw new Exception($"Template DB cannot set as a template database:{dbName}");
-
-
-                    command.CommandText = $"alter database \"{dbName}\" rename to \"{dbName}_old\";";
+                    command.CommandText = $"ALTER DATABASE \"{dbName}\" RENAME TO \"{dbName}_old\";";
 
                     intResult = command.ExecuteNonQuery();
 
-                    if (intResult > -1) throw new Exception($"Template DB cannot be switched (RENAMEOLD):{dbName}");
+                    if (intResult > -1)
+                        throw new Exception($"Template DB cannot be switched (RENAMEOLD):{dbName}");
 
 
-                    command.CommandText = $"select pg_terminate_backend(pg_stat_activity.pid) from pg_stat_activity where datname = '{dbName}_new' and pid <> pg_backend_pid();";
-
-                    intResult = command.ExecuteNonQuery();
-
-                    if (intResult > -1) throw new Exception($"Template DB cannot be switched (TERMINATECONN):{dbName}");
-
-
-                    command.CommandText = $"alter database \"{dbName}_new\" rename to \"{dbName}\";";
+                    command.CommandText = $"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = '{dbName}_new' and pid <> pg_backend_pid();";
 
                     intResult = command.ExecuteNonQuery();
 
-                    if (intResult > -1) throw new Exception($"Template DB cannot be switched (RENAMENEW):{dbName}");
+                    if (intResult > -1)
+                        throw new Exception($"Template DB cannot be switched (TERMINATECONN):{dbName}");
 
 
-                    command.CommandText = $"update pg_database set datistemplate=false where datname='{dbName}_old';";
-
-                    intResult = command.ExecuteNonQuery();
-
-                    if (intResult < 1) throw new Exception($"Template DB cannot be switched (NOTEMPLATE):{dbName}");
-
-
-                    command.CommandText = $"drop database \"{dbName}_old\";";
+                    command.CommandText = $"ALTER DATABASE \"{dbName}_new\" RENAME TO \"{dbName}\";";
 
                     intResult = command.ExecuteNonQuery();
 
-                    if (intResult > -1) throw new Exception($"Template DB cannot be switched (DROP):{dbName}");
+                    if (intResult > -1)
+                        throw new Exception($"Template DB cannot be switched (RENAMENEW):{dbName}");
+
+
+                    command.CommandText = $"UPDATE pg_database SET datistemplate=false WHERE datname='{dbName}_old';";
+
+                    intResult = command.ExecuteNonQuery();
+
+                    if (intResult < 1)
+                        throw new Exception($"Template DB cannot be switched (NOTEMPLATE):{dbName}");
+
+
+                    command.CommandText = $"DROP DATABASE \"{dbName}_old\";";
+
+                    intResult = command.ExecuteNonQuery();
+
+                    if (intResult > -1)
+                        throw new Exception($"Template DB cannot be switched (DROP):{dbName}");
                 }
 
                 connection.Close();

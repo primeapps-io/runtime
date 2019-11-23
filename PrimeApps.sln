@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Model", "PrimeApp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Admin", "PrimeApps.Admin\PrimeApps.Admin.csproj", "{E589AF4B-D46D-4301-AA11-0338B65D2A03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.CLI", "PrimeApps.CLI\PrimeApps.CLI.csproj", "{B3B8EE1A-B0A6-467B-9071-2DA9D4F0AA2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Migrator", "PrimeApps.Migrator\PrimeApps.Migrator.csproj", "{B3B8EE1A-B0A6-467B-9071-2DA9D4F0AA2D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
