@@ -116,6 +116,7 @@ namespace PrimeApps.Studio
 
             if (!string.IsNullOrEmpty(storageUrl))
             {
+                Environment.SetEnvironmentVariable("AWS_ENABLE_ENDPOINT_DISCOVERY", "false");
                 var awsOptions = Configuration.GetAWSOptions();
                 awsOptions.DefaultClientConfig.RegionEndpoint = RegionEndpoint.EUWest1;
                 awsOptions.DefaultClientConfig.ServiceURL = storageUrl;

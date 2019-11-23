@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Amazon.Runtime;
 using Amazon.S3;
 using Hangfire;
@@ -106,6 +107,7 @@ namespace PrimeApps.App
 
             if (!string.IsNullOrEmpty(storageUrl))
             {
+                Environment.SetEnvironmentVariable("AWS_ENABLE_ENDPOINT_DISCOVERY", "false");
                 var awsOptions = Configuration.GetAWSOptions();
                 awsOptions.DefaultClientConfig.RegionEndpoint = RegionEndpoint.EUWest1;
                 awsOptions.DefaultClientConfig.ServiceURL = storageUrl;

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -56,6 +57,7 @@ namespace PrimeApps.Auth
 
             if (!string.IsNullOrEmpty(storageUrl))
             {
+	            Environment.SetEnvironmentVariable("AWS_ENABLE_ENDPOINT_DISCOVERY", "false");
 	            var awsOptions = Configuration.GetAWSOptions();
 	            awsOptions.DefaultClientConfig.RegionEndpoint = RegionEndpoint.EUWest1;
 	            awsOptions.DefaultClientConfig.ServiceURL = storageUrl;
