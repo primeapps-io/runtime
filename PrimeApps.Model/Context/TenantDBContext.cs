@@ -11,11 +11,9 @@ namespace PrimeApps.Model.Context
 {
     public class TenantDBContext : DbContext
     {
-        public int? TenantId { get; set; }
-
-        public int? UserId { get; set; }
-
         private IConfiguration _configuration;
+        public int? TenantId { get; set; }
+        public int? UserId { get; set; }
 
         public TenantDBContext(DbContextOptions<TenantDBContext> options, IConfiguration configuration) : base(options)
         {
@@ -73,8 +71,10 @@ namespace PrimeApps.Model.Context
             System.Collections.Generic.IEnumerable<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry> entities = ChangeTracker.Entries().Where(x => x.Entity is BaseEntity && (x.State == EntityState.Added || x.State == EntityState.Modified));
 
             var previewMode = "";
+            
             if(_configuration != null)
                 previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+            
             foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entity in entities)
             {
                 if (entity.State == EntityState.Added)

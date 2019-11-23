@@ -10,10 +10,12 @@ namespace PrimeApps.Model.Context
 {
     public class PlatformDBContext : DbContext
     {
+        private IConfiguration _configuration;
         public int? UserId { get; set; }
 
-        public PlatformDBContext(DbContextOptions<PlatformDBContext> options) : base(options)
+        public PlatformDBContext(DbContextOptions<PlatformDBContext> options, IConfiguration configuration) : base(options)
         {
+            _configuration = configuration;
         }
 
         public PlatformDBContext(IConfiguration configuration)
@@ -48,6 +50,14 @@ namespace PrimeApps.Model.Context
             return UserId ?? 0;
         }
 
+        public void SetConnectionString(string connectionString)
+        {
+            var dbConnection = Database.GetDbConnection();
+
+            if (dbConnection.State != System.Data.ConnectionState.Open)
+                dbConnection.ConnectionString = connectionString;
+        }
+        
         private void SetDefaultValues()
         {
             var currentUserId = GetCurrentUserId();

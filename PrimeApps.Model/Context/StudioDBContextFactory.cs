@@ -8,9 +8,9 @@ namespace PrimeApps.Model.Context
 {
     public class StudioDBContextFactory : DbContextFactory<StudioDBContext>
     {
-        protected override StudioDBContext CreateNewInstance(DbContextOptions<StudioDBContext> options, IConfiguration _configuration)
+        protected override StudioDBContext CreateNewInstance(DbContextOptions<StudioDBContext> options, IConfiguration configuration)
         {
-            return new StudioDBContext(options);
+            return new StudioDBContext(options, configuration);
         }
     }
 }

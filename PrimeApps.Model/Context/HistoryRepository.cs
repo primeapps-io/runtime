@@ -10,17 +10,16 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal;
 
 namespace PrimeApps.Model.Context
 {
-    public class PostgreHistoryContext : NpgsqlHistoryRepository
+    public class HistoryRepository : NpgsqlHistoryRepository
 	{
-		public PostgreHistoryContext(HistoryRepositoryDependencies dependencies)
-        : base(dependencies)
+		public HistoryRepository(HistoryRepositoryDependencies dependencies): base(dependencies)
 		{
 		}
 
 		protected override void ConfigureTable(EntityTypeBuilder<HistoryRow> history)
 		{
 			base.ConfigureTable(history);
-			//history.ToTable("_migration_history", "public");
+			
 			history.Property(h => h.MigrationId).HasColumnName("migration_id");
 			history.Property(h => h.ProductVersion).HasColumnName("product_version");
 		}

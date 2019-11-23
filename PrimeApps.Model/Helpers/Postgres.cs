@@ -189,7 +189,36 @@ namespace PrimeApps.Model.Helpers
 
                     using (var command = connection.CreateCommand())
                     {
-                        command.CommandText = "SELECT datname FROM pg_database WHERE (datname LIKE 'app%' OR datname LIKE 'templet%') AND datistemplate=true";
+                        command.CommandText = "SELECT datname FROM pg_database WHERE datname LIKE 'app%' AND datistemplate=true";
+
+                        using (NpgsqlDataReader dataReader = command.ExecuteReader())
+                        {
+                            dbs = dataReader.MultiResultToJArray();
+                        }
+                    }
+
+                    connection.Close();
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            return dbs.Select(x => x["datname"].ToString()).ToList();
+        }
+        
+        public static IEnumerable<string> GetTempletDatabases(string connectionString, string externalConnectionString = null)
+        {
+            JArray dbs = new JArray();
+            try
+            {
+                using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
+                {
+                    connection.Open();
+
+                    using (var command = connection.CreateCommand())
+                    {
+                        command.CommandText = "SELECT datname FROM pg_database WHERE datname LIKE 'templet%' AND datistemplate=true";
 
                         using (NpgsqlDataReader dataReader = command.ExecuteReader())
                         {

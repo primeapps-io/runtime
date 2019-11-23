@@ -8,6 +8,7 @@ using PrimeApps.Migrator.Helpers;
 using PrimeApps.Model.Context;
 using System;
 using System.IO;
+using HistoryRepository = PrimeApps.Model.Context.HistoryRepository;
 
 namespace PrimeApps.Migrator
 {
@@ -35,12 +36,12 @@ namespace PrimeApps.Migrator
             var serviceProvider = new ServiceCollection()
                 .AddLogging(config => config.SetMinimumLevel(LogLevel.Error))
                 .AddEntityFrameworkNpgsql()
-                .AddDbContext<TenantDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("TenantDBConnection"), x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, PostgreHistoryContext>())
-                .AddDbContext<PlatformDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PlatformDBConnection"), x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, PostgreHistoryContext>())
-                .AddDbContext<StudioDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("StudioDBConnection"), x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, PostgreHistoryContext>())
-                .AddHttpContextAccessor()
-                .AddSingleton<IMigrationHelper, MigrationHelper>()
                 .AddSingleton<IConfiguration>(Configuration)
+                .AddDbContext<TenantDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("TenantDBConnection"), x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, HistoryRepository>())
+                .AddDbContext<PlatformDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PlatformDBConnection"), x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, HistoryRepository>())
+                .AddDbContext<StudioDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("StudioDBConnection"), x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, HistoryRepository>())
+                .AddSingleton<IMigrationHelper, MigrationHelper>()
+                .AddHttpContextAccessor()
                 .BuildServiceProvider();
 
             LoggerFactory = serviceProvider.GetService<ILoggerFactory>();
@@ -53,6 +54,7 @@ namespace PrimeApps.Migrator
             string connectionString = null;
             string sqlFile = null;
             string app = null;
+            Exception exception = null;
 
             switch (args.Length)
             {
@@ -60,12 +62,16 @@ namespace PrimeApps.Migrator
                     connectionString = args[1];
                     break;
                 case 3:
-                    connectionString = args[2];
                     sqlFile = args[1];
+
+                    if (!int.TryParse(args[2], out var appId))
+                        connectionString = args[2];
+                    else
+                        app = args[2];
                     break;
                 case 4:
-                    connectionString = args[2];
                     sqlFile = args[1];
+                    connectionString = args[2];
                     app = args[3];
                     break;
             }
@@ -76,23 +82,41 @@ namespace PrimeApps.Migrator
             {
                 switch (command)
                 {
-                    case "updateTenants":
-                        result = databaseMigration.MigrateTenantOrAppDatabases("tenant", connectionString);
+                    case "update-tenants":
+                        result = databaseMigration.UpdateTenantOrAppDatabases("tenant", connectionString);
                         break;
-                    case "updateApps":
-                        result = databaseMigration.MigrateTenantOrAppDatabases("app", connectionString);
+                    case "update-apps":
+                        result = databaseMigration.UpdateTenantOrAppDatabases("app", connectionString);
                         break;
-                    case "updateTemplates":
-                        result = databaseMigration.MigrateTemplateDatabases(connectionString);
+                    case "update-templates":
+                        result = databaseMigration.UpdateTemplateDatabases(connectionString);
                         break;
-                    case "runSqlTenants":
+                    case "update-templets":
+                        result = databaseMigration.UpdateTempletDatabases(connectionString);
+                        break;
+                    case "update-platform":
+                        result = databaseMigration.UpdatePlatformDatabase(connectionString);
+                        break;
+                    case "update-studio":
+                        result = databaseMigration.UpdateStudioDatabase(connectionString);
+                        break;
+                    case "migrate-pre":
+                        result = databaseMigration.MigratePre(connectionString);
+                        break;
+                    case "migrate-pde":
+                        result = databaseMigration.MigratePde(connectionString);
+                        break;
+                    case "runsql-tenants":
                         result = databaseMigration.RunSqlTenantDatabases(sqlFile, connectionString, app);
                         break;
-                    case "runSqlApps":
+                    case "runsql-apps":
                         result = databaseMigration.RunSqlAppDatabases(sqlFile, connectionString);
                         break;
-                    case "runSqlTemplates":
+                    case "runsql-templates":
                         result = databaseMigration.RunSqlTemplateDatabases(sqlFile, connectionString);
+                        break;
+                    case "runsql-templets":
+                        result = databaseMigration.RunSqlTempletsDatabases(sqlFile, connectionString);
                         break;
                     default:
                         Console.WriteLine("No command specified. Migrator will exit now.");
@@ -101,12 +125,15 @@ namespace PrimeApps.Migrator
             }
             catch (Exception ex)
             {
-                throw ex;
+                exception = ex;
             }
             finally
             {
                 Console.WriteLine("Results:" + result);
             }
+
+            if (exception != null)
+                throw exception;
         }
     }
 }

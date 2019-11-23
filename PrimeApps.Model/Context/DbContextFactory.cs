@@ -14,7 +14,7 @@ namespace PrimeApps.Model.Context
             return Create(Directory.GetCurrentDirectory(), Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"));
         }
 
-        protected abstract TContext CreateNewInstance(DbContextOptions<TContext> options, IConfiguration _configuration);
+        protected abstract TContext CreateNewInstance(DbContextOptions<TContext> options, IConfiguration configuration);
 
         public TContext Create()
         {
@@ -58,7 +58,7 @@ namespace PrimeApps.Model.Context
             Console.WriteLine("DbContextFactory.Create(string): Connection string: {0}", connectionString);
 
             optionsBuilder.UseNpgsql(connectionString, x => x.MigrationsHistoryTable("_migration_history", "public"))
-                .ReplaceService<IHistoryRepository, PostgreHistoryContext>();
+                .ReplaceService<IHistoryRepository, HistoryRepository>();
 
             return CreateNewInstance(optionsBuilder.Options, _configuration);
         }

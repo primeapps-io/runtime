@@ -8,9 +8,9 @@ namespace PrimeApps.Model.Context
 {
     public class TenantDBContextFactory : DbContextFactory<TenantDBContext>
     {
-        protected override TenantDBContext CreateNewInstance(DbContextOptions<TenantDBContext> options, IConfiguration _configuration)
+        protected override TenantDBContext CreateNewInstance(DbContextOptions<TenantDBContext> options, IConfiguration configuration)
         {
-            return new TenantDBContext(options, _configuration);
+            return new TenantDBContext(options, configuration);
         }
     }
 }
