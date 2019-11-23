@@ -20,8 +20,9 @@ namespace PrimeApps.Migrator.Helpers
         JObject UpdateTempletDatabases(string connectionString = null);
         JObject UpdatePlatformDatabase(string connectionString = null);
         JObject UpdateStudioDatabase(string connectionString = null);
-        JObject MigratePre(string connectionString = null);
-        JObject MigratePde(string connectionString = null);
+        JObject UpdatePre(string connectionString = null);
+        JObject UpdatePde(string connectionString = null);
+        JObject UpdateAll(string connectionString = null);
         JObject RunSqlTenantDatabases(string sqlFile, string connectionString = null, string app = null);
         JObject RunSqlAppDatabases(string sqlFile, string connectionString = null);
         JObject RunSqlTemplateDatabases(string sqlFile, string connectionString = null);
@@ -84,8 +85,9 @@ namespace PrimeApps.Migrator.Helpers
 
             foreach (var databaseName in dbs)
             {
+                Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
                 var optionsBuilder = new DbContextOptionsBuilder<TenantDBContext>();
-                var connString = Postgres.GetConnectionString(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
+                var connString = Postgres.GetConnectionString(_configuration.GetConnectionString("TenantDBConnection"), $"{databaseName}_new", connectionString);
                 optionsBuilder.UseNpgsql(connString, x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, HistoryRepository>();
 
                 using (var tenantDatabaseContext = new TenantDBContext(optionsBuilder.Options, _configuration))
@@ -97,8 +99,6 @@ namespace PrimeApps.Migrator.Helpers
                     {
                         try
                         {
-                            Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
-
                             foreach (var targetMigration in pendingMigrations)
                             {
                                 migrator.Migrate(targetMigration);
@@ -126,8 +126,9 @@ namespace PrimeApps.Migrator.Helpers
 
             foreach (var databaseName in dbs)
             {
+                Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
                 var optionsBuilder = new DbContextOptionsBuilder<TenantDBContext>();
-                var connString = Postgres.GetConnectionString(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
+                var connString = Postgres.GetConnectionString(_configuration.GetConnectionString("TenantDBConnection"), $"{databaseName}_new", connectionString);
                 optionsBuilder.UseNpgsql(connString, x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, HistoryRepository>();
 
                 using (var tenantDatabaseContext = new TenantDBContext(optionsBuilder.Options, _configuration))
@@ -139,8 +140,6 @@ namespace PrimeApps.Migrator.Helpers
                     {
                         try
                         {
-                            Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
-
                             foreach (var targetMigration in pendingMigrations)
                             {
                                 migrator.Migrate(targetMigration);
@@ -171,7 +170,7 @@ namespace PrimeApps.Migrator.Helpers
                 var migrator = platformDbContext.Database.GetService<IMigrator>();
 
                 if (!string.IsNullOrWhiteSpace(connectionString))
-                    platformDbContext.SetConnectionString(connectionString);
+                    platformDbContext.SetConnectionString(connectionString, _configuration);
 
                 var pendingMigrations = platformDbContext.Database.GetPendingMigrations().ToList();
 
@@ -206,7 +205,7 @@ namespace PrimeApps.Migrator.Helpers
                 var migrator = studioDbContext.Database.GetService<IMigrator>();
 
                 if (!string.IsNullOrWhiteSpace(connectionString))
-                    studioDbContext.SetConnectionString(connectionString);
+                    studioDbContext.SetConnectionString(connectionString, _configuration);
 
                 var pendingMigrations = studioDbContext.Database.GetPendingMigrations().ToList();
 
@@ -231,7 +230,7 @@ namespace PrimeApps.Migrator.Helpers
             return result;
         }
 
-        public JObject MigratePre(string connectionString = null)
+        public JObject UpdatePre(string connectionString = null)
         {
             var resultPlatform = UpdatePlatformDatabase(connectionString);
             var resultTemplates = UpdateTemplateDatabases(connectionString);
@@ -241,12 +240,21 @@ namespace PrimeApps.Migrator.Helpers
             return result;
         }
 
-        public JObject MigratePde(string connectionString = null)
+        public JObject UpdatePde(string connectionString = null)
         {
             var resultStudio = UpdateStudioDatabase(connectionString);
             var resultTemplets = UpdateTempletDatabases(connectionString);
             var resultTenants = UpdateTenantOrAppDatabases("app", connectionString);
             var result = new JObject { ["studio"] = resultStudio, ["templets"] = resultTemplets, ["tenants"] = resultTenants };
+
+            return result;
+        }
+
+        public JObject UpdateAll(string connectionString = null)
+        {
+            var resultPre = UpdatePre(connectionString);
+            var resultPde = UpdatePde(connectionString);
+            var result = new JObject { ["pre"] = resultPre, ["pde"] = resultPde };
 
             return result;
         }

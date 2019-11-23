@@ -180,57 +180,47 @@ namespace PrimeApps.Model.Helpers
 
         public static IEnumerable<string> GetTemplateDatabases(string connectionString, string externalConnectionString = null)
         {
-            JArray dbs = new JArray();
-            try
+            JArray dbs;
+
+            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
             {
-                using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
                 {
-                    connection.Open();
+                    command.CommandText = "SELECT datname FROM pg_database WHERE datname LIKE 'app%' AND datistemplate=true";
 
-                    using (var command = connection.CreateCommand())
+                    using (NpgsqlDataReader dataReader = command.ExecuteReader())
                     {
-                        command.CommandText = "SELECT datname FROM pg_database WHERE datname LIKE 'app%' AND datistemplate=true";
-
-                        using (NpgsqlDataReader dataReader = command.ExecuteReader())
-                        {
-                            dbs = dataReader.MultiResultToJArray();
-                        }
+                        dbs = dataReader.MultiResultToJArray();
                     }
-
-                    connection.Close();
                 }
-            }
-            catch (Exception)
-            {
+
+                connection.Close();
             }
 
             return dbs.Select(x => x["datname"].ToString()).ToList();
         }
-        
+
         public static IEnumerable<string> GetTempletDatabases(string connectionString, string externalConnectionString = null)
         {
-            JArray dbs = new JArray();
-            try
+            JArray dbs;
+
+            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
             {
-                using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
                 {
-                    connection.Open();
+                    command.CommandText = "SELECT datname FROM pg_database WHERE datname LIKE 'templet%' AND datistemplate=true";
 
-                    using (var command = connection.CreateCommand())
+                    using (NpgsqlDataReader dataReader = command.ExecuteReader())
                     {
-                        command.CommandText = "SELECT datname FROM pg_database WHERE datname LIKE 'templet%' AND datistemplate=true";
-
-                        using (NpgsqlDataReader dataReader = command.ExecuteReader())
-                        {
-                            dbs = dataReader.MultiResultToJArray();
-                        }
+                        dbs = dataReader.MultiResultToJArray();
                     }
-
-                    connection.Close();
                 }
-            }
-            catch (Exception)
-            {
+
+                connection.Close();
             }
 
             return dbs.Select(x => x["datname"].ToString()).ToList();
@@ -238,7 +228,7 @@ namespace PrimeApps.Model.Helpers
 
         public static void PrepareTemplateDatabaseForUpgrade(string connectionString, string dbName, string externalConnectionString = null)
         {
-            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1, externalConnectionString)))
+            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
             {
                 connection.Open();
 
@@ -258,7 +248,7 @@ namespace PrimeApps.Model.Helpers
 
         public static void FinalizeTemplateDatabaseUpgrade(string connectionString, string dbName, string externalConnectionString)
         {
-            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1, externalConnectionString)))
+            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
             {
                 connection.Open();
 

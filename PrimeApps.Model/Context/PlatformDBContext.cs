@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Model.Context
 {
@@ -50,14 +51,14 @@ namespace PrimeApps.Model.Context
             return UserId ?? 0;
         }
 
-        public void SetConnectionString(string connectionString)
+        public void SetConnectionString(string connectionString, IConfiguration configuration)
         {
             var dbConnection = Database.GetDbConnection();
 
             if (dbConnection.State != System.Data.ConnectionState.Open)
-                dbConnection.ConnectionString = connectionString;
+                dbConnection.ConnectionString = Postgres.GetConnectionString(configuration.GetConnectionString("PlatformDBConnection"), "platform", connectionString);
         }
-        
+
         private void SetDefaultValues()
         {
             var currentUserId = GetCurrentUserId();
@@ -112,7 +113,7 @@ namespace PrimeApps.Model.Context
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<UserTenant>()
-                .HasKey(t => new {t.UserId, t.TenantId});
+                .HasKey(t => new { t.UserId, t.TenantId });
 
             modelBuilder.Entity<UserTenant>()
                 .HasOne(pt => pt.PlatformUser)

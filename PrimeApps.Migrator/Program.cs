@@ -100,11 +100,14 @@ namespace PrimeApps.Migrator
                     case "update-studio":
                         result = databaseMigration.UpdateStudioDatabase(connectionString);
                         break;
-                    case "migrate-pre":
-                        result = databaseMigration.MigratePre(connectionString);
+                    case "update-pre":
+                        result = databaseMigration.UpdatePre(connectionString);
                         break;
-                    case "migrate-pde":
-                        result = databaseMigration.MigratePde(connectionString);
+                    case "update-pde":
+                        result = databaseMigration.UpdatePde(connectionString);
+                        break;
+                    case "update-all":
+                        result = databaseMigration.UpdateAll(connectionString);
                         break;
                     case "runsql-tenants":
                         result = databaseMigration.RunSqlTenantDatabases(sqlFile, connectionString, app);

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Entities.Studio;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Model.Context
 {
@@ -50,14 +51,15 @@ namespace PrimeApps.Model.Context
             return UserId ?? 0;
         }
 
-        public void SetConnectionString(string connectionString)
+        public void SetConnectionString(string connectionString, IConfiguration configuration)
         {
             var dbConnection = Database.GetDbConnection();
 
             if (dbConnection.State != System.Data.ConnectionState.Open)
-                dbConnection.ConnectionString = connectionString;
+                dbConnection.ConnectionString = Postgres.GetConnectionString(configuration.GetConnectionString("StudioDBConnection"), "studio", connectionString);
+            ;
         }
-        
+
         private void SetDefaultValues()
         {
             var currentUserId = GetCurrentUserId();
@@ -94,7 +96,7 @@ namespace PrimeApps.Model.Context
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<TeamUser>()
-                .HasKey(t => new {t.UserId, t.TeamId});
+                .HasKey(t => new { t.UserId, t.TeamId });
 
             modelBuilder.Entity<TeamUser>()
                 .HasOne(pt => pt.StudioUser)
@@ -107,7 +109,7 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey(pt => pt.TeamId);
 
             modelBuilder.Entity<OrganizationUser>()
-                .HasKey(t => new {t.UserId, t.OrganizationId});
+                .HasKey(t => new { t.UserId, t.OrganizationId });
 
             modelBuilder.Entity<OrganizationUser>()
                 .HasOne(pt => pt.StudioUser)
