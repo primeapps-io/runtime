@@ -90,7 +90,7 @@ namespace PrimeApps.App.Controllers
                 appUser.Language = "en";
 
             if (string.IsNullOrEmpty(appUser.TimeZone))
-                appUser.TimeZone = "America/Chicago";
+                appUser.TimeZone = "America/New_York";
 
             var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
             var previewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);
