@@ -21,15 +21,15 @@ namespace PrimeApps.Studio
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
             services.AddDbContext<StudioDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("StudioDBConnection")));
-            services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
-            services.AddScoped(p => new StudioDBContext(p.GetService<DbContextOptions<StudioDBContext>>()));
+            services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>(), configuration));
+            services.AddScoped(p => new StudioDBContext(p.GetService<DbContextOptions<StudioDBContext>>(), configuration));
 
             services.AddHttpContextAccessor();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.TryAddSingleton(configuration);
 
             //Register all repositories
-            foreach (var assembly in new[] {"PrimeApps.Model"})
+            foreach (var assembly in new[] { "PrimeApps.Model" })
             {
                 var assemblies = Assembly.Load(assembly);
                 var allServices = assemblies.GetTypes().Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract && t.GetTypeInfo().Name.EndsWith("Repository")).ToList();

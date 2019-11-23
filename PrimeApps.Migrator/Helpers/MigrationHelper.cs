@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
+using HistoryRepository = PrimeApps.Model.Context.HistoryRepository;
 
 namespace PrimeApps.Migrator.Helpers
 {
@@ -16,15 +17,15 @@ namespace PrimeApps.Migrator.Helpers
     {
         JObject UpdateTenantOrAppDatabases(string prefix, string connectionString = null);
         JObject UpdateTemplateDatabases(string connectionString = null);
-        JObject RunSqlTenantDatabases(string sqlFile, string connectionString = null, string app = null);
-        JObject RunSqlAppDatabases(string sqlFile, string connectionString = null);
-        JObject RunSqlTemplateDatabases(string sqlFile, string connectionString = null);
-        JObject RunSqlTempletsDatabases(string sqlFile, string connectionString = null);
         JObject UpdateTempletDatabases(string connectionString = null);
         JObject UpdatePlatformDatabase(string connectionString = null);
         JObject UpdateStudioDatabase(string connectionString = null);
         JObject MigratePre(string connectionString = null);
         JObject MigratePde(string connectionString = null);
+        JObject RunSqlTenantDatabases(string sqlFile, string connectionString = null, string app = null);
+        JObject RunSqlAppDatabases(string sqlFile, string connectionString = null);
+        JObject RunSqlTemplateDatabases(string sqlFile, string connectionString = null);
+        JObject RunSqlTempletDatabases(string sqlFile, string connectionString = null);
     }
 
     public class MigrationHelper : IMigrationHelper
@@ -41,17 +42,17 @@ namespace PrimeApps.Migrator.Helpers
         public JObject UpdateTenantOrAppDatabases(string prefix, string connectionString = null)
         {
             var result = new JObject { ["successful"] = new JArray(), ["failed"] = new JArray() };
-
             var dbs = Postgres.GetTenantOrAppDatabases(_configuration.GetConnectionString("TenantDBConnection"), prefix, connectionString);
 
-            using (var scope = _serviceScopeFactory.CreateScope())
+            foreach (var databaseName in dbs)
             {
-                var tenantDatabaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-                var migrator = tenantDatabaseContext.Database.GetService<IMigrator>();
+                var optionsBuilder = new DbContextOptionsBuilder<TenantDBContext>();
+                var connString = Postgres.GetConnectionString(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
+                optionsBuilder.UseNpgsql(connString, x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, HistoryRepository>();
 
-                foreach (var databaseName in dbs)
+                using (var tenantDatabaseContext = new TenantDBContext(optionsBuilder.Options, _configuration))
                 {
-                    tenantDatabaseContext.SetConnectionDatabaseName(databaseName, _configuration, connectionString);
+                    var migrator = tenantDatabaseContext.Database.GetService<IMigrator>();
                     var pendingMigrations = tenantDatabaseContext.Database.GetPendingMigrations().ToList();
 
                     if (pendingMigrations.Any())
@@ -81,15 +82,15 @@ namespace PrimeApps.Migrator.Helpers
             var result = new JObject { ["successful"] = new JArray(), ["failed"] = new JArray() };
             var dbs = Postgres.GetTemplateDatabases(_configuration.GetConnectionString("TenantDBConnection"), connectionString);
 
-            using (var scope = _serviceScopeFactory.CreateScope())
+            foreach (var databaseName in dbs)
             {
-                var tenantDatabaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-                var migrator = tenantDatabaseContext.Database.GetService<IMigrator>();
+                var optionsBuilder = new DbContextOptionsBuilder<TenantDBContext>();
+                var connString = Postgres.GetConnectionString(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
+                optionsBuilder.UseNpgsql(connString, x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, HistoryRepository>();
 
-                foreach (var databaseName in dbs)
+                using (var tenantDatabaseContext = new TenantDBContext(optionsBuilder.Options, _configuration))
                 {
-                    tenantDatabaseContext.SetConnectionDatabaseName(databaseName, _configuration, connectionString);
-
+                    var migrator = tenantDatabaseContext.Database.GetService<IMigrator>();
                     var pendingMigrations = tenantDatabaseContext.Database.GetPendingMigrations().ToList();
 
                     if (pendingMigrations.Any())
@@ -123,15 +124,15 @@ namespace PrimeApps.Migrator.Helpers
             var result = new JObject { ["successful"] = new JArray(), ["failed"] = new JArray() };
             var dbs = Postgres.GetTempletDatabases(_configuration.GetConnectionString("TenantDBConnection"), connectionString);
 
-            using (var scope = _serviceScopeFactory.CreateScope())
+            foreach (var databaseName in dbs)
             {
-                var tenantDatabaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-                var migrator = tenantDatabaseContext.Database.GetService<IMigrator>();
+                var optionsBuilder = new DbContextOptionsBuilder<TenantDBContext>();
+                var connString = Postgres.GetConnectionString(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
+                optionsBuilder.UseNpgsql(connString, x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, HistoryRepository>();
 
-                foreach (var databaseName in dbs)
+                using (var tenantDatabaseContext = new TenantDBContext(optionsBuilder.Options, _configuration))
                 {
-                    tenantDatabaseContext.SetConnectionDatabaseName(databaseName, _configuration, connectionString);
-
+                    var migrator = tenantDatabaseContext.Database.GetService<IMigrator>();
                     var pendingMigrations = tenantDatabaseContext.Database.GetPendingMigrations().ToList();
 
                     if (pendingMigrations.Any())
@@ -154,49 +155,6 @@ namespace PrimeApps.Migrator.Helpers
                             ((JArray)result["failed"]).Add(new JObject { ["name"] = databaseName, ["result"] = ex.Message });
                         }
                     }
-                }
-            }
-
-            return result;
-        }
-
-        public JObject RunSqlTenantDatabases(string sqlFile, string connectionString = null, string app = null)
-        {
-            if (string.IsNullOrEmpty(sqlFile))
-                throw new Exception("sqlFilePath cannot be null.");
-
-            var result = new JObject();
-            result["successful"] = new JArray();
-            result["failed"] = new JArray();
-
-            var sql = File.ReadAllText(sqlFile);
-            var dbs = Postgres.GetTenantOrAppDatabases(_configuration.GetConnectionString("TenantDBConnection"), "tenant", connectionString);
-
-            var appId = 0;
-
-            if (app != null)
-                appId = int.Parse(app);
-
-            foreach (var databaseName in dbs)
-            {
-                try
-                {
-                    if (appId > 0 && !CheckDatabaseApp(databaseName, appId, connectionString))
-                        continue;
-
-                    var rslt = Postgres.ExecuteNonQuery(_configuration.GetConnectionString("TenantDBConnection"), databaseName, sql, connectionString);
-
-                    var dbStatus = new JObject();
-                    dbStatus["name"] = databaseName;
-                    dbStatus["result"] = "success. result: " + rslt;
-                    ((JArray)result["successful"]).Add(dbStatus);
-                }
-                catch (Exception ex)
-                {
-                    var dbStatus = new JObject();
-                    dbStatus["name"] = databaseName;
-                    dbStatus["result"] = ex.Message;
-                    ((JArray)result["failed"]).Add(dbStatus);
                 }
             }
 
@@ -293,6 +251,49 @@ namespace PrimeApps.Migrator.Helpers
             return result;
         }
 
+        public JObject RunSqlTenantDatabases(string sqlFile, string connectionString = null, string app = null)
+        {
+            if (string.IsNullOrEmpty(sqlFile))
+                throw new Exception("sqlFilePath cannot be null.");
+
+            var result = new JObject();
+            result["successful"] = new JArray();
+            result["failed"] = new JArray();
+
+            var sql = File.ReadAllText(sqlFile);
+            var dbs = Postgres.GetTenantOrAppDatabases(_configuration.GetConnectionString("TenantDBConnection"), "tenant", connectionString);
+
+            var appId = 0;
+
+            if (app != null)
+                appId = int.Parse(app);
+
+            foreach (var databaseName in dbs)
+            {
+                try
+                {
+                    if (appId > 0 && !CheckDatabaseApp(databaseName, appId, connectionString))
+                        continue;
+
+                    var rslt = Postgres.ExecuteNonQuery(_configuration.GetConnectionString("TenantDBConnection"), databaseName, sql, connectionString);
+
+                    var dbStatus = new JObject();
+                    dbStatus["name"] = databaseName;
+                    dbStatus["result"] = "success. result: " + rslt;
+                    ((JArray)result["successful"]).Add(dbStatus);
+                }
+                catch (Exception ex)
+                {
+                    var dbStatus = new JObject();
+                    dbStatus["name"] = databaseName;
+                    dbStatus["result"] = ex.Message;
+                    ((JArray)result["failed"]).Add(dbStatus);
+                }
+            }
+
+            return result;
+        }
+
         public JObject RunSqlAppDatabases(string sqlFile, string connectionString = null)
         {
             if (string.IsNullOrEmpty(sqlFile))
@@ -367,7 +368,7 @@ namespace PrimeApps.Migrator.Helpers
             return result;
         }
 
-        public JObject RunSqlTempletsDatabases(string sqlFile, string connectionString = null)
+        public JObject RunSqlTempletDatabases(string sqlFile, string connectionString = null)
         {
             if (string.IsNullOrEmpty(sqlFile))
                 throw new Exception("sqlFilePath cannot be null.");

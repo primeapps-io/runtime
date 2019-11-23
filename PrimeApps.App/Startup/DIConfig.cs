@@ -22,7 +22,7 @@ namespace PrimeApps.App
         {
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
-            services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
+            services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>(), configuration));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton(configuration);
             services.AddHttpContextAccessor();
@@ -85,7 +85,7 @@ namespace PrimeApps.App
             services.AddScoped<Jobs.UpdateLeave, Jobs.UpdateLeave>();
             services.AddScoped<Jobs.EmployeeCalculation, Jobs.EmployeeCalculation>();
             services.AddScoped<Jobs.AccountCleanup, Jobs.AccountCleanup>();
-            
+
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
             services.AddTransient<ApprovalStep>();
             services.AddTransient<DataCreateStep>();

@@ -116,7 +116,7 @@ namespace PrimeApps.Migrator
                         result = databaseMigration.RunSqlTemplateDatabases(sqlFile, connectionString);
                         break;
                     case "runsql-templets":
-                        result = databaseMigration.RunSqlTempletsDatabases(sqlFile, connectionString);
+                        result = databaseMigration.RunSqlTempletDatabases(sqlFile, connectionString);
                         break;
                     default:
                         Console.WriteLine("No command specified. Migrator will exit now.");
