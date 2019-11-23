@@ -106,9 +106,6 @@ namespace PrimeApps.Migrator
                     case "update-pde":
                         result = databaseMigration.UpdatePde(connectionString);
                         break;
-                    case "update-all":
-                        result = databaseMigration.UpdateAll(connectionString);
-                        break;
                     case "runsql-tenants":
                         result = databaseMigration.RunSqlTenantDatabases(sqlFile, connectionString, app);
                         break;

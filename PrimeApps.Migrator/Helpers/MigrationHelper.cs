@@ -22,7 +22,6 @@ namespace PrimeApps.Migrator.Helpers
         JObject UpdateStudioDatabase(string connectionString = null);
         JObject UpdatePre(string connectionString = null);
         JObject UpdatePde(string connectionString = null);
-        JObject UpdateAll(string connectionString = null);
         JObject RunSqlTenantDatabases(string sqlFile, string connectionString = null, string app = null);
         JObject RunSqlAppDatabases(string sqlFile, string connectionString = null);
         JObject RunSqlTemplateDatabases(string sqlFile, string connectionString = null);
@@ -246,15 +245,6 @@ namespace PrimeApps.Migrator.Helpers
             var resultTemplets = UpdateTempletDatabases(connectionString);
             var resultTenants = UpdateTenantOrAppDatabases("app", connectionString);
             var result = new JObject { ["studio"] = resultStudio, ["templets"] = resultTemplets, ["tenants"] = resultTenants };
-
-            return result;
-        }
-
-        public JObject UpdateAll(string connectionString = null)
-        {
-            var resultPre = UpdatePre(connectionString);
-            var resultPde = UpdatePde(connectionString);
-            var result = new JObject { ["pre"] = resultPre, ["pde"] = resultPde };
 
             return result;
         }
