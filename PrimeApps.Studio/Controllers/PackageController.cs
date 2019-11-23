@@ -159,12 +159,12 @@ namespace PrimeApps.Studio.Controllers
             var anyProcess = await _packageRepository.GetActiveProcess((int)AppId);
 
             if (anyProcess != null)
-                return Conflict("Already have a running publish.");
+                return Conflict("A packaging process is currently in progress.");
             
             var dbHistory = await _historyDatabaseRepository.GetLast();
             
             if(dbHistory?.Tag != null)
-                return Conflict("Please make a change to create a new package.");
+                return Conflict("Please modify your app to create a new package.");
 
             var dbName = PreviewMode + (PreviewMode == "tenant" ? TenantId : AppId);
 

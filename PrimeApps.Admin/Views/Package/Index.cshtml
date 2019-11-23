@@ -54,7 +54,7 @@
                             </td>
                         }
                         <td class="align-middle text-center">
-                            <h3 class="mb-0">@(ViewBag.LastPackage != null ? ViewBag.LastPackage.Version : "Please create a package firstly.")</h3>
+                            <h3 class="mb-0">@(ViewBag.LastPackage != null ? ViewBag.LastPackage.Version : "You should create a package to publish the application. You can create a package on PrimeApps Studio Packages menu.")</h3>
                         </td>
                         <td class="align-middle">
                             <button disabled="@(ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed)" class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="@(ViewBag.LastPackage == null ? "" : ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version ? "Already up to date" : ViewBag.ProcessActive ? "There is an another process. Please wait for it..." : "Click for publish!")" onclick="apply()">
@@ -92,7 +92,7 @@
         {
             <div class="alert alert-warning alert-dismissible">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
-                Please create a package firstly !
+                You should create a package to publish the application. You can create a package on PrimeApps Studio Packages menu.
             </div>
         }
         @*<div class="row" id="log" hidden>
