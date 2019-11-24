@@ -2,7 +2,6 @@ FROM microsoft/dotnet:2.2-sdk-stretch AS build
 WORKDIR /src
 COPY ["PrimeApps.Admin/PrimeApps.Admin.csproj", "PrimeApps.Admin/"]
 COPY ["PrimeApps.Model/PrimeApps.Model.csproj", "PrimeApps.Model/"]
-COPY ["PrimeApps.Util/PrimeApps.Util.csproj", "PrimeApps.Util/"]
 RUN dotnet restore "PrimeApps.Admin/PrimeApps.Admin.csproj"
 COPY . .
 
