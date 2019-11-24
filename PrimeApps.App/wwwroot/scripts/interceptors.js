@@ -8,10 +8,11 @@ angular.module('primeapps')
                 request: function (config) {
                     config.headers = config.headers || {};
                     var accessToken = $localStorage.read('access_token');
-
-                    if ((cdnUrl && config.url.indexOf(cdnUrl) > -1) || (blobUrl && config.url.indexOf(blobUrl) > -1) || (routeTemplateUrls && config.url.indexOf(routeTemplateUrls) > -1))
+                    
+                    if ((blobUrl && config.url.indexOf(blobUrl) > -1) || (routeTemplateUrls && routeTemplateUrls.length > 0 && routeTemplateUrls.indexOf(config.url) > -1))
                         config.headers['Access-Control-Allow-Origin'] = '*';
-                    else if (accessToken && config.url.indexOf('/token') < 0 && (blobUrl === '' || config.url.indexOf(blobUrl) < 0) && (routeTemplateUrls === '' || config.url.indexOf(routeTemplateUrls) < 0))
+                    
+                    if (accessToken && config.url.indexOf('/token') < 0 && (blobUrl === '' || config.url.indexOf(blobUrl) < 0) && (!routeTemplateUrls || routeTemplateUrls.length < 1 || routeTemplateUrls.indexOf(config.url) < 0))
                         config.headers['Authorization'] = 'Bearer ' + accessToken;
 
                     if ($rootScope.branchAvailable) {
