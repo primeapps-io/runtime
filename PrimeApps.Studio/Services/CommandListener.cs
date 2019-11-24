@@ -67,7 +67,7 @@ namespace PrimeApps.Studio.Services
                 command = _command;
             else
             {
-                command = ((RelationalDataReader) result).DbCommand;
+                command = ((RelationalDataReader)result).DbCommand;
             }
 
             if (command != null && command.Connection?.Database != "studio" &&
@@ -98,16 +98,16 @@ namespace PrimeApps.Studio.Services
 
                     var sequences = new JObject();
 
-                    var sqls = rawQuery.Split(";\r\n");
+                    var sqls = rawQuery.Split(";" + Environment.NewLine);
                     var newRawQuery = "";
-                    foreach (var obj in sqls.OfType<string>().Select((sql, index) => new {sql, index}))
+                    foreach (var obj in sqls.OfType<string>().Select((sql, index) => new { sql, index }))
                     {
                         var sql = obj.sql;
                         var index = obj.index;
 
-                        if(string.IsNullOrEmpty(sql))
+                        if (string.IsNullOrEmpty(sql))
                             continue;
-                        
+
                         if (sql.StartsWith("INSERT INTO"))
                         {
                             var tableName = Model.Helpers.PackageHelper.GetTableName(sql);
@@ -129,7 +129,7 @@ namespace PrimeApps.Studio.Services
                                     {
                                         foreach (var table in arrayResult)
                                         {
-                                            value = (int) table["last_value"];
+                                            value = (int)table["last_value"];
                                         }
                                     }
 
@@ -138,23 +138,23 @@ namespace PrimeApps.Studio.Services
                                 }
                                 else
                                 {
-                                    sequences[tableName] = (int) sequences[tableName] + 1;
+                                    sequences[tableName] = (int)sequences[tableName] + 1;
                                 }
 
                                 sqls[index] = sql.Replace(tableName + " (", tableName + " (id,")
                                     .Replace("VALUES (", $"VALUES ({sequences[tableName]},");
                             }
 
-                            newRawQuery += sqls[index] + ";\r\n";
+                            newRawQuery += sqls[index] + ";" + Environment.NewLine;
                         }
                         else
                         {
-                            newRawQuery += sqls[index] + ";\r\n";
+                            newRawQuery += sqls[index] + ";" + Environment.NewLine;
                         }
                     }
 
                     _queue.QueueBackgroundWorkItem(token =>
-                        _historyHelper.Database(newRawQuery, executedAt, email, currentUser, (Guid) _lastCommandId));
+                        _historyHelper.Database(newRawQuery, executedAt, email, currentUser, (Guid)_lastCommandId));
                 }
 
                 _hastExecuting = false;
@@ -168,7 +168,7 @@ namespace PrimeApps.Studio.Services
 
             if (_lastCommandId.HasValue && _hastExecuting)
                 _queue.QueueBackgroundWorkItem(
-                    token => _historyHelper.DeleteDbRecord(currenUser, (Guid) _lastCommandId));
+                    token => _historyHelper.DeleteDbRecord(currenUser, (Guid)_lastCommandId));
         }
 
         public string GetGeneratedQuery(DbCommand dbCommand)
@@ -216,10 +216,10 @@ namespace PrimeApps.Studio.Services
                     // End of query parameters
                     query = query.Replace(parameter.ParameterName + ")", value + ")");
                 }
-                else if (query.Contains("= " + parameter.ParameterName + "\r\n"))
+                else if (query.Contains("= " + parameter.ParameterName + Environment.NewLine))
                 {
                     // End of query parameters
-                    query = query.Replace("= " + parameter.ParameterName + "\r\n", "= " + value + "\r\n");
+                    query = query.Replace("= " + parameter.ParameterName + Environment.NewLine, "= " + value + Environment.NewLine);
                 }
                 else if (query.Contains("= " + parameter.ParameterName))
                 {
