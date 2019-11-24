@@ -21,6 +21,7 @@ ENV ASPNETCORE_ENVIRONMENT Development
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 
+# Install PostgreSQL Client
 RUN mkdir -p /usr/share/man/man1 && mkdir -p /usr/share/man/man7
 RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client-9.6
 RUN psql --version
