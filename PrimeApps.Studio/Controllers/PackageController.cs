@@ -172,8 +172,11 @@ namespace PrimeApps.Studio.Controllers
             var version = currentBuildNumber + 1;
 
             var app = await _appDraftRepository.Get((int)AppId);
-            var appOptions = JObject.Parse(app.Setting?.Options);
-
+            var appOptions = new JObject{ ["clear_all_records"] = true, ["enable_registration"] =  true };
+            
+            if(app.Setting != null && !string.IsNullOrEmpty(app.Setting.Options))
+                appOptions = JObject.Parse(app.Setting.Options);
+            
             var packageModel = new Package()
             {
                 AppId = (int)AppId,

@@ -57,8 +57,8 @@ angular.module('primeapps')
                 if (!$rootScope.sockets)
                     $rootScope.sockets = {};
 
-                var isHttps = location.href.includes('https');
-                $rootScope.sockets[$scope.app.name] = new WebSocket(isHttps ? 'wss' : 'ws' + '://' + location.host + '/log_stream');
+                var isHttps = location.protocol === 'https:';
+                $rootScope.sockets[$scope.app.name] = new WebSocket((isHttps ? 'wss' : 'ws') + '://' + location.host + '/log_stream');
                 $rootScope.sockets[$scope.app.name].onopen = function (e) {
                     $rootScope.sockets[$scope.app.name].send(JSON.stringify({
                         'X-App-Id': $scope.app.id,
