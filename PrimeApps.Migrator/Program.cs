@@ -19,9 +19,9 @@ namespace PrimeApps.Migrator
 
         private static void Main(string[] args)
         {
-            if (args == null || args.Length < 2 || string.IsNullOrEmpty(args[0]) || string.IsNullOrEmpty(args[1]))
+            if (args == null || args.Length < 1 || string.IsNullOrEmpty(args[0]))
             {
-                Console.WriteLine("No command area and/or command specified. Migrator will exit now.");
+                Console.WriteLine("No command specified. Migrator will exit now.");
                 Environment.Exit(0);
             }
 
