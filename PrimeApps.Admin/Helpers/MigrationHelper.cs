@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using System;

@@ -279,7 +279,8 @@
         //if ($scope.socket && $scope.socket.readyState !== WebSocket.CLOSED)
         //    return;
 
-        var socket = new WebSocket('ws://' + location.host + '/log_stream');
+        var isHttps = location.href.includes('https');
+        var socket = new WebSocket(isHttps ? 'wss' : 'ws' +'://' + location.host + '/log_stream');
         socket.onopen = function(e) {
             socket.send(JSON.stringify({
                 'X-App-Id': @ViewBag.CurrentApp.Id,
