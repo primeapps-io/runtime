@@ -93,7 +93,7 @@
                                         <div class="flex-evenly">
                                             <div>
                                                 <div ng-style="{background:appModel.color}" class="appicon" title="">
-                                                    <i ng-class=" appModel.icon.value ?  appModel.icon.value :appModel.icon" class="fas fa-box-open"></i>
+                                                    <i class="{{appModel.icon.value ?  appModel.icon.value : 'fas fa-box-open'}}"></i>
                                                     <div class="icon-search-list">
                                                         <ui-select ng-model="appModel.icon" ng-disabled="ctrl.disabled">
                                                             <ui-select-match placeholder="Select an icon">
