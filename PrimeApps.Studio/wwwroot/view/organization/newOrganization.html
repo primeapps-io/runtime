@@ -72,30 +72,59 @@
 
                                 </div>
 
-                                <div class="form-group" style="position: relative;">
-                                    <label class="col-sm-6 required-field">
-                                        Color
-                                    </label>
-                                    <div class="colorpickx form-control" style="float:left;padding:5px !important;">
-                                        <span ng-repeat="color in colors" ng-click="$parent.$parent.organization.color=color.value" ng-class="{'active':$parent.$parent.organization.color==color.value}" style="background: {{color.value}}"></span>
-                                    </div>
-
-                                </div>
-                                <div class="form-group icon-search-list">
-                                    <label class="col-sm-4">{{'Common.Icon' | translate}}</label>
-                                    <ui-select ng-model="$parent.$parent.organization.icon" ng-disabled="ctrl.disabled">
-                                        <ui-select-match placeholder="Select an icon">
+                                <div class="form-group">
+                                    <label class="required-field">Change Organization Icon and Color</label>
+                                    <div class="iconandcolor">
+                                        <div class="flex-evenly">
                                             <div>
-                                                <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
-                                                <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
+                                                <div ng-style="{background:$parent.$parent.organization.color}" class="appicon" title="">
+                                                    <i class="{{$parent.$parent.organization.icon ?  $parent.$parent.organization.icon.value : 'fas fa-building'}}"></i>
+                                                    <div class="icon-search-list">
+                                                        <ui-select ng-model="$parent.$parent.organization.icon" ng-disabled="ctrl.disabled">
+                                                            <ui-select-match placeholder="Select an icon">
+                                                                <div>
+                                                                    <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+                                                                    <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
+                                                                </div>
+                                                            </ui-select-match>
+                                                            <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+                                                                <div ng-bind-html="icon.label"></div>
+                                                            </ui-select-choices>
+                                                        </ui-select>
+
+                                                    </div>
+
+                                                </div>
                                             </div>
-                                        </ui-select-match>
+                                            <div>
+                                                <div class="appcolor">
+                                                    <span ng-click="$parent.$parent.organization.color='#D24D57'" ng-class="$parent.$parent.organization.color =='#D24D57' ? 'active':''" style="background: #D24D57;"></span>
+                                                    <span ng-click="$parent.$parent.organization.color='#BE90D4'" ng-class="$parent.$parent.organization.color =='#BE90D4' ? 'active':'' " style="background: #BE90D4;"></span>
+                                                    <span ng-click="$parent.$parent.organization.color='#5AABE3'" ng-class="$parent.$parent.organization.color =='#5AABE3' ? 'active':'' " style="background: #5AABE3;"></span>
+                                                    <span ng-click="$parent.$parent.organization.color='#87D37C'" ng-class="$parent.$parent.organization.color =='#87D37C' ? 'active':'' " style="background: #87D37C;"></span>
+                                                    <span ng-click="$parent.$parent.organization.color='#F4D03E'" ng-class="$parent.$parent.organization.color =='#F4D03E' ? 'active':'' " style="background: #F4D03E;"></span>
+                                                    <span ng-click="$parent.$parent.organization.color='#B8BEC2'" ng-class="$parent.$parent.organization.color =='#B8BEC2' ? 'active':'' " style="background: #B8BEC2;"></span>
+                                                </div>
+                                                <div class="appcolor">
+                                                    <span ng-click="$parent.$parent.organization.color='#DC3023'" ng-class="$parent.$parent.organization.color =='#DC3023' ? 'active':''" style="background: #DC3023;"></span>
+                                                    <span ng-click="$parent.$parent.organization.color='#8E44AD'" ng-class="$parent.$parent.organization.color =='#8E44AD' ? 'active':''" style="background: #8E44AD;"></span>
+                                                    <span ng-click="$parent.$parent.organization.color='#19B5FE'" ng-class="$parent.$parent.organization.color =='#19B5FE' ? 'active':''" style="background: #19B5FE;"></span>
+                                                    <span ng-click="$parent.$parent.organization.color='#25A65B'" ng-class="$parent.$parent.organization.color =='#25A65B' ? 'active':''" style="background: #25A65B;"></span>
+                                                    <span ng-click="$parent.$parent.organization.color='#FFB61E'" ng-class="$parent.$parent.organization.color =='#FFB61E' ? 'active':''" style="background: #FFB61E;"></span>
+                                                    <span ng-click="$parent.$parent.organization.color='#959EA4'" ng-class="$parent.$parent.organization.color =='#959EA4' ? 'active':''" style="background: #959EA4;"></span>
+                                                </div>
+                                                <div class="appcolor">
+                                                    <span ng-click="$parent.$parent.organization.color='#C3272B'" ng-class="$parent.$parent.organization.color =='#C3272B' ? 'active':''" style="background: #C3272B;"></span>
+                                                    <span ng-click="$parent.$parent.organization.color='#763668'" ng-class="$parent.$parent.organization.color =='#763668' ? 'active':''" style="background: #763668;"></span>
+                                                    <span ng-click="$parent.$parent.organization.color='#1F4688'" ng-class="$parent.$parent.organization.color =='#1F4688' ? 'active':''" style="background: #1F4688;"></span>
+                                                    <span ng-click="$parent.$parent.organization.color='#006442'" ng-class="$parent.$parent.organization.color =='#006442' ? 'active':''" style="background: #006442;"></span>
+                                                    <span ng-click="$parent.$parent.organization.color='#CA6924'" ng-class="$parent.$parent.organization.color =='#CA6924' ? 'active':''" style="background: #CA6924;"></span>
+                                                    <span ng-click="$parent.$parent.organization.color='#4D5C66'" ng-class="$parent.$parent.organization.color =='#4D5C66' ? 'active':''" style="background: #4D5C66;"></span>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                        <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
-                                            <div ng-bind-html="icon.label"></div>
-                                        </ui-select-choices>
-
-                                    </ui-select>
+                                    </div>
                                 </div>
                             </div>
                         </div>

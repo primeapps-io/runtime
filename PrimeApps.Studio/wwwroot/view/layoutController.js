@@ -169,16 +169,26 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         };
 
         $scope.colors = [
-            {value: '#D72A20'},
-            {value: '#833CA3'},
-            {value: '#17ACFE'},
-            {value: '#33ffff'},
-            {value: '#229C51'},
-            {value: '#FFAD1C'},
-            {value: '#1C3E7D'},
-            {value: '#C35E21'},
-            {value: '#F3C937'},
-            {value: '#6B2F5D'},
+            { value: '#D24D57' },
+            { value: '#BE90D4' },
+            { value: '#5AABE3' },
+            { value: '#87D37C' },
+            { value: '#F4D03E' },
+            { value: '#B8BEC2' },
+            
+            { value: '#DC3023' },
+            { value: '#8E44AD' },
+            { value: '#19B5FE' },
+            { value: '#25A65B' },
+            { value: '#FFB61E' },
+            { value: '#959EA4' },
+
+            { value: '#C3272B' },
+            { value: '#763668' },
+            { value: '#1F4688' },
+            { value: '#006442' },
+            { value: '#CA6924' },
+            { value: '#4D5C66' }, 
         ];
 
         $scope.newOrganization = function () {
@@ -194,7 +204,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
             var orgColor = $scope.colors[Math.floor(Math.random() * $scope.colors.length)].value;
             $scope.organization.color = orgColor;
-            $scope.organization.icon = 'fas fa-building';
+            //$scope.organization.icon = 'fas fa-building';
 
             $scope.organizationFormModal = $scope.organizationFormModal || $modal({
                 scope: $scope,
@@ -251,26 +261,26 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                                 $scope.organization = {};
                                 $scope.nameValid = null;
                                 $scope.nameBlur = false;
-                                $state.go('studio.apps', {orgId: response.data});
+                                $state.go('studio.apps', { orgId: response.data });
                             }).catch(function () {
-                            toastr.error('Organization ' + $scope.organization.label + ' not created.');
-                            $scope.organizationSaving = false;
-                            $scope.nameValid = null;
-                            $scope.nameBlur = false;
-                        });
+                                toastr.error('Organization ' + $scope.organization.label + ' not created.');
+                                $scope.organizationSaving = false;
+                                $scope.nameValid = null;
+                                $scope.nameBlur = false;
+                            });
                     }
                     else {
                         $scope.nameValid = false;
                         $scope.organizationSaving = false;
                     }
                 }).catch(function () {
-                $scope.nameValid = false;
-                if (!$scope.nameValid) {
-                    toastr.warning("Organization Identifier value must be unique! ");
-                    return;
-                }
-                $scope.nameChecking = false;
-            });
+                    $scope.nameValid = false;
+                    if (!$scope.nameValid) {
+                        toastr.warning("Organization Identifier value must be unique! ");
+                        return;
+                    }
+                    $scope.nameChecking = false;
+                });
 
         };
 

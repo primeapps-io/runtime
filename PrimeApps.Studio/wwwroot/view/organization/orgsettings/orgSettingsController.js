@@ -94,9 +94,13 @@ angular.module('primeapps')
 
                 OrgSettingsService.update($scope.$parent.$parent.$parent.currentOrgId, $scope.orgModel)
                     .then(function (response) {
+                        if (!$rootScope.currentOrganization)
+                            $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, { id: $rootScope.currentOrgId })[0];
+
                         $rootScope.currentOrganization.label = $scope.orgModel.label;
                         $rootScope.currentOrganization.icon = $scope.orgModel.icon;
                         $rootScope.currentOrganization.color = $scope.orgModel.color;
+
                         toastr.success($filter('translate')('Organization is updated successfully.'));
                         $scope.saving = false;
                     });
