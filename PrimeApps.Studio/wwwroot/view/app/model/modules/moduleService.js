@@ -48,7 +48,7 @@ angular.module('primeapps')
                 // delete: function (id) {
                 //     return $http.delete(config.apiUrl + 'module/delete/' + id);
                 // },
-                newField: function (dataType) {
+                newField: function (dataType,order) {
 
                     var field = {};
                     field.label_en = dataType.label.en;
@@ -1270,6 +1270,7 @@ angular.module('primeapps')
                                 if (field.firstDrag === true) {
 
                                     showField.currentField = field;
+                                    showField.currentField.name = showField.currentField.name + field.order;
                                     showField.currentRow = row;
                                     showField.currentColumn = column;
                                     //  field.firstDrag = false;
