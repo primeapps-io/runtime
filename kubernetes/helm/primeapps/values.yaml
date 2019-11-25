@@ -27,6 +27,13 @@ app:
   googleMapsApiKey: "your-google-maps-api-key"
   sentryDsn: "https://your:dsn@log.primeapps.io/2"
 
+admin:
+  domain: "admin.yourdomain.com"
+  storage:
+    class: "default"
+    size: "10Gi"
+  sentryDsn: "https://your:dsn@log.primeapps.io/3"
+  
 postgresoperator:
   install: true
   password: "pAssW0rd987d"
