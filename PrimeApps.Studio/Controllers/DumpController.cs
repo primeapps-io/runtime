@@ -54,33 +54,33 @@ namespace PrimeApps.Studio.Controllers
             return Ok("Database dump process has been started. You'll be notified when finished. Job: " + jobId);
         }
 
-        [Route("restore"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
-        public IActionResult Restore([FromBody]JObject request)
-        {
-            if (request["app_id"].IsNullOrEmpty())
-                return BadRequest("app_id is required.");
-
-            if (!int.TryParse(request["app_id"].ToString(), out var appId))
-                return BadRequest("app_id must be a integer.");
-
-            if (request["environment"].IsNullOrEmpty())
-                return BadRequest("environment is required.");
-
-            var environment = (string)request["environment"];
-
-            if (environment != "test" && environment != "production")
-                return BadRequest("environment must be 'test' or 'production'.");
-
-            request["app_id"] = appId;
-            var organizationAppIds = _appDraftRepository.GetAppIdsByOrganizationId(OrganizationId);
-
-            if (!organizationAppIds.Contains(appId))
-                return Unauthorized();
-
-            var jobId = BackgroundJob.Enqueue<Dump>(dump => dump.Restore(request));
-
-            return Ok("Database dump restore process has been started. You'll be notified when finished. Job: " + jobId);
-        }
+//        [Route("restore"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
+//        public IActionResult Restore([FromBody]JObject request)
+//        {
+//            if (request["app_id"].IsNullOrEmpty())
+//                return BadRequest("app_id is required.");
+//
+//            if (!int.TryParse(request["app_id"].ToString(), out var appId))
+//                return BadRequest("app_id must be a integer.");
+//
+//            if (request["environment"].IsNullOrEmpty())
+//                return BadRequest("environment is required.");
+//
+//            var environment = (string)request["environment"];
+//
+//            if (environment != "test" && environment != "production")
+//                return BadRequest("environment must be 'test' or 'production'.");
+//
+//            request["app_id"] = appId;
+//            var organizationAppIds = _appDraftRepository.GetAppIdsByOrganizationId(OrganizationId);
+//
+//            if (!organizationAppIds.Contains(appId))
+//                return Unauthorized();
+//
+//            var jobId = BackgroundJob.Enqueue<Dump>(dump => dump.Restore(request));
+//
+//            return Ok("Database dump restore process has been started. You'll be notified when finished. Job: " + jobId);
+//        }
 
         [Route("download")]
         public IActionResult Download([FromQuery]int appId)
