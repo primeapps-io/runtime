@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using PrimeApps.Model.Common.Organization;
+using PrimeApps.Model.Common.Organization; 
 using PrimeApps.Model.Entities.Studio;
 using System;
 using System.Collections.Generic;
@@ -115,6 +115,25 @@ namespace PrimeApps.Admin.Helpers
             var data = await response.Content.ReadAsAsync<List<OrganizationModel>>();
 
             return data;
+        }
+
+        public async Task<Model.Common.User.StudioUser> GetUser()
+        {
+            var response = await _client.GetAsync($"user/me");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    throw new UnauthorizedAccessException();
+
+                var errorData = await response.Content.ReadAsStringAsync();
+
+                throw new Exception($"Method of Get User result {response.StatusCode}. Application Id: {_appId}, Organization Id: {_orgId}, Response: {errorData}");
+            }
+
+            var user = await response.Content.ReadAsAsync<Model.Common.User.StudioUser>();
+
+            return user;
         }
 
         public async Task<AppDraft> AppDraftGetById(int id)

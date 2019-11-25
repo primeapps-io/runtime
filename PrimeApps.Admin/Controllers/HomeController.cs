@@ -19,8 +19,8 @@ namespace PrimeApps.Admin.Controllers
         private readonly IPlatformUserRepository _platformUserRepository;
         private IBackgroundTaskQueue _queue;
         private IMigrationHelper _migrationHelper;
-        
-        public HomeController(IOrganizationHelper organizationHelper,IBackgroundTaskQueue queue,IMigrationHelper migrationHelper, IApplicationRepository applicationRepository, IPlatformUserRepository platformUserRepository)
+
+        public HomeController(IOrganizationHelper organizationHelper, IBackgroundTaskQueue queue, IMigrationHelper migrationHelper, IApplicationRepository applicationRepository, IPlatformUserRepository platformUserRepository)
         {
             _organizationHelper = organizationHelper;
             _applicationRepository = applicationRepository;
@@ -32,10 +32,10 @@ namespace PrimeApps.Admin.Controllers
         [Route("")]
         public async Task<IActionResult> Index(int? id)
         {
-            var user = _platformUserRepository.Get(HttpContext.User.FindFirst("email").Value);
             var token = await HttpContext.GetTokenAsync("access_token");
 
             var organizations = await _organizationHelper.Get(token);
+            var user = await _organizationHelper.GetUser(token);
 
             ViewBag.Organizations = organizations;
             ViewBag.User = user;
@@ -46,7 +46,7 @@ namespace PrimeApps.Admin.Controllers
                 if (selectedOrg == null)
                 {
                     ViewBag.ActiveOrganizationId = organizations[0].Id.ToString();
-                    return RedirectToAction("Index", new {id = organizations[0].Id});
+                    return RedirectToAction("Index", new { id = organizations[0].Id });
                 }
 
                 ViewBag.ActiveOrganizationId = id.ToString();
@@ -57,7 +57,7 @@ namespace PrimeApps.Admin.Controllers
 
             return View();
         }
-        
+
         [Route("Reload")]
         public IActionResult Reload()
         {
@@ -78,15 +78,15 @@ namespace PrimeApps.Admin.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel {RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-        
+
         [HttpGet, Route("healthz")]
         public IActionResult Healthz()
         {
             return Ok();
         }
-        
+
         [Route("migration")]
         public IActionResult Migration([FromQuery] string ids)
         {

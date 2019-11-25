@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using PrimeApps.Model.Common.Organization;
+using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Admin.Helpers
@@ -15,6 +14,7 @@ namespace PrimeApps.Admin.Helpers
         Task<OrganizationModel> GetById(int id, string token);
         Task<List<OrganizationModel>> Get(string token);
         bool ReloadOrganization();
+        Task<StudioUser> GetUser(string token);
     }
 
     public class OrganizationHelper : IOrganizationHelper
@@ -41,7 +41,7 @@ namespace PrimeApps.Admin.Helpers
             var studioClient = new StudioClient(_configuration, token);
             var organizations = await studioClient.OrganizationGetAllByUser();
 
-           await _cacheHelper.SetAsync(_organizationKey, organizations);
+            await _cacheHelper.SetAsync(_organizationKey, organizations);
 
             return organizations;
         }
@@ -70,6 +70,15 @@ namespace PrimeApps.Admin.Helpers
 
             _cacheHelper.Remove(_organizationKey);
             return true;
+        }
+
+        public async Task<StudioUser> GetUser(string token)
+        {
+            var studioClient = new StudioClient(_configuration, token);
+
+            var user = await studioClient.GetUser();
+
+            return user;
         }
     }
 }
