@@ -2661,6 +2661,13 @@ button, select {
       background: rgba(0, 0, 0, 0.75);
 
     }
+    &.org{
+      .ui-select-container {
+        .ui-select-choices {
+          transform: translateX(-33%);
+        }
+      }
+    }
   }
 
   .appcolor {
