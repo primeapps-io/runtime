@@ -148,5 +148,68 @@ namespace PrimeApps.App.Controllers
 
             return Ok();
         }
+
+        [Route("custom_setting_create"), HttpPost]
+        public async Task<IActionResult> CustomSettingCreate([FromBody]SettingBindingModel setting)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (setting.UserId.HasValue)
+            {
+                var user = _userRepository.GetById(setting.UserId.Value);
+
+                if (user == null)
+                    return BadRequest("User not found.");
+            }
+
+            if (setting.Type == SettingType.NotSet)
+                setting.Type = SettingType.Custom;
+
+            var settingEntity = new Setting
+            {
+                Type = setting.Type,
+                UserId = null,
+                Key = setting.Key,
+                Value = setting.Value
+            };
+
+            var result = await _settingRepository.Create(settingEntity);
+
+            if (result < 1)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+
+            return Ok(settingEntity);
+        }
+
+        [Route("custom_setting_update/{id:int}"), HttpPut]
+        public async Task<IActionResult> CustomSettingUpdate(int id, [FromBody]SettingBindingModel setting)
+        {
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var settingEntity = await _settingRepository.GetByIdWithType(id, SettingType.Custom);
+
+            if (settingEntity == null)
+                return NotFound();
+
+            if (setting.UserId.HasValue)
+            {
+                var user = _userRepository.GetById(setting.UserId.Value);
+
+                if (user == null)
+                    return BadRequest("User not found.");
+            }
+
+            settingEntity.Type = SettingType.Custom;
+            settingEntity.UserId = null;
+            settingEntity.Key = setting.Key;
+            settingEntity.Value = setting.Value;
+
+            await _settingRepository.Update(settingEntity);
+
+            return Ok(settingEntity);
+        }
     }
 }
