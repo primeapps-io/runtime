@@ -16,12 +16,16 @@
             <tr>
                 <th>{{'Setup.Templates.TemplateName' | translate}}</th>
                 <th>{{'Setup.Templates.Module' | translate}}</th>
+                <th>Code</th>
                 <th width="70"></th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="item in placeholderArray">
                 <td class="text-center">
+                    <div class="animated-background"></div>
+                </td>
+                <td>
                     <div class="animated-background"></div>
                 </td>
                 <td>
@@ -38,6 +42,7 @@
             <tr>
                 <th>{{'Setup.Templates.TemplateName' | translate}}</th>
                 <th>{{'Setup.Templates.Module' | translate}}</th>
+                <th>Code</th>
                 <th width="50"></th>
             </tr>
         </thead>
@@ -47,6 +52,7 @@
 
                 <!--<td>{{template.module['label_'+language+'_plural']}}</td>-->
                 <td>{{template.module['label_'+language+'_plural']}}</td>
+                <td>{{template.code}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
                         <button ng-click="$event.stopPropagation(); delete(template,$event);" type="button"

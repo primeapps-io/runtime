@@ -25,7 +25,8 @@ namespace PrimeApps.Studio.Helpers
 				Content = templateModel.Content,
 				Language = templateModel.Language,
 				Active = templateModel.Active,
-				SharingType = templateModel.SharingType
+				SharingType = templateModel.SharingType,
+				Code = templateModel.Code
 			};
 
 			if (templateModel.Permissions != null && templateModel.Permissions.Count > 0)
@@ -97,6 +98,7 @@ namespace PrimeApps.Studio.Helpers
 				template.Active = templateModel.Active;
 				template.Module = templateModel.Module;
 				template.UpdatedAt = DateTime.UtcNow;
+				template.Code = templateModel.Code;
 
 				if (templateModel.Permissions != null && templateModel.Permissions.Count > 0)
 				{
@@ -150,6 +152,7 @@ namespace PrimeApps.Studio.Helpers
 				appDraftTemplate.Language = appTemplateModel.Language;
 				appDraftTemplate.Active = appTemplateModel.Active;
 				appDraftTemplate.UpdatedAt = DateTime.UtcNow;
+				appDraftTemplate.SystemCode = appTemplateModel.SystemCode;
 			}
 		}
 
@@ -181,13 +184,17 @@ namespace PrimeApps.Studio.Helpers
 				Active = appTemplate.Active,
 				Settings = appTemplate.Settings,
 				Type = AppTemplateType.Email,
-				AppId = (int)appId
+				AppId = (int)appId,
+				SystemCode = appTemplate.SystemCode,
 			};
 
-			var systemCodes = appTemplate.Name.Split(" ");
-			foreach (var systemCode in systemCodes)
+			if (string.IsNullOrEmpty(appTemplate.SystemCode))
 			{
-				template.SystemCode += systemCode.ToLower() + "_";
+				var systemCodes = appTemplate.Name.Split(" ");
+				foreach (var systemCode in systemCodes)
+				{
+					template.SystemCode += systemCode.ToLower() + "_";
+				}
 			}
 
 			return template;

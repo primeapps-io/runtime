@@ -235,6 +235,7 @@ angular.module('primeapps')
 					$scope.template.template_name = template.name;
 					$scope.template.active = template.active;
 					$scope.template.language = template.language;
+					$scope.template.template_system_code = template.system_code;
 					var mailInfo = JSON.parse(template.settings);
 					$scope.template.mail_sender_name = mailInfo["MailSenderName"];
 					$scope.template.mail_sender_email = mailInfo["MailSenderEmail"];
@@ -293,8 +294,10 @@ angular.module('primeapps')
 
 			$scope.templateSave = function (uploadForm) {
 
-				if (!uploadForm.$valid)
+				if (uploadForm.$invalid){
+					toastr.error($filter('translate')('Module.RequiredError'));
 					return;
+				}
 
 				$scope.saving = true;
 				var template = {};
@@ -305,6 +308,7 @@ angular.module('primeapps')
 				template.content = $scope.template.tinymce_content;
 				template.active = $scope.template.active;
 				template.language = $scope.template.language;
+				template.system_code = $scope.template.template_system_code;
 				var mailInfo = '{ "MailSenderName":"' + $scope.template.mail_sender_name + '", "MailSenderEmail":"' + $scope.template.mail_sender_email + '"}';
 				template.settings = mailInfo;
 

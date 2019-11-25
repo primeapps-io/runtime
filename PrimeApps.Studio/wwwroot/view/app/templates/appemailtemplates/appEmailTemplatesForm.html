@@ -26,15 +26,21 @@
                         <div class="section" id="section1">
                             <div class="panel">
                                 <!--ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}"-->
-                                <div class="form-group">
-                                    <label>{{'Template.TemplateName' | translate}}</label>
+                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                                    <label>{{'Template.TemplateName' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="template.template_name" />
                                 </div>
-                                <div class="form-group">
-                                    <label>{{'Template.Subject' | translate}}</label>
+                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateSubject.$invalid}">
+                                    <label>{{'Template.Subject' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <input type="text" name="templateSubject" class="form-control" ng-required="true" ng-model="template.template_subject" />
                                 </div>
 
+                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateSystemCode.$invalid}">
+                                    <label>System Code </label>
+                                    <!--<span class="required-label">({{'Common.Required' | translate }})</span>-->
+                                    <input type="text" name="templateSystemCode" class="form-control" ng-maxlength="50"  ng-model="template.template_system_code" />
+                                </div>
+                                
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateStatus.$invalid}">
                                     <label class="col-sm-12 required-field">{{'Setup.Templates.TemplateStatus' | translate}}</label>
                                     <div ng-init="template.isNew ? template.active = true : template.active = template.active">
@@ -83,6 +89,7 @@
                                 </div>-->
                                 
                                 <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.tinymce.$invalid}">
+                                    <label>Content <span class="required-label">({{'Common.Required' | translate }})</span></label>
                                     <textarea mentio-id="'tinyMceTextArea2'" mentio mentio-typed-text="typedTerm"
                                               mentio-require-leading-space="true" ui-tinymce="tinymceTemplateEdit"
                                               name="tinymce"

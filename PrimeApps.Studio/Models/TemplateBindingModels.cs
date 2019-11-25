@@ -35,6 +35,9 @@ namespace PrimeApps.Studio.Models
         public List<int> Shares { get; set; }
 
         public List<TemplatePermissionsModel> Permissions { get; set; }
+        
+        [StringLength(50)]
+        public string Code { get; set; }
     }
 
     public class TemplatePermissionsModel

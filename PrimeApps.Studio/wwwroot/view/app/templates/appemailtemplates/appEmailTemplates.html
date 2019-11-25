@@ -16,6 +16,7 @@
             <th>{{'Setup.Templates.TemplateName' | translate}}</th>
             <th>Subject</th>
             <th>Language</th>
+            <th>System Code</th>
         </tr>
         </thead>
         <tbody>
@@ -28,6 +29,9 @@
             </td>
             <td>
                 <div class="animated-background"></div>
+            </td> 
+            <td>
+                <div class="animated-background"></div>
             </td>
         </tr>
         </tbody>
@@ -38,6 +42,7 @@
             <th>{{'Setup.Templates.TemplateName' | translate}}</th>
             <th>Subject</th>
             <th>Language</th>
+            <th>System Code</th>
         </tr>
         </thead>
         <tbody ng-show="!loading">
@@ -45,6 +50,7 @@
             <td>{{template.name}}</td>
             <td>{{template.subject}}</td>
             <td>{{template.language}}</td>
+            <td>{{template.system_code}}</td>
         </tr>
         </tbody>
     </table>
