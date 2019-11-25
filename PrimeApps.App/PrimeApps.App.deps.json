@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.2",
-    "signature": "8298624aa5abfa31c092a58cba8a8250c189a524"
+    "signature": "d35e6faf6d2ca2c085779907bbcb7c8ab2e5bb87"
   },
   "compilationOptions": {
     "defines": [
@@ -24,8 +24,8 @@
     ".NETCoreApp,Version=v2.2": {
       "PrimeApps.App/1.0.0": {
         "dependencies": {
-          "AWSSDK.Extensions.NETCore.Setup": "3.3.6",
-          "AWSSDK.S3": "3.3.31.5",
+          "AWSSDK.Extensions.NETCore.Setup": "3.3.100.1",
+          "AWSSDK.S3": "3.3.104.36",
           "Aspose.Cells": "18.12.0",
           "Aspose.Words": "19.1.0",
           "Hangfire": "1.7.0-beta4",
@@ -104,53 +104,46 @@
           "lib/netstandard2.0/Aspose.Words.dll": {}
         }
       },
-      "AWSSDK.Core/3.3.30.2": {
-        "dependencies": {
-          "Microsoft.CSharp": "4.5.0",
-          "System.Net.Requests": "4.0.11",
-          "System.Reflection.TypeExtensions": "4.4.0",
-          "System.Security.Cryptography.Csp": "4.3.0",
-          "System.Threading.Thread": "4.3.0"
-        },
+      "AWSSDK.Core/3.3.103.48": {
         "runtime": {
-          "lib/netstandard1.3/AWSSDK.Core.dll": {
+          "lib/netstandard2.0/AWSSDK.Core.dll": {
             "assemblyVersion": "3.3.0.0",
-            "fileVersion": "3.3.30.2"
+            "fileVersion": "3.3.103.48"
           }
         },
         "compile": {
-          "lib/netstandard1.3/AWSSDK.Core.dll": {}
+          "lib/netstandard2.0/AWSSDK.Core.dll": {}
         }
       },
-      "AWSSDK.Extensions.NETCore.Setup/3.3.6": {
+      "AWSSDK.Extensions.NETCore.Setup/3.3.100.1": {
         "dependencies": {
-          "AWSSDK.Core": "3.3.30.2",
+          "AWSSDK.Core": "3.3.103.48",
           "Microsoft.Extensions.Configuration.Abstractions": "2.2.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "2.2.0",
           "Microsoft.Extensions.Logging.Abstractions": "2.2.0"
         },
         "runtime": {
-          "lib/netstandard1.3/AWSSDK.Extensions.NETCore.Setup.dll": {
+          "lib/netstandard2.0/AWSSDK.Extensions.NETCore.Setup.dll": {
             "assemblyVersion": "3.3.0.0",
-            "fileVersion": "3.3.6.0"
+            "fileVersion": "3.3.100.0"
           }
         },
         "compile": {
-          "lib/netstandard1.3/AWSSDK.Extensions.NETCore.Setup.dll": {}
+          "lib/netstandard2.0/AWSSDK.Extensions.NETCore.Setup.dll": {}
         }
       },
-      "AWSSDK.S3/3.3.31.5": {
+      "AWSSDK.S3/3.3.104.36": {
         "dependencies": {
-          "AWSSDK.Core": "3.3.30.2"
+          "AWSSDK.Core": "3.3.103.48"
         },
         "runtime": {
-          "lib/netstandard1.3/AWSSDK.S3.dll": {
+          "lib/netstandard2.0/AWSSDK.S3.dll": {
             "assemblyVersion": "3.3.0.0",
-            "fileVersion": "3.3.31.5"
+            "fileVersion": "3.3.104.36"
           }
         },
         "compile": {
-          "lib/netstandard1.3/AWSSDK.S3.dll": {}
+          "lib/netstandard2.0/AWSSDK.S3.dll": {}
         }
       },
       "Dapper/1.50.5": {
@@ -1497,33 +1490,6 @@
           }
         }
       },
-      "System.Net.Requests/4.0.11": {
-        "dependencies": {
-          "Microsoft.NETCore.Platforms": "2.2.0",
-          "System.Collections": "4.3.0",
-          "System.Diagnostics.Debug": "4.3.0",
-          "System.Diagnostics.Tracing": "4.3.0",
-          "System.Globalization": "4.3.0",
-          "System.IO": "4.3.0",
-          "System.Net.Http": "4.3.0",
-          "System.Net.Primitives": "4.3.0",
-          "System.Net.WebHeaderCollection": "4.0.1",
-          "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
-          "System.Threading": "4.3.0",
-          "System.Threading.Tasks": "4.3.0"
-        },
-        "runtimeTargets": {
-          "runtime/unix/lib/_._": {
-            "rid": "unix",
-            "assetType": "runtime"
-          },
-          "runtime/win/lib/_._": {
-            "rid": "win",
-            "assetType": "runtime"
-          }
-        }
-      },
       "System.Net.Security/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "2.2.0",
@@ -1574,14 +1540,6 @@
           "System.Net.Primitives": "4.3.0",
           "System.Runtime": "4.3.0",
           "System.Threading.Tasks": "4.3.0"
-        }
-      },
-      "System.Net.WebHeaderCollection/4.0.1": {
-        "dependencies": {
-          "System.Collections": "4.3.0",
-          "System.Resources.ResourceManager": "4.3.0",
-          "System.Runtime": "4.3.0",
-          "System.Runtime.Extensions": "4.3.0"
         }
       },
       "System.Reflection.TypeExtensions/4.4.0": {},
@@ -1682,6 +1640,8 @@
       },
       "PrimeApps.Model/1.0.0": {
         "dependencies": {
+          "AWSSDK.Extensions.NETCore.Setup": "3.3.100.1",
+          "AWSSDK.S3": "3.3.104.36",
           "Hangfire": "1.7.0-beta4",
           "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "2.2.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "2.2.0",
@@ -1696,10 +1656,14 @@
           "Microsoft.Extensions.Configuration.EnvironmentVariables": "2.2.0",
           "Microsoft.Extensions.Configuration.Json": "2.2.0",
           "Microsoft.Extensions.Configuration.UserSecrets": "2.2.0",
+          "Microsoft.Extensions.DiagnosticAdapter": "2.2.0",
           "Microsoft.SqlServer.SqlManagementObjects": "140.17283.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore": "2.2.0",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "2.2.0",
-          "Sentry": "1.1.0"
+          "Sentry": "1.1.0",
+          "Sentry.AspNetCore": "1.1.0",
+          "System.Linq.Dynamic.Core": "1.0.9",
+          "WindowsAzure.Storage": "9.3.3"
         },
         "runtime": {
           "PrimeApps.Model.dll": {}
@@ -4893,26 +4857,26 @@
       "path": "aspose.words/19.1.0",
       "hashPath": "aspose.words.19.1.0.nupkg.sha512"
     },
-    "AWSSDK.Core/3.3.30.2": {
+    "AWSSDK.Core/3.3.103.48": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-3T3c/c44Yvvabjk6aBE3xhPVylwbP/uUHooxZDhbqJjaFb5zlQoXWRbzA4KknJfy5+8SF9UfqqTUCDMCD5cbzw==",
-      "path": "awssdk.core/3.3.30.2",
-      "hashPath": "awssdk.core.3.3.30.2.nupkg.sha512"
+      "sha512": "sha512-ltX0YbyTvGsR+69YLNnxO9l3isOh/ceoq7EwJsRqTB0a64qQh2kUtZV+enFxTsixDTlXfXBOzHVPjwLZ8wE4Dg==",
+      "path": "awssdk.core/3.3.103.48",
+      "hashPath": "awssdk.core.3.3.103.48.nupkg.sha512"
     },
-    "AWSSDK.Extensions.NETCore.Setup/3.3.6": {
+    "AWSSDK.Extensions.NETCore.Setup/3.3.100.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-vGAUQtMHYUzSN4PuKHdBrgw79AXt8Fw7jSsRjZiSit/5VwJV6x4o4ZNcVNDrtUOE76rE695hMCIzr0pONS3FuQ==",
-      "path": "awssdk.extensions.netcore.setup/3.3.6",
-      "hashPath": "awssdk.extensions.netcore.setup.3.3.6.nupkg.sha512"
+      "sha512": "sha512-KrMhRur0x5X8sSkRSVKt7iEwdsMqu8sa5zqTOhaxEw52r/YaqiiRgw0hNcNCObpm2gQAASewlIVfaBitGjHlUw==",
+      "path": "awssdk.extensions.netcore.setup/3.3.100.1",
+      "hashPath": "awssdk.extensions.netcore.setup.3.3.100.1.nupkg.sha512"
     },
-    "AWSSDK.S3/3.3.31.5": {
+    "AWSSDK.S3/3.3.104.36": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-QrZsaCyvK3QVqLJ9lc2M+V0F2EIZQXj+l4DVpV50QtDwSOXHVKHX0PKTcEJrUEjyAwJnJw8qyCyzK80Z+eo/uA==",
-      "path": "awssdk.s3/3.3.31.5",
-      "hashPath": "awssdk.s3.3.3.31.5.nupkg.sha512"
+      "sha512": "sha512-IJcpjWWqX9HFJfKdzcduurCiPfidJQ33xLnd/efcWSNtS95S8JugDy1KNpirJueDpLNZdXR9u69q6Ru+upsZ6A==",
+      "path": "awssdk.s3/3.3.104.36",
+      "hashPath": "awssdk.s3.3.3.104.36.nupkg.sha512"
     },
     "Dapper/1.50.5": {
       "type": "package",
@@ -5397,13 +5361,6 @@
       "path": "system.net.nameresolution/4.3.0",
       "hashPath": "system.net.nameresolution.4.3.0.nupkg.sha512"
     },
-    "System.Net.Requests/4.0.11": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-vxGt7C0cZixN+VqoSW4Yakc1Y9WknmxauDqzxgpw/FnBdz4kQNN51l4wxdXX5VY1xjqy//+G+4CvJWp1+f+y6Q==",
-      "path": "system.net.requests/4.0.11",
-      "hashPath": "system.net.requests.4.0.11.nupkg.sha512"
-    },
     "System.Net.Security/4.3.0": {
       "type": "package",
       "serviceable": true,
@@ -5417,13 +5374,6 @@
       "sha512": "sha512-m6icV6TqQOAdgt5N/9I5KNpjom/5NFtkmGseEH+AK/hny8XrytLH3+b5M8zL/Ycg3fhIocFpUMyl/wpFnVRvdw==",
       "path": "system.net.sockets/4.3.0",
       "hashPath": "system.net.sockets.4.3.0.nupkg.sha512"
-    },
-    "System.Net.WebHeaderCollection/4.0.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-XX2TIAN+wBSAIV51BU2FvvXMdstUa8b0FBSZmDWjZdwUMmggQSifpTOZ5fNH20z9ZCg2fkV1L5SsZnpO2RQDRQ==",
-      "path": "system.net.webheadercollection/4.0.1",
-      "hashPath": "system.net.webheadercollection.4.0.1.nupkg.sha512"
     },
     "System.Reflection.TypeExtensions/4.4.0": {
       "type": "package",
