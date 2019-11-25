@@ -70,7 +70,7 @@
                             </div>
                         </div>
                         <div class="col pl-2">
-                            @ViewBag.User.FirstName @ViewBag.User.LastName
+                            @ViewBag.User?.FirstName @ViewBag.User?.LastName
                         </div>
                     </div>
                 </div>
@@ -139,8 +139,8 @@
                                     </div>
                                 </div>
                                 <div class="col pl-2">
-                                    <h4 class="mb-0">@ViewBag.User.FirstName @ViewBag.User.LastName</h4>
-                                    <small class="mb-0">@ViewBag.User.Email</small>
+                                    <h4 class="mb-0">@ViewBag.User?.FirstName @ViewBag.User?.LastName</h4>
+                                    <small class="mb-0">@ViewBag.User?.Email</small>
                                 </div>
                             </div>
                         </div>

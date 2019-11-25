@@ -86,7 +86,8 @@ namespace PrimeApps.Model.Helpers
                 {
                     foreach (var table in arrayResult)
                     {
-                        var sql = $"DELETE FROM {table["table_name"]};";
+                        //var sql = $"DELETE FROM {table["table_name"]};";
+                        var sql = $"TRUNCATE {table["table_name"]} CASCADE;";
                         AddScript(scriptPath, sql);
                     }
                 }
@@ -95,7 +96,8 @@ namespace PrimeApps.Model.Helpers
                     File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while clearing dynamic tables... \u001b[39m" + Environment.NewLine);
                 */
 
-                File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Records are marking as sample..." + Environment.NewLine);
+                //Set is sample removed.
+                /*File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Records are marking as sample..." + Environment.NewLine);
                 arrayResult = PostgresHelper.Read(PDEConnectionString, dbName, PackageHelper.SetRecordsIsSampleSql(), "array");
 
                 if (arrayResult != null)
@@ -104,7 +106,7 @@ namespace PrimeApps.Model.Helpers
                     {
                         AddScript(scriptPath, ((JObject)r)["?column?"].ToString());
                     }
-                }
+                }*/
 
                 //AddScript(scriptPath, $"INSERT INTO \"public\".\"dashboard\"(\"id\", \"name\", \"description\", \"user_id\", \"profile_id\", \"is_active\", \"sharing_type\", \"created_by\", \"updated_by\", \"created_at\", \"updated_at\", \"deleted\") VALUES (1, 'Default Dashboard', NULL, NULL, NULL, 'f', 1, 1, NULL, '2018-02-18 23:14:26.377005', NULL, 'f');");
 
@@ -113,7 +115,7 @@ namespace PrimeApps.Model.Helpers
                 */
 
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Making final adjusments to template..." + Environment.NewLine);
-                arrayResult = PackageHelper.GetAllUsersFKSql(PDEConnectionString, dbName);
+                arrayResult = PackageHelper.GetAllUsersFkSql(PDEConnectionString, dbName);
 
                 if (arrayResult != null)
                 {
@@ -343,7 +345,7 @@ namespace PrimeApps.Model.Helpers
             return $"SELECT table_name FROM information_schema.tables WHERE table_type != 'VIEW' AND table_schema = 'public' AND table_name LIKE '%\\_d'";
         }
 
-        public static JArray GetAllUsersFKSql(string connectionString, string dbName)
+        public static JArray GetAllUsersFkSql(string connectionString, string dbName)
         {
             var sqls = new JArray();
 
@@ -359,7 +361,8 @@ namespace PrimeApps.Model.Helpers
 
                 if (!columns.HasValues) continue;
 
-                dropCommand = PostgresHelper.Read(connectionString, dbName, ColumnIsExistsSql(table.ToString(), "id"), "hasRows");
+                sqls.Add(UpdateUserFkRecordSql(table.ToString(), columns));
+                /*dropCommand = PostgresHelper.Read(connectionString, dbName, ColumnIsExistsSql(table.ToString(), "id"), "hasRows");
                 var idColumnIsExists = dropCommand;
                 var idExists = true;
 
@@ -382,7 +385,7 @@ namespace PrimeApps.Model.Helpers
                 {
                     var sql = UpdateRecordSql(record, table.ToString(), fkColumns, 1, idExists);
                     sqls.Add(sql);
-                }
+                }*/
             }
 
             return sqls;
@@ -403,19 +406,18 @@ namespace PrimeApps.Model.Helpers
                    "WHERE tc.constraint_type = 'FOREIGN KEY' AND tc.table_name='" + tableName + "' AND ccu.table_name = 'users';";
         }
 
-        public static string GetAllRecordsWithColumnsSql(string tableName, JArray columns)
+        public static string UpdateUserFkRecordSql(string tableName, JArray columns)
         {
-            var sql = new StringBuilder("SELECT ");
+            var sql = new StringBuilder($"UPDATE {tableName} SET ");
 
             foreach (var column in columns)
             {
                 var columnName = column["column_name"];
-                sql.Append(columnName + ",");
+                sql.Append(columnName + " = 1,");
             }
 
             sql = sql.Remove(sql.Length - 1, 1);
-            sql.Append(" FROM " + tableName);
-
+            sql.Append(";");
             return sql.ToString();
         }
 
