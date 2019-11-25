@@ -87,7 +87,7 @@ namespace PrimeApps.Studio.Controllers
         {
             var dumpDirectory = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);
 
-            return PhysicalFile(Path.Combine(dumpDirectory, $"app{appId}.tar"), "text/plain", $"app{appId}.tar");
+            return PhysicalFile(Path.Combine(dumpDirectory, $"app{appId}.bak"), "text/plain", $"app{appId}.bak");
         }
     }
 }
