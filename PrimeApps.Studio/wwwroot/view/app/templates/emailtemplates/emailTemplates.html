@@ -34,6 +34,9 @@
                 <td>
                     <div class="animated-background"></div>
                 </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -42,6 +45,7 @@
             <tr>
                 <th>{{'Setup.Templates.TemplateName' | translate}}</th>
                 <th>{{'Setup.Templates.Module' | translate}}</th>
+                <th>Language</th>
                 <th>Code</th>
                 <th width="50"></th>
             </tr>
@@ -52,6 +56,7 @@
 
                 <!--<td>{{template.module['label_'+language+'_plural']}}</td>-->
                 <td>{{template.module['label_'+language+'_plural']}}</td>
+                <td>{{template.language}}</td>
                 <td>{{template.code}}</td>
                 <td class="text-center">
                     <div class="action-buttons-block">
