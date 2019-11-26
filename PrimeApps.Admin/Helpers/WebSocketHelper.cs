@@ -60,14 +60,6 @@ namespace PrimeApps.Admin.Helpers
                 if (string.IsNullOrEmpty(email))
                     throw new Exception("User is not valid.");
 
-                var platformUserRepository = (IPlatformUserRepository)hContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-                platformUserRepository.CurrentUser = new CurrentUser {UserId = 1};
-
-                var platformUser = platformUserRepository.GetByEmail(email);
-
-                if (platformUser == null)
-                    throw new Exception("User not found.");
-
                 if (string.IsNullOrEmpty(wsParameters["X-Organization-Id"].ToString()) || !int.TryParse(wsParameters["X-Organization-Id"].ToString(), out var organizationId))
                     throw new Exception("Organization not found.");
 
