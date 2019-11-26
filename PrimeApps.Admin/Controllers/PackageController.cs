@@ -121,7 +121,8 @@ namespace PrimeApps.Admin.Controllers
             {
                 StartTime = DateTime.Now,
                 Status = ReleaseStatus.Running,
-                Version = ""
+                Version = "",
+                CreatedById = 1
             };
 
             await _releaseRepository.Create(newRelease);
@@ -164,7 +165,8 @@ namespace PrimeApps.Admin.Controllers
             {
                 StartTime = DateTime.Now,
                 Status = ReleaseStatus.Running,
-                Version = "pointer"
+                Version = "pointer",
+                CreatedById = 1
             };
 
             await _releaseRepository.Create(newRelease);
