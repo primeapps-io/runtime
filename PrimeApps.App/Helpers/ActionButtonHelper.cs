@@ -41,7 +41,8 @@ namespace PrimeApps.App.Helpers
             {
                 if (actionButton.ActionType == ActionButtonEnum.ActionType.Scripting)
                 {
-                    actionButton.Template = _moduleHelper.ReplaceDynamicValues(actionButton.Template, appConfigs);
+                    actionButton.Template = _moduleHelper.ReplaceDynamicValues(actionButton.Url, appConfigs);
+                    actionButton.Url = _moduleHelper.ReplaceDynamicValues(actionButton.Url, appConfigs);
 
                     if (!string.IsNullOrEmpty(actionButton.Url))
                     {
