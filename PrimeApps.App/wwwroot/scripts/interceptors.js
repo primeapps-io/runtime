@@ -51,7 +51,7 @@ angular.module('primeapps')
                                 case 'branch_id':
                                     return $rootScope.branchAvailable ? $rootScope.user.branchId : '';
                                 case 'X-Tenant-Language':
-                                case 'x-tenant-tanguage':
+                                case 'x-tenant-language':
                                     return $rootScope.user.tenant_language ? $rootScope.user.tenant_language : '';
                             }
                         };
