@@ -873,6 +873,7 @@ namespace PrimeApps.App.Helpers
                     }
 
                     component.Content = ReplaceDynamicValues(component.Content, appConfigs);
+                    component.CustomUrl = ReplaceDynamicValues(component.CustomUrl, appConfigs);
 
                     if (!string.IsNullOrEmpty(component.CustomUrl))
                     {

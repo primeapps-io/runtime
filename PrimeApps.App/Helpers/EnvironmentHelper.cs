@@ -12,7 +12,7 @@ namespace PrimeApps.App.Helpers
     {
         List<T> DataFilter<T>(List<T> data);
         T DataFilter<T>(T data);
-        string GetEnvironmentValue();
+        int GetEnvironmentValue();
     }
 
     public class EnvironmentHelper : IEnvironmentHelper
@@ -46,7 +46,9 @@ namespace PrimeApps.App.Helpers
 
                 if (value != null)
                 {
-                    if (value.Contains(environmentType))
+                    var valueInt = int.Parse(value);
+
+                    if (environmentType <= valueInt)
                         newData.Add(item);
                 }
             }
@@ -68,18 +70,23 @@ namespace PrimeApps.App.Helpers
 
             var value = prop.GetValue(data).ToString();
 
-            if (value != null && value.Contains(environmentType))
-                return data;
+            if (value != null)
+            {
+                var valueInt = int.Parse(value);
+
+                if (environmentType <= valueInt)
+                    return data;
+            }
 
             return default(T);
         }
 
-        public string GetEnvironmentValue()
+        public int GetEnvironmentValue()
         {
             var environment = !string.IsNullOrEmpty(_configuration.GetValue("AppSettings:Environment", string.Empty)) ? _configuration.GetValue("AppSettings:Environment", string.Empty) : "development";
             var environmentValue = (int)environment.ToEnum<EnvironmentType>();
 
-            return environmentValue.ToString();
+            return environmentValue;
         }
     }
 }

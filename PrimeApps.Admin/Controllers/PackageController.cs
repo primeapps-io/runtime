@@ -62,8 +62,8 @@ namespace PrimeApps.Admin.Controllers
 
         public async Task<IActionResult> Index(int? appId, int? orgId)
         {
-            var user = _platformUserRepository.Get(HttpContext.User.FindFirst("email").Value);
             var token = await HttpContext.GetTokenAsync("access_token");
+            var user = await _organizationHelper.GetUser(token);
             var organizations = await _organizationHelper.Get(token);
 
             ViewBag.Organizations = organizations;
@@ -111,7 +111,7 @@ namespace PrimeApps.Admin.Controllers
         public async Task<IActionResult> Apply(int id, int orgId, string appUrl, string authUrl, bool useSsl)
         {
             var token = await HttpContext.GetTokenAsync("access_token");
-
+            
             var runningPublish = await _releaseRepository.IsThereRunningProcess(id);
 
             if (runningPublish)
@@ -121,12 +121,13 @@ namespace PrimeApps.Admin.Controllers
             {
                 StartTime = DateTime.Now,
                 Status = ReleaseStatus.Running,
-                Version = ""
+                Version = "",
+                CreatedById = 1
             };
 
             await _releaseRepository.Create(newRelease);
 
-            _queue.QueueBackgroundWorkItem(x => _publish.PackageApply(id, orgId, token, newRelease.Id, AppUser.Id, appUrl, authUrl, useSsl));
+            _queue.QueueBackgroundWorkItem(x => _publish.PackageApply(id, orgId, token, newRelease.Id, 1, appUrl, authUrl, useSsl));
 
             return Ok(newRelease.Id);
         }
@@ -164,12 +165,13 @@ namespace PrimeApps.Admin.Controllers
             {
                 StartTime = DateTime.Now,
                 Status = ReleaseStatus.Running,
-                Version = "pointer"
+                Version = "pointer",
+                CreatedById = 1
             };
 
             await _releaseRepository.Create(newRelease);
 
-            _queue.QueueBackgroundWorkItem(x => _publish.UpdateTenants(id, orgId, AppUser.Id, tenantIds, token, newRelease.Id));
+            _queue.QueueBackgroundWorkItem(x => _publish.UpdateTenants(id, orgId, 1, tenantIds, token, newRelease.Id));
 
             return Ok(newRelease.Id);
         }
