@@ -37,7 +37,8 @@ angular.module('primeapps',
         'mwl.calendar',
         'angular.filter',
         'bw.paging',
-        'dndLists'
+        'dndLists',
+        'kendo.directives'
     ])
 
     .config(['$locationProvider', '$compileProvider', '$filterProvider', '$controllerProvider', '$provide', '$httpProvider', '$qProvider', '$sceDelegateProvider', '$translateProvider', 'tmhDynamicLocaleProvider', '$datepickerProvider', 'blockUIConfig', '$animateProvider', 'pluploadOptionProvider', 'config', 'uiSelectConfig',

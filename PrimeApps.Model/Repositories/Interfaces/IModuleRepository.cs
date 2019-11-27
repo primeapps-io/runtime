@@ -3,6 +3,7 @@ using PrimeApps.Model.Entities.Tenant;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Helpers;
+using System.Linq;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
@@ -43,7 +44,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<ICollection<Component>> GetComponents();
         Task<Field> GetFieldByName(string fieldName);
         Task<int> Count();
-        Task<ICollection<Module>> Find(PaginationModel paginationModel);
+        Task<IQueryable<Module>> Find();
         Task<ICollection<Field>> GetModuleFieldByName(string moduleName);
         Task<Module> GetByIdFullModule(int id);
     }

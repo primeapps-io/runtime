@@ -59,6 +59,7 @@
         <link rel="stylesheet" href="/styles/ui.css"/>
         <link rel="stylesheet" href="/styles/app.css"/>
         <link rel="stylesheet" href="/styles/theme.css"/>
+        <link rel="stylesheet" href="~/styles/vendor/kendo.all.css"/>
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="/styles/bundles-css/vendor.css"/>
@@ -141,7 +142,9 @@
 </script>
 <environment include="Development">
     <script src="/scripts/vendor/tinymce/tinymce.min.js"></script>
-    <script src="/scripts/vendor/xlsx.core.min.js"></script>
+    <script src="/scripts/vendor/xlsx.core.min.js"></script> 
+    <script src="~/scripts/vendor/bpm/jquery.min.js"></script>
+    <script src="~/scripts/vendor/bpm/jquery-ui.min.js"></script>
     <script src="/scripts/vendor/angular.js"></script>
     <script src="/scripts/vendor/angular-filter.js"></script>
     <script src="/scripts/vendor/angular-ui-router.js"></script>
@@ -211,13 +214,14 @@
     <script src="/view/layoutController.js"></script>
     <script src="/view/app/appController.js"></script>
     <script src="/view/organization/organizationController.js"></script>
-    <script src="~/scripts/vendor/bpm/jquery.min.js"></script>
-    <script src="~/scripts/vendor/bpm/jquery-ui.min.js"></script>
     <script src="~/scripts/vendor/bpm/bootstrap.min.js"></script>
     <script src="~/scripts/vendor/bpm/go.js"></script>
     <script src="~/scripts/vendor/bpm/DrawCommandHandler.js"></script>
     <script src="~/scripts/vendor/bpm/highlight.js"></script>
     <script src="~/scripts/vendor/toastr.js"></script>
+    <script src="~/scripts/vendor/kendo/kendo.all.min.js"></script>
+    <script src="~/scripts/vendor/kendo/culture/kendo.culture.en-US.min.js"></script>
+    <script src="~/scripts/vendor/kendo/messages/kendo.messages.en-US.min.js"></script>
 
 
 </environment>

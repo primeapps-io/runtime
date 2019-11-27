@@ -1,7 +1,7 @@
 ﻿using PrimeApps.Model.Enums;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema; 
 
 namespace PrimeApps.Model.Entities.Tenant
 {
@@ -11,7 +11,7 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("name"), MaxLength(50), Required]
         public string Name { get; set; }
 
-        [Column("system_type"), Required]
+        [Column("system_type"), Required]  
         public SystemType SystemType { get; set; }
 
         [Column("order")]

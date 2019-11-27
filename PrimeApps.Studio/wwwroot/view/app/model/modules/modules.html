@@ -11,7 +11,7 @@
     </div>
 </div>
 
-<div class="tab-content table-responsive">
+<div class="tab-content table-responsive" ng-if="false">
     <table class="table" ng-show="loading">
         <thead>
         <tr>
@@ -90,7 +90,8 @@
                             class="btn btn-xs btn-default list-action-button"
                             placement="bottom-right"
                             data-animation="am-flip-x"
-                            bs-dropdown
+                            data-container="body"
+                            bs-dropdown 
                             data-trigger="focus"
                             aria-haspopup="true"
                             aria-expanded="true">
@@ -186,3 +187,6 @@
         </div>
     </div>
 </div>
+
+<kendo-grid class="grid-theme grid-theme-center table-responsive" k-scope-field="grid" id="kendo-grid" k-options="mainGridOptions">
+</kendo-grid>
