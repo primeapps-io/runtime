@@ -3,76 +3,10 @@
 angular.module('primeapps')
     .controller('ModuleController',
         [
-            '$rootScope', '$scope', '$filter', '$state', '$dropdown', '$modal', 'helper', 'ModuleService', '$cache',
-            'LayoutService', '$localStorage',
-            function ($rootScope,
-                $scope,
-                $filter,
-                $state,
-                $dropdown,
-                $modal,
-                helper,
-                ModuleService,
-                $cache,
-                LayoutService,
-                $localStorage) {
+            '$rootScope', '$scope', '$filter', '$state', '$modal', 'ModuleService', '$localStorage',
+            function ($rootScope, $scope, $filter, $state, $modal, ModuleService, $localStorage) {
                 $scope.$parent.activeMenuItem = 'modules';
                 $rootScope.breadcrumblist[2].title = 'Modules';
-
-                //$scope.generator = function (limit) {
-                //    $scope.placeholderArray = [];
-                //    for (var i = 0; i < limit; i++) {
-                //        $scope.placeholderArray[i] = i;
-                //    }
-
-                //};
-
-                //$scope.generator(10);
-
-                //$scope.modules = [];
-                //$scope.loading = true;
-                //$scope.requestModel = {
-                //    limit: "10",
-                //    offset: 0
-                //};
-
-                //$scope.activePage = 1;
-
-                //ModuleService.count()
-                //    .then(function (response) {
-                //        $scope.pageTotal = response.data;
-                //        $scope.changePage(1);
-                //    });
-
-                //$scope.changePage = function (page) {
-                //    $scope.loading = true;
-
-                //    if (page !== 1) {
-                //        var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                //        if (page > difference) {
-                //            if (Math.abs(page - difference) < 1)
-                //                --page;
-                //            else
-                //                page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                //        }
-                //    }
-
-                //    $scope.activePage = page;
-                //    var requestModel = angular.copy($scope.requestModel);
-                //    requestModel.offset = page - 1;
-
-                //    ModuleService.find(requestModel)
-                //        .then(function (response) {
-                //            $scope.modules = response.data;
-                //            $scope.loading = false;
-                //        });
-
-                //};
-
-                //$scope.changeOffset = function () {
-                //    $scope.changePage($scope.activePage);
-                //};
 
                 $scope.delete = function (module, event) {
                     var willDelete =
@@ -84,25 +18,16 @@ angular.module('primeapps')
                             dangerMode: true
                         }).then(function (value) {
                             if (value) {
-                                //var elem = angular.element(event.srcElement);
-                                //  angular.element(elem.closest('tr')).addClass('animated-background');
                                 ModuleService.delete(module.id)
                                     .then(function () {
-                                        //$scope.pageTotal--;
                                         var index = $rootScope.appModules.indexOf(module);
                                         $rootScope.appModules.splice(index, 1);
-
-                                        //  angular.element(document.getElementsByClassName('ng-scope animated-background'))
-                                        // .remove();
-                                        //$scope.changePage($scope.activePage);
                                         $scope.grid.dataSource.read();
 
                                         toastr.success("Module is deleted successfully.", "Deleted!");
 
                                     })
                                     .catch(function () {
-                                        //angular.element(document.getElementsByClassName('ng-scope animated-background'))
-                                        //    .removeClass('animated-background');
                                     });
 
                             }
@@ -158,69 +83,13 @@ angular.module('primeapps')
                 $scope.moduleListFilter = function (item) {
                     return item.name !== 'users' && item.name !== 'profiles' && item.name !== 'roles';
                 };
-                $scope.click = function () { console.log("click"); };
 
-                var processTemp = '    <div class="action-buttons-block">  ' +
-                    '                       <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"  ' +
-                    '                               class="btn btn-xs btn-default list-action-button"  ' +
-                    '                               placement="bottom-right"  ' +
-                    '                               data-animation="am-flip-x"  ' +
-                    '                               data-container="body"  ' +
-                    '                               bs-dropdown  ' +
-                    '                               data-trigger="focus"  ' +
-                    '                               aria-haspopup="true"  ' +
-                    '                               aria-expanded="true">  ' +
-                    '                           <i class="fas fa-ellipsis-v"></i>  ' +
-                    '                       </button>  ' +
-                    '                       <ul class="dropdown-menu" role="menu">  ' +
-                    '                           <li>  ' +
-                    '                         <a href ui-sref="studio.app.moduleDesigner({id:dataItem.id , clone:dataItem.name})"' +
-                    '                                  ng-click="$event.stopPropagation();"> ' +
-                    '                                   {{"Common.Copy" | translate}}  ' +
-                    '                               </a>  ' +
-                    '                           </li>  ' +
-                    '                           <li>  ' +
-                    '                               <a href ng-click="$event.stopPropagation(); showEditModal(dataItem.id);">  ' +
-                    '                                   Settings  ' +
-                    '                               </a>  ' +
-                    '                           </li>  ' +
-                    '                           <li>  ' +
-                    '                               <a href ng-click="$event.stopPropagation(); delete(dataItem, $event);">  ' +
-                    '                                   {{"Common.Remove" | translate}}  ' +
-                    '                               </a>  ' +
-                    '                           </li>  ' +
-                    '                           <li>  ' +
-                    '                               <a ng-click="$event.stopPropagation();"  ' +
-                    '                                  href="/#/org/{{orgId}}/app/{{appId}}/relations?id={{dataItem.id}}">  ' +
-                    '                                   {{"Setup.Modules.ModuleRelations" | translate}}  ' +
-                    '                               </a>  ' +
-                    '                           </li>  ' +
-                    '                           <li>  ' +
-                    '                               <a ng-click="$event.stopPropagation();"  ' +
-                    '                                  href="/#/org/{{orgId}}/app/{{appId}}/dependencies?id={{dataItem.id}}">  ' +
-                    '                                   Field Dependency  ' +
-                    '                               </a>  ' +
-                    '                           </li>  ' +
-                    '                           <li>  ' +
-                    '                               <a ng-click="$event.stopPropagation();"  ' +
-                    '                                  href="/#/org/{{orgId}}/app/{{appId}}/views?id={{dataItem.id}}">  ' +
-                    '                                   {{"Setup.Modules.TitleFilters" | translate}}  ' +
-                    '                               </a>  ' +
-                    '                           </li>  ' +
-                    '                           <li>  ' +
-                    '                               <a ng-click="$event.stopPropagation();"  ' +
-                    '                                  href="/#/org/{{orgId}}/app/{{appId}}/actionButtons?id={{dataItem.id}}">  ' +
-                    '                                   {{"Setup.Modules.TitleActionButtons" | translate}}  ' +
-                    '                               </a>  ' +
-                    '                           </li>  ' +
-                    '                           <li>  ' +
-                    '                               <a ng-click="$event.stopPropagation();"  ' +
-                    '                                  href="/#/org/{{orgId}}/app/{{appId}}/moduleprofilesettings/{{dataItem.id}}">  ' +
-                    '                                   Profile Settings  ' +
-                    '                               </a>  ' +
-                    '                           </li>  ' +
-                    '                       </ul>  ' +
-                    '                  </div>  ';
+                $scope.goUrl = function (id) {
+                    var selection = window.getSelection();
+                    if (selection.toString().length === 0) {
+                        $state.go('studio.app.moduleDesigner', { id: id });
+                    }
+                };
 
                 //For Kendo UI
                 var accessToken = $localStorage.read('access_token');
@@ -267,13 +136,13 @@ angular.module('primeapps')
                         extra: false
                     },
                     rowTemplate: function (e) {
-                        var trTemp = '<tr ui-sref="studio.app.moduleDesigner({id:dataItem.id})">';
+                        var trTemp = '<tr ng-click="goUrl(dataItem.id)">';
                         trTemp += '<td class="text-center"><span><i class="' + e.menu_icon + '"></i ></span></td>';
                         trTemp += '<td><span>' + e['label_' + $scope.language + '_plural'] + '</span></td>';
                         trTemp += '<td><span>' + $filter('translate')('Setup.Modules.Type-' + e.system_type) + '</span></td>';
                         trTemp += e.display ? '<td><span>' + $filter('translate')('Common.Yes') + '</span></td>' : '<td><span>' + $filter('translate')('Common.No') + '</span></td>';
                         trTemp += e.sharing === "private" ? '<td ><span>' + $filter('translate')('Setup.Modules.SharingPrivate') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.SharingPublic') + '</span></td>';
-                        trTemp += '<td ng-click="$event.stopPropagation();">' + processTemp + '</td></tr>';
+                        trTemp += '<td ng-click="$event.stopPropagation();">' + dropDownMenuTemp + '</td></tr>';
                         return trTemp;
                     },
                     pageable: {
@@ -320,6 +189,70 @@ angular.module('primeapps')
                         }]
                 };
                 //For Kendo UI
+
+                var dropDownMenuTemp = '    <div class="action-buttons-block">  ' +
+                    '                       <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"  ' +
+                    '                               class="btn btn-xs btn-default list-action-button"  ' +
+                    '                               placement="bottom-right"  ' +
+                    '                               data-animation="am-flip-x"  ' +
+                    '                               data-container="body"  ' +
+                    '                               bs-dropdown  ' +
+                    '                               data-trigger="click"  ' +
+                    '                               aria-haspopup="true"  ' +
+                    '                               aria-expanded="true">  ' +
+                    '                           <i class="fas fa-ellipsis-v"></i>  ' +
+                    '                       </button>  ' + 
+                    '                       <ul class="dropdown-menu" role="menu">  ' +
+                    '                           <li>  ' +
+                    '                         <a href="javascript:void(0);" ui-sref="studio.app.moduleDesigner({id:dataItem.id , clone:dataItem.name})"' +
+                    '                                  ng-click="$event.stopPropagation();"> ' +
+                    '                                   {{"Common.Copy" | translate}}  ' +
+                    '                               </a>  ' +
+                    '                           </li>  ' +
+                    '                           <li>  ' +
+                    '                               <a href="javascript:void(0);" ng-click="$event.stopPropagation(); showEditModal(dataItem.id);">  ' +
+                    '                                   Settings  ' +
+                    '                               </a>  ' +
+                    '                           </li>  ' +
+                    '                           <li>  ' +
+                    '                               <a href="javascript:void(0);" ng-click="$event.stopPropagation(); delete(dataItem, $event);">  ' +
+                    '                                   {{"Common.Remove" | translate}}  ' +
+                    '                               </a>  ' +
+                    '                           </li>  ' +
+                    '                           <li>  ' +
+                    '                               <a ng-click="$event.stopPropagation();"  ' +
+                    '                                  href="/#/org/{{orgId}}/app/{{appId}}/relations?id={{dataItem.id}}">  ' +
+                    '                                   {{"Setup.Modules.ModuleRelations" | translate}}  ' +
+                    '                               </a>  ' +
+                    '                           </li>  ' +
+                    '                           <li>  ' +
+                    '                               <a ng-click="$event.stopPropagation();"  ' +
+                    '                                  href="/#/org/{{orgId}}/app/{{appId}}/dependencies?id={{dataItem.id}}">  ' +
+                    '                                   Field Dependency  ' +
+                    '                               </a>  ' +
+                    '                           </li>  ' +
+                    '                           <li>  ' +
+                    '                               <a ng-click="$event.stopPropagation();"  ' +
+                    '                                  href="/#/org/{{orgId}}/app/{{appId}}/views?id={{dataItem.id}}">  ' +
+                    '                                   {{"Setup.Modules.TitleFilters" | translate}}  ' +
+                    '                               </a>  ' +
+                    '                           </li>  ' +
+                    '                           <li>  ' +
+                    '                               <a ng-click="$event.stopPropagation();"  ' +
+                    '                                  href="/#/org/{{orgId}}/app/{{appId}}/actionButtons?id={{dataItem.id}}">  ' +
+                    '                                   {{"Setup.Modules.TitleActionButtons" | translate}}  ' +
+                    '                               </a>  ' +
+                    '                           </li>  ' +
+                    '                           <li>  ' +
+                    '                               <a ng-click="$event.stopPropagation();"  ' +
+                    '                                  href="/#/org/{{orgId}}/app/{{appId}}/moduleprofilesettings/{{dataItem.id}}">  ' +
+                    '                                   Profile Settings  ' +
+                    '                               </a>  ' +
+                    '                           </li>  ' +
+                    '                       </ul>  ' +
+                    '                  </div>  ';
+
+
 
             }
         ]);
