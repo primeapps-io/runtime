@@ -174,12 +174,12 @@ namespace PrimeApps.Studio.Controllers
             if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var templates = await _profileRepository.Find(paginationModel);
+            var profiles = await _profileRepository.Find(paginationModel);
 
             //if (templates == null)
             //	return NotFound();
 
-            return Ok(templates);
+            return Ok(profiles);
         }
 
     }

@@ -86,6 +86,7 @@ angular.module('primeapps')
                     $scope.profile.newsfeed = false;
                     $scope.profile.report = false;
                     $scope.profile.dashboard = true;
+                    $scope.profile.smtp_settings = false;
                     $scope.profile.home = false;
                     $scope.profile.collective_annual_leave = false;
                     $scope.profile.permissions = $filter('filter')($scope.profiles, {
@@ -142,6 +143,7 @@ angular.module('primeapps')
                     $scope.profile.newsfeed = false;
                     $scope.profile.report = false;
                     $scope.profile.dashboard = true;
+                    $scope.profile.smtp_settings = false;
                     $scope.profile.home = false;
                     $scope.profile.collective_annual_leave = false;
                     $scope.profile.permissions = $filter('filter')($scope.profiles, {
@@ -313,6 +315,7 @@ angular.module('primeapps')
                     $scope.profile.newsfeed = false;
                     $scope.profile.report = false;
                     $scope.profile.dashboard = true;
+                    $scope.profile.smtp_settings = false;
                     $scope.profile.home = false;
                     $scope.profile.collective_annual_leave = false;
                     $scope.profile.permissions = $filter('filter')($scope.profilesCopy, {

@@ -64,6 +64,9 @@ namespace PrimeApps.Model.Entities.Tenant
 
         [Column("dashboard")]
         public bool Dashboard { get; set; }
+        
+        [Column("smtp_settings")]
+        public bool SmtpSettings { get; set; }
 
         [Column("home")]
         public bool Home { get; set; }

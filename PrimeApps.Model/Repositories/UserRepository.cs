@@ -113,6 +113,7 @@ namespace PrimeApps.Model.Repositories
 						Report = user.Profile.Report,
 						Dashboard = user.Profile.Dashboard,
 						Home = user.Profile.Home,
+						SmtpSettings = user.Profile.SmtpSettings,
 						CollectiveAnnualLeave = user.Profile.CollectiveAnnualLeave,
 						StartPage = user.Profile.StartPage,
 						SystemCode = user.Profile.SystemCode,
