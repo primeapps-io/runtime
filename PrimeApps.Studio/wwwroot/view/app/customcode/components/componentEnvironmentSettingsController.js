@@ -9,7 +9,14 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'components';
             $scope.app = $rootScope.currentApp;
-            $scope.headersArray = ['X-User-Id', 'X-Tenant-Id', 'X-App-Id', 'X-Auth-Key', 'X-Branch-Id', 'X-Tenant-Language', 'Custom'];
+            /*prepare headersArray for development, test, production*/
+            $scope.headersArray = {
+                'development0': ['X-User-Id', 'X-Tenant-Id', 'X-App-Id', 'X-Auth-Key', 'X-Branch-Id', 'X-Tenant-Language', 'Custom']
+            };
+            $scope.headersArray['test0'] = angular.copy($scope.headersArray['development0']);
+            $scope.headersArray['production0'] = angular.copy($scope.headersArray['development0']);
+
+            $scope.copyheadersArray = angular.copy($scope.headersArray);
 
             $scope.loading = true;
 
@@ -84,43 +91,33 @@ angular.module('primeapps')
                         $scope.saving = false;
                         toastr.success("Global Config updated successfully.");
                         $scope.loading = false;
-                        getRecord();
+                        $state.go('studio.app.components');
                     })
                     .catch(function () {
                         $scope.saving = false;
                         $scope.loading = false;
                         toastr.error("Global Config didn't update.");
+                        $state.go('studio.app.components');
                     });
             };
 
             $scope.parameterRemove = function (index, parameterArray, key) {
-                // var index = parameterArray.indexOf(itemName);
+
                 /*Objectse gelen key'e objec'den siliyoruz*/
-                if (key) {
-                    if (Object.keys(parameterArray).length <= 1) {
-
-                        // /*Tekrar yazma sebebim mevcuttaki Değer Customsa siliniyor ve tekrardan Header eklenemiyor*/
-                        delete parameterArray[key];
-                        //parameterArray['Custom'] = '';
-                        if (Object.keys(parameterArray).length < 1) {
-                            key = 'Custom';
-                        }
-                        $scope.headerChange(key, parameterArray);
-                        $scope.changeCustomInput($scope.resChangedKey, '');
-                    } else {
-                        delete parameterArray[key];
-                        if ($scope.customInputObject)
-                            delete $scope.customInputObject[$scope.activeTab][key];
-                    }
-
-                    /*customInputObject
-                    * Daha Önceden eklenmiş olan Custom inputlarının değerini objeden siliyoruz*/
-                    //delete $scope.customInputObject[$scope.activeTab][key];
-                } else
+                if (key || key === "") {
+                    delete parameterArray[key];
+                    $scope.headerChange(key, parameterArray);
+                    if (!key.contains('Custom'))
+                        $scope.headersArray[$scope.activeTab + $scope.currentIndex].push(key);
+                    else
+                        delete $scope.customInputObject[$scope.activeTab][key];
+                } else {
                     parameterArray.splice(index, 1);
+                    delete $scope.headersArray[$scope.activeTab + index]
+                }
             };
 
-            $scope.parameterAdd = function (addItem, no) {
+            $scope.parameterAdd = function (addItem, no, index) {
 
                 var parameter = {};
                 var parameterArray = [];
@@ -128,16 +125,12 @@ angular.module('primeapps')
                     case 1:
                         parameter.urls = addItem ? addItem.urls : "";
                         parameter.headers = {};
-                        if (addItem && addItem.headers) {
-                            for (var key in addItem.headers) {
-                                if (addItem.headers.hasOwnProperty(key))
-                                    parameter.headers[key] = addItem.headers[key];
 
-                                break;
-                            }
-                        } else
-                            parameter.headers[$scope.headersArray[0]] = $scope.headersArray[0] === 'Custom' ? '' : 'Auto Set';
-
+                        if ($scope.trustedUrlsParameters && $scope.trustedUrlsParameters.length > 0) {
+                            $scope.headersArray[$scope.activeTab + $scope.trustedUrlsParameters.length] = angular.copy($scope.copyheadersArray[$scope.activeTab + '0']);
+                        } else {
+                            $scope.headersArray[$scope.activeTab + '0'] = angular.copy($scope.copyheadersArray[$scope.activeTab + '0']);
+                        }
                         parameterArray = $scope.trustedUrlsParameters ? $scope.trustedUrlsParameters : parameterArray;
                         break;
                     case 2:
@@ -198,7 +191,6 @@ angular.module('primeapps')
 
                         setCustomInputObject($scope.currenContent.trusted_urls);
 
-                        //$scope.trustedUrlsParameters = [];
                         for (var i = 0; i < $scope.currenContent.trusted_urls.length; i++) {
                             var parameters = {};
                             parameters.urls = $scope.currenContent.trusted_urls[i].url;
@@ -211,9 +203,9 @@ angular.module('primeapps')
                             $scope.trustedUrlsParameters.push(parameters);
                         }
                     }
+
                     $scope.routeParameters = [];
                     if ($scope.currenContent.route_template_urls && $scope.currenContent.route_template_urls.length > 0) {
-                        // $scope.routeParameters = [];
                         for (var i = 0; i < $scope.currenContent.route_template_urls.length; i++) {
                             var routeParameter = {};
                             routeParameter.route_template_urls = $scope.currenContent.route_template_urls[i];
@@ -385,56 +377,46 @@ angular.module('primeapps')
                 return $scope.currenContent;
             };
 
-            $scope.addHeader = function (headers) {
-                var copy = angular.copy($scope.headersArray);
-                if (angular.isObject(headers)) {
-                    for (var key in headers) {
-                        if (headers.hasOwnProperty(key)) {
-                            var index = copy.indexOf(key);
-                            copy.splice(index, 1);
-                        }
-                    }
-                    headers[copy[0]] = copy[0] === 'Custom' ? '' : 'Auto set';
+            $scope.addHeader = function (header, headers) {
+
+                if (header === 'Custom') {
+                    $scope.headerChange('Custom', headers);
+                    $scope.changeCustomInput($scope.resChangedKey, '');
+                } else {
+                    headers[header] = 'Auto set';
+                    var index = $scope.headersArray[$scope.activeTab + $scope.currentIndex].indexOf(header);
+                    $scope.headersArray[$scope.activeTab + $scope.currentIndex].splice(index, 1);
                 }
             };
 
             $scope.headerChange = function (key, headers) {
 
-                if (angular.isObject(headers)) {
-                    if ($scope.oldHeaderValue)
-                        delete headers[$scope.oldHeaderValue];
-
-                    if (key === 'Custom') {
-                        var newKey = undefined;
-                        //for (var k in headers) {
-                        if ($scope.customInputObject)
-                            for (var k in $scope.customInputObject[$scope.activeTab]) {
-                                if (!newKey && k.contains('Custom'))
-                                    newKey = k;
-                                else if (newKey && k.contains('Custom'))
-                                    newKey = newKey.length > k.length ? newKey : k;
-                            }
-
-                        if (newKey && newKey.length > 6 && !$scope.customIndex > 0) {
-                            $scope.customIndex = parseInt(newKey.slice(6)) + 1;
-                        } else if (newKey && newKey.length === 6 && !$scope.customIndex > 0) {
-                            $scope.customIndex = 1;
-                        } else if ($scope.customIndex > 0) {
-                            $scope.customIndex += 1;
+                if (key === 'Custom') {
+                    var newKey = undefined;
+                    if ($scope.customInputObject)
+                        for (var k in $scope.customInputObject[$scope.activeTab]) {
+                            if (!newKey && k.contains('Custom'))
+                                newKey = k;
+                            else if (newKey && k.contains('Custom'))
+                                newKey = newKey.length > k.length ? newKey : k;
                         }
 
-                        var nKey = $scope.customIndex > 0 ? key + $scope.customIndex : key;
-                        $scope.resChangedKey = nKey;
-                        headers[nKey] = '';
-                    } else {
-                        headers[key] = key.contains('Custom') ? '' : 'Auto set';
-                        $scope.resChangedKey = key;
+                    if (newKey && newKey.length > 6 && !$scope.customIndex > 0) {
+                        $scope.customIndex = parseInt(newKey.slice(6)) + 1;
+                    } else if (newKey && newKey.length === 6 && !$scope.customIndex > 0) {
+                        $scope.customIndex = 1;
+                    } else if ($scope.customIndex > 0) {
+                        $scope.customIndex += 1;
                     }
+
+                    var nKey = $scope.customIndex > 0 ? key + $scope.customIndex : key;
+                    $scope.resChangedKey = nKey;
+                    headers[nKey] = '';
                 }
             };
 
-            $scope.setOldHeaderValue = function (key) {
-                $scope.oldHeaderValue = key;
+            $scope.setIndex = function (index) {
+                $scope.currentIndex = index;
             };
             $scope.changeCustomInput = function (key, custom) {
 
@@ -476,29 +458,35 @@ angular.module('primeapps')
 
             var setCustomInputObject = function (trustedUrls) {
 
+                if (!$scope.customInputObject)
+                    $scope.customInputObject = {};
+
+                if (!$scope.customInputObject.hasOwnProperty($scope.activeTab))
+                    $scope.customInputObject[$scope.activeTab] = {};
+
                 for (var o = 0; o < trustedUrls.length; o++) {
                     for (var k in trustedUrls[o].headers) {
                         if (trustedUrls[o].headers.hasOwnProperty(k)) {
-                            var index = $scope.headersArray.indexOf(k);
+                            if (!$scope.headersArray[o > 0 ? $scope.activeTab + o : $scope.activeTab + o])
+                                $scope.headersArray[o > 0 ? $scope.activeTab + o : $scope.activeTab + o] = angular.copy($scope.copyheadersArray[$scope.activeTab + '0']);
 
-                            if (index === -1) {
+                            var index = $scope.headersArray[o > 0 ? $scope.activeTab + o : $scope.activeTab + o].indexOf(k);
 
-                                if (!$scope.customInputObject)
-                                    $scope.customInputObject = {};
-
-                                if (!$scope.customInputObject.hasOwnProperty($scope.activeTab))
-                                    $scope.customInputObject[$scope.activeTab] = {};
+                            if (index === -1 && !k.contains('Custom')) {
 
                                 var oldVal = trustedUrls[o].headers[k];
                                 var num = Object.keys($scope.customInputObject[$scope.activeTab]).length;
-                                var nKey = num > 0 ? 'Custom' + num : 'Custom';
+                                var nKey = num > 0 && num !== 'NaN' ? 'Custom' + num : 'Custom';
                                 /*Daha önceden ekli olan CustomInput datasını siliyoruz
                                 * d1 : "development1" değerini
                                 * Custom:"development1" olarak değiştiriyoruz
                                 * */
                                 delete trustedUrls[o].headers[k];
-                                trustedUrls[o].headers[nKey] = oldVal;
+                                trustedUrls[o].headers[nKey] = oldVal === '::dynamic' ? 'Auto set' : oldVal;
                                 $scope.customInputObject[$scope.activeTab][nKey] = k;
+                            } else if (!k.contains('Custom')) {
+                                trustedUrls[o].headers[k] = 'Auto set';
+                                $scope.headersArray[$scope.activeTab + o].splice(index, 1);
                             }
                         }
                     }

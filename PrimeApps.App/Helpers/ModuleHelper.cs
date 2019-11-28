@@ -863,10 +863,10 @@ namespace PrimeApps.App.Helpers
 
                 foreach (var component in module.Components)
                 {
-                    if (component.Deleted || component.Type != ComponentType.Script || component.Place == ComponentPlace.GlobalConfig || string.IsNullOrEmpty(component.Content))
+                    if (component.Deleted || component.Type != ComponentType.Script || component.Place == ComponentPlace.GlobalConfig)
                         continue;
 
-                    if (component.Content.StartsWith("{appConfigs") && appConfigs.IsNullOrEmpty())
+                    if ((component.Content.Contains("{appConfigs") || component.CustomUrl.StartsWith("{appConfigs")) && appConfigs.IsNullOrEmpty())
                     {
                         component.Content = "console.error('Dynamic values not replaced. Because appConfigs is null.');";
                         continue;
@@ -909,7 +909,6 @@ namespace PrimeApps.App.Helpers
                         catch
                         {
                             component.Content = "console.error('" + component.Content + " has connection error. Please check the url.');";
-                            continue;
                         }
                     }
                 }
