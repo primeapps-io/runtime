@@ -872,11 +872,13 @@ namespace PrimeApps.App.Helpers
                         continue;
                     }
 
-                    component.Content = ReplaceDynamicValues(component.Content, appConfigs);
-                    component.CustomUrl = ReplaceDynamicValues(component.CustomUrl, appConfigs);
+                    if (!string.IsNullOrEmpty(component.Content))
+                        component.Content = ReplaceDynamicValues(component.Content, appConfigs);
 
                     if (!string.IsNullOrEmpty(component.CustomUrl))
                     {
+                        component.CustomUrl = ReplaceDynamicValues(component.CustomUrl, appConfigs);
+
                         if (!IsTrustedUrl(component.CustomUrl, appConfigs))
                         {
                             component.Content = "console.error('" + component.Content + " is not a trusted url.');";
