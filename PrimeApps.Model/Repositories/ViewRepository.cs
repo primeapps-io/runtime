@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Tenant;
@@ -166,34 +167,14 @@ namespace PrimeApps.Model.Repositories
             return await count.CountAsync();
         }
 
-        public async Task<ICollection<View>> Find(int id, PaginationModel paginationModel)
+        public async Task<IQueryable<View>> Find()
         {
             var views = DbContext.Views
-                .Where(x => !x.Deleted)
-                .OrderByDescending(x => x.Id)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
+            .Where(x => !x.Deleted)
+            .Include(x=>x.Module)
+            .OrderByDescending(x => x.Id);
 
-            if (id > 0)
-                views = views.Where(x => x.ModuleId == id);
-
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(View).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    views = views.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    views = views.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
-
-            }
-
-            return await views.ToListAsync();
-
+            return views;
         }
     }
 }
