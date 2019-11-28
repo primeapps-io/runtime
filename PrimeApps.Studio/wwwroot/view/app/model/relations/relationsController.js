@@ -2,72 +2,73 @@
 
 angular.module('primeapps')
 
-    .controller('RelationsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'RelationsService', 'LayoutService', '$http', 'config', 'ModuleService', '$location',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, RelationsService, LayoutService, $http, config, ModuleService, $location) {
+    .controller('RelationsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'RelationsService', 'LayoutService', '$http', 'config', 'ModuleService', '$location', '$localStorage',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, RelationsService, LayoutService, $http, config, ModuleService, $location, $localStorage) {
 
             $scope.$parent.activeMenuItem = "relations";
             $rootScope.breadcrumblist[2].title = 'Relations';
-
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-
-            };
-
-            $scope.generator(10);
-
             $scope.id = $location.search().id ? $location.search().id : 0;
 
-            $scope.loading = true;
-            $scope.requestModel = {
-                limit: '10',
-                offset: 0
-            };
+            //$scope.generator = function (limit) {
+            //    $scope.placeholderArray = [];
+            //    for (var i = 0; i < limit; i++) {
+            //        $scope.placeholderArray[i] = i;
+            //    }
 
-            $scope.activePage = 1;
+            //};
 
-            RelationsService.count($scope.id).then(function (response) {
-                $scope.pageTotal = response.data;
-                $scope.changePage(1);
-            });
-
-            $scope.changePage = function (page) {
-                $scope.loading = true;
-
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
-
-                $scope.activePage = page;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-
-                RelationsService.find($scope.id, requestModel)
-                    .then(function (response) {
-                        $scope.relations = response.data;
-                        angular.forEach($scope.relations, function (relation) {
-                            relation.related_module = $filter('filter')($rootScope.appModules, { name: relation.related_module }, true)[0];
-                        });
-
-                        $scope.relationsState = angular.copy($scope.relations);
-                        $scope.loading = false;
-                    });
-
-            };
+            //$scope.generator(10);
 
 
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage);
-            };
+
+            //$scope.loading = true;
+            //$scope.requestModel = {
+            //    limit: '10',
+            //    offset: 0
+            //};
+
+            // $scope.activePage = 1;
+
+            //RelationsService.count($scope.id).then(function (response) {
+            //    $scope.pageTotal = response.data;
+            //    $scope.changePage(1);
+            //});
+
+            //$scope.changePage = function (page) {
+            //    $scope.loading = true;
+
+            //    if (page !== 1) {
+            //        var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+            //        if (page > difference) {
+            //            if (Math.abs(page - difference) < 1)
+            //                --page;
+            //            else
+            //                page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+            //        }
+            //    }
+
+            //    $scope.activePage = page;
+            //    var requestModel = angular.copy($scope.requestModel);
+            //    requestModel.offset = page - 1;
+
+            //    RelationsService.find($scope.id, requestModel)
+            //        .then(function (response) {
+            //            $scope.relations = response.data;
+            //            angular.forEach($scope.relations, function (relation) {
+            //                relation.related_module = $filter('filter')($rootScope.appModules, { name: relation.related_module }, true)[0];
+            //            });
+
+            //            $scope.relationsState = angular.copy($scope.relations);
+            //            $scope.loading = false;
+            //        });
+
+            //};
+
+
+            //$scope.changeOffset = function () {
+            //    $scope.changePage($scope.activePage);
+            //};
 
             $scope.showFormModal = function (relation) {
                 $scope.moduleLists = [];
@@ -117,12 +118,12 @@ angular.module('primeapps')
 
 
                 $scope.addNewRelationsFormModal = $scope.addNewRelationsFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/model/relations/relationForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/model/relations/relationForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.addNewRelationsFormModal.$promise.then(function () {
                     $scope.addNewRelationsFormModal.show();
@@ -198,18 +199,19 @@ angular.module('primeapps')
                 $scope.fields = {};
                 $scope.currentRelation.relationField = null;
                 if ($scope.currentRelation.related_module) {
-                    var relatedModuleName = $scope.currentRelation.related_module.name;
+                    /////var relatedModuleName = $scope.currentRelation.related_module.name;
+                    var relatedModuleName = $scope.currentRelation.related_module;
                     $scope.modalLoading = true;
                     ModuleService.getModuleFields(relatedModuleName).then(function (response) {
-
+                        $scope.currentRelation.related_module = $filter('filter')($rootScope.appModules, { name: relatedModuleName }, true)[0];
                         $scope.currentRelation.related_module.fields = response.data;
 
                         if ($scope.currentRelation.related_module)
                             $scope.currentRelation.hasRelationField = $filter('filter')($scope.currentRelation.related_module.fields, {
-                                    data_type: 'lookup',
-                                    lookup_type: $scope.currentRelation.module.name,
-                                    deleted: false
-                                }, true).length > 0;
+                                data_type: 'lookup',
+                                lookup_type: $scope.currentRelation.module.name,
+                                deleted: false
+                            }, true).length > 0;
 
                         if ($scope.currentRelation.related_module && ($scope.currentRelation.related_module.name === 'activities' || $scope.currentRelation.related_module.name === 'mails') && ($scope.module.name !== 'activities' || $scope.module.name !== 'mails') && $scope.currentRelation.relation_type === 'one_to_many')
                             $scope.currentRelation.relationField = $filter('filter')($scope.currentRelation.related_module.fields, { name: 'related_to' }, true)[0];
@@ -326,7 +328,7 @@ angular.module('primeapps')
                         $scope.loading = true;
                         toastr.success($filter('translate')('Setup.Modules.RelationSaveSuccess'));
                         $scope.addNewRelationsFormModal.hide();
-                        $scope.changePage($scope.activePage);
+                        //$scope.changePage($scope.activePage);
                     }
                 };
 
@@ -344,13 +346,13 @@ angular.module('primeapps')
                     RelationsService.createModuleRelation(relation, relation.two_way ? mainModuleId : $scope.module.id)
                         .then(function () {
                             success();
-                            $scope.pageTotal++;
+                            //$scope.pageTotal++;
                         })
                         .catch(function () {
                             error();
                         }).finally(function () {
-                        $scope.saving = false;
-                    });
+                            $scope.saving = false;
+                        });
                 } else {
                     RelationsService.updateModuleRelation(relation, $scope.currentRelation.module.id)
                         .then(function () {
@@ -359,8 +361,8 @@ angular.module('primeapps')
                         .catch(function () {
                             error();
                         }).finally(function () {
-                        $scope.saving = false;
-                    });
+                            $scope.saving = false;
+                        });
                 }
             };
 
@@ -375,20 +377,20 @@ angular.module('primeapps')
                     }).then(function (value) {
                         if (value) {
 
-                            var elem = angular.element(event.srcElement);
-                            angular.element(elem.closest('tr')).addClass('animated-background');
+                            //var elem = angular.element(event.srcElement);
+                            //angular.element(elem.closest('tr')).addClass('animated-background');
 
                             RelationsService.deleteModuleRelation(relation.id)
                                 .then(function () {
 
-                                    $scope.pageTotal--;
-                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
+                                    //$scope.pageTotal--;
+                                    //angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
                                     toastr.success($filter('translate')('Setup.Modules.RelationDeleteSuccess'));
-                                    $scope.changePage($scope.activePage);
+                                    //$scope.changePage($scope.activePage);
 
                                 })
                                 .catch(function () {
-                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
+                                    //angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     //$scope.relations = $scope.relationsState;
 
                                     if ($scope.addNewRelationsFormModal) {
@@ -419,5 +421,99 @@ angular.module('primeapps')
                     $scope.background_color = "background-color: #fbfbfb";
             });
 
+            //For Kendo UI
+            $scope.goUrl = function (relation) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.showFormModal(relation); //click event.
+                }
+            };
+
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/relation/find/" + $scope.id,
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                LabelEnPlural: { type: "string" },
+                                ParentModule: { type: "string" },
+                                RelatedModule: { type: "string" },
+                                RelationType: { type: "enums" }
+                            }
+                        }
+                    }
+
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                filterable: {
+                    extra: false
+                },
+                rowTemplate: function (e) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td><span>' + e['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += '<td><span>' + e.parent_module['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += '<td class="text-capitalize"> <span>' + e.related_module + '</span></td > ';
+                    trTemp += e.relation_type === "one_to_many" ? '<td ><span>' + $filter('translate')('Setup.Modules.OneToMany') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.ManyToMany') + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+        pageable: {
+            refresh: true,
+            pageSize: 10,
+            pageSizes: [10, 25, 50, 100],
+            buttonCount: 5,
+            info: true,
+        },
+        columns: [
+            {
+                field: 'LabelEnPlural',
+                title: $filter('translate')('Setup.Modules.RelationName'),
+            },
+            {
+                field: 'ParentModule.Name',
+                title: $filter('translate')('Setup.Modules.Name'), 
+            },
+            {
+                field: 'RelatedModule',
+                title: $filter('translate')('Setup.Modules.RelatedModule'),
+            },
+            {
+                field: 'RelationType',
+                title: $filter('translate')('Setup.Modules.RelationType'),
+                values: [
+                    { text: 'One to many', value: 'OneToMany' },
+                    { text: 'Many to many', value: 'ManyToMany' }]
+            },
+            {
+                field: '',
+                title: '',
+                width: "90px"
+            }]
+            };
+            //For Kendo UI
         }
     ]);

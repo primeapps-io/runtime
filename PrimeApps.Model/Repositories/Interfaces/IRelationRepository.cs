@@ -3,6 +3,7 @@ using PrimeApps.Model.Entities.Tenant;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Helpers;
+using System.Linq;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
@@ -13,6 +14,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<ICollection<Relation>> GetAllDeleted();
         Task<Relation> GetRelation(int id);
         Task<int> Count(int id);
-        ICollection<Relation> Find(int id, PaginationModel paginationModel);
+        Task<IQueryable<Relation>> Find(int id);
     }
 }

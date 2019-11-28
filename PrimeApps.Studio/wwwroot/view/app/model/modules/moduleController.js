@@ -84,6 +84,9 @@ angular.module('primeapps')
                     return item.name !== 'users' && item.name !== 'profiles' && item.name !== 'roles';
                 };
 
+             
+
+                //For Kendo UI
                 $scope.goUrl = function (id) {
                     var selection = window.getSelection();
                     if (selection.toString().length === 0) {
@@ -91,7 +94,6 @@ angular.module('primeapps')
                     }
                 };
 
-                //For Kendo UI
                 var accessToken = $localStorage.read('access_token');
 
                 $scope.mainGridOptions = {
