@@ -104,7 +104,7 @@ namespace PrimeApps.Model.Helpers
                 var sqls = new string[] { };
 
                 if (!string.IsNullOrEmpty(scriptsText))
-                    sqls = scriptsText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                    sqls = scriptsText.Split(Environment.NewLine.ToCharArray());
 
                 File.AppendAllText(logPath,
                     "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." + Environment.NewLine);
@@ -214,7 +214,12 @@ namespace PrimeApps.Model.Helpers
             var releaseList = new List<Release>();
             bool result;
 
-            var identityUrl = configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
+            var isLocalString = configuration.GetValue("AppSettings:IsLocal", string.Empty);
+            var isLocal = !string.IsNullOrEmpty(isLocalString) && bool.Parse(isLocalString);
+            var identityUrl =  isLocal
+                ? configuration.GetValue("AppSettings:AuthenticationServerURLLocal", string.Empty) 
+                : configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
+            
             var logFileName = "";
             foreach (var obj in versions.OfType<object>().Select((version, index) => new { version, index }))
             {
@@ -253,6 +258,16 @@ namespace PrimeApps.Model.Helpers
                             Environment.NewLine);
 
                     var token = studioToken;
+                    
+                    if (isLocal)
+                    {
+                        var authIntegrationEmail = "app@primeapps.io";
+                        var authIntegrationPassword = "123456";
+                        var clientId = configuration.GetValue("AppSettings:ClientId", string.Empty);
+                        var clientSecret = "secret";
+
+                        token = await GetAuthToken(identityUrl, authIntegrationPassword, authIntegrationEmail, clientId, clientSecret);
+                    }
 
                     if (!string.IsNullOrEmpty(token))
                     {
@@ -263,7 +278,7 @@ namespace PrimeApps.Model.Helpers
                         if (string.IsNullOrEmpty(addClientResult))
                         {
                             var clientResult = await AddClientUrl(
-                                configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty), token,
+                                identityUrl, token,
                                 appUrl, useSsl);
                             if (!string.IsNullOrEmpty(clientResult))
                                 File.AppendAllText(logPath,
@@ -443,7 +458,7 @@ namespace PrimeApps.Model.Helpers
                         var sqls = new string[] { };
 
                         if (!string.IsNullOrEmpty(scriptsText))
-                            sqls = scriptsText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                            sqls = scriptsText.Split(Environment.NewLine.ToCharArray());
 
                         File.AppendAllText(logPath,
                             "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." +
@@ -660,7 +675,7 @@ namespace PrimeApps.Model.Helpers
         }
 
         public static async Task<string> GetAuthToken(string authUrl, string studioSecret, string integrationEmail,
-            string clientId)
+            string clientId, string clientSecret)
         {
             using (var httpClient = new HttpClient())
             {
@@ -670,7 +685,7 @@ namespace PrimeApps.Model.Helpers
                     { "username", integrationEmail },
                     { "password", studioSecret },
                     { "client_id", clientId },
-                    { "client_secret", studioSecret }
+                    { "client_secret", clientSecret }
                 };
 
                 var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token")
