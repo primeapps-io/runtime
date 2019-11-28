@@ -8,68 +8,7 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = "relations";
             $rootScope.breadcrumblist[2].title = 'Relations';
             $scope.id = $location.search().id ? $location.search().id : 0;
-
-            //$scope.generator = function (limit) {
-            //    $scope.placeholderArray = [];
-            //    for (var i = 0; i < limit; i++) {
-            //        $scope.placeholderArray[i] = i;
-            //    }
-
-            //};
-
-            //$scope.generator(10);
-
-
-
-            //$scope.loading = true;
-            //$scope.requestModel = {
-            //    limit: '10',
-            //    offset: 0
-            //};
-
-            // $scope.activePage = 1;
-
-            //RelationsService.count($scope.id).then(function (response) {
-            //    $scope.pageTotal = response.data;
-            //    $scope.changePage(1);
-            //});
-
-            //$scope.changePage = function (page) {
-            //    $scope.loading = true;
-
-            //    if (page !== 1) {
-            //        var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-            //        if (page > difference) {
-            //            if (Math.abs(page - difference) < 1)
-            //                --page;
-            //            else
-            //                page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-            //        }
-            //    }
-
-            //    $scope.activePage = page;
-            //    var requestModel = angular.copy($scope.requestModel);
-            //    requestModel.offset = page - 1;
-
-            //    RelationsService.find($scope.id, requestModel)
-            //        .then(function (response) {
-            //            $scope.relations = response.data;
-            //            angular.forEach($scope.relations, function (relation) {
-            //                relation.related_module = $filter('filter')($rootScope.appModules, { name: relation.related_module }, true)[0];
-            //            });
-
-            //            $scope.relationsState = angular.copy($scope.relations);
-            //            $scope.loading = false;
-            //        });
-
-            //};
-
-
-            //$scope.changeOffset = function () {
-            //    $scope.changePage($scope.activePage);
-            //};
-
+             
             $scope.showFormModal = function (relation) {
                 $scope.moduleLists = [];
                 $scope.background_color = "background-color: #fbfbfb";
@@ -327,8 +266,8 @@ angular.module('primeapps')
                     else {
                         $scope.loading = true;
                         toastr.success($filter('translate')('Setup.Modules.RelationSaveSuccess'));
-                        $scope.addNewRelationsFormModal.hide();
-                        //$scope.changePage($scope.activePage);
+                        $scope.addNewRelationsFormModal.hide();  
+                        $scope.grid.dataSource.read();
                     }
                 };
 
@@ -345,8 +284,7 @@ angular.module('primeapps')
                         var mainModuleId = ($filter('filter')($rootScope.appModules, { name: relation.mainModule }, true)[0]).id;
                     RelationsService.createModuleRelation(relation, relation.two_way ? mainModuleId : $scope.module.id)
                         .then(function () {
-                            success();
-                            //$scope.pageTotal++;
+                            success(); 
                         })
                         .catch(function () {
                             error();
@@ -376,23 +314,14 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
-
-                            //var elem = angular.element(event.srcElement);
-                            //angular.element(elem.closest('tr')).addClass('animated-background');
+                         
 
                             RelationsService.deleteModuleRelation(relation.id)
-                                .then(function () {
-
-                                    //$scope.pageTotal--;
-                                    //angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                    toastr.success($filter('translate')('Setup.Modules.RelationDeleteSuccess'));
-                                    //$scope.changePage($scope.activePage);
-
+                                .then(function () { 
+                                     toastr.success($filter('translate')('Setup.Modules.RelationDeleteSuccess')); 
+                                    $scope.grid.dataSource.read();
                                 })
                                 .catch(function () {
-                                    //angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
-                                    //$scope.relations = $scope.relationsState;
-
                                     if ($scope.addNewRelationsFormModal) {
                                         $scope.addNewRelationsFormModal.hide();
                                         $scope.saving = false;
