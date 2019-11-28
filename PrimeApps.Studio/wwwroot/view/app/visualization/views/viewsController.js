@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ViewsController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ViewsService', '$http', 'config', '$modal', 'ModuleService',
-        function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, ViewsService, $http, config, $modal, ModuleService) {
+    .controller('ViewsController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ViewsService', '$http', 'config', '$modal', 'ModuleService', '$localStorage',
+        function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, ViewsService, $http, config, $modal, ModuleService, $localStorage) {
 
             $scope.id = $location.search().id ? $location.search().id : 0;
             if ($scope.id > 0)
@@ -11,64 +11,65 @@ angular.module('primeapps')
 
             $scope.$parent.activeMenuItem = 'views';
             $rootScope.breadcrumblist[2].title = 'Views';
+            var language = $rootScope.language;
 
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
+            //$scope.generator = function (limit) {
+            //    $scope.placeholderArray = [];
+            //    for (var i = 0; i < limit; i++) {
+            //        $scope.placeholderArray[i] = i;
+            //    }
+            //};
 
-            $scope.generator(10);
+            //$scope.generator(10);
 
-            $scope.loading = true;
-            $scope.requestModel = {
-                limit: '10',
-                offset: 0
-            };
+            //$scope.loading = true;
+            //$scope.requestModel = {
+            //    limit: '10',
+            //    offset: 0
+            //};
 
-            $scope.activePage = 1;
-            ViewsService.count($scope.id).then(function (response) {
-                $scope.pageTotal = response.data;
-                $scope.changePage(1);
-            });
+            //$scope.activePage = 1;
+            //ViewsService.count($scope.id).then(function (response) {
+            //    $scope.pageTotal = response.data;
+            //    $scope.changePage(1);
+            //});
 
-            $scope.changePage = function (page) {
-                $scope.loading = true;
+            //$scope.changePage = function (page) {
+            //    $scope.loading = true;
 
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+            //    if (page !== 1) {
+            //        var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
 
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
+            //        if (page > difference) {
+            //            if (Math.abs(page - difference) < 1)
+            //                --page;
+            //            else
+            //                page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+            //        }
+            //    }
 
-                $scope.activePage = page;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
+            //    $scope.activePage = page;
+            //    var requestModel = angular.copy($scope.requestModel);
+            //    requestModel.offset = page - 1;
 
-                ViewsService.find($scope.id, requestModel).then(function (response) {
-                    var customViews = angular.copy(response.data);
-                    for (var i = customViews.length - 1; i >= 0; i--) {
-                        var parentModule = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
-                        if (parentModule) {
-                            customViews[i].parent_module = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
-                        } else {
-                            customViews.splice(i, 1);
-                        }
-                    }
-                    $scope.customViews = customViews;
-                    $scope.loading = false;
-                });
-            };
+            //    ViewsService.find($scope.id, requestModel).then(function (response) {
+            //        var customViews = angular.copy(response.data);
+            //        for (var i = customViews.length - 1; i >= 0; i--) {
+            //            var parentModule = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
+            //            if (parentModule) {
+            //                customViews[i].parent_module = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
+            //            } else {
+            //                customViews.splice(i, 1);
+            //            }
+            //        }
+            //        $scope.customViews = customViews;
+            //        $scope.loading = false;
+            //    });
+            //};
 
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage)
-            };
+            //$scope.changeOffset = function () {
+            //    $scope.changePage($scope.activePage)
+            //};
 
             $scope.deleteView = function (id, event) {
                 var willDelete =
@@ -88,8 +89,9 @@ angular.module('primeapps')
                                     ViewsService.deleteView(id)
                                         .then(function () {
                                             angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                            $scope.pageTotal--;
-                                            $scope.changePage($scope.activePage);
+                                            //$scope.pageTotal--;
+                                            //$scope.changePage($scope.activePage);
+                                            $scope.grid.dataSource.read()
                                             toastr.success("View is deleted successfully.", "Deleted!");
                                         })
                                         .catch(function () {
@@ -118,7 +120,7 @@ angular.module('primeapps')
                     ViewsService.getView(view.id)
                         .then(function (view) {
                             $scope.view = angular.copy(view);
-                            $scope.module = $filter('filter')($rootScope.appModules, {id: view.module_id}, true)[0];
+                            $scope.module = $filter('filter')($rootScope.appModules, { id: view.module_id }, true)[0];
                             $scope.view.label = $scope.view['label_' + $scope.language];
                             $scope.view.edit = true;
 
@@ -201,7 +203,7 @@ angular.module('primeapps')
                         }
                     });
                 }
-                
+
                 if (containerRight) {
                     $scope.selectedFields_ = dragularService([containerRight], {
                         scope: $scope,
@@ -363,10 +365,10 @@ angular.module('primeapps')
                     view.fields.push(field);
 
                     if (selectedField.lookup_type && selectedField.lookup_type !== 'relation') {
-                        var lookupModule = $filter('filter')($rootScope.appModules, {name: selectedField.lookup_type}, true)[0];
+                        var lookupModule = $filter('filter')($rootScope.appModules, { name: selectedField.lookup_type }, true)[0];
                         //TODO dont forget
                         if (lookupModule) {
-                            var primaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
+                            var primaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                             var fieldPrimary = {};
                             fieldPrimary.field = selectedField.name + '.' + lookupModule.name + '.' + primaryField.name + '.primary';
                             fieldPrimary.order = i + 1;
@@ -389,8 +391,8 @@ angular.module('primeapps')
                     var fieldName = field.name;
 
                     if (field.data_type === 'lookup' && field.lookup_type !== 'users') {
-                        var lookupModule = $filter('filter')($rootScope.appModules, {name: field.lookup_type}, true)[0];
-                        var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
+                        var lookupModule = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
+                        var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                         fieldName = field.name + '.' + field.lookup_type + '.' + lookupModulePrimaryField.name;
                     }
 
@@ -458,9 +460,9 @@ angular.module('primeapps')
                             }
 
                             viewState.active_view = response.data.id;
-
+                            $scope.grid.dataSource.read();
                             success();
-                            $scope.pageTotal = $scope.pageTotal + 1;
+                            //$scope.pageTotal = $scope.pageTotal + 1;
                         })
                         .catch(function (data) {
                             error(data.data, data.status);
@@ -702,7 +704,7 @@ angular.module('primeapps')
                         viewFilters[j].field = name;
                     }
 
-                    var field = $filter('filter')(moduleFields, {name: name}, true)[0];
+                    var field = $filter('filter')(moduleFields, { name: name }, true)[0];
                     var fieldValue = null;
 
                     if (!field)
@@ -710,14 +712,14 @@ angular.module('primeapps')
 
                     switch (field.data_type) {
                         case 'picklist':
-                            fieldValue = $filter('filter')(modulePicklists[field.picklist_id], {labelStr: value}, true)[0];
+                            fieldValue = $filter('filter')(modulePicklists[field.picklist_id], { labelStr: value }, true)[0];
                             break;
                         case 'multiselect':
                             fieldValue = [];
                             var multiselectValue = value.split('|');
 
                             angular.forEach(multiselectValue, function (picklistLabel) {
-                                var picklist = $filter('filter')(modulePicklists[field.picklist_id], {labelStr: picklistLabel}, true)[0];
+                                var picklist = $filter('filter')(modulePicklists[field.picklist_id], { labelStr: picklistLabel }, true)[0];
 
                                 if (picklist)
                                     fieldValue.push(picklist);
@@ -742,8 +744,8 @@ angular.module('primeapps')
                                 } else {
                                     if (value !== '-') {
                                         var userItem =
-                                            $filter('filter')($rootScope.users, {Id: parseInt(value)}, true)[0
-                                                ];
+                                            $filter('filter')($rootScope.users, { Id: parseInt(value) }, true)[0
+                                            ];
                                         user.id = userItem.Id;
                                         user.email = userItem.Email;
                                         user.full_name = userItem.FullName;
@@ -776,7 +778,7 @@ angular.module('primeapps')
                             }
                             break;
                         case 'checkbox':
-                            fieldValue = $filter('filter')(modulePicklists.yes_no, {system_code: value}, true)[0];
+                            fieldValue = $filter('filter')(modulePicklists.yes_no, { system_code: value }, true)[0];
                             break;
                         default:
                             fieldValue = value;
@@ -870,6 +872,86 @@ angular.module('primeapps')
                     viewForm.filterLogic.$invalid = false;
                     viewForm.$valid = true;
                 }
+            };
+
+            $scope.goUrl = function (view) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.showFormModal(view);
+                }
+            };
+
+            //For Kendo UI
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/view/find",
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                LabelEn: { type: "string" },
+                                Module: { type: "string" }
+                            }
+                        }
+                    }
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                filterable: {
+                    extra: false
+                },
+                rowTemplate: function (e) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td>' + e.label_en + '</td>';
+                    trTemp += '<td>' + e.module.label_en_singular + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); deleteView(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+
+                    {
+                        field: 'LabelEn',
+                        title: $filter('translate')('View.ViewName'),
+                    },
+
+                    {
+                        field: 'Module.Name',
+                        title: $filter('translate')('Setup.Modules.Name'),
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
             };
         }
     ]);

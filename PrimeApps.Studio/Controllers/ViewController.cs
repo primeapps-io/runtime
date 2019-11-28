@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -224,18 +227,15 @@ namespace PrimeApps.Studio.Controllers
 			return Ok(count);
 		}
 
-		[Route("find/{id:int}"), HttpPost]
-		public async Task<IActionResult> Find(int id, [FromBody]PaginationModel paginationModel)
-		{
+		[Route("find")]
+        public async Task<IActionResult> Find(ODataQueryOptions<View> queryOptions)
+        {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "view", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var views = await _viewRepository.Find(id, paginationModel);
-
-			if (views == null)
-				return NotFound();
-
-			return Ok(views);
-		}
+            var views = await _viewRepository.Find();
+            var queryResults = (IQueryable<View>)queryOptions.ApplyTo(views);
+            return Ok(new PageResult<View>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
+        }
 	}
 }
