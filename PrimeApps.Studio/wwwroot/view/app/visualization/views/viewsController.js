@@ -13,64 +13,6 @@ angular.module('primeapps')
             $rootScope.breadcrumblist[2].title = 'Views';
             var language = $rootScope.language;
 
-            //$scope.generator = function (limit) {
-            //    $scope.placeholderArray = [];
-            //    for (var i = 0; i < limit; i++) {
-            //        $scope.placeholderArray[i] = i;
-            //    }
-            //};
-
-            //$scope.generator(10);
-
-            //$scope.loading = true;
-            //$scope.requestModel = {
-            //    limit: '10',
-            //    offset: 0
-            //};
-
-            //$scope.activePage = 1;
-            //ViewsService.count($scope.id).then(function (response) {
-            //    $scope.pageTotal = response.data;
-            //    $scope.changePage(1);
-            //});
-
-            //$scope.changePage = function (page) {
-            //    $scope.loading = true;
-
-            //    if (page !== 1) {
-            //        var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-            //        if (page > difference) {
-            //            if (Math.abs(page - difference) < 1)
-            //                --page;
-            //            else
-            //                page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-            //        }
-            //    }
-
-            //    $scope.activePage = page;
-            //    var requestModel = angular.copy($scope.requestModel);
-            //    requestModel.offset = page - 1;
-
-            //    ViewsService.find($scope.id, requestModel).then(function (response) {
-            //        var customViews = angular.copy(response.data);
-            //        for (var i = customViews.length - 1; i >= 0; i--) {
-            //            var parentModule = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
-            //            if (parentModule) {
-            //                customViews[i].parent_module = $filter('filter')($rootScope.appModules, {id: customViews[i].module_id}, true)[0];
-            //            } else {
-            //                customViews.splice(i, 1);
-            //            }
-            //        }
-            //        $scope.customViews = customViews;
-            //        $scope.loading = false;
-            //    });
-            //};
-
-            //$scope.changeOffset = function () {
-            //    $scope.changePage($scope.activePage)
-            //};
-
             $scope.deleteView = function (id, event) {
                 var willDelete =
                     swal({
@@ -89,8 +31,6 @@ angular.module('primeapps')
                                     ViewsService.deleteView(id)
                                         .then(function () {
                                             angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                            //$scope.pageTotal--;
-                                            //$scope.changePage($scope.activePage);
                                             $scope.grid.dataSource.read()
                                             toastr.success("View is deleted successfully.", "Deleted!");
                                         })
@@ -462,7 +402,6 @@ angular.module('primeapps')
                             viewState.active_view = response.data.id;
                             $scope.grid.dataSource.read();
                             success();
-                            //$scope.pageTotal = $scope.pageTotal + 1;
                         })
                         .catch(function (data) {
                             error(data.data, data.status);
@@ -922,10 +861,10 @@ angular.module('primeapps')
                 filterable: {
                     extra: false
                 },
-                rowTemplate: function (e) {
+                rowTemplate: function (view) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
-                    trTemp += '<td>' + e.label_en + '</td>';
-                    trTemp += '<td>' + e.module.label_en_singular + '</td>';
+                    trTemp += '<td>' + view.label_en + '</td>';
+                    trTemp += '<td>' + view.module.label_en_singular + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); deleteView(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },

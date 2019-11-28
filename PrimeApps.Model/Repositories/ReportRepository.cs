@@ -29,31 +29,15 @@ namespace PrimeApps.Model.Repositories
             return count;
         }
 
-        public async Task<ICollection<Report>> Find(PaginationModel paginationModel, bool withIncludes = true)
+
+        public async Task<IQueryable<Report>> Find()
         {
             var reports = DbContext.Reports
-                .Where(x => !x.Deleted)
-                .Include(x => x.Category)
-                .OrderByDescending(x => x.Id)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
+            .Where(x => !x.Deleted)
+            .Include(x => x.Category)
+            .OrderByDescending(x => x.Id);
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Report).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    reports = reports.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    reports = reports.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
-
-            }
-
-            return await reports.ToListAsync();
+            return reports;
         }
 
         public async Task<JArray> GetDashletReportData(int reportId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true, bool showDisplayValue = true)
@@ -390,7 +374,7 @@ namespace PrimeApps.Model.Repositories
             var reportCategories = DbContext.ReportCategories
                 .Where(x => !x.Deleted)
                 .OrderBy(x => x.Order);
-         
+
             return await reportCategories.ToListAsync();
         }
 
