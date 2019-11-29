@@ -49,6 +49,14 @@ namespace PrimeApps.Auth.UI
         public int RoleId { get; set; }
 
         [DataMember(Name = "phone")]
-        public string Phone { get; set; }
+        public string Phone { get; set; } 
+        
+        [DataMember(Name = "language")]
+        public string Language { get; set; }
+        
+        [DataMember(Name = "currency")]
+        public string Currency { get; set; }
+
+
     }
 }

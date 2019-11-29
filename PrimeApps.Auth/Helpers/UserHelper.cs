@@ -102,9 +102,9 @@ namespace PrimeApps.Auth.Helpers
             {
                 settings = new PlatformUserSetting
                 {
-                    Culture = "en-US",
-                    Language = "en",
-                    Currency = "USD",
+                    Culture = string.IsNullOrEmpty(userModel.Culture) ? "en-US" : userModel.Culture,
+                    Language = string.IsNullOrEmpty(userModel.Language) ? "en" : userModel.Language,
+                    Currency = string.IsNullOrEmpty(userModel.Currency) ? "USD" : userModel.Currency,
                     TimeZone = "America/Chicago"
                 };
             }
@@ -124,11 +124,11 @@ namespace PrimeApps.Auth.Helpers
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 
                 using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))//, cacheHelper))
-				{
+                {
                     var result = await _platformUserRepository.CreateUser(user);
                     if (result != 0)
                     {
-                        var platformUser =  await _platformUserRepository.GetWithTenants(userModel.Email);
+                        var platformUser = await _platformUserRepository.GetWithTenants(userModel.Email);
                         return platformUser;
                     }
 
@@ -163,7 +163,7 @@ namespace PrimeApps.Auth.Helpers
 
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
                 {
-                    var _currentUser = new CurrentUser {TenantId = previewMode == "app" ? appId : tenantId, UserId = platformUserId, PreviewMode = previewMode};
+                    var _currentUser = new CurrentUser { TenantId = previewMode == "app" ? appId : tenantId, UserId = platformUserId, PreviewMode = previewMode };
                     _userRepository.CurrentUser = _currentUser;
 
                     var result = await _userRepository.CreateAsync(user);
@@ -206,15 +206,15 @@ namespace PrimeApps.Auth.Helpers
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 
                 using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))//, cacheHelper))
-				using (var _tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))//, cacheHelper))
-				{
+                using (var _tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))//, cacheHelper))
+                {
                     var tenant = await _tenantRepository.GetAsync(tenantId);
                     var platformUser = await _platformUserRepository.GetWithTenants(user.Email);
 
                     if (platformUser.TenantsAsUser == null)
                         platformUser.TenantsAsUser = new List<UserTenant>();
 
-                    platformUser.TenantsAsUser.Add(new UserTenant {Tenant = tenant, PlatformUser = platformUser});
+                    platformUser.TenantsAsUser.Add(new UserTenant { Tenant = tenant, PlatformUser = platformUser });
 
                     await _platformUserRepository.UpdateAsync(platformUser);
                 }
@@ -226,7 +226,7 @@ namespace PrimeApps.Auth.Helpers
 
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
                 {
-                    var _currentUser = new CurrentUser {TenantId = previewMode == "app" ? appId : tenantId, UserId = resultTenantUser.Id, PreviewMode = previewMode};
+                    var _currentUser = new CurrentUser { TenantId = previewMode == "app" ? appId : tenantId, UserId = resultTenantUser.Id, PreviewMode = previewMode };
                     _userRepository.CurrentUser = _currentUser;
 
                     var result = _userRepository.GetById(resultTenantUser.Id);
