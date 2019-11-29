@@ -55,8 +55,6 @@ namespace PrimeApps.Auth.UI
         public string Language { get; set; }
         
         [DataMember(Name = "currency")]
-        public string Currency { get; set; }
-
-
+        public string Currency { get; set; }  
     }
 }
