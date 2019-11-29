@@ -10,9 +10,12 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("widget_type"), Required]
         public WidgetType WidgetType { get; set; }
 
-        [Column("name"), MaxLength(200), Required]
-        public string Name { get; set; }
-
+        [Column("name_en"), MaxLength(200)]
+        public string NameEn { get; set; }
+        
+        [Column("name_tr"), MaxLength(200)]
+        public string NameTr { get; set; }
+        
         //For external widget for future usage
         [Column("load_url"), MaxLength(100)]
         public string LoadUrl { get; set; }

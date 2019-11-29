@@ -147,10 +147,15 @@ angular.module('primeapps')
 
             $scope.addTemplateCategory = function () {
                 var category = {
-                    "name": '',
+                    "name_tr": '',
+                    "name_en": '',
                     order: 0,
                     edit: true
                 };
+                
+                if (!angular.isArray($rootScope.reportCategory)) {
+                    $rootScope.reportCategory = [];
+                }
                 $rootScope.reportCategory.push(category);
             };
 
@@ -160,8 +165,15 @@ angular.module('primeapps')
 
             $scope.saveCategory = function (category) {
                 category.saving = true;
+
+                var categoryModel = {
+                    name_tr: category.name_en,
+                    name_en: category.name_en,
+                    id: category.id
+                };
+
                 if (!category.id) {
-                    ReportsService.createCategory(category).then(function (result) {
+                    ReportsService.createCategory(categoryModel).then(function (result) {
                         var resultCategory = result.data;
                         category.id = resultCategory.id;
                         toastr.success("Report category  is saved successfully.");
@@ -169,7 +181,7 @@ angular.module('primeapps')
                         category.edit = false;
                     });
                 } else {
-                    ReportsService.updateCategory(category).then(function (result) {
+                    ReportsService.updateCategory(categoryModel).then(function (result) {
                         var resultCategory = result.data;
                         category.id = resultCategory.id;
                         toastr.success("Report category  is saved successfully.");

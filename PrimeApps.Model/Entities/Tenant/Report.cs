@@ -8,8 +8,11 @@ namespace PrimeApps.Model.Entities.Tenant
     [Table("reports")]
     public class Report : BaseEntity
     {
-        [Column("name"), MaxLength(100), Required]
-        public string Name { get; set; }
+        [Column("name_en"), MaxLength(100)]
+        public string NameEn { get; set; }
+        
+        [Column("name_tr"), MaxLength(100)]
+        public string NameTr { get; set; }
 
         [Column("report_type")]
         public ReportType ReportType { get; set; }

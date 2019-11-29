@@ -184,9 +184,11 @@ angular.module('primeapps')
                     $scope.reportSummary.chart.formatNumberScale = '0';
                     $scope.reportSummary.chart.exportEnabled = '1';
                     $scope.reportSummary.chart.exportTargetWindow = '_self';
-                    $scope.reportSummary.chart.exportFileName = $scope.reportSummary.chart.caption;
+                    $scope.reportSummary.chart.exportFileName = $scope.reportSummary.chart['caption_'+$rootScope.user.language];
                     $scope.reportSummary.chart.exportFormats = 'PNG=' + $filter('translate')('Report.ExportImage') + '|PDF=' + $filter('translate')('Report.ExportPdf') + '|XLS=Export Chart Data';
-
+                    $scope.reportSummary.chart['xaxisname']= $scope.reportSummary.chart['xaxisname_'+$rootScope.user.language]
+                    $scope.reportSummary.chart['yaxisname']= $scope.reportSummary.chart['yaxisname_'+$rootScope.user.language];
+                    $scope.reportSummary.chart['caption'] = $scope.reportSummary.chart['caption_'+$rootScope.user.language]
                     if ($scope.locale === 'tr') {
                         $scope.reportSummary.chart.decimalSeparator = ',';
                         $scope.reportSummary.chart.thousandSeparator = '.';
@@ -357,13 +359,9 @@ angular.module('primeapps')
 
             //Kategori
             $scope.categoryEditModalOpen = function (type, category) {
-
-                $scope.ReportCategory = {
-                    user_id: category.user_id ? category.user_id : "0",
-                    name: category.name,
-                    type: type,
-                    id: category.id
-                };
+                $scope.ReportCategory = category;
+                $scope.ReportCategory.type = type
+                $scope.ReportCategory. user_id=category.user_id ? category.user_id : "0",                
 
                 $scope.categoryEditModal = $scope.categoryEditModal || $modal({
                     scope: $scope,
@@ -380,7 +378,7 @@ angular.module('primeapps')
                     return false;
                 if ($scope.ReportCategory.user_id === "0")
                     $scope.ReportCategory.user_id = "";
-
+debugger;
                 if ($scope.ReportCategory.type === 'create') {
                     ReportsService.createCategory(ReportCategory).then(function (result) {
                         if ($scope.ReportCateogryies) {

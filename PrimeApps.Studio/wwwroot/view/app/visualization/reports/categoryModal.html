@@ -28,7 +28,7 @@
                     <div ng-if="category.edit !=true">
 
                         <span> <span class="option-drag optison-handle"><i
-                                class="fa fa-arrows option-handle"></i></span> {{ category.name }}</span>
+                                class="fa fa-arrows option-handle"></i></span> {{ category.name_en }}</span>
                         <span class="new-actions">
                             <button ng-click="category.edit = true" class="edit-btn" title="Edit"><i
                                     class="fas fa-pen"></i></button>
@@ -38,7 +38,7 @@
                         </span>
                     </div>
                     <div class="form-group bottom0" ng-if="category.edit ===true">
-                        <input name="category_{{category.id}}" ng-model="category.name" class="form-control"
+                        <input name="category_{{category.id}}" ng-model="category.name_en" class="form-control"
                                placeholder="Please fill your category name"/>
                         <span class="new-actions">
                             <button ng-click="saveCategory(category)" ladda="category.saving" class="apply-btn"

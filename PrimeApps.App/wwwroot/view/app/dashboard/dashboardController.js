@@ -107,7 +107,10 @@ angular.module('primeapps')
                                     dashlet.chart_item.chart.isHollow = '0';
                                     dashlet.chart_item.chart.is2D = '0';
                                     dashlet.chart_item.chart.formatNumberScale = '0';
-
+                                    dashlet.chart_item.chart['xaxisname']= dashlet.chart_item.chart['xaxisname_'+$rootScope.user.language]
+                                    dashlet.chart_item.chart['yaxisname']= dashlet.chart_item.chart['yaxisname_'+$rootScope.user.language];
+                                    dashlet.chart_item.chart['caption'] = dashlet.chart_item.chart['caption_'+$rootScope.user.language]
+                                    
                                     if ($scope.locale === 'tr') {
                                         dashlet.chart_item.chart.decimalSeparator = ',';
                                         dashlet.chart_item.chart.thousandSeparator = '.';
@@ -242,7 +245,7 @@ angular.module('primeapps')
                 //                 }
                 //
                 //                 var activityTypePicklistItem = $filter('filter')(activityTypes, {value: value}, true)[0];
-                //                 return activityTypePicklistItem.label[$rootScope.user.tenant_language];
+                //                 return activityTypePicklistItem.label[$rootScope.user.language];
                 //             };
                 //
                 //             if (activityTypeList.indexOf(responseDashboard.query1_type) > -1) {
@@ -517,12 +520,19 @@ angular.module('primeapps')
             $scope.saveDashboard = function (dashboardForm) {
                 if (dashboardForm.$submitted && dashboardForm.$valid) {
                     {
-                        var dahsbordModel = {
-                            name: $scope.currentDashboard.name,
-                            description: $scope.currentDashboard.description
-
-                        };
-
+                       // $scope.currentDashboard['name_'+user.language]
+                        var dahsbordModel = {}
+                        dahsbordModel['description_'+$rootScope.user.language]  = $scope.currentDashboard['description_'+$rootScope.user.language];
+                        dahsbordModel['name_'+$rootScope.user.language] =$scope.currentDashboard ['name_'+$rootScope.user.language] ;
+                        if( $rootScope.user.language === 'en'){
+                            dahsbordModel['name_tr'] = $scope.currentDashboard.id ? $scope.currentDashboard['name_tr'] : $scope.currentDashboard['name_en'] ;
+                            dahsbordModel['description_tr'] = $scope.currentDashboard.id ? $scope.currentDashboard['description_tr'] : $scope.currentDashboard['description_en'] ;                            
+                             
+                        }else{
+                            dahsbordModel['name_en'] = $scope.currentDashboard.id ? $scope.currentDashboard['name_en'] : $scope.currentDashboard['name_tr'] ;
+                            dahsbordModel['description_en'] = $scope.currentDashboard.id ? $scope.currentDashboard['description_en'] : $scope.currentDashboard['description_tr'] ;
+                        }
+                        
                         if (!$scope.currentDashboard.id) {
                             dahsbordModel.profile_id = $scope.currentDashboard.profile_id;
                             dahsbordModel.sharing_type = 3;
@@ -547,13 +557,16 @@ angular.module('primeapps')
             $scope.saveDashlet = function (dashletFormModal) {
                 if (dashletFormModal.$submitted && dashletFormModal.$valid) {
                     var dashletModel = {
-                        name: $scope.currentDashlet.name,
                         dashlet_type: $scope.currentDashlet.dashlet_type,
                         dashboard_id: $scope.activeDashboard.id,
                         y_tile_length: $scope.currentDashlet.y_tile_length,
                         x_tile_height: $scope.currentDashlet.x_tile_height,
                     };
-
+                    
+                    dashletModel['name_tr']=$scope.currentDashlet['name_tr'];
+                    dashletModel['name_en']=$scope.currentDashlet['name_en'];
+                
+     
                     if ($scope.currentDashlet.dashlet_type === 'chart') {
                         dashletModel.chart_id = $scope.currentDashlet.board;
                     } else {
@@ -664,10 +677,12 @@ angular.module('primeapps')
                 $scope.dashletMode = $scope.dashletMode === true ? false : true;
             };
             $scope.changeView = function () {
-                $scope.currentDashlet.name = $filter('filter')($scope.views, { id: $scope.currentDashlet.view_id }, true)[0]['label_' + $rootScope.language];
+                $scope.currentDashlet['name_en'] =  $filter('filter')($scope.views, { id: $scope.currentDashlet.view_id }, true)[0]['label_en'];
+                $scope.currentDashlet['name_tr'] =  $filter('filter')($scope.views, { id: $scope.currentDashlet.view_id }, true)[0]['label_tr'];
             };
             $scope.changeBoard = function () {
-                $scope.currentDashlet.name = $filter('filter')($scope.boards, { id: $scope.currentDashlet.board }, true)[0].name;
+                $scope.currentDashlet['name_en'] = $filter('filter')($scope.boards, { id: $scope.currentDashlet.board }, true)[0]["name_en"];
+                $scope.currentDashlet['name_tr'] = $filter('filter')($scope.boards, { id: $scope.currentDashlet.board }, true)[0]["name_tr"];
             };
 
             if (typeof Tawk_API !== 'undefined') {

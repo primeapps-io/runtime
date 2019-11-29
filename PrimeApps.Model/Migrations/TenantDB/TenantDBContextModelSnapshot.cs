@@ -629,9 +629,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .ValueGeneratedOnAdd()
                         .HasColumnName("id");
 
-                    b.Property<string>("Caption")
-                        .IsRequired()
-                        .HasColumnName("caption")
+                    b.Property<string>("CaptionEn")
+                        .HasColumnName("caption_en")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("CaptionTr")
+                        .HasColumnName("caption_tr")
                         .HasMaxLength(100);
 
                     b.Property<int>("ChartType")
@@ -649,8 +652,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<int?>("ReportId")
                         .HasColumnName("report_id");
 
-                    b.Property<string>("SubCaption")
-                        .HasColumnName("sub_caption")
+                    b.Property<string>("SubCaptionEn")
+                        .HasColumnName("sub_caption_en")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("SubCaptionTr")
+                        .HasColumnName("sub_caption_tr")
                         .HasMaxLength(200);
 
                     b.Property<int>("Theme")
@@ -662,14 +669,20 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<int?>("UpdatedById")
                         .HasColumnName("updated_by");
 
-                    b.Property<string>("XaxisName")
-                        .IsRequired()
-                        .HasColumnName("x_axis_name")
+                    b.Property<string>("XaxisNameEn")
+                        .HasColumnName("x_axis_name_en")
                         .HasMaxLength(80);
 
-                    b.Property<string>("YaxisName")
-                        .IsRequired()
-                        .HasColumnName("y_axis_name")
+                    b.Property<string>("XaxisNameTr")
+                        .HasColumnName("x_axis_name_tr")
+                        .HasMaxLength(80);
+
+                    b.Property<string>("YaxisNameEn")
+                        .HasColumnName("y_axis_name_en")
+                        .HasMaxLength(80);
+
+                    b.Property<string>("YaxisNameTr")
+                        .HasColumnName("y_axis_name_tr")
                         .HasMaxLength(80);
 
                     b.HasKey("Id");
@@ -874,16 +887,23 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
 
-                    b.Property<string>("Description")
-                        .HasColumnName("description")
+                    b.Property<string>("DescriptionEn")
+                        .HasColumnName("description_en")
+                        .HasMaxLength(250);
+
+                    b.Property<string>("DescriptionTr")
+                        .HasColumnName("description_tr")
                         .HasMaxLength(250);
 
                     b.Property<bool>("IsActive")
                         .HasColumnName("is_active");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnName("name")
+                    b.Property<string>("NameEn")
+                        .HasColumnName("name_en")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("NameTr")
+                        .HasColumnName("name_tr")
                         .HasMaxLength(50);
 
                     b.Property<int?>("ProfileId")
@@ -949,9 +969,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnName("name")
+                    b.Property<string>("NameEn")
+                        .HasColumnName("name_en")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("NameTr")
+                        .HasColumnName("name_tr")
                         .HasMaxLength(50);
 
                     b.Property<int>("Order")
@@ -3095,9 +3118,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<int>("ModuleId")
                         .HasColumnName("module_id");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnName("name")
+                    b.Property<string>("NameEn")
+                        .HasColumnName("name_en")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("NameTr")
+                        .HasColumnName("name_tr")
                         .HasMaxLength(100);
 
                     b.Property<int>("ReportFeed")
@@ -3208,9 +3234,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnName("name")
+                    b.Property<string>("NameEn")
+                        .HasColumnName("name_en")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("NameTr")
+                        .HasColumnName("name_tr")
                         .HasMaxLength(100);
 
                     b.Property<int>("Order")
@@ -4229,9 +4258,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .HasColumnName("load_url")
                         .HasMaxLength(100);
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnName("name")
+                    b.Property<string>("NameEn")
+                        .HasColumnName("name_en")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("NameTr")
+                        .HasColumnName("name_tr")
                         .HasMaxLength(200);
 
                     b.Property<int?>("ReportId")

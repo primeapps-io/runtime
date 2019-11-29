@@ -18,7 +18,7 @@ using Microsoft.Extensions.Configuration;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/report"), Authorize]
-	public class ReportController : ApiBaseController
+    public class ReportController : ApiBaseController
     {
         private IReportRepository _reportRepository;
         private IRecordRepository _recordRepository;
@@ -27,10 +27,12 @@ namespace PrimeApps.App.Controllers
         private IUserRepository _userRepository;
         private IConfiguration _configuration;
 
-	    private IRecordHelper _recordHelper;
-	    private IReportHelper _reportHelper;
+        private IRecordHelper _recordHelper;
+        private IReportHelper _reportHelper;
 
-        public ReportController(IReportRepository reportRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IUserRepository userRepository, IRecordHelper recordHelper, IReportHelper reportHelper, IConfiguration configuration)
+        public ReportController(IReportRepository reportRepository, IRecordRepository recordRepository,
+            IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IUserRepository userRepository,
+            IRecordHelper recordHelper, IReportHelper reportHelper, IConfiguration configuration)
         {
             _reportRepository = reportRepository;
             _recordRepository = recordRepository;
@@ -38,21 +40,21 @@ namespace PrimeApps.App.Controllers
             _picklistRepository = picklistRepository;
             _userRepository = userRepository;
 
-	        _recordHelper = recordHelper;
-	        _reportHelper = reportHelper;
+            _recordHelper = recordHelper;
+            _reportHelper = reportHelper;
             _configuration = configuration;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
             SetCurrentUser(_reportRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_userRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_picklistRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_recordRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_picklistRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_recordRepository, PreviewMode, TenantId, AppId);
             base.OnActionExecuting(context);
-		}
+        }
 
         [Route("get_all"), HttpGet]
         public IActionResult GetAll()
@@ -69,25 +71,32 @@ namespace PrimeApps.App.Controllers
 
             return Ok(report);
         }
+
         [Route("get_chart/{report:int}"), HttpGet]
         public async Task<IActionResult> GetChart(int report)
         {
             var chart = await _reportRepository.GetChartByReportId(report);
             var aggregation = chart.Report.Aggregations.FirstOrDefault();
-            var showDisplayValue = chart.ChartType != ChartType.Funnel && chart.ChartType != ChartType.Pyramid && aggregation != null && aggregation.AggregationType != AggregationType.Count;
-            var data = await _reportRepository.GetDashletReportData(report, _recordRepository, _moduleRepository, _picklistRepository, _configuration, AppUser, showDisplayValue: showDisplayValue);
+            var showDisplayValue = chart.ChartType != ChartType.Funnel && chart.ChartType != ChartType.Pyramid &&
+                                   aggregation != null && aggregation.AggregationType != AggregationType.Count;
+            var data = await _reportRepository.GetDashletReportData(report, _recordRepository, _moduleRepository,
+                _picklistRepository, _configuration, AppUser, showDisplayValue: showDisplayValue);
 
             var response = new
             {
                 data = data,
                 chart = new ChartView
                 {
-                    Caption = chart.Caption,
+                    CaptionEn = chart.CaptionEn,
+                    CaptionTr = chart.CaptionTr,
                     ChartType = chart.ChartType,
-                    Subcaption = chart.SubCaption,
+                    SubcaptionEn = chart.SubCaptionEn,
+                    SubcaptionTr = chart.SubCaptionTr,
                     Theme = chart.Theme,
-                    Xaxisname = chart.XaxisName,
-                    Yaxisname = chart.YaxisName,
+                    XaxisnameEn = chart.XaxisNameEn,
+                    XaxisnameTr = chart.XaxisNameTr,
+                    YaxisnameEn = chart.YaxisNameEn,
+                    YaxisnameTr = chart.YaxisNameTr,
                     ReportId = chart.ReportId.ToString(),
                     ReportModuleId = chart.Report.ModuleId,
                     ReportGroupField = chart.Report.GroupField,
@@ -101,7 +110,8 @@ namespace PrimeApps.App.Controllers
         [Route("get_widget/{report:int}"), HttpGet]
         public async Task<IActionResult> GetWidget(int report)
         {
-            var response = await _reportRepository.GetDashletReportData(report, _recordRepository, _moduleRepository, _picklistRepository, _configuration, AppUser);
+            var response = await _reportRepository.GetDashletReportData(report, _recordRepository, _moduleRepository,
+                _picklistRepository, _configuration, AppUser);
             var widget = await _reportRepository.GetWidgetByReportId(report);
 
             response.First()["color"] = widget.Color;
@@ -111,7 +121,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody]ReportBindingModel report)
+        public async Task<IActionResult> Create([FromBody] ReportBindingModel report)
         {
             _reportHelper.Validate(report, ModelState, _recordHelper.ValidateFilterLogic);
 
@@ -153,15 +163,15 @@ namespace PrimeApps.App.Controllers
             }
 
             var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/report/get/" + reportEntity.Id, reportEntity);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/report/get/" + reportEntity.Id, reportEntity);
             //return Created(Request.Scheme + "://" + Request.Host + "/api/report/get/" + reportEntity.Id, reportEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update(int id, [FromBody]ReportBindingModel report)
+        public async Task<IActionResult> Update(int id, [FromBody] ReportBindingModel report)
         {
             _reportHelper.Validate(report, ModelState, _recordHelper.ValidateFilterLogic);
-
+         
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -229,7 +239,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create_category"), HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody]ReportCategoryBindingModel reportCategory)
+        public async Task<IActionResult> CreateCategory([FromBody] ReportCategoryBindingModel reportCategory)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -242,12 +252,12 @@ namespace PrimeApps.App.Controllers
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/get_categories", reportCategoryEntity);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/get_categories", reportCategoryEntity);
             //return Created(Request.Scheme + "://" + Request.Host + "/api/get_categories", reportCategoryEntity);
         }
 
         [Route("update_category/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateCategory(int id, [FromBody]ReportCategoryBindingModel reportCategory)
+        public async Task<IActionResult> UpdateCategory(int id, [FromBody] ReportCategoryBindingModel reportCategory)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -257,7 +267,7 @@ namespace PrimeApps.App.Controllers
             if (reportCategoryEntity == null)
                 return NotFound();
 
-	        _reportHelper.UpdateCategoryEntity(reportCategory, reportCategoryEntity);
+            _reportHelper.UpdateCategoryEntity(reportCategory, reportCategoryEntity);
             await _reportRepository.UpdateCategory(reportCategoryEntity);
 
             return Ok(reportCategoryEntity);
