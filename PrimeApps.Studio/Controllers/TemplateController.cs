@@ -15,6 +15,12 @@ using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
 using PrimeApps.Model.Storage;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNet.OData.Query;
+using PrimeApps.Model.Entities.Studio;
+using System.Linq;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using PrimeApps.Model.Entities.Tenant;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -182,15 +188,15 @@ namespace PrimeApps.Studio.Controllers
             var count = _templateRepostory.Count(templateType);
             return Ok(count);
         }
-
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel, [FromUri]TemplateType templateType = 0)
+        [Route("find")]
+        public async Task<IActionResult> Find(ODataQueryOptions<Template> queryOptions)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var templates = await _templateRepostory.Find(paginationModel, templateType);
-            return Ok(templates);
+            var views = await _templateRepostory.Find();
+            var queryResults = (IQueryable<Template>)queryOptions.ApplyTo(views);
+            return Ok(new PageResult<Template>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
         [Route("create_app_email_template"), HttpPost]

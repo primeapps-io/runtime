@@ -10,8 +10,7 @@ angular.module('primeapps')
             //$scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesEmail';
             $rootScope.breadcrumblist[2].title = 'E-mail';
-            $scope.moduleDisabled = false;
-            $scope.activePage = 1;
+            $scope.moduleDisabled = false;          
 
             $scope.loading = true;
             $scope.newtemplate = {};
@@ -320,51 +319,6 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.generator(10);
-            $scope.activePage = 1;
-            EmailTemplatesService.count("email").then(function (response) {
-                $scope.pageTotal = response.data;
-                $scope.changePage(1);
-            });
-
-
-            $scope.changePage = function (page) {
-                $scope.loading = true;
-
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
-
-                $scope.activePage = page;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-
-                EmailTemplatesService.find(requestModel,"email").then(function (response) {
-                    var templates = response.data;
-                    ProfilesService.getAllBasic().then(function (response) {
-                        $scope.profiles = ProfilesService.getProfiles(response.data, $rootScope.appModules, false);
-                    });
-                    for (var i = 0; i < templates.length; i++) {
-                        var template = templates[i];
-                        template.module = $filter('filter')($rootScope.appModules, {name: template.module}, true)[0];
-                    }
-                    $scope.templates = templates;
-                }).finally(function () {
-                    $scope.loading = false;
-                });
-            };
-
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage);
-            };
-
             $scope.templateSave = function (uploadForm) {
 
                 if (!uploadForm.$valid) {
@@ -417,19 +371,19 @@ angular.module('primeapps')
                     result = EmailTemplatesService.update(template).then(function () {
                         $scope.saving = false;
                         $scope.addNewEmailTemplateFormModal.hide();
-                        $scope.changePage($scope.activePage);
+                        $scope.grid.dataSource.read();
                         toastr.success($filter('translate')('Template.SuccessMessage'));
                     }).catch(function () {
                         toastr.error($filter('translate')('Common.Error'));
                         $scope.addNewEmailTemplateFormModal.hide();
-                        $scope.changePage($scope.activePage);
+                        $scope.grid.dataSource.read();
                     });
                 } else {
                     EmailTemplatesService.create(template).then(function (response) {
                         var result = response.data;
                         $scope.saving = false;
                         $scope.addNewEmailTemplateFormModal.hide();
-                        $scope.changePage($scope.activePage);
+                        $scope.grid.dataSource.read();
                         toastr.success($filter('translate')('Template.SuccessMessage'));
                         $scope.pageTotal++;
                     });
@@ -515,12 +469,11 @@ angular.module('primeapps')
                             angular.element(elem.closest('tr')).addClass('animated-background');
                             EmailTemplatesService.delete(template.id)
                                 .then(function () {
-                                    $scope.pageTotal--;
                                     //var index = $rootScope.appModules.indexOf(module);
                                     // $rootScope.appModules.splice(index, 1);
 
                                     angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                    $scope.changePage($scope.activePage);
+                                    $scope.grid.dataSource.read();
                                     toastr.success("Email template is deleted successfully.", "Deleted!");
 
                                 })
@@ -531,5 +484,97 @@ angular.module('primeapps')
                         }
                     });
             };
+
+
+            $scope.goUrl = function (emailTemp) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.showFormModal(emailTemp);
+                }
+            };
+
+            //For Kendo UI
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/template/find",
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                LabelEn: { type: "string" },
+                                Module: { type: "string" }
+                            }
+                        }
+                    }
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                filterable: {
+                    extra: false
+                },
+                rowTemplate: function (emailTemp) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td>' + emailTemp.name + '</td>';
+                    trTemp += '<td>' + emailTemp.module + '</td>';
+                    trTemp += '<td>' + emailTemp.language + '</td>';
+                    trTemp += '<td>' + emailTemp.code + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+
+                    {
+                        field: 'Name',
+                        title: $filter('translate')('Setup.Templates.TemplateName'),
+                    },
+
+                    {
+                        field: 'Module.Name',
+                        title: $filter('translate')('Setup.Templates.Module'),
+                    },
+                    {
+                        field: 'Language',
+                        title: 'Language',
+                    },
+                    {
+                        field: 'Code',
+                        title: 'Code',
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
+            };
+
         }
     ]);

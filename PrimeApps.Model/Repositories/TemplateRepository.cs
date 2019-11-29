@@ -9,6 +9,7 @@ using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Common;
+using PrimeApps.Model.Entities.Studio;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -124,31 +125,15 @@ namespace PrimeApps.Model.Repositories
             return count;
         }
 
-        public async Task<ICollection<Template>> Find(PaginationModel paginationModel, TemplateType templateType)
+        public async Task<IQueryable<Template>> Find()
         {
             var templates = DbContext.Templates
-                .Where(x => !x.Deleted && x.TemplateType == templateType)
-                .OrderByDescending(x => x.Id)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
+            .Where(x => !x.Deleted)
+            .OrderByDescending(x => x.Id);
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Template).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    templates = templates.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    templates = templates.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
-
-            }
-
-            return await templates.ToListAsync();
+            return templates;
         }
     }
 }
+
 
