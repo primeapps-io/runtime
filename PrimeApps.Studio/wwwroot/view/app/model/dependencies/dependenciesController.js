@@ -555,7 +555,7 @@ angular.module('primeapps')
                 },
                 columns: [
                     {
-                        field: 'Module.name',
+                        field: 'Module.LabelEnPlural',
                         title: $filter('translate')('Setup.Templates.Module'),
                     },
                     {

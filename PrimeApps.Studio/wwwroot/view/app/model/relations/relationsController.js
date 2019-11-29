@@ -423,7 +423,7 @@ angular.module('primeapps')
                 title: $filter('translate')('Setup.Modules.RelationName'),
             },
             {
-                field: 'ParentModule.Name',
+                field: 'ParentModule.LabelEnPlural',
                 title: $filter('translate')('Setup.Modules.Name'), 
             },
             {
