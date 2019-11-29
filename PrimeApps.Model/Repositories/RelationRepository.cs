@@ -45,7 +45,7 @@ namespace PrimeApps.Model.Repositories
             if (id > 0)
                 relations = relations.Where(x => x.ModuleId == id);
 
-            relations = relations.Include(relation => relation.ParentModule) 
+            relations = relations.Include(relation => relation.ParentModule)
                                  .OrderByDescending(x => x.Id);
 
             return relations;

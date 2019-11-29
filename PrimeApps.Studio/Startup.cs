@@ -81,14 +81,8 @@ namespace PrimeApps.Studio
                     });
             });
 
-            services.AddOData(); 
+            services.AddOData();
             services.AddODataQueryFilter();
-            //services.AddTransient<ODataUriResolver>();
-            //services.AddTransient<ODataQueryValidator>();
-            //services.AddTransient<TopQueryValidator>();
-            //services.AddTransient<FilterQueryValidator>();
-            //services.AddTransient<SkipQueryValidator>();
-            //services.AddTransient<OrderByQueryValidator>();
 
             services.AddMvc(opt =>
                 {
@@ -220,11 +214,7 @@ namespace PrimeApps.Studio
                     await next();
                 }
             });
-
-            var builder = new ODataConventionModelBuilder();
-
-            builder.EnableLowerCamelCase();
-
+             
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -240,27 +230,8 @@ namespace PrimeApps.Studio
                 * These two option for odata controller.
                 */
                 routes.Select().Expand().Filter().OrderBy().MaxTop(null).Count();
-                routes.EnableDependencyInjection();
+                routes.EnableDependencyInjection();                
             });
         }
     }
-
-    //public class Test
-    //{
-    //    public IEdmModel GetEdmModel(IServiceProvider serviceProvider)
-    //    {
-    //        var builder = new ODataConventionModelBuilder(serviceProvider);
-    //        builder.EntitySet<Module>(nameof(Module))
-    //        .EntityType
-    //        .Filter()
-    //        .Count()
-    //        .Expand()
-    //        .OrderBy()
-    //        .Page()
-    //        .Select();
-
-    //        return builder.GetEdmModel();
-    //    }
-    //}
-
 }
