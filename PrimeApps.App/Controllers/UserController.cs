@@ -280,6 +280,8 @@ namespace PrimeApps.App.Controllers
                     return Ok(null);
 
                 acc.user.tenantLanguage = AppUser.TenantLanguage;
+                acc.user.Language = AppUser.Language;
+                
                 acc.instances = tenant;
                 var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
                 if (!string.IsNullOrEmpty(storageUrl))

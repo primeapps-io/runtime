@@ -215,3 +215,5 @@ FakesAssemblies/
 
 /PrimeApps.CLI/Properties/launchSettings.json
 /PrimeApps.App/wwwroot/bundles/
+/programs/
+/data/
