@@ -12,6 +12,10 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Chart;
+using Microsoft.AspNet.OData.Query;
+using PrimeApps.Model.Entities.Tenant;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -54,15 +58,15 @@ namespace PrimeApps.Studio.Controllers
         }
 
 
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody] PaginationModel paginationModel)
+        [Route("find")]
+        public async Task<IActionResult> Find(ODataQueryOptions<Report> queryOptions)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "report", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var reports = await _reportRepository.Find(paginationModel);
-
-            return Ok(reports);
+            var views = await _reportRepository.Find();
+            var queryResults = (IQueryable<Report>)queryOptions.ApplyTo(views);
+            return Ok(new PageResult<Report>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
         [Route("get_by_id/{id:int}"), HttpGet]

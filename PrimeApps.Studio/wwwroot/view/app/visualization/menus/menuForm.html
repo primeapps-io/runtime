@@ -88,7 +88,6 @@
 										<select class="form-control"
 												name="profile_name"
 												ng-model="menu.profile"
-												ng-required="!menu.default"
 												ng-options="o as o['name'] for o in newProfiles | filter:{deleted:'!true'}">
 											<option value="">{{'Common.Select' | translate}}</option>
 										</select>
