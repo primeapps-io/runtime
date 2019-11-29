@@ -112,7 +112,9 @@ angular.module('primeapps')
                     $scope.currentActionButton = actionButton;
                     $scope.currentActionButton.action_button_name = actionButton.name;
                     $scope.currentActionButton.action_button_url = actionButton.url;
-                    $scope.currentActionButton.module = actionButton.parent_module;
+                    $scope.currentActionButton.module = actionButton.parent_module || actionButton.module;
+                    $scope.currentActionButton.trigger = actionButton.trigger_clone;
+                    $scope.currentActionButton.action_type = actionButton.type;
 
                     if (actionButton.environment && actionButton.environment.indexOf(',') > -1)
                         $scope.currentActionButton.environments = actionButton.environment.split(',');
@@ -131,15 +133,18 @@ angular.module('primeapps')
                 $scope.currentActionButtonState = angular.copy($scope.currentActionButton);
                 $scope.actionButtonTypes = [
                     {
-                        type: "Modal",
+                        text: "Modal",
+                        name: "ModalFrame",
                         value: 3
                     },
                     {
-                        type: "Webhook",
+                        text: "Webhook",
+                        name: "Webhook",
                         value: 2
                     },
                     {
-                        type: "Script",
+                        text: "Script",
+                        name: "Script",
                         value: 1
                     }
                 ];
@@ -658,11 +663,16 @@ angular.module('primeapps')
                         },
                         parse: function (data) {
                             for (var i = 0; i < data.items.length; i++) {
-                                angular.forEach(data.items[i], function (value, key) {
-                                    if (key === 'trigger')
-                                        key = 'trigger_clone';
-                                });
+                                data.items[i].trigger_clone = angular.copy(data.items[i].trigger);
+                                delete data.items[i].trigger;
+
+                                //angular.forEach(data.items[i], function (value, key) {
+                                //    if (key === 'trigger')
+                                //        key = 'trigger_clone';
+                                //});
                             }
+
+                            return data;
                         }
                     }
 

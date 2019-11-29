@@ -63,7 +63,11 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> Find(int id, ODataQueryOptions<Dependency> queryOptions)
         {
             var dependencies = await _dependencyRepository.Find(id);
-            var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
+            var serializerSettings = new JsonSerializerSettings
+            { 
+                PreserveReferencesHandling = PreserveReferencesHandling.None,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            };
 
             var json = JsonConvert.SerializeObject(dependencies, serializerSettings);
             var newData = JsonConvert.DeserializeObject<ICollection<Dependency>>(json);
