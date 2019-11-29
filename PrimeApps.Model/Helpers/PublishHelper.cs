@@ -258,7 +258,7 @@ namespace PrimeApps.Model.Helpers
 
                     var token = studioToken;
                     
-                    if (isLocal)
+                    if (!string.IsNullOrEmpty(localAuth))
                     {
                         var authIntegrationEmail = "app@primeapps.io";
                         var authIntegrationPassword = "123456";
