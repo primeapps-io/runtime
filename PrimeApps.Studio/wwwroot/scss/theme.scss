@@ -4,7 +4,7 @@
   bottom: 2px;
   right: -5px;
   border: none;
-} 
+}
 
 @keyframes pagepointmove {
   from {
@@ -419,7 +419,7 @@ $primeapps-color: #0D6FAA;
 }
 
 .go-live {
-   .swal2-actions {
+  .swal2-actions {
     justify-content: left !important;
   }
   .swal2-content {
@@ -2958,6 +2958,11 @@ button, select {
         background-color: rgba(206, 4, 4, 0.15) !important;
       }
     }
+    .mce-tinymce{
+      .mce-edit-area{
+        background-color: rgba(206, 4, 4, 0.15) !important;
+      }
+    }
   }
 
   .pagination {
@@ -5024,7 +5029,7 @@ button, select {
   .c-settings-table{
     table{
       margin-bottom: 20px;
-      
+
       tbody{
         tr{
           cursor: default;
@@ -5034,7 +5039,7 @@ button, select {
           &.black5{
             background: rgba(0,0,0,0.05);
             font-size: 90%;
-            
+
             &:hover{
               background: rgba(0,0,0,0.05);
             }
