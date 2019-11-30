@@ -11,6 +11,5 @@ namespace PrimeApps.Model.Repositories.Interfaces
     {
         Task<Notification> Create(Notification notification);
         Task<Notification> Update(Notification notification);
-        Task<Template> GetTemplate(string code);
     }
 }

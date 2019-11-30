@@ -9,8 +9,10 @@ using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.App.Storage;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+
 namespace PrimeApps.App.Controllers
 {
     [Route("api/template"), Authorize]
@@ -54,7 +56,8 @@ namespace PrimeApps.App.Controllers
         [Route("get_all"), HttpGet]
         public async Task<IActionResult> GetAll([FromQuery(Name = "type")]TemplateType type = TemplateType.NotSet, [FromQuery(Name = "moduleName")]string moduleName = "")
         {
-            var templates = await _templateRepostory.GetAll(type, moduleName);
+            var language = AppUser.Language.ToEnum<LanguageType>();
+            var templates = await _templateRepostory.GetAll(type, language, true, moduleName);
 
             return Ok(templates);
         }
