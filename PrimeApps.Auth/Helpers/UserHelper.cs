@@ -116,9 +116,9 @@ namespace PrimeApps.Auth.Helpers
             {
                 settings = new PlatformUserSetting
                 {
-                    Culture = "en-US",
-                    Language = "en",
-                    Currency = "USD",
+                    Culture = string.IsNullOrEmpty(userModel.Culture) ? "en-US" : userModel.Culture,
+                    Language = string.IsNullOrEmpty(userModel.Language) ? "en" : userModel.Language,
+                    Currency = string.IsNullOrEmpty(userModel.Currency) ? "USD" : userModel.Currency,
                     TimeZone = "America/New_York",
                 };
             }
@@ -177,7 +177,7 @@ namespace PrimeApps.Auth.Helpers
 
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
                 {
-                    var _currentUser = new CurrentUser {TenantId = previewMode == "app" ? appId : tenantId, UserId = platformUserId, PreviewMode = previewMode};
+                    var _currentUser = new CurrentUser { TenantId = previewMode == "app" ? appId : tenantId, UserId = platformUserId, PreviewMode = previewMode };
                     _userRepository.CurrentUser = _currentUser;
 
                     var result = await _userRepository.CreateAsync(user);
@@ -228,7 +228,7 @@ namespace PrimeApps.Auth.Helpers
                     if (platformUser.TenantsAsUser == null)
                         platformUser.TenantsAsUser = new List<UserTenant>();
 
-                    platformUser.TenantsAsUser.Add(new UserTenant {Tenant = tenant, PlatformUser = platformUser});
+                    platformUser.TenantsAsUser.Add(new UserTenant { Tenant = tenant, PlatformUser = platformUser });
 
                     await _platformUserRepository.UpdateAsync(platformUser);
                 }
@@ -240,7 +240,7 @@ namespace PrimeApps.Auth.Helpers
 
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
                 {
-                    var _currentUser = new CurrentUser {TenantId = previewMode == "app" ? appId : tenantId, UserId = resultTenantUser.Id, PreviewMode = previewMode};
+                    var _currentUser = new CurrentUser { TenantId = previewMode == "app" ? appId : tenantId, UserId = resultTenantUser.Id, PreviewMode = previewMode };
                     _userRepository.CurrentUser = _currentUser;
 
                     var result = _userRepository.GetById(resultTenantUser.Id);

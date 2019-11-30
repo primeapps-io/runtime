@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PrimeApps.Model.Context;
@@ -9,9 +10,10 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.TenantDB
 {
     [DbContext(typeof(TenantDBContext))]
-    partial class TenantDBContextModelSnapshot : ModelSnapshot
+    [Migration("20191127141650_Task3446")]
+    partial class Task3446
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -636,10 +638,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .HasColumnName("id");
 
                     b.Property<string>("CaptionEn")
+                        .IsRequired()
                         .HasColumnName("caption_en")
                         .HasMaxLength(100);
 
                     b.Property<string>("CaptionTr")
+                        .IsRequired()
                         .HasColumnName("caption_tr")
                         .HasMaxLength(100);
 
@@ -676,18 +680,22 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .HasColumnName("updated_by");
 
                     b.Property<string>("XaxisNameEn")
+                        .IsRequired()
                         .HasColumnName("x_axis_name_en")
                         .HasMaxLength(80);
 
                     b.Property<string>("XaxisNameTr")
+                        .IsRequired()
                         .HasColumnName("x_axis_name_tr")
                         .HasMaxLength(80);
 
                     b.Property<string>("YaxisNameEn")
+                        .IsRequired()
                         .HasColumnName("y_axis_name_en")
                         .HasMaxLength(80);
 
                     b.Property<string>("YaxisNameTr")
+                        .IsRequired()
                         .HasColumnName("y_axis_name_tr")
                         .HasMaxLength(80);
 
@@ -914,10 +922,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .HasColumnName("is_active");
 
                     b.Property<string>("NameEn")
+                        .IsRequired()
                         .HasColumnName("name_en")
                         .HasMaxLength(50);
 
                     b.Property<string>("NameTr")
+                        .IsRequired()
                         .HasColumnName("name_tr")
                         .HasMaxLength(50);
 
@@ -985,10 +995,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .HasColumnName("deleted");
 
                     b.Property<string>("NameEn")
+                        .IsRequired()
                         .HasColumnName("name_en")
                         .HasMaxLength(50);
 
                     b.Property<string>("NameTr")
+                        .IsRequired()
                         .HasColumnName("name_tr")
                         .HasMaxLength(50);
 
@@ -3220,10 +3232,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .HasColumnName("module_id");
 
                     b.Property<string>("NameEn")
+                        .IsRequired()
                         .HasColumnName("name_en")
                         .HasMaxLength(100);
 
                     b.Property<string>("NameTr")
+                        .IsRequired()
                         .HasColumnName("name_tr")
                         .HasMaxLength(100);
 
@@ -3336,10 +3350,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .HasColumnName("deleted");
 
                     b.Property<string>("NameEn")
+                        .IsRequired()
                         .HasColumnName("name_en")
                         .HasMaxLength(100);
 
                     b.Property<string>("NameTr")
+                        .IsRequired()
                         .HasColumnName("name_tr")
                         .HasMaxLength(100);
 
@@ -4360,10 +4376,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .HasMaxLength(100);
 
                     b.Property<string>("NameEn")
+                        .IsRequired()
                         .HasColumnName("name_en")
                         .HasMaxLength(200);
 
                     b.Property<string>("NameTr")
+                        .IsRequired()
                         .HasColumnName("name_tr")
                         .HasMaxLength(200);
 

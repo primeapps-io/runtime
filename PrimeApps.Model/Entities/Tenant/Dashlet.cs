@@ -7,8 +7,11 @@ namespace PrimeApps.Model.Entities.Tenant
     [Table("dashlets")]
     public class Dashlet : BaseEntity
     {
-        [Column("name"), MaxLength(50), Required]
-        public string Name { get; set; }
+        [Column("name_en"), MaxLength(50)]
+        public string NameEn { get; set; }
+        
+        [Column("name_tr"), MaxLength(50)]
+        public string NameTr { get; set; }
 
         [Column("dashlet_area"), Required]
         public DashletArea DashletArea { get; set; }

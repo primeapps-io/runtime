@@ -161,6 +161,7 @@ namespace PrimeApps.App.Controllers
         [Route("update_dashlet/{id:int}"), HttpPut]
         public async Task<IActionResult> UpdateDashlet(int id, [FromBody]DashletBindingModel dashlet)
         {
+           
             var dashletEntity = await _dashletRepository.GetDashletById(id);
 
             if (dashletEntity == null)

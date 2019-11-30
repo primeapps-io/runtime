@@ -12,7 +12,7 @@
                                     <ul id="dashletOrderContainer" class="list-unstyled">
                                         <li ng-repeat="dashlet in dashlets" class="option-drag   option-handle">
                                             <i class="fa fa-arrows"></i> {{ dashlet.dashlet_type === 'widget' ?
-                                            dashlet.widget.name :
+                                            dashlet.widget['name_'+user.language] :
                                             dashlet.chart_item.chart.caption }}
 
                                         </li>

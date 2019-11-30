@@ -6,11 +6,16 @@ namespace PrimeApps.App.Models
 {
     public class DashboardBindingModel
     {
-        [Required, StringLength(100)]
-        public string Name { get; set; }
+        [StringLength(100)]
+        public string NameEn { get; set; }
+        [StringLength(100)]
+        public string NameTr { get; set; }
 
         [StringLength(250)]
-        public string Description { get; set; }
+        public string DescriptionEn { get; set; }
+        
+        [StringLength(250)]
+        public string DescriptionTr { get; set; }
 
         public int? UserId { get; set; }
 
@@ -23,7 +28,8 @@ namespace PrimeApps.App.Models
     public class DashletBindingModel
     {
         [StringLength(100)]
-        public string Name { get; set; }
+        public string NameEn { get; set; }
+        public string NameTr { get; set; }
 
         [Required]
         public DashletArea DashletArea { get; set; }
