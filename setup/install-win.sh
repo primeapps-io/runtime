@@ -101,7 +101,7 @@ echo -e "${GREEN}Restoring databases...${NC}"
 
 # Set templet0 db as template
 echo -e "${GREEN}Setting templet0 db as template database...${NC}"
-./psql -d postgres -p 5434 -c "UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'templet0'; UPDATE pg_database SET datallowconn = FALSE WHERE datname = 'templet0';"
+./psql -d postgres -h localhost -p 5434 -c "UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'templet0'; UPDATE pg_database SET datallowconn = FALSE WHERE datname = 'templet0';"
 
 # Stop Postgres-PRE-Test, not required for now
 net stop "Postgres-PRE-Test"
