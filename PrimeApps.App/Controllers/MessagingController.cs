@@ -174,7 +174,7 @@ namespace PrimeApps.App.Controllers
             {
                 if (!emailRequest.TemplateWithBody.Contains("html"))
                 {
-                    var language = AppUser.Language.ToEnum<LanguageType>();
+                    var language = !string.IsNullOrEmpty(emailRequest.Language) ? emailRequest.Language.ToEnum<LanguageType>() : AppUser.Language.ToEnum<LanguageType>();
                     var template = _templateRepository.GetByCode(emailRequest.TemplateWithBody, language);
                     emailRequest.TemplateWithBody = template.Content;
                     emailRequest.Subject = template.Subject;
