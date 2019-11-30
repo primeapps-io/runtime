@@ -1606,10 +1606,9 @@ namespace PrimeApps.Auth.UI
             if (applicationInfo != null)
             {
                 var token = "";
-                var culture = !string.IsNullOrEmpty(model.Culture)
-                    ? model.Culture
-                    : applicationInfo.ApplicationSetting.Culture;
-
+                var culture = !string.IsNullOrEmpty(model.Culture) ? model.Culture : applicationInfo.ApplicationSetting.Culture;
+                var language = !string.IsNullOrEmpty(culture) ? culture.Substring(0, 2) : applicationInfo.Language;
+                    
                 if (!externalLogin && !identityUser.EmailConfirmed)
                     token = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
 
@@ -1792,7 +1791,7 @@ namespace PrimeApps.Auth.UI
 
                         response["Success"] = true;
 
-                        Queue.QueueBackgroundWorkItem(x => _userHelper.CreateIntegrationUser(tenant.AppId, tenantId, applicationInfo.Name, applicationInfo.Secret, applicationInfo?.Domain));
+                        Queue.QueueBackgroundWorkItem(x => _userHelper.CreateIntegrationUser(tenant.AppId, tenantId, applicationInfo.Name, applicationInfo.Secret, applicationInfo?.Domain, language));
                     }
                     catch (Exception ex)
                     {
