@@ -14,7 +14,9 @@ namespace PrimeApps.Model.Repositories
 {
     public class TemplateRepository : RepositoryBaseTenant, ITemplateRepository
     {
-        public TemplateRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public TemplateRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        {
+        }
 
         public async Task<Template> GetById(int id)
         {
@@ -26,7 +28,7 @@ namespace PrimeApps.Model.Repositories
 
         public Template GetByCode(string code, LanguageType language = LanguageType.Tr)
         {
-            return DbContext.Templates.FirstOrDefault(x => x.Code == code && x.Language == language);
+            return DbContext.Templates.FirstOrDefault(x => x.Code == code && x.Language == language && !x.Deleted);
         }
 
         public async Task<ICollection<Template>> GetByType(TemplateType templateType)
@@ -36,13 +38,19 @@ namespace PrimeApps.Model.Repositories
                 .ToListAsync();
         }
         
-        public async Task<ICollection<Template>> GetAll(TemplateType templateType, string moduleName = "")
+        public async Task<ICollection<Template>> GetAll(TemplateType templateType, LanguageType language, bool hasNotCode = true, string moduleName = "")
         {
             var templates = DbContext.Templates
-                   .Include(x => x.Shares)
-                   .ThenInclude(x => x.TenantUser)
-                   .Include(x => x.Permissions)
-                   .Where(x => x.Code == null && x.Deleted == false);
+                .Include(x => x.Shares)
+                .ThenInclude(x => x.TenantUser)
+                .Include(x => x.Permissions)
+                .Where(x => x.Deleted == false);
+
+            if (language != LanguageType.NotSet)
+                templates = templates.Where(x => x.Language == language);
+
+            if (hasNotCode)
+                templates = templates.Where(x => x.Code == null);
 
             if (templateType != TemplateType.NotSet)
                 templates = templates.Where(x => x.TemplateType == templateType);
@@ -53,8 +61,8 @@ namespace PrimeApps.Model.Repositories
             if (templateType == TemplateType.Email)
             {
                 templates = templates.Where(x => x.SharingType == TemplateSharingType.Everybody
-                || x.CreatedBy.Id == CurrentUser.UserId
-                || x.Shares.Any(j => j.UserId == CurrentUser.UserId));
+                                                 || x.CreatedBy.Id == CurrentUser.UserId
+                                                 || x.Shares.Any(j => j.UserId == CurrentUser.UserId));
 
                 return await templates.ToListAsync();
             }
@@ -120,7 +128,7 @@ namespace PrimeApps.Model.Repositories
         public int Count(TemplateType templateType)
         {
             var count = DbContext.Templates
-               .Where(x => !x.Deleted && x.TemplateType == templateType).Count();
+                .Where(x => !x.Deleted && x.TemplateType == templateType).Count();
             return count;
         }
 
@@ -144,11 +152,9 @@ namespace PrimeApps.Model.Repositories
                 {
                     templates = templates.OrderByDescending(x => propertyInfo.GetValue(x, null));
                 }
-
             }
 
             return await templates.ToListAsync();
         }
     }
 }
-

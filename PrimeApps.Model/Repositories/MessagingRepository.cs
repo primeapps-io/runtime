@@ -24,11 +24,5 @@ namespace PrimeApps.Model.Repositories
             await DbContext.SaveChangesAsync();
             return notification;
         }
-        public async Task<Template> GetTemplate(string code)
-        {
-            var templateBody = await DbContext.Templates.Where(x => x.Code == code && !x.Deleted).FirstOrDefaultAsync();
-
-            return templateBody;
-        }
     }
 }

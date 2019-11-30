@@ -22,7 +22,7 @@ namespace PrimeApps.Auth.Helpers
         Task<ApplicationUser> CreateIdentityUser(AddUserBindingModel userModel, string domain);
         Task<PlatformUser> CreatePlatformUser(AddUserBindingModel userModel, string appName, bool isIntegration = false, PlatformUserSetting settings = null);
         Task<TenantUser> CreateTenantUser(int platformUserId, AddUserBindingModel userModel, int appId, int tenantId, string culture = "en-US", string currency = "en");
-        Task<bool> CreateIntegrationUser(int appId, int tenantId, string appName, string secret, string domain);
+        Task<bool> CreateIntegrationUser(int appId, int tenantId, string appName, string secret, string domain, string language);
     }
 
     public class UserHelper : IUserHelper
@@ -190,7 +190,7 @@ namespace PrimeApps.Auth.Helpers
             }
         }
 
-        public async Task<bool> CreateIntegrationUser(int appId, int tenantId, string appName, string secret, string domain)
+        public async Task<bool> CreateIntegrationUser(int appId, int tenantId, string appName, string secret, string domain, string language)
         {
             var password = CryptoHelper.Decrypt(secret);
 
@@ -199,7 +199,8 @@ namespace PrimeApps.Auth.Helpers
                 Email = $"integration_{appId}_{tenantId}@primeapps.io",
                 FirstName = "Integration",
                 LastName = "User",
-                Password = password
+                Password = password,
+                Language = language
             };
 
             var resultIdentityUser = await CreateIdentityUser(user, domain);
