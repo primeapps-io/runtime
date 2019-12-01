@@ -51,6 +51,10 @@ namespace PrimeApps.Model.Migrations.TenantDB
                 table: "helps",
                 nullable: false,
                 defaultValue: 0);
+            
+            migrationBuilder.Sql("UPDATE profiles SET name_tr = name_en, description_tr = description_en;");
+            migrationBuilder.Sql("UPDATE action_buttons SET name_tr = name_en;");
+            migrationBuilder.Sql("UPDATE helps SET language = 2;");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
