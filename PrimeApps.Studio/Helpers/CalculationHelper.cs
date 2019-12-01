@@ -3675,8 +3675,8 @@ namespace PrimeApps.Studio.Helpers
 
                 parentId = await roleRepository.CreateAsync(new Role()
                 {
-                    LabelEn = schemaItem.Name,
-                    LabelTr = schemaItem.Name,
+                    LabelEn = schemaItem.NameEn,
+                    LabelTr = schemaItem.NameTr,
                     DescriptionEn = null,
                     DescriptionTr = null,
                     Master = false,

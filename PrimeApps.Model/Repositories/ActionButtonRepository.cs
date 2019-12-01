@@ -18,7 +18,7 @@ namespace PrimeApps.Model.Repositories
         {
         }
 
-        public async Task<ICollection<ActionButtonViewModel>> GetByModuleId(int id)
+        public async Task<ICollection<ActionButtonViewModel>> GetByModuleId(int id, string language = "en")
         {
             var actionButtons = new List<ActionButtonViewModel>();
 
@@ -33,7 +33,7 @@ namespace PrimeApps.Model.Repositories
                 {
                     Id = actionButtonItem.Id,
                     ActionType = actionButtonItem.Type,
-                    Name = actionButtonItem.Name,
+                    Name = language == "en" ? actionButtonItem.NameEn : actionButtonItem.NameTr,
                     Template = actionButtonItem.Template,
                     ModuleId = id,
                     Icon = actionButtonItem.Icon,

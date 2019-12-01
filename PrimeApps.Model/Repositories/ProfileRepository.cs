@@ -34,7 +34,8 @@ namespace PrimeApps.Model.Repositories
         {
             Profile newProfile = new Profile()
             {
-                Description = newProfileDTO.Description,
+                DescriptionEn = newProfileDTO.Description,
+                DescriptionTr = newProfileDTO.Description,
                 HasAdminRights = newProfileDTO.HasAdminRights,
                 IsPersistent = false,
                 SendEmail = newProfileDTO.SendEmail,
@@ -47,7 +48,8 @@ namespace PrimeApps.Model.Repositories
                 Tasks = newProfileDTO.Tasks,
                 Calendar = newProfileDTO.Calendar,
                 Newsfeed = newProfileDTO.Newsfeed,
-                Name = newProfileDTO.Name,
+                NameEn = newProfileDTO.Name,
+                NameTr = newProfileDTO.Name,
                 Dashboard = newProfileDTO.Dashboard,
                 Home = newProfileDTO.Home,
                 CollectiveAnnualLeave = newProfileDTO.CollectiveAnnualLeave,
@@ -129,8 +131,10 @@ namespace PrimeApps.Model.Repositories
 
             if (profileToUpdate == null) return;
 
-            profileToUpdate.Name = updatedProfileDTO.Name;
-            profileToUpdate.Description = updatedProfileDTO.Description;
+            profileToUpdate.NameEn = updatedProfileDTO.Name;
+            profileToUpdate.NameTr = updatedProfileDTO.Name;
+            profileToUpdate.DescriptionEn = updatedProfileDTO.Description;
+            profileToUpdate.DescriptionTr = updatedProfileDTO.Description;
             profileToUpdate.HasAdminRights = updatedProfileDTO.HasAdminRights;
             profileToUpdate.SendSMS = updatedProfileDTO.SendSMS;
             profileToUpdate.SendEmail = updatedProfileDTO.SendEmail;
@@ -276,7 +280,7 @@ namespace PrimeApps.Model.Repositories
                     UserIDs = x.Users.Select(z => z.Id).ToList(),
                     Permissions = x.Permissions.Select(y => new ProfilePermissionLightDTO()
                     {
-                        Type = (int) y.Type,
+                        Type = (int)y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,
@@ -295,14 +299,14 @@ namespace PrimeApps.Model.Repositories
             return profile;
         }
 
-        public async Task<IEnumerable<ProfileWithUsersDTO>> GetAllProfiles()
+        public async Task<IEnumerable<ProfileWithUsersDTO>> GetAllProfiles(string language = "en")
         {
             return await DbContext.Profiles
                 .Select(x => new ProfileWithUsersDTO()
                 {
                     ID = x.Id,
-                    Description = x.Description,
-                    Name = x.Name,
+                    Description = language == "en" ? x.DescriptionEn : x.DescriptionTr,
+                    Name = language == "en" ? x.NameEn : x.NameTr,
                     IsPersistent = x.IsPersistent,
                     HasAdminRights = x.HasAdminRights,
                     SendEmail = x.SendEmail,
@@ -327,7 +331,7 @@ namespace PrimeApps.Model.Repositories
                     {
                         ID = x.Id,
                         ModuleId = y.ModuleId,
-                        Type = (int) y.Type,
+                        Type = (int)y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,
@@ -460,8 +464,8 @@ namespace PrimeApps.Model.Repositories
                 .Select(x => new ProfileWithUsersDTO()
                 {
                     ID = x.Id,
-                    Description = x.Description,
-                    Name = x.Name,
+                    Description = x.DescriptionEn,
+                    Name = x.NameEn,
                     IsPersistent = x.IsPersistent,
                     HasAdminRights = x.HasAdminRights,
                     SendEmail = x.SendEmail,
@@ -486,7 +490,7 @@ namespace PrimeApps.Model.Repositories
                     {
                         ID = x.Id,
                         ModuleId = y.ModuleId,
-                        Type = (int) y.Type,
+                        Type = (int)y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,

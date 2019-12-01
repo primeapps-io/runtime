@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PrimeApps.Model.Context;
@@ -9,9 +10,10 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.TenantDB
 {
     [DbContext(typeof(TenantDBContext))]
-    partial class TenantDBContextModelSnapshot : ModelSnapshot
+    [Migration("20191201061106_Task3469")]
+    partial class Task3469
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,10 +45,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.Property<string>("DependentField")
                         .HasColumnName("dependent_field");
-
-                    b.Property<string>("Environment")
-                        .HasColumnName("environment")
-                        .HasMaxLength(10);
 
                     b.Property<string>("Headers")
                         .HasColumnName("headers");
@@ -100,8 +98,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("Deleted");
-
-                    b.HasIndex("Environment");
 
                     b.HasIndex("ModuleId");
 
@@ -728,22 +724,15 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<int>("CreatedById")
                         .HasColumnName("created_by");
 
-                    b.Property<string>("CustomUrl")
-                        .HasColumnName("custom_url");
-
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
-
-                    b.Property<string>("Environment")
-                        .HasColumnName("environment")
-                        .HasMaxLength(10);
 
                     b.Property<string>("Label")
                         .IsRequired()
                         .HasColumnName("label")
                         .HasMaxLength(100);
 
-                    b.Property<int?>("ModuleId")
+                    b.Property<int>("ModuleId")
                         .HasColumnName("module_id");
 
                     b.Property<string>("Name")
@@ -776,8 +765,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("Deleted");
-
-                    b.HasIndex("Environment");
 
                     b.HasIndex("ModuleId");
 
@@ -1681,10 +1668,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<string>("Dependencies")
                         .HasColumnName("dependencies");
 
-                    b.Property<string>("Environment")
-                        .HasColumnName("environment")
-                        .HasMaxLength(10);
-
                     b.Property<string>("Handler")
                         .IsRequired()
                         .HasColumnName("handler");
@@ -1715,8 +1698,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("Deleted");
-
-                    b.HasIndex("Environment");
 
                     b.HasIndex("Label");
 
@@ -1798,86 +1779,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("helps");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.HistoryDatabase", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
-
-                    b.Property<Guid>("CommandId")
-                        .HasColumnName("command_id");
-
-                    b.Property<string>("CommandText")
-                        .HasColumnName("command_text");
-
-                    b.Property<string>("CreatedByEmail")
-                        .IsRequired()
-                        .HasColumnName("created_by");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnName("deleted");
-
-                    b.Property<DateTime?>("ExecutedAt")
-                        .HasColumnName("executed_at");
-
-                    b.Property<string>("TableName")
-                        .HasColumnName("table_name");
-
-                    b.Property<string>("Tag")
-                        .HasColumnName("tag");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TableName");
-
-                    b.HasIndex("Tag");
-
-                    b.ToTable("history_database");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.HistoryStorage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
-
-                    b.Property<string>("CreatedByEmail")
-                        .IsRequired()
-                        .HasColumnName("created_by");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnName("deleted");
-
-                    b.Property<DateTime?>("ExecutedAt")
-                        .HasColumnName("executed_at");
-
-                    b.Property<string>("FileName")
-                        .HasColumnName("file_name");
-
-                    b.Property<string>("MimeType")
-                        .HasColumnName("mime_type");
-
-                    b.Property<string>("Operation")
-                        .HasColumnName("operation");
-
-                    b.Property<string>("Path")
-                        .HasColumnName("path");
-
-                    b.Property<string>("Tag")
-                        .HasColumnName("tag");
-
-                    b.Property<string>("UniqueName")
-                        .HasColumnName("unique_name");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Tag");
-
-                    b.HasIndex("UniqueName");
-
-                    b.ToTable("history_storage");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Import", b =>
@@ -2492,6 +2393,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.HasIndex("Deleted");
 
+                    b.HasIndex("LabelEn")
+                        .IsUnique();
+
+                    b.HasIndex("LabelTr")
+                        .IsUnique();
+
                     b.HasIndex("SystemCode")
                         .IsUnique();
 
@@ -2606,10 +2513,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
 
-                    b.Property<string>("Environment")
-                        .HasColumnName("environment")
-                        .HasMaxLength(10);
-
                     b.Property<int>("Frequency")
                         .HasColumnName("frequency");
 
@@ -2650,8 +2553,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("Deleted");
-
-                    b.HasIndex("Environment");
 
                     b.HasIndex("ModuleId");
 
@@ -4437,10 +4338,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
 
-                    b.Property<string>("Environment")
-                        .HasColumnName("environment")
-                        .HasMaxLength(10);
-
                     b.Property<int>("Frequency")
                         .HasColumnName("frequency");
 
@@ -4475,8 +4372,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("Deleted");
-
-                    b.HasIndex("Environment");
 
                     b.HasIndex("ModuleId");
 
@@ -4909,7 +4804,8 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany("Components")
-                        .HasForeignKey("ModuleId");
+                        .HasForeignKey("ModuleId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()

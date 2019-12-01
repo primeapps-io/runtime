@@ -220,7 +220,7 @@ namespace PrimeApps.Model.Repositories
                         if (aggregation.Field != report.GroupField)
                             record[aggregation.Field] = record.First().First();
 
-                        var recordFormatted = await RecordHelper.FormatRecordValues(report.Module, (JObject)record, moduleRepository, picklistRepository, configuration, appUser.TenantGuid, appUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules, currencyPicklistValue: currencyFilterValue);
+                        var recordFormatted = await RecordHelper.FormatRecordValues(report.Module, (JObject)record, moduleRepository, picklistRepository, configuration, appUser.TenantGuid, appUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules, currencyPicklistValue: currencyFilterValue, userLanguage: appUser.Language);
 
                         dataItem["label"] = !recordFormatted[report.GroupField].IsNullOrEmpty() ? recordFormatted[report.GroupField] : noneLabel;
                         dataItem["valueFormatted"] = recordFormatted[aggregation.Field];

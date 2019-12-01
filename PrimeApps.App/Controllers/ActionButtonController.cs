@@ -41,7 +41,7 @@ namespace PrimeApps.App.Controllers
         [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> GetActionButtons(int id)
         {
-            var actionButtons = await _actionButtonRepository.GetByModuleId(id);
+            var actionButtons = await _actionButtonRepository.GetByModuleId(id, AppUser.Language);
             actionButtons = _environmentHelper.DataFilter(actionButtons.ToList());
 
             await _actionButtonHelper.ProcessScriptFiles(actionButtons, _componentRepository);
