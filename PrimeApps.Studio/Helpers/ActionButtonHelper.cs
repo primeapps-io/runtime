@@ -11,7 +11,8 @@ namespace PrimeApps.Studio.Helpers
         {
             var actionbutton = new ActionButton
             {
-                Name = actionButtonModel.ActionButtonName,
+                NameEn = actionButtonModel.ActionButtonName,
+                NameTr = actionButtonModel.ActionButtonName,
                 Type = actionButtonModel.Type,
                 Trigger = actionButtonModel.Trigger,
                 CssClass = actionButtonModel.CssClass,
@@ -20,7 +21,7 @@ namespace PrimeApps.Studio.Helpers
                 ModuleId = actionButtonModel.ModuleId,
                 MethodType = actionButtonModel.MethodType,
                 Parameters = actionButtonModel.Parameters,
-                Headers=actionButtonModel.Headers
+                Headers = actionButtonModel.Headers
             };
 
             if (actionButtonModel.Permissions != null && actionButtonModel.Permissions.Count > 0)
@@ -44,7 +45,8 @@ namespace PrimeApps.Studio.Helpers
 
         public static void UpdateEntity(ActionButtonBindingModel actionButtonModel, ActionButton actionButton)
         {
-            actionButton.Name = actionButtonModel.ActionButtonName;
+            actionButton.NameEn = actionButtonModel.ActionButtonName;
+            actionButton.NameTr = actionButtonModel.ActionButtonName;
             actionButton.Type = actionButtonModel.Type;
             actionButton.Trigger = actionButtonModel.Trigger;
             actionButton.CssClass = actionButtonModel.CssClass;

@@ -94,7 +94,7 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<ICollection<Help>> GetAll(ModalType modalType = ModalType.NotSet)
+        public async Task<ICollection<Help>> GetAll(ModalType modalType = ModalType.NotSet, LanguageType language = LanguageType.NotSet)
         {
             var helps = DbContext.Helps
                 .Where(x => !x.Deleted);
@@ -102,73 +102,84 @@ namespace PrimeApps.Model.Repositories
             if (modalType != ModalType.NotSet)
                 helps = helps.Where(x => x.ModalType == modalType);
 
+            if (language != LanguageType.NotSet)
+                helps = helps.Where(x => x.Language == language);
+
             helps = helps.OrderBy(x => x.CreatedAt);
 
             return await helps.ToListAsync();
         }
 
-        public async Task<Help> GetByType(ModalType templateType, int? moduleId = null, string route = "")
+        public async Task<Help> GetByType(ModalType templateType, LanguageType language = LanguageType.NotSet, int? moduleId = null, string route = "")
         {
-            var templates = DbContext.Helps
+            var helps = DbContext.Helps
                 .Where(x => x.Deleted == false)
                 .Where(x => x.ModalType == templateType);
 
-
+            if (language != LanguageType.NotSet)
+                helps = helps.Where(x => x.Language == language);
+            
             if (moduleId.HasValue)
-                templates = templates.Where(x => x.ModuleId == moduleId);
-
+                helps = helps.Where(x => x.ModuleId == moduleId);
 
             if (!string.IsNullOrEmpty(route) && route != "null")
-                templates = templates.Where(x => x.RouteUrl == route);
+                helps = helps.Where(x => x.RouteUrl == route);
 
-            templates = templates.OrderByDescending(x => x.CreatedAt);
+            helps = helps.OrderByDescending(x => x.CreatedAt);
 
-            return await templates.FirstOrDefaultAsync();
+            return await helps.FirstOrDefaultAsync();
         }
 
-        public async Task<Help> GetModuleType(ModalType templateType, ModuleType moduleType, int? moduleId = null)
+        public async Task<Help> GetModuleType(ModalType templateType, ModuleType moduleType, LanguageType language = LanguageType.NotSet, int? moduleId = null)
         {
-            var templates = DbContext.Helps
+            var helps = DbContext.Helps
                 .Where(x => x.Deleted == false)
                 .Where(x => x.ModalType == templateType)
                 .Where(x => x.ModuleType == moduleType);
 
-
+            if (language != LanguageType.NotSet)
+                helps = helps.Where(x => x.Language == language);
+            
             if (moduleId.HasValue)
-                templates = templates.Where(x => x.ModuleId == moduleId);
+                helps = helps.Where(x => x.ModuleId == moduleId);
+            
+            helps = helps.OrderByDescending(x => x.CreatedAt);
 
-
-            templates = templates.OrderByDescending(x => x.CreatedAt);
-
-            return await templates.FirstOrDefaultAsync();
+            return await helps.FirstOrDefaultAsync();
         }
 
-        public async Task<Help> GetFistScreen(ModalType templateType, bool? firstscreen = false)
+        public async Task<Help> GetFistScreen(ModalType templateType, LanguageType language = LanguageType.NotSet, bool? firstscreen = false)
         {
-            var templates = DbContext.Helps
+            var helps = DbContext.Helps
                 .Where(x => x.Deleted == false)
                 .Where(x => x.ModalType == templateType);
 
+            if (language != LanguageType.NotSet)
+                helps = helps.Where(x => x.Language == language);
+            
             if (firstscreen != false)
-                templates = templates.Where(x => x.FirstScreen == firstscreen);
+                helps = helps.Where(x => x.FirstScreen == firstscreen);
 
-            templates = templates.OrderByDescending(x => x.CreatedAt);
+            helps = helps.OrderByDescending(x => x.CreatedAt);
 
-            return await templates.FirstOrDefaultAsync();
+            return await helps.FirstOrDefaultAsync();
         }
 
-        public async Task<ICollection<Help>> GetCustomHelp(ModalType templateType, bool? customhelp = false)
+        public async Task<ICollection<Help>> GetCustomHelp(ModalType templateType, LanguageType language = LanguageType.NotSet, bool? customhelp = false)
         {
-            var templates = DbContext.Helps
+            var helps = DbContext.Helps
                 .Where(x => x.Deleted == false)
                 .Where(x => x.ModalType == templateType);
 
+            if (language != LanguageType.NotSet)
+                helps = helps.Where(x => x.Language == language);
+            
             if (customhelp != false)
-                templates = templates.Where(x => x.CustomHelp == customhelp);
+                helps = helps.Where(x => x.CustomHelp == customhelp);
 
-            templates = templates.OrderByDescending(x => x.CreatedAt);
+            helps = helps.OrderByDescending(x => x.CreatedAt);
 
-            return await templates.ToListAsync();
+            return await helps.ToListAsync();
         }
     }
 }

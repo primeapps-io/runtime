@@ -44,7 +44,7 @@ namespace PrimeApps.App.Controllers
         [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> GetActionButtons(int id)
         {
-            var actionButtons = await _actionButtonRepository.GetByModuleId(id);
+            var actionButtons = await _actionButtonRepository.GetByModuleId(id, AppUser.Language);
             var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
             previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 

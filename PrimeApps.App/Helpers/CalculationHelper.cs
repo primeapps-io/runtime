@@ -2902,7 +2902,7 @@ namespace PrimeApps.App.Helpers
 										branchRecord = recordRepository.GetById(branchModule, int.Parse(calisanRecord["branch"].ToString()));
 										branchRecord = (bool)record["branch_manager"] ? branchRecord : subBranchRecord;
 										roleId = branchRecord != null && !branchRecord["branch"].IsNullOrEmpty() ? (int)branchRecord["branch"] : 0;
-										missingSchema = await MissingProfileSchema(new List<Profile>() { new Profile() { Name = (string)branchRecord["name"] } }, roleId, roleId, profileRepository, roleRepository, title);
+										missingSchema = await MissingProfileSchema(new List<Profile>() { new Profile() { NameEn = (string)branchRecord["name"], NameTr = (string)branchRecord["name"] } }, roleId, roleId, profileRepository, roleRepository, title);
 									}
 									else break;
 
@@ -3755,8 +3755,8 @@ namespace PrimeApps.App.Helpers
 
 					parentId = await roleRepository.CreateAsync(new Role()
 					{
-						LabelEn = schemaItem.Name,
-						LabelTr = schemaItem.Name,
+						LabelEn = schemaItem.NameEn,
+						LabelTr = schemaItem.NameTr,
 						DescriptionEn = null,
 						DescriptionTr = null,
 						Master = false,
@@ -3770,8 +3770,8 @@ namespace PrimeApps.App.Helpers
 				{
 					parentId = await roleRepository.CreateAsync(new Role()
 					{
-						LabelEn = "Standard-" + schemaItem.Name,
-						LabelTr = "Standart-" + schemaItem.Name,
+						LabelEn = "Standard-" + schemaItem.NameEn,
+						LabelTr = "Standart-" + schemaItem.NameTr,
 						DescriptionEn = null,
 						DescriptionTr = null,
 						Master = false,

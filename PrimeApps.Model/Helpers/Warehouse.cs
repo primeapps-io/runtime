@@ -470,17 +470,17 @@ namespace PrimeApps.Model.Helpers
 
             foreach (var profile in profiles)
             {
-                if (string.IsNullOrEmpty(profile.Name) && string.IsNullOrEmpty(profile.Description) && profile.IsPersistent)
+                if (string.IsNullOrEmpty(profile.NameEn) && string.IsNullOrEmpty(profile.DescriptionEn) && profile.IsPersistent)
                 {
                     if (profile.HasAdminRights)
                     {
-                        profile.Name = "Sistem Yöneticisi";
-                        profile.Description = "Bu profil tüm yetkilere sahiptir";
+                        profile.NameEn = "Sistem Yöneticisi";
+                        profile.DescriptionEn = "Bu profil tüm yetkilere sahiptir";
                     }
                     else
                     {
-                        profile.Name = "Standart Kullanıcı";
-                        profile.Description = "Bu profil yönetimsel yetkilere sahip değildir";
+                        profile.NameEn = "Standart Kullanıcı";
+                        profile.DescriptionEn = "Bu profil yönetimsel yetkilere sahip değildir";
                     }
                 }
 
@@ -673,11 +673,11 @@ namespace PrimeApps.Model.Helpers
                     command.Parameters.Add(new SqlParameter { ParameterName = "parent_id", SqlValue = profile.ParentId, SqlDbType = SqlDbType.Int });
                     command.Parameters.Add(new SqlParameter { ParameterName = "order", SqlValue = profile.Order, SqlDbType = SqlDbType.Int });
 
-                    if (!string.IsNullOrEmpty(profile.Name))
-                        command.Parameters.Add(new SqlParameter { ParameterName = "name", SqlValue = profile.Name, SqlDbType = SqlDbType.NVarChar });
+                    if (!string.IsNullOrEmpty(profile.NameEn))
+                        command.Parameters.Add(new SqlParameter { ParameterName = "name", SqlValue = profile.NameEn, SqlDbType = SqlDbType.NVarChar });
 
-                    if (!string.IsNullOrEmpty(profile.Description))
-                        command.Parameters.Add(new SqlParameter { ParameterName = "description", SqlValue = profile.Description, SqlDbType = SqlDbType.NVarChar });
+                    if (!string.IsNullOrEmpty(profile.DescriptionEn))
+                        command.Parameters.Add(new SqlParameter { ParameterName = "description", SqlValue = profile.DescriptionEn, SqlDbType = SqlDbType.NVarChar });
 
                     if (!string.IsNullOrEmpty(profile.SystemCode))
                         command.Parameters.Add(new SqlParameter { ParameterName = "system_code", SqlValue = profile.SystemCode, SqlDbType = SqlDbType.NVarChar });
@@ -728,11 +728,11 @@ namespace PrimeApps.Model.Helpers
                     command.Parameters.Add(new SqlParameter { ParameterName = "parent_id", SqlValue = profile.ParentId, SqlDbType = SqlDbType.Int });
                     command.Parameters.Add(new SqlParameter { ParameterName = "order", SqlValue = profile.Order, SqlDbType = SqlDbType.Int });
 
-                    if (!string.IsNullOrEmpty(profile.Name))
-                        command.Parameters.Add(new SqlParameter { ParameterName = "name", SqlValue = profile.Name, SqlDbType = SqlDbType.NVarChar });
+                    if (!string.IsNullOrEmpty(profile.NameEn))
+                        command.Parameters.Add(new SqlParameter { ParameterName = "name", SqlValue = profile.NameEn, SqlDbType = SqlDbType.NVarChar });
 
-                    if (!string.IsNullOrEmpty(profile.Description))
-                        command.Parameters.Add(new SqlParameter { ParameterName = "description", SqlValue = profile.Description, SqlDbType = SqlDbType.NVarChar });
+                    if (!string.IsNullOrEmpty(profile.DescriptionEn))
+                        command.Parameters.Add(new SqlParameter { ParameterName = "description", SqlValue = profile.DescriptionEn, SqlDbType = SqlDbType.NVarChar });
 
                     if (!string.IsNullOrEmpty(profile.SystemCode))
                         command.Parameters.Add(new SqlParameter { ParameterName = "system_code", SqlValue = profile.SystemCode, SqlDbType = SqlDbType.NVarChar });
@@ -776,7 +776,7 @@ namespace PrimeApps.Model.Helpers
 
                     if (user.Profile != null)
                     {
-                        command.Parameters.Add(new SqlParameter { ParameterName = "profile", SqlValue = user.Profile.Name, SqlDbType = SqlDbType.NVarChar });
+                        command.Parameters.Add(new SqlParameter { ParameterName = "profile", SqlValue = user.Profile.NameEn, SqlDbType = SqlDbType.NVarChar });
                     }
                     else
                     {
@@ -854,9 +854,9 @@ namespace PrimeApps.Model.Helpers
 
                     if (user.Profile != null)
                     {
-                        if (user.Profile.Name != null)
+                        if (user.Profile.NameEn != null)
                         {
-                            command.Parameters.Add(new SqlParameter { ParameterName = "profile", SqlValue = user.Profile.Name, SqlDbType = SqlDbType.NVarChar });
+                            command.Parameters.Add(new SqlParameter { ParameterName = "profile", SqlValue = user.Profile.NameEn, SqlDbType = SqlDbType.NVarChar });
                         }
                         else
                         {

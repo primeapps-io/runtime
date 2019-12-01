@@ -225,7 +225,7 @@ namespace PrimeApps.App.Controllers
         {
             try
             {
-                var user = await _userRepository.GetUserInfoAsync(AppUser.Id);
+                var user = await _userRepository.GetUserInfoAsync(AppUser.Id, true, AppUser.Language);
 
                 if (user != null)
                 {
@@ -270,7 +270,7 @@ namespace PrimeApps.App.Controllers
             /*if (previewMode == "app")
                 acc.user = await _userRepository.GetUserInfoAsync(1, false);
             else*/
-            acc.user = await _userRepository.GetUserInfoAsync(AppUser.Id);
+            acc.user = await _userRepository.GetUserInfoAsync(AppUser.Id, true, AppUser.Language);
 
             if (acc.user != null)
             {
@@ -281,7 +281,7 @@ namespace PrimeApps.App.Controllers
 
                 acc.user.tenantLanguage = AppUser.TenantLanguage;
                 acc.user.Language = AppUser.Language;
-                
+
                 acc.instances = tenant;
                 var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
                 if (!string.IsNullOrEmpty(storageUrl))
@@ -433,7 +433,6 @@ namespace PrimeApps.App.Controllers
             await _userRepository.UpdateAsync(tenantUserToEdit);
 
             return Ok(userId);
-
         }
 
         [Route("send_user_password"), HttpPost]
