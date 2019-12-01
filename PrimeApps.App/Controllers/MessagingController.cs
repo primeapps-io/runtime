@@ -43,6 +43,7 @@ namespace PrimeApps.App.Controllers
             SetContext(context);
             SetCurrentUser(_messagingRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_settingRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_templateRepository, PreviewMode, TenantId, AppId);
 
             base.OnActionExecuting(context);
         }
