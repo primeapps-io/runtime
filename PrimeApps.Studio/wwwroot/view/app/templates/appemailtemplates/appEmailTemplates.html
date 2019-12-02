@@ -9,49 +9,49 @@
     </ul>
 </div>
 
-<div class="tab-content table-responsive">
+<div class="tab-content table-responsive" ng-if="false">
     <table class="table" ng-show="loading">
         <thead>
-        <tr>
-            <th>{{'Setup.Templates.TemplateName' | translate}}</th>
-            <th>Subject</th>
-            <th>Language</th>
-            <th>System Code</th>
-        </tr>
+            <tr>
+                <th>{{'Setup.Templates.TemplateName' | translate}}</th>
+                <th>Subject</th>
+                <th>Language</th>
+                <th>System Code</th>
+            </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="item in placeholderArray">
-            <td class="text-center">
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td> 
-            <td>
-                <div class="animated-background"></div>
-            </td>
-        </tr>
+            <tr ng-repeat="item in placeholderArray">
+                <td class="text-center">
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
         </tbody>
     </table>
     <table class="table" ng-show="!loading">
         <thead>
-        <tr>
-            <th>{{'Setup.Templates.TemplateName' | translate}}</th>
-            <th>Subject</th>
-            <th>Language</th>
-            <th>System Code</th>
-        </tr>
+            <tr>
+                <th>{{'Setup.Templates.TemplateName' | translate}}</th>
+                <th>Subject</th>
+                <th>Language</th>
+                <th>System Code</th>
+            </tr>
         </thead>
         <tbody ng-show="!loading">
-        <tr ng-repeat="template in templates" ng-click="showFormModal(template);">
-            <td>{{template.name}}</td>
-            <td>{{template.subject}}</td>
-            <td>{{template.language}}</td>
-            <td>{{template.system_code}}</td>
-        </tr>
+            <tr ng-repeat="template in templates" ng-click="showFormModal(template);">
+                <td>{{template.name}}</td>
+                <td>{{template.subject}}</td>
+                <td>{{template.language}}</td>
+                <td>{{template.system_code}}</td>
+            </tr>
         </tbody>
     </table>
     <div class="table-pagination">
@@ -89,4 +89,8 @@
             </select>
         </div>
     </div>
+</div>
+<div class="tab-content">
+    <kendo-grid class="grid-theme grid-theme-center table-responsive" k-scope-field="grid" id="kendo-grid" k-options="mainGridOptions">
+    </kendo-grid>
 </div>

@@ -260,16 +260,15 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find_app_email_template"), HttpPost]
-        public async Task<IActionResult> FindAppTemplate([FromBody]PaginationModel paginationModel, [FromUri]string currentAppName)
+        [Route("find_app_email_template")]
+        public async Task<IActionResult> FindAppEmailTemplate(ODataQueryOptions<AppDraftTemplate> queryOptions)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var app = await _appDraftRepository.GetByName(currentAppName.ToLower());
-            var templates = app != null ? await _appDraftTemplateRepository.Find(paginationModel, app.Id) : null;
-
-            return Ok(templates);
+            var views = await _appDraftTemplateRepository.Find();
+            var queryResults = (IQueryable<AppDraftTemplate>)queryOptions.ApplyTo(views);
+            return Ok(new PageResult<AppDraftTemplate>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
 
