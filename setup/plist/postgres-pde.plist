@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Label</key>
+        <string>io.primeapps.postgres.pde</string>
+        
+        <key>RunAtLoad</key>
+        <true/>
+        
+        <key>EnvironmentVariables</key>
+        <dict>
+            <key>PGDATA</key>
+            <string>{{DATA}}/pgsql_pde</string>
+            <key>PGPORT</key>
+            <string>5434</string>
+            <key>LANG</key>
+            <string>en_US.UTF-8</string>
+            <key>LC_ALL</key>
+            <string>en_US.UTF-8</string>
+        </dict>
+        
+        <key>ProgramArguments</key>
+        <array>
+            <string>{{PROGRAMS}}/pgsql/bin/postgres</string>
+        </array>
+        
+    </dict>
+</plist>
