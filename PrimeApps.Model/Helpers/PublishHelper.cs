@@ -310,9 +310,9 @@ namespace PrimeApps.Model.Helpers
                     try
                     {
                         await storage.AddHttpReferrerUrlToBucket($"app{app["id"]}",
-                            useSsl ? "https://" : "http://" + authUrl, UnifiedStorage.PolicyType.TenantPolicy);
+                            (useSsl ? "https://" : "http://") + authUrl, UnifiedStorage.PolicyType.TenantPolicy);
                         await storage.AddHttpReferrerUrlToBucket($"app{app["id"]}",
-                            useSsl ? "https://" : "http://" + appUrl, UnifiedStorage.PolicyType.TenantPolicy);
+                            (useSsl ? "https://" : "http://") + appUrl, UnifiedStorage.PolicyType.TenantPolicy);
                     }
                     catch (Exception e)
                     {
@@ -636,7 +636,7 @@ namespace PrimeApps.Model.Helpers
             {
                 var clientRequest = new JObject
                 {
-                    ["urls"] = useSsl ? "https://" : "http://" + url,
+                    ["urls"] = (useSsl ? "https://" : "http://") + url,
                 };
 
                 client.DefaultRequestHeaders.Accept.Clear();
@@ -673,8 +673,8 @@ namespace PrimeApps.Model.Helpers
                     ["always_send_client_claims"] = true,
                     ["require_consent"] = false,
                     ["client_secrets"] = secret,
-                    ["redirect_uris"] = useSsl ? "https://" : "http://" + $"{appUrl}/signin-oidc",
-                    ["post_logout_redirect_uris"] = useSsl ? "https://" : "http://" + $"{appUrl}/signout-callback-oidc",
+                    ["redirect_uris"] = (useSsl ? "https://" : "http://") + $"{appUrl}/signin-oidc",
+                    ["post_logout_redirect_uris"] = (useSsl ? "https://" : "http://") + $"{appUrl}/signout-callback-oidc",
                     ["allowed_scopes"] = "openid;profile;email;api1",
                     ["access_token_life_time"] = 864000
                 };
