@@ -133,10 +133,10 @@ namespace PrimeApps.Model.Repositories
             return count;
         }
 
-        public IQueryable<Template> Find()
+        public IQueryable<Template> Find(TemplateType templateType)
         {
             var templates = DbContext.Templates
-            .Where(x => !x.Deleted)
+            .Where(x => !x.Deleted && x.TemplateType == templateType)
             .OrderByDescending(x => x.Id);
 
             return templates;
