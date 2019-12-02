@@ -2,7 +2,7 @@
 
 angular.module('primeapps')
 
-    .controller('ExcelTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ExcelTemplatesService', '$http', 'config', '$modal', '$cookies', '$window', 'FileUploader','$localStorage',
+    .controller('ExcelTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ExcelTemplatesService', '$http', 'config', '$modal', '$cookies', '$window', 'FileUploader', '$localStorage',
         function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, ExcelTemplatesService, $http, config, $modal, $cookies, $window, FileUploader, $localStorage) {
 
             //$scope.$parent.menuTopTitle = "Templates";
@@ -24,7 +24,7 @@ angular.module('primeapps')
             $scope.requestModel = {
                 limit: '10',
                 offset: 0
-            };       
+            };
 
             $scope.showFormModal = function (template) {
                 $scope.requiredColor = "";
@@ -182,10 +182,10 @@ angular.module('primeapps')
             $scope.remove = function () {
                 if (fileUpload.queue[0]) {
                     fileUpload.queue[0].remove();
-                } 
-                    $scope.template.content = undefined;
-                    $scope.templateFileCleared = true;
-                
+                }
+                $scope.template.content = undefined;
+                $scope.templateFileCleared = true;
+
             };
 
             $scope.save = function (uploadForm) {
@@ -195,7 +195,7 @@ angular.module('primeapps')
                     if (!$scope.template.content)
                         $scope.requiredColor = 'background-color:rgba(206, 4, 4, 0.15) !important;';
                     //else
-                        toastr.error($filter('translate')('Module.RequiredError'));
+                    toastr.error($filter('translate')('Module.RequiredError'));
 
                     return;
                 }
@@ -281,14 +281,18 @@ angular.module('primeapps')
 
             };
 
-            $scope.getDownloadUrlExcel = function (module) {
-                module = module.name;
-                $window.open("/attach/export_excel?module=" + module + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId + '&locale=' + $scope.$parent.$parent.language, "_blank");
+            $scope.closeModal = function () {
+                $scope.clickDownloadCloseModal = true;
             };
 
-            $scope.getDownloadUrl = function (template) {
-                return '/attach/download_template?fileId=' + template.id + "&tempType=" + template.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
-            };
+            //$scope.getDownloadUrlExcel = function (module) {
+            //    module = module.name;
+            //    $window.open("/attach/export_excel?module=" + module + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId + '&locale=' + $scope.$parent.$parent.language, "_blank");
+            //};
+
+            //$scope.getDownloadUrl = function (template) {
+            //    return '/attach/download_template?fileId=' + template.id + "&tempType=" + template.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
+            //};
 
             $scope.delete = function (id, event) {
                 var willDelete =
@@ -365,11 +369,19 @@ angular.module('primeapps')
                 }
             };
 
+
+            $scope.excelDownload = function (excelTemp) {
+                $window.open("/attach/export_excel?module =" + excelTemp.name + "&appId=" + $scope.appId + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId + '&locale=' + $scope.$parent.$parent.language, "_blank");
+            };
+
             $scope.goUrl = function (emailTemp) {
-                var selection = window.getSelection();
-                if (selection.toString().length === 0) {
-                    $scope.showFormModal(emailTemp);
+                if (!$scope.clickDownloadCloseModal) {
+                    var selection = window.getSelection();
+                    if (selection.toString().length === 0) {
+                        $scope.showFormModal(emailTemp);
+                    }
                 }
+                $scope.clickDownloadCloseModal = false;
             };
 
             //For Kendo UI
@@ -414,11 +426,12 @@ angular.module('primeapps')
                     extra: false
                 },
                 rowTemplate: function (excelTemp) {
+                    var getUrl = "/attach/export_excel?module=" + excelTemp.name + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId + '&locale=' + $scope.$parent.$parent.language;
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
                     trTemp += '<td>' + excelTemp.name + '</td>';
                     trTemp += '<td>' + excelTemp.module + '</td>';
                     trTemp += excelTemp.active ? '<td><span>' + $filter('translate')('Setup.Modules.Active') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.Passive') + '</span></td>';
-                    trTemp += '<td>' + '<a href="{{getDownloadUrl(template)}}" target="_blank">' + $filter('translate')('Common.Download') + '</a>' + '</td>';
+                    trTemp += '<td>' + '<a href="' + getUrl + '" target="_blank" ng-click="closeModal();">' + $filter('translate')('Common.Download') + '</a>' + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
