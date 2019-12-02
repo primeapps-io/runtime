@@ -189,13 +189,13 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
         [Route("find")]
-        public async Task<IActionResult> Find(ODataQueryOptions<Template> queryOptions)
+        public IActionResult Find(ODataQueryOptions<Template> queryOptions)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var views = await _templateRepostory.Find();
-            var queryResults = (IQueryable<Template>)queryOptions.ApplyTo(views);
+            var temps = _templateRepostory.Find();
+            var queryResults = (IQueryable<Template>)queryOptions.ApplyTo(temps);
             return Ok(new PageResult<Template>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 

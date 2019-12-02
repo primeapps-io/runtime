@@ -44,28 +44,12 @@ namespace PrimeApps.Model.Repositories
                 .AnyAsync();
         }
 
-        public async Task<ICollection<Component>> Find(PaginationModel paginationModel)
+        public IQueryable<Component> Find()
         {
             var components = DbContext.Components
-                .Where(x => !x.Deleted && x.Type == ComponentType.Script && x.Place != ComponentPlace.GlobalConfig)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
+                .Where(x => !x.Deleted && x.Type == ComponentType.Script && x.Place != ComponentPlace.GlobalConfig);
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Component).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    components = components.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    components = components.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
-            }
-
-            return await components.ToListAsync();
+            return components;
         }
 
         public async Task<List<Component>> GetByPlace(ComponentPlace place)

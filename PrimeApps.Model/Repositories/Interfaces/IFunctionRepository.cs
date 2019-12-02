@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Common;
+using System.Linq;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
@@ -10,7 +11,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     {
         Task<int> Count();
         Task<bool> IsFunctionNameAvailable(string name);
-        Task<ICollection<Function>> Find(PaginationModel paginationModel);
+        IQueryable<Function> Find();
         Task<Function> Get(int id);
         Task<Function> Get(string name);
         Task<int> Create(Function component);

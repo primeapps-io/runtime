@@ -60,9 +60,9 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("find/{id:int}")]
-        public async Task<IActionResult> Find(int id, ODataQueryOptions<Relation> queryOptions)
+        public IActionResult Find(int id, ODataQueryOptions<Relation> queryOptions)
         {
-            var relations = await _relationRepository.Find(id);
+            var relations = _relationRepository.Find(id);
             var queryResults = (IQueryable<Relation>)queryOptions.ApplyTo(relations);
             return Ok(new PageResult<Relation>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
