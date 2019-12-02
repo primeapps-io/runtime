@@ -15,8 +15,8 @@ namespace PrimeApps.Auth.Controllers
 
         public override void OnActionExecuting(ActionExecutingContext ctx)
         {
-            if (!ctx.HttpContext.Request.IsLocal())
-                ctx.Result = new UnauthorizedResult();
+            /*if (!ctx.HttpContext.Request.IsLocal())
+                ctx.Result = new UnauthorizedResult();*/
 
             base.OnActionExecuting(ctx);
         }
