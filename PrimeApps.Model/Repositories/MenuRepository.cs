@@ -207,7 +207,7 @@ namespace PrimeApps.Model.Repositories
             return count;
         }
 
-        public async Task<IQueryable<Menu>> Find()
+        public IQueryable<Menu> Find()
         {
             var views = DbContext.Menus
             .Where(x => !x.Deleted)

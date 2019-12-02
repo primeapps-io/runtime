@@ -57,7 +57,7 @@ namespace PrimeApps.Model.Repositories
         }
 
 
-        public async Task<IQueryable<Picklist>> Find()
+        public IQueryable<Picklist> Find()
         {
             var picklists = DbContext.Picklists.Where(q => !q.Deleted).OrderByDescending(q => q.Id);
 

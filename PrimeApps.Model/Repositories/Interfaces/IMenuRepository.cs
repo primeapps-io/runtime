@@ -30,7 +30,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<ICollection<MenuItem>> GetAllMenuItems();
 
         Task<int> Count();
-        Task<IQueryable<Menu>> Find();
+        IQueryable<Menu> Find();
 
     }
 }

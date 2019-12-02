@@ -63,7 +63,7 @@ namespace PrimeApps.Model.Repositories
         //    return await modules.ToListAsync();
         //}
 
-        public async Task<IQueryable<Module>> Find()
+        public IQueryable<Module> Find()
         {
             var modules = DbContext.Modules
             .Where(x => !x.Deleted && x.Order != 0)

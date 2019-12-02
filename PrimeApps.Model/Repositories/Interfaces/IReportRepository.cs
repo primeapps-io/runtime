@@ -38,6 +38,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> DeleteSoftWidget(Widget widget);
         Task<int> DeleteHardWidget(Widget widget);
         Task<int> Count();
-        Task<IQueryable<Report>> Find();
+        IQueryable<Report> Find();
     }
 }

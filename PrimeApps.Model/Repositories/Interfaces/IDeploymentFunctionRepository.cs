@@ -2,6 +2,7 @@
 using PrimeApps.Model.Entities.Tenant;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         bool AvailableForDeployment(int functionId);
         Task<DeploymentFunction> Get(int id);
         Task<int> CurrentBuildNumber(int functionId);
-        Task<ICollection<DeploymentFunction>> Find(int functionId, PaginationModel paginationModel);
+        IQueryable<DeploymentFunction> Find(int functionId);
         Task<int> Create(DeploymentFunction deployment);
         Task<int> Update(DeploymentFunction deployment);
         Task<int> Delete(DeploymentFunction deployment);

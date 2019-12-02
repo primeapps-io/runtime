@@ -39,7 +39,7 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<IQueryable<AppDraftTemplate>> Find()
+        public IQueryable<AppDraftTemplate> Find()
         {
             var templates = DbContext.AppTemplates
             .Where(x => !x.Deleted)

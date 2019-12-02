@@ -167,7 +167,7 @@ namespace PrimeApps.Model.Repositories
             return await count.CountAsync();
         }
 
-        public async Task<IQueryable<View>> Find()
+        public IQueryable<View> Find()
         {
             var views = DbContext.Views
             .Where(x => !x.Deleted)

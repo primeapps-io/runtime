@@ -30,7 +30,7 @@ namespace PrimeApps.Model.Repositories
         }
 
 
-        public async Task<IQueryable<Report>> Find()
+        public IQueryable<Report> Find()
         {
             var reports = DbContext.Reports
             .Where(x => !x.Deleted)

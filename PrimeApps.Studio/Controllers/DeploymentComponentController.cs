@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -52,15 +56,16 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find/{id}"), HttpPost]
-        public async Task<IActionResult> Find(int id, [FromBody]PaginationModel paginationModel)
+        [Route("find/{id}")]
+        public IActionResult Find(int id, ODataQueryOptions<DeploymentComponent> queryOptions)
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment_component", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var deployments = await _deploymentComponentRepository.Find(id, paginationModel);
+            var deployments = _deploymentComponentRepository.Find(id);
 
-            return Ok(deployments);
+            var queryResults = (IQueryable<DeploymentComponent>)queryOptions.ApplyTo(deployments);
+            return Ok(new PageResult<DeploymentComponent>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
         [Route("get/{id}"), HttpGet]

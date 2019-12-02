@@ -478,12 +478,12 @@ namespace PrimeApps.Studio.Controllers
 		}
 
         [Route("find")]
-        public async Task<IActionResult> Find(ODataQueryOptions<Menu> queryOptions)
+        public IActionResult Find(ODataQueryOptions<Menu> queryOptions)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var views = await _menuRepository.Find();
+            var views = _menuRepository.Find();
             var queryResults = (IQueryable<Menu>)queryOptions.ApplyTo(views);
             return Ok(new PageResult<Menu>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }

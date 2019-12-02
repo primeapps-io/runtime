@@ -78,12 +78,12 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("get_page")]
-        public async Task<IActionResult> Find(ODataQueryOptions<Picklist> queryOptions)
+        public IActionResult Find(ODataQueryOptions<Picklist> queryOptions)
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "picklist", RequestTypeEnum.View))
                 return StatusCode(403);
   
-            var picklists = await _picklistRepository.Find();
+            var picklists =  _picklistRepository.Find();
 
             var queryResults = (IQueryable<Picklist>)queryOptions.ApplyTo(picklists);
             return Ok(new PageResult<Picklist>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));

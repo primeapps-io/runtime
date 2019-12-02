@@ -76,12 +76,12 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("find")]
-        public async Task<IActionResult> Find(ODataQueryOptions<Module> queryOptions)
+        public IActionResult Find(ODataQueryOptions<Module> queryOptions)
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "module", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var modules = await _moduleRepository.Find();
+            var modules = _moduleRepository.Find();
             var queryResults = (IQueryable<Module>)queryOptions.ApplyTo(modules);
             return Ok(new PageResult<Module>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }

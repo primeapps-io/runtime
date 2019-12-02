@@ -24,6 +24,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> DeleteViewShare(ViewShares view, TenantUser user);
 
         Task<int> Count(int id);
-        Task<IQueryable<View>> Find();
+        IQueryable<View> Find();
     }
 }
