@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ExcelTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ExcelTemplatesService', '$http', 'config', '$modal', '$cookies', '$window', 'FileUploader',
-        function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, ExcelTemplatesService, $http, config, $modal, $cookies, $window, FileUploader) {
+    .controller('ExcelTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ExcelTemplatesService', '$http', 'config', '$modal', '$cookies', '$window', 'FileUploader','$localStorage',
+        function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, ExcelTemplatesService, $http, config, $modal, $cookies, $window, FileUploader, $localStorage) {
 
             //$scope.$parent.menuTopTitle = "Templates";
             //$scope.$parent.activeMenu = 'templates';
@@ -24,50 +24,7 @@ angular.module('primeapps')
             $scope.requestModel = {
                 limit: '10',
                 offset: 0
-            };
-
-            $scope.activePage = 1;
-            ExcelTemplatesService.count("excel").then(function (response) {
-                $scope.pageTotal = response.data;
-                $scope.changePage(1);
-            });
-
-            $scope.changePage = function (page) {
-                $scope.loading = true;
-
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
-
-                $scope.activePage = page;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-
-                ExcelTemplatesService.find(requestModel, "excel").then(function (response) {
-
-                    var templates = response.data;
-                    angular.forEach(templates, function (template) {
-                        template.module = $filter('filter')($rootScope.appModules, {name: template.module}, true)[0];
-                    });
-                    $scope.templates = templates;
-                    $scope.templatesState = templates;
-
-                }).finally(function () {
-                    $scope.loading = false;
-                });
-            };
-
-            $scope.changeOffset = function () {
-
-                $scope.changePage($scope.activePage);
-            };
+            };       
 
             $scope.showFormModal = function (template) {
                 $scope.requiredColor = "";
@@ -303,13 +260,14 @@ angular.module('primeapps')
             };
 
             var setCurrentTemplate = function (template) {
+                var module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
                 /**template.name
                  * wordTemplates.html'deki değişken adıyla aynı olduğu için modal açıldığında wordTemplatesForm.html'de ki alan değişikliğinde wordTemplates.html'deki alan etkileniyor*/
                 $scope.templateFileCleared = false;
                 $scope.template = angular.copy(template);
                 $scope.template.templateName = template.name;
                 $scope.template.active = template.active;
-                $scope.template.templateModule = template.module;
+                $scope.template.templateModule = module;
                 $scope.currentContent = angular.copy(template.content);
             };
 
@@ -386,6 +344,7 @@ angular.module('primeapps')
                         ExcelTemplatesService.create(template)
                             .then(function () {
                                 success();
+                                $scope.grid.dataSource.read();
                             })
                             .catch(function () {
                                 $scope.saving = false;
@@ -396,6 +355,7 @@ angular.module('primeapps')
                         ExcelTemplatesService.update(template)
                             .then(function () {
                                 success();
+                                $scope.grid.dataSource.read();
                             })
                             .catch(function () {
                                 $scope.saving = false;
@@ -403,6 +363,96 @@ angular.module('primeapps')
                     }
 
                 }
+            };
+
+            $scope.goUrl = function (emailTemp) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.showFormModal(emailTemp);
+                }
+            };
+
+            //For Kendo UI
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/template/find?TemplateType=excel",
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                LabelEn: { type: "string" },
+                                Module: { type: "string" }
+                            }
+                        }
+                    }
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                filterable: {
+                    extra: false
+                },
+                rowTemplate: function (excelTemp) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td>' + excelTemp.name + '</td>';
+                    trTemp += '<td>' + excelTemp.module + '</td>';
+                    trTemp += excelTemp.active ? '<td><span>' + $filter('translate')('Setup.Modules.Active') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.Passive') + '</span></td>';
+                    trTemp += '<td>' + '<a href="{{getDownloadUrl(template)}}" target="_blank">' + $filter('translate')('Common.Download') + '</a>' + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+
+                    {
+                        field: 'Name',
+                        title: $filter('translate')('Setup.Templates.TemplateName'),
+                    },
+
+                    {
+                        field: 'Module.Name',
+                        title: $filter('translate')('Setup.Templates.Module'),
+                    },
+                    {
+                        field: 'Status',
+                        title: 'Status',
+                    },
+                    {
+                        field: 'File',
+                        title: 'File',
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
             };
         }
     ]);

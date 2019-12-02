@@ -428,11 +428,6 @@ angular.module('primeapps')
                     {
                         field: 'Code',
                         title: 'Code',
-                    },
-                    {
-                        field: '',
-                        title: '',
-                        width: "90px"
                     }]
             };
 
