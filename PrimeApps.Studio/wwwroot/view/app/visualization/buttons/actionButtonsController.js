@@ -12,6 +12,7 @@ angular.module('primeapps')
             $rootScope.breadcrumblist[2].title = 'Buttons';
             $scope.$parent.activeMenuItem = 'buttons';
             $scope.environments = angular.copy(ActionButtonsService.getEnvironments());
+            $scope.actionButtons = [];
 
             $scope.environmentChange = function (env, index, otherValue) {
                 otherValue = otherValue || false;
@@ -25,61 +26,7 @@ angular.module('primeapps')
                     }
                 }
             };
-
-            $scope.actionButtons = [];
-            //$scope.generator = function (limit) {
-            //    $scope.placeholderArray = [];
-            //    for (var i = 0; i < limit; i++) {
-            //        $scope.placeholderArray[i] = i;
-            //    }
-            //};
-            //$scope.generator(10);
-
-            //$scope.loading = true;
-
-            //$scope.requestModel = {
-            //    limit: "10",
-            //    offset: 0
-            //};
-
-            //$scope.activePage = 1;
-            //ActionButtonsService.count($scope.id).then(function (response) {
-            //    $scope.pageTotal = response.data;
-            //    $scope.changePage(1);
-            //});
-
-            //$scope.changePage = function (page) {
-            //    $scope.loading = true;
-            //    if (page !== 1) {
-            //        var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-            //        if (page > difference) {
-            //            if (Math.abs(page - difference) < 1)
-            //                --page;
-            //            else
-            //                page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-            //        }
-            //    }
-
-            //    $scope.activePage = page;
-            //    var requestModel = angular.copy($scope.requestModel);
-            //    requestModel.offset = page - 1;
-
-            //    ActionButtonsService.find($scope.id, requestModel).then(function (response) {
-            //        $scope.actionButtons = response.data;
-            //        for (var i = 0; i < response.data.length; i++) {
-            //            $scope.actionButtons[i].parent_module = $filter('filter')($rootScope.appModules, { id: response.data[i].module_id }, true)[0];
-            //            $scope.actionButtons[i].action_type = $scope.actionButtons[i].type;
-            //        }
-            //        $scope.actionbuttonState = angular.copy($scope.actionButtons);
-            //        $scope.loading = false;
-            //    });
-            //};
-
-            //$scope.changeOffset = function () {
-            //    $scope.changePage($scope.activePage);
-            //};
-
+             
             $scope.moduleChanged = function (isNew, actionButton) {
                 if ($scope.currentActionButton.module) {
                     $scope.module = $scope.currentActionButton.module;
@@ -364,11 +311,7 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.delete = function (actionButton, event) {
-                // delete actionButton.$$hashKey;
-                // var deleteModel = angular.copy($scope.actionButtons);
-                // var actionButtonIndex = helper.arrayObjectIndexOf(deleteModel, actionButton);
-                // deleteModel.splice(actionButtonIndex, 1);
+            $scope.delete = function (actionButton, event) { 
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -377,26 +320,13 @@ angular.module('primeapps')
                         buttons: ['Cancel', 'Yes'],
                         dangerMode: true
                     }).then(function (value) {
-                        if (value) {
-
-                            //var elem = angular.element(event.srcElement);
-                            //angular.element(elem.closest('tr')).addClass('animated-background');
-
+                        if (value) { 
                             ModuleService.deleteActionButton(actionButton.id)
-                                .then(function () {
-                                    // var actionButtonIndex = helper.arrayObjectIndexOf($scope.actionButtons, actionButton);
-                                    // $scope.actionButtons.splice(actionButtonIndex, 1);
-
-                                    //angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                    //$scope.pageTotal--;
-                                    //$scope.changePage($scope.activePage);
-
+                                .then(function () { 
                                     toastr.success($filter('translate')('Setup.Modules.ActionButtonDeleteSuccess'));
                                     $scope.grid.dataSource.read();
                                 })
                                 .catch(function () {
-
-                                    //angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     $scope.actionButtons = $scope.actionButtonState;
 
                                     if ($scope.formModal) {
@@ -664,12 +594,7 @@ angular.module('primeapps')
                         parse: function (data) {
                             for (var i = 0; i < data.items.length; i++) {
                                 data.items[i].trigger_clone = angular.copy(data.items[i].trigger);
-                                delete data.items[i].trigger;
-
-                                //angular.forEach(data.items[i], function (value, key) {
-                                //    if (key === 'trigger')
-                                //        key = 'trigger_clone';
-                                //});
+                                delete data.items[i].trigger; 
                             }
 
                             return data;
@@ -686,7 +611,7 @@ angular.module('primeapps')
                 rowTemplate: function (e) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
                     trTemp += '<td><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
-                    trTemp += '<td><span>' + e.name + '</span></td>';
+                    trTemp += '<td><span>' + e['name_'+$scope.language] + '</span></td>';
                     trTemp += '<td class="text-capitalize"> <span>' + e.type + '</span></td > ';
                     trTemp += '<td class="text-capitalize"> <span>' + e.trigger_clone + '</span></td > ';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
@@ -705,7 +630,7 @@ angular.module('primeapps')
                         title: $filter('translate')('Setup.Modules.Name'),
                     },
                     {
-                        field: 'Name',
+                        field: 'Name' + $scope.language,
                         title: $filter('translate')('Setup.Modules.ActionButtonLabel'),
                     },
                     {
