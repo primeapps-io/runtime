@@ -38,63 +38,10 @@ angular.module('primeapps')
             };
 
             $scope.loading = true;
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
 
-            $scope.generator(10);
 
             $scope.$parent.$parent.tabManage = {
                 activeTab: "overview"
-            };
-
-            $scope.requestModel = {
-                limit: "10",
-                offset: 0
-            };
-            $scope.activePage = 1;
-
-            ComponentsDeploymentService.count($scope.id)
-                .then(function (response) {
-                    $scope.pageTotal = response.data;
-                    //$scope.changePage(1);
-                });
-
-            $scope.changePage = function (page) {
-                $scope.loadingDeployments = true;
-
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
-
-                $scope.activePage = page;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-
-                ComponentsDeploymentService.find($scope.component.id, requestModel)
-                    .then(function (response) {
-                        $scope.deployments = response.data;
-                        $scope.loadingDeployments = false;
-                        //$scope.loading = false;
-                    })
-                    .catch(function (response) {
-                        toastr.error($filter('translate')('Common.Error'));
-                        $scope.loadingDeployments = false;
-                    });
-            };
-
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage)
             };
 
             //var currentOrganization = $localStorage.get("currentApp");
@@ -158,7 +105,6 @@ angular.module('primeapps')
                         $scope.environmentChange($scope.environments[envValue - 1], envValue - 1, true);
                     });
 
-                    $scope.changePage(1);
                     $scope.loading = false;
                 });
 
@@ -223,9 +169,7 @@ angular.module('primeapps')
                 ComponentsService.deploy($scope.id)
                     .then(function (response) {
                         toastr.success("Deployment Started");
-                        $scope.pageTotal = $scope.pageTotal + 1;
-                        $scope.activePage = 1;
-                        $scope.changePage(1);
+                        $scope.grid.dataSource.read();
                     })
                     .catch(function (response) {
                         $scope.loadingDeployments = false;
@@ -243,8 +187,8 @@ angular.module('primeapps')
                 return moment(time).format("DD-MM-YYYY HH:ss");
             };
 
-            $scope.getIcon = function (status) {
-                switch (status) {
+            $scope.getIcon = function (type) {
+                switch (type) {
                     case 'running':
                         return $sce.trustAsHtml('<i style="color:#0d6faa;" class="fas fa-clock"></i>');
                     case 'failed':
@@ -253,5 +197,108 @@ angular.module('primeapps')
                         return $sce.trustAsHtml('<i style="color:rgba(16,124,16,1);" class="fas fa-check"></i>');
                 }
             };
+
+            //For Kendo UI
+
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/deployment_component/find/" + $scope.id,
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            },
+                            complete: function () {
+                                $scope.loadingDeployments = false;
+                                $scope.loading = false;
+                            },
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                StartTime: { type: "date" },
+                                EndTime: { type: "date" },
+                                Status: { type: "enums" }
+                            }
+                        }
+                    }
+
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                filterable: {
+                    extra: false
+                },
+                rowTemplate: function (e) {
+                    var trTemp = '<tr>';
+                    trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
+                    trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
+                    trTemp += '<td> <span>' + e.version + '</span></td > ';
+                    trTemp += '<td style="text-align: center;" ng-bind-html="getIcon(dataItem.status)"></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+                    {
+                        field: 'StartTime',
+                        title: 'Start Time',
+                        filterable: {
+                            ui: function (element) {
+                                element.kendoDatePicker({
+                                    format: '{0: dd-MM-yyyy}'
+                                })
+                            }
+                        }
+                    },
+                    {
+                        field: 'EndTime',
+                        title: 'End Time',
+                        filterable: {
+                            ui: function (element) {
+                                element.kendoDatePicker({
+                                    format: '{0: dd-MM-yyyy}'
+                                })
+                            }
+                        }
+                    },
+                    {
+                        field: 'Version',
+                        title: 'Version'
+                    },
+                    {
+                        field: 'Status',
+                        title: 'Status',
+                        values: [
+                            { text: 'Running', value: 'Running' },
+                            { text: 'Failed', value: 'Failed' },
+                            { text: 'Succeed', value: 'Succeed' }
+                        ]
+                    }]
+            };
+
+            //For Kendo UI
         }
     ]);

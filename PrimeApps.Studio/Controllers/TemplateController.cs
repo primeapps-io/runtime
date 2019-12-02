@@ -274,13 +274,13 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("find_app_email_template")]
-        public async Task<IActionResult> FindAppEmailTemplate(ODataQueryOptions<AppDraftTemplate> queryOptions)
+        public IActionResult FindAppEmailTemplate(ODataQueryOptions<AppDraftTemplate> queryOptions)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
 
             var views = _appDraftTemplateRepository.Find();
-            var queryResults = (IQueryable<AppDraftTemplate>) queryOptions.ApplyTo(views);
+            var queryResults = (IQueryable<AppDraftTemplate>)queryOptions.ApplyTo(views);
             return Ok(new PageResult<AppDraftTemplate>(queryResults, Request.ODataFeature().NextLink,
                 Request.ODataFeature().TotalCount));
         }
@@ -292,7 +292,7 @@ namespace PrimeApps.Studio.Controllers
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var templates = await _appDraftTemplateRepository.GetAll((int) AppId);
+            var templates = await _appDraftTemplateRepository.GetAll((int)AppId);
 
             return Ok(templates);
         }
