@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -15,6 +16,7 @@ using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Storage;
+using Sentry.Protocol;
 
 namespace PrimeApps.Model.Helpers
 {
@@ -251,10 +253,15 @@ namespace PrimeApps.Model.Helpers
                     result = PublishHelper.CreatePlatformApp(PREConnectionString, app, secretEncrypt, appUrl, authUrl);
 
                     if (!result)
+                    {
                         File.AppendAllText(logPath,
                             "\u001b[90m" + DateTime.Now + "\u001b[39m" +
                             " : \u001b[93m Unhandle exception while creating platform app... \u001b[39m" +
                             Environment.NewLine);
+                        
+                        ErrorHandler.LogMessage($"App: app{app["id"]}, Version: {version}, Create platform application error.",SentryLevel.Error);
+                    }
+                        
 
                     var token = studioToken;
                     
@@ -280,23 +287,37 @@ namespace PrimeApps.Model.Helpers
                                 identityUrl, token,
                                 appUrl, useSsl);
                             if (!string.IsNullOrEmpty(clientResult))
+                            {
                                 File.AppendAllText(logPath,
                                     "\u001b[90m" + DateTime.Now + "\u001b[39m" +
                                     " : \u001b[93m Unhandle exception while adding app url to client... \u001b[39m" +
                                     Environment.NewLine);
+                                
+                                ErrorHandler.LogMessage($"App: app{app["id"]}, Version: {version}, Add client url error. Message: {clientResult}",SentryLevel.Error);
+                            }
                         }
                         else
+                        {
                             File.AppendAllText(logPath,
                                 "\u001b[90m" + DateTime.Now + "\u001b[39m" +
                                 " : \u001b[93m Unhandle exception while creating app client... Error: " +
                                 addClientResult + " \u001b[39m" + Environment.NewLine);
+                            
+                            ErrorHandler.LogMessage($"App: app{app["id"]}, Version: {version}, Create client error. Message: {addClientResult}",SentryLevel.Error);
+                        }
                     }
 
-                    //Add auth and app url to amazon s3 bucket policy.
-                    await storage.AddHttpReferrerUrlToBucket($"app{app["id"]}",
-                        useSsl ? "https://" : "http://" + authUrl, UnifiedStorage.PolicyType.TenantPolicy);
-                    await storage.AddHttpReferrerUrlToBucket($"app{app["id"]}",
-                        useSsl ? "https://" : "http://" + appUrl, UnifiedStorage.PolicyType.TenantPolicy);
+                    try
+                    {
+                        await storage.AddHttpReferrerUrlToBucket($"app{app["id"]}",
+                            useSsl ? "https://" : "http://" + authUrl, UnifiedStorage.PolicyType.TenantPolicy);
+                        await storage.AddHttpReferrerUrlToBucket($"app{app["id"]}",
+                            useSsl ? "https://" : "http://" + appUrl, UnifiedStorage.PolicyType.TenantPolicy);
+                    }
+                    catch (Exception e)
+                    {
+                        ErrorHandler.LogMessage($"App: app{app["id"]}, Version: {version}, Add storage profile permission error. Message: {e.Message}",SentryLevel.Error);
+                    }
                 }
                 else if (!createPlatformApp && obj.index == 0)
                 {
@@ -627,6 +648,9 @@ namespace PrimeApps.Model.Helpers
 
                 if (!response.IsSuccessStatusCode)
                 {
+                    if (response.StatusCode == HttpStatusCode.Unauthorized)
+                        return "Unauthorized";
+                    
                     var resp = await response.Content.ReadAsStringAsync();
                     return resp;
                 }
@@ -664,8 +688,10 @@ namespace PrimeApps.Model.Helpers
 
                 if (!response.IsSuccessStatusCode)
                 {
+                    if (response.StatusCode == HttpStatusCode.Unauthorized)
+                        return "Unauthorized";
+            
                     var resp = await response.Content.ReadAsStringAsync();
-
                     return resp;
                 }
 
