@@ -44,9 +44,9 @@ namespace PrimeApps.Model.Repositories
                 .AnyAsync();
         }
 
-        public async Task<IQueryable<Component>> Find()
+        public IQueryable<Component> Find()
         {
-            var components = DbContext.Components 
+            var components = DbContext.Components
                 .Where(x => !x.Deleted && x.Type == ComponentType.Script && x.Place != ComponentPlace.GlobalConfig);
 
             return components;

@@ -66,14 +66,14 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("find")]
-        public async Task<IActionResult> Find(ODataQueryOptions<Component> queryOptions)
+        public IActionResult Find(ODataQueryOptions<Component> queryOptions)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "script", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var scripts = await _scriptRepository.Find();
+            var scripts = _scriptRepository.Find();
 
-            var queryResults = (IQueryable<Component>)queryOptions.ApplyTo(scripts.AsQueryable());
+            var queryResults = (IQueryable<Component>)queryOptions.ApplyTo(scripts);
             return Ok(new PageResult<Component>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 

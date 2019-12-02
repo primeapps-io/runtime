@@ -13,8 +13,7 @@ angular.module('primeapps')
             $scope.nameValid = null;
             $scope.componentPlaces = componentPlaces;
             $scope.componentPlaceEnums = componentPlaceEnums;
-            $scope.modules = $rootScope.appModules;
-            //$scope.activePage = 1;
+            $scope.modules = $rootScope.appModules; 
             $scope.environments = ScriptsService.getEnvironments();
 
             $scope.environmentChange = function (env, index, otherValue) {
@@ -29,76 +28,7 @@ angular.module('primeapps')
                     }
                 }
             };
-
-            //$scope.requestModel = {
-            //    limit: "10",
-            //    offset: 0
-            //};
-
-            //$scope.generator = function (limit) {
-            //    $scope.placeholderArray = [];
-            //    for (var i = 0; i < limit; i++) {
-            //        $scope.placeholderArray[i] = i;
-            //    }
-            //};
-
-            //$scope.generator(10);
-
-            //var count = function () {
-            //    ScriptsService.count().then(function (response) {
-            //        $scope.pageTotal = response.data;
-            //        $scope.changePage(1);
-            //    });
-            //};
-            //count();
-
-            //$scope.changePage = function (page) {
-            //    $scope.loading = true;
-
-            //    if (page !== 1) {
-            //        var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-            //        if (page > difference) {
-            //            if (Math.abs(page - difference) < 1)
-            //                --page;
-            //            else
-            //                page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-            //        }
-            //    }
-
-            //    $scope.requestModel.offset = page;
-
-            //    var requestModel = angular.copy($scope.requestModel);
-            //    requestModel.offset = page - 1;
-            //    $scope.activePage = requestModel.offset + 1;
-            //    ScriptsService.find(requestModel)
-            //        .then(function (response) {
-            //            if (response.data) {
-            //                $scope.scripts = response.data;
-            //                setModule(response.data);
-            //            }
-            //            $scope.loading = false;
-            //        })
-            //        .catch(function (reason) {
-            //            $scope.loading = false;
-            //        });
-
-            //};
-
-            //$scope.changePage(1);
-
-            //$scope.changeOffset = function () {
-            //    $scope.changePage($scope.activePage)
-            //};
-
-            //var setModule = function (data) {
-            //    for (var i = 0; i < data.length; i++) {
-            //        var module = $filter('filter')($scope.modules, {id: data[i].module_id}, true);
-            //        if (module && module.length > 0)
-            //            data[i].module = angular.copy(module[0]);
-            //    }
-            //};
-
+             
             $scope.save = function (scriptForm) {
                 $scope.saving = true;
 
@@ -147,7 +77,7 @@ angular.module('primeapps')
                                 $scope.saving = false;
                             }
                             $scope.saving = false;
-                            //$scope.changeOffset(1);
+                            $scope.grid.dataSource.read();
                         }).catch(function (reason) {
                             toastr.error($filter('translate')('Common.Error'));
                             $scope.saving = false;

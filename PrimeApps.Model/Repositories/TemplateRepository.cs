@@ -38,7 +38,7 @@ namespace PrimeApps.Model.Repositories
                 .Where(x => x.TemplateType == templateType && x.Deleted == false)
                 .ToListAsync();
         }
-        
+
         public async Task<ICollection<Template>> GetAll(TemplateType templateType, LanguageType language, bool hasNotCode = true, string moduleName = "")
         {
             var templates = DbContext.Templates
@@ -133,7 +133,7 @@ namespace PrimeApps.Model.Repositories
             return count;
         }
 
-        public async Task<IQueryable<Template>> Find()
+        public IQueryable<Template> Find()
         {
             var templates = DbContext.Templates
             .Where(x => !x.Deleted)

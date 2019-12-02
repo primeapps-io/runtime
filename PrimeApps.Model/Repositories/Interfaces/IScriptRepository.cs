@@ -14,7 +14,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<Component> Get(int id);
         Task<Component> GetByName(string name);
         Task<bool> IsUniqueName(string name);
-        Task<IQueryable<Component>> Find();
+        IQueryable<Component> Find();
         Task<List<Component>> GetByPlace(ComponentPlace place);
         Task<Component> GetGlobalSettings();
         Task<int> Create(Component component);

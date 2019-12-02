@@ -38,7 +38,7 @@ namespace PrimeApps.Model.Repositories
             return await count.CountAsync();
         }
 
-        public async Task<IQueryable<Relation>> Find(int id)
+        public IQueryable<Relation> Find(int id)
         {
             var relations = DbContext.Relations
                             .Where(relation => !relation.Deleted);

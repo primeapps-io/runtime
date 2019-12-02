@@ -14,6 +14,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<ICollection<Relation>> GetAllDeleted();
         Task<Relation> GetRelation(int id);
         Task<int> Count(int id);
-        Task<IQueryable<Relation>> Find(int id);
+        IQueryable<Relation> Find(int id);
     }
 }
