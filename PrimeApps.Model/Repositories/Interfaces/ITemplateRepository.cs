@@ -20,7 +20,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> DeleteHard(Template template);
         int Count(TemplateType templateType);
         Task<IQueryable<Template>> Find();
-        Task<ICollection<Template>> Find(PaginationModel paginationModel, TemplateType templateType);
         Template GetByCode(string code, LanguageType language = LanguageType.Tr);
     }
 }
