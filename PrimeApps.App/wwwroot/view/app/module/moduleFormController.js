@@ -695,8 +695,10 @@ angular.module('primeapps')
                     if (picklistItem.inactive || picklistItem.hidden)
                         return;
 
-                    if (picklistItem.labelStr.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || picklistItem.labelStr.toUpperCase().indexOf(searchTerm.toUpperCase()) > -1
-                        || picklistItem.labelStr.toLowerCaseTurkish().indexOf(searchTerm.toLowerCaseTurkish()) > -1 || picklistItem.labelStr.toUpperCaseTurkish().indexOf(searchTerm.toUpperCaseTurkish()) > -1)
+                    picklistItem.labelLang = picklistItem.label[$rootScope.user.language];
+
+                    if (picklistItem.labelLang.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || picklistItem.labelLang.toUpperCase().indexOf(searchTerm.toUpperCase()) > -1
+                        || picklistItem.labelLang.toLowerCaseTurkish().indexOf(searchTerm.toLowerCaseTurkish()) > -1 || picklistItem.labelLang.toUpperCaseTurkish().indexOf(searchTerm.toUpperCaseTurkish()) > -1)
                         picklistItems.push(picklistItem);
                 });
 
