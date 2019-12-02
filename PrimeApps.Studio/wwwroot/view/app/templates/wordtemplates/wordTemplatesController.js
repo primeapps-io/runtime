@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('WordTemplatesController', ['$rootScope', '$scope', '$state', '$filter', 'WordTemplatesService', '$http', 'config', '$modal', '$cookies', 'ModuleService', 'FileUploader', 'helper', '$localStorage',
-        function ($rootScope, $scope, $state, $filter, WordTemplatesService, $http, config, $modal, $cookies, ModuleService, FileUploader, helper, $localStorage) {
+    .controller('WordTemplatesController', ['$rootScope', '$scope', '$state', '$filter', 'WordTemplatesService', '$http', 'config', '$modal', '$cookies', 'ModuleService', 'FileUploader', 'helper', '$localStorage','$window',
+        function ($rootScope, $scope, $state, $filter, WordTemplatesService, $http, config, $modal, $cookies, ModuleService, FileUploader, helper, $localStorage, $window) {
 
             //$scope.$parent.menuTopTitle = "Templates";
             // $scope.$parent.activeMenu = 'templates';
@@ -518,6 +518,10 @@ angular.module('primeapps')
                     toastr.error($filter('translate')('Common.Error'));
                     $scope.saving = false;
                 }
+            };
+
+            $scope.wordDownload = function (wordTemp) {
+                $window.open('/attach/download_template?fileId=' + wordTemp.id + "&tempType=" + wordTemp.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId , "_blank");
             };
 
             $scope.goUrl = function (emailTemp) {
