@@ -54,24 +54,24 @@
             <tr ng-repeat="report in reports | filter:{name:'!users'} | orderBy:['-system_type','order']"
                 ng-click="openReportDetail(report)">
 
-                <td>
-                    {{report.name}}
-                </td>
-                <td>
-                    {{report.category.name}}
-                </td>
-                <td>
-                    {{ report.report_type =='tabular' ? 'List':(report.report_type =='single') ? 'Single':'Summary' }}
-                </td>
-                <td class="text-center">
-                    <div class="action-buttons-block">
-                        <button ng-click="$event.stopPropagation(); deleteReport(report,$event);" type="button"
-                                class="action-buttons-delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>
+            <td>
+                {{report.name_en}}
+            </td>
+            <td>
+                {{report.category.name_en}}
+            </td>
+            <td>
+                {{ report.report_type =='tabular' ? 'List':(report.report_type =='single') ? 'Single':'Summary' }}
+            </td>
+            <td class="text-center">
+                <div class="action-buttons-block">
+                    <button ng-click="$event.stopPropagation(); deleteReport(report,$event);" type="button"
+                            class="action-buttons-delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
         </tbody>
     </table>
     <div class="table-pagination">

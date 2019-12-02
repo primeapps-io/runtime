@@ -14,7 +14,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task AddUserAsync(int userId, int profileId);
         Task<Profile> CreateAsync(ProfileDTO newProfileDTO, string tenantLanguage);
         Task<IEnumerable<Profile>> GetAll();
-        Task<IEnumerable<ProfileWithUsersDTO>> GetAllProfiles();
+        Task<IEnumerable<ProfileWithUsersDTO>> GetAllProfiles(string language = "en");
         Task<IEnumerable<ProfileLightDTO>> GetUserProfilesForCache();
         Task RemoveAsync(int profileId, int replacementProfileId);
         Task RemoveModule(int moduleId);

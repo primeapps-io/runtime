@@ -3,16 +3,6 @@
     <div class="row">
         <div class="col-sm-2 reports-sidebar">
             <div class="reports-sidebar-header">
-                <!--<div class="page-header reports-sidebar-header-title">-->
-                <!--<h3>Klasörler-->
-                <!--<div class="pull-right"><a href="#">Düzenle</a>-->
-                <!--<small>|</small>-->
-                <!--<a data-title="Klasör  Adı"-->
-                <!--data-template-url="view/app/reports/createCategoryReport.html"-->
-                <!--data-animation="am-flip-x" data-auto-close="1" data-placement="bottom"-->
-                <!--bs-popover>Oluştur</a></div>-->
-                <!--</h3>-->
-                <!--</div>-->
                 <div class="input-group input-group-sm report-search">
                     <i class="fa fa-search" aria-hidden="true"></i>
                     <input type="text" class="form-control" ng-model="reportSearch"
@@ -76,7 +66,7 @@
                                             <span>
                                                 <i class="glyphicon" style="font-size: 10px;"
                                                      ng-class="collapseStatus($index) ? 'glyphicon-chevron-up' :'glyphicon-chevron-down'"></i>
-                                                {{ item.name }}
+                                                {{ item['name_'+user.language] }}
                                             </span>
                                             <span>
                                                 <ul class="list-unstyled list-inline">
@@ -116,7 +106,7 @@
                                             ng-class="currentReport.id == report.id ? 'active':''"
                                             ng-if="report.category_id == item.id">
                                             <i class="fa fa-angle-right"></i>
-                                            {{ report.name }}
+                                            {{ report['name_'+user.language] }}
                                         </li>
                                     </ul>
                                     <div>
@@ -176,7 +166,7 @@
                 </div>
                 <div class="row report-list-header">
                     <div class="col-sm-12 report-list-header-title">
-                        <h3>{{ currentReport.name }}</h3>
+                        <h3>{{ currentReport['name_'+user.language] }}</h3>
                     </div>
                     <div class="col-sm-12 pull-right " ng-if="Reports.length>1">
                         <a confirm-click action="deleteReport(currentReport.id)"
@@ -415,7 +405,7 @@
                                             ng-click="shortChange('value',current.reverse==false ? true:false)"
                                             ng-class="current.field =='value' && current.reverse==true ? 'sort-asc':''  + current.field =='value' && current.reverse==false ? 'sort-desc':'' ">
                                         <div>
-                                            <span>{{ reportSummary.chart.yaxisname }}</span>
+                                            <span>{{ reportSummary.chart["yaxisname_"+user.language] }} </span>                                             
                                         </div>
                                     </th>
                                 </tr>

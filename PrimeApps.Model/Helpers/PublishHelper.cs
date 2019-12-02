@@ -214,10 +214,9 @@ namespace PrimeApps.Model.Helpers
             var releaseList = new List<Release>();
             bool result;
 
-            var isLocalString = configuration.GetValue("AppSettings:IsLocal", string.Empty);
-            var isLocal = !string.IsNullOrEmpty(isLocalString) && bool.Parse(isLocalString);
-            var identityUrl =  isLocal
-                ? configuration.GetValue("AppSettings:AuthenticationServerURLLocal", string.Empty) 
+            var localAuth = configuration.GetValue("AppSettings:AuthenticationServerURLLocal", string.Empty);
+            var identityUrl =  !string.IsNullOrEmpty(localAuth)
+                ? localAuth
                 : configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
             
             var logFileName = "";
@@ -259,7 +258,7 @@ namespace PrimeApps.Model.Helpers
 
                     var token = studioToken;
                     
-                    if (isLocal)
+                    if (!string.IsNullOrEmpty(localAuth))
                     {
                         var authIntegrationEmail = "app@primeapps.io";
                         var authIntegrationPassword = "123456";

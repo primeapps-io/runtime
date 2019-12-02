@@ -11,11 +11,13 @@ using static PrimeApps.Model.Enums.ActionButtonEnum;
 namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("action_buttons")]
-
     public class ActionButton : BaseEntity
     {
-        [Column("name"), Required, MaxLength(100)]
-        public string Name { get; set; }
+        [Column("name_en"), Required, MaxLength(100)]
+        public string NameEn { get; set; }
+
+        [Column("name_tr"), Required, MaxLength(100)]
+        public string NameTr { get; set; }
 
         [Column("template"), Required]
         public string Template { get; set; }
@@ -85,6 +87,5 @@ namespace PrimeApps.Model.Entities.Tenant
                 Environment = string.Join(",", value.Select(x => (int)x));
             }
         }
-
     }
 }

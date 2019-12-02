@@ -14,11 +14,17 @@ namespace PrimeApps.Model.Entities.Tenant
             Permissions = new List<ProfilePermission>();
         }
 
-        [Column("name")]
-        public string Name { get; set; }
+        [Column("name_en")]
+        public string NameEn { get; set; }
 
-        [Column("description")]
-        public string Description { get; set; }
+        [Column("name_tr")]
+        public string NameTr { get; set; }
+
+        [Column("description_en")]
+        public string DescriptionEn { get; set; }
+
+        [Column("description_tr")]
+        public string DescriptionTr { get; set; }
 
         [Column("has_admin_rights")]
         public bool HasAdminRights { get; set; }
@@ -68,10 +74,10 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("home")]
         public bool Home { get; set; }
 
-	    [Column("collective_annual_leave")]
-	    public bool CollectiveAnnualLeave { get; set; }
+        [Column("collective_annual_leave")]
+        public bool CollectiveAnnualLeave { get; set; }
 
-		[Column("startpage")]
+        [Column("startpage")]
         public string StartPage { get; set; }
 
         [Column("migration_id")]
@@ -90,6 +96,5 @@ namespace PrimeApps.Model.Entities.Tenant
 
         [InverseProperty("Profile")]
         public virtual IList<TenantUser> Users { get; set; }
-
     }
 }

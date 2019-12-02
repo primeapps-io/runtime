@@ -77,7 +77,7 @@ namespace PrimeApps.App.Controllers
         [Route("GetAll"), HttpPost]
         public async Task<IActionResult> GetAll()
         {
-            IEnumerable<ProfileWithUsersDTO> profileList = await _profileRepository.GetAllProfiles();
+            IEnumerable<ProfileWithUsersDTO> profileList = await _profileRepository.GetAllProfiles(AppUser.Language);
 
             return Ok(profileList);
         }

@@ -171,12 +171,16 @@ namespace PrimeApps.Studio.Controllers
             {
                 chart = new ChartView
                 {
-                    Caption = chart.Caption,
+                    CaptionEn = chart.CaptionEn,
+                    CaptionTr = chart.CaptionTr,
                     ChartType = chart.ChartType,
-                    Subcaption = chart.SubCaption,
+                    SubcaptionEn = chart.SubCaptionEn,
+                    SubcaptionTr = chart.SubCaptionTr,
                     Theme = chart.Theme,
-                    Xaxisname = chart.XaxisName,
-                    Yaxisname = chart.YaxisName,
+                    XaxisnameEn = chart.XaxisNameEn,
+                    XaxisnameTr = chart.XaxisNameTr,
+                    YaxisnameEn = chart.YaxisNameEn,
+                    YaxisnameTr = chart.YaxisNameTr,
                     ReportId = chart.ReportId.ToString(),
                     ReportModuleId = chart.Report.ModuleId,
                     ReportGroupField = chart.Report.GroupField,

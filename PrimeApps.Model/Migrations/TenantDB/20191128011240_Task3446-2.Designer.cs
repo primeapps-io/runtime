@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PrimeApps.Model.Context;
@@ -9,9 +10,10 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.TenantDB
 {
     [DbContext(typeof(TenantDBContext))]
-    partial class TenantDBContextModelSnapshot : ModelSnapshot
+    [Migration("20191128011240_Task3446-2")]
+    partial class Task34462
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,14 +62,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<int>("ModuleId")
                         .HasColumnName("module_id");
 
-                    b.Property<string>("NameEn")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnName("name_en")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("NameTr")
-                        .IsRequired()
-                        .HasColumnName("name_tr")
+                        .HasColumnName("name")
                         .HasMaxLength(100);
 
                     b.Property<string>("Parameters")
@@ -1751,9 +1748,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("FirstScreen")
                         .HasColumnName("first_screen");
 
-                    b.Property<int>("Language")
-                        .HasColumnName("language");
-
                     b.Property<int>("ModalType")
                         .HasColumnName("modal_type");
 
@@ -2914,11 +2908,8 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
 
-                    b.Property<string>("DescriptionEn")
-                        .HasColumnName("description_en");
-
-                    b.Property<string>("DescriptionTr")
-                        .HasColumnName("description_tr");
+                    b.Property<string>("Description")
+                        .HasColumnName("description");
 
                     b.Property<bool>("DocumentSearch")
                         .HasColumnName("document_search");
@@ -2944,11 +2935,8 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<string>("MigrationId")
                         .HasColumnName("migration_id");
 
-                    b.Property<string>("NameEn")
-                        .HasColumnName("name_en");
-
-                    b.Property<string>("NameTr")
-                        .HasColumnName("name_tr");
+                    b.Property<string>("Name")
+                        .HasColumnName("name");
 
                     b.Property<bool>("Newsfeed")
                         .HasColumnName("newsfeeed");

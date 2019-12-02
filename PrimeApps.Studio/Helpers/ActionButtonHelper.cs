@@ -20,7 +20,8 @@ namespace PrimeApps.Studio.Helpers
 
             var actionbutton = new ActionButton
             {
-                Name = actionButtonModel.ActionButtonName,
+                NameEn = actionButtonModel.ActionButtonName,
+                NameTr = actionButtonModel.ActionButtonName,
                 Type = actionButtonModel.Type,
                 Trigger = actionButtonModel.Trigger,
                 CssClass = actionButtonModel.CssClass,
@@ -62,7 +63,8 @@ namespace PrimeApps.Studio.Helpers
             else if (actionButtonModel.Environments.Count < 1)
                 actionButtonModel.Environments.Add(Model.Enums.EnvironmentType.Development);
 
-            actionButton.Name = actionButtonModel.ActionButtonName;
+            actionButton.NameEn = actionButtonModel.ActionButtonName;
+            actionButton.NameTr = actionButtonModel.ActionButtonName;
             actionButton.Type = actionButtonModel.Type;
             actionButton.Trigger = actionButtonModel.Trigger;
             actionButton.CssClass = actionButtonModel.CssClass;

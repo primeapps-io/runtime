@@ -81,7 +81,7 @@ namespace PrimeApps.Studio.Controllers
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var templates = await _templateRepostory.GetAll(templateType); //, moduleName);
+			var templates = await _templateRepostory.GetAll(templateType, LanguageType.NotSet, false);//, moduleName);
 
             return Ok(templates);
         }

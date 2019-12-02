@@ -866,17 +866,19 @@ namespace PrimeApps.App.Helpers
                     if (component.Deleted || component.Type != ComponentType.Script || component.Place == ComponentPlace.GlobalConfig)
                         continue;
 
-                    if ((component.Content.Contains("{appConfigs") || component.CustomUrl.StartsWith("{appConfigs")) && appConfigs.IsNullOrEmpty())
+                    if (appConfigs.IsNullOrEmpty() && ((!string.IsNullOrEmpty(component.CustomUrl) && component.CustomUrl.StartsWith("{appConfigs")) || (!string.IsNullOrEmpty(component.Content) && component.Content.Contains("{appConfigs"))))
                     {
                         component.Content = "console.error('Dynamic values not replaced. Because appConfigs is null.');";
                         continue;
                     }
 
-                    component.Content = ReplaceDynamicValues(component.Content, appConfigs);
-                    component.CustomUrl = ReplaceDynamicValues(component.CustomUrl, appConfigs);
+                    if (!string.IsNullOrEmpty(component.Content))
+                        component.Content = ReplaceDynamicValues(component.Content, appConfigs);
 
                     if (!string.IsNullOrEmpty(component.CustomUrl))
                     {
+                        component.CustomUrl = ReplaceDynamicValues(component.CustomUrl, appConfigs);
+
                         if (!IsTrustedUrl(component.CustomUrl, appConfigs))
                         {
                             component.Content = "console.error('" + component.Content + " is not a trusted url.');";

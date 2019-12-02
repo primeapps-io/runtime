@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.App.Controllers
 {
@@ -26,13 +27,15 @@ namespace PrimeApps.App.Controllers
         private ISettingRepository _settingRepository;
         private IConfiguration _configuration;
         private IServiceScopeFactory _serviceScopeFactory;
+        private ITemplateRepository _templateRepository;
 
-        public MessagingController(IMessagingRepository messagingRepository, ISettingRepository settingRepository, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+        public MessagingController(IMessagingRepository messagingRepository, ISettingRepository settingRepository, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, ITemplateRepository templateRepository)
         {
             _messagingRepository = messagingRepository;
             _settingRepository = settingRepository;
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
+            _templateRepository = templateRepository;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -40,6 +43,7 @@ namespace PrimeApps.App.Controllers
             SetContext(context);
             SetCurrentUser(_messagingRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_settingRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_templateRepository, PreviewMode, TenantId, AppId);
 
             base.OnActionExecuting(context);
         }
@@ -171,7 +175,8 @@ namespace PrimeApps.App.Controllers
             {
                 if (!emailRequest.TemplateWithBody.Contains("html"))
                 {
-                    var template = await _messagingRepository.GetTemplate(emailRequest.TemplateWithBody);
+                    var language = !string.IsNullOrEmpty(emailRequest.Language) ? emailRequest.Language.ToEnum<LanguageType>() : AppUser.Language.ToEnum<LanguageType>();
+                    var template = _templateRepository.GetByCode(emailRequest.TemplateWithBody, language);
                     emailRequest.TemplateWithBody = template.Content;
                     emailRequest.Subject = template.Subject;
                 }

@@ -95,19 +95,19 @@
                                               name="tinymce"
                                               ng-model="template.tinymce_content" ng-required="true"
                                               mentio-iframe-element="iframeElement['tinymceTemplateEdit']"></textarea>
-                                   <!-- <script type="text/ng-template" id="tag-mentions.tpl">
+
+                                    <script type="text/ng-template" id="tag-mentions.tpl">
                                         <ul class="ment-tags">
-                                            <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
-                                                class="list-group-item clearfix"
-                                                ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
-                                                {{tag.name}}
+                                            <li  mentio-menu-item="tag" ng-repeat="tag in items"
+                                                class="list-group-item clearfix item">
+                                                {{tag}}
                                             </li>
                                         </ul>
-                                    </script>-->
-                               <!--     <mentio-menu class="mention-scrollbar" id="hastmenu2" mentio-for="'tinyMceTextArea2'"
+                                    </script>
+                                 <mentio-menu class="mention-scrollbar" id="hastmenu2" mentio-for="'tinyMceTextArea2'"
                                                  mentio-trigger-char="'#'" mentio-items="tags"
                                                  mentio-template-url="tag-mentions.tpl" mentio-search="searchTags(term)"
-                                                 mentio-select="getTagTextRaw(item)"></mentio-menu>-->
+                                                 mentio-select="getTagTextRaw(item)"></mentio-menu>
                                 </div>
                             </div>
                         </div>

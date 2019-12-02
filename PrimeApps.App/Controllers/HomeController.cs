@@ -246,6 +246,17 @@ namespace PrimeApps.App.Controllers
                     if (userInfo != null)
                         hasAdminRight = userInfo.profile.HasAdminRights;
                 }
+                
+                var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                using (var platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))
+                {
+                    platformUserRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
+                    var platformUser = await platformUserRepository.GetSettings(userId);
+                    if (platformUser != null)
+                    {
+                        account["user"] = JsonConvert.SerializeObject(platformUser, serializerSettings);
+                    }
+                }
             }
 
             ViewBag.Preview = previewMode == "app";

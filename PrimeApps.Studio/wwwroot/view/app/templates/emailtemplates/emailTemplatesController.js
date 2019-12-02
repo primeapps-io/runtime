@@ -27,33 +27,32 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.changeModule = function () {
+            $scope.changeModule = function (moduleName) {
 
-                var moduleName = $scope.newtemplate.moduleName.name;
+                var moduleName = moduleName;//$scope.newtemplate.moduleName.name;
                 ModuleService.getModuleByName(moduleName).then(function (response) {
                     $scope.module = response.data;
                     $scope.moduleFields = EmailTemplatesService.getFields($scope.module);
-
-                    $scope.searchTags = function (term) {
-                        var tagsList = [];
-                        angular.forEach($scope.moduleFields, function (item) {
-                            if (item.name == "seperator")
-                                return;
-
-                            if (item.name.match('seperator'))
-                                item.name = item.label;
-
-                            if (item.name && item.name.indexOf(term) >= 0) {
-                                tagsList.push(item);
-                            }
-                        });
-
-                        $scope.tags = tagsList;
-                        return tagsList;
-                    };
                 });
             };
 
+            $scope.searchTags = function (term) {
+                var tagsList = [];
+                angular.forEach($scope.moduleFields, function (item) {
+                    if (item.name === "seperator")
+                        return;
+
+                    if (item.name && item.name.match('seperator'))
+                        item.name = item.label;
+
+                    if (item.name && item.name.indexOf(term) >= 0) {
+                        tagsList.push(item);
+                    }
+                });
+
+                $scope.tags = tagsList;
+                return tagsList;
+            };
 
             var dialog_uid = plupload.guid();
             /// set default email field if available.
@@ -286,6 +285,7 @@ angular.module('primeapps')
                     $scope.newtemplate.active = template.active;
                     $scope.newtemplate.language = template.language;
                     var module = $filter('filter')($rootScope.appModules, {name: template.module}, true)[0];
+                    $scope.changeModule(module.name);
                     $scope.newtemplate.moduleName = module;
                     $scope.newtemplate.isNew = false;
 
@@ -306,7 +306,7 @@ angular.module('primeapps')
 
 
             };
-            
+
             $scope.requestModel = {
                 limit: '10',
                 offset: 0
@@ -354,7 +354,7 @@ angular.module('primeapps')
                     template.sharing_type === 'everybody';
 
                 template.template_type = 2;
-               // template.active = true;
+                // template.active = true;
 
                 if ($scope.newtemplate.sharing_type === 'custom') {
                     template.shares = [];
@@ -440,6 +440,7 @@ angular.module('primeapps')
                     $scope.currentTemplate = null;
                     $scope.moduleDisabled = false;
                     $scope.newtemplate.isNew = true;
+                    $scope.moduleFields = undefined;
                 }
 
                 $scope.addNewEmailTemplateFormModal = $scope.addNewEmailTemplateFormModal || $modal({

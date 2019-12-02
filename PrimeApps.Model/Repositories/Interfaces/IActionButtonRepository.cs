@@ -8,7 +8,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 {
 	public interface IActionButtonRepository : IRepositoryBaseTenant
 	{
-		Task<ICollection<ActionButtonViewModel>> GetByModuleId(int id);
+		Task<ICollection<ActionButtonViewModel>> GetByModuleId(int id, string language = "en");
 		Task<ActionButton> GetByIdBasic(int id);
 		Task<ActionButton> GetById(int id);
 		Task<int> Create(ActionButton actionbutton);

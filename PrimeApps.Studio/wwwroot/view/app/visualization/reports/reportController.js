@@ -567,11 +567,11 @@ angular.module('primeapps')
                             aggregation_type: "count"
 
                         }];
-                    $scope.reportModel.chart.yaxis_name = $filter('translate')('Report.count');
+                    $scope.reportModel.chart.yaxis_name_en = $filter('translate')('Report.count');
                     return true;
                 }
 
-                $scope.reportModel.chart.yaxis_name = field["label_" + $rootScope.language];
+                $scope.reportModel.chart.yaxis_name_en = field["label_" + $rootScope.user.language];
                 if ($scope.reportModel.report_type === 'summary' || $scope.reportModel.report_type === 'single') {
                     $scope.reportModel.aggregations = [];
                 } else {
@@ -651,13 +651,13 @@ angular.module('primeapps')
 
                     if (!(filterItem.operator.name === 'empty' || filterItem.operator.name === 'not_empty')) {
                         if (field.data_type === 'picklist')
-                            filter.value = filter.value.label[$rootScope.language];
+                            filter.value = filter.value.label[$rootScope.user.language];
 
                         if (field.data_type === 'multiselect') {
                             var value = '';
 
                             angular.forEach(filter.value, function (picklistItem) {
-                                value += picklistItem.label[$rootScope.language] + '|';
+                                value += picklistItem.label[$rootScope.user.language] + '|';
                             });
 
                             filter.value = value.slice(0, -1);
@@ -733,18 +733,24 @@ angular.module('primeapps')
                 report.category_id = $scope.reportModel.category_id;
                 report.module_id = $scope.reportModel.module_id;
                 report.filters = $scope.getFilterModel();
-                report.name = $scope.reportModel.name;
+                report.name_en = $scope.reportModel.name_en;
+                report.name_tr = $scope.reportModel.name_en;
                 report.report_type = $scope.reportModel.report_type;
                 report.aggregations = $scope.reportModel.aggregations;
 
                 if (report.report_type === 'summary') {
                     report.chart = $scope.reportModel.chart;
-                    report.chart.caption = report.name;
+                    report.chart.caption_en = report.name_en;
+                    report.chart.caption_tr = report.name_tr;
+                    report.chart.xaxis_name_tr = report.chart.xaxis_name_en;
+                    report.chart.yaxis_name_tr = report.chart.xaxis_name_en;
+         
                     report.group_field = $scope.reportModel.group_field;
                     report.sort_field = $scope.reportModel.sort_field;
                     report.sort_direction = "asc";
 
                     if (report.aggregations.length < 1) {
+                        
                         report.aggregations = [
                             {
                                 field: "created_by",
@@ -767,7 +773,8 @@ angular.module('primeapps')
                     }
 
                     report.widget = {
-                        name: report.name,
+                        name_en: report.name_en,
+                        name_tr: report.name_tr,
                         color: $scope.reportModel.widget ? $scope.reportModel.widget.color : null,
 
                     }
@@ -856,8 +863,8 @@ angular.module('primeapps')
                     case "summary":
                         $scope.setValide("group_field");
                         $scope.setValide("chartTypes");
-                        $scope.setValide("yaxis_name");
-                        $scope.setValide("xaxis_name");
+                        $scope.setValide("yaxis_name_en");
+                        $scope.setValide("xaxis_name_en");
                         break;
                     case "single":
                         break;
@@ -873,7 +880,7 @@ angular.module('primeapps')
             $scope.changeGroupField = function () {
                 var field = $filter('filter')($scope.fields.availableFields, { name: $scope.reportModel.group_field }, true)[0];
                 if (field)
-                    $scope.reportModel.chart.xaxis_name = field["label_" + $rootScope.language];
+                    $scope.reportModel.chart.xaxis_name_en = field["label_" + $rootScope.user.language];
             };
 
             $scope.setStep1 = function () {
@@ -881,7 +888,7 @@ angular.module('primeapps')
                 $scope.reportModel.module_id = $scope.currentReport.module_id;
                 $scope.reportModel.sharing_type = $scope.currentReport.sharing_type;
                 $scope.reportModel.shares = $scope.currentReport.shares;
-                $scope.reportModel.name = $scope.currentReport.name;
+                $scope.reportModel.name_en = $scope.currentReport.name_en;
                 $scope.reportModel.filters = $scope.currentReport.filters;
                 $scope.selectModule();
 
@@ -892,8 +899,8 @@ angular.module('primeapps')
                         var chart = result.data.chart;
                         $scope.reportModel.chart = {
                             type: chart.chart_type,
-                            yaxis_name: chart.yaxisname,
-                            xaxis_name: chart.xaxisname
+                            yaxis_name_en: chart.yaxisname_en,
+                            xaxis_name_en: chart.xaxisname_en
                         };
 
                     });
@@ -910,7 +917,7 @@ angular.module('primeapps')
                 $scope.reportModel.aggregations = $scope.currentReport.aggregations;
 
                 angular.forEach($scope.numberField, function (item) {
-                    var aggregation = $filter('filter')($scope.currentReport.aggregations, { field: item.name }, true)[0];
+                    var aggregation = $filter('filter')($scope.currentReport.aggregations, {field: item.name_en}, true)[0];
                     if (aggregation) {
                         item.Aggregation = aggregation.aggregation_type + "-" + aggregation.field;
                     }
