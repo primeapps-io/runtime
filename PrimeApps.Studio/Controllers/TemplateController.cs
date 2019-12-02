@@ -189,12 +189,12 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
         [Route("find")]
-        public IActionResult Find(ODataQueryOptions<Template> queryOptions)
+        public IActionResult Find(ODataQueryOptions<Template> queryOptions, [FromUri]TemplateType templateType = 0)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var temps = _templateRepostory.Find();
+            var temps = _templateRepostory.Find(templateType);
             var queryResults = (IQueryable<Template>)queryOptions.ApplyTo(temps);
             return Ok(new PageResult<Template>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }

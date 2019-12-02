@@ -507,7 +507,7 @@ angular.module('primeapps')
                     serverSorting: true,
                     transport: {
                         read: {
-                            url: "/api/template/find",
+                            url: "/api/template/find?TemplateType=email",
                             type: 'GET',
                             dataType: "json",
                             beforeSend: function (req) {
