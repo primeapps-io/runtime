@@ -11,7 +11,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface ISettingRepository : IRepositoryBaseTenant
     {
-        Task<ICollection<Setting>> Find(PaginationModel paginationModel);
+        IQueryable<Setting> Find();
         Task<int> Count();
         Task<Setting> GetById(int id);
         Task<Setting> GetByIdWithType(int id, SettingType type);

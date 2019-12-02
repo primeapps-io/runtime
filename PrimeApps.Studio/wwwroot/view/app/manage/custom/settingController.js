@@ -10,58 +10,8 @@ angular.module('primeapps')
             $scope.settings = [];
             $scope.loading = true;
             $scope.modalLoading = false;
-            $scope.settingModel = {}; 
-
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-
-            $scope.generator(10);
-
-            $scope.requestModel = {
-                limit: "10",
-                offset: 0
-            };
-
-            SettingsService.count()
-                .then(function (response) {
-                    $scope.pageTotal = response.data;
-                    $scope.changePage(1);
-                });
-
-            $scope.changePage = function (page) {
-                $scope.loading = true;
-
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
-
-                $scope.activePage = page;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-
-                SettingsService.find(requestModel)
-                    .then(function (response) {
-                        $scope.settings = response.data;
-                        $scope.loading = false;
-                    });
-
-            };
-
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage, true)
-            };
-
+            $scope.settingModel = {};
+             
             $scope.showFormModal = function (setting) {
 
                 if (setting) {
@@ -126,7 +76,7 @@ angular.module('primeapps')
                         .then(function (response) {
                             if (response.data) {
                                 toastr.success("Setting is saved successfully");
-                                $scope.changePage(1);
+                                $scope.grid.dataSource.read();
                                 $scope.saving = false;
                                 $scope.closeModal();
                             }
@@ -148,7 +98,7 @@ angular.module('primeapps')
                         .then(function (response) {
                             if (response.data) {
                                 toastr.success("Setting is saved successfully");
-                                $scope.changePage(1);
+                                $scope.grid.dataSource.read();
                                 $scope.saving = false;
                                 $scope.closeModal();
                             }
@@ -178,7 +128,7 @@ angular.module('primeapps')
                         if (setting) {
                             SettingsService.delete(setting.id)
                                 .then(function () {
-                                    $scope.changePage($scope.activePage);
+                                    $scope.grid.dataSource.read();
                                     toastr.success("Setting is deleted successfully.", "Deleted!");
 
                                 })
@@ -190,6 +140,82 @@ angular.module('primeapps')
                     }
                 });
             };
+
+            //For Kendo UI
+            $scope.goUrl = function (item) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.showFormModal(item); //click event.
+                }
+            };
+
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/setting/find",
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id", 
+                        }
+                    }
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                filterable: {
+                    extra: false
+                },
+                rowTemplate: function (e) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td> <span>' + e.key + '</span></td > ';
+                    trTemp += '<td><span>' + e.value + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+                    {
+                        field: 'Key',
+                        title: 'Key',
+                    },
+                    {
+                        field: 'Value',
+                        title: 'Value',
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
+            };
+            //For Kendo UI
+
 
         }
     ]);
