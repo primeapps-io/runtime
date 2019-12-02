@@ -77,7 +77,7 @@ namespace PrimeApps.Studio.Controllers
 			if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
 				return StatusCode(403);
 
-			var templates = await _templateRepostory.GetAllList(type, excelType, moduleName);
+			var templates = await _templateRepostory.GetAllList(LanguageType.NotSet, type, excelType, moduleName);
 
 			return Ok(templates);
 		}
@@ -193,7 +193,7 @@ namespace PrimeApps.Studio.Controllers
 
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
-			
+
 			var templateEntity = TemplateHelper.CreateEntityAppTemplate(template, template.AppId);
 			var result = await _platformRepository.CreateAppTemplate(templateEntity);
 

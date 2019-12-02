@@ -140,7 +140,6 @@ angular.module('primeapps')
 				if ($scope.selectedLanguage === $rootScope.language)
 					return;
 
-				//$localStorage.write('is_change_language', true);
 				$scope.userModel.culture = $scope.selectedLanguage === 'tr' ? 'tr-TR' : 'en-US';
 				SettingService.editUser($scope.userModel)
 					.then(function onSuccess() {
