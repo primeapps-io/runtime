@@ -65,7 +65,8 @@ namespace PrimeApps.App.Controllers
         [Route("get_all_list"), HttpGet]
         public async Task<IActionResult> GetAllList(TemplateType type = TemplateType.NotSet, TemplateType excelType = TemplateType.NotSet, string moduleName = "")
         {
-            var templates = await _templateRepostory.GetAllList(type, excelType, moduleName);
+            var language = AppUser.Language.ToEnum<LanguageType>();
+            var templates = await _templateRepostory.GetAllList(language, type, excelType, moduleName);
 
             return Ok(templates);
         }
@@ -75,6 +76,9 @@ namespace PrimeApps.App.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            if (template.Language == LanguageType.NotSet)
+                template.Language = AppUser.Language.ToEnum<LanguageType>();
 
             var templateEntity = TemplateHelper.CreateEntity(template, _userRepository);
             var result = await _templateRepostory.Create(templateEntity);
@@ -117,6 +121,9 @@ namespace PrimeApps.App.Controllers
 
             if (templateEntity == null)
                 return NotFound();
+
+            if (template.Language == LanguageType.NotSet)
+                template.Language = AppUser.Language.ToEnum<LanguageType>();
 
             TemplateHelper.UpdateEntity(template, templateEntity, _userRepository);
             await _templateRepostory.Update(templateEntity);
