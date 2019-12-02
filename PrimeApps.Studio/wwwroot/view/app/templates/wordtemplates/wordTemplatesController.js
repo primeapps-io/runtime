@@ -260,8 +260,12 @@ angular.module('primeapps')
                 });
             };
 
-            $scope.getDownloadUrl = function (template) {
-                console.log('');
+            //$scope.getDownloadUrl = function (template) {
+            //    console.log('');
+            //};
+
+            $scope.closeModal = function () {
+                $scope.clickDownloadCloseModal = true;
             };
 
             $scope.clearTemplateFile = function () {
@@ -517,10 +521,13 @@ angular.module('primeapps')
             };
 
             $scope.goUrl = function (emailTemp) {
-                var selection = window.getSelection();
-                if (selection.toString().length === 0) {
-                    $scope.showFormModal(emailTemp);
+                if (!$scope.clickDownloadCloseModal) {
+                    var selection = window.getSelection();
+                    if (selection.toString().length === 0) {
+                        $scope.showFormModal(emailTemp);
+                    }
                 }
+                $scope.clickDownloadCloseModal = false;
             };
 
             //For Kendo UI
@@ -570,7 +577,7 @@ angular.module('primeapps')
                     trTemp += '<td>' + wordTemp.name + '</td>';
                     trTemp += '<td>' + wordTemp.module + '</td>';
                     trTemp += wordTemp.active ? '<td><span>' + $filter('translate')('Setup.Modules.Active') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.Passive') + '</span></td>';
-                    trTemp += '<td>' + '<a href="' + getUrl + '" target="_blank">' + $filter('translate')('Common.Download') + '</a>' + '</td>';
+                    trTemp += '<td>' + '<a href="' + getUrl + '" target="_blank" ng-click="closeModal();">' + $filter('translate')('Common.Download') + '</a>' + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
