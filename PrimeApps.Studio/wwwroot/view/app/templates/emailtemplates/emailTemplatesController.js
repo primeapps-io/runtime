@@ -559,7 +559,7 @@ angular.module('primeapps')
                     },
 
                     {
-                        field: 'Module.Name',
+                        field: 'Module',
                         title: $filter('translate')('Setup.Templates.Module'),
                     },
                     {

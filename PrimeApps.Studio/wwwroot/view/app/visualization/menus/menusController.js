@@ -795,11 +795,11 @@ angular.module('primeapps')
                     },
 
                     {
-                        field: 'Category',
+                        field: 'ProfileId',
                         title: $filter('translate')('Menu.ProfileName'),
                     },
                     {
-                        field: 'Type',
+                        field: 'Default',
                         title: $filter('translate')('Menu.DefaultMenu'),
                     },
                     {

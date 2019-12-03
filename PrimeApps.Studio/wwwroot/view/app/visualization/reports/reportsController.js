@@ -339,12 +339,12 @@ angular.module('primeapps')
                 columns: [
 
                     {
-                        field: 'Name',
+                        field: 'NameEn',
                         title: $filter('translate')('Setup.Report.ReportName'),
                     },
 
                     {
-                        field: 'Category.Name',
+                        field: 'CategoryId',
                         title: $filter('translate')('Setup.Report.ReportCategory'),
                     },
                     {

@@ -426,7 +426,7 @@ angular.module('primeapps')
                         title: 'Language',
                     },
                     {
-                        field: 'Code',
+                        field: 'SystemCode',
                         title: 'Code',
                     }]
             };

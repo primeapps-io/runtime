@@ -450,16 +450,16 @@ angular.module('primeapps')
                     },
 
                     {
-                        field: 'Module.Name',
+                        field: 'Module',
                         title: $filter('translate')('Setup.Templates.Module'),
                     },
                     {
-                        field: 'Status',
-                        title: 'Status',
+                        field: 'Active',
+                        title: $filter('translate')('Setup.Templates.Status'),
                     },
                     {
-                        field: 'File',
-                        title: 'File',
+                        field: 'Content',
+                        title: $filter('translate')('Setup.Templates.TemplateFile'),
                     },
                     {
                         field: '',

@@ -181,6 +181,7 @@ angular.module('primeapps')
 
                 if (!$scope.profile.id) {
                     result = ProfilesService.create($scope.profile);
+
                     $scope.grid.dataSource.read();
                 } else {
                     result = ProfilesService.update($scope.profile);

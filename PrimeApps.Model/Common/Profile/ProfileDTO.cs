@@ -13,9 +13,13 @@ namespace PrimeApps.Model.Common.Profile
         [DataMember]
         public int ID { get; set; }
         [DataMember]
-        public string Name { get; set; }
+        public string NameEn { get; set; }
         [DataMember]
-        public string Description { get; set; }
+        public string NameTr { get; set; }
+        [DataMember]
+        public string DescriptionEn { get; set; }
+        [DataMember]
+        public string DescriptionTr { get; set; }
         [DataMember]
         public bool HasAdminRights { get; set; }
         [DataMember]

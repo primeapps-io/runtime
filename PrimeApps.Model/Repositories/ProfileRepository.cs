@@ -34,8 +34,8 @@ namespace PrimeApps.Model.Repositories
         {
             Profile newProfile = new Profile()
             {
-                DescriptionEn = newProfileDTO.Description,
-                DescriptionTr = newProfileDTO.Description,
+                DescriptionEn = newProfileDTO.DescriptionEn,
+                DescriptionTr = newProfileDTO.DescriptionTr,
                 HasAdminRights = newProfileDTO.HasAdminRights,
                 IsPersistent = false,
                 SendEmail = newProfileDTO.SendEmail,
@@ -48,8 +48,8 @@ namespace PrimeApps.Model.Repositories
                 Tasks = newProfileDTO.Tasks,
                 Calendar = newProfileDTO.Calendar,
                 Newsfeed = newProfileDTO.Newsfeed,
-                NameEn = newProfileDTO.Name,
-                NameTr = newProfileDTO.Name,
+                NameEn = newProfileDTO.NameEn,
+                NameTr = newProfileDTO.NameTr,
                 Dashboard = newProfileDTO.Dashboard,
                 Home = newProfileDTO.Home,
                 CollectiveAnnualLeave = newProfileDTO.CollectiveAnnualLeave,
@@ -131,10 +131,10 @@ namespace PrimeApps.Model.Repositories
 
             if (profileToUpdate == null) return;
 
-            profileToUpdate.NameEn = updatedProfileDTO.Name;
-            profileToUpdate.NameTr = updatedProfileDTO.Name;
-            profileToUpdate.DescriptionEn = updatedProfileDTO.Description;
-            profileToUpdate.DescriptionTr = updatedProfileDTO.Description;
+            profileToUpdate.NameEn = updatedProfileDTO.NameEn;
+            profileToUpdate.NameTr = updatedProfileDTO.NameTr;
+            profileToUpdate.DescriptionEn = updatedProfileDTO.DescriptionEn;
+            profileToUpdate.DescriptionTr = updatedProfileDTO.DescriptionTr;
             profileToUpdate.HasAdminRights = updatedProfileDTO.HasAdminRights;
             profileToUpdate.SendSMS = updatedProfileDTO.SendSMS;
             profileToUpdate.SendEmail = updatedProfileDTO.SendEmail;
