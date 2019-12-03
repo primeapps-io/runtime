@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Entities.Tenant;
@@ -20,8 +21,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<ICollection<Help>> GetCustomHelp(ModalType templateType, LanguageType language = LanguageType.NotSet, bool? customhelp = false);
         Task<Help> GetModuleType(ModalType templateType, ModuleType moduleType, LanguageType language = LanguageType.NotSet, int? moduleId = null);
         Task<int> Count();
-        Task<ICollection<Help>> Find(PaginationModel paginationModel);
-
+        IQueryable<Help> Find();
 
     }
 }
