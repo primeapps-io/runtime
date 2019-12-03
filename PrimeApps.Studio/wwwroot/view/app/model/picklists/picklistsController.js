@@ -930,7 +930,7 @@ angular.module('primeapps')
                 },
                 rowTemplate: function (e) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
-                    trTemp += '<td><span>' + e['label_' + $scope.language] + '</span></td>';
+                    trTemp += '<td class="text-left"><span>' + e['label_' + $scope.language] + '</span></td>';
                     trTemp += e.system_code ? '<td><span>' + e.system_code + '</span></td>' : '<td><span></span></td>';
                     trTemp += '<td class="text-capitalize"> <span>' + e.system_type + '</span></td > ';
                     trTemp += '<td ng-click="$event.stopPropagation();"> ' + actionButtonsTemplate + '</td></tr>';
@@ -947,6 +947,9 @@ angular.module('primeapps')
                     {
                         field: 'LabelEn',
                         title: $filter('translate')('Picklist.Name'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
                         field: 'SystemCode',

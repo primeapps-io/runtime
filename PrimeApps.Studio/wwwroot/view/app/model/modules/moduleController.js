@@ -139,8 +139,8 @@ angular.module('primeapps')
                     },
                     rowTemplate: function (e) {
                         var trTemp = '<tr ng-click="goUrl(dataItem.id)">';
-                        trTemp += '<td class="text-center"><span><i class="' + e.menu_icon + '"></i ></span></td>';
-                        trTemp += '<td><span>' + e['label_' + $scope.language + '_plural'] + '</span></td>';
+                        trTemp += '<td><span><i class="' + e.menu_icon + '"></i ></span></td>';
+                        trTemp += '<td class="text-left"><span>' + e['label_' + $scope.language + '_plural'] + '</span></td>';
                         trTemp += '<td><span>' + $filter('translate')('Setup.Modules.Type-' + e.system_type) + '</span></td>';
                         trTemp += e.display ? '<td><span>' + $filter('translate')('Common.Yes') + '</span></td>' : '<td><span>' + $filter('translate')('Common.No') + '</span></td>';
                         trTemp += e.sharing === "private" ? '<td ><span>' + $filter('translate')('Setup.Modules.SharingPrivate') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.SharingPublic') + '</span></td>';
@@ -164,6 +164,9 @@ angular.module('primeapps')
                         {
                             field: 'Name',
                             title: $filter('translate')('Setup.Modules.Name'),
+                            headerAttributes: {
+                                'class': 'text-left'
+                            },
                         },
                         {
                             field: 'SystemType',

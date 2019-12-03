@@ -1,0 +1,156 @@
+@import "variables-from-app";
+   
+@import "../../node_modules/@progress/kendo-theme-bootstrap/scss/_functions.scss";
+@import "../../node_modules/@progress/kendo-theme-bootstrap/scss/_variables.scss";
+@import "../../node_modules/@progress/kendo-theme-bootstrap/scss/_mixins.scss";
+ 
+// Dependencies
+@import "../../node_modules/@progress/kendo-theme-bootstrap/scss/common/_all.scss";
+@import "../../node_modules/@progress/kendo-theme-bootstrap/scss/ripple.scss";
+@import "../../node_modules/@progress/kendo-theme-bootstrap/scss/popup.scss";
+
+// Data management
+@import "../../node_modules/@progress/kendo-theme-bootstrap/scss/pager.scss";
+@import "../../node_modules/@progress/kendo-theme-bootstrap/scss/grid.scss";
+@import "../../node_modules/@progress/kendo-theme-bootstrap/scss/spreadsheet.scss";
+@import "../../node_modules/@progress/kendo-theme-bootstrap/scss/listview.scss";
+@import "../../node_modules/@progress/kendo-theme-bootstrap/scss/pivotgrid.scss";
+@import "../../node_modules/@progress/kendo-theme-bootstrap/scss/treelist.scss";
+@import "../../node_modules/@progress/kendo-theme-bootstrap/scss/scrollview.scss";
+@import "../../node_modules/@progress/kendo-theme-bootstrap/scss/filter.scss";
+ 
+.grid-theme{
+  @include radius(5px);
+  border-color: transparent;
+  width: 100%;
+  thead{
+    th,td{
+      font-size: 12px;
+      font-weight: bold;
+      color: $black50;
+    }
+  }
+  tbody{
+    th,td{
+      font-size: 14px;
+    }
+  }
+  &.grid-theme-center{
+    th,td{
+      text-align: center;
+      &.text-left{
+        text-align: left;
+      }
+    }
+  }
+  .k-grouping-header{
+    background-color: transparent;
+    color: $black50;
+    padding: $input-btn-padding-y $input-btn-padding-x;
+  }
+
+  .k-grid-pager{
+    background-color: transparent;
+    padding: $input-btn-padding-x;
+  }
+  .k-grid-header {
+    background-color: $white;
+    border-bottom: 1px solid $secondary;
+  }
+  .k-pager-sizes{
+    margin-left: auto;
+    margin-right: 0;
+    font-size: $font-size-base *.9;
+    > .k-dropdown{
+      order: 2;
+      margin: 0px 0px 0px 10px;
+    }
+  }
+  .k-loading-mask{
+    display: none;
+    ~ table td{
+      position: relative;
+      &:before {
+        content: '';
+        -webkit-animation-duration: 1s;
+        -webkit-animation-fill-mode: forwards;
+        -webkit-animation-iteration-count: infinite;
+        -webkit-animation-name: placeHolderShimmer;
+        -webkit-animation-timing-function: linear;
+        background: #f6f7f9;
+        background-image: linear-gradient(to right, #f6f7f9 0%, #e9ebee 20%, #f6f7f9 40%, #f6f7f9 100%);
+        background-repeat: no-repeat;
+        background-size: 1000px 200px;
+        height:calc(100% - 10px);
+        width: calc(100% - 10px);
+        position: absolute;
+        color: rgba(0,0,0,0);
+        border-radius: 5px;
+        display: block;
+        top: 5px;
+        left: 5px;
+        z-index: 1;
+      }
+    }
+  }
+  .k-grid-pager{
+    @include flexbox();
+    >*{
+      order: 1;
+      &.k-pager-info{
+        order:3;
+        justify-content: center;
+      }
+      &.k-pager-sizes{
+        order:4;
+      }
+      &.k-pager-refresh{
+        order:2;
+        margin-left: 20px;
+      }
+    }
+  }
+  tr[ng-click]{
+    cursor: pointer;
+    td[ng-click]{
+      cursor: default;
+      position: relative;
+    }
+  }
+  .k-checkbox{
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    pointer-events: inherit;
+    -webkit-appearance: inherit;
+    clip: inherit;
+    cursor: pointer;
+  }
+  tbody{
+    tr{
+      &:nth-child(2n+1){
+        background: $body-bg2;
+        &:hover{
+          background: rgba(41,43,44,0.065);
+        }
+      }
+    }
+  }
+  .list-action-button{
+    background: transparent;
+    border: none;
+  }
+  
+} 
+.k-textbox,.k-dropdown-wrap{
+  border-radius: 2px;
+  background-color: rgba(0,0,0,0.05);
+  border: none;
+  max-width: 100% !important;
+  padding: $input-padding-y $input-padding-x;
+  &:hover,&:focus{
+    background-color: $secondary;
+    outline: none;
+  }  
+}
