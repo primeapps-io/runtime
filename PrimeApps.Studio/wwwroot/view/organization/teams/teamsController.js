@@ -27,83 +27,13 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'teams';
             $rootScope.breadcrumblist[2].title = "Teams";
-            //$scope.requestModel = {
-            //    limit: "10",
-            //    offset: 0
-            //};
-
-            //$scope.generator = function (limit) {
-            //    $scope.placeholderArray = [];
-            //    for (var i = 0; i < limit; i++) {
-            //        $scope.placeholderArray[i] = i;
-            //    }
-
-            //};
-            //$scope.generator(10);
-
-            //TeamsService.count().then(function (response) {
-            //    $scope.$parent.teamCount = response.data;
-            //    $scope.pageTotal = response.data;
-            //});
-
-            //TeamsService.find($scope.requestModel, $rootScope.currentOrgId).then(function (response) {
-            //    $scope.teamArray = response.data;
-
-            //    for (var i = 0; i < $scope.teamArray.length; i++) {
-            //        var team = $scope.teamArray[i];
-            //        team.organizationName = $filter('filter')($rootScope.organizations, { id: team.organization_id }, true)[0].label;
-            //    }
-            //    $scope.$parent.teamArray = response.data;
-            //    $scope.loading = false;
-            //});
-
-            //$scope.changePage = function (page) {
-            //    $scope.loading = true;
-
-            //    if (page !== 1) {
-            //        var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-            //        if (page > difference) {
-            //            if (Math.abs(page - difference) < 1)
-            //                --page;
-            //            else
-            //                page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-            //        }
-            //    }
-
-            //    var requestModel = angular.copy($scope.requestModel);
-            //    requestModel.offset = page - 1;
-            //    TeamsService.count().then(function (response) {
-            //        if (response.data > 0) {
-            //            $scope.$parent.teamCount = response.data;
-            //            $scope.pageTotal = response.data;
-            //        }
-            //    });
-
-            //    TeamsService.find(requestModel, $rootScope.currentOrgId).then(function (response) {
-            //        $scope.teamArray = response.data;
-            //        for (var i = 0; i < $scope.teamArray.length; i++) {
-            //            var team = $scope.teamArray[i];
-            //            team.organizationName = $filter('filter')($rootScope.organizations, { id: team.organization_id }, true)[0].label;
-            //        }
-            //        if ($scope.$parent)
-            //            $scope.$parent.teamArray = response.data;
-
-            //        $scope.loading = false;
-            //    });
-            //};
-
-            //$scope.changeOffset = function () {
-            //    $scope.changePage($scope.activePage);
-            //};
-
+           
             $scope.setStep = function (value) {
                 $scope.stepNo = value;
             };
 
             $scope.getOrganizationUserList = function () {
-                $scope.loadingMembers = true;
-                //$scope.generator(10);
+                $scope.loadingMembers = true; 
 
                 TeamsService.getOrganizationUsers($rootScope.currentOrgId)
                     .then(function (response) {
@@ -123,8 +53,7 @@ angular.module('primeapps')
                         toastr.error($filter('translate')('Common.Error'));
                     });
             }
-
-            //$scope.getTeamsList();
+             
 
             $scope.selectTeam = function (id) {
                 if (id)
