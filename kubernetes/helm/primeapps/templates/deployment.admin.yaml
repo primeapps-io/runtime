@@ -28,7 +28,7 @@ spec:
             secretName: "{{.Release.Name}}-admin-selfsigned-ssl"
         - name: admin-data-volume
           persistentVolumeClaim:
-            claimName: admin-data-volume-claim
+            claimName: primapps-admin
       containers:
         - name: "{{.Release.Name}}-admin"
           image: "primeapps/primeapps-admin:{{.Values.image.tag}}"
