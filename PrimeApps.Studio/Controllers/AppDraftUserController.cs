@@ -7,6 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -203,15 +206,16 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        [Route("find")]
+        public IActionResult Find(ODataQueryOptions<TenantUser> queryOptions)
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "app_draft_user", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var users = await _userRepository.Find(paginationModel);
+            var users = _userRepository.Find();
 
-            return Ok(users);
+            var queryResults = (IQueryable<TenantUser>)queryOptions.ApplyTo(users);
+            return Ok(new PageResult<TenantUser>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
         [Route("send_email_password"), HttpPost]

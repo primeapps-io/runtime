@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('UsersController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'UsersService',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, UsersService) {
+    .controller('UsersController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'UsersService', '$localStorage',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, UsersService, $localStorage) {
             function validateEmail(email) {
                 var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 return re.test(email);
@@ -35,22 +35,6 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-
-            $scope.generator(10);
-
-            $scope.requestModel = {
-                limit: "10",
-                offset: 0
-            };
-
-            $scope.activePage = 1;
-
             UsersService.getAllRoles()
                 .then(function (response) {
                     $scope.roles = response.data;
@@ -60,44 +44,8 @@ angular.module('primeapps')
                 .then(function (response) {
                     $scope.profiles = response.data;
                     $scope.profiles[0].name = 'Administrator';
-                    $scope.profiles[1].name = 'Standard';
+                    $scope.profiles[1] ? $scope.profiles[1].name = 'Standard' : null;
                 });
-
-            UsersService.count()
-                .then(function (response) {
-                    $scope.pageTotal = response.data;
-                    $scope.changePage(1);
-                });
-
-            $scope.changePage = function (page) {
-                $scope.loading = true;
-
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
-
-                $scope.activePage = page;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-
-                UsersService.find(requestModel)
-                    .then(function (response) {
-                        $scope.users = response.data;
-                        $scope.loading = false;
-                    });
-
-            };
-
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage, true)
-            };
 
             $scope.delete = function (id, event) {
                 var willDelete =
@@ -109,19 +57,14 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
-                            var elem = angular.element(event.srcElement);
-                            angular.element(elem.closest('tr')).addClass('animated-background');
+
                             UsersService.delete(id)
                                 .then(function () {
-                                    $scope.pageTotal--;
-
-                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                    $scope.changePage($scope.activePage, true);
+                                    $scope.grid.dataSource.read();
                                     toastr.success("User is deleted successfully.", "Deleted!");
 
                                 })
                                 .catch(function () {
-                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     toastr.error("User is not deleted successfully.", "Deleted!");
                                 });
 
@@ -147,7 +90,7 @@ angular.module('primeapps')
                             $scope.pageTotal++;
                             if (response.data) {
                                 toastr.success('User is saved successfully');
-                                $scope.changePage(1);
+                                $scope.grid.dataSource.read();
                                 if ($scope.resultModel.sendPassword) {
                                     $scope.sendEmailPassword($scope.userModel, $scope.resultModel);
                                 }
@@ -215,7 +158,7 @@ angular.module('primeapps')
                     .then(function (response) {
                         toastr.success('User is saved successfully');
                         $scope.closeModal();
-                        $scope.changePage($scope.activePage);
+                        $scope.grid.dataSource.read();
                         $scope.saving = false;
 
                     })
@@ -245,12 +188,12 @@ angular.module('primeapps')
                 }
 
                 $scope.userFormModal = $scope.userFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/manage/users/userFormModal.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/manage/users/userFormModal.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.userFormModal.$promise.then(function () {
                     $scope.userFormModal.show();
@@ -293,5 +236,94 @@ angular.module('primeapps')
                     element.attr('marked', true)
                 }
             };
+
+            //For Kendo UI
+            $scope.goUrl = function (item) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.showFormModal(item.id); //click event.
+                }
+            };
+
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/app_draft_user/find",
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                        },
+                        parse: function (data) {
+                            $scope.users = data.items;
+                            return data;
+                        }
+                    }
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                filterable: {
+                    extra: false
+                },
+                rowTemplate: function (e) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td> <span>' + e.full_name + '</span></td > ';
+                    trTemp += '<td> <span>' + e.email + '</span> <span ng-click="$event.stopPropagation();" class="copy-button pull-right" title="{{"Common.Copy" | translate}}" ngclipboard data-clipboard-text="' + e.email + '"><i class="copy-icon fa fa-clipboard"></i></span></td > ';
+                    trTemp += '<td> <span>' + e.role['label_' + $scope.language] + '</span></td > ';
+                    trTemp += e.profile_id === 1 ? '<td> <span>Administrator</span></td>' : e.profile_id === 2 ? '<td> <span>Standart</span></td>' : '<td> <span>' + e.profile['name_' + $scope.language] + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+                    {
+                        field: 'FullName',
+                        title: 'Name',
+                    },
+                    {
+                        field: 'Email',
+                        title: 'Email',
+                    },
+                    {
+                        field: 'Role.Label' + $scope.language,
+                        title: 'Role',
+                    },
+                    {
+                        field: 'Profile.Name' + $scope.language,
+                        title: 'Profile',
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
+            };
+            //For Kendo UI
         }
     ]);

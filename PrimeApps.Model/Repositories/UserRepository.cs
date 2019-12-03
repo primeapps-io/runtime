@@ -251,7 +251,7 @@ namespace PrimeApps.Model.Repositories
                 .CountAsync();
         }
 
-        public async Task<ICollection<TenantUser>> Find(PaginationModel paginationModel)
+        public IQueryable<TenantUser> Find()
         {
             /* Studio user can manage user active status in panel.
              * Because of this we also need to get inactive users.
@@ -260,25 +260,9 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.Profile)
                 .Include(x => x.Role)
                 .Where(x => !x.Deleted && x.Id != 1/*&& x.IsActive*/)
-                .OrderByDescending(x => x.Id)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
-
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Module).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    users = users.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    users = users.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
-            }
-
-            return await users.ToListAsync();
+                .OrderByDescending(x => x.Id);
+                 
+            return users;
         }
 
         public TenantUser GetSubscriber()
