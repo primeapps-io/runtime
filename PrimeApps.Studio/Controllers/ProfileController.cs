@@ -1,11 +1,16 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Profile;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -168,18 +173,15 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        [Route("find")]
+        public IActionResult Find(ODataQueryOptions<Profile> queryOptions)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var templates = await _profileRepository.Find(paginationModel);
-
-            //if (templates == null)
-            //	return NotFound();
-
-            return Ok(templates);
+            var profiles = _profileRepository.Find();
+            var queryResults = (IQueryable<Profile>)queryOptions.ApplyTo(profiles);
+            return Ok(new PageResult<Profile>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
     }

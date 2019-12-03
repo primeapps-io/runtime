@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Profile;
@@ -24,6 +25,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<Profile> GetByIdBasic(int id);
         Task<int> DeleteSoft(Profile profile);
         int Count();
-        Task<ICollection<ProfileWithUsersDTO>> Find(PaginationModel paginationModel);
+        IQueryable<Profile> Find();
     }
 }

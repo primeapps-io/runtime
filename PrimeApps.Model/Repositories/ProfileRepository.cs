@@ -432,27 +432,12 @@ namespace PrimeApps.Model.Repositories
             return count;
         }
 
-        public async Task<ICollection<ProfileWithUsersDTO>> Find(PaginationModel paginationModel)
+        public IQueryable<Profile> Find()
         {
-            var getPagination = await GetPaginationQuery(paginationModel);
-
-            var profiles = getPagination
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit).ToList();
-
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Profile).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    profiles = profiles.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
-                }
-                else
-                {
-                    profiles = profiles.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
-                }
-            }
+            var profiles = DbContext.Profiles
+            .Where(x => !x.Deleted)
+            .Include(x=>x.Permissions)
+            .OrderByDescending(x => x.Id);
 
             return profiles;
         }
