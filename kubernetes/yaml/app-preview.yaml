@@ -192,17 +192,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-app-preview-config
-                  key: SentryDsn
-          readinessProbe:
-            httpGet:
-              path: /healthz
-              port: 80
-              scheme: HTTP
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            timeoutSeconds: 2
-            successThreshold: 1
-            failureThreshold: 1                  
+                  key: SentryDsn              
 ---
 kind: Service
 apiVersion: v1

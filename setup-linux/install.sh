@@ -8,14 +8,13 @@ cd ..
 
 # Variables
 basePath=$(pwd -W)
-filePostgres="http://get.enterprisedb.com/postgresql/postgresql-12.1-1-windows-x64-binaries.zip"
-fileMinio="https://dl.min.io/server/minio/release/windows-amd64/minio.exe"
-fileRedis="https://github.com/microsoftarchive/redis/releases/download/win-3.0.504/Redis-x64-3.0.504.zip"
+filePostgres="http://get.enterprisedb.com/postgresql/postgresql-10.11-1-linux-x64-binaries.tar.gz"
+fileMinio="https://dl.min.io/server/minio/release/linux-amd64/minio"
+fileRedis="http://download.redis.io/redis-stable.tar.gz"
 fileGitea="https://github.com/go-gitea/gitea/releases/download/v1.10.0/gitea-1.10.0-windows-4.0-amd64.exe"
-fileWinSW="https://github.com/kohsuke/winsw/releases/download/winsw-v2.2.0/WinSW.NET4.exe"
+ 
 postgresLocale="en-US"
 postgresPath="$basePath/programs/pgsql/bin"
-hostname=$(hostname)
 
 # Create programs directory
 mkdir programs
@@ -50,12 +49,7 @@ cd gitea
 echo -e "${GREEN}Downloading Gitea..${NC}."
 curl $fileGitea -L --output gitea.exe
 
-# Download WinSW
-cd "$basePath/programs"
-mkdir winsw
-cd winsw
-echo -e "${GREEN}Downloading WinSW...${NC}"
-curl $fileWinSW -L --output winsw.exe
+ 
 
 # Init database instances
 cd $postgresPath
@@ -72,9 +66,9 @@ echo -e "${GREEN}Registering database instances...${NC}"
 
 # Start database instances
 echo -e "${GREEN}Starting database instances...${NC}"
-net start "Postgres-PRE"
-net start "Postgres-PDE"
-net start "Postgres-PRE-Test"
+systemctl enable "Postgres-PRE"
+systemctl enable "Postgres-PDE"
+systemctl enable "Postgres-PRE-Test"
 
 # Create postgres role
 echo -e "${GREEN}Creating postgres role for database instances...${NC}"
@@ -113,9 +107,9 @@ cd "$basePath/programs/minio"
 cp "$basePath/programs/winsw/winsw.exe" minio-pre.exe
 cp "$basePath/programs/winsw/winsw.exe" minio-pde.exe
 cp "$basePath/programs/winsw/winsw.exe" minio-pre-test.exe
-cp "$basePath/setup/xml/minio-pre.xml" minio-pre.xml
-cp "$basePath/setup/xml/minio-pde.xml" minio-pde.xml
-cp "$basePath/setup/xml/minio-pre-test.xml" minio-pre-test.xml
+cp "$basePath/setup/minio-pre.xml" minio-pre.xml
+cp "$basePath/setup/minio-pde.xml" minio-pde.xml
+cp "$basePath/setup/minio-pre-test.xml" minio-pre-test.xml
 
 ./minio-pre.exe install
 ./minio-pde.exe install
@@ -136,9 +130,9 @@ cd "$basePath/programs/redis"
 cp "$basePath/programs/winsw/winsw.exe" redis-pre.exe
 cp "$basePath/programs/winsw/winsw.exe" redis-pde.exe
 cp "$basePath/programs/winsw/winsw.exe" redis-pre-test.exe
-cp "$basePath/setup/xml/redis-pre.xml" redis-pre.xml
-cp "$basePath/setup/xml/redis-pde.xml" redis-pde.xml
-cp "$basePath/setup/xml/redis-pre-test.xml" redis-pre-test.xml
+cp "$basePath/setup/redis-pre.xml" redis-pre.xml
+cp "$basePath/setup/redis-pde.xml" redis-pde.xml
+cp "$basePath/setup/redis-pre-test.xml" redis-pre-test.xml
 
 mkdir "$basePath/data/redis_pre"
 mkdir "$basePath/data/redis_pde"
@@ -176,6 +170,7 @@ mkdir log
 cd "$basePath/programs/gitea"
 cp "$basePath/setup/app.ini" app.ini
 
+hostname=$(hostname)
 pathRepository="$basePath/data/gitea/repositories"
 pathRepository=${pathRepository//\//\\/} # escape slash
 pathLfs="$basePath/data/gitea/lfs"

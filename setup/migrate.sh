@@ -2,10 +2,10 @@
 
 if [[ "$OSTYPE" == "msys" ]]
 then
-	./install-win.sh
+	./migrate-win.sh
 elif [[ "$OSTYPE" == "darwin"* ]]
 then
-    ./install-mac.sh	
+    ./migrate-mac.sh	
 else
-	./install-linux.sh
+	./migrate-linux.sh
 fi
