@@ -1,8 +1,8 @@
 apiVersion: v1
-description: PrimeApps Runtime Helm chart
+description: PrimeApps Runtime Helm Chart
 name: primeapps
 version: 1.0.2
-appVersion: 1.19.337.1
+appVersion: 1.19.337.2
 keywords:
   - low-code
   - apaas
