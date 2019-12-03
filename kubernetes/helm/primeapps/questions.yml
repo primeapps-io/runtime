@@ -10,7 +10,7 @@ questions:
   group: "Container Images"
   subquestions:
   - variable: image.tag
-    default: "1.19.277.1-debian"
+    default: "1.19.337.1-debian"
     description: "PrimeApps Docker image tag. https://hub.docker.com/u/primeapps"
     type: string
     label: Image Tag
@@ -267,7 +267,7 @@ questions:
   group: "Other Settings"  
 - variable: app.googleMapsApiKey
   default: "your-google-maps-api-key"
-  description: "Google Mapps API Key"
+  description: "Google Maps API Key"
   type: string
-  label: Google Mapps API Key
+  label: Google Maps API Key
   group: "Other Settings"
