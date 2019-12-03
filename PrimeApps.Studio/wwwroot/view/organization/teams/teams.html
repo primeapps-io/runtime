@@ -1,6 +1,6 @@
 <div class="setup-title">
     <h2>{{selectedTeam ? selectedTeam.name:'Teams'}}</h2>
-    <ul class="list-unstyled list-inline"  >
+    <ul class="list-unstyled list-inline">
         <li>
             <button class="btn add-button" ng-click="addNewTeam()">
                 <i class="fas fa-plus"></i> {{'Team.AddNew' | translate}}
@@ -8,8 +8,11 @@
         </li>
     </ul>
 </div>
-
 <div class="tab-content">
+    <div class="grid-theme grid-theme-center table-responsive" kendo-grid="grid" id="kendo-grid" k-options="mainGridOptions">
+    </div>
+</div>
+<div class="tab-content" ng-if="false">
     <div class="table-responsive" ng-show="loading">
         <table class="table">
             <thead>

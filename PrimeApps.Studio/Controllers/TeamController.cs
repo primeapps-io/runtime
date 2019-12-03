@@ -1,5 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -168,15 +172,17 @@ namespace PrimeApps.Studio.Controllers
             return Ok(teams);
         }
 
-        [Route("find/{organizationId:int}"), HttpPost]
-        public async Task<IActionResult> Find(int organizationId, [FromBody] PaginationModel paginationModel)
+        [Route("find/{organizationId:int}")]
+        public IActionResult Find(int organizationId, ODataQueryOptions<Team> queryOptions)
         {
-            var teams = await _teamRepository.Find(paginationModel, organizationId);
+            var teams = _teamRepository.Find(organizationId);
 
             if (teams == null)
                 return NotFound();
 
-            return Ok(teams);
+            var queryResults = (IQueryable<Team>)queryOptions.ApplyTo(teams);
+
+            return Ok(new PageResult<Team>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
         [Route("count"), HttpGet]

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using PrimeApps.Model.Entities.Studio;
+using System.Linq;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
@@ -15,7 +16,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<List<Team>> GetByUserId(int userId);
         Task<Team> GetByName(string name, int organizationId);
         Task<List<Team>> GetByOrganizationId(int organizationId);
-        Task<ICollection<Team>> Find(PaginationModel paginationModel, int organizationId);
+        IQueryable<Team> Find(int organizationId);
         Task<int> Create(Team team);
         Task<int> Delete(Team team);
         Task<int> Update(Team team);

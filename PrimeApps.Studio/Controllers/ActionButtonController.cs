@@ -128,7 +128,7 @@ namespace PrimeApps.Studio.Controllers
         {
             var dependencies = await _actionButtonRepository.Find(id);
             var serializerSettings = new JsonSerializerSettings
-            { 
+            {
                 PreserveReferencesHandling = PreserveReferencesHandling.None,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             };

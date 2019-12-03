@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('TeamsController', ['$rootScope', '$scope', '$filter', 'TeamsService', '$state', '$modal', 'ModuleService',
-        function ($rootScope, $scope, $filter, TeamsService, $state, $modal, ModuleService) {
+    .controller('TeamsController', ['$rootScope', '$scope', '$filter', 'TeamsService', '$state', '$modal', 'ModuleService', '$localStorage',
+        function ($rootScope, $scope, $filter, TeamsService, $state, $modal, ModuleService, $localStorage) {
             $scope.loading = true;
             $scope.activePage = 1;
             $scope.stepNo = 0;
@@ -27,75 +27,75 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'teams';
             $rootScope.breadcrumblist[2].title = "Teams";
-            $scope.requestModel = {
-                limit: "10",
-                offset: 0
-            };
+            //$scope.requestModel = {
+            //    limit: "10",
+            //    offset: 0
+            //};
 
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
+            //$scope.generator = function (limit) {
+            //    $scope.placeholderArray = [];
+            //    for (var i = 0; i < limit; i++) {
+            //        $scope.placeholderArray[i] = i;
+            //    }
 
-            };
-            $scope.generator(10);
+            //};
+            //$scope.generator(10);
 
-            TeamsService.count().then(function (response) {
-                $scope.$parent.teamCount = response.data;
-                $scope.pageTotal = response.data;
-            });
+            //TeamsService.count().then(function (response) {
+            //    $scope.$parent.teamCount = response.data;
+            //    $scope.pageTotal = response.data;
+            //});
 
-            TeamsService.find($scope.requestModel, $rootScope.currentOrgId).then(function (response) {
-                $scope.teamArray = response.data;
+            //TeamsService.find($scope.requestModel, $rootScope.currentOrgId).then(function (response) {
+            //    $scope.teamArray = response.data;
 
-                for (var i = 0; i < $scope.teamArray.length; i++) {
-                    var team = $scope.teamArray[i];
-                    team.organizationName = $filter('filter')($rootScope.organizations, { id: team.organization_id }, true)[0].label;
-                }
-                $scope.$parent.teamArray = response.data;
-                $scope.loading = false;
-            });
+            //    for (var i = 0; i < $scope.teamArray.length; i++) {
+            //        var team = $scope.teamArray[i];
+            //        team.organizationName = $filter('filter')($rootScope.organizations, { id: team.organization_id }, true)[0].label;
+            //    }
+            //    $scope.$parent.teamArray = response.data;
+            //    $scope.loading = false;
+            //});
 
-            $scope.changePage = function (page) {
-                $scope.loading = true;
+            //$scope.changePage = function (page) {
+            //    $scope.loading = true;
 
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+            //    if (page !== 1) {
+            //        var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
 
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
+            //        if (page > difference) {
+            //            if (Math.abs(page - difference) < 1)
+            //                --page;
+            //            else
+            //                page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+            //        }
+            //    }
 
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-                TeamsService.count().then(function (response) {
-                    if (response.data > 0) {
-                        $scope.$parent.teamCount = response.data;
-                        $scope.pageTotal = response.data;
-                    }
-                });
+            //    var requestModel = angular.copy($scope.requestModel);
+            //    requestModel.offset = page - 1;
+            //    TeamsService.count().then(function (response) {
+            //        if (response.data > 0) {
+            //            $scope.$parent.teamCount = response.data;
+            //            $scope.pageTotal = response.data;
+            //        }
+            //    });
 
-                TeamsService.find(requestModel, $rootScope.currentOrgId).then(function (response) {
-                    $scope.teamArray = response.data;
-                    for (var i = 0; i < $scope.teamArray.length; i++) {
-                        var team = $scope.teamArray[i];
-                        team.organizationName = $filter('filter')($rootScope.organizations, { id: team.organization_id }, true)[0].label;
-                    }
-                    if ($scope.$parent)
-                        $scope.$parent.teamArray = response.data;
+            //    TeamsService.find(requestModel, $rootScope.currentOrgId).then(function (response) {
+            //        $scope.teamArray = response.data;
+            //        for (var i = 0; i < $scope.teamArray.length; i++) {
+            //            var team = $scope.teamArray[i];
+            //            team.organizationName = $filter('filter')($rootScope.organizations, { id: team.organization_id }, true)[0].label;
+            //        }
+            //        if ($scope.$parent)
+            //            $scope.$parent.teamArray = response.data;
 
-                    $scope.loading = false;
-                });
-            };
+            //        $scope.loading = false;
+            //    });
+            //};
 
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage);
-            };
+            //$scope.changeOffset = function () {
+            //    $scope.changePage($scope.activePage);
+            //};
 
             $scope.setStep = function (value) {
                 $scope.stepNo = value;
@@ -103,7 +103,7 @@ angular.module('primeapps')
 
             $scope.getOrganizationUserList = function () {
                 $scope.loadingMembers = true;
-                $scope.generator(10);
+                //$scope.generator(10);
 
                 TeamsService.getOrganizationUsers($rootScope.currentOrgId)
                     .then(function (response) {
@@ -131,7 +131,7 @@ angular.module('primeapps')
                     $scope.teamId = id;
 
                 $scope.loadingMembers = true;
-                $scope.generator(10);
+                // $scope.generator(10);
                 TeamsService.get(id)
                     .then(function (response) {
                         if (response.data) {
@@ -190,11 +190,11 @@ angular.module('primeapps')
             };
 
             $scope.save = function (addNewTeamForm) {
-                if (!addNewTeamForm.$valid){
+                if (!addNewTeamForm.$valid) {
                     toastr.error($filter('translate')('Module.RequiredError'));
                     return false;
                 }
-                
+
                 $scope.submitting = true;
 
                 var request = {
@@ -219,7 +219,7 @@ angular.module('primeapps')
                                             $scope.submitting = false;
                                             toastr.success('Team created successfully');
                                             $scope.clearModels();
-                                            $scope.changeOffset();
+                                            $scope.grid.dataSource.read();
                                         }
                                     })
                                     .catch(function (error) {
@@ -232,9 +232,9 @@ angular.module('primeapps')
                                 TeamsService.update($scope.teamId, request)
                                     .then(function (response) {
                                         if (response.data >= 0) {
-                                            toastr.success($filter('translate')('Common.Success'));
+                                            toastr.success($filter('translate')('Team.SaveSuccess'));
                                             $scope.clearModels();
-                                            $scope.changeOffset();
+                                            $scope.grid.dataSource.read();
                                             $scope.submitting = false;
                                         }
                                     })
@@ -276,7 +276,7 @@ angular.module('primeapps')
                         TeamsService.delete(team.id)
                             .then(function (response) {
                                 if (response.data) {
-                                    $scope.changeOffset();
+                                    $scope.grid.dataSource.read();
                                     $scope.teamId = null;
                                     $scope.teamModel = {};
                                     toastr.success("Team is deleted successfully.", "Deleted!");
@@ -374,9 +374,96 @@ angular.module('primeapps')
                     $scope.teamModel = {};
                     $scope.teamId = null;
                     $scope.stepNo = 0;
-                    $scope.changeOffset();
+                    $scope.grid.dataSource.read();
                 }
             };
 
+            //For Kendo UI
+            $scope.goUrl = function (item) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.selectTeam(item.id);
+                    $scope.addNewTeam(item.id); //click event.
+                }
+            };
+
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/team/find/" + $rootScope.currentOrgId,
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                TeamUsers: { type: "number" }
+                            }
+                        },
+                        parse: function (data) {
+                            $scope.teamArray = data.items;
+                            return data;
+                        }
+                    }
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                filterable: {
+                    extra: false
+                },
+                rowTemplate: function (e) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td><div class="user-info"><div class="user-image"><i ng-class="dataItem.icon"></i></div><div class="user-text"><h2 class="ng-binding">' + e.name + '</h2></div></div></td > ';
+                    trTemp += e.team_users ? '<td> <span>' + e.team_users.length + '</span></td > ' : '<td> <span>0</span></td > ';
+                    trTemp += '<td><span>' + e.organization.label + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+                    {
+                        field: 'Name',
+                        title: $filter('translate')('Team.Name'),
+                    },
+                    {
+                        field: '',
+                        title: $filter('translate')('Team.TeamMember'),
+                    },
+                    {
+                        field: 'Organization.Label',
+                        title: $filter('translate')('Team.Organization'),
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
+            };
+            //For Kendo UI 
         }
     ]);
