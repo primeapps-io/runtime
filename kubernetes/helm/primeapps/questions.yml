@@ -175,21 +175,21 @@ questions:
   description: "Storage class for persistent volume"
   type: string
   required: true
-  label: Class
+  label: Storage Class
   group: "Cache Settings"
 - variable: redis.master.persistence.size
   default: "20Gi"
   description: "Storage size for persistent volume - Master"
   type: string
   required: true
-  label: Size
+  label: Storage Size - Master
   group: "Cache Settings"
 - variable: redis.slave.persistence.size
   default: "20Gi"
   description: "Storage size for persistent volume - Slave"
   type: string
   required: true
-  label: Size
+  label: Storage Size - Slave
   group: "Cache Settings"
 - variable: minio.install
   default: true
