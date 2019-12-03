@@ -873,7 +873,7 @@ angular.module('primeapps')
                         title: $filter('translate')('Setup.HelpGuide.HelpScreenName'),
                     },
                     {
-                        field: 'Type',
+                        field: 'ModalType',
                         title: 'Type',
                     },
 
