@@ -538,8 +538,8 @@ angular.module('primeapps')
                 },
                 rowTemplate: function (emailTemp) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
-                    trTemp += '<td>' + emailTemp.name + '</td>';
-                    trTemp += '<td>' + emailTemp.module + '</td>';
+                    trTemp += '<td class="text-left">' + emailTemp.name + '</td>';
+                    trTemp += '<td class="text-left">' + emailTemp.module + '</td>';
                     trTemp += '<td>' + emailTemp.language + '</td>';
                     trTemp += '<td>' + emailTemp.code + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
@@ -547,8 +547,8 @@ angular.module('primeapps')
                 },
                 altRowTemplate: function (emailTemp) {
                     var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
-                    trTemp += '<td>' + emailTemp.name + '</td>';
-                    trTemp += '<td>' + emailTemp.module + '</td>';
+                    trTemp += '<td class="text-left">' + emailTemp.name + '</td>';
+                    trTemp += '<td class="text-left">' + emailTemp.module + '</td>';
                     trTemp += '<td>' + emailTemp.language + '</td>';
                     trTemp += '<td>' + emailTemp.code + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
@@ -566,11 +566,17 @@ angular.module('primeapps')
                     {
                         field: 'Name',
                         title: $filter('translate')('Setup.Templates.TemplateName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
 
                     {
                         field: 'Module',
                         title: $filter('translate')('Setup.Templates.Module'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
                         field: 'Language',

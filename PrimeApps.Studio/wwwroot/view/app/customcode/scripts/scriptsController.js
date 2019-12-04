@@ -286,17 +286,17 @@ angular.module('primeapps')
                 },
                 rowTemplate: function (e) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
-                    trTemp += '<td><span>' + e.label + '</span></td>';
-                    trTemp += '<td> <span>' + e.name + '</span></td > ';
-                    trTemp += '<td><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += '<td class="text-left"><span>' + e.label + '</span></td>';
+                    trTemp += '<td class="text-left"> <span>' + e.name + '</span></td > ';
+                    trTemp += '<td class="text-left"><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
                 altRowTemplate: function (e) {
                     var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
-                    trTemp += '<td><span>' + e.label + '</span></td>';
-                    trTemp += '<td> <span>' + e.name + '</span></td > ';
-                    trTemp += '<td><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += '<td class="text-left"><span>' + e.label + '</span></td>';
+                    trTemp += '<td class="text-left"> <span>' + e.name + '</span></td > ';
+                    trTemp += '<td class="text-left"><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
@@ -311,14 +311,23 @@ angular.module('primeapps')
                     {
                         field: 'Label',
                         title: 'Label',
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
                         field: 'Name',
                         title: 'Identifier',
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
                         field: 'Module.Label' + $scope.language + 'Plural',
-                        title: $filter('translate')('Setup.Modules.Name')
+                        title: $filter('translate')('Setup.Modules.Name'),
+                          headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
                         field: '',

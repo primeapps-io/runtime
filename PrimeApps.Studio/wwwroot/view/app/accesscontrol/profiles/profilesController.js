@@ -364,15 +364,15 @@ angular.module('primeapps')
                 },
                 rowTemplate: function (profile) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
-                    trTemp += '<td>' + profile.name_en + '</td>';
-                    trTemp += '<td>' + profile.description_en + '</td>';
+                    trTemp += '<td class="text-left">' + profile.name_en + '</td>';
+                    trTemp += '<td class="text-left">' + profile.description_en + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
                 altRowTemplate: function (profile) {
                     var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
-                    trTemp += '<td>' + profile.name_en + '</td>';
-                    trTemp += '<td>' + profile.description_en + '</td>';
+                    trTemp += '<td class="text-left">' + profile.name_en + '</td>';
+                    trTemp += '<td class="text-left">' + profile.description_en + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
@@ -388,11 +388,17 @@ angular.module('primeapps')
                     {
                         field: 'NameEn',
                         title: $filter('translate')('Setup.Profiles.ProfileName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
 
                     {
                         field: 'DescriptionEn',
                         title: $filter('translate')('Setup.Profiles.ProfileDescription'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
                         field: '',

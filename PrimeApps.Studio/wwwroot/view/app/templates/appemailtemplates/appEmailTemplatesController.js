@@ -397,16 +397,16 @@ angular.module('primeapps')
                 },
                 rowTemplate: function (emailTemp) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
-                    trTemp += '<td>' + emailTemp.name + '</td>';
-                    trTemp += '<td>' + emailTemp.subject + '</td>';
+                    trTemp += '<td class="text-left">' + emailTemp.name + '</td>';
+                    trTemp += '<td class="text-left">' + emailTemp.subject + '</td>';
                     trTemp += '<td>' + emailTemp.language + '</td>';
                     trTemp += '<td>' + emailTemp.system_code + '</td>';
                     return trTemp;
                 },
                 altRowTemplate: function (emailTemp) {
                     var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
-                    trTemp += '<td>' + emailTemp.name + '</td>';
-                    trTemp += '<td>' + emailTemp.subject + '</td>';
+                    trTemp += '<td class="text-left">' + emailTemp.name + '</td>';
+                    trTemp += '<td class="text-left">' + emailTemp.subject + '</td>';
                     trTemp += '<td>' + emailTemp.language + '</td>';
                     trTemp += '<td>' + emailTemp.system_code + '</td>';
                     return trTemp;
@@ -423,11 +423,17 @@ angular.module('primeapps')
                     {
                         field: 'Name',
                         title: $filter('translate')('Setup.Templates.TemplateName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
 
                     {
                         field: 'Subject',
                         title: 'Subject',
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
                         field: 'Language',

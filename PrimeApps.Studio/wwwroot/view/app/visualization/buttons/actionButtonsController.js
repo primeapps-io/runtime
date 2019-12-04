@@ -610,7 +610,7 @@ angular.module('primeapps')
                 },
                 rowTemplate: function (e) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
-                    trTemp += '<td><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += '<td class="text-left"><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
                     trTemp += '<td><span>' + e['name_'+$scope.language] + '</span></td>';
                     trTemp += '<td class="text-capitalize"> <span>' + e.type + '</span></td > ';
                     trTemp += '<td class="text-capitalize"> <span>' + e.trigger_clone + '</span></td > ';
@@ -619,7 +619,7 @@ angular.module('primeapps')
                 },
                 altRowTemplate: function (e) {
                     var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
-                    trTemp += '<td><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += '<td class="text-left"><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
                     trTemp += '<td><span>' + e['name_' + $scope.language] + '</span></td>';
                     trTemp += '<td class="text-capitalize"> <span>' + e.type + '</span></td > ';
                     trTemp += '<td class="text-capitalize"> <span>' + e.trigger_clone + '</span></td > ';
@@ -637,6 +637,9 @@ angular.module('primeapps')
                     {
                         field: 'Module.LabelEnPlural',
                         title: $filter('translate')('Setup.Modules.Name'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
                         field: 'Name' + $scope.language,

@@ -187,15 +187,15 @@ angular.module('primeapps')
                 },
                 rowTemplate: function (e) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
-                    trTemp += '<td> <span>' + e.key + '</span></td > ';
-                    trTemp += '<td><span>' + e.value + '</span></td>';
+                    trTemp += '<td class="text-left"> <span>' + e.key + '</span></td > ';
+                    trTemp += '<td class="text-left"><span>' + e.value + '</span></td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
                 altRowTemplate: function (e) {
                     var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
-                    trTemp += '<td> <span>' + e.key + '</span></td > ';
-                    trTemp += '<td><span>' + e.value + '</span></td>';
+                    trTemp += '<td class="text-left"> <span>' + e.key + '</span></td > ';
+                    trTemp += '<td class="text-left"><span>' + e.value + '</span></td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
@@ -210,10 +210,16 @@ angular.module('primeapps')
                     {
                         field: 'Key',
                         title: 'Key',
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
                         field: 'Value',
                         title: 'Value',
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
                         field: '',
