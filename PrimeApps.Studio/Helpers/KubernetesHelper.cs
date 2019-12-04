@@ -46,7 +46,7 @@ namespace PrimeApps.Studio.Helpers
             };
 
 
-            ingress.Metadata.Annotations.Add("certmanager.k8s.io/cluster-issuer", "letsencrypt-prod");
+            ingress.Metadata.Annotations.Add("cert-manager.io/cluster-issuer", "letsencrypt-prod");
 
             client.CreateNamespacedIngress(ingress, "primeapps");
         }
