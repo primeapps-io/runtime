@@ -795,12 +795,15 @@ angular.module('primeapps')
                     },
 
                     {
-                        field: 'ProfileId',
+                        field: 'Profile.NameEn',
                         title: $filter('translate')('Menu.ProfileName'),
                     },
                     {
                         field: 'Default',
                         title: $filter('translate')('Menu.DefaultMenu'),
+                        values: [
+                            { text: 'Yes', value: true },
+                            { text: 'No', value: false }]
                     },
                     {
                         field: '',
