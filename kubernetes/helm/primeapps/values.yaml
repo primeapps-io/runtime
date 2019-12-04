@@ -10,7 +10,7 @@ global:
   modsecurity: false
 
 image:
-  tag: "1.19.337.1-debian"
+  tag: "1.19.338.2-debian"
   pullPolicy: "IfNotPresent"
 
 auth:
