@@ -576,8 +576,8 @@ angular.module('primeapps')
                         field: 'Language',
                         title: 'Language',
                         values: [
-                            { text: 'Tr', value: 'tr' },
-                            { text: 'En', value: 'en' }]
+                            { text: 'Tr', value: 'Tr' },
+                            { text: 'En', value: 'En' }]
                     },
                     {
                         field: 'Code',
