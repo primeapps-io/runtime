@@ -564,7 +564,8 @@ angular.module('primeapps')
                             id: "id",
                             fields: {
                                 LabelEn: { type: "string" },
-                                Module: { type: "string" }
+                                Module: { type: "string" },
+                                Active: { type: "boolean" }
                             }
                         }
                     }

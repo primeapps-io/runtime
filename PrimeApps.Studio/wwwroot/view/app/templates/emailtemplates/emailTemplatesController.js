@@ -524,7 +524,8 @@ angular.module('primeapps')
                             id: "id",
                             fields: {
                                 LabelEn: { type: "string" },
-                                Module: { type: "string" }
+                                Module: { type: "string" },
+                                Language: { type: "enums" }
                             }
                         }
                     }
@@ -574,6 +575,9 @@ angular.module('primeapps')
                     {
                         field: 'Language',
                         title: 'Language',
+                        values: [
+                            { text: 'Tr', value: 'tr' },
+                            { text: 'En', value: 'en' }]
                     },
                     {
                         field: 'Code',
