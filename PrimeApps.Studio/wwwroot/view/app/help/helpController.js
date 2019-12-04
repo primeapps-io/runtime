@@ -838,7 +838,8 @@ angular.module('primeapps')
                         model: {
                             id: "id",
                             fields: {
-                                LabelEn: { type: "string" }
+                                LabelEn: { type: "string" },
+                                ModalType: { type: "enums" }
                             }
                         }
                     }
@@ -885,6 +886,9 @@ angular.module('primeapps')
                     {
                         field: 'ModalType',
                         title: 'Type',
+                        values: [
+                            { text: 'Introduction', value: 'Modal' },
+                            { text: 'Help', value: 'SideModal' }]
                     },
 
                     {
