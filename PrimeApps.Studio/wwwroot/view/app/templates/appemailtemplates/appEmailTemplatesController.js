@@ -403,6 +403,14 @@ angular.module('primeapps')
                     trTemp += '<td>' + emailTemp.system_code + '</td>';
                     return trTemp;
                 },
+                altRowTemplate: function (emailTemp) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td>' + emailTemp.name + '</td>';
+                    trTemp += '<td>' + emailTemp.subject + '</td>';
+                    trTemp += '<td>' + emailTemp.language + '</td>';
+                    trTemp += '<td>' + emailTemp.system_code + '</td>';
+                    return trTemp;
+                },
                 pageable: {
                     refresh: true,
                     pageSize: 10,

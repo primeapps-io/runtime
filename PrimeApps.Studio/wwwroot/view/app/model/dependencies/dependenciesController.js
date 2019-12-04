@@ -546,6 +546,18 @@ angular.module('primeapps')
 
                     return trTemp;
                 },
+                altRowTemplate: function (e) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += e.dependency_type === 'display' ? '<td><span>' + $filter('translate')('Setup.Modules.DependencyTypeDisplay') + '</span></td>' :
+                        e.dependency_type === 'freeze' ? '<td><span>' + $filter('translate')('Setup.Modules.DependencyTypeFreeze') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.DependencyTypeValueChange') + '</span></td>';
+                    trTemp += '<td class="text-capitalize"> <span>' + $filter('filter')(e.module.fields, { name: e.parent_field }, true)[0]['label_' + $scope.language] + '</span></td > ';
+                    trTemp += e.child_field ? '<td class="text-capitalize"> <span>' + $filter('filter')(e.module.fields, { name: e.child_field }, true)[0]['label_' + $scope.language] + '</span></td > ' : '<td><span>-</span></td>';
+                    trTemp += e.child_section ? '<td class="text-capitalize"> <span>' + $filter('filter')(e.module.sections, { name: e.child_section }, true)[0]['label_' + $scope.language] + '</span></td > ' : '<td><span>-</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+
+                    return trTemp;
+                },
                 pageable: {
                     refresh: true,
                     pageSize: 10,

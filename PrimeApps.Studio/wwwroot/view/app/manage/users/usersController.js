@@ -294,6 +294,15 @@ angular.module('primeapps')
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
+                altRowTemplate: function (e) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td> <span>' + e.full_name + '</span></td > ';
+                    trTemp += '<td> <span>' + e.email + '</span> <span ng-click="$event.stopPropagation();" class="copy-button pull-right" title="{{"Common.Copy" | translate}}" ngclipboard data-clipboard-text="' + e.email + '"><i class="copy-icon fa fa-clipboard"></i></span></td > ';
+                    trTemp += '<td> <span>' + e.role['label_' + $scope.language] + '</span></td > ';
+                    trTemp += e.profile_id === 1 ? '<td> <span>Administrator</span></td>' : e.profile_id === 2 ? '<td> <span>Standart</span></td>' : '<td> <span>' + e.profile['name_' + $scope.language] + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
                 pageable: {
                     refresh: true,
                     pageSize: 10,

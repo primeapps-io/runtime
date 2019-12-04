@@ -360,6 +360,16 @@ angular.module('primeapps')
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.name, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
+                altRowTemplate: function (e) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td> <span>' + e.name + '</span></td > ';
+                    trTemp += '<td><span>' + e.label + '</span></td>';
+                    trTemp += '<td><span>' + e.runtime + '</span></td>';
+                    trTemp += '<td><span>' + e.handler + '</span></td>';
+                    trTemp += '<td><span>' + $scope.getTime(e.created_at) + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.name, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
                 pageable: {
                     refresh: true,
                     pageSize: 10,

@@ -617,6 +617,15 @@ angular.module('primeapps')
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
+                altRowTemplate: function (e) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += '<td><span>' + e['name_' + $scope.language] + '</span></td>';
+                    trTemp += '<td class="text-capitalize"> <span>' + e.type + '</span></td > ';
+                    trTemp += '<td class="text-capitalize"> <span>' + e.trigger_clone + '</span></td > ';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
                 pageable: {
                     refresh: true,
                     pageSize: 10,

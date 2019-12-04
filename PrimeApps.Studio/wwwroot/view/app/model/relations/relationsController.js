@@ -8,7 +8,7 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = "relations";
             $rootScope.breadcrumblist[2].title = 'Relations';
             $scope.id = $location.search().id ? $location.search().id : 0;
-             
+
             $scope.showFormModal = function (relation) {
                 $scope.moduleLists = [];
                 $scope.background_color = "background-color: #fbfbfb";
@@ -266,7 +266,7 @@ angular.module('primeapps')
                     else {
                         $scope.loading = true;
                         toastr.success($filter('translate')('Setup.Modules.RelationSaveSuccess'));
-                        $scope.addNewRelationsFormModal.hide();  
+                        $scope.addNewRelationsFormModal.hide();
                         $scope.grid.dataSource.read();
                     }
                 };
@@ -284,7 +284,7 @@ angular.module('primeapps')
                         var mainModuleId = ($filter('filter')($rootScope.appModules, { name: relation.mainModule }, true)[0]).id;
                     RelationsService.createModuleRelation(relation, relation.two_way ? mainModuleId : $scope.module.id)
                         .then(function () {
-                            success(); 
+                            success();
                         })
                         .catch(function () {
                             error();
@@ -314,11 +314,11 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
-                         
+
 
                             RelationsService.deleteModuleRelation(relation.id)
-                                .then(function () { 
-                                     toastr.success($filter('translate')('Setup.Modules.RelationDeleteSuccess')); 
+                                .then(function () {
+                                    toastr.success($filter('translate')('Setup.Modules.RelationDeleteSuccess'));
                                     $scope.grid.dataSource.read();
                                 })
                                 .catch(function () {
@@ -410,38 +410,47 @@ angular.module('primeapps')
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
-        pageable: {
-            refresh: true,
-            pageSize: 10,
-            pageSizes: [10, 25, 50, 100],
-            buttonCount: 5,
-            info: true,
-        },
-        columns: [
-            {
-                field: 'LabelEnPlural',
-                title: $filter('translate')('Setup.Modules.RelationName'),
-            },
-            {
-                field: 'ParentModule.LabelEnPlural',
-                title: $filter('translate')('Setup.Modules.Name'), 
-            },
-            {
-                field: 'RelatedModule',
-                title: $filter('translate')('Setup.Modules.RelatedModule'),
-            },
-            {
-                field: 'RelationType',
-                title: $filter('translate')('Setup.Modules.RelationType'),
-                values: [
-                    { text: 'One to many', value: 'OneToMany' },
-                    { text: 'Many to many', value: 'ManyToMany' }]
-            },
-            {
-                field: '',
-                title: '',
-                width: "90px"
-            }]
+                AltRowTemplate: function (e) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td><span>' + e['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += '<td><span>' + e.parent_module['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += '<td class="text-capitalize"> <span>' + e.related_module + '</span></td > ';
+                    trTemp += e.relation_type === "one_to_many" ? '<td ><span>' + $filter('translate')('Setup.Modules.OneToMany') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.ManyToMany') + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+                    {
+                        field: 'LabelEnPlural',
+                        title: $filter('translate')('Setup.Modules.RelationName'),
+                    },
+                    {
+                        field: 'ParentModule.LabelEnPlural',
+                        title: $filter('translate')('Setup.Modules.Name'),
+                    },
+                    {
+                        field: 'RelatedModule',
+                        title: $filter('translate')('Setup.Modules.RelatedModule'),
+                    },
+                    {
+                        field: 'RelationType',
+                        title: $filter('translate')('Setup.Modules.RelationType'),
+                        values: [
+                            { text: 'One to many', value: 'OneToMany' },
+                            { text: 'Many to many', value: 'ManyToMany' }]
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
             };
             //For Kendo UI
         }

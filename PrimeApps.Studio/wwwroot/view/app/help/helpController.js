@@ -859,6 +859,16 @@ angular.module('primeapps')
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
+                altRowTemplate: function (help) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    var relationModule = $filter('filter')($scope.appModules, { id: help.module_id })[0];
+                    var helpType = $scope.helpType(help, $scope.moduleFilter, $scope.helpEnums);
+                    trTemp += '<td>' + help.name + '</td>';
+                    trTemp += '<td>' + helpType + '</td>';
+                    trTemp += '<td>' + relationModule.name + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
                 pageable: {
                     refresh: true,
                     pageSize: 10,
