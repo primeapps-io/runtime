@@ -254,7 +254,7 @@ namespace PrimeApps.App.Controllers
                     var platformUser = await platformUserRepository.GetSettings(userId);
                     if (platformUser != null)
                     {
-                        account["user"] = JsonConvert.SerializeObject(platformUser, serializerSettings);
+                        account["user"] = JObject.Parse(JsonConvert.SerializeObject(platformUser, serializerSettings));
                     }
                 }
             }
