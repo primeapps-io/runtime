@@ -147,6 +147,16 @@ angular.module('primeapps')
                         trTemp += '<td ng-click="$event.stopPropagation();">' + dropDownMenuTemp + '</td></tr>';
                         return trTemp;
                     },
+                    altRowTemplate: function (e) {
+                        var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem.id)">';
+                        trTemp += '<td><span><i class="' + e.menu_icon + '"></i ></span></td>';
+                        trTemp += '<td class="text-left"><span>' + e['label_' + $scope.language + '_plural'] + '</span></td>';
+                        trTemp += '<td><span>' + $filter('translate')('Setup.Modules.Type-' + e.system_type) + '</span></td>';
+                        trTemp += e.display ? '<td><span>' + $filter('translate')('Common.Yes') + '</span></td>' : '<td><span>' + $filter('translate')('Common.No') + '</span></td>';
+                        trTemp += e.sharing === "private" ? '<td ><span>' + $filter('translate')('Setup.Modules.SharingPrivate') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.SharingPublic') + '</span></td>';
+                        trTemp += '<td ng-click="$event.stopPropagation();">' + dropDownMenuTemp + '</td></tr>';
+                        return trTemp;
+                    },
                     pageable: {
                         refresh: true,
                         pageSize: 10,
@@ -195,9 +205,8 @@ angular.module('primeapps')
                 };
                 //For Kendo UI
 
-                var dropDownMenuTemp = '    <div class="action-buttons-block">  ' +
-                    '                       <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"  ' +
-                    '                               class="btn btn-xs btn-default list-action-button"  ' +
+                var dropDownMenuTemp = '<button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"  ' +
+                    '                               class="action-button2-more"  ' +
                     '                               placement="bottom-right"  ' +
                     '                               data-animation="am-flip-x"  ' +
                     '                               data-container="body"  ' +

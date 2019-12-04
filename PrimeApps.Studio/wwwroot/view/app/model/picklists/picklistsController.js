@@ -936,6 +936,14 @@ angular.module('primeapps')
                     trTemp += '<td ng-click="$event.stopPropagation();"> ' + actionButtonsTemplate + '</td></tr>';
                     return trTemp;
                 },
+                altRowTemplate: function (e) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left"><span>' + e['label_' + $scope.language] + '</span></td>';
+                    trTemp += e.system_code ? '<td><span>' + e.system_code + '</span></td>' : '<td><span></span></td>';
+                    trTemp += '<td class="text-capitalize"> <span>' + e.system_type + '</span></td > ';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> ' + actionButtonsTemplate + '</td></tr>';
+                    return trTemp;
+                },
                 pageable: {
                     refresh: true,
                     pageSize: 10,

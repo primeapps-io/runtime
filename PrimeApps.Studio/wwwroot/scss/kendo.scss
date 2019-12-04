@@ -22,17 +22,14 @@
 .grid-theme{
   @include radius(5px);
   border-color: transparent;
-  width: 100%;
+  width: 100%; 
   thead{
     th,td{
-      font-size: 12px;
-      font-weight: bold;
-      color: $black50;
+      color: $black75; 
     }
   }
   tbody{
     th,td{
-      font-size: 14px;
     }
   }
   &.grid-theme-center{
@@ -127,16 +124,7 @@
     clip: inherit;
     cursor: pointer;
   }
-  tbody{
-    tr{
-      &:nth-child(2n+1){
-        background: $body-bg2;
-        &:hover{
-          background: rgba(41,43,44,0.065);
-        }
-      }
-    }
-  }
+  
   .list-action-button{
     background: transparent;
     border: none;
