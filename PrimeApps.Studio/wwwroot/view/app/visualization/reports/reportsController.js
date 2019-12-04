@@ -344,7 +344,7 @@ angular.module('primeapps')
                     },
 
                     {
-                        field: 'CategoryId',
+                        field: 'Category.NameEn',
                         title: $filter('translate')('Setup.Report.ReportCategory'),
                     },
                     {
