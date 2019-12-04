@@ -611,7 +611,7 @@ angular.module('primeapps')
                 rowTemplate: function (e) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left"><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
-                    trTemp += '<td><span>' + e['name_'+$scope.language] + '</span></td>';
+                    trTemp += '<td class="text-left"><span>' + e['name_'+$scope.language] + '</span></td>';
                     trTemp += '<td class="text-capitalize"> <span>' + e.type + '</span></td > ';
                     trTemp += '<td class="text-capitalize"> <span>' + e.trigger_clone + '</span></td > ';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
@@ -620,7 +620,7 @@ angular.module('primeapps')
                 altRowTemplate: function (e) {
                     var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left"><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
-                    trTemp += '<td><span>' + e['name_' + $scope.language] + '</span></td>';
+                    trTemp += '<td class="text-left"><span>' + e['name_' + $scope.language] + '</span></td>';
                     trTemp += '<td class="text-capitalize"> <span>' + e.type + '</span></td > ';
                     trTemp += '<td class="text-capitalize"> <span>' + e.trigger_clone + '</span></td > ';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
@@ -644,6 +644,9 @@ angular.module('primeapps')
                     {
                         field: 'Name' + $scope.language,
                         title: $filter('translate')('Setup.Modules.ActionButtonLabel'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
                         field: 'Type',
