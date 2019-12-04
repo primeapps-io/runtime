@@ -761,7 +761,7 @@ angular.module('primeapps')
                             fields: {
                                 Name: { type: "string" },
                                 ProfileName: { type: "string" },
-                                Default: { type: "string" }
+                                Default: { type: "boolean" }
                             }
                         }
                     }
@@ -795,12 +795,13 @@ angular.module('primeapps')
                     },
 
                     {
-                        field: 'ProfileId',
+                        field: 'Profile.NameEn',
                         title: $filter('translate')('Menu.ProfileName'),
                     },
                     {
                         field: 'Default',
                         title: $filter('translate')('Menu.DefaultMenu'),
+                      
                     },
                     {
                         field: '',
