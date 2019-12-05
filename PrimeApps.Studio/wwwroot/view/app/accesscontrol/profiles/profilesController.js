@@ -141,7 +141,7 @@ angular.module('primeapps')
             }
 
             $scope.descriptionChange = function () {
-                if ($scope.profile.description)
+                if ($scope.profile.description_en)
                     $scope.requiredColor = "";
                 else
                     $scope.requiredColor = 'background-color:#f8dada';
