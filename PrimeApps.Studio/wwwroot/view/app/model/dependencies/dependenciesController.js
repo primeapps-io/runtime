@@ -9,6 +9,7 @@ angular.module('primeapps')
             //$scope.$parent.activeMenu = "model";
             $scope.$parent.activeMenuItem = "dependencies";
             $rootScope.breadcrumblist[2].title = 'Dependencies';
+            $scope.dependencies = [];
 
             $scope.id = $location.search().id ? $location.search().id : 0;
 
@@ -375,10 +376,10 @@ angular.module('primeapps')
                     toastr.success($filter('translate')('Setup.Modules.DependencySaveSuccess'));
                     $scope.saving = false;
                     $scope.addNewDependencyModal.hide();
-                    $scope.grid.dataSource.read(); 
+                    $scope.grid.dataSource.read();
                 };
 
-                var error = function () { 
+                var error = function () {
 
                     if ($scope.addNewDependencyModal) {
                         $scope.addNewDependencyModal.hide();
@@ -428,7 +429,7 @@ angular.module('primeapps')
                                     toastr.success("Dependency is deleted successfully.", "Deleted!");
                                     $scope.grid.dataSource.read();
                                 })
-                                .catch(function () {  
+                                .catch(function () {
                                     if ($scope.addNewDependencyModal) {
                                         $scope.addNewDependencyModal.hide();
                                         $scope.saving = false;
@@ -589,7 +590,7 @@ angular.module('primeapps')
                     },
                     {
                         field: 'ParentField',
-                        title: $filter('translate')('Setup.Modules.DependencyParentField'), 
+                        title: $filter('translate')('Setup.Modules.DependencyParentField'),
                     },
                     {
                         field: 'ChildField',
