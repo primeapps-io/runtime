@@ -579,7 +579,8 @@ angular.module('primeapps')
 					section.display_detail = true;
 
 					var fieldEmail = {};
-					fieldEmail.name = 'name';
+					//fieldEmail.name = 'name';
+					fieldEmail.name = 'name_' + $rootScope.language;
 					fieldEmail.system_type = 'system';
 					fieldEmail.data_type = 'text_single';
 					fieldEmail.order = 2;
