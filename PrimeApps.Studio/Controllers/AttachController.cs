@@ -126,7 +126,7 @@ namespace PrimeApps.Studio.Controllers
             }
 
             if (module == "profiles")
-                moduleEntity = Model.Helpers.ModuleHelper.GetFakeProfileModule();
+                moduleEntity = Model.Helpers.ModuleHelper.GetFakeProfileModule(AppUser.TenantLanguage);
 
             if (module == "roles")
                 moduleEntity = Model.Helpers.ModuleHelper.GetFakeRoleModule(AppUser.TenantLanguage);
