@@ -9,9 +9,9 @@ cd ..
 basePath=$(pwd -W)
 
 echo -e "${GREEN}Stoping services...${NC}"
-net stop Postgres-PRE
-net stop MinIO-PRE
-net stop Redis-PRE
+net stop Postgres-PrimeApps
+net stop MinIO-PrimeApps
+net stop Redis-PrimeApps
 
 echo -e "${GREEN}Deleting data folders...${NC}"
 cd "$basePath/data"
@@ -26,8 +26,8 @@ tar -xzf minio_pre.tar.gz minio_pre
 tar -xzf redis_pre.tar.gz redis_pre
 
 echo -e "${GREEN}Starting services...${NC}"
-net start Postgres-PRE
-net start MinIO-PRE
-net start Redis-PRE
+net start Postgres-PrimeApps
+net start MinIO-PrimeApps
+net start Redis-PrimeApps
 
 echo -e "${BLUE}Completed${NC}"

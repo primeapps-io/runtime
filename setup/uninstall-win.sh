@@ -9,14 +9,14 @@ cd ..
 basePath=$(pwd -W)
 
 echo -e "${GREEN}Stoping services...${NC}"
-net stop Postgres-PRE
-net stop MinIO-PRE
-net stop Redis-PRE
+net stop Postgres-PrimeApps
+net stop MinIO-PrimeApps
+net stop Redis-PrimeApps
 
 echo -e "${GREEN}Deleting services...${NC}"
-sc delete Postgres-PRE
-sc delete MinIO-PRE
-sc delete Redis-PRE
+sc delete Postgres-PrimeApps
+sc delete MinIO-PrimeApps
+sc delete Redis-PrimeApps
 
 echo -e "${GREEN}Deleting $basePath/data...${NC}"
 rm -rf "$basePath/data"
