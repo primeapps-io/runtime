@@ -96,8 +96,10 @@ namespace PrimeApps.Model.Repositories
                     profile = new ProfileDTO()
                     {
                         ID = user.Profile.Id,
-                        Description = language == "en" ? user.Profile.DescriptionEn : user.Profile.DescriptionTr,
-                        Name = language == "en" ? user.Profile.NameEn : user.Profile.NameTr,
+                        DescriptionEn = user.Profile.DescriptionEn,
+                        DescriptionTr = user.Profile.DescriptionTr,
+                        NameEn = user.Profile.NameEn,
+                        NameTr = user.Profile.NameTr,
                         HasAdminRights = user.Profile.HasAdminRights,
                         IsPersistent = user.Profile.IsPersistent,
                         SendSMS = user.Profile.SendSMS,

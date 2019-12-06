@@ -8,6 +8,7 @@ using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Profile;
 using PrimeApps.Model.Entities.Tenant;
@@ -57,7 +58,7 @@ namespace PrimeApps.Studio.Controllers
         /// </summary>
         /// <param name="NewProfile"></param>
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody]ProfileDTO NewProfile)
+        public async Task<IActionResult> Create(ProfileDTO NewProfile)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.Create))
                 return StatusCode(403);
@@ -74,7 +75,7 @@ namespace PrimeApps.Studio.Controllers
         /// </summary>
         /// <param name="UpdatedProfile"></param>
         [Route("update"), HttpPost]
-        public async Task<IActionResult> Update([FromBody]ProfileDTO UpdatedProfile)
+        public async Task<IActionResult> Update(ProfileDTO UpdatedProfile)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.Update))
                 return StatusCode(403);

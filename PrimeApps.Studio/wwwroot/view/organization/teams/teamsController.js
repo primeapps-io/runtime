@@ -367,6 +367,14 @@ angular.module('primeapps')
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
+                altRowTemplate: function (e) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td><div class="user-info"><div class="user-image"><i ng-class="dataItem.icon"></i></div><div class="user-text"><h2 class="ng-binding">' + e.name + '</h2></div></div></td > ';
+                    trTemp += e.team_users ? '<td> <span>' + e.team_users.length + '</span></td > ' : '<td> <span>0</span></td > ';
+                    trTemp += '<td><span>' + e.organization.label + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
                 pageable: {
                     refresh: true,
                     pageSize: 10,

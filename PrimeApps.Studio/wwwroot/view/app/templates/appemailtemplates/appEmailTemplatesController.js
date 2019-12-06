@@ -5,7 +5,7 @@ angular.module('primeapps')
     .controller('AppEmailTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'AppEmailTemplatesService', '$http', 'config', '$modal', '$localStorage', '$cookies',
         function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, AppEmailTemplatesService, $http, config, $modal, $localStorage, $cookies) {
 
-            $scope.templateModules = $filter('filter')($rootScope.appModules, {deleted: false});
+            $scope.templateModules = $filter('filter')($rootScope.appModules, { deleted: false });
             $scope.$parent.activeMenuItem = 'appEmailTemplates';
 
             $rootScope.breadcrumblist[2].title = 'Email Templates';
@@ -40,11 +40,11 @@ angular.module('primeapps')
                     },
                     filters: {
                         mime_types: [
-                            {title: "Image files", extensions: "jpg,gif,png"},
+                            { title: "Image files", extensions: "jpg,gif,png" },
                         ],
                         max_file_size: "2mb"
                     },
-                    resize: {quality: 90}
+                    resize: { quality: 90 }
                 },
                 events: {
                     filesAdded: function (uploader, files) {
@@ -69,7 +69,7 @@ angular.module('primeapps')
                     fileUploaded: function (uploader, file, response) {
                         tinymce.activeEditor.windowManager.close();
                         var resp = JSON.parse(response.response);
-                        uploadSuccessCallback(resp.public_url, {alt: file.name});
+                        uploadSuccessCallback(resp.public_url, { alt: file.name });
                         uploadSuccessCallback = null;
                     },
                     error: function (file, error) {
@@ -104,7 +104,7 @@ angular.module('primeapps')
                     },
                     filters: {
                         mime_types: [
-                            {title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv"},
+                            { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
                         ],
                         max_file_size: "50mb"
                     }
@@ -131,7 +131,7 @@ angular.module('primeapps')
                     },
                     fileUploaded: function (uploader, file, response) {
                         var resp = JSON.parse(response.response);
-                        uploadSuccessCallback(config.storage_host + resp.public_url, {alt: file.name});
+                        uploadSuccessCallback(config.storage_host + resp.public_url, { alt: file.name });
                         uploadSuccessCallback = null;
                         tinymce.activeEditor.windowManager.close();
                     },
@@ -183,8 +183,8 @@ angular.module('primeapps')
                     toolbar: "addParameter | styleselect | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | table bullist numlist | link image imagetools |  cut copy paste | undo redo searchreplace | outdent indent | blockquote hr insertdatetime charmap | visualblocks code preview fullscreen",
                     menubar: 'false',
                     templates: [
-                        {title: 'Test template 1', content: 'Test 1'},
-                        {title: 'Test template 2', content: 'Test 2'}
+                        { title: 'Test template 1', content: 'Test 1' },
+                        { title: 'Test template 2', content: 'Test 2' }
                     ],
                     skin: 'lightgray',
                     theme: 'modern',
@@ -397,8 +397,16 @@ angular.module('primeapps')
                 },
                 rowTemplate: function (emailTemp) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
-                    trTemp += '<td>' + emailTemp.name + '</td>';
-                    trTemp += '<td>' + emailTemp.subject + '</td>';
+                    trTemp += '<td class="text-left">' + '<div style="padding:12px 0px;">' + emailTemp.name + '</div>' + '</td>';
+                    trTemp += '<td class="text-left">' + emailTemp.subject + '</td>';
+                    trTemp += '<td>' + emailTemp.language + '</td>';
+                    trTemp += '<td>' + emailTemp.system_code + '</td>';
+                    return trTemp;
+                },
+                altRowTemplate: function (emailTemp) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + '<div style="padding:12px 0px;">' + emailTemp.name + '</div>' + '</td>';
+                    trTemp += '<td class="text-left">' + emailTemp.subject + '</td>';
                     trTemp += '<td>' + emailTemp.language + '</td>';
                     trTemp += '<td>' + emailTemp.system_code + '</td>';
                     return trTemp;
@@ -415,48 +423,54 @@ angular.module('primeapps')
                     {
                         field: 'Name',
                         title: $filter('translate')('Setup.Templates.TemplateName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
 
                     {
                         field: 'Subject',
                         title: 'Subject',
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
                         field: 'Language',
                         title: 'Language',
                     },
                     {
-                        field: 'Code',
+                        field: 'SystemCode',
                         title: 'Code',
                     }]
             };
 
-             //$scope.delete = function (template) {
-             //    var willDelete =
-             //        swal({
-             //            title: "Are you sure?",
-             //            text: " ",
-             //            icon: "warning",
-             //            buttons: ['Cancel', 'Yes'],
-             //            dangerMode: true
-             //        }).then(function (value) {
-             //            if (value) {
-             //                AppEmailTemplatesService.delete(template.id)
-             //                    .then(function () {
-             //                        var templateToDeleteIndex = helper.arrayObjectIndexOf($scope.templates, template);
-             //                        $scope.templates.splice(templateToDeleteIndex, 1);
-             //                        toastr.success("Email template is deleted successfully.", "Deleted!");
-            
-             //                    })
-             //                    .catch(function () {
-            
-             //                        if ($scope.addNewHelpFormModal) {
-             //                            $scope.addNewHelpFormModal.hide();
-             //                            $scope.saving = false;
-             //                        }
-             //                    });
-             //            }
-             //        });
-             //};
+            //$scope.delete = function (template) {
+            //    var willDelete =
+            //        swal({
+            //            title: "Are you sure?",
+            //            text: " ",
+            //            icon: "warning",
+            //            buttons: ['Cancel', 'Yes'],
+            //            dangerMode: true
+            //        }).then(function (value) {
+            //            if (value) {
+            //                AppEmailTemplatesService.delete(template.id)
+            //                    .then(function () {
+            //                        var templateToDeleteIndex = helper.arrayObjectIndexOf($scope.templates, template);
+            //                        $scope.templates.splice(templateToDeleteIndex, 1);
+            //                        toastr.success("Email template is deleted successfully.", "Deleted!");
+
+            //                    })
+            //                    .catch(function () {
+
+            //                        if ($scope.addNewHelpFormModal) {
+            //                            $scope.addNewHelpFormModal.hide();
+            //                            $scope.saving = false;
+            //                        }
+            //                    });
+            //            }
+            //        });
+            //};
         }
     ]);

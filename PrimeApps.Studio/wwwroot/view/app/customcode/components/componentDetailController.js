@@ -254,6 +254,14 @@ angular.module('primeapps')
                     trTemp += '<td style="text-align: center;" ng-bind-html="getIcon(dataItem.status)"></td></tr>';
                     return trTemp;
                 },
+                altRowTemplate: function (e) {
+                    var trTemp = '<tr class="k-alt">';
+                    trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
+                    trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
+                    trTemp += '<td> <span>' + e.version + '</span></td > ';
+                    trTemp += '<td style="text-align: center;" ng-bind-html="getIcon(dataItem.status)"></td></tr>';
+                    return trTemp;
+                },
                 pageable: {
                     refresh: true,
                     pageSize: 10,

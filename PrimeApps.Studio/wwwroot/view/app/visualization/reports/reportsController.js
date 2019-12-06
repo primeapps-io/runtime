@@ -323,8 +323,16 @@ angular.module('primeapps')
                 },
                 rowTemplate: function (report) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
-                    trTemp += '<td>' + report.name_en + '</td>';
-                    trTemp += '<td>' + report.category.name_en + '</td>';
+                    trTemp += '<td class="text-left">' + report.name_en + '</td>';
+                    trTemp += '<td class="text-left">' + report.category.name_en + '</td>';
+                    trTemp += '<td>' + report.report_type + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); deleteReport(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                altRowTemplate: function (report) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + report.name_en + '</td>';
+                    trTemp += '<td class="text-left">' + report.category.name_en + '</td>';
                     trTemp += '<td>' + report.report_type + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); deleteReport(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
@@ -339,13 +347,19 @@ angular.module('primeapps')
                 columns: [
 
                     {
-                        field: 'Name',
+                        field: 'NameEn',
                         title: $filter('translate')('Setup.Report.ReportName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
 
                     {
-                        field: 'Category.Name',
+                        field: 'Category.NameEn',
                         title: $filter('translate')('Setup.Report.ReportCategory'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
                         field: 'ReportType',

@@ -863,8 +863,15 @@ angular.module('primeapps')
                 },
                 rowTemplate: function (view) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
-                    trTemp += '<td>' + view.label_en + '</td>';
-                    trTemp += '<td>' + view.module.label_en_singular + '</td>';
+                    trTemp += '<td class="text-left">' + view.label_en + '</td>';
+                    trTemp += '<td class="text-left">' + view.module.label_en_singular + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); deleteView(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                altRowTemplate: function (view) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + view.label_en + '</td>';
+                    trTemp += '<td class="text-left">' + view.module.label_en_singular + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); deleteView(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
@@ -880,11 +887,17 @@ angular.module('primeapps')
                     {
                         field: 'LabelEn',
                         title: $filter('translate')('View.ViewName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
 
                     {
                         field: 'Module.Name',
                         title: $filter('translate')('Setup.Modules.Name'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
                         field: '',

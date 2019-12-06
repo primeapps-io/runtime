@@ -1,0 +1,305 @@
+$black: 		rgba(0,0,0,1);
+$black0: 		rgba(0,0,0,0);
+$black5: 		rgba(0,0,0,0.05);
+$black10: 		rgba(0,0,0,0.10);
+$black25: 		rgba(0,0,0,0.25);
+$black50: 		rgba(0,0,0,0.5);
+$black75: 		rgba(0,0,0,0.75);
+$black90: 		rgba(0,0,0,0.90);
+$white: 		rgba(255,255,255,1);
+$white0: 		rgba(255,255,255,0);
+$white5: 		rgba(255,255,255,0.05);
+$white10: 		rgba(255,255,255,0.10);
+$white20: 		rgba(255,255,255,0.20);
+$white25: 		rgba(255,255,255,0.25);
+$white50: 		rgba(255,255,255,0.5);
+$white75: 		rgba(255,255,255,0.75);
+
+
+//Colors
+$theme-color-red: #DC3023;
+$theme-color-purple: #8E44AD;
+$theme-color-blue: #0d6faa;
+$theme-color-light-blue: #19B5FE;
+$theme-color-green: #25A65B;
+$theme-color-orange: #FFB61E;
+$theme-color-gray: #4D5C66;
+
+//Bootstrap and Kendo
+$primary: $theme-color-blue;
+$secondary: #e4e7eb;
+
+$info: $theme-color-light-blue;
+$success: $theme-color-green;
+$warning: $theme-color-orange;
+$error: $theme-color-red;
+
+$series-a: $theme-color-blue;
+$series-b: $theme-color-green;
+$series-c: $theme-color-orange;
+$series-d: $theme-color-red;
+$series-e: $theme-color-purple;
+$series-f: $theme-color-gray;
+
+$body-bg: #ffffff;
+$body-bg2: #f7f7f7;
+$body-color: #292b2c;
+$component-bg: #ffffff;
+$component-color: #292b2c;
+$card-cap-bg: #f7f7f9;
+$card-cap-color: #292b2c;
+
+
+
+$input-bg: #FFFFFF;
+$accent: $primary;
+
+$font-family-sans-serif:      Nunito, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
+$font-size-base:              .875rem; // Assumes the browser default, typically `16px`
+$font-size-lg:                1rem;
+$font-size-sm:                .75rem;
+
+
+$input-btn-padding-y:         .375rem !default;
+$input-btn-padding-x:         1rem !default;
+$input-btn-padding-y-sm:      .25rem !default;
+$input-btn-padding-x-sm:      .75rem !default;
+$input-btn-padding-y-lg:      .5rem !default;
+$input-btn-padding-x-lg:      2rem !default;
+$input-color: 				  $body-color;
+$form-group-margin-bottom:    .5rem;
+
+$input-disabled-bg: $input-bg;
+$input-border-color: $input-bg;
+$input-btn-focus-width: 2px;
+$border-width: 1px;
+$input-border-width: 2px;
+$input-default-width: 100%;
+$disabled-opacity: 0.5;
+$btn-disabled-opacity: 0.5;
+$custom-control-indicator-size: 1.2rem;
+$icon-size: 16px;
+
+$input-btn-focus-box-shadow: none !important;
+$button-focused-shadow: none !important;
+
+$alert-padding-y:                   1rem;
+$alert-padding-x:                   1.5rem;
+$alert-margin-bottom:               1rem;
+$alert-bg-level:                    0;
+
+
+ 
+$notification-info-bg: $info;
+$notification-info-text: $white;
+$notification-info-border: $info;
+$notification-success-bg: $success;
+$notification-success-text: $white;
+$notification-success-border: $success;
+$notification-warning-bg: $warning;
+$notification-warning-text: $black75;
+$notification-warning-border: $warning;
+$notification-error-bg: $error;
+$notification-error-text: $white;
+$notification-error-border: $error;
+$list-item-padding-x: $input-btn-padding-x;
+$list-item-padding-y: $input-btn-padding-y;
+
+  
+
+
+/// Material Design Variables ///
+
+$font-family: $font-family-sans-serif;
+$layout-breakpoint-xs:     768px !default;
+$layout-breakpoint-sm:     992px !default;
+$layout-breakpoint-md:     1200px !default;
+$layout-breakpoint-lg:     1920px !default;
+
+
+
+$tooltip-fontsize-lg: 14px !default;
+$tooltip-fontsize-sm: 16px !default;
+$tooltip-height-lg: 30px !default;
+$tooltip-height-sm: 40px !default;
+$sidenav-mobile-width: 320px !default;
+$sidenav-desktop-width: 500px !default;
+$sidenav-desktop-width2: 800px !default;
+$sidenav-desktop-width3: 1200px !default;
+$sidenav-min-space: 56px !default;
+
+
+
+//////////////////////////Own Sass Mixings//////////////////////////
+
+@mixin transform($property) {
+	-webkit-transform: $property;
+	-moz-transform: $property;
+	-ms-transform: $property;
+	-o-transform: $property;
+	transform: $property;
+}
+@mixin origin($property) {
+	-webkit-transform-origin: $property;
+	-moz-transform-origin: $property;
+	-ms-transform-origin: $property;
+	-o-transform-origin: $property;
+	transform-origin: $property;
+}
+@mixin move($property) {
+	-webkit-transition: all $property ease;
+	-moz-transition: all $property ease;
+	-ms-transition: all $property ease;
+	-o-transition: all $property ease;
+	transition: all $property ease;
+}
+
+@mixin shadow($property) {
+	-webkit-box-shadow: 0px 0px 20px 0px rgba(0,0,0,$property);
+	-moz-box-shadow: 0px 0px 20px 0px rgba(0,0,0,$property);
+	-ms-box-shadow: 0px 0px 20px 0px rgba(0,0,0,$property);
+	-o-box-shadow: 0px 0px 20px 0px rgba(0,0,0,$property);
+	box-shadow: 0px 0px 20px 0px rgba(0,0,0,$property);
+}
+
+@mixin radius($property) {
+	-webkit-border-radius: $property;
+	-moz-border-radius: $property;
+	-ms-border-radius: $property;
+	-o-border-radius: $property;
+	border-radius: $property;
+}
+
+// Flexbox display
+@mixin flexbox() {
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+}
+
+// The 'flex' shorthand
+// - applies to: flex items
+// <positive-number>, initial, auto, or none
+@mixin flex($values) {
+	-webkit-box-flex: $values;
+	-moz-box-flex: $values;
+	-webkit-flex: $values;
+	-ms-flex: $values;
+	flex: $values;
+}
+
+// Flex Flow Direction
+// - applies to: flex containers
+// row | row-reverse | column | column-reverse
+@mixin flex-direction($direction) {
+	-webkit-flex-direction: $direction;
+	-moz-flex-direction: $direction;
+	-ms-flex-direction: $direction;
+	flex-direction: $direction;
+}
+
+// Flex Line Wrapping
+// - applies to: flex containers
+// nowrap | wrap | wrap-reverse
+@mixin flex-wrap($wrap) {
+	-webkit-flex-wrap: $wrap;
+	-moz-flex-wrap: $wrap;
+	-ms-flex-wrap: $wrap;
+	flex-wrap: $wrap;
+}
+
+// Flex Direction and Wrap
+// - applies to: flex containers
+// <flex-direction> || <flex-wrap>
+@mixin flex-flow($flow) {
+	-webkit-flex-flow: $flow;
+	-moz-flex-flow: $flow;
+	-ms-flex-flow: $flow;
+	flex-flow: $flow;
+}
+
+// Display Order
+// - applies to: flex items
+// <integer>
+@mixin order($val) {
+	-webkit-box-ordinal-group: $val;
+	-moz-box-ordinal-group: $val;
+	-ms-flex-order: $val;
+	-webkit-order: $val;
+	order: $val;
+}
+
+// Flex grow factor
+// - applies to: flex items
+// <number>
+@mixin flex-grow($grow) {
+	-webkit-flex-grow: $grow;
+	-moz-flex-grow: $grow;
+	-ms-flex-grow: $grow;
+	flex-grow: $grow;
+}
+
+// Flex shrink
+// - applies to: flex item shrink factor
+// <number> 
+@mixin flex-shrink($shrink) {
+	-webkit-flex-shrink: $shrink;
+	-moz-flex-shrink: $shrink;
+	-ms-flex-shrink: $shrink;
+	flex-shrink: $shrink;
+}
+
+// Flex basis
+// - the initial main size of the flex item
+// - applies to: flex itemsnitial main size of the flex item
+// <width> 
+@mixin flex-basis($width) {
+	-webkit-flex-basis: $width;
+	-moz-flex-basis: $width;
+	-ms-flex-basis: $width;
+	flex-basis: $width;
+}
+
+// Axis Alignment
+// - applies to: flex containers
+// flex-start | flex-end | center | space-between | space-around 
+@mixin justify-content($justify) {
+	-webkit-justify-content: $justify;
+	-moz-justify-content: $justify;
+	-ms-justify-content: $justify;
+	justify-content: $justify;
+	-ms-flex-pack: $justify;
+}
+
+// Packing Flex Lines
+// - applies to: multi-line flex containers
+// flex-start | flex-end | center | space-between | space-around | stretch 
+@mixin align-content($align) {
+	-webkit-align-content: $align;
+	-moz-align-content: $align;
+	-ms-align-content: $align;
+	align-content: $align;
+}
+
+// Cross-axis Alignment
+// - applies to: flex containers
+// flex-start | flex-end | center | baseline | stretch 
+@mixin align-items($align) {
+	-webkit-align-items: $align;
+	-moz-align-items: $align;
+	-ms-align-items: $align;
+	-ms-flex-align: $align;
+	align-items: $align;
+}
+
+// Cross-axis Alignment
+// - applies to: flex items
+// auto | flex-start | flex-end | center | baseline | stretch 
+@mixin align-self($align) {
+	-webkit-align-self: $align;
+	-moz-align-self: $align;
+	-ms-align-self: $align;
+	align-self: $align;
+}

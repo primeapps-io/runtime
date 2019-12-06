@@ -761,7 +761,7 @@ angular.module('primeapps')
                             fields: {
                                 Name: { type: "string" },
                                 ProfileName: { type: "string" },
-                                Default: { type: "string" }
+                                Default: { type: "boolean" }
                             }
                         }
                     }
@@ -774,8 +774,16 @@ angular.module('primeapps')
                 },
                 rowTemplate: function (menu) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
-                    trTemp += '<td>' + menu.name + '</td>';
-                    trTemp += '<td>' + menu.profile.name_en + '</td>';
+                    trTemp += '<td class="text-left">' + menu.name + '</td>';
+                    trTemp += '<td class="text-left">' + menu.profile.name_en + '</td>';
+                    trTemp += menu.default ? '<td><span>' + $filter('translate')('Common.Yes') + '</span></td>' : '<td><span>' + $filter('translate')('Common.No') + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                altRowTemplate: function (menu) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + menu.name + '</td>';
+                    trTemp += '<td class="text-left">' + menu.profile.name_en + '</td>';
                     trTemp += menu.default ? '<td><span>' + $filter('translate')('Common.Yes') + '</span></td>' : '<td><span>' + $filter('translate')('Common.No') + '</span></td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
@@ -792,15 +800,22 @@ angular.module('primeapps')
                     {
                         field: 'Name',
                         title: $filter('translate')('Menu.MenuName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
 
                     {
-                        field: 'Category',
+                        field: 'Profile.NameEn',
                         title: $filter('translate')('Menu.ProfileName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
-                        field: 'Type',
+                        field: 'Default',
                         title: $filter('translate')('Menu.DefaultMenu'),
+                      
                     },
                     {
                         field: '',

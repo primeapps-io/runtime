@@ -564,7 +564,8 @@ angular.module('primeapps')
                             id: "id",
                             fields: {
                                 LabelEn: { type: "string" },
-                                Module: { type: "string" }
+                                Module: { type: "string" },
+                                Active: { type: "boolean" }
                             }
                         }
                     }
@@ -578,8 +579,18 @@ angular.module('primeapps')
                 rowTemplate: function (wordTemp) {
                     var getUrl = '/attach/download_template?fileId=' + wordTemp.id + "&tempType=" + wordTemp.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
-                    trTemp += '<td>' + wordTemp.name + '</td>';
-                    trTemp += '<td>' + wordTemp.module + '</td>';
+                    trTemp += '<td class="text-left">' + wordTemp.name + '</td>';
+                    trTemp += '<td class="text-left">' + wordTemp.module + '</td>';
+                    trTemp += wordTemp.active ? '<td><span>' + $filter('translate')('Setup.Modules.Active') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.Passive') + '</span></td>';
+                    trTemp += '<td>' + '<a href="' + getUrl + '" target="_blank" ng-click="closeModal();">' + $filter('translate')('Common.Download') + '</a>' + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                altRowTemplate: function (wordTemp) {
+                    var getUrl = '/attach/download_template?fileId=' + wordTemp.id + "&tempType=" + wordTemp.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + wordTemp.name + '</td>';
+                    trTemp += '<td class="text-left">' + wordTemp.module + '</td>';
                     trTemp += wordTemp.active ? '<td><span>' + $filter('translate')('Setup.Modules.Active') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.Passive') + '</span></td>';
                     trTemp += '<td>' + '<a href="' + getUrl + '" target="_blank" ng-click="closeModal();">' + $filter('translate')('Common.Download') + '</a>' + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
@@ -597,18 +608,24 @@ angular.module('primeapps')
                     {
                         field: 'Name',
                         title: $filter('translate')('Setup.Templates.TemplateName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
 
                     {
-                        field: 'Module.Name',
+                        field: 'Module',
                         title: $filter('translate')('Setup.Templates.Module'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
-                        field: 'Status',
+                        field: 'Active',
                         title: $filter('translate')('Setup.Templates.Status'),
                     },
                     {
-                        field: 'TemplateFile',
+                        field: 'Content',
                         title: $filter('translate')('Setup.Templates.TemplateFile'),
                     },
                     {
