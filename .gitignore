@@ -201,5 +201,3 @@ FakesAssemblies/
 .vscode/*
 .history
 /.vscode
-
-/startup*
