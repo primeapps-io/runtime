@@ -399,8 +399,8 @@ angular.module('primeapps')
                         title: 'Creation Time', 
                         filterable: {
                             ui: function (element) {
-                                element.kendoDatePicker({
-                                    format: '{0: dd-MM-yyyy}'
+                                element.kendoDateTimePicker({
+                                    format: '{0: dd-MM-yyyy  hh:mm}'
                                 })
                             }
                         }

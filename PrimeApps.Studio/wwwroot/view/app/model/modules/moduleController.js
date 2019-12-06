@@ -84,7 +84,7 @@ angular.module('primeapps')
                     return item.name !== 'users' && item.name !== 'profiles' && item.name !== 'roles';
                 };
 
-             
+
 
                 //For Kendo UI
                 $scope.goUrl = function (id) {
@@ -189,6 +189,9 @@ angular.module('primeapps')
                         {
                             field: 'Display',
                             title: $filter('translate')('Setup.Modules.DisplayOnMenu'),
+                            filterable: {
+                                messages: { isTrue: "Yes <span></span>", isFalse: "No <span></span>" },
+                            },
                         },
                         {
                             field: 'Sharing',
@@ -215,7 +218,7 @@ angular.module('primeapps')
                     '                               aria-haspopup="true"  ' +
                     '                               aria-expanded="true">  ' +
                     '                           <i class="fas fa-ellipsis-v"></i>  ' +
-                    '                       </button>  ' + 
+                    '                       </button>  ' +
                     '                       <ul class="dropdown-menu" role="menu">  ' +
                     '                           <li>  ' +
                     '                         <a href="javascript:void(0);" ui-sref="studio.app.moduleDesigner({id:dataItem.id , clone:dataItem.name})"' +

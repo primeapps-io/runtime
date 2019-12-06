@@ -289,8 +289,8 @@ angular.module('primeapps')
                         title: 'Start Time',
                         filterable: {
                             ui: function (element) {
-                                element.kendoDatePicker({
-                                    format: '{0: dd-MM-yyyy}'
+                                element.kendoDateTimePicker({
+                                    format: '{0: dd-MM-yyyy  hh:mm}'
                                 })
                             }
                         }
@@ -300,8 +300,8 @@ angular.module('primeapps')
                         title: 'End Time',
                         filterable: {
                             ui: function (element) {
-                                element.kendoDatePicker({
-                                    format: '{0: dd-MM-yyyy}'
+                                element.kendoDateTimePicker({
+                                    format: '{0: dd-MM-yyyy  hh:mm}'
                                 })
                             }
                         }
