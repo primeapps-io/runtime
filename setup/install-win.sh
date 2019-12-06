@@ -42,13 +42,6 @@ curl $fileRedis -L --output Redis-x64-3.0.504.zip
 unzip Redis-x64-3.0.504.zip
 rm Redis-x64-3.0.504.zip
 
-# Install Gitea
-cd "$basePath/programs"
-mkdir gitea
-cd gitea
-echo -e "${GREEN}Downloading Gitea..${NC}."
-curl $fileGitea -L --output gitea.exe
-
 # Download WinSW
 cd "$basePath/programs"
 mkdir winsw
