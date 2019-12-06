@@ -11,62 +11,7 @@ angular.module('primeapps')
             $rootScope.breadcrumblist[2].title = 'Dependencies';
 
             $scope.id = $location.search().id ? $location.search().id : 0;
-
-            //$scope.generator = function (limit) {
-            //    $scope.placeholderArray = [];
-            //    for (var i = 0; i < limit; i++) {
-            //        $scope.placeholderArray[i] = i;
-            //    }
-            //};
-            //$scope.generator(10);
-
-            //$scope.loading = true;
-            //$scope.picklist = [];
-            //$scope.picklistsModule = {};
-
-            //$scope.requestModel = {
-            //    limit: '10',
-            //    offset: 0
-            //};
-
-            //$scope.activePage = 1;
-            //DependenciesService.count($scope.id).then(function (response) {
-            //    $scope.pageTotal = response.data;
-            //    $scope.changePage(1);
-            //});
-
-            //$scope.changePage = function (page) {
-
-            //    $scope.loading = true;
-
-            //    if (page !== 1) {
-            //        var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-            //        if (page > difference) {
-            //            if (Math.abs(page - difference) < 1)
-            //                --page;
-            //            else
-            //                page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-            //        }
-            //    }
-
-            //    $scope.activePage = page;
-            //    var requestModel = angular.copy($scope.requestModel);
-            //    requestModel.offset = page - 1;
-
-            //    DependenciesService.find($scope.id, requestModel).then(function (response) {
-            //        var dependencies = response.data;
-            //        // $scope.dependencies = DependenciesService.processDependencies(dependencies);
-            //        $scope.dependencies = dependencies;
-            //        $scope.dependenciesState = $scope.dependencies;
-            //        $scope.loading = false;
-            //    });
-            //};
-
-            //$scope.changeOffset = function () {
-            //    $scope.changePage($scope.activePage);
-            //};
-
+  
             $scope.moduleChanged = function () {
 
                 $scope.parentDisplayFields = [];
@@ -95,6 +40,7 @@ angular.module('primeapps')
 
             var getFields = function () {
 
+                $scope.dependencies = $scope.grid.dataSource.data();
 
                 angular.forEach($scope.module.fields, function (field) {
 
