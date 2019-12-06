@@ -63,7 +63,7 @@ echo -e "${GREEN}Initializing database instances...${NC}"
 
 # Register database instances
 echo -e "${GREEN}Registering database instances...${NC}"
-./pg_ctl register -D "$basePath/data/pgsql_pre" -o "-F -p 5432" -N "Postgres-PRE"
+./pg_ctl register -D "$basePath/data/pgsql_pre" -o "-F -p 5436" -N "Postgres-PRE"
 
 # Start database instances
 echo -e "${GREEN}Starting database instances...${NC}"
@@ -71,17 +71,17 @@ net start "Postgres-PRE"
 
 # Create postgres role
 echo -e "${GREEN}Creating postgres role for database instances...${NC}"
-./psql -d postgres -p 5432 -c "CREATE ROLE postgres SUPERUSER CREATEDB CREATEROLE LOGIN REPLICATION BYPASSRLS;"
+./psql -d postgres -p 5436 -c "CREATE ROLE postgres SUPERUSER CREATEDB CREATEROLE LOGIN REPLICATION BYPASSRLS;"
 
 # Create databases
 echo -e "${GREEN}Creating databases...${NC}"
-./createdb -h localhost -U postgres -p 5432 --template=template0 --encoding=UTF8 --lc-ctype=$postgresLocale --lc-collate=$postgresLocale auth
-./createdb -h localhost -U postgres -p 5432 --template=template0 --encoding=UTF8 --lc-ctype=$postgresLocale --lc-collate=$postgresLocale platform
+./createdb -h localhost -U postgres -p 5436 --template=template0 --encoding=UTF8 --lc-ctype=$postgresLocale --lc-collate=$postgresLocale auth
+./createdb -h localhost -U postgres -p 5436 --template=template0 --encoding=UTF8 --lc-ctype=$postgresLocale --lc-collate=$postgresLocale platform
 
 # Restore databases
 echo -e "${GREEN}Restoring databases...${NC}"
-./pg_restore -h localhost -U postgres -p 5432 --no-owner --role=postgres -Fc -d auth "$basePath/database/auth.bak"
-./pg_restore -h localhost -U postgres -p 5432 --no-owner --role=postgres -Fc -d platform "$basePath/database/platform.bak"
+./pg_restore -h localhost -U postgres -p 5436 --no-owner --role=postgres -Fc -d auth "$basePath/database/auth.bak"
+./pg_restore -h localhost -U postgres -p 5436 --no-owner --role=postgres -Fc -d platform "$basePath/database/platform.bak"
 
 # Init storage instances
 echo -e "${GREEN}Initializing storage instances...${NC}"

@@ -13,7 +13,7 @@
             <key>PGDATA</key>
             <string>{{DATA}}/pgsql_pre</string>
             <key>PGPORT</key>
-            <string>5433</string>
+            <string>5436</string>
             <key>LANG</key>
             <string>en_US.UTF-8</string>
             <key>LC_ALL</key>

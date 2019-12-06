@@ -21,7 +21,7 @@
             <string>{{PROGRAMS}}/minio/minio</string>
             <string>server</string>
             <string>--address</string>
-            <string>:9001</string>
+            <string>:9004</string>
             <string>{{DATA}}/minio_pre</string>
         </array>
         
