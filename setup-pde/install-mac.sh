@@ -7,14 +7,18 @@ NC='\033[0m' # No Color
 cd ..
 
 # Variables
-basePath=$(pwd -W)
-filePostgres="http://get.enterprisedb.com/postgresql/postgresql-10.11-1-linux-x64-binaries.tar.gz"
-fileMinio="https://dl.min.io/server/minio/release/linux-amd64/minio"
-fileRedis="http://download.redis.io/redis-stable.tar.gz"
-fileGitea="https://github.com/go-gitea/gitea/releases/download/v1.10.0/gitea-1.10.0-windows-4.0-amd64.exe"
- 
-postgresLocale="en-US"
+basePath=$(pwd [-LP])
+filePostgres="http://get.enterprisedb.com/postgresql/postgresql-12.1-1-osx-binaries.zip"
+fileMinio="https://dl.min.io/server/minio/release/darwin-amd64/minio"
+fileRedis="https://github.com/microsoftarchive/redis/releases/download/win-3.0.504/Redis-x64-3.0.504.zip"
+fileGitea="https://github.com/go-gitea/gitea/releases/download/v1.10.0/gitea-1.10.0-darwin-10.6-386"
+postgresLocale="en_US"
 postgresPath="$basePath/programs/pgsql/bin"
+programsPath="$basePath/programs"
+programsPathEscape=${programsPath//\//\\/}
+dataPath="$basePath/data"
+dataPathEscape=${dataPath//\//\\/}
+hostname=$(hostname)
 
 # Create programs directory
 mkdir programs
@@ -35,21 +39,18 @@ curl $fileMinio -L --output minio.exe
 
 # Install Redis
 cd "$basePath/programs"
-mkdir redis
-cd redis
 echo -e "${GREEN}Downloading Redis...${NC}"
-curl $fileRedis -L --output Redis-x64-3.0.504.zip
-unzip Redis-x64-3.0.504.zip
-rm Redis-x64-3.0.504.zip
+curl $fileRedis -L --output redis.zip
+unzip redis.zip
+rm redis.zip
+mv redis-mac-5.0.7 redis
 
 # Install Gitea
 cd "$basePath/programs"
 mkdir gitea
 cd gitea
 echo -e "${GREEN}Downloading Gitea..${NC}."
-curl $fileGitea -L --output gitea.exe
-
- 
+curl $fileGitea -L --output gitea
 
 # Init database instances
 cd $postgresPath
@@ -60,15 +61,24 @@ echo -e "${GREEN}Initializing database instances...${NC}"
 
 # Register database instances
 echo -e "${GREEN}Registering database instances...${NC}"
-./pg_ctl register -D "$basePath/data/pgsql_pre" -o "-F -p 5433" -N "Postgres-PRE"
-./pg_ctl register -D "$basePath/data/pgsql_pde" -o "-F -p 5434" -N "Postgres-PDE"
-./pg_ctl register -D "$basePath/data/pgsql_pre_test" -o "-F -p 5435" -N "Postgres-PRE-Test" -S "demand"
 
-# Start database instances
-echo -e "${GREEN}Starting database instances...${NC}"
-systemctl enable "Postgres-PRE"
-systemctl enable "Postgres-PDE"
-systemctl enable "Postgres-PRE-Test"
+cp "$basePath/setup/plist/postgres-pre.plist" postgres-pre.plist
+sed -i -e "s/{{USER}}/$hostname/" postgres-pre.plist
+sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pre.plist
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pre.plist
+launchctl load postgres-pre.plist
+
+cp "$basePath/setup/plist/postgres-pde.plist" postgres-pde.plist
+sed -i -e "s/{{USER}}/$hostname/" postgres-pde.plist
+sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pde.plist
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pde.plist
+launchctl load postgres-pde.plist
+
+cp "$basePath/setup/plist/postgres-pre-test.plist" postgres-pre.plist
+sed -i -e "s/{{USER}}/$hostname/" postgres-pre-test.plist
+sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pre-test.plist
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pre-test.plist
+launchctl load postgres-pre-test.plist
 
 # Create postgres role
 echo -e "${GREEN}Creating postgres role for database instances...${NC}"
@@ -98,12 +108,16 @@ echo -e "${GREEN}Restoring databases...${NC}"
 echo -e "${GREEN}Setting templet0 db as template database...${NC}"
 ./psql -d postgres -h localhost -p 5434 -c "UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'templet0'; UPDATE pg_database SET datallowconn = FALSE WHERE datname = 'templet0';"
 
-# Stop Postgres-PRE-Test, not required for now
-net stop "Postgres-PRE-Test"
-
 # Init storage instances
 echo -e "${GREEN}Initializing storage instances...${NC}"
 cd "$basePath/programs/minio"
+
+cp "$basePath/plist/minio-pre.plist" minio-pre.plist
+sed -i -e "s/{{USER}}/$hostname/" postgres-pre.plist
+sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pre.plist
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pre.plist
+launchctl load postgres-pre.plist
+
 cp "$basePath/programs/winsw/winsw.exe" minio-pre.exe
 cp "$basePath/programs/winsw/winsw.exe" minio-pde.exe
 cp "$basePath/programs/winsw/winsw.exe" minio-pre-test.exe
@@ -170,7 +184,6 @@ mkdir log
 cd "$basePath/programs/gitea"
 cp "$basePath/setup/app.ini" app.ini
 
-hostname=$(hostname)
 pathRepository="$basePath/data/gitea/repositories"
 pathRepository=${pathRepository//\//\\/} # escape slash
 pathLfs="$basePath/data/gitea/lfs"
@@ -182,10 +195,10 @@ pathExe=${pathExe//\//\\} # replace slash to backslash
 pathAppIni="$basePath/programs/gitea/app.ini"
 pathAppIni=${pathAppIni//\//\\} # replace slash to backslash
 
-sed -i "s/{{RUN_USER}}/$hostname/" app.ini
-sed -i "s/{{ROOT}}/$pathRepository/" app.ini
-sed -i "s/{{LFS_CONTENT_PATH}}/$pathLfs/" app.ini
-sed -i "s/{{ROOT_PATH}}/$pathLog/" app.ini
+sed -i -e "s/{{RUN_USER}}/$hostname/" app.ini
+sed -i -e "s/{{ROOT}}/$pathRepository/" app.ini
+sed -i -e "s/{{LFS_CONTENT_PATH}}/$pathLfs/" app.ini
+sed -i -e "s/{{ROOT_PATH}}/$pathLog/" app.ini
 
 echo -e "${GREEN}Initializing git instance...${NC}"
 sc create "Gitea-PDE" start=auto binPath=""$pathExe" web --config "$pathAppIni""

@@ -5,6 +5,6 @@
   <executable>minio.exe</executable>
   <env name="MINIO_ACCESS_KEY" value="storage-access-key"/>
   <env name="MINIO_SECRET_KEY" value="storage-secret-key"/>
-  <arguments>server --address :9001 "..\..\data\minio_pre"</arguments>
+  <arguments>server --address :9000 "..\..\data\minio_pre"</arguments>
   <logmode>rotate</logmode>
 </service>
