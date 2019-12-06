@@ -33,7 +33,7 @@ ingress:
   hostname: log.primeapps.io
   annotations: 
     kubernetes.io/ingress.class: nginx
-    # certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
   tls:
     - hosts:
         - sentry.primeapps.io

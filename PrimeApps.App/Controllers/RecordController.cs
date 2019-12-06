@@ -77,7 +77,7 @@ namespace PrimeApps.App.Controllers
                 moduleEntity = ModuleHelper.GetFakeUserModule();
 
             if (module == "profiles")
-                moduleEntity = ModuleHelper.GetFakeProfileModule();
+                moduleEntity = ModuleHelper.GetFakeProfileModule(AppUser.TenantLanguage);
 
             if (module == "roles")
                 moduleEntity = ModuleHelper.GetFakeRoleModule(AppUser.TenantLanguage);
@@ -119,7 +119,7 @@ namespace PrimeApps.App.Controllers
             }
 
             lookupModules.Add(ModuleHelper.GetFakeUserModule());
-            lookupModules.Add(ModuleHelper.GetFakeProfileModule());
+            lookupModules.Add(ModuleHelper.GetFakeProfileModule(AppUser.TenantLanguage));
             lookupModules.Add(ModuleHelper.GetFakeRoleModule(AppUser.TenantLanguage));
 
             try

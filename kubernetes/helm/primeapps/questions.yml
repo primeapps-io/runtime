@@ -10,7 +10,7 @@ questions:
   group: "Container Images"
   subquestions:
   - variable: image.tag
-    default: "1.19.337.1-debian"
+    default: "1.19.340.1-debian"
     description: "PrimeApps Docker image tag. https://hub.docker.com/u/primeapps"
     type: string
     label: Image Tag
@@ -197,42 +197,42 @@ questions:
   type: boolean
   required: true
   label: Install Minio
-  group: "Storage Settings"
+  group: "Object Storage Settings"
 - variable: minio.domain
   default: "storage.yourdomain.com"
   description: "Storage Domain"
   type: string
   required: true
   label: Install Minio
-  group: "Storage Settings"
+  group: "Object Storage Settings"
 - variable: minio.accessKey
   default: "AKIAIOSFODNN7EXAMPLE"
   description: "Access key"
   type: string
   required: true
   label: Access Key
-  group: "Storage Settings"
+  group: "Object Storage Settings"
 - variable: minio.secretKey
   default: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
   description: "Secret key"
   type: string
   required: true
   label: Secret Key
-  group: "Storage Settings"
+  group: "Object Storage Settings"
 - variable: minio.persistence.storageClass
   default: "standard"
   description: "Storage class for persistent volume"
   type: string
   required: true
-  label: Class
-  group: "Storage Settings"
+  label: Storage Class
+  group: "Object Storage Settings"
 - variable: minio.persistence.size
   default: "50Gi"
   description: "Storage size for persistent volume"
   type: string
   required: true
-  label: Size
-  group: "Storage Settings"
+  label: Storage Size
+  group: "Object Storage Settings"
 - variable: admin.storage.class
   default: "standard"
   description: "Storage class for persistent volume"

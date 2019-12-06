@@ -2397,7 +2397,7 @@ namespace PrimeApps.Model.Helpers
                         lookupModuleNames.Add(field.LookupType);
 
                     if (field.LookupType != "profiles")
-                        lookupModules.Add(ModuleHelper.GetFakeProfileModule());
+                        lookupModules.Add(ModuleHelper.GetFakeProfileModule(tenantLanguage));
 
                     if (field.LookupType != "roles")
                         lookupModules.Add(ModuleHelper.GetFakeRoleModule(tenantLanguage));

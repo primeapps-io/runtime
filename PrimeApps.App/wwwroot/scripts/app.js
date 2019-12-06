@@ -71,7 +71,7 @@ angular.module('primeapps',
 			$httpProvider.interceptors.push('genericInterceptor');
 
 			//var language = window.localStorage.getItem('NG_TRANSLATE_LANG_KEY');
-			var language = JSON.parse(account.user).setting.language;
+			var language = account.user.setting.language;
 			
 
 			if (!language && customLanguage)

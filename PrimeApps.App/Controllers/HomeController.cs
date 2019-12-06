@@ -209,7 +209,7 @@ namespace PrimeApps.App.Controllers
 
             var jsonString = "";
             var hasAdminRight = false;
-
+            var tenantLanguage = "en";
             var componentRepository = (IComponentRepository)HttpContext.RequestServices.GetService(typeof(IComponentRepository));
             var scriptRepository = (IScriptRepository)HttpContext.RequestServices.GetService(typeof(IScriptRepository));
             var moduleRepository = (IModuleRepository)HttpContext.RequestServices.GetService(typeof(IModuleRepository));
@@ -244,7 +244,11 @@ namespace PrimeApps.App.Controllers
                     var userInfo = await userRepository.GetUserInfoAsync(userId);
 
                     if (userInfo != null)
-                        hasAdminRight = userInfo.profile.HasAdminRights;
+                    {
+                         hasAdminRight = userInfo.profile.HasAdminRights;
+                         tenantLanguage = userInfo.tenantLanguage;
+                    }
+                       
                 }
                 
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
@@ -254,7 +258,7 @@ namespace PrimeApps.App.Controllers
                     var platformUser = await platformUserRepository.GetSettings(userId);
                     if (platformUser != null)
                     {
-                        account["user"] = JsonConvert.SerializeObject(platformUser, serializerSettings);
+                        account["user"] = JObject.Parse(JsonConvert.SerializeObject(platformUser, serializerSettings));
                     }
                 }
             }
@@ -263,6 +267,7 @@ namespace PrimeApps.App.Controllers
             ViewBag.Components = jsonString;
             ViewBag.HasAdminRight = hasAdminRight;
             ViewBag.TenantId = tenantId;
+            ViewBag.TenantLanguage = tenantLanguage;
             ViewBag.AppId = appId;
             ViewBag.EncryptedUserId = CryptoHelper.Encrypt(userId.ToString(), ".btA99KnTp+%','L");
             ViewBag.GlobalSettings = globalSettings != null ? globalSettings.Content : null;

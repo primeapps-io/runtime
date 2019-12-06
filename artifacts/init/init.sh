@@ -5,7 +5,7 @@ sleep 15
 
 create_and_wait_cluster(){
     echo -e "${GREEN}Creating Cluster...${NC}"
-    pgo create cluster -w $PGPASSWORD --metrics --pgbackrest --custom-config 'pgo-custom-pg-config' primeapps-database
+    pgo create cluster -w "$PGPASSWORD" --metrics --pgbackrest --custom-config 'pgo-custom-pg-config' primeapps-database
 
     until pg_isready; do echo Waiting for cluster...; sleep 15; done;
 }

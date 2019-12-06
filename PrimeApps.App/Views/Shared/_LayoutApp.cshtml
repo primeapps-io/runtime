@@ -92,6 +92,7 @@
     var version = '@typeof(ControllerContext).Assembly.GetName().Version';
     var cdnUrl = '@ViewBag.CdnUrlDynamic';
     var customLanguage = '@appInfo.Language';
+    var tenantLanguage = '@ViewBag.tenantLanguage';
     var multiLanguage = ('@appInfo.MultiLanguage' !== 'False');
     var appLogo = '@Html.Raw(appInfo.Logo)';
     var components = @(new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Components)));

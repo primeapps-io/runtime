@@ -24,4 +24,4 @@ cd PrimeApps.Auth
 export ASPNETCORE_ENVIRONMENT=Development
 export AppSettings__Authority="http://localhost:$PORTAUTH"
 
-dotnet run --urls="http://localhost:$PORTAUTH"
+dotnet PrimeApps.Auth.dll --urls="http://localhost:$PORTAUTH"
