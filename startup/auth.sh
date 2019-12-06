@@ -2,7 +2,7 @@
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-PORTAUTH=5020
+PORTAUTH=5000
 
 for i in "$@"
 do
