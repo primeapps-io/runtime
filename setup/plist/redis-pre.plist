@@ -3,7 +3,7 @@
 <plist version="1.0">
     <dict>
         <key>Label</key>
-        <string>io.primeapps.redis.pre</string>
+        <string>io.primeapps.redis</string>
 
         <key>RunAtLoad</key>
         <true/>

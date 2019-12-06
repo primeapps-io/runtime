@@ -1,7 +1,7 @@
 <service>
-  <id>Redis-PRE</id>
-  <name>Redis-PRE</name>
-  <description>Redis-PRE</description>
+  <id>Redis-PrimeApps</id>
+  <name>Redis-PrimeApps</name>
+  <description>Redis-PrimeApps</description>
   <executable>redis-server.exe</executable>
   <arguments>"..\..\data\redis_pre\redis.windows.conf" --port 6384</arguments>
   <logmode>rotate</logmode>

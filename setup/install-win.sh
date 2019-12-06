@@ -63,11 +63,11 @@ echo -e "${GREEN}Initializing database instances...${NC}"
 
 # Register database instances
 echo -e "${GREEN}Registering database instances...${NC}"
-./pg_ctl register -D "$basePath/data/pgsql_pre" -o "-F -p 5436" -N "Postgres-PRE"
+./pg_ctl register -D "$basePath/data/pgsql_pre" -o "-F -p 5436" -N "Postgres-PrimeApps"
 
 # Start database instances
 echo -e "${GREEN}Starting database instances...${NC}"
-net start "Postgres-PRE"
+net start "Postgres-PrimeApps"
 
 # Create postgres role
 echo -e "${GREEN}Creating postgres role for database instances...${NC}"
@@ -92,7 +92,7 @@ cp "$basePath/setup/xml/minio-pre.xml" minio-pre.xml
 ./minio-pre.exe install
 
 echo -e "${GREEN}Starting storage instances...${NC}"
-net start "MinIO-PRE"
+net start "MinIO-PrimeApps"
 
 # Init cache instance
 echo -e "${GREEN}Initializing cache instances...${NC}"
@@ -106,7 +106,7 @@ cp redis.windows.conf "$basePath/data/redis_pre/redis.windows.conf"
 ./redis-pre.exe install
 
 echo -e "${GREEN}Starting cache instances...${NC}"
-net start "Redis-PRE"
+net start "Redis-PrimeApps"
 
 # Create directory for dump, package, git, etc.
 mkdir "$basePath/data/primeapps"

@@ -1,7 +1,7 @@
 <service>
-  <id>MinIO-PRE</id>
-  <name>MinIO-PRE</name>
-  <description>MinIO-PRE</description>
+  <id>MinIO-PrimeApps</id>
+  <name>MinIO-PrimeApps</name>
+  <description>MinIO-PrimeApps</description>
   <executable>minio.exe</executable>
   <env name="MINIO_ACCESS_KEY" value="storage-access-key"/>
   <env name="MINIO_SECRET_KEY" value="storage-secret-key"/>

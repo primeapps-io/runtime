@@ -3,7 +3,7 @@
 <plist version="1.0">
     <dict>
         <key>Label</key>
-        <string>io.primeapps.postgres.pre</string>
+        <string>io.primeapps.postgres</string>
         
         <key>RunAtLoad</key>
         <true/>

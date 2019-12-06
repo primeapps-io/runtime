@@ -3,7 +3,7 @@
 <plist version="1.0">
     <dict>
         <key>Label</key>
-        <string>io.primeapps.minio.pre</string>
+        <string>io.primeapps.minio</string>
         
         <key>RunAtLoad</key>
         <true/>
