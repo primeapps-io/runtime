@@ -473,6 +473,9 @@ angular.module('primeapps')
                     {
                         field: 'Active',
                         title: $filter('translate')('Setup.Templates.Status'),
+                        filterable: {
+                            messages: { isTrue: $filter('translate')('Setup.Modules.Active') + "<span></span>", isFalse: $filter('translate')('Setup.Modules.Passive')+"<span></span>" },
+                        },
                     },
                     {
                         field: 'Content',

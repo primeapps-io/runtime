@@ -815,7 +815,9 @@ angular.module('primeapps')
                     {
                         field: 'Default',
                         title: $filter('translate')('Menu.DefaultMenu'),
-                      
+                        filterable: {
+                            messages: { isTrue: "Yes <span></span>", isFalse: "No <span></span>" },
+                        },
                     },
                     {
                         field: '',
