@@ -18,6 +18,9 @@ LATEST_VERSION=$(echo $LATEST_RELEASE | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/
 AUTH_URL="https://github.com/primeapps-io/pre/releases/download/$LATEST_VERSION/PrimeApps.Auth.zip"
 APP_URL="https://github.com/primeapps-io/pre/releases/download/$LATEST_VERSION/PrimeApps.App.zip"
 ADMIN_URL="https://github.com/primeapps-io/pre/releases/download/$LATEST_VERSION/PrimeApps.Admin.zip"
+DATABASE_URL="https://github.com/primeapps-io/pre/releases/download/$LATEST_VERSION/database.zip"
+SETUP_URL="https://github.com/primeapps-io/pre/releases/download/$LATEST_VERSION/setup.zip"
+STARTUP_URL="https://github.com/primeapps-io/pre/releases/download/$LATEST_VERSION/startup.zip"
 
 echo "Downloading $AUTH_URL"
 wget $AUTH_URL
@@ -28,6 +31,15 @@ wget $APP_URL
 echo "Downloading $ADMIN_URL"
 wget $ADMIN_URL
 
+echo "Downloading $DATABASE_URL"
+wget $DATABASE_URL
+
+echo "Downloading $SETUP_URL"
+wget $SETUP_URL
+
+echo "Downloading $STARTUP_URL"
+wget $STARTUP_URL
+
 echo "Unzipping PrimeApps.Auth.zip"
 unzip PrimeApps.Auth.zip -d PrimeApps.Auth
 
@@ -37,9 +49,21 @@ unzip PrimeApps.App.zip -d PrimeApps.App
 echo "Unzipping PrimeApps.Admin.zip"
 unzip PrimeApps.Admin.zip -d PrimeApps.Admin
 
+echo "Unzipping database.zip"
+unzip database.zip -d database
+
+echo "Unzipping setup.zip"
+unzip setup.zip -d setup
+
+echo "Unzipping startup.zip"
+unzip startup.zip -d startup
+
 cp -R PrimeApps.Auth/. pre/PrimeApps.Auth
 cp -R PrimeApps.App/. pre/PrimeApps.App
 cp -R PrimeApps.Admin/. pre/PrimeApps.Admin
+cp -R database/. pre/database
+cp -R setup/. pre/setup
+cp -R startup/. pre/startup
 
 cd pre
 
@@ -56,6 +80,12 @@ rm -rf pre
 rm -rf PrimeApps.Auth
 rm -rf PrimeApps.App
 rm -rf PrimeApps.Admin
+rm -rf database
+rm -rf setup
+rm -rf startup
 rm PrimeApps.Auth.zip
 rm PrimeApps.App.zip
 rm PrimeApps.Admin.zip
+rm database.zip
+rm setup.zip
+rm startup.zip
