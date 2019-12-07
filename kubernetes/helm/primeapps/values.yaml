@@ -32,6 +32,8 @@ admin:
   storage:
     class: "default"
     size: "10Gi"
+  postgresPath: "/usr/bin/"
+  dataDirectory: "/data/primeapps/"
   sentryDsn: "https://your:dsn@log.primeapps.io/3"
   
 postgresoperator:
