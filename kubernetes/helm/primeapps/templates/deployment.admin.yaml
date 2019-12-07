@@ -81,6 +81,11 @@ spec:
                 configMapKeyRef:
                   name: {{.Release.Name}}-admin-config
                   key: AuthenticationServerURL
+            - name: AppSettings__AuthenticationServerURLLocal
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: AuthenticationServerURLLocal                  
             - name: AppSettings__ClientId
               valueFrom:
                 configMapKeyRef:
