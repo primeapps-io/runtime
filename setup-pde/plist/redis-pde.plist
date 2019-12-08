@@ -3,7 +3,7 @@
 <plist version="1.0">
     <dict>
         <key>Label</key>
-        <string>io.primeapps.redis</string>
+        <string>io.primeapps.redis.pde</string>
 
         <key>RunAtLoad</key>
         <true/>
@@ -11,9 +11,9 @@
         <key>ProgramArguments</key>
         <array>
             <string>{{PROGRAMS}}/redis/redis-server</string>
-            <string>{{DATA}}/redis_pre/redis.conf</string>
+            <string>{{DATA}}/redis_pde/redis.conf</string>
             <string>--port</string>
-            <string>6384</string>
+            <string>6382</string>
         </array>
 
     </dict>

@@ -10,15 +10,15 @@ cd ..
 basePath=$(pwd [-LP])
 filePostgres="http://get.enterprisedb.com/postgresql/postgresql-12.1-1-osx-binaries.zip"
 fileMinio="https://dl.min.io/server/minio/release/darwin-amd64/minio"
-fileRedis="https://github.com/microsoftarchive/redis/releases/download/win-3.0.504/Redis-x64-3.0.504.zip"
-fileGitea="https://github.com/go-gitea/gitea/releases/download/v1.10.0/gitea-1.10.0-darwin-10.6-386"
+fileRedis="https://github.com/fatihsever/redis-mac/archive/5.0.7.zip"
+fileGitea="https://dl.gitea.io/gitea/1.10.1/gitea-1.10.1-darwin-10.6-amd64"
 postgresLocale="en_US"
 postgresPath="$basePath/programs/pgsql/bin"
 programsPath="$basePath/programs"
 programsPathEscape=${programsPath//\//\\/}
 dataPath="$basePath/data"
 dataPathEscape=${dataPath//\//\\/}
-hostname=$(hostname)
+user=$(id -un)
 
 # Create programs directory
 mkdir programs
@@ -35,7 +35,8 @@ cd "$basePath/programs"
 mkdir minio
 cd minio
 echo -e "${GREEN}Downloading Minio...${NC}"
-curl $fileMinio -L --output minio.exe
+curl $fileMinio -L --output minio
+chmod 777 minio
 
 # Install Redis
 cd "$basePath/programs"
@@ -44,6 +45,8 @@ curl $fileRedis -L --output redis.zip
 unzip redis.zip
 rm redis.zip
 mv redis-mac-5.0.7 redis
+cd redis
+chmod 777 redis-server
 
 # Install Gitea
 cd "$basePath/programs"
@@ -51,6 +54,7 @@ mkdir gitea
 cd gitea
 echo -e "${GREEN}Downloading Gitea..${NC}."
 curl $fileGitea -L --output gitea
+chmod 777 gitea
 
 # Init database instances
 cd $postgresPath
@@ -62,23 +66,23 @@ echo -e "${GREEN}Initializing database instances...${NC}"
 # Register database instances
 echo -e "${GREEN}Registering database instances...${NC}"
 
-cp "$basePath/setup/plist/postgres-pre.plist" postgres-pre.plist
-sed -i -e "s/{{USER}}/$hostname/" postgres-pre.plist
+cp "$basePath/setup-pde/plist/postgres-pre.plist" postgres-pre.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pre.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pre.plist
 launchctl load postgres-pre.plist
 
-cp "$basePath/setup/plist/postgres-pde.plist" postgres-pde.plist
-sed -i -e "s/{{USER}}/$hostname/" postgres-pde.plist
+cp "$basePath/setup-pde/plist/postgres-pde.plist" postgres-pde.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pde.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pde.plist
 launchctl load postgres-pde.plist
 
-cp "$basePath/setup/plist/postgres-pre-test.plist" postgres-pre.plist
-sed -i -e "s/{{USER}}/$hostname/" postgres-pre-test.plist
+cp "$basePath/setup-pde/plist/postgres-pre-test.plist" postgres-pre-test.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pre-test.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pre-test.plist
 launchctl load postgres-pre-test.plist
+launchctl start io.primeapps.postgres.pre-test
+
+sleep 3 # Sleep 3 seconds for postgres services wakeup
 
 # Create postgres role
 echo -e "${GREEN}Creating postgres role for database instances...${NC}"
@@ -108,65 +112,63 @@ echo -e "${GREEN}Restoring databases...${NC}"
 echo -e "${GREEN}Setting templet0 db as template database...${NC}"
 ./psql -d postgres -h localhost -p 5434 -c "UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'templet0'; UPDATE pg_database SET datallowconn = FALSE WHERE datname = 'templet0';"
 
+# Stop Postgres-PRE-Test, not required for now
+launchctl stop io.primeapps.postgres.pre-test
+
 # Init storage instances
 echo -e "${GREEN}Initializing storage instances...${NC}"
 cd "$basePath/programs/minio"
 
-cp "$basePath/plist/minio-pre.plist" minio-pre.plist
-sed -i -e "s/{{USER}}/$hostname/" postgres-pre.plist
-sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pre.plist
-sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pre.plist
-launchctl load postgres-pre.plist
+cp "$basePath/setup-pde/plist/minio-pre.plist" minio-pre.plist
+sed -i -e "s/{{DATA}}/$dataPathEscape/" minio-pre.plist
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" minio-pre.plist
+launchctl load minio-pre.plist
 
-cp "$basePath/programs/winsw/winsw.exe" minio-pre.exe
-cp "$basePath/programs/winsw/winsw.exe" minio-pde.exe
-cp "$basePath/programs/winsw/winsw.exe" minio-pre-test.exe
-cp "$basePath/setup/minio-pre.xml" minio-pre.xml
-cp "$basePath/setup/minio-pde.xml" minio-pde.xml
-cp "$basePath/setup/minio-pre-test.xml" minio-pre-test.xml
+cp "$basePath/setup-pde/plist/minio-pde.plist" minio-pde.plist
+sed -i -e "s/{{DATA}}/$dataPathEscape/" minio-pde.plist
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" minio-pde.plist
+launchctl load minio-pde.plist
 
-./minio-pre.exe install
-./minio-pde.exe install
-./minio-pre-test.exe install
-
-echo -e "${GREEN}Starting storage instances...${NC}"
-net start "MinIO-PRE"
-net start "MinIO-PDE"
-net start "MinIO-PRE-Test"
+cp "$basePath/setup-pde/plist/minio-pre-test.plist" minio-pre-test.plist
+sed -i -e "s/{{DATA}}/$dataPathEscape/" minio-pre-test.plist
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" minio-pre-test.plist
+launchctl load minio-pre-test.plist
+launchctl start io.primeapps.minio.pre-test
 
 # Stop Minio-PRE-Test, not required for now
 sleep 3 # Sleep 3 seconds for minio wakeup
-net stop "MinIO-PRE-Test"
+launchctl stop io.primeapps.minio.pre-test
 
 # Init cache instance
 echo -e "${GREEN}Initializing cache instances...${NC}"
 cd "$basePath/programs/redis"
-cp "$basePath/programs/winsw/winsw.exe" redis-pre.exe
-cp "$basePath/programs/winsw/winsw.exe" redis-pde.exe
-cp "$basePath/programs/winsw/winsw.exe" redis-pre-test.exe
-cp "$basePath/setup/redis-pre.xml" redis-pre.xml
-cp "$basePath/setup/redis-pde.xml" redis-pde.xml
-cp "$basePath/setup/redis-pre-test.xml" redis-pre-test.xml
 
 mkdir "$basePath/data/redis_pre"
 mkdir "$basePath/data/redis_pde"
 mkdir "$basePath/data/redis_pre_test"
-cp redis.windows.conf "$basePath/data/redis_pre/redis.windows.conf"
-cp redis.windows.conf "$basePath/data/redis_pde/redis.windows.conf"
-cp redis.windows.conf "$basePath/data/redis_pre_test/redis.windows.conf"
+cp redis.conf "$basePath/data/redis_pre/redis.conf"
+cp redis.conf "$basePath/data/redis_pde/redis.conf"
+cp redis.conf "$basePath/data/redis_pre_test/redis.conf"
 
-./redis-pre.exe install
-./redis-pde.exe install
-./redis-pre-test.exe install
+cp "$basePath/setup-pde/plist/redis-pre.plist" redis-pre.plist
+sed -i -e "s/{{DATA}}/$dataPathEscape/" redis-pre.plist
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" redis-pre.plist
+launchctl load redis-pre.plist
 
-echo -e "${GREEN}Starting cache instances...${NC}"
-net start "Redis-PRE"
-net start "Redis-PDE"
-net start "Redis-PRE-Test"
+cp "$basePath/setup-pde/plist/redis-pde.plist" redis-pde.plist
+sed -i -e "s/{{DATA}}/$dataPathEscape/" redis-pde.plist
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" redis-pde.plist
+launchctl load redis-pde.plist
+
+cp "$basePath/setup-pde/plist/redis-pre-test.plist" redis-pre-test.plist
+sed -i -e "s/{{DATA}}/$dataPathEscape/" redis-pre-test.plist
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" redis-pre-test.plist
+launchctl load redis-pre-test.plist
+launchctl start io.primeapps.redis.pre-test
 
 # Stop Redis-PRE-Test, not required for now
 sleep 3 # Sleep 3 seconds for redis wakeup
-net stop "Redis-PRE-Test"
+launchctl stop io.primeapps.redis.pre-test
 
 # Init git instance
 echo -e "${GREEN}Creating Gitea database...${NC}"
@@ -190,21 +192,17 @@ pathLfs="$basePath/data/gitea/lfs"
 pathLfs=${pathLfs//\//\\/} # escape slash
 pathLog="$basePath/data/gitea/log"
 pathLog=${pathLog//\//\\/} # escape slash
-pathExe="$basePath/programs/gitea/gitea.exe"
-pathExe=${pathExe//\//\\} # replace slash to backslash
 pathAppIni="$basePath/programs/gitea/app.ini"
-pathAppIni=${pathAppIni//\//\\} # replace slash to backslash
 
-sed -i -e "s/{{RUN_USER}}/$hostname/" app.ini
+sed -i -e "s/{{RUN_USER}}/$user/" app.ini
 sed -i -e "s/{{ROOT}}/$pathRepository/" app.ini
 sed -i -e "s/{{LFS_CONTENT_PATH}}/$pathLfs/" app.ini
 sed -i -e "s/{{ROOT_PATH}}/$pathLog/" app.ini
 
-echo -e "${GREEN}Initializing git instance...${NC}"
-sc create "Gitea-PDE" start=auto binPath=""$pathExe" web --config "$pathAppIni""
-
-echo -e "${GREEN}Starting git instance...${NC}"
-net start "Gitea-PDE"
+cp "$basePath/setup-pde/plist/gitea-pde.plist" gitea-pde.plist
+sed -i -e "s/{{DATA}}/$dataPathEscape/" gitea-pde.plist
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" gitea-pde.plist
+launchctl load gitea-pde.plist
 
 echo -e "${GREEN}Creating admin user...${NC}"
 curl -s -L http://localhost:3000 > /dev/null

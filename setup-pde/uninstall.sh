@@ -3,6 +3,9 @@
 if [[ "$OSTYPE" == "msys" ]]
 then
 	./uninstall-win.sh
+elif [[ "$OSTYPE" == "darwin"* ]]
+then
+    ./uninstall-mac.sh	
 else
-	./uninstall-unix.sh
+	./uninstall-linux.sh
 fi
