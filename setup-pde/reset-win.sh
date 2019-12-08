@@ -20,6 +20,8 @@ net stop Redis-PRE-Test
 net stop Redis-PDE
 net stop Gitea-PDE
 
+sleep 3 # Sleep 3 seconds for stop all services
+
 echo -e "${GREEN}Deleting data folders...${NC}"
 cd "$basePath/data"
 
