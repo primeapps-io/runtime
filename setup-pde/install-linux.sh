@@ -7,14 +7,18 @@ NC='\033[0m' # No Color
 cd ..
 
 # Variables
-basePath=$(pwd -W)
-filePostgres="http://get.enterprisedb.com/postgresql/postgresql-10.11-1-linux-x64-binaries.tar.gz"
+basePath=$(pwd [-LP])
+filePostgres="https://get.enterprisedb.com/postgresql/postgresql-10.11-2-linux-x64-binaries.tar.gz"
 fileMinio="https://dl.min.io/server/minio/release/linux-amd64/minio"
-fileRedis="http://download.redis.io/redis-stable.tar.gz"
-fileGitea="https://github.com/go-gitea/gitea/releases/download/v1.10.0/gitea-1.10.0-windows-4.0-amd64.exe"
- 
-postgresLocale="en-US"
+fileRedis="https://github.com/fatihsever/redis-linux/archive/5.0.7.zip"
+fileGitea="https://dl.gitea.io/gitea/1.10.1/gitea-1.10.1-linux-amd64"
+postgresLocale="en_US"
 postgresPath="$basePath/programs/pgsql/bin"
+programsPath="$basePath/programs"
+programsPathEscape=${programsPath//\//\\/}
+dataPath="$basePath/data"
+dataPathEscape=${dataPath//\//\\/}
+user=$(id -un)
 
 # Create programs directory
 mkdir programs
@@ -31,25 +35,26 @@ cd "$basePath/programs"
 mkdir minio
 cd minio
 echo -e "${GREEN}Downloading Minio...${NC}"
-curl $fileMinio -L --output minio.exe
+curl $fileMinio -L --output minio
+chmod 777 minio
 
 # Install Redis
 cd "$basePath/programs"
-mkdir redis
-cd redis
 echo -e "${GREEN}Downloading Redis...${NC}"
-curl $fileRedis -L --output Redis-x64-3.0.504.zip
-unzip Redis-x64-3.0.504.zip
-rm Redis-x64-3.0.504.zip
+curl $fileRedis -L --output redis.zip
+unzip redis.zip
+rm redis.zip
+mv redis-mac-5.0.7 redis
+cd redis
+chmod 777 redis-server
 
 # Install Gitea
 cd "$basePath/programs"
 mkdir gitea
 cd gitea
 echo -e "${GREEN}Downloading Gitea..${NC}."
-curl $fileGitea -L --output gitea.exe
-
- 
+curl $fileGitea -L --output gitea
+chmod 777 gitea
 
 # Init database instances
 cd $postgresPath
@@ -60,15 +65,28 @@ echo -e "${GREEN}Initializing database instances...${NC}"
 
 # Register database instances
 echo -e "${GREEN}Registering database instances...${NC}"
-./pg_ctl register -D "$basePath/data/pgsql_pre" -o "-F -p 5433" -N "Postgres-PRE"
-./pg_ctl register -D "$basePath/data/pgsql_pde" -o "-F -p 5434" -N "Postgres-PDE"
-./pg_ctl register -D "$basePath/data/pgsql_pre_test" -o "-F -p 5435" -N "Postgres-PRE-Test" -S "demand"
 
-# Start database instances
-echo -e "${GREEN}Starting database instances...${NC}"
-systemctl enable "Postgres-PRE"
-systemctl enable "Postgres-PDE"
-systemctl enable "Postgres-PRE-Test"
+cp "$basePath/setup-pde/service/postgres-pre.service" postgres-pre.service
+sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pre.service
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pre.service
+sed -i -e "s/{{USER}}/$user/" postgres-pre.service
+systemctl start postgres-pre
+systemctl enable postgres-pre
+
+cp "$basePath/setup-pde/service/postgres-pde.service" postgres-pde.service
+sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pde.service
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pde.service
+sed -i -e "s/{{USER}}/$user/" postgres-pde.service
+systemctl start postgres-pde
+systemctl enable postgres-pde
+
+cp "$basePath/setup-pde/service/postgres-pre-test.service" postgres-pre-test.service
+sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pre-test.service
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pre-test.service
+sed -i -e "s/{{USER}}/$user/" postgres-pre-test.service
+systemctl start postgres-pre-test
+
+sleep 3 # Sleep 3 seconds for postgres services wakeup
 
 # Create postgres role
 echo -e "${GREEN}Creating postgres role for database instances...${NC}"
@@ -99,60 +117,70 @@ echo -e "${GREEN}Setting templet0 db as template database...${NC}"
 ./psql -d postgres -h localhost -p 5434 -c "UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'templet0'; UPDATE pg_database SET datallowconn = FALSE WHERE datname = 'templet0';"
 
 # Stop Postgres-PRE-Test, not required for now
-net stop "Postgres-PRE-Test"
+systemctl stop postgres-pre-test
 
 # Init storage instances
 echo -e "${GREEN}Initializing storage instances...${NC}"
 cd "$basePath/programs/minio"
-cp "$basePath/programs/winsw/winsw.exe" minio-pre.exe
-cp "$basePath/programs/winsw/winsw.exe" minio-pde.exe
-cp "$basePath/programs/winsw/winsw.exe" minio-pre-test.exe
-cp "$basePath/setup/minio-pre.xml" minio-pre.xml
-cp "$basePath/setup/minio-pde.xml" minio-pde.xml
-cp "$basePath/setup/minio-pre-test.xml" minio-pre-test.xml
 
-./minio-pre.exe install
-./minio-pde.exe install
-./minio-pre-test.exe install
+cp "$basePath/setup-pde/service/minio-pre.service" minio-pre.service
+sed -i -e "s/{{DATA}}/$dataPathEscape/" minio-pre.service
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" minio-pre.service
+sed -i -e "s/{{USER}}/$user/" minio-pre.service
+systemctl start minio-pre
+systemctl enable minio-pre
 
-echo -e "${GREEN}Starting storage instances...${NC}"
-net start "MinIO-PRE"
-net start "MinIO-PDE"
-net start "MinIO-PRE-Test"
+cp "$basePath/setup-pde/service/minio-pde.service" minio-pde.service
+sed -i -e "s/{{DATA}}/$dataPathEscape/" minio-pde.service
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" minio-pde.service
+sed -i -e "s/{{USER}}/$user/" minio-pde.service
+systemctl start minio-pde
+systemctl enable minio-pde
+
+cp "$basePath/setup-pde/service/minio-pre-test.service" minio-pre-test.service
+sed -i -e "s/{{DATA}}/$dataPathEscape/" minio-pre-test.service
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" minio-pre-test.service
+sed -i -e "s/{{USER}}/$user/" minio-pre-test.service
+systemctl start minio-pre-test
 
 # Stop Minio-PRE-Test, not required for now
 sleep 3 # Sleep 3 seconds for minio wakeup
-net stop "MinIO-PRE-Test"
+systemctl stop minio-pre-test
 
 # Init cache instance
 echo -e "${GREEN}Initializing cache instances...${NC}"
 cd "$basePath/programs/redis"
-cp "$basePath/programs/winsw/winsw.exe" redis-pre.exe
-cp "$basePath/programs/winsw/winsw.exe" redis-pde.exe
-cp "$basePath/programs/winsw/winsw.exe" redis-pre-test.exe
-cp "$basePath/setup/redis-pre.xml" redis-pre.xml
-cp "$basePath/setup/redis-pde.xml" redis-pde.xml
-cp "$basePath/setup/redis-pre-test.xml" redis-pre-test.xml
 
 mkdir "$basePath/data/redis_pre"
 mkdir "$basePath/data/redis_pde"
 mkdir "$basePath/data/redis_pre_test"
-cp redis.windows.conf "$basePath/data/redis_pre/redis.windows.conf"
-cp redis.windows.conf "$basePath/data/redis_pde/redis.windows.conf"
-cp redis.windows.conf "$basePath/data/redis_pre_test/redis.windows.conf"
+cp redis.conf "$basePath/data/redis_pre/redis.conf"
+cp redis.conf "$basePath/data/redis_pde/redis.conf"
+cp redis.conf "$basePath/data/redis_pre_test/redis.conf"
 
-./redis-pre.exe install
-./redis-pde.exe install
-./redis-pre-test.exe install
+cp "$basePath/setup-pde/service/redis-pre.service" redis-pre.service
+sed -i -e "s/{{DATA}}/$dataPathEscape/" redis-pre.service
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" redis-pre.service
+sed -i -e "s/{{USER}}/$user/" redis-pre.service
+systemctl start redis-pre
+systemctl enable redis-pre
 
-echo -e "${GREEN}Starting cache instances...${NC}"
-net start "Redis-PRE"
-net start "Redis-PDE"
-net start "Redis-PRE-Test"
+cp "$basePath/setup-pde/service/redis-pde.service" redis-pde.service
+sed -i -e "s/{{DATA}}/$dataPathEscape/" redis-pde.service
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" redis-pde.service
+sed -i -e "s/{{USER}}/$user/" redis-pde.service
+systemctl start redis-pde
+systemctl enable redis-pde
+
+cp "$basePath/setup-pde/service/redis-pre-test.service" redis-pre-test.service
+sed -i -e "s/{{DATA}}/$dataPathEscape/" redis-pre-test.service
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" redis-pre-test.service
+sed -i -e "s/{{USER}}/$user/" redis-pre-test.service
+systemctl start redis-pre-test
 
 # Stop Redis-PRE-Test, not required for now
 sleep 3 # Sleep 3 seconds for redis wakeup
-net stop "Redis-PRE-Test"
+systemctl stop redis-pre-test
 
 # Init git instance
 echo -e "${GREEN}Creating Gitea database...${NC}"
@@ -170,28 +198,24 @@ mkdir log
 cd "$basePath/programs/gitea"
 cp "$basePath/setup/app.ini" app.ini
 
-hostname=$(hostname)
 pathRepository="$basePath/data/gitea/repositories"
 pathRepository=${pathRepository//\//\\/} # escape slash
 pathLfs="$basePath/data/gitea/lfs"
 pathLfs=${pathLfs//\//\\/} # escape slash
 pathLog="$basePath/data/gitea/log"
 pathLog=${pathLog//\//\\/} # escape slash
-pathExe="$basePath/programs/gitea/gitea.exe"
-pathExe=${pathExe//\//\\} # replace slash to backslash
 pathAppIni="$basePath/programs/gitea/app.ini"
-pathAppIni=${pathAppIni//\//\\} # replace slash to backslash
 
-sed -i "s/{{RUN_USER}}/$hostname/" app.ini
-sed -i "s/{{ROOT}}/$pathRepository/" app.ini
-sed -i "s/{{LFS_CONTENT_PATH}}/$pathLfs/" app.ini
-sed -i "s/{{ROOT_PATH}}/$pathLog/" app.ini
+sed -i -e "s/{{RUN_USER}}/$user/" app.ini
+sed -i -e "s/{{ROOT}}/$pathRepository/" app.ini
+sed -i -e "s/{{LFS_CONTENT_PATH}}/$pathLfs/" app.ini
+sed -i -e "s/{{ROOT_PATH}}/$pathLog/" app.ini
 
-echo -e "${GREEN}Initializing git instance...${NC}"
-sc create "Gitea-PDE" start=auto binPath=""$pathExe" web --config "$pathAppIni""
-
-echo -e "${GREEN}Starting git instance...${NC}"
-net start "Gitea-PDE"
+cp "$basePath/setup-pde/service/gitea-pde.service" gitea-pde.service
+sed -i -e "s/{{DATA}}/$dataPathEscape/" gitea-pde.service
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" gitea-pde.service
+systemctl start gitea-pde
+systemctl enable gitea-pde
 
 echo -e "${GREEN}Creating admin user...${NC}"
 curl -s -L http://localhost:3000 > /dev/null
