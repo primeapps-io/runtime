@@ -113,9 +113,9 @@ cd "$basePath/programs/minio"
 cp "$basePath/programs/winsw/winsw.exe" minio-pre.exe
 cp "$basePath/programs/winsw/winsw.exe" minio-pde.exe
 cp "$basePath/programs/winsw/winsw.exe" minio-pre-test.exe
-cp "$basePath/setup/xml/minio-pre.xml" minio-pre.xml
-cp "$basePath/setup/xml/minio-pde.xml" minio-pde.xml
-cp "$basePath/setup/xml/minio-pre-test.xml" minio-pre-test.xml
+cp "$basePath/setup-pde/xml/minio-pre.xml" minio-pre.xml
+cp "$basePath/setup-pde/xml/minio-pde.xml" minio-pde.xml
+cp "$basePath/setup-pde/xml/minio-pre-test.xml" minio-pre-test.xml
 
 ./minio-pre.exe install
 ./minio-pde.exe install
@@ -136,9 +136,9 @@ cd "$basePath/programs/redis"
 cp "$basePath/programs/winsw/winsw.exe" redis-pre.exe
 cp "$basePath/programs/winsw/winsw.exe" redis-pde.exe
 cp "$basePath/programs/winsw/winsw.exe" redis-pre-test.exe
-cp "$basePath/setup/xml/redis-pre.xml" redis-pre.xml
-cp "$basePath/setup/xml/redis-pde.xml" redis-pde.xml
-cp "$basePath/setup/xml/redis-pre-test.xml" redis-pre-test.xml
+cp "$basePath/setup-pde/xml/redis-pre.xml" redis-pre.xml
+cp "$basePath/setup-pde/xml/redis-pde.xml" redis-pde.xml
+cp "$basePath/setup-pde/xml/redis-pre-test.xml" redis-pre-test.xml
 
 mkdir "$basePath/data/redis_pre"
 mkdir "$basePath/data/redis_pde"
@@ -174,7 +174,7 @@ mkdir lfs
 mkdir log
 
 cd "$basePath/programs/gitea"
-cp "$basePath/setup/app.ini" app.ini
+cp "$basePath/setup-pde/app.ini" app.ini
 
 pathRepository="$basePath/data/gitea/repositories"
 pathRepository=${pathRepository//\//\\/} # escape slash

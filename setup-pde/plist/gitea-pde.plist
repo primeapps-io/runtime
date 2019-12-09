@@ -3,18 +3,18 @@
 <plist version="1.0">
     <dict>
         <key>Label</key>
-        <string>io.primeapps.redis</string>
-
+        <string>io.primeapps.gitea.pde</string>
+        
         <key>RunAtLoad</key>
         <true/>
-
+        
         <key>ProgramArguments</key>
         <array>
-            <string>{{PROGRAMS}}/redis/redis-server</string>
-            <string>{{DATA}}/redis_pre/redis.conf</string>
-            <string>--port</string>
-            <string>6384</string>
+            <string>{{PROGRAMS}}/gitea/gitea</string>
+            <string>web</string>
+            <string>--config</string>
+            <string>{{PROGRAMS}}/gitea/app.ini</string>
         </array>
-
+        
     </dict>
 </plist>

@@ -1,0 +1,14 @@
+[Unit]
+Description=Redis-PRE
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User={{USER}}
+ExecStart={{PROGRAMS}}/redis/redis-server {{DATA}}/redis_pre/redis.conf --port 6384
+
+[Install]
+WantedBy=multi-user.target

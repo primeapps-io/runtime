@@ -2,8 +2,8 @@
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-PORTAUTH=5020
-PORTAPP=5021
+PORTAUTH=5000
+PORTAPP=5001
 CLIENTID=primeapps_app
 
 for i in "$@"

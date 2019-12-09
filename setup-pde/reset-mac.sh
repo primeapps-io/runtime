@@ -6,19 +6,19 @@ NC='\033[0m' # No Color
 
 # Variables
 cd ..
-basePath=$(pwd -W)
+basePath=$(pwd [-LP])
 
 echo -e "${GREEN}Stoping services...${NC}"
-net stop Postgres-PRE
-net stop Postgres-PRE-Test
-net stop Postgres-PDE
-net stop MinIO-PRE
-net stop MinIO-PRE-Test
-net stop MinIO-PDE
-net stop Redis-PRE
-net stop Redis-PRE-Test
-net stop Redis-PDE
-net stop Gitea-PDE
+launchctl stop io.primeapps.postgres.pre
+launchctl stop io.primeapps.postgres.pde
+launchctl stop io.primeapps.postgres.pre-test
+launchctl stop io.primeapps.minio.pre
+launchctl stop io.primeapps.minio.pde
+launchctl stop io.primeapps.minio.pre-test
+launchctl stop io.primeapps.redis.pre
+launchctl stop io.primeapps.redis.pde
+launchctl stop io.primeapps.redis.pre-test
+launchctl stop io.primeapps.gitea.pde
 
 sleep 3 # Sleep 3 seconds for stop all services
 
@@ -49,15 +49,15 @@ tar -xzf redis_pre_test.tar.gz redis_pre_test
 tar -xzf gitea.tar.gz gitea
 
 echo -e "${GREEN}Starting services...${NC}"
-net start Postgres-PRE
-#net start Postgres-PRE-Test
-net start Postgres-PDE
-net start MinIO-PRE
-#net start MinIO-PRE-Test
-net start MinIO-PDE
-net start Redis-PRE
-#net start Redis-PRE-Test
-net start Redis-PDE
-net start Gitea-PDE
+launchctl start io.primeapps.postgres.pre
+launchctl start io.primeapps.postgres.pde
+#launchctl start io.primeapps.postgres.pre-test
+launchctl start io.primeapps.minio.pre
+launchctl start io.primeapps.minio.pde
+#launchctl start io.primeapps.minio.pre-test
+launchctl start io.primeapps.redis.pre
+launchctl start io.primeapps.redis.pde
+#launchctl start io.primeapps.redis.pre-test
+launchctl start io.primeapps.gitea.pde
 
 echo -e "${BLUE}Completed${NC}"

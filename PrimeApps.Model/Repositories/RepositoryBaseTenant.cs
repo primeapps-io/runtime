@@ -40,7 +40,7 @@ namespace PrimeApps.Model.Repositories
 
                 if (dbConnection.State != System.Data.ConnectionState.Open)
                 {
-                    if (TenantId.HasValue)
+                    if (CurrentUser.PreviewMode != "app" && TenantId.HasValue)
                     {
                         dbConnection.ConnectionString = Postgres.GetConnectionString(connectionString, TenantId.Value, CurrentUser.PreviewMode);
                     }

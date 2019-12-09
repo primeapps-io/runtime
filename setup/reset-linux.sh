@@ -6,12 +6,10 @@ NC='\033[0m' # No Color
 
 # Variables
 cd ..
-basePath=$(pwd -W)
+basePath=$(pwd [-LP])
 
 echo -e "${GREEN}Stoping services...${NC}"
-net stop Postgres-PrimeApps
-net stop MinIO-PrimeApps
-net stop Redis-PrimeApps
+#TODO: stop services here
 
 sleep 3 # Sleep 3 seconds for stop all services
 
@@ -28,8 +26,6 @@ tar -xzf minio_pre.tar.gz minio_pre
 tar -xzf redis_pre.tar.gz redis_pre
 
 echo -e "${GREEN}Starting services...${NC}"
-net start Postgres-PrimeApps
-net start MinIO-PrimeApps
-net start Redis-PrimeApps
+#TODO: start services here
 
 echo -e "${BLUE}Completed${NC}"
