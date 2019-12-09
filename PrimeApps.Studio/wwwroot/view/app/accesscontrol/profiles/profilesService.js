@@ -47,19 +47,23 @@ angular.module('primeapps')
 
                                 switch (permission.type) {
                                     case 'Document':/// Document
+                                    case 1:
                                         permission.EntityTypeName = $filter('translate')('Layout.Menu.Documents');
                                         permission.order = 999;
                                         break;
                                     case 'Report':
+                                    case 2:
                                         permission.EntityTypeName = $filter('translate')('Layout.Menu.Reports');
                                         permission.order = 1000;
                                         break;
-                                    case 'Feed':
+                                    case 'Newsfeed':
+                                    case 3:
                                         permission.EntityTypeName = $filter('translate')('Feed.Feed');
                                         permission.Order = 1001;
                                         break;
 
                                     case 'Module':/// Module
+                                    case 0:
                                         var module = $filter('filter')(modules, { id: permission.module_id }, true)[0];
 
                                         if (module && module.order > 0) {

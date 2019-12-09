@@ -58,7 +58,7 @@ namespace PrimeApps.Studio.Controllers
         /// </summary>
         /// <param name="NewProfile"></param>
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create(ProfileDTO NewProfile)
+        public async Task<IActionResult> Create([FromBody]ProfileDTO NewProfile)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.Create))
                 return StatusCode(403);

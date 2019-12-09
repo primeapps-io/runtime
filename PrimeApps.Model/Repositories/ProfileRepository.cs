@@ -49,7 +49,7 @@ namespace PrimeApps.Model.Repositories
                 Calendar = newProfileDTO.Calendar,
                 Newsfeed = newProfileDTO.Newsfeed,
                 NameEn = newProfileDTO.NameEn,
-                NameTr = newProfileDTO.NameTr,
+                NameTr = string.IsNullOrEmpty(newProfileDTO.NameTr) ? newProfileDTO.NameEn : newProfileDTO.NameTr,
                 Dashboard = newProfileDTO.Dashboard,
                 Home = newProfileDTO.Home,
                 CollectiveAnnualLeave = newProfileDTO.CollectiveAnnualLeave,
@@ -280,7 +280,7 @@ namespace PrimeApps.Model.Repositories
                     UserIDs = x.Users.Select(z => z.Id).ToList(),
                     Permissions = x.Permissions.Select(y => new ProfilePermissionLightDTO()
                     {
-                        Type = (int)y.Type,
+                        Type = (int) y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,
@@ -331,7 +331,7 @@ namespace PrimeApps.Model.Repositories
                     {
                         ID = x.Id,
                         ModuleId = y.ModuleId,
-                        Type = (int)y.Type,
+                        Type = (int) y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,
@@ -435,9 +435,9 @@ namespace PrimeApps.Model.Repositories
         public IQueryable<Profile> Find()
         {
             var profiles = DbContext.Profiles
-            .Where(x => !x.Deleted)
-            .Include(x=>x.Permissions)
-            .OrderByDescending(x => x.Id);
+                .Where(x => !x.Deleted)
+                .Include(x => x.Permissions)
+                .OrderByDescending(x => x.Id);
 
             return profiles;
         }
@@ -475,7 +475,7 @@ namespace PrimeApps.Model.Repositories
                     {
                         ID = x.Id,
                         ModuleId = y.ModuleId,
-                        Type = (int)y.Type,
+                        Type = (int) y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,
