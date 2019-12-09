@@ -359,7 +359,10 @@ namespace PrimeApps.Model.Helpers
                 var columns = PostgresHelper.Read(connectionString, dbName, GetUserFKColumnsSql(table.ToString()), "array");
 
                 if (!columns.HasValues) continue;
-
+                
+                if(((JArray)columns).Count == 1 && ((JArray)columns).First["column_name"].ToString() == "user_id")
+                    continue;
+                
                 sqls.Add(UpdateUserFkRecordSql(table.ToString(), columns));
                 /*dropCommand = PostgresHelper.Read(connectionString, dbName, ColumnIsExistsSql(table.ToString(), "id"), "hasRows");
                 var idColumnIsExists = dropCommand;
@@ -412,6 +415,10 @@ namespace PrimeApps.Model.Helpers
             foreach (var column in columns)
             {
                 var columnName = column["column_name"];
+                
+                if(columnName.ToString() == "user_id")
+                    continue;
+
                 sql.Append(columnName + " = 1,");
             }
 

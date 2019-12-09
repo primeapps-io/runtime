@@ -180,7 +180,7 @@ namespace PrimeApps.App.Controllers
                 template.CopyTo(memoryStream);
                 doc = new Aspose.Words.Document(memoryStream);
             }
-            
+
             // Add related module records.
             await AddRelatedModuleRecords(relatedModuleRecords, notes, moduleEntity, lookupModules, doc, record, module, id, currentCulture, timezoneOffset);
 
@@ -235,7 +235,7 @@ namespace PrimeApps.App.Controllers
 
                 outputStream.Position = 0;
                 var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
-				var result = new { filename = fileName, fileurl = _storage.GetLink(publicPath, publicFileName, storageUrl) };
+                var result = new { filename = fileName, fileurl = _storage.GetLink(publicPath, publicFileName, storageUrl) };
 
                 return Ok(result);
             }
@@ -465,12 +465,12 @@ namespace PrimeApps.App.Controllers
                     if (moduleEntity.Name == relation.RelatedModule)
                     {
                         relatedModuleEntity = moduleEntity;
-                        relatedLookupModules = new List<Module> {moduleEntity};
+                        relatedLookupModules = new List<Module> { moduleEntity };
                     }
                     else
                     {
                         relatedModuleEntity = await _moduleRepository.GetByNameBasic(relation.RelatedModule);
-                        relatedLookupModules = new List<Module> {relatedModuleEntity};
+                        relatedLookupModules = new List<Module> { relatedModuleEntity };
                     }
 
                     var recordsFormatted = new JArray();
@@ -485,7 +485,7 @@ namespace PrimeApps.App.Controllers
                         if (secondLevel != null)
                         {
                             await AddSecondLevelRecords(recordFormatted, secondLevel.Module, secondLevel.SubRelation,
-                                (int) recordItem[relation.RelatedModule + "_id"], secondLevel.SubModule, currentCulture,
+                                (int)recordItem[relation.RelatedModule + "_id"], secondLevel.SubModule, currentCulture,
                                 timezoneOffset);
                         }
 
@@ -2151,15 +2151,23 @@ namespace PrimeApps.App.Controllers
 
         private void SetAsposeLicence(bool isWord = false)
         {
-            var licenceData = "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxMaWNlbnNlPg0KICAgIDxEYXRhPg0KICAgICAgICA8TGljZW5zZWRUbz5pckRldmVsb3BlcnMuY29tPC9MaWNlbnNlZFRvPg0KICAgICAgICA8RW1haWxUbz5pbmZvQGlyRGV2ZWxvcGVycy5jb208L0VtYWlsVG8+DQogICAgICAgIDxMaWNlbnNlVHlwZT5EZXZlbG9wZXIgT0VNPC9MaWNlbnNlVHlwZT4NCiAgICAgICAgPExpY2Vuc2VOb3RlPkxpbWl0ZWQgdG8gMTAwMCBkZXZlbG9wZXIsIHVubGltaXRlZCBwaHlzaWNhbCBsb2NhdGlvbnM8L0xpY2Vuc2VOb3RlPg0KICAgICAgICA8T3JkZXJJRD43ODQzMzY0Nzc4NTwvT3JkZXJJRD4NCiAgICAgICAgPFVzZXJJRD4xMTk0NDkyNDM3OTwvVXNlcklEPg0KICAgICAgICA8T0VNPlRoaXMgaXMgYSByZWRpc3RyaWJ1dGFibGUgbGljZW5zZTwvT0VNPg0KICAgICAgICA8UHJvZHVjdHM+DQogICAgICAgICAgICA8UHJvZHVjdD5Bc3Bvc2UuVG90YWwgUHJvZHVjdCBGYW1pbHk8L1Byb2R1Y3Q+DQogICAgICAgIDwvUHJvZHVjdHM+DQogICAgICAgIDxFZGl0aW9uVHlwZT5FbnRlcnByaXNlPC9FZGl0aW9uVHlwZT4NCiAgICAgICAgPFNlcmlhbE51bWJlcj57RjJCOTcwNDUtMUIyOS00QjNGLUJENTMtNjAxRUZGQTE1QUE5fTwvU2VyaWFsTnVtYmVyPg0KICAgICAgICA8U3Vic2NyaXB0aW9uRXhwaXJ5PjIwOTkxMjMxPC9TdWJzY3JpcHRpb25FeHBpcnk+DQogICAgICAgIDxMaWNlbnNlVmVyc2lvbj4zLjA8L0xpY2Vuc2VWZXJzaW9uPg0KICAgIDwvRGF0YT4NCiAgICA8U2lnbmF0dXJlPlFYTndiM05sTGxSdmRHRnNMb1B5YjJSMVkzUWdSbUZ0YVd4NTwvU2lnbmF0dXJlPg0KPC9MaWNlbnNlPg==";
-            Stream stream = new MemoryStream(Convert.FromBase64String(licenceData));
-
-            stream.Seek(0, SeekOrigin.Begin);
-
+            var licenceData = _configuration.GetValue("AppSettings:AsposeLicence", string.Empty);
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(licenceData);
+            writer.Flush();
+            stream.Position = 0;
+              
             if (isWord)
-                new Aspose.Words.License().SetLicense(stream);
+            {
+                Aspose.Words.License licence = new Aspose.Words.License();
+                licence.SetLicense(stream);
+            }
             else
-                new Aspose.Cells.License().SetLicense(stream);
+            {
+                Aspose.Cells.License licence = new Aspose.Cells.License();
+                licence.SetLicense(stream);
+            }
         }
     }
 }
