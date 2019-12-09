@@ -106,7 +106,7 @@ namespace PrimeApps.Model.Helpers
                 var sqls = new string[] { };
 
                 if (!string.IsNullOrEmpty(scriptsText))
-                    sqls = scriptsText.Split(Environment.NewLine.ToCharArray());
+                    sqls = scriptsText.Split(Environment.NewLine);
 
                 File.AppendAllText(logPath,
                     "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." + Environment.NewLine);
@@ -220,8 +220,9 @@ namespace PrimeApps.Model.Helpers
             var identityUrl =  !string.IsNullOrEmpty(localAuth)
                 ? localAuth
                 : configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
-            
+
             var logFileName = "";
+         
             foreach (var obj in versions.OfType<object>().Select((version, index) => new { version, index }))
             {
                 var version = obj.version;
@@ -258,13 +259,13 @@ namespace PrimeApps.Model.Helpers
                             "\u001b[90m" + DateTime.Now + "\u001b[39m" +
                             " : \u001b[93m Unhandle exception while creating platform app... \u001b[39m" +
                             Environment.NewLine);
-                        
+                    
                         ErrorHandler.LogMessage($"App: app{app["id"]}, Version: {version}, Create platform application error.",SentryLevel.Error);
                     }
-                        
+                    
 
                     var token = studioToken;
-                    
+                
                     if (!string.IsNullOrEmpty(localAuth))
                     {
                         var authIntegrationEmail = "app@primeapps.io";
@@ -290,7 +291,7 @@ namespace PrimeApps.Model.Helpers
                                     "\u001b[90m" + DateTime.Now + "\u001b[39m" +
                                     " : \u001b[93m Unhandle exception while adding app url to client... \u001b[39m" +
                                     Environment.NewLine);
-                                
+                            
                                 ErrorHandler.LogMessage($"App: app{app["id"]}, Version: {version}, Add client url error. Message: {clientResult}",SentryLevel.Error);
                             }
                         }
@@ -300,7 +301,7 @@ namespace PrimeApps.Model.Helpers
                                 "\u001b[90m" + DateTime.Now + "\u001b[39m" +
                                 " : \u001b[93m Unhandle exception while creating app client... Error: " +
                                 addClientResult + " \u001b[39m" + Environment.NewLine);
-                            
+                        
                             ErrorHandler.LogMessage($"App: app{app["id"]}, Version: {version}, Create client error. Message: {addClientResult}",SentryLevel.Error);
                         }
                     }
@@ -343,7 +344,7 @@ namespace PrimeApps.Model.Helpers
 
                 try
                 {
-                    var path = Path.Combine(rootPath, "packages", dbName, version.ToString());
+                    var path = Path.Combine(rootPath, "packages", databaseName, version.ToString());
 
                     if (Directory.Exists(path))
                         Directory.Delete(path, true);
@@ -480,7 +481,7 @@ namespace PrimeApps.Model.Helpers
                         var sqls = new string[] { };
 
                         if (!string.IsNullOrEmpty(scriptsText))
-                            sqls = scriptsText.Split(Environment.NewLine.ToCharArray());
+                            sqls = scriptsText.Split(Environment.NewLine);
 
                         File.AppendAllText(logPath,
                             "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." +
