@@ -529,7 +529,7 @@ angular.module('primeapps')
 								lookupRecord.primary_value = lookupRecord['full_name'];
 							}
 							else if (field.lookup_type === 'profiles') {
-								lookupRecord.primary_value = lookupRecord['name'];
+								lookupRecord.primary_value = lookupRecord['name_' + $rootScope.language];
 							}
 							else if (field.lookup_type === 'roles') {
 								lookupRecord.primary_value = lookupRecord['label_' + $rootScope.user.tenant_language];
@@ -1069,9 +1069,9 @@ angular.module('primeapps')
                             var customFilter = customFilters[j];
                             customFilter.no = findRequest.filters.length + 1;
 
-                            findRequest.filters.push(customFilter);
-                        }
-                    }
+							findRequest.filters.push(customFilter);
+						}
+					}
 
 					this.findRecords(lookupType, findRequest)
 						.then(function (response) {
@@ -3505,7 +3505,7 @@ angular.module('primeapps')
 															if (!scope.parentModule && !scope.viewid)
 																$cache.put(key, cacheItem);
 
-                                                            components.run('EmptyList', 'Script', scope);
+															components.run('EmptyList', 'Script', scope);
 
 															var findRecords = function (findRequest, cacheItem) {
 																scope.listFindRequest = findRequest;
