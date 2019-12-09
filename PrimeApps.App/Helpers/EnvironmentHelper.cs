@@ -46,9 +46,9 @@ namespace PrimeApps.App.Helpers
 
                 if (value != null)
                 {
-                    var valueInt = int.Parse(value);
+                    var environmentValues = value.Split(',').Select(Int32.Parse).ToList();
 
-                    if (environmentType <= valueInt)
+                    if (environmentValues.Any(q => q >= environmentType))
                         newData.Add(item);
                 }
             }
@@ -72,9 +72,9 @@ namespace PrimeApps.App.Helpers
 
             if (value != null)
             {
-                var valueInt = int.Parse(value);
+                var environmentValues = value.Split(',').Select(Int32.Parse).ToList();
 
-                if (environmentType <= valueInt)
+                if (environmentValues.Any(q => q >= environmentType))
                     return data;
             }
 
