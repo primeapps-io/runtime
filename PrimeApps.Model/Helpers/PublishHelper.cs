@@ -283,9 +283,7 @@ namespace PrimeApps.Model.Helpers
 
                         if (string.IsNullOrEmpty(addClientResult))
                         {
-                            var clientResult = await AddClientUrl(
-                                identityUrl, token,
-                                appUrl, useSsl);
+                            var clientResult = await AddClientUrl(identityUrl, token, appUrl, useSsl);
                             if (!string.IsNullOrEmpty(clientResult))
                             {
                                 File.AppendAllText(logPath,
@@ -469,6 +467,10 @@ namespace PrimeApps.Model.Helpers
                                 break;
                             }*/
                             templateCopied = true;
+                        }
+                        else
+                        {
+                            PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, dbName, true);
                         }
                     }
 
