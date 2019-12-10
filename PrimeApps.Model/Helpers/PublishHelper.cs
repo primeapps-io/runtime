@@ -10,13 +10,18 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Storage;
 using Sentry.Protocol;
+using HistoryRepository = PrimeApps.Model.Context.HistoryRepository;
 
 namespace PrimeApps.Model.Helpers
 {
@@ -436,6 +441,8 @@ namespace PrimeApps.Model.Helpers
                                 Environment.NewLine);
                             break;
                         }
+                        
+                        EfMigrate(configuration, databaseName);
                     }
                     else
                     {
@@ -917,6 +924,32 @@ namespace PrimeApps.Model.Helpers
             {
                 ErrorHandler.LogError(e, "PublishHelper UpdatePlatformApp method error.");
                 return false;
+            }
+        }
+
+        private static void EfMigrate(IConfiguration configuration, string databaseName)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<TenantDBContext>();
+            var connString = Postgres.GetConnectionString(configuration.GetConnectionString("TenantDBConnection"), databaseName);
+            optionsBuilder.UseNpgsql(connString, x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, HistoryRepository>();
+            using (var tenantDatabaseContext = new TenantDBContext(optionsBuilder.Options, configuration))
+            {
+                var migrator = tenantDatabaseContext.Database.GetService<IMigrator>();
+                var pendingMigrations = tenantDatabaseContext.Database.GetPendingMigrations().ToList();
+                if (pendingMigrations.Any())
+                {
+                    try
+                    {
+                        foreach (var targetMigration in pendingMigrations)
+                        {
+                            migrator.Migrate(targetMigration);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorHandler.LogError(ex,"PublishHelper EfMigrate DbName: " + databaseName);
+                    }
+                }
             }
         }
     }
