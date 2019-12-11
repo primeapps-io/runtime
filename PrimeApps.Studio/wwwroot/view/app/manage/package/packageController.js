@@ -11,12 +11,7 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'packages';
             $rootScope.breadcrumblist[2].title = 'Packages';
-  
-            $scope.$on('package-created', function (event, args) {
-                $scope.reload();
-            });
- 
-
+   
             $scope.app = $rootScope.currentApp;
 
             PackageService.getActiveProcess()
@@ -253,8 +248,13 @@ angular.module('primeapps')
                 scrollable: false,
                 persistSelection: true,
                 sortable: true,
-                filterable: {
-                    extra: false
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter && e.field !== 'Status') {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
                 },
                 rowTemplate: function (e) {
                     var trTemp = '<tr>';

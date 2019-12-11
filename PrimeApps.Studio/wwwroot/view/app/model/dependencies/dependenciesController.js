@@ -481,6 +481,13 @@ angular.module('primeapps')
                 filterable: {
                     extra: false
                 },
+                filter: function (e) {
+                    if (e.filter && e.field !== 'DependencyType') {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
+                },
                 rowTemplate: function (e) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left"><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';

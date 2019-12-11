@@ -37,25 +37,7 @@ angular.module('primeapps')
                     $scope.moduleFilter = $filter('filter')(result.data, { deleted: false });
                 });
             }
-
-            $scope.requestModel = {
-                limit: "10",
-                offset: 0
-            };
-
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-            $scope.generator(10);
-
-            HelpService.count().then(function (response) {
-                $scope.pageTotal = response.data;
-            });
-
-
+                
             if ($scope.id) {
                 location = window.location.hash.split('/')[3].split('?')[0];
             } else {
@@ -847,8 +829,13 @@ angular.module('primeapps')
                 scrollable: false,
                 persistSelection: true,
                 sortable: true,
-                filterable: {
-                    extra: false
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter && e.field !== 'ModalType') {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
                 },
                 rowTemplate: function (help) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
@@ -877,8 +864,7 @@ angular.module('primeapps')
                     buttonCount: 5,
                     info: true,
                 },
-                columns: [
-
+                columns: [ 
                     {
                         field: 'Name',
                         title: $filter('translate')('Setup.HelpGuide.HelpScreenName'),
@@ -892,10 +878,9 @@ angular.module('primeapps')
                         values: [
                             { text: 'Introduction', value: 'Modal' },
                             { text: 'Help', value: 'SideModal' }]
-                    },
-
+                    }, 
                     {
-                        field: 'Module.Name',
+                        field: 'Module.LabelEnPlural',
                         title: $filter('translate')('Setup.HelpGuide.HelpScreenRelation'),
                         headerAttributes: {
                             'class': 'text-left'

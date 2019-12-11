@@ -114,11 +114,7 @@ angular.module('primeapps')
                                     req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
                                 }
                             }
-                        },
-                        sort: [{
-                            field: "id",
-                            dir: "desc"
-                        }],
+                        }, 
                         schema: {
                             data: "items",
                             total: "count",
@@ -139,8 +135,8 @@ angular.module('primeapps')
                     sortable: true,
                     filterable: true,
                     filter: function (e) {
-                        var temps = [];
-                        if (e.filter && e.field === 'LabelEnPlural') {
+                        //var temps = [];
+                        if (e.filter && e.field !== 'SystemType' && e.field !== 'Sharing') {
                             for (var i = 0; i < e.filter.filters.length; i++) {
                                 e.filter.filters[i].ignoreCase = true;
                                 //var temp = angular.copy(e.filter.filters[i]);
@@ -182,10 +178,9 @@ angular.module('primeapps')
                     },
                     columns: [
                         {
-                            field: 'MenuIcon',
+                            field: '',
                             title: 'Icon',
-                            width: "90px",
-                            filterable: false
+                            width: "90px", 
                         },
                         {
                             field: 'LabelEnPlural',

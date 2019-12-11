@@ -84,7 +84,8 @@ namespace PrimeApps.Model.Repositories
         {
             var packages = DbContext.Packages
                 .Include(x => x.AppDraft)
-                .Where(x => !x.Deleted & x.AppId == appId);
+                .Where(x => !x.Deleted & x.AppId == appId)
+                .OrderByDescending(x => x.Id);
 
             return packages;
         }

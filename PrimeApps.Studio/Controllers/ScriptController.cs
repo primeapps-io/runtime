@@ -73,7 +73,7 @@ namespace PrimeApps.Studio.Controllers
 
             var scripts = _scriptRepository.Find();
 
-            var queryResults = (IQueryable<Component>)queryOptions.ApplyTo(scripts);
+            var queryResults = (IQueryable<Component>)queryOptions.ApplyTo(scripts, new ODataQuerySettings() { EnsureStableOrdering = false });
             return Ok(new PageResult<Component>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 

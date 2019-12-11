@@ -21,6 +21,7 @@ using System.Linq;
 using Microsoft.AspNet.OData;
 using Microsoft.AspNet.OData.Extensions;
 using PrimeApps.Model.Entities.Tenant;
+using System.Collections.Generic;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -98,7 +99,7 @@ namespace PrimeApps.Studio.Controllers
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
 
-			var templates = await _templateRepostory.GetAllList(LanguageType.NotSet, type, excelType, moduleName);
+            var templates = await _templateRepostory.GetAllList(LanguageType.NotSet, type, excelType, moduleName);
 
             return Ok(templates);
         }
@@ -207,7 +208,8 @@ namespace PrimeApps.Studio.Controllers
                 return StatusCode(403);
 
             var temps = _templateRepostory.Find(templateType);
-            var queryResults = (IQueryable<Template>)queryOptions.ApplyTo(temps);
+
+            var queryResults = (IQueryable<Template>)queryOptions.ApplyTo(temps, new ODataQuerySettings() { EnsureStableOrdering = false });
             return Ok(new PageResult<Template>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
@@ -280,7 +282,7 @@ namespace PrimeApps.Studio.Controllers
                 return StatusCode(403);
 
             var views = _appDraftTemplateRepository.Find();
-            var queryResults = (IQueryable<AppDraftTemplate>)queryOptions.ApplyTo(views);
+            var queryResults = (IQueryable<AppDraftTemplate>)queryOptions.ApplyTo(views, new ODataQuerySettings() { EnsureStableOrdering = false });
             return Ok(new PageResult<AppDraftTemplate>(queryResults, Request.ODataFeature().NextLink,
                 Request.ODataFeature().TotalCount));
         }

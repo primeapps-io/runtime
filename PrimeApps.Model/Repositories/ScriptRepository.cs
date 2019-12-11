@@ -47,7 +47,8 @@ namespace PrimeApps.Model.Repositories
         public IQueryable<Component> Find()
         {
             var components = DbContext.Components
-                .Where(x => !x.Deleted && x.Type == ComponentType.Script && x.Place != ComponentPlace.GlobalConfig);
+                .Where(x => !x.Deleted && x.Type == ComponentType.Script && x.Place != ComponentPlace.GlobalConfig)
+                .OrderByDescending(x => x.Id);
 
             return components;
         }

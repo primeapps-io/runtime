@@ -64,7 +64,7 @@ namespace PrimeApps.Studio.Controllers
 
             var deployments = _deploymentFunctionRepository.Find(functionId);
 
-            var queryResults = (IQueryable<DeploymentFunction>)queryOptions.ApplyTo(deployments);
+            var queryResults = (IQueryable<DeploymentFunction>)queryOptions.ApplyTo(deployments, new ODataQuerySettings() { EnsureStableOrdering = false });
             return Ok(new PageResult<DeploymentFunction>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
 
         }

@@ -128,7 +128,7 @@ namespace PrimeApps.Model.Repositories
                 actionButtons = actionButtons.Where(x => x.ModuleId == id);
 
 
-            return await actionButtons.ToListAsync();
+            return await actionButtons.OrderByDescending(x => x.Id).ToListAsync();
         }
     }
 }

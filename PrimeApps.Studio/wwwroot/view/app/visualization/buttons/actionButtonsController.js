@@ -26,7 +26,7 @@ angular.module('primeapps')
                     }
                 }
             };
-             
+
             $scope.moduleChanged = function (isNew, actionButton) {
                 if ($scope.currentActionButton.module) {
                     $scope.module = $scope.currentActionButton.module;
@@ -311,7 +311,7 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.delete = function (actionButton, event) { 
+            $scope.delete = function (actionButton, event) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -320,9 +320,9 @@ angular.module('primeapps')
                         buttons: ['Cancel', 'Yes'],
                         dangerMode: true
                     }).then(function (value) {
-                        if (value) { 
+                        if (value) {
                             ModuleService.deleteActionButton(actionButton.id)
-                                .then(function () { 
+                                .then(function () {
                                     toastr.success($filter('translate')('Setup.Modules.ActionButtonDeleteSuccess'));
                                     $scope.grid.dataSource.read();
                                 })
@@ -587,14 +587,14 @@ angular.module('primeapps')
                             fields: {
                                 Module: { type: "string" },
                                 Name: { type: "string" },
-                                Type: { type: "string" },
+                                Type: { type: "enums" },
                                 Trigger: { type: "enums" }
                             }
                         },
                         parse: function (data) {
                             for (var i = 0; i < data.items.length; i++) {
                                 data.items[i].trigger_clone = angular.copy(data.items[i].trigger);
-                                delete data.items[i].trigger; 
+                                delete data.items[i].trigger;
                             }
 
                             return data;
@@ -605,23 +605,28 @@ angular.module('primeapps')
                 scrollable: false,
                 persistSelection: true,
                 sortable: true,
-                filterable: {
-                    extra: false
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter && e.field !== 'Type' && e.field !== 'Trigger') {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
                 },
                 rowTemplate: function (e) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left"><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
-                    trTemp += '<td class="text-left"><span>' + e['name_'+$scope.language] + '</span></td>';
-                    trTemp += '<td class="text-capitalize"> <span>' + e.type + '</span></td > ';
+                    trTemp += '<td class="text-left"><span>' + e['name_' + $scope.language] + '</span></td>';
+                    trTemp += e.type === 'Scripting' ? '<td class="text-capitalize"> <span>Script</span></td > ' : e.type === 'ModalFrame' ? '<td class="text-capitalize"> <span>Modal</span></td > ' : '<td class="text-capitalize"> <span>' + e.type + '</span></td > ';
                     trTemp += '<td class="text-capitalize"> <span>' + e.trigger_clone + '</span></td > ';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
                 altRowTemplate: function (e) {
-                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left"><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
                     trTemp += '<td class="text-left"><span>' + e['name_' + $scope.language] + '</span></td>';
-                    trTemp += '<td class="text-capitalize"> <span>' + e.type + '</span></td > ';
+                    trTemp += e.type === 'Scripting' ? '<td class="text-capitalize"> <span>Script</span></td > ' : e.type === 'ModalFrame' ? '<td class="text-capitalize"> <span>Modal</span></td > ' : '<td class="text-capitalize"> <span>' + e.type + '</span></td > ';
                     trTemp += '<td class="text-capitalize"> <span>' + e.trigger_clone + '</span></td > ';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;

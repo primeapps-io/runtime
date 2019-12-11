@@ -71,7 +71,7 @@ namespace PrimeApps.Studio.Controllers
 
             var components = _componentRepository.Find();
 
-            var queryResults = (IQueryable<Component>)queryOptions.ApplyTo(components);
+            var queryResults = (IQueryable<Component>)queryOptions.ApplyTo(components, new ODataQuerySettings() { EnsureStableOrdering = false });
             return Ok(new PageResult<Component>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 

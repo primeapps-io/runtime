@@ -180,7 +180,7 @@ namespace PrimeApps.Studio.Controllers
             if (teams == null)
                 return NotFound();
 
-            var queryResults = (IQueryable<Team>)queryOptions.ApplyTo(teams);
+            var queryResults = (IQueryable<Team>)queryOptions.ApplyTo(teams, new ODataQuerySettings() { EnsureStableOrdering = false });
 
             return Ok(new PageResult<Team>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }

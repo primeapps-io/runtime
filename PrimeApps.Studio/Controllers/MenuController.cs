@@ -484,7 +484,7 @@ namespace PrimeApps.Studio.Controllers
                 return StatusCode(403);
 
             var views = _menuRepository.Find();
-            var queryResults = (IQueryable<Menu>)queryOptions.ApplyTo(views);
+            var queryResults = (IQueryable<Menu>)queryOptions.ApplyTo(views, new ODataQuerySettings() { EnsureStableOrdering = false });
             return Ok(new PageResult<Menu>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 

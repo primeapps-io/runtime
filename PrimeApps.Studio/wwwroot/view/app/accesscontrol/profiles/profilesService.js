@@ -25,8 +25,8 @@ angular.module('primeapps')
 
                     angular.forEach(profiles, function (profile) {
                         if (profile.is_persistent && profile.has_admin_rights) {
-                            profile.name = $filter('translate')('Setup.Profiles.Administrator');
-                            profile.description = $filter('translate')('Setup.Profiles.AdministratorDescription');
+                            profile.name_en = $filter('translate')('Setup.Profiles.Administrator');
+                            profile.description_en = $filter('translate')('Setup.Profiles.AdministratorDescription');
                         }
 
                         //if (profile.is_persistent && !profile.has_admin_rights) {

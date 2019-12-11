@@ -64,14 +64,14 @@ namespace PrimeApps.Studio.Controllers
         {
             var dependencies = await _dependencyRepository.Find(id);
             var serializerSettings = new JsonSerializerSettings
-            { 
+            {
                 PreserveReferencesHandling = PreserveReferencesHandling.None,
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             };
 
             var json = JsonConvert.SerializeObject(dependencies, serializerSettings);
             var newData = JsonConvert.DeserializeObject<ICollection<Dependency>>(json);
-            var queryResults = (IQueryable<Dependency>)queryOptions.ApplyTo(newData.AsQueryable());
+            var queryResults = (IQueryable<Dependency>)queryOptions.ApplyTo(newData.AsQueryable(), new ODataQuerySettings() { EnsureStableOrdering = false });
 
             return Ok(new PageResult<Dependency>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }

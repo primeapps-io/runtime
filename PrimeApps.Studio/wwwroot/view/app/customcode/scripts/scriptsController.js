@@ -13,7 +13,7 @@ angular.module('primeapps')
             $scope.nameValid = null;
             $scope.componentPlaces = componentPlaces;
             $scope.componentPlaceEnums = componentPlaceEnums;
-            $scope.modules = $rootScope.appModules; 
+            $scope.modules = $rootScope.appModules;
             $scope.environments = ScriptsService.getEnvironments();
 
             $scope.environmentChange = function (env, index, otherValue) {
@@ -28,7 +28,7 @@ angular.module('primeapps')
                     }
                 }
             };
-             
+
             $scope.save = function (scriptForm) {
                 $scope.saving = true;
 
@@ -267,10 +267,10 @@ angular.module('primeapps')
                             id: "id",
                         },
                         parse: function (data) {
-                            for (var i = 0; i < data.items.length; i++) { 
+                            for (var i = 0; i < data.items.length; i++) {
                                 var module = $filter('filter')($scope.modules, { id: data.items[i].module_id }, true);
                                 if (module && module.length > 0)
-                                    data.items[i].module = angular.copy(module[0]); 
+                                    data.items[i].module = angular.copy(module[0]);
                             }
 
                             return data;
@@ -281,8 +281,13 @@ angular.module('primeapps')
                 scrollable: false,
                 persistSelection: true,
                 sortable: true,
-                filterable: {
-                    extra: false
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter) {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
                 },
                 rowTemplate: function (e) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
@@ -325,7 +330,7 @@ angular.module('primeapps')
                     {
                         field: 'Module.Label' + $scope.language + 'Plural',
                         title: $filter('translate')('Setup.Modules.Name'),
-                          headerAttributes: {
+                        headerAttributes: {
                             'class': 'text-left'
                         },
                     },

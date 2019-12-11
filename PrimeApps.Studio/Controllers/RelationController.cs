@@ -63,7 +63,7 @@ namespace PrimeApps.Studio.Controllers
         public IActionResult Find(int id, ODataQueryOptions<Relation> queryOptions)
         {
             var relations = _relationRepository.Find(id);
-            var queryResults = (IQueryable<Relation>)queryOptions.ApplyTo(relations);
+            var queryResults = (IQueryable<Relation>)queryOptions.ApplyTo(relations, new ODataQuerySettings() { EnsureStableOrdering = false });
             return Ok(new PageResult<Relation>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 

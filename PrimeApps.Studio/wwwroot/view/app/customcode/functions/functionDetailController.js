@@ -386,11 +386,16 @@ angular.module('primeapps')
                     scrollable: false,
                     persistSelection: true,
                     sortable: true,
-                    filterable: {
-                        extra: false
+                    filterable: true,
+                    filter: function (e) {
+                        if (e.filter && e.field !== 'Status') {
+                            for (var i = 0; i < e.filter.filters.length; i++) {
+                                e.filter.filters[i].ignoreCase = true;
+                            }
+                        }
                     },
                     rowTemplate: function (e) {
-                        var trTemp = '<tr">';
+                        var trTemp = '<tr>';
                         trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
                         trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
                         trTemp += '<td> <span>' + e.version + '</span></td > ';
@@ -418,7 +423,7 @@ angular.module('primeapps')
                             title: 'Start Time',
                             filterable: {
                                 ui: function (element) {
-                                    element.kendoDatePicker({
+                                    element.kendoDateTimePicker({
                                         format: '{0: dd-MM-yyyy}'
                                     })
                                 }
@@ -429,7 +434,7 @@ angular.module('primeapps')
                             title: 'End Time',
                             filterable: {
                                 ui: function (element) {
-                                    element.kendoDatePicker({
+                                    element.kendoDateTimePicker({
                                         format: '{0: dd-MM-yyyy}'
                                     })
                                 }

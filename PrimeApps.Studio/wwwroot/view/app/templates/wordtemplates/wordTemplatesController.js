@@ -14,23 +14,9 @@ angular.module('primeapps')
                 });*/
 
             $rootScope.breadcrumblist[2].title = 'Document';
-
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-
-            $scope.generator(10);
-
+             
             $scope.loading = true;
-
-            $scope.requestModel = {
-                limit: '10',
-                offset: 0
-            };
-
+             
             $scope.showFormModal = function (template) {
                 $scope.requiredColor = "";
                 $scope.template = [];
@@ -573,14 +559,19 @@ angular.module('primeapps')
                 scrollable: false,
                 persistSelection: true,
                 sortable: true,
-                filterable: {
-                    extra: false
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter) {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
                 },
                 rowTemplate: function (wordTemp) {
                     var getUrl = '/attach/download_template?fileId=' + wordTemp.id + "&tempType=" + wordTemp.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left">' + wordTemp.name + '</td>';
-                    trTemp += '<td class="text-left">' + wordTemp.module + '</td>';
+                    trTemp += '<td class="text-left text-capitalize">' + wordTemp.module + '</td>';
                     trTemp += wordTemp.active ? '<td><span>' + $filter('translate')('Setup.Modules.Active') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.Passive') + '</span></td>';
                     trTemp += '<td>' + '<a href="' + getUrl + '" target="_blank" ng-click="closeModal();">' + $filter('translate')('Common.Download') + '</a>' + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
@@ -590,7 +581,7 @@ angular.module('primeapps')
                     var getUrl = '/attach/download_template?fileId=' + wordTemp.id + "&tempType=" + wordTemp.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
                     var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left">' + wordTemp.name + '</td>';
-                    trTemp += '<td class="text-left">' + wordTemp.module + '</td>';
+                    trTemp += '<td class="text-left text-capitalize">' + wordTemp.module + '</td>';
                     trTemp += wordTemp.active ? '<td><span>' + $filter('translate')('Setup.Modules.Active') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.Passive') + '</span></td>';
                     trTemp += '<td>' + '<a href="' + getUrl + '" target="_blank" ng-click="closeModal();">' + $filter('translate')('Common.Download') + '</a>' + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
@@ -630,6 +621,8 @@ angular.module('primeapps')
                     {
                         field: 'Content',
                         title: $filter('translate')('Setup.Templates.TemplateFile'),
+                        filterable: false,
+                        sortable: false
                     },
                     {
                         field: '',

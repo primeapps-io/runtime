@@ -5,12 +5,12 @@ angular.module('primeapps')
     .controller('EmailTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'EmailTemplatesService', '$http', 'config', '$modal', '$localStorage', '$cookies', 'ModuleService', 'ProfilesService',
         function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, EmailTemplatesService, $http, config, $modal, $localStorage, $cookies, ModuleService, ProfilesService) {
 
-            $scope.templateModules = $filter('filter')($rootScope.appModules, {deleted: false});
+            $scope.templateModules = $filter('filter')($rootScope.appModules, { deleted: false });
             //$scope.$parent.menuTopTitle = "Templates";
             //$scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesEmail';
             $rootScope.breadcrumblist[2].title = 'E-mail';
-            $scope.moduleDisabled = false;          
+            $scope.moduleDisabled = false;
 
             $scope.loading = true;
             $scope.newtemplate = {};
@@ -18,6 +18,10 @@ angular.module('primeapps')
             $scope.newtemplate.sharing_type = 'everybody';
             var uploadSuccessCallback,
                 uploadFailedCallback;
+
+            ProfilesService.getAllBasic().then(function (response) {
+                $scope.profiles = ProfilesService.getProfiles(response.data, $rootScope.appModules, false);
+            });
 
             $scope.getTagTextRaw = function (item) {
                 if (item.name.indexOf("seperator") >= 0) {
@@ -74,11 +78,11 @@ angular.module('primeapps')
                     },
                     filters: {
                         mime_types: [
-                            {title: "Image files", extensions: "jpg,gif,png"},
+                            { title: "Image files", extensions: "jpg,gif,png" },
                         ],
                         max_file_size: "2mb"
                     },
-                    resize: {quality: 90}
+                    resize: { quality: 90 }
                 },
                 events: {
                     filesAdded: function (uploader, files) {
@@ -103,7 +107,7 @@ angular.module('primeapps')
                     fileUploaded: function (uploader, file, response) {
                         tinymce.activeEditor.windowManager.close();
                         var resp = JSON.parse(response.response);
-                        uploadSuccessCallback(config.storage_host + resp.public_url, {alt: file.name});
+                        uploadSuccessCallback(config.storage_host + resp.public_url, { alt: file.name });
                         uploadSuccessCallback = null;
                     },
                     error: function (file, error) {
@@ -138,7 +142,7 @@ angular.module('primeapps')
                     },
                     filters: {
                         mime_types: [
-                            {title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv"},
+                            { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
                         ],
                         max_file_size: "50mb"
                     }
@@ -165,7 +169,7 @@ angular.module('primeapps')
                     },
                     fileUploaded: function (uploader, file, response) {
                         var resp = JSON.parse(response.response);
-                        uploadSuccessCallback(config.storage_host + resp.public_url, {alt: file.name});
+                        uploadSuccessCallback(config.storage_host + resp.public_url, { alt: file.name });
                         uploadSuccessCallback = null;
                         tinymce.activeEditor.windowManager.close();
                     },
@@ -217,8 +221,8 @@ angular.module('primeapps')
                     toolbar: "addParameter | styleselect | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | table bullist numlist | link image imagetools |  cut copy paste | undo redo searchreplace | outdent indent | blockquote hr insertdatetime charmap | visualblocks code preview fullscreen",
                     menubar: 'false',
                     templates: [
-                        {title: 'Test template 1', content: 'Test 1'},
-                        {title: 'Test template 2', content: 'Test 2'}
+                        { title: 'Test template 1', content: 'Test 1' },
+                        { title: 'Test template 2', content: 'Test 2' }
                     ],
                     skin: 'lightgray',
                     theme: 'modern',
@@ -284,7 +288,7 @@ angular.module('primeapps')
                     $scope.newtemplate.template_code = template.code;
                     $scope.newtemplate.active = template.active;
                     $scope.newtemplate.language = template.language;
-                    var module = $filter('filter')($rootScope.appModules, {name: template.module}, true)[0];
+                    var module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
                     $scope.changeModule(module.name);
                     $scope.newtemplate.moduleName = module;
                     $scope.newtemplate.isNew = false;
@@ -402,7 +406,7 @@ angular.module('primeapps')
 
             $scope.showFormModal = function (template) {
                 $scope.multiselect = function () {
-                    return $filter('filter')($rootScope.appProfiles, {deleted: false, has_admin_rights: false}, true);
+                    return $filter('filter')($rootScope.appProfiles, { deleted: false, has_admin_rights: false }, true);
                 };
 
                 if (template) {
@@ -413,7 +417,7 @@ angular.module('primeapps')
                                 var newPermission = [];
 
                                 for (var i = 0; i < data.permissions.length; i++) {
-                                    var profile = $filter('filter')($scope.profiles, {id: data.permissions[i].profile_id}, true)[0];
+                                    var profile = $filter('filter')($scope.profiles, { id: data.permissions[i].profile_id }, true)[0];
                                     if (profile) {
                                         newPermission.push(profile);
                                     }
@@ -533,14 +537,19 @@ angular.module('primeapps')
                 scrollable: false,
                 persistSelection: true,
                 sortable: true,
-                filterable: {
-                    extra: false
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter && e.field !== 'Language') {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
                 },
                 rowTemplate: function (emailTemp) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left">' + emailTemp.name + '</td>';
-                    trTemp += '<td class="text-left">' + emailTemp.module + '</td>';
-                    trTemp += '<td>' + emailTemp.language + '</td>';
+                    trTemp += '<td class="text-left text-capitalize">' + emailTemp.module + '</td>';
+                    trTemp += emailTemp.language === 'tr' ? '<td>Turkish</td>' : '<td>English</td>';
                     trTemp += '<td>' + emailTemp.code + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
@@ -548,8 +557,8 @@ angular.module('primeapps')
                 altRowTemplate: function (emailTemp) {
                     var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left">' + emailTemp.name + '</td>';
-                    trTemp += '<td class="text-left">' + emailTemp.module + '</td>';
-                    trTemp += '<td>' + emailTemp.language + '</td>';
+                    trTemp += '<td class="text-left text-capitalize">' + emailTemp.module + '</td>';
+                    trTemp += emailTemp.language === 'tr' ? '<td>Turkish</td>' : '<td>English</td>';
                     trTemp += '<td>' + emailTemp.code + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
@@ -561,8 +570,7 @@ angular.module('primeapps')
                     buttonCount: 5,
                     info: true,
                 },
-                columns: [
-
+                columns: [ 
                     {
                         field: 'Name',
                         title: $filter('translate')('Setup.Templates.TemplateName'),
@@ -582,8 +590,8 @@ angular.module('primeapps')
                         field: 'Language',
                         title: 'Language',
                         values: [
-                            { text: 'Tr', value: 'Tr' },
-                            { text: 'En', value: 'En' }]
+                            { text: 'Turkish', value: 'Tr' },
+                            { text: 'English', value: 'En' }]
                     },
                     {
                         field: 'Code',

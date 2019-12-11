@@ -42,6 +42,7 @@ namespace PrimeApps.Model.Repositories
         {
             var relations = DbContext.Relations
                             .Where(relation => !relation.Deleted);
+
             if (id > 0)
                 relations = relations.Where(x => x.ModuleId == id);
 

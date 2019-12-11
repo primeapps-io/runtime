@@ -26,45 +26,11 @@ angular.module('primeapps')
             $scope.componentPlaces = componentPlaces;
             $scope.componentTypes = componentTypes;
             $rootScope.breadcrumblist[2].title = 'Components';
-            //$scope.page = 1;
-
-            //$scope.generator = function (limit) {
-            //    $scope.placeholderArray = [];
-            //    for (var i = 0; i < limit; i++) {
-            //        $scope.placeholderArray[i] = i;
-            //    }
-            //};
-
-            //$scope.generator(10);
-
-            //$scope.requestModel = {
-            //    limit: "10",
-            //    offset: 0
-            //};
 
             $scope.closeModal = function () {
                 $scope.component = {};
                 $scope.createFormModal.hide();
             };
-
-            //$scope.reload = function () {
-            //    ComponentsService.count()
-            //        .then(function (response) {
-            //            $scope.pageTotal = response.data;
-
-            //            if ($scope.requestModel.offset != 0 && ($scope.requestModel.offset * $scope.requestModel.limit) >= $scope.pageTotal) {
-            //                $scope.requestModel.offset = $scope.requestModel.offset - 1;
-            //            }
-
-            //            ComponentsService.find($scope.requestModel)
-            //                .then(function (response) {
-            //                    $scope.components = response.data;
-            //                    $scope.loading = false;
-            //                });
-            //        });
-            //};
-
-            //$scope.reload();
 
             $scope.environmentChange = function (env, index, otherValue) {
                 otherValue = otherValue || false;
@@ -78,23 +44,6 @@ angular.module('primeapps')
                     }
                 }
             };
-
-            //$scope.changePage = function (page) {
-            //    $scope.loading = true;
-            //    var requestModel = angular.copy($scope.requestModel);
-            //    requestModel.offset = page - 1;
-            //    $scope.page = requestModel.offset + 1;
-            //    ComponentsService.find(requestModel)
-            //        .then(function (response) {
-            //            $scope.components = response.data;
-            //            $scope.loading = false;
-            //        });
-
-            //};
-
-            //$scope.changeOffset = function () {
-            //    $scope.changePage(1)
-            //};
 
             $scope.openModal = function () {
                 $scope.createFormModal = $scope.createFormModal || $modal({
@@ -228,8 +177,13 @@ angular.module('primeapps')
                 scrollable: false,
                 persistSelection: true,
                 sortable: true,
-                filterable: {
-                    extra: false
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter) {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
                 },
                 rowTemplate: function (e) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
@@ -270,7 +224,7 @@ angular.module('primeapps')
                         },
                     },
                     {
-                        field: 'Module.Name',
+                        field: 'Module.LabelEnPrular',
                         title: $filter('translate')('Setup.Modules.Name'),
                         headerAttributes: {
                             'class': 'text-left'

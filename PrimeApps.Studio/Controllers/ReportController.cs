@@ -64,8 +64,8 @@ namespace PrimeApps.Studio.Controllers
             if (!_permissionHelper.CheckUserProfile(UserProfile, "report", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var views =  _reportRepository.Find();
-            var queryResults = (IQueryable<Report>)queryOptions.ApplyTo(views);
+            var views = _reportRepository.Find();
+            var queryResults = (IQueryable<Report>)queryOptions.ApplyTo(views, new ODataQuerySettings() { EnsureStableOrdering = false });
             return Ok(new PageResult<Report>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 

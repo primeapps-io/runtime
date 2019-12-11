@@ -122,7 +122,7 @@ namespace PrimeApps.Studio.Controllers
 
             var packages = _packageRepository.Find((int)AppId);
 
-            var queryResults = (IQueryable<Package>)queryOptions.ApplyTo(packages);
+            var queryResults = (IQueryable<Package>)queryOptions.ApplyTo(packages, new ODataQuerySettings() { EnsureStableOrdering = false });
             return Ok(new PageResult<Package>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 

@@ -152,7 +152,7 @@ angular.module('primeapps')
                     order: 0,
                     edit: true
                 };
-                
+
                 if (!angular.isArray($rootScope.reportCategory)) {
                     $rootScope.reportCategory = [];
                 }
@@ -272,6 +272,8 @@ angular.module('primeapps')
                 }, 100);
             };
 
+            //For Kendo UI
+
             $scope.goUrl = function (report) {
                 var selection = window.getSelection();
                 if (selection.toString().length === 0) {
@@ -279,7 +281,6 @@ angular.module('primeapps')
                 }
             };
 
-            //For Kendo UI
             var accessToken = $localStorage.read('access_token');
 
             $scope.mainGridOptions = {
@@ -310,7 +311,7 @@ angular.module('primeapps')
                             fields: {
                                 Name: { type: "string" },
                                 Category: { type: "string" },
-                                ReportType: { type: "string" }
+                                ReportType: { type: "enums" }
                             }
                         }
                     }
@@ -318,14 +319,19 @@ angular.module('primeapps')
                 scrollable: false,
                 persistSelection: true,
                 sortable: true,
-                filterable: {
-                    extra: false
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter && e.field !== 'ReportType') {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
                 },
                 rowTemplate: function (report) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left">' + report.name_en + '</td>';
                     trTemp += '<td class="text-left">' + report.category.name_en + '</td>';
-                    trTemp += '<td>' + report.report_type + '</td>';
+                    trTemp += '<td class="text-capitalize">' + report.report_type + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); deleteReport(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
@@ -333,7 +339,7 @@ angular.module('primeapps')
                     var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left">' + report.name_en + '</td>';
                     trTemp += '<td class="text-left">' + report.category.name_en + '</td>';
-                    trTemp += '<td>' + report.report_type + '</td>';
+                    trTemp += '<td class="text-capitalize">' + report.report_type + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); deleteReport(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
@@ -345,7 +351,6 @@ angular.module('primeapps')
                     info: true,
                 },
                 columns: [
-
                     {
                         field: 'NameEn',
                         title: $filter('translate')('Setup.Report.ReportName'),
@@ -353,7 +358,6 @@ angular.module('primeapps')
                             'class': 'text-left'
                         },
                     },
-
                     {
                         field: 'Category.NameEn',
                         title: $filter('translate')('Setup.Report.ReportCategory'),
@@ -376,6 +380,5 @@ angular.module('primeapps')
                         width: "90px"
                     }]
             };
-
         }
     ]);

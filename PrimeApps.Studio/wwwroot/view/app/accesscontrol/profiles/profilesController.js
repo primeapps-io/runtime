@@ -5,8 +5,7 @@ angular.module('primeapps')
     .controller('ProfilesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ProfilesService', 'LayoutService', '$http', 'config', '$popover', '$location', '$localStorage',
         function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ProfilesService, LayoutService, $http, config, $popover, $location, $localStorage) {
 
-            $scope.$parent.activeMenuItem = 'profiles';
-            $scope.activePage = 1;
+            $scope.$parent.activeMenuItem = 'profiles'; 
             $rootScope.breadcrumblist[2].title = 'Profiles';
             $scope.loading = true;
             $scope.moduleLead = $filter('filter')($rootScope.appModules, { name: 'leads' }, true)[0];
@@ -44,25 +43,7 @@ angular.module('primeapps')
                     "name": $filter('translate')('Layout.Menu.Homepage')
                 });
             }
-
-            $scope.requestModel = {
-                limit: '10',
-                offset: 0
-            };
-
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-            $scope.generator(10);
-
-            ProfilesService.count().then(function (response) {
-                $scope.pageTotal = response.data;
-            });
-
-
+              
             function getProfile() {
                 $scope.profiles = null; //Geçici çözüm detaylı bakılacak.
                 $scope.loading = true;
@@ -367,8 +348,13 @@ angular.module('primeapps')
                 scrollable: false,
                 persistSelection: true,
                 sortable: true,
-                filterable: {
-                    extra: false
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter) {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
                 },
                 rowTemplate: function (profile) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';

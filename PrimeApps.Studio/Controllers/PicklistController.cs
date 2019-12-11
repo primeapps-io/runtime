@@ -85,7 +85,7 @@ namespace PrimeApps.Studio.Controllers
   
             var picklists =  _picklistRepository.Find();
 
-            var queryResults = (IQueryable<Picklist>)queryOptions.ApplyTo(picklists);
+            var queryResults = (IQueryable<Picklist>)queryOptions.ApplyTo(picklists, new ODataQuerySettings() { EnsureStableOrdering = false });
             return Ok(new PageResult<Picklist>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
 
         }

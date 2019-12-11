@@ -19,39 +19,39 @@ using PrimeApps.Studio.Helpers;
 
 namespace PrimeApps.Studio.Controllers
 {
-	[Route("api/profile")]
-	public class ProfileController : DraftBaseController
-	{
-		private IRelationRepository _relationRepository;
+    [Route("api/profile")]
+    public class ProfileController : DraftBaseController
+    {
+        private IRelationRepository _relationRepository;
         private IUserRepository _userRepository;
         private IProfileRepository _profileRepository;
-		private ISettingRepository _settingRepository; 
-		private IConfiguration _configuration;
-		private Warehouse _warehouse;
-		private IModuleHelper _moduleHelper;
+        private ISettingRepository _settingRepository;
+        private IConfiguration _configuration;
+        private Warehouse _warehouse;
+        private IModuleHelper _moduleHelper;
         private IPermissionHelper _permissionHelper;
 
-        public ProfileController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration,IHelpRepository helpRepository,IUserRepository userRepository, IPermissionHelper permissionHelper)
-		{
-			_relationRepository = relationRepository;
-			_profileRepository = profileRepository;
-			_settingRepository = settingRepository;			
-			_warehouse = warehouse;
-			_configuration = configuration;
-			_moduleHelper = moduleHelper;
+        public ProfileController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration, IHelpRepository helpRepository, IUserRepository userRepository, IPermissionHelper permissionHelper)
+        {
+            _relationRepository = relationRepository;
+            _profileRepository = profileRepository;
+            _settingRepository = settingRepository;
+            _warehouse = warehouse;
+            _configuration = configuration;
+            _moduleHelper = moduleHelper;
             _userRepository = userRepository;
             _permissionHelper = permissionHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_relationRepository, PreviewMode, AppId, TenantId);
-			SetCurrentUser(_profileRepository, PreviewMode, AppId, TenantId);
-			SetCurrentUser(_settingRepository, PreviewMode, AppId, TenantId);
+        {
+            SetContext(context);
+            SetCurrentUser(_relationRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_profileRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_settingRepository, PreviewMode, AppId, TenantId);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
         /// <summary>
         /// Creates a new profile.
@@ -65,9 +65,9 @@ namespace PrimeApps.Studio.Controllers
             //Set Warehouse
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
-           var profile = await _profileRepository.CreateAsync(NewProfile, AppUser.TenantLanguage);
+            var profile = await _profileRepository.CreateAsync(NewProfile, AppUser.TenantLanguage);
 
-		  return Ok(profile);
+            return Ok(profile);
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace PrimeApps.Studio.Controllers
                 return StatusCode(403);
 
             var profiles = _profileRepository.Find();
-            var queryResults = (IQueryable<Profile>)queryOptions.ApplyTo(profiles);
+            var queryResults = (IQueryable<Profile>)queryOptions.ApplyTo(profiles, new ODataQuerySettings() { EnsureStableOrdering = false });
             return Ok(new PageResult<Profile>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 

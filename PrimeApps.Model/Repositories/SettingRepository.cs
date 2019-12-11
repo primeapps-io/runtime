@@ -23,7 +23,8 @@ namespace PrimeApps.Model.Repositories
         public IQueryable<Setting> Find()
         {
             var settings = DbContext.Settings
-                .Where(x => !x.Deleted && x.Type == SettingType.Custom);
+                .Where(x => !x.Deleted && x.Type == SettingType.Custom)
+                .OrderByDescending(x => x.Id);
 
             return settings;
         }

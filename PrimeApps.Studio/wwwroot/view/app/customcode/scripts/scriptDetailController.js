@@ -241,7 +241,7 @@ angular.module('primeapps')
 
 
             //For Kendo UI
-           
+
             var accessToken = $localStorage.read('access_token');
 
             $scope.mainGridOptions = function () {
@@ -279,6 +279,7 @@ angular.module('primeapps')
                                     fields: {
                                         StartTime: { type: "date" },
                                         EndTime: { type: "date" },
+                                        Version: { type: "string" },
                                         Status: { type: "enums" }
                                     }
                                 }
@@ -288,11 +289,16 @@ angular.module('primeapps')
                         scrollable: false,
                         persistSelection: true,
                         sortable: true,
-                        filterable: {
-                            extra: false
+                        filterable: true,
+                        filter: function (e) {
+                            if (e.filter && e.field !== 'Status') {
+                                for (var i = 0; i < e.filter.filters.length; i++) {
+                                    e.filter.filters[i].ignoreCase = true;
+                                }
+                            }
                         },
                         rowTemplate: function (e) {
-                            var trTemp = '<tr">';
+                            var trTemp = '<tr>';
                             trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
                             trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
                             trTemp += '<td> <span>' + e.version + '</span></td > ';
@@ -300,7 +306,7 @@ angular.module('primeapps')
                             return trTemp;
                         },
                         altRowTemplate: function (e) {
-                            var trTemp = '<tr class="k-alt"">';
+                            var trTemp = '<tr class="k-alt">';
                             trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
                             trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
                             trTemp += '<td> <span>' + e.version + '</span></td > ';
@@ -320,7 +326,7 @@ angular.module('primeapps')
                                 title: 'Start Time',
                                 filterable: {
                                     ui: function (element) {
-                                        element.kendoDatePicker({
+                                        element.kendoDateTimePicker({
                                             format: '{0: dd-MM-yyyy}'
                                         })
                                     }
@@ -331,7 +337,7 @@ angular.module('primeapps')
                                 title: 'End Time',
                                 filterable: {
                                     ui: function (element) {
-                                        element.kendoDatePicker({
+                                        element.kendoDateTimePicker({
                                             format: '{0: dd-MM-yyyy}'
                                         })
                                     }
@@ -354,7 +360,7 @@ angular.module('primeapps')
             };
 
             angular.element(document).ready(function () {
-                $scope.script.custom_url ? null : $scope.mainGridOptions();
+                $scope.mainGridOptions();
             });
             //For Kendo UI
         }

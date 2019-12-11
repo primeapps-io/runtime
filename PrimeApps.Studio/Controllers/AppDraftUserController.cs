@@ -214,7 +214,7 @@ namespace PrimeApps.Studio.Controllers
 
             var users = _userRepository.Find();
 
-            var queryResults = (IQueryable<TenantUser>)queryOptions.ApplyTo(users);
+            var queryResults = (IQueryable<TenantUser>)queryOptions.ApplyTo(users, new ODataQuerySettings() { EnsureStableOrdering = false });
             return Ok(new PageResult<TenantUser>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 

@@ -136,7 +136,7 @@ namespace PrimeApps.Studio.Controllers
             var json = JsonConvert.SerializeObject(dependencies, serializerSettings);
             var newData = JsonConvert.DeserializeObject<ICollection<ActionButton>>(json);
 
-            var queryResults = (IQueryable<ActionButton>)queryOptions.ApplyTo(newData.AsQueryable());
+            var queryResults = (IQueryable<ActionButton>)queryOptions.ApplyTo(newData.AsQueryable(), new ODataQuerySettings() { EnsureStableOrdering = false });
 
             return Ok(new PageResult<ActionButton>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }

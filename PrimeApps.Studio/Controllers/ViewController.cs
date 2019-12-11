@@ -234,7 +234,7 @@ namespace PrimeApps.Studio.Controllers
                 return StatusCode(403);
 
             var views = _viewRepository.Find();
-            var queryResults = (IQueryable<View>)queryOptions.ApplyTo(views);
+            var queryResults = (IQueryable<View>)queryOptions.ApplyTo(views, new ODataQuerySettings() { EnsureStableOrdering = false });
             return Ok(new PageResult<View>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
     }

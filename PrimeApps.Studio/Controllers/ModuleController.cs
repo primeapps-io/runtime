@@ -82,7 +82,7 @@ namespace PrimeApps.Studio.Controllers
                 return StatusCode(403);
 
             var modules = _moduleRepository.Find();
-            var queryResults = (IQueryable<Module>)queryOptions.ApplyTo(modules);
+            var queryResults = (IQueryable<Module>)queryOptions.ApplyTo(modules, new ODataQuerySettings() { EnsureStableOrdering = false });
             return Ok(new PageResult<Module>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 

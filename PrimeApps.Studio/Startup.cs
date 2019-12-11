@@ -248,7 +248,7 @@ namespace PrimeApps.Studio
     public class ODataQueryStringFixer : IMiddleware
     {
         private static readonly Regex ReplaceToLowerRegex =
-            new Regex(@"\(tolower\((?<columnName>\w+).*(?<value>(\'|%27).+(\'|%27))\)");
+            new Regex(@"\(tolower\((?<columnName>([^\)\(]+))\)%2C(?<value>(\'|%27)(\w+)(\'|%27))\)");
 
         public Task InvokeAsync(HttpContext context, RequestDelegate next)
         {

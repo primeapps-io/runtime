@@ -384,7 +384,8 @@ angular.module('primeapps')
                             id: "id",
                             fields: {
                                 LabelEn: { type: "string" },
-                                Module: { type: "string" }
+                                Module: { type: "string" },
+                                Language: { type: "enums" }
                             }
                         }
                     }
@@ -392,14 +393,19 @@ angular.module('primeapps')
                 scrollable: false,
                 persistSelection: true,
                 sortable: true,
-                filterable: {
-                    extra: false
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter && e.field !== 'Language') {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
                 },
                 rowTemplate: function (emailTemp) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left">' + '<div style="padding:12px 0px;">' + emailTemp.name + '</div>' + '</td>';
                     trTemp += '<td class="text-left">' + emailTemp.subject + '</td>';
-                    trTemp += '<td>' + emailTemp.language + '</td>';
+                    trTemp += emailTemp.language === 'tr' ? '<td>Turkish</td>' : '<td>English</td>';
                     trTemp += '<td>' + emailTemp.system_code + '</td>';
                     return trTemp;
                 },
@@ -407,7 +413,7 @@ angular.module('primeapps')
                     var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left">' + '<div style="padding:12px 0px;">' + emailTemp.name + '</div>' + '</td>';
                     trTemp += '<td class="text-left">' + emailTemp.subject + '</td>';
-                    trTemp += '<td>' + emailTemp.language + '</td>';
+                    trTemp += emailTemp.language === 'tr' ? '<td>Turkish</td>' : '<td>English</td>';
                     trTemp += '<td>' + emailTemp.system_code + '</td>';
                     return trTemp;
                 },
@@ -438,6 +444,9 @@ angular.module('primeapps')
                     {
                         field: 'Language',
                         title: 'Language',
+                        values: [
+                            { text: 'Turkish', value: 'Tr' },
+                            { text: 'English', value: 'En' }]
                     },
                     {
                         field: 'SystemCode',

@@ -86,7 +86,7 @@ namespace PrimeApps.Studio.Controllers
                 return StatusCode(403);
 
             var helps = _helpRepository.Find();
-            var queryResults = (IQueryable<Help>)queryOptions.ApplyTo(helps);
+            var queryResults = (IQueryable<Help>)queryOptions.ApplyTo(helps, new ODataQuerySettings() { EnsureStableOrdering = false });
             return Ok(new PageResult<Help>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
