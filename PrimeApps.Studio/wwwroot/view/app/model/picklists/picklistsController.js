@@ -18,12 +18,7 @@ angular.module('primeapps')
             $scope.fixedField = {};
             $scope.activePage = 1;
             $scope.picklistModel = {};
-            $scope.wizardStep = 0;
-            //$scope.requestModel = { //default page value
-            //    limit: "10",
-            //    offset: 0,
-            //    order_column: "label_en"
-            //};
+            $scope.wizardStep = 0; 
 
             $scope.fields = [
                 { name: "name", label: "Name", required: true, order: 1 },
@@ -31,89 +26,7 @@ angular.module('primeapps')
                 { name: "value", label: "Value-1", required: false, order: 3 },
                 { name: "value2", label: "Value-2", required: false, order: 4 },
                 { name: "value3", label: "Value-3", required: false, order: 5 }];
-
-            //$scope.generator = function (limit) {
-            //    $scope.placeholderArray = [];
-            //    for (var i = 0; i < limit; i++) {
-            //        $scope.placeholderArray[i] = i;
-            //    }
-            //};
-
-            //$scope.generator(10);
-
-
-
-            //PicklistsService.getPage($scope.requestModel).then(function (response) {
-            //    if (response.data) {
-            //        $scope.picklists = response.data;
-
-            //        PicklistsService.count().then(function (count) {
-            //            $scope.pageTotal = count.data;
-            //            $scope.loading = false;
-            //        }).catch(function (reason) {
-            //            $scope.loading = false;
-            //        });
-            //    }
-            //}).catch(function (reason) {
-            //    $scope.loadingItem = false;
-            //});
-
-            //$scope.changePage = function (page) {
-            //    $scope.loading = true;
-
-            //    if (page !== 1) {
-            //        var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-            //        if (page > difference) {
-            //            if (Math.abs(page - difference) < 1)
-            //                --page;
-            //            else
-            //                page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-            //        }
-            //    }
-
-            //    var requestModel = angular.copy($scope.requestModel);
-            //    if (page != 0)
-            //        requestModel.offset = page - 1;
-            //    else
-            //        requestModel.offset = 0;
-
-            //    PicklistsService.getPage(requestModel).then(function (response) {
-
-            //        $scope.picklists = response.data;
-            //        $scope.loading = false;
-            //    }).catch(function (reason) {
-            //        $scope.loading = false;
-            //    });
-
-            //};
-
-            //$scope.changePageItem = function (page) {
-            //    $scope.loadingItem = true;
-
-            //    PicklistsService.get($scope.id).then(function (response) {
-            //        $scope.picklist = response.data;
-            //        PicklistsService.countItems($scope.id)
-            //            .then(function (count) {
-            //                if (count.data) {
-            //                    $scope.pageTotalItems = count.data;
-            //                    $scope.loadingItem = false;
-            //                }
-            //            }).catch(function (reason) {
-            //                $scope.loadingItem = false;
-            //                $scope.cancel();
-            //            });
-            //    }).catch(function (reason) {
-            //        $scope.loadingItem = false;
-            //        $scope.cancel();
-            //    });
-
-            //};
-
-            //$scope.changeOffset = function () {
-            //    $scope.changePage($scope.activePage);
-            //};
-
+                 
             $scope.selectPicklist = function (id) {
                 $scope.modalLoading = true;
                 PicklistsService.get(id)
@@ -925,8 +838,13 @@ angular.module('primeapps')
                 scrollable: false,
                 persistSelection: true,
                 sortable: true,
-                filterable: {
-                    extra: false
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter && e.field !== 'SystemType') {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
                 },
                 rowTemplate: function (e) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';

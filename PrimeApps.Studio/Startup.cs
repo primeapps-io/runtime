@@ -81,6 +81,7 @@ namespace PrimeApps.Studio
                     });
             });
 
+            services.AddSingleton<ODataQueryStringFixer>();//For OData Filter Middleware
             services.AddOData();
             services.AddODataQueryFilter();
 
@@ -192,6 +193,7 @@ namespace PrimeApps.Studio
                 ReceiveBufferSize = 4 * 1024
             };
 
+            app.UseODataQueryStringFixer(); //For OData Filter Middleware
             app.UseWebSockets(new WebSocketOptions() { KeepAliveInterval = TimeSpan.FromSeconds(10) });
             app.Use(async (ctx, next) =>
             {
@@ -214,7 +216,7 @@ namespace PrimeApps.Studio
                     await next();
                 }
             });
-             
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -230,8 +232,31 @@ namespace PrimeApps.Studio
                 * These two option for odata controller.
                 */
                 routes.Select().Expand().Filter().OrderBy().MaxTop(null).Count();
-                routes.EnableDependencyInjection();                
+                routes.EnableDependencyInjection();
             });
+        }
+    }
+
+    public static class ODataQueryStringFixerExtensions
+    {
+        public static IApplicationBuilder UseODataQueryStringFixer(this IApplicationBuilder app)
+        {
+            return app.UseMiddleware<ODataQueryStringFixer>();
+        }
+    }
+
+    public class ODataQueryStringFixer : IMiddleware
+    {
+        private static readonly Regex ReplaceToLowerRegex =
+            new Regex(@"\(tolower\((?<columnName>\w+).*(?<value>(\'|%27).+(\'|%27))\)");
+
+        public Task InvokeAsync(HttpContext context, RequestDelegate next)
+        {
+            var input = context.Request.QueryString.Value;
+            var replacement = @"(tolower(${columnName}),tolower(${value}))";
+            context.Request.QueryString = new QueryString(ReplaceToLowerRegex.Replace(input, replacement));
+
+            return next(context);
         }
     }
 }

@@ -19,7 +19,7 @@
         <PackageReference Include="LibGit2Sharp" Version="0.26.0" />
         <PackageReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="2.2.0" />
-        <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.2.1" />
+        <PackageReference Include="Microsoft.AspNetCore.OData" Version="7.2.2" />
         <PackageReference Include="Microsoft.Azure.Search" Version="7.0.0-preview" />
         <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.2.0" />
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />

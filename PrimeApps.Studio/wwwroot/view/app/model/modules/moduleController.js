@@ -99,7 +99,6 @@ angular.module('primeapps')
                 $scope.mainGridOptions = {
                     dataSource: {
                         type: "odata-v4",
-                        page: 1,
                         pageSize: 10,
                         serverPaging: true,
                         serverFiltering: true,
@@ -116,6 +115,10 @@ angular.module('primeapps')
                                 }
                             }
                         },
+                        sort: [{
+                            field: "id",
+                            dir: "desc"
+                        }],
                         schema: {
                             data: "items",
                             total: "count",
@@ -123,7 +126,7 @@ angular.module('primeapps')
                                 id: "id",
                                 fields: {
                                     MenuIcon: { type: "string" },
-                                    Name: { type: "string" },
+                                    LabelEnPlural: { type: "string" },
                                     SystemType: { type: "enums" },
                                     Display: { type: "boolean" },
                                     Sharing: { type: "enums" }
@@ -134,8 +137,21 @@ angular.module('primeapps')
                     scrollable: false,
                     persistSelection: true,
                     sortable: true,
-                    filterable: {
-                        extra: false
+                    filterable: true,
+                    filter: function (e) {
+                        var temps = [];
+                        if (e.filter && e.field === 'LabelEnPlural') {
+                            for (var i = 0; i < e.filter.filters.length; i++) {
+                                e.filter.filters[i].ignoreCase = true;
+                                //var temp = angular.copy(e.filter.filters[i]);
+                                //temp.value = temp.value.toLowerCase();
+                                //temps.push(temp);
+                                //e.filter.filters[i].value = e.filter.filters[i].value.toLowerCase();
+                            }
+                            //var lastArray = e.filter.filters.concat(temps);
+                            //e.preventDefault();
+                            //e.sender.dataSource.filter(temps);
+                        }
                     },
                     rowTemplate: function (e) {
                         var trTemp = '<tr ng-click="goUrl(dataItem.id)">';
@@ -172,7 +188,7 @@ angular.module('primeapps')
                             filterable: false
                         },
                         {
-                            field: 'Name',
+                            field: 'LabelEnPlural',
                             title: $filter('translate')('Setup.Modules.Name'),
                             headerAttributes: {
                                 'class': 'text-left'
