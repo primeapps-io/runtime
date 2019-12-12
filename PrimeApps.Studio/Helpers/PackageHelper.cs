@@ -87,7 +87,7 @@ namespace PrimeApps.Studio.Helpers
 
                     try
                     {
-                        result = await Model.Helpers.PackageHelper.All(JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), clearAllRecords, dbName, version, _configuration, _storage, historyStorages, _hostingEnvironment);
+                        result = await Model.Helpers.PackageHelper.All(JObject.Parse(appString), clearAllRecords, dbName, version, _configuration, _storage, historyStorages, _hostingEnvironment);
                     }
                     catch (Exception e)
                     {
@@ -168,7 +168,7 @@ namespace PrimeApps.Studio.Helpers
 
                     try
                     {
-                        result = await Model.Helpers.PackageHelper.Diffs(historyDatabases, historyStorages, JObject.Parse(appString), CryptoHelper.Decrypt(studioApp.Secret), dbName, version, packageId, _configuration, _storage, _hostingEnvironment);
+                        result = await Model.Helpers.PackageHelper.Diffs(historyDatabases, historyStorages, JObject.Parse(appString), dbName, version, packageId, _configuration, _storage, _hostingEnvironment);
                     }
                     catch (Exception e)
                     {

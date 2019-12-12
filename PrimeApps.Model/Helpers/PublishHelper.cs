@@ -254,9 +254,8 @@ namespace PrimeApps.Model.Helpers
                         "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Platform application creating..." +
                         Environment.NewLine);
 
-                    var secret = Guid.NewGuid().ToString().Replace("-", string.Empty);
-                    var secretEncrypt = CryptoHelper.Encrypt(secret);
-                    result = PublishHelper.CreatePlatformApp(PREConnectionString, app, secretEncrypt, appUrl, authUrl);
+                  
+                    result = PublishHelper.CreatePlatformApp(PREConnectionString, app, CryptoHelper.Encrypt(app["secret"].ToString()), appUrl, authUrl);
 
                     if (!result)
                     {
@@ -268,7 +267,6 @@ namespace PrimeApps.Model.Helpers
                         ErrorHandler.LogMessage($"App: app{app["id"]}, Version: {version}, Create platform application error.",SentryLevel.Error);
                     }
                     
-
                     var token = studioToken;
                 
                     if (!string.IsNullOrEmpty(localAuth))
@@ -285,7 +283,7 @@ namespace PrimeApps.Model.Helpers
                     {
                         //var applicationUrl = string.Format(configuration.GetValue("AppSettings:AppUrl", string.Empty), app["name"].ToString());
                         var addClientResult = await CreateClient(appUrl, identityUrl, token, app["name"].ToString(),
-                            app["label"].ToString(), secret, useSsl);
+                            app["label"].ToString(), app["secret"].ToString(), useSsl);
 
                         if (string.IsNullOrEmpty(addClientResult))
                         {

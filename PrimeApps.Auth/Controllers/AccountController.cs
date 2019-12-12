@@ -531,16 +531,7 @@ namespace PrimeApps.Auth.UI
                 }
             };
 
-            var createUserRespone =
-                await CreateUser(
-                    new RegisterInputModel
-                    {
-                        Email = model.Email,
-                        Password = model.Password,
-                        Culture = model.Culture,
-                        FirstName = model.FirstName,
-                        LastName = model.LastName
-                    }, application, "");
+            var createUserRespone = await CreateUser(new RegisterInputModel { Email = model.Email, Password = model.Password, Culture = model.Culture, FirstName = model.FirstName, LastName = model.LastName }, application, "");
 
             if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
                 return BadRequest(new {ErrorMessage = createUserRespone["Error"].ToString()});
@@ -1653,7 +1644,7 @@ namespace PrimeApps.Auth.UI
                         settings.Culture = culture;
                         settings.Language = culture.Substring(0, 2);
                         settings.TimeZone = "America/New_York";
-                        settings.Currency = culture.Substring(0, 2);
+                        settings.Currency = culture.Substring(0, 2) == "tr" ? "TRY" : "USD";;
                     }
                     else
                     {
