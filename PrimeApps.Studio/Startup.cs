@@ -253,6 +253,9 @@ namespace PrimeApps.Studio
         public Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             var input = context.Request.QueryString.Value;
+            if (string.IsNullOrEmpty(input))
+                return next(context);
+            
             var replacement = @"(tolower(${columnName}),tolower(${value}))";
             context.Request.QueryString = new QueryString(ReplaceToLowerRegex.Replace(input, replacement));
 
