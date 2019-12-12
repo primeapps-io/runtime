@@ -71,27 +71,27 @@ cp -R database/. pre/database
 cp -R setup/. pre/setup
 cp -R startup/. pre/startup
 
-#cd pre
-#
-#git config user.name "PrimeApps"
-#git config user.email "admin@primeapps.io"
-#
-#git add .
-#git commit -m "Updates and bugfixes"
-#git push https://primeappsio:76559642717f22a6384e0720df32813e1a477b2e@github.com/primeapps-io/pre.git
-#
-#cd ..
-#
-#rm -rf pre
-#rm -rf PrimeApps.Auth
-#rm -rf PrimeApps.App
-#rm -rf PrimeApps.Admin
-#rm -rf database
-#rm -rf setup
-#rm -rf startup
-#rm PrimeApps.Auth.zip
-#rm PrimeApps.App.zip
-#rm PrimeApps.Admin.zip
-#rm database.zip
-#rm setup.zip
-#rm startup.zip
+cd pre
+
+git config user.name "PrimeApps"
+git config user.email "admin@primeapps.io"
+
+git add .
+git commit -m "Updates and bugfixes"
+git push https://primeappsio:76559642717f22a6384e0720df32813e1a477b2e@github.com/primeapps-io/pre.git
+
+cd ..
+
+rm -rf pre
+rm -rf PrimeApps.Auth
+rm -rf PrimeApps.App
+rm -rf PrimeApps.Admin
+rm -rf database
+rm -rf setup
+rm -rf startup
+rm PrimeApps.Auth.zip
+rm PrimeApps.App.zip
+rm PrimeApps.Admin.zip
+rm database.zip
+rm setup.zip
+rm startup.zip
