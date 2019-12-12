@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.2",
-    "signature": "d35e6faf6d2ca2c085779907bbcb7c8ab2e5bb87"
+    "signature": "93937afb9bf48cbbb44fcd72e10b7f24fb6e6002"
   },
   "compilationOptions": {
     "defines": [
@@ -26,8 +26,8 @@
         "dependencies": {
           "AWSSDK.Extensions.NETCore.Setup": "3.3.100.1",
           "AWSSDK.S3": "3.3.104.36",
-          "Aspose.Cells": "18.12.0",
-          "Aspose.Words": "19.1.0",
+          "Aspose.Cells": "19.11.0",
+          "Aspose.Words": "19.12.0",
           "Hangfire": "1.7.0-beta4",
           "Hangfire.AspNetCore": "1.7.0-beta4",
           "Hangfire.PostgreSql": "1.5.0",
@@ -72,31 +72,31 @@
           "PrimeApps.App.dll": {}
         }
       },
-      "Aspose.Cells/18.12.0": {
+      "Aspose.Cells/19.11.0": {
         "dependencies": {
-          "System.Drawing.Common": "4.5.0",
+          "System.Drawing.Common": "4.5.1",
           "System.Text.Encoding.CodePages": "4.5.0"
         },
         "runtime": {
-          "lib/netstandard2.0/Aspose.Cells.dll": {
-            "assemblyVersion": "18.12.0.0",
-            "fileVersion": "18.12.0.0"
+          "lib/netstandard20/Aspose.Cells.dll": {
+            "assemblyVersion": "19.11.0.0",
+            "fileVersion": "19.11.0.0"
           }
         },
         "compile": {
-          "lib/netstandard2.0/Aspose.Cells.dll": {}
+          "lib/netstandard20/Aspose.Cells.dll": {}
         }
       },
-      "Aspose.Words/19.1.0": {
+      "Aspose.Words/19.12.0": {
         "dependencies": {
-          "SkiaSharp": "1.60.3",
+          "SkiaSharp": "1.68.1",
           "System.Reflection.Emit": "4.3.0",
           "System.Reflection.Emit.ILGeneration": "4.3.0",
           "System.Text.Encoding.CodePages": "4.5.0"
         },
         "runtime": {
           "lib/netstandard2.0/Aspose.Words.dll": {
-            "assemblyVersion": "19.1.0.0",
+            "assemblyVersion": "19.12.0.0",
             "fileVersion": "0.0.0.0"
           }
         },
@@ -1103,11 +1103,11 @@
           "lib/netstandard2.0/Sentry.Protocol.dll": {}
         }
       },
-      "SkiaSharp/1.60.3": {
+      "SkiaSharp/1.68.1": {
         "runtime": {
           "lib/netstandard1.3/SkiaSharp.dll": {
-            "assemblyVersion": "1.60.0.0",
-            "fileVersion": "1.60.3.0"
+            "assemblyVersion": "1.68.0.0",
+            "fileVersion": "1.68.1.0"
           }
         },
         "runtimeTargets": {
@@ -1126,13 +1126,13 @@
             "assetType": "native",
             "fileVersion": "0.0.0.0"
           },
-          "runtimes/win7-x64/native/libSkiaSharp.dll": {
-            "rid": "win7-x64",
+          "runtimes/win-x64/native/libSkiaSharp.dll": {
+            "rid": "win-x64",
             "assetType": "native",
             "fileVersion": "0.0.0.0"
           },
-          "runtimes/win7-x86/native/libSkiaSharp.dll": {
-            "rid": "win7-x86",
+          "runtimes/win-x86/native/libSkiaSharp.dll": {
+            "rid": "win-x86",
             "assetType": "native",
             "fileVersion": "0.0.0.0"
           }
@@ -1393,29 +1393,29 @@
           }
         }
       },
-      "System.Drawing.Common/4.5.0": {
+      "System.Drawing.Common/4.5.1": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "2.2.0",
           "Microsoft.Win32.SystemEvents": "4.5.0"
         },
         "runtime": {
           "lib/netstandard2.0/System.Drawing.Common.dll": {
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.6.26515.6"
+            "assemblyVersion": "4.0.0.1",
+            "fileVersion": "4.6.26919.2"
           }
         },
         "runtimeTargets": {
           "runtimes/unix/lib/netcoreapp2.0/System.Drawing.Common.dll": {
             "rid": "unix",
             "assetType": "runtime",
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.6.26515.6"
+            "assemblyVersion": "4.0.0.1",
+            "fileVersion": "4.6.26919.2"
           },
           "runtimes/win/lib/netcoreapp2.0/System.Drawing.Common.dll": {
             "rid": "win",
             "assetType": "runtime",
-            "assemblyVersion": "4.0.0.0",
-            "fileVersion": "4.6.26515.6"
+            "assemblyVersion": "4.0.0.1",
+            "fileVersion": "4.6.26919.2"
           }
         },
         "compile": {
@@ -4843,19 +4843,19 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Aspose.Cells/18.12.0": {
+    "Aspose.Cells/19.11.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-KjA9Z2VUkfIsppnj7A9FJ8z7xq83eKOrS5IKGSODJmCwLs1epaMNgTTIzxB81XRuCHm/1Prr58/ykN0ge44sYg==",
-      "path": "aspose.cells/18.12.0",
-      "hashPath": "aspose.cells.18.12.0.nupkg.sha512"
+      "sha512": "sha512-poqLbuSvt4LJqwiWFTcviGgKLpsoVNv1o2S/D5YXwbQkIjLTrnD59l9KFSzzUul2+uN9idFVmBl613Ni3ojXwg==",
+      "path": "aspose.cells/19.11.0",
+      "hashPath": "aspose.cells.19.11.0.nupkg.sha512"
     },
-    "Aspose.Words/19.1.0": {
+    "Aspose.Words/19.12.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-84Cp1JbhtK9HdpE9sgmFhXTYSB5w1KT8XDJh365z2G+cLjjrSWc0xDIKm2yeWKnyfLw6XYoiMXoxRsV57PAz3w==",
-      "path": "aspose.words/19.1.0",
-      "hashPath": "aspose.words.19.1.0.nupkg.sha512"
+      "sha512": "sha512-VCgK09UHPae2KC53dXa+Ec6Pg7RKzFvhTmyZJAaH+BOhFtGxpJSV3kQxPaWvdyhsEl4hBNW8YQzs76qp5UIuFA==",
+      "path": "aspose.words/19.12.0",
+      "hashPath": "aspose.words.19.12.0.nupkg.sha512"
     },
     "AWSSDK.Core/3.3.103.48": {
       "type": "package",
@@ -5242,12 +5242,12 @@
       "path": "sentry.protocol/1.0.2",
       "hashPath": "sentry.protocol.1.0.2.nupkg.sha512"
     },
-    "SkiaSharp/1.60.3": {
+    "SkiaSharp/1.68.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-9L8luXSspkXMhRuBx7CPjEVNJ2CJljpc5XMkDUITCQnhuJJadyCwYSWcAsgEqeRqmAimI2TyJWu73BRsvKTFZg==",
-      "path": "skiasharp/1.60.3",
-      "hashPath": "skiasharp.1.60.3.nupkg.sha512"
+      "sha512": "sha512-HT+Ks5hC71IkOKlmWYPeb9SkHqdOV5FVYuQxXgkQF06qmbhDD7cIvB0p+TcnxtKgO5U7bb9wK6BkOQ9Ni7PubQ==",
+      "path": "skiasharp/1.68.1",
+      "hashPath": "skiasharp.1.68.1.nupkg.sha512"
     },
     "StackExchange.Redis/2.0.519": {
       "type": "package",
@@ -5326,12 +5326,12 @@
       "path": "system.diagnostics.process/4.3.0",
       "hashPath": "system.diagnostics.process.4.3.0.nupkg.sha512"
     },
-    "System.Drawing.Common/4.5.0": {
+    "System.Drawing.Common/4.5.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-AiJFxxVPdeITstiRS5aAu8+8Dpf5NawTMoapZ53Gfirml24p7HIfhjmCRxdXnmmf3IUA3AX3CcW7G73CjWxW/Q==",
-      "path": "system.drawing.common/4.5.0",
-      "hashPath": "system.drawing.common.4.5.0.nupkg.sha512"
+      "sha512": "sha512-GiyeGi/v4xYDz1vCNFwFvhz9k1XddOG7VD3jxRqzRBCbTHji+s3HxxbxtoymuK4OadEpgotI8zQ5+GEEH9sUEQ==",
+      "path": "system.drawing.common/4.5.1",
+      "hashPath": "system.drawing.common.4.5.1.nupkg.sha512"
     },
     "System.Linq.Dynamic.Core/1.0.9": {
       "type": "package",

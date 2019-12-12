@@ -4,10 +4,10 @@
     <dict>
         <key>Label</key>
         <string>io.primeapps.minio</string>
-        
+
         <key>RunAtLoad</key>
         <true/>
-        
+
         <key>EnvironmentVariables</key>
         <dict>
             <key>MINIO_ACCESS_KEY</key>
@@ -15,7 +15,7 @@
             <key>MINIO_SECRET_KEY</key>
             <string>storage-secret-key</string>
         </dict>
-        
+
         <key>ProgramArguments</key>
         <array>
             <string>{{PROGRAMS}}/minio/minio</string>
@@ -24,6 +24,6 @@
             <string>:9004</string>
             <string>{{DATA}}/minio_pre</string>
         </array>
-        
+
     </dict>
 </plist>

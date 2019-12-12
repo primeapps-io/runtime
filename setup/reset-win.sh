@@ -13,6 +13,8 @@ net stop Postgres-PrimeApps
 net stop MinIO-PrimeApps
 net stop Redis-PrimeApps
 
+sleep 3 # Sleep 3 seconds for stop all services
+
 echo -e "${GREEN}Deleting data folders...${NC}"
 cd "$basePath/data"
 
