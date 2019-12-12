@@ -2152,12 +2152,16 @@ namespace PrimeApps.App.Controllers
         private void SetAsposeLicence(bool isWord = false)
         {
             var licenceData = _configuration.GetValue("AppSettings:AsposeLicence", string.Empty);
+
+            if (string.IsNullOrEmpty(licenceData))
+                return;
+
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
             writer.Write(licenceData);
             writer.Flush();
             stream.Position = 0;
-              
+
             if (isWord)
             {
                 Aspose.Words.License licence = new Aspose.Words.License();
