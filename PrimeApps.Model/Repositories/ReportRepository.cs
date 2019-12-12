@@ -250,6 +250,11 @@ namespace PrimeApps.Model.Repositories
 
                 foreach (var viewFilter in view.Filters)
                 {
+                    if (viewFilter.Field.Contains("."))
+                    {
+                        findRequest.Fields.Add(viewFilter.Field);
+                    }
+                    
                     viewFilter.Value = viewFilter.Value.Replace("[me]", appUser.TenantId.ToString());
                     viewFilter.Value = viewFilter.Value.Replace("[me.email]", appUser.Email);
 

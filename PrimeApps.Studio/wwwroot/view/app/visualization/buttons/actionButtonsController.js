@@ -56,8 +56,9 @@ angular.module('primeapps')
                     setWebHookHeaders();
 
                 } else {
+                   
                     $scope.currentActionButton = actionButton;
-                    $scope.currentActionButton.action_button_name = actionButton.name;
+                    $scope.currentActionButton.action_button_name = actionButton['name_en'];
                     $scope.currentActionButton.action_button_url = actionButton.url;
                     $scope.currentActionButton.module = actionButton.parent_module || actionButton.module;
                     $scope.currentActionButton.trigger = actionButton.trigger_clone;

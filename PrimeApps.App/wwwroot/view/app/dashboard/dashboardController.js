@@ -1,5 +1,31 @@
 'use strict';
 
+
+function getCode(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, false);
+    xhr.onload = function () {
+        if (this.status == 200) {
+            return callback(xhr.responseText)
+
+        }
+    };
+    xhr.send({});
+}
+
+var runController = function (code, callback) {
+    if (!angular.isObject(code)) {
+        getCode(code.url, function (result) {
+            eval(result)
+            return callback(result)
+        });
+    } else {
+        eval(code);
+        return callback(true)
+    }
+
+};
+
 angular.module('primeapps')
 
     .controller('DashboardController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'DashboardService', 'ModuleService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$aside',
@@ -83,6 +109,14 @@ angular.module('primeapps')
                     return user.full_name;
                 return id;
             };
+            $scope.showComponent = [];
+            var componentsListe = [];
+            if(components !=null){
+                var com = JSON.parse(components)
+                for (var i = 0; i < com.length; i++) {
+                    componentsListe['component-' + com[i].Id] = com[i];
+                }
+            }
 
             $scope.loadDashboard = function () {
 
@@ -94,6 +128,22 @@ angular.module('primeapps')
 
                             for (var i = 0; i < dashlets.length; i++) {
                                 var dashlet = dashlets[i];
+
+                                if (dashlet.dashlet_type === 'component') {
+
+                                    if (!$cache.get('component-' + dashlet.id)) {
+                                        runController(false, function (code) {
+                                            $scope.showComponent[dashlet.id] = true;
+
+                                            $cache.put($cache.get('component-' + id), code);
+                                        });
+                                    } else {
+                                        runController($cache.get($scope.showComponent[dashlet.id]), function (code) {
+                                            $scope.componetiGoster = true;
+                                        });
+                                    }
+                                }
+
 
                                 if (dashlet.dashlet_type === 'chart') {
                                     dashlet.chart_item.config = {

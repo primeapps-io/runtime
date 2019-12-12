@@ -880,7 +880,7 @@ angular.module('primeapps')
             $scope.changeGroupField = function () {
                 var field = $filter('filter')($scope.fields.availableFields, { name: $scope.reportModel.group_field }, true)[0];
                 if (field)
-                    $scope.reportModel.chart.xaxis_name_en = field["label_" + $rootScope.user.language];
+                    $scope.reportModel.chart.xaxis_name_en = field["label_en"];
             };
 
             $scope.setStep1 = function () {
