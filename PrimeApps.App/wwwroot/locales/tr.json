@@ -1599,17 +1599,23 @@
       "PasswordComplexError": "Şifre büyük harf, küçük harf ve rakam içermelidir.",
       "PaswordSuccess": "Şifre başarılı bir şekilde değiştirilmiştir."
     },
-    "UserGroups": {
-      "Title": "Kullanıcı Grupları",
-      "NewUserGroup": "Yeni Grup",
-      "EditUserGroup": "Grup Düzenle",
-      "GroupName": "Grup Adı",
-      "GroupDescription": "Açıklama",
-      "GroupUsers": "Grup Kullanıcıları",
-      "DuplicateName": "Bu kullanıcı grubu adı daha önce kullanılmıştır.",
-      "SubmitSuccess": "Kullanıcı grubu başarılı bir şekilde kaydedildi.",
-      "DeleteSuccess": "Kullanıcı grubu başarılı bir şekilde silindi."
-    }
+		"UserGroups": {
+			"Title": "Kullanıcı Grupları",
+			"NewUserGroup": "Yeni Grup",
+			"EditUserGroup": "Grup Düzenle",
+			"GroupName": "Grup Adı",
+			"GroupDescription": "Açıklama",
+			"GroupUsers": "Grup Kullanıcıları",
+			"DuplicateName": "Bu kullanıcı grubu adı daha önce kullanılmıştır.",
+			"SubmitSuccess": "Kullanıcı grubu başarılı bir şekilde kaydedildi.",
+			"DeleteSuccess": "Kullanıcı grubu başarılı bir şekilde silindi."
+		},
+		"Branches": {
+			"BranchDelete": "Şubeyi Sil",
+			"BranchDeleteLabel": "Kullanıcıların Aktarılacağı Şube",
+			"TransferAndDelete": "Aktar ve Sil",
+			"DeleteSuccess": "Kullanıcı grubu başarılı bir şekilde silindi."
+		}
   },
   "Import": {
     "Title": "İçeri Veri Aktarımı",
