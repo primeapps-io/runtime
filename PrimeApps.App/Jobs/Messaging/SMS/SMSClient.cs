@@ -341,12 +341,12 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                                             }
                                         }
 
-                                        string formattedMessage = FormatMessage(messageFields, messageBody, record);
+                                        //string formattedMessage = FormatMessage(messageFields, messageBody, record);  //DB perfonmans to deleted
 
                                         JObject messageStatus = new JObject();
 
                                         messageStatus["number"] = phoneNumber;
-                                        messageStatus["message"] = formattedMessage;
+                                        ///messageStatus["message"] = formattedMessage;  //Deleted for DB perfonmans
                                         messageStatus["status"] = status.ToString();
                                         messageStatus["sms_id"] = smsId;
                                         messageStatus["record_primary_value"] = record[phoneField]?.ToString();
@@ -362,7 +362,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                                             /// create a message object and add it to the list.
                                             Message smsMessage = new Message();
                                             smsMessage.Recipients.Add(phoneNumber);
-                                            smsMessage.Body = formattedMessage;
+                                            ///smsMessage.Body = formattedMessage;  //Deleted for DB perfonmans
                                             messages.Add(smsMessage);
                                             successful++;
                                         }

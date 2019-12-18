@@ -1733,7 +1733,8 @@
     "TemplateDelete": "Sil",
     "SuccessMessage": "Şablon başarılı bir şekilde kaydedilmiştir.",
     "SuccessDelete": "Şablon başarılı bir şekilde silinmiştir.",
-    "SmsTemplate": "Şablon"
+    "SmsTemplate": "Şablon",
+    "ChooseTemplate": "Lütfen bir şablon seçiniz veya yeni şablon ekleyiniz."
   },
   "Product": {
     "Product": "Ürün",
