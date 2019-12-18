@@ -296,7 +296,7 @@ namespace PrimeApps.App.Controllers
             var doc = await _documentRepository.GetById(fileId);
             if (doc != null)
             {
-                var file = await _storage.Download(UnifiedStorage.GetPath("record", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), doc.UniqueName, doc.Name);
+                var file = await _storage.Download(UnifiedStorage.GetPath("attachment", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), doc.UniqueName, doc.Name);
 
                 var result = new FileStreamResult(file.ResponseStream, file.Headers.ContentType)
                 {
