@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Cache;
+using PrimeApps.Model.Common.Record;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface IReportRepository : IRepositoryBaseTenant
     {
+        Task<JArray> ChartFilter(FindRequest request, string aggregationField, string currentCulture, string tenantLanguage, string moduleName, IConfiguration configuration, IPicklistRepository picklistRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, int timezoneOffset = 180, bool roleBasedEnabled = true, bool showDisplayValue = true);
         Task<JArray> GetDashletReportData(int reportId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true, bool showDisplayValue = true);
         Task<JArray> GetDashletViewData(int viewId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true);
         ICollection<Report> GetAllBasic();
