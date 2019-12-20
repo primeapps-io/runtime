@@ -353,7 +353,8 @@
     "ExchangeRatesMessage": "Merkez Bankası {{date}} efektif satış döviz kurları alınmıştır.",
     "UpdateSelecteds": "Seçilenleri Düzenle",
     "ConvertToSalesInvoice": "Satış Faturasına Dönüştür",
-    "ConvertToBuyingInvoice": "Alış Faturasına Dönüştür"
+    "ConvertToBuyingInvoice": "Alış Faturasına Dönüştür",
+    "UpdateRecordBulkSuccess": "Güncelleme işleminiz başarıyla gerçekleşti."
   },
   "View": {
     "Edit": "Görünüm Düzenle",
