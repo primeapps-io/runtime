@@ -37,6 +37,9 @@ namespace PrimeApps.Model.Entities.Studio
         [Column("use_tenant_settings"), JsonProperty("use_tenant_settings"), DataMember(Name = "use_tenant_settings")]
         public bool UseTenantSettings { get; set; }
         
+        [Column("secret"), MaxLength(4000)]
+        public string Secret { get; set; }
+        
         public virtual Templet Templet { get; set; }
         
         public virtual AppDraftSetting Setting { get; set; }

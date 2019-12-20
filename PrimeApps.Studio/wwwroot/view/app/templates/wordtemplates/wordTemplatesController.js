@@ -299,7 +299,7 @@ angular.module('primeapps')
                         if (module.name === 'order_products' && module.fields[i].lookup_type === 'sales_order')
                             continue;
 
-                        for (var j = 0; j < $scope.app.length; j++) {
+                        for (var j = 0; j < $rootScope.appModules.length; j++) {
                             if (module.fields[i].lookup_type === $rootScope.appModules[j].name) {
                                 var lookupModule = angular.copy($rootScope.appModules[j]);
                                 lookupModule.parent_field = module.fields[i];

@@ -153,7 +153,7 @@ angular.module('primeapps')
 
             $scope.templateDelete = function () {
                 var templates;
-                templates=$scope.template;
+                templates = $scope.template;
                 TemplateService.delete(templates)
                     .then(function () {
                         TemplateService.getAll('email')
@@ -271,16 +271,18 @@ angular.module('primeapps')
                     selectedIds,
                     $scope.queryRequest.query || null,
                     $scope.$parent.$parent.$parent.isAllSelected,
-                    $scope.tinymceModel.replace(/(\r\n|\n|\r)/gm, " "),
-                    $scope.phoneField.name).then(function (response) {
-                    $scope.submittingModal = false;
-                    $scope.smsModal.hide();
-                    $scope.phoneField.name, $scope.$parent.$parent.$parent.isAllSelected = false;
-                    $scope.$parent.$parent.$parent.selectedRecords = [];
-                    $scope.$parent.$parent.$parent.selectedRows = [];
-                    ngToast.create({ content: $filter('translate')('SMS.MessageQueued'), className: 'success' });
+                    //$scope.tinymceModel.replace(/(\r\n|\n|\r)/gm, " "),
+                    null,
+                    $scope.phoneField.name,
+                    $scope.template).then(function (response) {
+                        $scope.submittingModal = false;
+                        $scope.smsModal.hide();
+                        $scope.phoneField.name, $scope.$parent.$parent.$parent.isAllSelected = false;
+                        $scope.$parent.$parent.$parent.selectedRecords = [];
+                        $scope.$parent.$parent.$parent.selectedRows = [];
+                        ngToast.create({ content: $filter('translate')('SMS.MessageQueued'), className: 'success' });
 
-                })
+                    })
                     .catch(function () {
                         $scope.submittingModal = false;
                         $scope.smsModal.hide();

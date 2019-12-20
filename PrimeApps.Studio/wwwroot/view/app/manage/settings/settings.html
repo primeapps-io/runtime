@@ -129,6 +129,9 @@
                     </div>
                 </div>
             </div>
+            <div style="text-align: center;"><label style="font-size: 14px; color: #000000;opacity: 0.5;"><span style="font-weight: bold;">Client Id</span> : {{currentApp.name}}</label></div>
+            <div style="text-align: center;"><label style="font-size: 14px; color: #000000;opacity: 0.5;"><span style="font-weight: bold;">Client Secret </span>: <i ng-show="!showSecret" ng-click="showSecret = true; apply();" class="fas fa-eye"></i><span ng-show="showSecret">{{currentApp.secret}}</span> </label></div>
+
         </div>
     </div>
     <div class="setup-title col-sm-6">

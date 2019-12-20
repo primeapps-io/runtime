@@ -22,7 +22,7 @@ namespace PrimeApps.Model.Common.Messaging
         public string Subject { get; set; }
         [DataMember]
         [Required]
-        public string Message { get; set; }
+        public int TemplateId { get; set; }
         [DataMember]
         [Required]
         public string EMailField { get; set; }

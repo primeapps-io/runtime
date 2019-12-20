@@ -17,7 +17,7 @@ namespace PrimeApps.Model.Helpers
 {
     public class PackageHelper
     {
-        public static async Task<bool> All(JObject app, string studioSecret, bool clearAllRecords, string dbName, string version, IConfiguration configuration, IUnifiedStorage storage, List<HistoryStorage> historyStorages, IHostingEnvironment hostingEnvironment)
+        public static async Task<bool> All(JObject app, bool clearAllRecords, string dbName, string version, IConfiguration configuration, IUnifiedStorage storage, List<HistoryStorage> historyStorages, IHostingEnvironment hostingEnvironment)
         {
             var PDEConnectionString = configuration.GetConnectionString("StudioDBConnection");
             var postgresPath = PostgresHelper.GetPostgresBinaryPath(configuration, hostingEnvironment);
@@ -214,7 +214,7 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static async Task<bool> Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, JObject app, string studioSecret, string dbName, string version, int deploymentId, IConfiguration configuration, IUnifiedStorage storage, IHostingEnvironment hostingEnvironment)
+        public static async Task<bool> Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, JObject app, string dbName, string version, int deploymentId, IConfiguration configuration, IUnifiedStorage storage, IHostingEnvironment hostingEnvironment)
         {
             var root = DataHelper.GetDataDirectoryPath(configuration, hostingEnvironment);
 

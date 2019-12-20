@@ -93,6 +93,7 @@ namespace PrimeApps.Studio.Controllers
             var moduleEntity = await _moduleRepository.GetByName(module);
             var currentCulture = locale == "en" ? "en-US" : "tr-TR";
 
+            SetAsposeLicence(true);
 
             if (moduleEntity == null)
             {
@@ -1042,6 +1043,8 @@ namespace PrimeApps.Studio.Controllers
                 throw new HttpRequestException("Module field is required");
             }
 
+            SetAsposeLicence();
+
             var moduleEntity = await _moduleRepository.GetByName(module);
             var fields = moduleEntity.Fields.OrderBy(x => x.Id).ToList();
             var nameModule = AppUser.Culture.Contains("tr") ? moduleEntity.LabelTrPlural : moduleEntity.LabelEnPlural;
@@ -1222,6 +1225,8 @@ namespace PrimeApps.Studio.Controllers
             {
                 throw new HttpRequestException("Module field is required");
             }
+
+            SetAsposeLicence();
 
             var moduleEntity = await _moduleRepository.GetByName(module);
             var moduleFields = moduleEntity.Fields.Where(x => !x.Deleted).OrderBy(x => x.Id).ToList();
@@ -1566,6 +1571,8 @@ namespace PrimeApps.Studio.Controllers
                 throw new HttpRequestException("Module field is required");
             }
 
+            SetAsposeLicence();
+
             var moduleEntity = await _moduleRepository.GetByName(module);
             var Module = await _moduleRepository.GetByName(module);
             var template = await _templateRepository.GetById(templateId);
@@ -1870,6 +1877,8 @@ namespace PrimeApps.Studio.Controllers
                 throw new HttpRequestException("Module field is required");
             }
 
+            SetAsposeLicence();
+
             var moduleEntity = await _moduleRepository.GetByName(module);
             var template = await _templateRepository.GetById(templateId);
             var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}", _configuration);
@@ -2160,6 +2169,31 @@ namespace PrimeApps.Studio.Controllers
             }
 
             return true;
+        }
+
+        private void SetAsposeLicence(bool isWord = false)
+        {
+            var licenceData = _configuration.GetValue("AppSettings:AsposeLicence", string.Empty);
+
+            if (string.IsNullOrEmpty(licenceData))
+                return;
+
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(licenceData);
+            writer.Flush();
+            stream.Position = 0;
+
+            if (isWord)
+            {
+                Aspose.Words.License licence = new Aspose.Words.License();
+                licence.SetLicense(stream);
+            }
+            else
+            {
+                Aspose.Cells.License licence = new Aspose.Cells.License();
+                licence.SetLicense(stream);
+            }
         }
     }
 }

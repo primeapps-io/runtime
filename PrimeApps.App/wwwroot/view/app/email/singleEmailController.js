@@ -582,7 +582,7 @@ angular.module('primeapps')
                         $scope.selectedIds,
                         $scope.queryRequest.query,
                         $scope.$parent.$parent.isAllSelected,
-                        $scope.tinymceModel,
+                        $scope.template,
                         $scope.emailField.name,
                         $scope.Cc,
                         $scope.Bcc,

@@ -394,7 +394,7 @@ angular.module('primeapps')
                     selectedIds,
                     $scope.queryRequest.query || null,
                     $scope.$parent.$parent.$parent.isAllSelected,
-                    $scope.tinymceModel,
+                    $scope.template,
                     $scope.emailField.name,
                     $scope.Cc,
                     $scope.Bcc,

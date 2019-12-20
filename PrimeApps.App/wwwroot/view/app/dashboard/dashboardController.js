@@ -111,8 +111,8 @@ angular.module('primeapps')
             };
             $scope.showComponent = [];
             var componentsListe = [];
-            if(components !=null){
-                var com = JSON.parse(components)
+            if(components) {
+                var com = JSON.parse(components);
                 for (var i = 0; i < com.length; i++) {
                     componentsListe['component-' + com[i].Id] = com[i];
                 }

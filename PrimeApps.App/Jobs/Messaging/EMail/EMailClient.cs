@@ -358,12 +358,12 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 								}
 
 								record = await RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, _configuration, tenant.GuidId, language, culture, 180, lookupModules, true);
-								string formattedMessage = FormatMessage(messageFields, messageBody, record);
+                                ///string formattedMessage = FormatMessage(messageFields, messageBody, record);  //DB perfonmans to deleted
 
-								JObject messageStatus = new JObject();
+                                JObject messageStatus = new JObject();
 								messageStatus["email"] = record[emailField]?.ToString();
-								messageStatus["message"] = formattedMessage;
-								messageStatus["status"] = status.ToString();
+                                ///messageStatus["message"] = formattedMessage;  //Deleted for DB perfonmans
+                                messageStatus["status"] = status.ToString();
 								messageStatus["email_id"] = emailId;
 								messageStatus["record_primary_value"] = record[emailField]?.ToString();
 								messageStatus["module_id"] = module.Id;
@@ -378,8 +378,8 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 									/// create a message object and add it to the list.
 									Message emailMessage = new Message();
 									emailMessage.Recipients.Add(record[emailField].ToString());
-									emailMessage.Body = formattedMessage;
-									emailMessage.Subject = subject;
+                                    ///emailMessage.Body = formattedMessage; //Deleted for DB perfonmans
+                                    emailMessage.Subject = subject;
 									emailMessage.AttachmentLink = attachmentLink;
 									emailMessage.AttachmentName = attachmentName;
 									emailMessage.Cc = Cc;

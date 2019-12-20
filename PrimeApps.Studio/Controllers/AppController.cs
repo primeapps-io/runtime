@@ -73,7 +73,7 @@ namespace PrimeApps.Studio.Controllers
             //                return Forbid(ApiResponseMessages.PERMISSION);
 
             var app = await _appDraftRepository.Get(id);
-
+            app.Secret = CryptoHelper.Decrypt(app.Secret);
             return Ok(app);
         }
 
@@ -85,6 +85,9 @@ namespace PrimeApps.Studio.Controllers
 
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
+            
+            var secret = Guid.NewGuid().ToString().Replace("-", string.Empty);
+            var secretEncrypt = CryptoHelper.Encrypt(secret);
 
             var app = new AppDraft
             {
@@ -96,6 +99,7 @@ namespace PrimeApps.Studio.Controllers
                 TempletId = model.TempletId,
                 Color = model.Color,
                 Icon = model.Icon,
+                Secret = secretEncrypt,
                 Setting = new AppDraftSetting()
                 {
                     AuthDomain = _configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty).Replace("https://", string.Empty).Replace("http://", string.Empty),
