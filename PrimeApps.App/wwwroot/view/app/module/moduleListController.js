@@ -747,7 +747,7 @@ angular.module('primeapps')
                         $scope.updateModal.hide();
                         $scope.submittingModal = false;
                         ngToast.create({
-                            content: $filter('translate')('Güncelleme işleminiz başarıyla gerçekleşti. '),
+                            content: $filter('translate')('Module.UpdateRecordBulkSuccess'),
                             className: 'success'
                         });
                         $cache.remove(cacheKey);

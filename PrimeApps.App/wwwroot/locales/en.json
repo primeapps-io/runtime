@@ -353,7 +353,8 @@
     "ExchangeRatesMessage": "Central Bank of the Republic of Turkey {{date}} banknote  selling exchange rates",
     "UpdateSelecteds": "Update Selected",
     "ConvertToSalesInvoice": "Convert To Sales Invoice",
-    "ConvertToBuyingInvoice": "Convert To Buying Invoice"
+    "ConvertToBuyingInvoice": "Convert To Buying Invoice",
+    "UpdateRecordBulkSuccess":"Records has been updated successfully"
   },
   "View": {
     "Edit": "Edit View",
