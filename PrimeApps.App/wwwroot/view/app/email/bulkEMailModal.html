@@ -99,52 +99,56 @@
                                     </select>
                                 </div>
                             </div>
-                            <br />
                             <div class="row">
-                                <div class="col-sm-12 tinymce-container" ng-class="{'has-error': emailModalForm.$submitted && emailModalForm.tinymceModel.$invalid}">
-                                    <textarea mentio-id="'tinyMceTextArea1'" mentio mentio-typed-text="typedTerm"
-                                              mentio-require-leading-space="true" ui-tinymce="tinymceTemplate"
-                                              ng-required="true" ng-model="tinymceModel"
-                                              mentio-iframe-element="iframeElement['tinymceTemplate']"></textarea>
-                                    <script type="text/ng-template" id="tag-mentions.tpl">
-                                        <ul class="ment-tags">
-                                            <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
-                                                class="list-group-item clearfix"
-                                                ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
-                                                {{tag.label}}
-                                            </li>
-                                        </ul>
-                                    </script>
-                                    <mentio-menu class="mention-scrollbar" id="hastmenu1"
-                                                 mentio-for="'tinyMceTextArea1'" mentio-trigger-char="'#'"
-                                                 mentio-items="tags" mentio-template-url="tag-mentions.tpl"
-                                                 mentio-search="searchTags(term)"
-                                                 mentio-select="getTagTextRaw(item)"></mentio-menu>
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-10 tinymce-container" ng-class="{'has-error': emailModalForm.$submitted && emailModalForm.tinymceModel.$invalid}">
+                                    <pre name="tinymceModel"
+                                         class="form-control ng-animate-disabled"
+                                         style="padding-top: 5px; padding-left: 1px; border: 1px;height: 100%"
+                                         ng-bind-html="tinymceModel"></pre>
+                                    <!-- <textarea mentio-id="'tinyMceTextArea1'" mentio mentio-typed-text="typedTerm"
+                                                  mentio-require-leading-space="true" ui-tinymce="tinymceTemplate"
+                                                  ng-required="true" ng-model="tinymceModel"
+                                                  mentio-iframe-element="iframeElement['tinymceTemplate']"></textarea>
+                                        <script type="text/ng-template" id="tag-mentions.tpl">
+                                            <ul class="ment-tags">
+                                                <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
+                                                    class="list-group-item clearfix"
+                                                    ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
+                                                    {{tag.label}}
+                                                </li>
+                                            </ul>
+                                        </script>
+                                        <mentio-menu class="mention-scrollbar" id="hastmenu1"
+                                                     mentio-for="'tinyMceTextArea1'" mentio-trigger-char="'#'"
+                                                     mentio-items="tags" mentio-template-url="tag-mentions.tpl"
+                                                     mentio-search="searchTags(term)"
+                                                     mentio-select="getTagTextRaw(item)"></mentio-menu>
 
-                                    <div class="hidden" plupload="imgUpload">
-                                        <input id="uploadImage" type="file" add-file="add-file" />
-                                    </div>
-                                    <div class="hidden" plupload="fileUpload">
-                                        <input id="uploadFile" type="file" add-file="add-file" />
-                                    </div>
-                                </div>
-                                <div style="width:100%;background-color:white;border:2px" class="form-group" ng-show="emailModalForm.$submitted && emailModalForm.$invalid">
+                                        <div class="hidden" plupload="imgUpload">
+                                            <input id="uploadImage" type="file" add-file="add-file" />
+                                        </div>
+                                        <div class="hidden" plupload="fileUpload">
+                                            <input id="uploadFile" type="file" add-file="add-file" />
+                                        </div>
+                                    </div>-->
+                                    <!--<div style="width:100%;background-color:white;border:2px" class="form-group" ng-show="emailModalForm.$submitted && emailModalForm.$invalid">
                                     <div class="col-sm-offset-2 col-sm-8">
                                         <div class="callout callout-danger">
                                             <p ng-if="emailModalForm.$error.required || emailModalForm.$error['autocomplete-required']">{{'Module.RequiredError' | translate}}</p>
                                         </div>
-                                    </div>
+                                    </div>-->
                                 </div>
                             </div>
                         </div>
                         <div class="clearfix mail-footer">
-                            <div class="col-sm-4">
-                                <p class="pull-left" style="margin-top:6px">{{'Common.ParameterMessage' | translate}}</p>
+                            <div class="col-sm-5">
+                                <p class="pull-left" ng-if="!template" style="margin-top:6px">{{'Template.ChooseTemplate' | translate}}</p>
                             </div>
-                            <div class="col-sm-8 text-right">
+                            <div class="col-sm-7 text-right">
                                 <button type="button" class="btn btn-custom" ng-show="template" ng-click="formType = 'template';setTemplate()" ng-disabled="saving">{{'Template.EditTemplate' | translate}}</button>
                                 <button type="button" class="btn btn-custom" ng-show="!template" ng-click="formType = 'template';setTemplate()" ng-disabled="saving">{{'Template.NewTemplate' | translate}}</button>
-                                <button type="submit" class="btn btn-w-md btn-primary" ng-disabled="!emailField" ladda="submittingModal"><i class="fa fa-check-circle pull-left pull-right"></i> {{'Common.Send' | translate}}</button>
+                                <button type="submit" class="btn btn-w-md btn-primary" ng-disabled="!emailField || !template" ladda="submittingModal"><i class="fa fa-check-circle pull-left pull-right"></i> {{'Common.Send' | translate}}</button>
                             </div>
                         </div>
                     </div>
