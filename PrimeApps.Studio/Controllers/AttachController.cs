@@ -1058,8 +1058,8 @@ namespace PrimeApps.Studio.Controllers
             var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
             var currentCulture = locale == "en" ? "en-US" : "tr-TR";
             var formatDate = currentCulture == "tr-TR" ? "dd.MM.yyyy" : "M/d/yyyy";
-            var formatDateTime = currentCulture == "tr-TR" ? "dd.MM.yyyy HH:mm" : "M/d/yyyy h:mm a";
-            var formatTime = currentCulture == "tr-TR" ? "HH:mm" : "h:mm a";
+            var formatDateTime = currentCulture == "tr-TR" ? "dd.MM.yyyy HH:mm" : "M/d/yyyy h:mm";
+            var formatTime = currentCulture == "tr-TR" ? "HH:mm" : "h:mm";
             var format = "";
 
             var findRequest = new FindRequest();
