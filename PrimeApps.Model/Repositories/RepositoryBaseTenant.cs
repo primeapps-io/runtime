@@ -6,6 +6,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Distributed;
+using Sentry.Protocol;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -53,7 +54,11 @@ namespace PrimeApps.Model.Repositories
                         throw new TenantNotFoundException("No valid Tenant Database information found for the repository.");
                     }
                 }
-
+                else
+                {
+                    ErrorHandler.LogMessage($"TenantDbContext state problem. State : {dbConnection.State}, connectionString : {dbConnection.ConnectionString}, " +
+                                            $"CurrentUser : {CurrentUser?.ToJsonString()}, TenantId: {TenantId}", SentryLevel.Fatal);
+                }
                 _dbContext.UserId = CurrentUser.UserId;
 
                 return _dbContext;
