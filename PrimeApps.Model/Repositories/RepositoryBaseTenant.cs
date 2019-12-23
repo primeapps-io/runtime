@@ -41,6 +41,9 @@ namespace PrimeApps.Model.Repositories
 
                 if (dbConnection.State != System.Data.ConnectionState.Open)
                 {
+                    ErrorHandler.LogMessage($"TenantDbContext state problem. State : {dbConnection.State}, connectionString : {dbConnection.ConnectionString}, " +
+                                            $"CurrentUser : {CurrentUser?.ToJsonString()}, TenantId: {TenantId}", SentryLevel.Info);
+                    
                     if (TenantId.HasValue)
                     {
                         dbConnection.ConnectionString = Postgres.GetConnectionString(connectionString, TenantId.Value, CurrentUser.PreviewMode);
