@@ -93,7 +93,8 @@ namespace PrimeApps.App
                     opt.SerializerSettings.Converters.Add(new StringEnumConverter());
                 })
                 .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix, opts => { opts.ResourcesPath = "Localization"; })
-                .AddDataAnnotationsLocalization();
+                .AddDataAnnotationsLocalization()
+                .AddControllersAsServices();
 
 
             var storageUrl = Configuration.GetValue("AppSettings:StorageUrl", string.Empty);
