@@ -41,9 +41,6 @@ namespace PrimeApps.Model.Repositories
 
                 if (dbConnection.State != System.Data.ConnectionState.Open)
                 {
-                    ErrorHandler.LogMessage($"TenantDbContext state problem. State : {dbConnection.State}, connectionString : {dbConnection.ConnectionString}, " +
-                                            $"CurrentUser : {CurrentUser?.ToJsonString()}, TenantId: {TenantId}", SentryLevel.Info);
-                    
                     if (TenantId.HasValue)
                     {
                         dbConnection.ConnectionString = Postgres.GetConnectionString(connectionString, TenantId.Value, CurrentUser.PreviewMode);
@@ -57,11 +54,7 @@ namespace PrimeApps.Model.Repositories
                         throw new TenantNotFoundException("No valid Tenant Database information found for the repository.");
                     }
                 }
-                else
-                {
-                    ErrorHandler.LogMessage($"TenantDbContext state problem. State : {dbConnection.State}, connectionString : {dbConnection.ConnectionString}, " +
-                                            $"CurrentUser : {CurrentUser?.ToJsonString()}, TenantId: {TenantId}", SentryLevel.Fatal);
-                }
+                
                 _dbContext.UserId = CurrentUser.UserId;
 
                 return _dbContext;
