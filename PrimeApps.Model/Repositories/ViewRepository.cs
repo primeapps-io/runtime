@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
-using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -167,12 +164,15 @@ namespace PrimeApps.Model.Repositories
             return await count.CountAsync();
         }
 
-        public IQueryable<View> Find()
+        public IQueryable<View> Find(int id)
         {
             var views = DbContext.Views
             .Where(x => !x.Deleted)
-            .Include(x=>x.Module)
+            .Include(x => x.Module)
             .OrderByDescending(x => x.Id);
+
+            if (id > 0)
+                views.Where(x => x.ModuleId == id);
 
             return views;
         }

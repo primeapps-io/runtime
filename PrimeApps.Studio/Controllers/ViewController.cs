@@ -227,13 +227,13 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find")]
-        public IActionResult Find(ODataQueryOptions<View> queryOptions)
+        [Route("find/{id:int}")]
+        public IActionResult Find(int id, ODataQueryOptions<View> queryOptions)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "view", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var views = _viewRepository.Find();
+            var views = _viewRepository.Find(id);
             var queryResults = (IQueryable<View>)queryOptions.ApplyTo(views, new ODataQuerySettings() { EnsureStableOrdering = false });
             return Ok(new PageResult<View>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }

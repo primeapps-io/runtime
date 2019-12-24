@@ -624,7 +624,7 @@ angular.module('primeapps')
                     return trTemp;
                 },
                 altRowTemplate: function (e) {
-                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left"><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
                     trTemp += '<td class="text-left"><span>' + e['name_' + $scope.language] + '</span></td>';
                     trTemp += e.type === 'Scripting' ? '<td class="text-capitalize"> <span>Script</span></td > ' : e.type === 'ModalFrame' ? '<td class="text-capitalize"> <span>Modal</span></td > ' : '<td class="text-capitalize"> <span>' + e.type + '</span></td > ';

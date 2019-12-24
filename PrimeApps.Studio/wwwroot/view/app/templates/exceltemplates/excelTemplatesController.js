@@ -211,8 +211,8 @@ angular.module('primeapps')
                     fileUpload.onCompleteItem = function (fileItem, tempInfo, status) {
                         uploadThenComplete(fileItem, tempInfo, status);
                     };
-                    $scope.pageTotal++;
-                } else {
+                }
+                else {
                     if ($scope.templateFileCleared) {
                         //$scope.fileUpload.uploader.start();
                         fileUpload.queue[0].uploader.headers = header;
@@ -221,7 +221,8 @@ angular.module('primeapps')
                         fileUpload.onCompleteItem = function (fileItem, tempInfo, status) {
                             uploadThenComplete(fileItem, tempInfo, status);
                         };
-                    } else {
+                    }
+                    else {
                         var template = angular.copy($scope.template);
                         template.module = $scope.template.templateModule.name;
                         template.name = $scope.template.templateName;
@@ -261,13 +262,13 @@ angular.module('primeapps')
             };
 
             var success = function () {
-
+                $scope.grid.dataSource.read();
                 $scope.saving = false;
                 $scope.addNewExcelTemplateFormModal.hide();
-                $scope.changePage($scope.activePage);
+                //$scope.changePage($scope.activePage);
                 toastr.success($filter('translate')('Setup.Templates.SaveSuccess'));
                 $scope.addNewWordTemplateFormModal.hide();
-
+                
             };
 
             $scope.closeModal = function () {
@@ -293,20 +294,14 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
-
-                            var elem = angular.element(event.srcElement);
-                            angular.element(elem.closest('tr')).addClass('animated-background');
-
+                         
                             ExcelTemplatesService.delete(id).then(function () {
-
-                                angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                $scope.changePage($scope.activePage);
-                                $scope.pageTotal--;
+                             
+                                $scope.grid.dataSource.read();
                                 toastr.success($filter('translate')('Setup.Templates.DeleteSuccess' | translate));
 
                             }).catch(function () {
-
-                                angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
+                             
                                 $scope.templates = $scope.templatesState;
 
                                 if ($scope.addNewExcelTemplateFormModal) {
@@ -337,7 +332,6 @@ angular.module('primeapps')
                         ExcelTemplatesService.create(template)
                             .then(function () {
                                 success();
-                                $scope.grid.dataSource.read();
                             })
                             .catch(function () {
                                 $scope.saving = false;
@@ -348,7 +342,6 @@ angular.module('primeapps')
                         ExcelTemplatesService.update(template)
                             .then(function () {
                                 success();
-                                $scope.grid.dataSource.read();
                             })
                             .catch(function () {
                                 $scope.saving = false;
