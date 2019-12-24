@@ -408,16 +408,16 @@ angular.module('primeapps')
                 },
                 rowTemplate: function (e) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
-                    trTemp += '<td><span>' + e['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += '<td class="text-left"><span>' + e['label_' + $scope.language + '_plural'] + '</span></td>';
                     trTemp += '<td class="text-left"><span>' + e.parent_module['label_' + $scope.language + '_plural'] + '</span></td>';
                     trTemp += '<td class="text-capitalize text-left"> <span>' + e.related_module + '</span></td > ';
                     trTemp += e.relation_type === "one_to_many" ? '<td ><span>' + $filter('translate')('Setup.Modules.OneToMany') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.ManyToMany') + '</span></td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
-                AltRowTemplate: function (e) {
+                altRowTemplate: function (e) {
                     var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
-                    trTemp += '<td><span>' + e['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += '<td class="text-left"><span>' + e['label_' + $scope.language + '_plural'] + '</span></td>';
                     trTemp += '<td class="text-left"><span>' + e.parent_module['label_' + $scope.language + '_plural'] + '</span></td>';
                     trTemp += '<td class="text-capitalize text-left"> <span>' + e.related_module + '</span></td > ';
                     trTemp += e.relation_type === "one_to_many" ? '<td ><span>' + $filter('translate')('Setup.Modules.OneToMany') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.ManyToMany') + '</span></td>';
@@ -435,6 +435,9 @@ angular.module('primeapps')
                     {
                         field: 'LabelEnPlural',
                         title: $filter('translate')('Setup.Modules.RelationName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
                     },
                     {
                         field: 'ParentModule.LabelEnPlural',

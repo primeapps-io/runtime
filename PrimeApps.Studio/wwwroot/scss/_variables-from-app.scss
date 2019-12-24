@@ -55,9 +55,9 @@ $input-bg: #FFFFFF;
 $accent: $primary;
 
 $font-family-sans-serif:      Nunito, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
-$font-size-base:              .875rem; // Assumes the browser default, typically `16px`
-$font-size-lg:                1rem;
-$font-size-sm:                .75rem;
+$font-size-base:              1.4rem; // Assumes the browser default, typically `16px`
+$font-size-lg:                1.6rem;
+$font-size-sm:                1.2rem;
 
 
 $input-btn-padding-y:         .375rem !default;
@@ -68,6 +68,7 @@ $input-btn-padding-y-lg:      .5rem !default;
 $input-btn-padding-x-lg:      2rem !default;
 $input-color: 				  $body-color;
 $form-group-margin-bottom:    .5rem;
+$table-cell-padding:          1rem;
 
 $input-disabled-bg: $input-bg;
 $input-border-color: $input-bg;
@@ -78,7 +79,7 @@ $input-default-width: 100%;
 $disabled-opacity: 0.5;
 $btn-disabled-opacity: 0.5;
 $custom-control-indicator-size: 1.2rem;
-$icon-size: 16px;
+$icon-size: 14px;
 
 $input-btn-focus-box-shadow: none !important;
 $button-focused-shadow: none !important;
