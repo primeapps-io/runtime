@@ -81,7 +81,7 @@ namespace PrimeApps.Studio
                     });
             });
 
-            services.AddSingleton<ODataQueryStringFixer>();//For OData Filter Middleware
+            services.AddSingleton<ODataQueryStringFixer>();//For OData Filter Middlewares
             services.AddOData();
             services.AddODataQueryFilter();
 
@@ -235,31 +235,5 @@ namespace PrimeApps.Studio
                 routes.EnableDependencyInjection();
             });
         }
-    }
-
-    public static class ODataQueryStringFixerExtensions
-    {
-        public static IApplicationBuilder UseODataQueryStringFixer(this IApplicationBuilder app)
-        {
-            return app.UseMiddleware<ODataQueryStringFixer>();
-        }
-    }
-
-    public class ODataQueryStringFixer : IMiddleware
-    {
-        private static readonly Regex ReplaceToLowerRegex =
-            new Regex(@"\(tolower\((?<columnName>([^\)\(]+))\)%2C(?<value>(\'|%27)(\w+)(\'|%27))\)");
-
-        public Task InvokeAsync(HttpContext context, RequestDelegate next)
-        {
-            var input = context.Request.QueryString.Value;
-            if (string.IsNullOrEmpty(input))
-                return next(context);
-            
-            var replacement = @"(tolower(${columnName}),tolower(${value}))";
-            context.Request.QueryString = new QueryString(ReplaceToLowerRegex.Replace(input, replacement));
-
-            return next(context);
-        }
-    }
+    } 
 }
