@@ -1917,7 +1917,7 @@ namespace PrimeApps.Model.Helpers
 			return sql;
 		}
 
-		public static async Task<JObject> FormatRecordValues(Module module, JObject record, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, Guid tenantGuid, string picklistLanguage, string currentCulture, int timezoneMinutesFromUtc = 180, ICollection<Module> lookupModules = null, bool convertImage = false, bool formatNumeric = true, string currencyPicklistValue = null, string userLanguage = null)
+		public static async Task<JObject> FormatRecordValues(Module module, JObject record, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, Guid? tenantGuid, string picklistLanguage, string currentCulture, int timezoneMinutesFromUtc = 180, ICollection<Module> lookupModules = null, bool convertImage = false, bool formatNumeric = true, string currencyPicklistValue = null, string userLanguage = null)
 		{
 			var recordNew = new JObject();
 
@@ -2106,7 +2106,10 @@ namespace PrimeApps.Model.Helpers
 							var url = "";
 							if (!string.IsNullOrEmpty(blobUrl))
 							{
-								url = blobUrl + "/record-detail-" + tenantGuid + "/" + property.Value;
+								if (tenantGuid != null)
+									url = blobUrl + "/record-detail-" + tenantGuid + "/" + property.Value;
+								else
+									url = blobUrl + "/records/" + property.Value;
 							}
 
 							var img = "<img src=\"" + url + "\" width=\"100%\">";

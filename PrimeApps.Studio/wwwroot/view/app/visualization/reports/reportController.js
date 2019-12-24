@@ -571,7 +571,7 @@ angular.module('primeapps')
                     return true;
                 }
 
-                $scope.reportModel.chart.yaxis_name_en = field["label_" + $rootScope.user.language];
+                $scope.reportModel.chart.yaxis_name_en = field["label_en"];
                 if ($scope.reportModel.report_type === 'summary' || $scope.reportModel.report_type === 'single') {
                     $scope.reportModel.aggregations = [];
                 } else {

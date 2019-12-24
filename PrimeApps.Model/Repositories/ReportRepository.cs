@@ -40,6 +40,70 @@ namespace PrimeApps.Model.Repositories
             return reports;
         }
 
+        public async Task<JArray> ChartFilter(FindRequest request, string aggregationField, string currentCulture, string tenantLanguage, string moduleName, IConfiguration configuration, IPicklistRepository picklistRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, int timezoneOffset = 180, bool roleBasedEnabled = true, bool showDisplayValue = true)
+        {
+            var data = new JArray();
+            
+            var noneLabel = tenantLanguage == "tr" ? "(Boş)" : "(None)";
+            
+            var findRequest = new FindRequest
+            {
+                Fields = new List<string>(),
+                SortField = request.SortField,
+                SortDirection = request.SortDirection,
+                GroupBy = request.GroupBy
+            };
+
+            string currencyFilterValue = null;
+
+            findRequest.Fields.Add(aggregationField);
+            findRequest.Fields.Add(request.GroupBy);
+
+            if (request.Filters != null && request.Filters.Count > 0)
+            {
+                findRequest.Filters = new List<Filter>();
+
+                foreach (var reportFilter in request.Filters)
+                {
+                    findRequest.Filters.Add(new Filter {Field = reportFilter.Field, Operator = reportFilter.Operator, Value = reportFilter.Value, No = reportFilter.No});
+
+                    if (reportFilter.Field == "currency")
+                        currencyFilterValue = reportFilter.Value.ToString();
+                }
+            }
+
+            var records = recordRepository.Find(moduleName, findRequest, true, 180);
+
+            var module = await moduleRepository.GetByName(moduleName);
+
+            var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository, tenantLanguage: tenantLanguage);
+
+            foreach (var record in records)
+            {
+                var dataItem = new JObject();
+                dataItem["value"] = record.First().First();
+
+                if (aggregationField != request.GroupBy)
+                    record[aggregationField] = record.First().First();
+
+                var recordFormatted = await RecordHelper.FormatRecordValues(module, (JObject) record, moduleRepository, picklistRepository, configuration, null, tenantLanguage, currentCulture, timezoneOffset,
+                    lookupModules, currencyPicklistValue: currencyFilterValue, userLanguage: tenantLanguage);
+
+                dataItem["label"] = !recordFormatted[request.GroupBy].IsNullOrEmpty() ? recordFormatted[request.GroupBy] : noneLabel;
+                dataItem["valueFormatted"] = recordFormatted[aggregationField];
+
+                if (showDisplayValue)
+                {
+                    dataItem["displayValue"] = recordFormatted[aggregationField];
+                    dataItem["tooltext"] = dataItem["label"] + ", " + recordFormatted[aggregationField];
+                }
+
+                data.Add(dataItem);
+            }
+
+            return data;
+        }
+
         public async Task<JArray> GetDashletReportData(int reportId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true, bool showDisplayValue = true)
         {
             var data = new JArray();
