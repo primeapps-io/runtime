@@ -21,7 +21,8 @@ namespace PrimeApps.App
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
             services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped(p => new TenantDBContext(p.GetService<DbContextOptions<TenantDBContext>>()));
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton(configuration);
             services.AddHttpContextAccessor();
 
@@ -43,7 +44,7 @@ namespace PrimeApps.App
                             throw new Exception("The " + itype.Name + " type has more than one implementations, please change your filter");
                         }
 
-                        services.AddScoped(itype, type);
+                        services.AddTransient(itype, type);
                     }
                 }
             }
