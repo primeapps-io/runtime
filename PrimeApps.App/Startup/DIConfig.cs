@@ -45,7 +45,7 @@ namespace PrimeApps.App
                             throw new Exception("The " + itype.Name + " type has more than one implementations, please change your filter");
                         }
 
-                        services.AddScoped(itype, type);
+                        services.AddTransient(itype, type);
                     }
                 }
             }
