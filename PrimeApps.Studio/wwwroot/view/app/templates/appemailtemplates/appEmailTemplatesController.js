@@ -248,19 +248,7 @@ angular.module('primeapps')
                     $scope.template.isNew = false;
                 }
             };
-
-            $scope.requestModel = {
-                limit: '10',
-                offset: 0
-            };
-
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-
+             
             $scope.templateSave = function (uploadForm) {
 
                 if (uploadForm.$invalid) {
@@ -347,6 +335,7 @@ angular.module('primeapps')
                 return tagsList;
             };
 
+            //For Kendo UI
             $scope.goUrl = function (emailTemp) {
                 var selection = window.getSelection();
                 if (selection.toString().length === 0) {
@@ -354,7 +343,6 @@ angular.module('primeapps')
                 }
             };
 
-            //For Kendo UI
             var accessToken = $localStorage.read('access_token');
 
             $scope.mainGridOptions = {

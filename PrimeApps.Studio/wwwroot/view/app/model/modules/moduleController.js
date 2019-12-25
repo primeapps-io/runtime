@@ -275,7 +275,7 @@ angular.module('primeapps')
                     '                           </li>  ' +
                     '                           <li>  ' +
                     '                               <a ng-click="$event.stopPropagation();"  ' +
-                    '                                  href="/#/org/{{orgId}}/app/{{appId}}/moduleprofilesettings/{{dataItem.id}}">  ' +
+                    '                                  href="/#/org/{{orgId}}/app/{{appId}}/moduleprofilesettings/{{dataItem.name}}">  ' +
                     '                                   Profile Settings  ' +
                     '                               </a>  ' +
                     '                           </li>  ' +

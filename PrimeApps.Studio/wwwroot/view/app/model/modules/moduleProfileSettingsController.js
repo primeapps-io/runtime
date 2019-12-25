@@ -2,9 +2,9 @@
 
 angular.module('primeapps')
 
-    .controller('ModuleProfileSettingController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', 'helper', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleService',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, helper, $cache, systemRequiredFields, systemReadonlyFields, ModuleService) {
-            $scope.loading = true;
+    .controller('ModuleProfileSettingController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', 'ModuleService', '$localStorage',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, ModuleService, $localStorage) {
+            $scope.loading = false;
             var module = $filter('filter')($rootScope.appModules, { name: $stateParams.module }, true)[0];
             $scope.activePage = 1;
 
@@ -15,102 +15,7 @@ angular.module('primeapps')
                 return;
             }
 
-            $scope.requestModel = {
-                limit: '10',
-                offset: 0
-            };
-
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-            $scope.generator(10);
-
-            ModuleService.profileSettingsCount(module.id).then(function (response) {
-                $scope.pageTotal = response.data;
-            });
-
-            //2 templateType Module
-            ModuleService.profileSettingsFind($scope.requestModel, 2).then(function (response) {
-                var templates = response.data;
-                angular.forEach(templates, function (template) {
-                    template.module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
-                });
-                $scope.templates = templates;
-
-            }).finally(function () {
-                $scope.loading = false;
-            });
-
-            $scope.changePage = function (page) {
-                $scope.loading = true;
-
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
-
-                $scope.activePage = page;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-
-                ModuleService.profileSettingsFind(requestModel, 2).then(function (response) {
-                    var data = $filter('filter')(response.data, { module_id: $scope.module.id }, true);
-                    for (var i = 0; i < data.length; i++) {
-                        for (var j = 0; j < data[i].profile_list.length; j++) {
-                            var profileName = $filter('filter')($rootScope.appProfiles, { id: parseInt(data[i].profile_list[j]) }, true)[0].name;
-                            if (!data[i].profileName)
-                                data[i].profileName = profileName;
-                            else
-                                data[i].profileName += ', ' + profileName;
-                        }
-                    }
-                    $scope.profileSettings = data;
-                    $scope.profileSettingState = angular.copy($scope.profileSettings);
-                    $scope.loading = false;
-
-                }).finally(function () {
-                    $scope.loading = false;
-                });
-
-            };
-
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage);
-            };
-
             $scope.module = angular.copy(module);
-
-            var getModuleProfileSettings = function () {
-                ModuleService.profileSettingsFind($scope.requestModel, 2).then(function (response) {
-                    var data = $filter('filter')(response.data, { module_id: $scope.module.id }, true);
-                    for (var i = 0; i < data.length; i++) {
-                        for (var j = 0; j < data[i].profile_list.length; j++) {
-                            var profileName = $filter('filter')($rootScope.appProfiles, { id: parseInt(data[i].profile_list[j]) }, true)[0].name;
-                            if (!data[i].profileName)
-                                data[i].profileName = profileName;
-                            else
-                                data[i].profileName += ', ' + profileName;
-                        }
-                    }
-                    $scope.profileSettings = data;
-                    $scope.profileSettingState = angular.copy($scope.profileSettings);
-                    $scope.loading = false;
-                })
-                    .catch(function () {
-                        $scope.loading = false;
-                    });
-            };
-
-            getModuleProfileSettings();
 
             //show form modal
             $scope.showFormModal = function (profileSetting) {
@@ -151,12 +56,12 @@ angular.module('primeapps')
                 $scope.currentProfileSettingState = angular.copy($scope.currentProfileSetting);
 
                 $scope.profileSettingsFormModal = $scope.profileSettingsFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/model/modules/moduleProfileSettingForm.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/model/modules/moduleProfileSettingForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.profileSettingsFormModal.$promise.then(function () {
                     $scope.profileSettingsFormModal.show();
@@ -208,21 +113,18 @@ angular.module('primeapps')
 
 
                 var success = function () {
-                    getModuleProfileSettings();
+                    $scope.grid.dataSource.read();
                     toastr.success($filter('translate')('Setup.Modules.ModuleProfileSettingSaveSuccess'));
                     $scope.saving = false;
                     $scope.profileSettingsFormModal.hide();
-                    $scope.changePage($scope.activePage);
                 };
 
                 if (!profileSetting.id) {
                     ModuleService.createModuleProfileSetting(obj)
                         .then(function () {
                             success();
-                            $scope.pageTotal++;
                         })
                         .catch(function () {
-                            $scope.profileSettings = $scope.profileSettingState;
 
                             if ($scope.profileSettingsFormModal) {
                                 $scope.profileSettingsFormModal.hide();
@@ -255,23 +157,13 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
-                            var elem = angular.element(event.srcElement);
-                            angular.element(elem.closest('tr')).addClass('animated-background');
                             ModuleService.deleteModuleProfileSetting(profileSetting.id)
                                 .then(function () {
-                                    $scope.pageTotal--;
-                                    //var index = $rootScope.appModules.indexOf(module);
-                                    // $rootScope.appModules.splice(index, 1);
-
-                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                    $scope.changePage($scope.activePage);
+                                    $scope.grid.dataSource.read();
                                     toastr.success("Profile setting is deleted successfully.", "Deleted!");
 
                                 })
                                 .catch(function () {
-                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
-                                    $scope.profileSettings = $scope.profileSettingState;
-
                                     if ($scope.profileSettingsFormModal) {
                                         $scope.profileSettingsFormModal.hide();
                                         $scope.saving = false;
@@ -288,6 +180,129 @@ angular.module('primeapps')
                 });
 
                 $scope.profileSettingsFormModal.hide();
+            };
+
+            //For Kendo UI
+            $scope.goUrl = function (item) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.showFormModal(item);
+                }
+            };
+
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/module_profile_settings/find",
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                Profiles: { type: "string" },
+                                CreatedAt: { type: "date" }
+                            }
+                        },
+                        parse: function (data) {
+                            for (var i = 0; i < data.items.length; i++) {
+                                var labels = [];
+
+                                for (var a = 0; a < data.items[i].profile_list.length; a++) {
+                                    var profile = $filter('filter')($rootScope.appProfiles, { id: parseInt(data.items[i].profile_list[a]) }, true)[0];
+
+                                    if (profile)
+                                        labels.push(profile['name_' + $scope.language]);
+                                }
+                                data.items[i].profile_names = angular.copy(labels);
+                            }
+
+                            return data;
+                        }
+                    }
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                noRecords: true,
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter) {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
+                },
+                rowTemplate: function (item) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + item.profile_names.join(', ') + '</td>';
+                    trTemp += '<td class="text-left">' + kendo.toString(kendo.parseDate(item.created_at), "dd/MM/yyyy HH:mm:ss") + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                altRowTemplate: function (item) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + item.profile_names.join(', ') + '</td>';
+                    trTemp += '<td class="text-left">' + kendo.toString(kendo.parseDate(item.created_at), "dd/MM/yyyy HH:mm:ss") + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+
+                    {
+                        field: 'Profiles',
+                        title: $filter('translate')('Setup.Modules.ModuleProfileSettingProfiles'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                        filterable: {
+                            multi: true,
+                            search: false,
+                            operator: "contains"
+                        },
+                        values: [{ text: "test", value: "5" }, { text: "test2", value: "2" }, { text: "test3", value: "3" }, { text: "test4", value: "4" },]
+                    },
+
+                    {
+                        field: 'CreatedAt',
+                        title: $filter('translate')('Setup.UserCustomShares.CreatedDate'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                        filterable: {
+                            ui: "datetimepicker"
+                        }
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
             };
         }
     ]);
