@@ -17,14 +17,14 @@ angular.module('primeapps')
 
             $scope.module = angular.copy(module);
 
+            $scope.multiselect = function () {
+                return $filter('filter')($rootScope.appProfiles, { deleted: false, has_admin_rights: false }, true);
+            };
+
             //show form modal
             $scope.showFormModal = function (profileSetting) {
                 $scope.currentProfileSetting = {};
                 $scope.icons = ModuleService.getIcons();
-
-                $scope.multiselect = function () {
-                    return $filter('filter')($rootScope.appProfiles, { deleted: false, has_admin_rights: false }, true);
-                };
 
                 if (profileSetting) {
                     var profileList = [];
@@ -183,6 +183,18 @@ angular.module('primeapps')
             };
 
             //For Kendo UI
+            $scope.profileFilterList = [];
+            var profileDataList = $scope.multiselect();
+
+            for (var i = 0; i < profileDataList.length; i++) {
+
+                var data = {
+                    text: profileDataList[i]['name_' + $scope.language],
+                    value: profileDataList[i].id.toString(),
+                };
+                $scope.profileFilterList.push(data);
+            }
+
             $scope.goUrl = function (item) {
                 var selection = window.getSelection();
                 if (selection.toString().length === 0) {
@@ -285,7 +297,7 @@ angular.module('primeapps')
                             search: false,
                             operator: "contains"
                         },
-                        values: [{ text: "test", value: "5" }, { text: "test2", value: "2" }, { text: "test3", value: "3" }, { text: "test4", value: "4" },]
+                        values: $scope.profileFilterList
                     },
 
                     {
