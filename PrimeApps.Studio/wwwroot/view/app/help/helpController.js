@@ -37,7 +37,7 @@ angular.module('primeapps')
                     $scope.moduleFilter = $filter('filter')(result.data, { deleted: false });
                 });
             }
-                
+
             if ($scope.id) {
                 location = window.location.hash.split('/')[3].split('?')[0];
             } else {
@@ -819,8 +819,7 @@ angular.module('primeapps')
                         total: "count",
                         model: {
                             id: "id",
-                            fields: {
-                                LabelEn: { type: "string" },
+                            fields: { 
                                 ModalType: { type: "enums" }
                             }
                         }
@@ -844,7 +843,7 @@ angular.module('primeapps')
                     var helpType = $scope.helpType(help, $scope.moduleFilter, $scope.helpEnums);
                     trTemp += '<td class="text-left">' + help.name + '</td>';
                     trTemp += '<td>' + helpType + '</td>';
-                    trTemp += '<td class="text-left">' + relationModule.name + '</td>';
+                    trTemp += '<td class="text-left">' + relationModule['label_' + $scope.language + '_plural'] + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
@@ -854,7 +853,7 @@ angular.module('primeapps')
                     var helpType = $scope.helpType(help, $scope.moduleFilter, $scope.helpEnums);
                     trTemp += '<td class="text-left">' + help.name + '</td>';
                     trTemp += '<td>' + helpType + '</td>';
-                    trTemp += '<td class="text-left">' + relationModule.name + '</td>';
+                    trTemp += '<td class="text-left">' + relationModule['label_' + $scope.language + '_plural'] + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
@@ -865,7 +864,7 @@ angular.module('primeapps')
                     buttonCount: 5,
                     info: true,
                 },
-                columns: [ 
+                columns: [
                     {
                         field: 'Name',
                         title: $filter('translate')('Setup.HelpGuide.HelpScreenName'),
@@ -879,7 +878,7 @@ angular.module('primeapps')
                         values: [
                             { text: 'Introduction', value: 'Modal' },
                             { text: 'Help', value: 'SideModal' }]
-                    }, 
+                    },
                     {
                         field: 'Module.LabelEnPlural',
                         title: $filter('translate')('Setup.HelpGuide.HelpScreenRelation'),

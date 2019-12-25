@@ -139,7 +139,7 @@ angular.module('primeapps')
                 $scope.currentRelation.relationField = null;
                 if ($scope.currentRelation.related_module) {
                     /////var relatedModuleName = $scope.currentRelation.related_module.name;
-                    var relatedModuleName = $scope.currentRelation.related_module;
+                    var relatedModuleName = $scope.currentRelation.related_module.name;
                     $scope.modalLoading = true;
                     ModuleService.getModuleFields(relatedModuleName).then(function (response) {
                         $scope.currentRelation.related_module = $filter('filter')($rootScope.appModules, { name: relatedModuleName }, true)[0];
@@ -400,11 +400,11 @@ angular.module('primeapps')
                 sortable: true,
                 noRecords: true,
                 filterable: true,
-                filter: function (e) { 
+                filter: function (e) {
                     if (e.filter && e.field !== 'RelationType') {
                         for (var i = 0; i < e.filter.filters.length; i++) {
-                            e.filter.filters[i].ignoreCase = true; 
-                        } 
+                            e.filter.filters[i].ignoreCase = true;
+                        }
                     }
                 },
                 rowTemplate: function (e) {

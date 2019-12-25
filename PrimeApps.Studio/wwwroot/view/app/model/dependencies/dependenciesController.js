@@ -41,7 +41,7 @@ angular.module('primeapps')
 
             var getFields = function () {
 
-                $scope.dependencies = $scope.grid.dataSource.data();
+                //$scope.dependencies = $scope.grid.dataSource.data();
 
                 angular.forEach($scope.module.fields, function (field) {
 
