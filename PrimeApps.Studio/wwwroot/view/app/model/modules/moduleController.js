@@ -133,6 +133,7 @@ angular.module('primeapps')
                     scrollable: false,
                     persistSelection: true,
                     sortable: true,
+                    noRecords: true,
                     filterable: true,
                     filter: function (e) {
                         //var temps = [];
@@ -217,6 +218,7 @@ angular.module('primeapps')
                             width: "90px"
                         }]
                 };
+                
                 //For Kendo UI
 
                 var dropDownMenuTemp = '<button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"  ' +

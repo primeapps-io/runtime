@@ -243,6 +243,7 @@ angular.module('primeapps')
                 scrollable: false,
                 persistSelection: true,
                 sortable: true,
+                noRecords: true,
                 filterable: {
                     extra: false
                 },

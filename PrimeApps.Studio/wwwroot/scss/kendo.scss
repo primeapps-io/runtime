@@ -28,13 +28,26 @@
   margin-bottom: 30px;
   thead{
     th,td{
-      color: $black75; 
+      border-color: $black5;
+      font-weight: bold;
+      color: $black50;
     }
   }
   tbody{
     th,td{
-      padding: .5rem 1rem;
+      border-color: $black5;
+      padding: .5rem 2rem;
     }
+  }
+  .k-grid-norecords-template{
+    border-color: transparent;
+  }
+  .k-pager-wrap .k-link, .k-pager-wrap .k-pager-nav,.k-pager-wrap .k-dropdown .k-dropdown-wrap{
+    color: $black50;
+    border-color: $black10;
+  }
+  .k-pager-wrap.k-pager-lg .k-pager-numbers, .k-pager-wrap.k-pager-md .k-pager-numbers, .k-pager-wrap.k-pager-sm .k-pager-numbers{
+    border-color: $black10;
   }
   &.grid-theme-center{
     th,td{
@@ -42,6 +55,11 @@
       &.text-left{
         text-align: left;
       }
+    }
+    .k-grid-pager{
+      border-color: $black5;
+      color: $black50;
+      padding: 2rem;
     }
   }
   .k-grouping-header{

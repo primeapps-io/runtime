@@ -838,6 +838,7 @@ angular.module('primeapps')
                 scrollable: false,
                 persistSelection: true,
                 sortable: true,
+                noRecords: true,
                 filterable: true,
                 filter: function (e) {
                     if (e.filter && e.field !== 'SystemType') {
@@ -899,7 +900,7 @@ angular.module('primeapps')
 
             var actionButtonsTemplate = '   <div class="action-buttons-block">  ' +
                 '                       <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"  ' +
-                '                               class="btn btn-xs btn-default list-action-button"  ' +
+                '                               class="action-button2-more"  ' +
                 '                               placement="bottom-right"  ' +
                 '                               data-animation="am-flip-x"  ' +
                 '                               data-container="body"  ' +
