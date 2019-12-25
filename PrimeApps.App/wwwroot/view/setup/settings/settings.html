@@ -253,136 +253,139 @@
                             </select>
                         </div>
                     </div>
-                    <div ng-show="emailModel.provider">
-                        <!--SMTP Settings-->
-                        <div ng-if="emailModel.provider==='smtp'">
-                            <div class="form-group" show-errors>
-                                <label
-                                    class="col-sm-2 control-label">{{'Setup.Messaging.EMail.SMTP.Host' | translate}}</label>
-                                <div class="col-sm-10">
-                                    <input type="text" name="smtpHost" class="form-control" required
-                                        ng-model="emailModel.host" />
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label
-                                    class="col-sm-2 control-label">{{'Setup.Messaging.EMail.SMTP.SSLEnable'| translate}}<b>*</b></label>
-                                <div class="col-sm-10">
-                                    <input type="checkbox" ng-model="emailModel.enable_ssl" />
-                                </div>
-                            </div>
-                            <div class="form-group" show-errors>
-                                <label
-                                    class="col-sm-2 control-label">{{'Setup.Messaging.EMail.SMTP.Port' | translate}}</label>
-                                <div class="col-sm-10">
-                                    <input type="text" numeric min="1" max="64738" name="smtpHost" class="form-control"
-                                        required ng-model="emailModel.port" />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group" show-errors>
-                            <label
-                                class="col-sm-2 control-label">{{'Setup.Messaging.EMail.UserName' | translate}}</label>
-                            <div class="col-sm-10">
-                                <input type="text" name="userName" class="form-control" required
-                                    ng-model="emailModel.user_name" />
-                            </div>
-                        </div>
-                        <div class="form-group" show-errors>
-                            <label
-                                class="col-sm-2 control-label">{{'Setup.Messaging.EMail.Password' | translate}}</label>
-                            <div class="col-sm-10">
-                                <input type="password" name="password" class="form-control" required
-                                    ng-model="emailModel.password" />
-                            </div>
-                        </div>
-                        <div class="form-group" show-error>
-                            <label
-                                class="col-sm-2 control-label">{{'Setup.Messaging.EMail.Senders' | translate}}</label>
-                            <div class="col-sm-8">
-                                <div ng-if="emailModel.senders.length===0" style="padding:6px 0;">
-                                    {{'Setup.Messaging.EMail.NoCustomSender' | translate}}</div>
-                                <div ng-show="emailModel.senders.length>0">
-                                    <table ng-table="tableParams" class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>
-                                                    {{'Setup.Messaging.EMail.Alias' | translate}}
-                                                </th>
-                                                <th>
-                                                    {{'Setup.Messaging.EMail.Address' | translate}}
-                                                </th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tr ng-repeat="sender in $data">
-                                            <td>
-                                                {{sender.alias}}
-                                            </td>
-                                            <td>
-                                                {{sender.email}}
-                                            </td>
-                                            <td>
-                                                <div class="view-action-buttons pull-right">
-                                                    <a href confirm-click action="removeSender(sender)" placement="left"
-                                                        confirm-message="{{'Common.AreYouSure' | translate}}"
-                                                        confirm-yes="{{'Common.Yes' | translate}}"
-                                                        confirm-no="{{'Common.No' | translate}}"
-                                                        title="{{'Common.Delete' | translate}}">
-                                                        {{'Common.Delete' | translate}}
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <button type="button" name="addSender" class="btn btn-xs btn-custom"
-                                    ng-click="showNewSenderForm()"
-                                    style="padding: 4px 5px;">{{'Common.Add' | translate}}</button>
-                            </div>
-                        </div>
-                        <div class="col-sm-12"><b>*</b> {{'Setup.Messaging.EMail.SMTP.WhatIsSSL' | translate}}</div>
-                        <div class="form-group am-fade-and-slide-top"
-                            ng-show="emailForm.$submitted && emailForm.$invalid">
-                            <div class="col-sm-offset-2 col-sm-8">
-                                <div class="callout callout-danger">
-                                    <p ng-if="emailForm.$error.required">{{'Setup.Settings.ErrorEmpty' | translate}}</p>
-                                    <p ng-if="emailForm.$error.noSender">
-                                        {{'Setup.Messaging.EMail.NoSender' | translate}}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-offset-2 col-sm-10">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-offset-2">
-                                <button type="button" ng-show="!system.messaging.PersonalEMail.provider"
-                                    ng-click="resetEMailForm()" class="btn btn-custom" ladda="emailUpdating">
-                                    {{'Common.Cancel' | translate}}</button>
+					<div ng-show="emailModel.provider">
+						<!--SMTP Settings-->
+						<div ng-if="emailModel.provider==='smtp'">
+							<div class="form-group" show-errors>
+								<label class="col-sm-2 control-label">{{'Setup.Messaging.EMail.SMTP.Host' | translate}}</label>
+								<div class="col-sm-10">
+									<input type="text" name="smtpHost" class="form-control" required
+										   ng-model="emailModel.host" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">{{'Setup.Messaging.EMail.SMTP.SSLEnable'| translate}}<b>*</b></label>
+								<div class="col-sm-10">
+									<input type="checkbox" ng-model="emailModel.enable_ssl" />
+								</div>
+							</div>
+							<div class="form-group" show-errors>
+								<label class="col-sm-2 control-label">{{'Setup.Messaging.EMail.SMTP.Port' | translate}}</label>
+								<div class="col-sm-10">
+									<input type="text" numeric min="1" max="64738" name="smtpHost" class="form-control"
+										   required ng-model="emailModel.port" />
+								</div>
+							</div>
+						</div>
+						<div class="form-group" show-errors>
+							<label class="col-sm-2 control-label">{{'Setup.Messaging.EMail.UserName' | translate}}</label>
+							<div class="col-sm-10">
+								<input type="text" name="userName" class="form-control" required
+									   ng-model="emailModel.user_name" />
+							</div>
+						</div>
+						<div class="form-group" show-errors>
+							<label class="col-sm-2 control-label">{{'Setup.Messaging.EMail.Password' | translate}}</label>
+							<div class="col-sm-10">
+								<input type="password" name="password" class="form-control" required
+									   ng-model="emailModel.password" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">{{'Setup.Messaging.EMail.SMTP.SendBulkEmailResult'| translate}}</label>
+							<div class="col-sm-10">
+								<input type="checkbox" ng-model="emailModel.send_bulk_email_result" />
+							</div>
+						</div>
+						<div class="form-group" show-error>
+							<label class="col-sm-2 control-label">{{'Setup.Messaging.EMail.Senders' | translate}}</label>
+							<div class="col-sm-8">
+								<div ng-if="emailModel.senders.length===0" style="padding:6px 0;">
+									{{'Setup.Messaging.EMail.NoCustomSender' | translate}}
+								</div>
+								<div ng-show="emailModel.senders.length>0">
+									<table ng-table="tableParams" class="table">
+										<thead>
+											<tr>
+												<th>
+													{{'Setup.Messaging.EMail.Alias' | translate}}
+												</th>
+												<th>
+													{{'Setup.Messaging.EMail.Address' | translate}}
+												</th>
+												<th></th>
+											</tr>
+										</thead>
+										<tr ng-repeat="sender in $data">
+											<td>
+												{{sender.alias}}
+											</td>
+											<td>
+												{{sender.email}}
+											</td>
+											<td>
+												<div class="view-action-buttons pull-right">
+													<a href confirm-click action="removeSender(sender)" placement="left"
+													   confirm-message="{{'Common.AreYouSure' | translate}}"
+													   confirm-yes="{{'Common.Yes' | translate}}"
+													   confirm-no="{{'Common.No' | translate}}"
+													   title="{{'Common.Delete' | translate}}">
+														{{'Common.Delete' | translate}}
+													</a>
+												</div>
+											</td>
+										</tr>
+									</table>
+								</div>
+							</div>
+							<div class="col-sm-2">
+								<button type="button" name="addSender" class="btn btn-xs btn-custom"
+										ng-click="showNewSenderForm()"
+										style="padding: 4px 5px;">
+									{{'Common.Add' | translate}}
+								</button>
+							</div>
+						</div>
+						<div class="col-sm-12"><b>*</b> {{'Setup.Messaging.EMail.SMTP.WhatIsSSL' | translate}}</div>
+						<div class="form-group am-fade-and-slide-top"
+							 ng-show="emailForm.$submitted && emailForm.$invalid">
+							<div class="col-sm-offset-2 col-sm-8">
+								<div class="callout callout-danger">
+									<p ng-if="emailForm.$error.required">{{'Setup.Settings.ErrorEmpty' | translate}}</p>
+									<p ng-if="emailForm.$error.noSender">
+										{{'Setup.Messaging.EMail.NoSender' | translate}}
+									</p>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-offset-2">
+								<button type="button" ng-show="!system.messaging.PersonalEMail.provider"
+										ng-click="resetEMailForm()" class="btn btn-custom" ladda="emailUpdating">
+									{{'Common.Cancel' | translate}}
+								</button>
 
-                                <button type="button" ng-show="system.messaging.PersonalEMail.provider" confirm-click
-                                    placement="top" action="removePersonalEMailSettings()"
-                                    confirm-message="{{'Common.AreYouSure' | translate}}"
-                                    confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}"
-                                    title="{{'Common.Delete' | translate}}" class="btn btn-w-lg btn-custom"
-                                    ladda="emailUpdating">
-                                    <i class="fa fa-minus-circle pull-left"></i> {{'Common.Delete' | translate}}
-                                </button>
-                                <button type="submit" class="btn btn-primary btn-w-lg" ladda="emailUpdating"
-                                    style="margin-left:10px;">
-                                    <i class="fa fa-check-circle pull-left"></i>
-                                    <span
-                                        ng-show="system.messaging.PersonalEMail.provider">{{'Common.Update' | translate}}</span>
-                                    <span
-                                        ng-show="!system.messaging.PersonalEMail.provider">{{'Common.Save' | translate}}</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+								<button type="button" ng-show="system.messaging.PersonalEMail.provider" confirm-click
+										placement="top" action="removePersonalEMailSettings()"
+										confirm-message="{{'Common.AreYouSure' | translate}}"
+										confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}"
+										title="{{'Common.Delete' | translate}}" class="btn btn-w-lg btn-custom"
+										ladda="emailUpdating">
+									<i class="fa fa-minus-circle pull-left"></i> {{'Common.Delete' | translate}}
+								</button>
+								<button type="submit" class="btn btn-primary btn-w-lg" ladda="emailUpdating"
+										style="margin-left:10px;">
+									<i class="fa fa-check-circle pull-left"></i>
+									<span ng-show="system.messaging.PersonalEMail.provider">{{'Common.Update' | translate}}</span>
+									<span ng-show="!system.messaging.PersonalEMail.provider">{{'Common.Save' | translate}}</span>
+								</button>
+							</div>
+						</div>
+					</div>
                 </form>
             </div>
         </div>

@@ -1265,7 +1265,8 @@
           "Host": "Sunucu",
           "Port": "Port",
           "SSLEnable": "Güvenli Bağlantı",
-          "WhatIsSSL": "Güvenli bağlantı (SSL) gerektiren sunucularda işaretlenmelidir."
+					"WhatIsSSL": "Güvenli bağlantı (SSL) gerektiren sunucularda işaretlenmelidir.",
+					"SendBulkEmailResult": "Bilgilendirme E-Postası Gönder."
         }
       }
     },

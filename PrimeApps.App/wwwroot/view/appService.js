@@ -387,9 +387,15 @@ angular.module('primeapps')
 										if (messaging.SystemEMail)
 											messaging.SystemEMail.enable_ssl = messaging.SystemEMail.enable_ssl === 'True';
 
+										if (messaging.SystemEMail && messaging.SystemEMail.send_bulk_email_result)
+											messaging.SystemEMail.send_bulk_email_result = messaging.SystemEMail.send_bulk_email_result === 'True';
+
 										if (messaging.PersonalEMail)
 											messaging.PersonalEMail.enable_ssl = messaging.PersonalEMail.enable_ssl === 'True';
 
+										if (messaging.PersonalEMail && messaging.PersonalEMail.send_bulk_email_result)
+											messaging.PersonalEMail.send_bulk_email_result = messaging.PersonalEMail.send_bulk_email_result === 'True';
+										
 										$rootScope.system.messaging = messaging;
 									}
 
