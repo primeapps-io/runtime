@@ -15,9 +15,9 @@ namespace PrimeApps.App.Controllers
     [Authorize, CheckHttpsRequire, ResponseCache(CacheProfileName = "Nocache")]
     public class MvcBaseController : BaseController
     {
-        public static int? AppId { get; set; }
-        public static int? TenantId { get; set; }
-        public static string PreviewMode { get; set; }
+        public int? AppId { get; set; }
+        public int? TenantId { get; set; }
+        public string PreviewMode { get; set; }
 
         public void SetContext(ActionExecutingContext context)
         {
