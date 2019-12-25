@@ -1246,29 +1246,29 @@
         "Title": "SMS Ayarları",
         "UserName": "Kullanıcı Adı"
       },
-      "EMail": {
-        "Title": "E-Posta Ayarları",
-        "PersonalTitle": "Kişisel E-Posta Ayarları",
-        "Provider": "Servis Sağlayıcı",
-        "UserName": "Kullanıcı Adı",
-        "Password": "Şifre",
-        "Senders": "Göndericiler",
-        "Alias": "Gönderici Adı",
-        "Address": "E-Posta Adresi",
-        "NewSenderAdd": "Yeni Gönderici Ekle",
-        "NoCustomSender": "Ekli gönderici yok. 'Ekle' butonunu kullanarak yeni gönderici ekleyebilirsiniz.",
-        "NoProvider": "Henüz bir E-Posta servis sağlayıcı tanımlanmamış. Servis sağlayıcı seçerek tanımlama işlemine başlayabilirsiniz:",
-        "ProviderTitle": "Tanımladığınız E-Posta servis sağlayıcı bilgileri:",
-        "NoSender": "En az bir gönderici tanımlanmalı.",
-        "SMTP": {
-          "Title": "SMTP",
-          "Host": "Sunucu",
-          "Port": "Port",
-          "SSLEnable": "Güvenli Bağlantı",
-					"WhatIsSSL": "Güvenli bağlantı (SSL) gerektiren sunucularda işaretlenmelidir.",
-					"SendBulkEmailResult": "Bilgilendirme E-Postası Gönder."
-        }
-      }
+			"EMail": {
+				"Title": "E-Posta Ayarları",
+				"PersonalTitle": "Kişisel E-Posta Ayarları",
+				"Provider": "Servis Sağlayıcı",
+				"UserName": "Kullanıcı Adı",
+				"Password": "Şifre",
+				"Senders": "Göndericiler",
+				"Alias": "Gönderici Adı",
+				"Address": "E-Posta Adresi",
+				"NewSenderAdd": "Yeni Gönderici Ekle",
+				"NoCustomSender": "Ekli gönderici yok. 'Ekle' butonunu kullanarak yeni gönderici ekleyebilirsiniz.",
+				"NoProvider": "Henüz bir E-Posta servis sağlayıcı tanımlanmamış. Servis sağlayıcı seçerek tanımlama işlemine başlayabilirsiniz:",
+				"ProviderTitle": "Tanımladığınız E-Posta servis sağlayıcı bilgileri:",
+				"NoSender": "En az bir gönderici tanımlanmalı.",
+				"SMTP": {
+					"Title": "SMTP",
+					"Host": "Sunucu",
+					"Port": "Port",
+					"SSLEnable": "Güvenli Bağlantı",
+					"WhatIsSSL": "Güvenli bağlantı (SSL) gerektiren sunucularda işaretlenmelidir."
+				},
+				"DontSendBulkEmailResult": "Bilgilendirme E-Postası Gönderme"
+			}
     },
     "Outlook": {
       "ContactModuleSettings": "Outlook Ayarları",

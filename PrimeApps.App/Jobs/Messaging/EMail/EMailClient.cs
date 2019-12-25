@@ -46,7 +46,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
 			string[] ids;
-			bool isAllSelected = false, sendBulkEmailResult = false;
+			bool isAllSelected = false;
 			string emailTemplate = "",
 				query = "",
 				moduleId = "",
@@ -60,7 +60,9 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 				senderAlias = "",
 				senderEMail = "",
 				Cc = "",
-				Bcc = "";
+				Bcc = "",
+				dontSendBulkEmailResultvalue = "";
+
 			DateTime queueDate = DateTime.UtcNow;
 
 			EMailComposerResult composerResult = new EMailComposerResult();
@@ -116,8 +118,8 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 						var host = emailSet.FirstOrDefault(r => r.Key == "host")?.Value;
 						var sslValue = emailSet.FirstOrDefault(r => r.Key == "enable_ssl")?.Value;
 						var portValue = emailSet.FirstOrDefault(r => r.Key == "port")?.Value;
-						var valSendBulkEmailResult = emailSet.FirstOrDefault(r => r.Key == "send_bulk_email_result")?.Value;
-						sendBulkEmailResult = bool.Parse(valSendBulkEmailResult != null ? valSendBulkEmailResult : "True");
+						dontSendBulkEmailResultvalue = emailSet.FirstOrDefault(r => r.Key == "dont_send_bulk_email_result")?.Value;
+
 
 						bool sslEnabled = false;
 						int port = 0;
@@ -221,7 +223,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 				bulkEMailStatus = NotificationStatus.SystemError;
 			}
 
-			if (sendBulkEmailResult)
+			if (String.IsNullOrEmpty(dontSendBulkEmailResultvalue) || (!String.IsNullOrEmpty(dontSendBulkEmailResultvalue) && !bool.Parse(dontSendBulkEmailResultvalue)))
 				Email.Messaging.SendEMailStatusNotification(emailOwner, emailTemplate, senderAlias, senderEMail, moduleName, queueDate, bulkEMailStatus, composerResult.Successful, composerResult.NotAllowed, composerResult.NoAddress, emailQueueItem.TenantId, _configuration, _serviceScopeFactory, appUser);
 
 			/// always return true to say queue that the job has done.
