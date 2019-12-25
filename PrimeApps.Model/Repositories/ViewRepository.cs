@@ -172,7 +172,7 @@ namespace PrimeApps.Model.Repositories
             .OrderByDescending(x => x.Id);
 
             if (id > 0)
-                views.Where(x => x.ModuleId == id);
+                return views.Where(x => x.ModuleId == id);
 
             return views;
         }
