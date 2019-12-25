@@ -1264,7 +1264,8 @@
 					"Host": "Host",
 					"Port": "Port",
 					"SSLEnable": "Secure Connection",
-					"WhatIsSSL": "It must be checked for the servers requiring secure connection (SSL)."
+					"WhatIsSSL": "It must be checked for the servers requiring secure connection (SSL).",
+					"SendBulkEmailResult": "Send Notification E-Mail"
 				}
 			}
 		},

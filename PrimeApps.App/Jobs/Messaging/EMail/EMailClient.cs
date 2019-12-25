@@ -46,7 +46,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
 			string[] ids;
-			bool isAllSelected = false;
+			bool isAllSelected = false, sendBulkEmailResult = false;
 			string emailTemplate = "",
 				query = "",
 				moduleId = "",
@@ -81,18 +81,19 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 					using (var platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 					using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))//, cacheHelper))
 					using (var notifitionRepository = new NotificationRepository(databaseContext, _configuration))
+					using (var templateRepository = new TemplateRepository(databaseContext, _configuration))
 					{
 
-						notifitionRepository.CurrentUser = tenantRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+						notifitionRepository.CurrentUser = tenantRepository.CurrentUser = templateRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
 
-                        /// get details of the email queue item.
-                        ///
-                        var notificationId = Convert.ToInt32(emailQueueItem.Id);
+						/// get details of the email queue item.
+						///
+						var notificationId = Convert.ToInt32(emailQueueItem.Id);
 
 						//  var emailNotification = databaseContext.Notifications.Include(x => x.CreatedBy).FirstOrDefault(r => r.NotificationType == Model.Enums.NotificationType.Email && r.Id == notificationId && r.Deleted == false);
 
 						var emailNotification = await notifitionRepository.GetById(notificationId);
-
+						var templateEntity = await templateRepository.GetById(Int32.Parse(emailNotification.Template));
 						/// this request has already been removed, do nothing and return success.
 						if (emailNotification == null) return true;
 
@@ -115,6 +116,8 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 						var host = emailSet.FirstOrDefault(r => r.Key == "host")?.Value;
 						var sslValue = emailSet.FirstOrDefault(r => r.Key == "enable_ssl")?.Value;
 						var portValue = emailSet.FirstOrDefault(r => r.Key == "port")?.Value;
+						var valSendBulkEmailResult = emailSet.FirstOrDefault(r => r.Key == "send_bulk_email_result")?.Value;
+						sendBulkEmailResult = bool.Parse(valSendBulkEmailResult != null ? valSendBulkEmailResult : "True");
 
 						bool sslEnabled = false;
 						int port = 0;
@@ -147,7 +150,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 							}
 
 							query = emailNotification.Query;
-							emailTemplate = emailNotification.Template;
+							emailTemplate = templateEntity.Content;
 							moduleId = emailNotification.ModuleId.ToString();
 							language = emailNotification.Lang;
 							emailId = emailNotification.Id.ToString();
@@ -168,7 +171,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 							using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
 							{
 								moduleRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
-                                module = await moduleRepository.GetById(emailNotification.ModuleId);
+								module = await moduleRepository.GetById(emailNotification.ModuleId);
 							}
 
 							moduleName = emailNotification.Lang == "en" ? module.LabelEnSingular : module.LabelTrSingular;
@@ -195,7 +198,11 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
 							databaseContext.Entry(emailNotification).State = EntityState.Modified;
 							composerResult.ProviderResponse = emailResponse.Status.ToString();
-
+							/**DataBase'de fazladan yer kaplamaması için Body'leri null setliyoruz*/
+							foreach (var message in composerResult.Messages)
+							{
+								message.Body = null;
+							}
 							emailNotification.Result = JsonConvert.SerializeObject(composerResult);
 							databaseContext.SaveChanges();
 
@@ -213,7 +220,9 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 				ErrorHandler.LogError(ex, $"EMail Client has failed while sending a short message template with id:{emailId} of tenant: {emailQueueItem.TenantId}.");
 				bulkEMailStatus = NotificationStatus.SystemError;
 			}
-			Email.Messaging.SendEMailStatusNotification(emailOwner, emailTemplate, senderAlias, senderEMail, moduleName, queueDate, bulkEMailStatus, composerResult.Successful, composerResult.NotAllowed, composerResult.NoAddress, emailQueueItem.TenantId, _configuration, _serviceScopeFactory, appUser);
+
+			if (sendBulkEmailResult)
+				Email.Messaging.SendEMailStatusNotification(emailOwner, emailTemplate, senderAlias, senderEMail, moduleName, queueDate, bulkEMailStatus, composerResult.Successful, composerResult.NotAllowed, composerResult.NoAddress, emailQueueItem.TenantId, _configuration, _serviceScopeFactory, appUser);
 
 			/// always return true to say queue that the job has done.
 			return true;
@@ -280,7 +289,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
 			if (ids?.Length > 0 || isAllSelected)
 			{
-                if (isAllSelected)
+				if (isAllSelected)
 				{
 					//Query with filtered or non filtered selectedAll ids..
 					var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
@@ -326,7 +335,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
 							moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
 
-                            foreach (string recordId in ids)
+							foreach (string recordId in ids)
 							{
 								var status = MessageStatusEnum.Successful;
 								var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository, tenantLanguage: tenant.Setting.Language);
@@ -358,12 +367,12 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 								}
 
 								record = await RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, _configuration, tenant.GuidId, language, culture, 180, lookupModules, true);
-                                ///string formattedMessage = FormatMessage(messageFields, messageBody, record);  //DB perfonmans to deleted
+								string formattedMessage = FormatMessage(messageFields, messageBody, record);
 
-                                JObject messageStatus = new JObject();
+								JObject messageStatus = new JObject();
 								messageStatus["email"] = record[emailField]?.ToString();
-                                ///messageStatus["message"] = formattedMessage;  //Deleted for DB perfonmans
-                                messageStatus["status"] = status.ToString();
+								///messageStatus["message"] = formattedMessage;  //Deleted for DB perfonmans
+								messageStatus["status"] = status.ToString();
 								messageStatus["email_id"] = emailId;
 								messageStatus["record_primary_value"] = record[emailField]?.ToString();
 								messageStatus["module_id"] = module.Id;
@@ -378,8 +387,8 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 									/// create a message object and add it to the list.
 									Message emailMessage = new Message();
 									emailMessage.Recipients.Add(record[emailField].ToString());
-                                    ///emailMessage.Body = formattedMessage; //Deleted for DB perfonmans
-                                    emailMessage.Subject = subject;
+									emailMessage.Body = formattedMessage;
+									emailMessage.Subject = subject;
 									emailMessage.AttachmentLink = attachmentLink;
 									emailMessage.AttachmentName = attachmentName;
 									emailMessage.Cc = Cc;
