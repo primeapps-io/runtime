@@ -833,7 +833,7 @@ angular.module('primeapps')
                     serverSorting: true,
                     transport: {
                         read: {
-                            url: "/api/view/find",
+                            url: "/api/view/find/" + $scope.id,
                             type: 'GET',
                             dataType: "json",
                             beforeSend: function (req) {
