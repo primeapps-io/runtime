@@ -202,7 +202,7 @@ angular.module('primeapps')
                             field: 'Display',
                             title: $filter('translate')('Setup.Modules.DisplayOnMenu'),
                             filterable: {
-                                messages: { isTrue: "Yes <span></span>", isFalse: "No <span></span>" },
+                                messages: { isTrue: "<span class='k-item-title'>Yes</span>", isFalse: "<span class='k-item-title'>No</span>" },
                             },
                         },
                         {
