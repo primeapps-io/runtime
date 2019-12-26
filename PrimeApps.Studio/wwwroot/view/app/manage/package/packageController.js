@@ -177,7 +177,7 @@ angular.module('primeapps')
             };
   
             $scope.getTime = function (time) {
-                return moment(time).format("DD-MM-YYYY HH:ss");
+                return moment(time).format("DD-MM-YYYY HH:mm");
             };
 
             $scope.asHtml = function () {

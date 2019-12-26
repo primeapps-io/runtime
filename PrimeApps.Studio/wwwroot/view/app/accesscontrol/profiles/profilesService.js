@@ -50,21 +50,25 @@ angular.module('primeapps')
                                     case 1:
                                         permission.EntityTypeName = $filter('translate')('Layout.Menu.Documents');
                                         permission.order = 999;
+                                        permission.type = 1;
                                         break;
                                     case 'Report':
                                     case 2:
                                         permission.EntityTypeName = $filter('translate')('Layout.Menu.Reports');
                                         permission.order = 1000;
+                                        permission.type = 2; 
                                         break;
                                     case 'Newsfeed':
                                     case 3:
                                         permission.EntityTypeName = $filter('translate')('Feed.Feed');
                                         permission.Order = 1001;
+                                        permission.type = 3;
                                         break;
 
                                     case 'Module':/// Module
                                     case 0:
                                         var module = $filter('filter')(modules, { id: permission.module_id }, true)[0];
+                                        permission.type = 0;
 
                                         if (module && module.order > 0) {
                                             permission.EntityTypeName = module["label_" + $rootScope.language + "_plural"];

@@ -95,7 +95,7 @@ namespace PrimeApps.Model.Repositories
                     createdAt = user.CreatedAt,
                     profile = new ProfileDTO()
                     {
-                        ID = user.Profile.Id,
+                        Id = user.Profile.Id,
                         DescriptionEn = user.Profile.DescriptionEn,
                         DescriptionTr = user.Profile.DescriptionTr,
                         NameEn = user.Profile.NameEn,

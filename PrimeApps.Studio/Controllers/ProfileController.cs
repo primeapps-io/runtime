@@ -75,7 +75,7 @@ namespace PrimeApps.Studio.Controllers
         /// </summary>
         /// <param name="UpdatedProfile"></param>
         [Route("update"), HttpPost]
-        public async Task<IActionResult> Update(ProfileDTO UpdatedProfile)
+        public async Task<IActionResult> Update([FromBody]ProfileDTO UpdatedProfile)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.Update))
                 return StatusCode(403);
@@ -96,7 +96,7 @@ namespace PrimeApps.Studio.Controllers
             if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.Delete))
                 return StatusCode(403);
 
-            await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.ID, RemovalRequest.TransferProfile.ID);
+            await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.Id, RemovalRequest.TransferProfile.Id);
 
 
             return Ok();

@@ -67,15 +67,16 @@ namespace PrimeApps.Model.Repositories
                 Remove = true
             });
 
-            DbContext.ProfilePermissions.Add(new ProfilePermission()
-            {
-                Type = EntityType.Report,
-                Profile = newProfile,
-                Modify = true,
-                Read = true,
-                Write = true,
-                Remove = true
-            });
+            //Front tarafından default olarak geliyor. Yoksa Rapor iznini çokluyordu.
+            //DbContext.ProfilePermissions.Add(new ProfilePermission()
+            //{
+            //    Type = EntityType.Report,
+            //    Profile = newProfile,
+            //    Modify = true,
+            //    Read = true,
+            //    Write = true,
+            //    Remove = true
+            //});
 
             DbContext.ProfilePermissions.Add(new ProfilePermission()
             {
@@ -96,7 +97,8 @@ namespace PrimeApps.Model.Repositories
                     Read = permission.Read,
                     Remove = permission.Remove,
                     Write = permission.Write,
-                    Profile = newProfile
+                    Profile = newProfile,
+                    Type = (EntityType)permission.Type,
                 });
             }
 
@@ -127,7 +129,7 @@ namespace PrimeApps.Model.Repositories
         public async Task UpdateAsync(ProfileDTO updatedProfileDTO, string tenantLanguage)
         {
             Profile profileToUpdate = await DbContext.Profiles.Include(x => x.Permissions)
-                .Where(x => x.Id == updatedProfileDTO.ID).SingleOrDefaultAsync();
+                .Where(x => x.Id == updatedProfileDTO.Id).SingleOrDefaultAsync();
 
             if (profileToUpdate == null) return;
 
@@ -280,7 +282,7 @@ namespace PrimeApps.Model.Repositories
                     UserIDs = x.Users.Select(z => z.Id).ToList(),
                     Permissions = x.Permissions.Select(y => new ProfilePermissionLightDTO()
                     {
-                        Type = (int) y.Type,
+                        Type = (int)y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,
@@ -329,9 +331,9 @@ namespace PrimeApps.Model.Repositories
                     UserIds = x.Users.Select(z => z.Id).ToList(),
                     Permissions = x.Permissions.Select(y => new ProfilePermissionDTO()
                     {
-                        ID = x.Id,
+                        ID = y.Id,
                         ModuleId = y.ModuleId,
-                        Type = (int) y.Type,
+                        Type = (int)y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,
@@ -350,6 +352,7 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.Profiles
                 .Where(x => !x.Deleted)
+                .Include(x => x.Permissions)
                 .OrderBy(x => x.CreatedAt).ToListAsync();
         }
 
@@ -475,7 +478,7 @@ namespace PrimeApps.Model.Repositories
                     {
                         ID = x.Id,
                         ModuleId = y.ModuleId,
-                        Type = (int) y.Type,
+                        Type = (int)y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,

@@ -11,7 +11,7 @@ namespace PrimeApps.Model.Common.Profile
             Permissions = new List<ProfilePermissionDTO>();
         }
         [DataMember]
-        public int ID { get; set; }
+        public int Id { get; set; }
         [DataMember]
         public string NameEn { get; set; }
         [DataMember]
