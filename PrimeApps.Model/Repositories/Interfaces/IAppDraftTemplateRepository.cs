@@ -18,5 +18,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         IQueryable<AppDraftTemplate> Find();
         int Count(int appId);
         Task<AppDraftTemplate> Get(int id);
+        Task<int> DeleteSoft(AppDraftTemplate template);
     }
 }

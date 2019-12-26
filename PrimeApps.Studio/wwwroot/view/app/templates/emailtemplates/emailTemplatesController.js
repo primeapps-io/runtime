@@ -479,7 +479,7 @@ angular.module('primeapps')
 
                                     angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
                                     $scope.grid.dataSource.read();
-                                    toastr.success("Email template is deleted successfully.", "Deleted!");
+                                    toastr.success($filter('translate')('Setup.Templates.DeleteSuccess' | translate), "Deleted!");
 
                                 })
                                 .catch(function () {
