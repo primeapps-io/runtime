@@ -34,15 +34,15 @@ angular.module('primeapps')
                                 case 'X-User-Id':
                                 case 'x-user-id':
                                 case 'user_id':
-                                    return $rootScope.user.id;
+                                    return account.user.id;
                                 case 'X-Tenant-Id':
                                 case 'x-tenant-id':
                                 case 'tenant_id':
-                                    return $rootScope.user.tenant_id;
+                                    return preview ? applicationId : tenantId;
                                 case 'X-App-Id':
                                 case 'x-app-id':
                                 case 'app_id':
-                                    return appId;
+                                    return applicationId ;
                                 case 'X-Auth-Key':
                                 case 'x-auth-key':
                                     return encryptedUserId;
@@ -51,8 +51,8 @@ angular.module('primeapps')
                                 case 'branch_id':
                                     return $rootScope.branchAvailable ? $rootScope.user.branchId : '';
                                 case 'X-Tenant-Language':
-                                case 'x-tenant-tanguage':
-                                    return $rootScope.user.tenant_language ? $rootScope.user.tenant_language : '';
+                                case 'x-tenant-language':
+                                    return tenantLanguage  ;
                             }
                         };
 

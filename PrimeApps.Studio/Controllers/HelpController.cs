@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -16,42 +20,42 @@ using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace PrimeApps.Studio.Controllers
 {
-	[Route("api/help")]
-	public class HelpController : DraftBaseController
-	{
-		private IRelationRepository _relationRepository;
+    [Route("api/help")]
+    public class HelpController : DraftBaseController
+    {
+        private IRelationRepository _relationRepository;
         private IHelpRepository _helpRepository;
         private IUserRepository _userRepository;
         private IProfileRepository _profileRepository;
-		private ISettingRepository _settingRepository; 
-		private IConfiguration _configuration;
-		private Warehouse _warehouse;
-		private IModuleHelper _moduleHelper;
+        private ISettingRepository _settingRepository;
+        private IConfiguration _configuration;
+        private Warehouse _warehouse;
+        private IModuleHelper _moduleHelper;
         private IPermissionHelper _permissionHelper;
 
-        public HelpController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration,IHelpRepository helpRepository,IUserRepository userRepository, IPermissionHelper permissionHelper)
-		{
-			_relationRepository = relationRepository;
-			_profileRepository = profileRepository;
-			_settingRepository = settingRepository;			
-			_warehouse = warehouse;
-			_configuration = configuration;
-			_moduleHelper = moduleHelper;
+        public HelpController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration, IHelpRepository helpRepository, IUserRepository userRepository, IPermissionHelper permissionHelper)
+        {
+            _relationRepository = relationRepository;
+            _profileRepository = profileRepository;
+            _settingRepository = settingRepository;
+            _warehouse = warehouse;
+            _configuration = configuration;
+            _moduleHelper = moduleHelper;
             _helpRepository = helpRepository;
             _userRepository = userRepository;
             _permissionHelper = permissionHelper;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_relationRepository, PreviewMode, AppId, TenantId);
-			SetCurrentUser(_profileRepository, PreviewMode, AppId, TenantId);
-			SetCurrentUser(_settingRepository, PreviewMode, AppId, TenantId);
-			SetCurrentUser(_helpRepository, PreviewMode, AppId, TenantId);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_relationRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_profileRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_settingRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_helpRepository, PreviewMode, AppId, TenantId);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
         [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> GetById(int id)
@@ -71,22 +75,25 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> Count()
         {
             var count = await _helpRepository.Count();
-           
+
             return Ok(count);
         }
 
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        [Route("find")]
+        public IActionResult Find(ODataQueryOptions<Help> queryOptions)
         {
-            var helps = await _helpRepository.Find(paginationModel);
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "help", RequestTypeEnum.View))
+                return StatusCode(403);
 
-            return Ok(helps);
+            var helps = _helpRepository.Find();
+            var queryResults = (IQueryable<Help>)queryOptions.ApplyTo(helps, new ODataQuerySettings() { EnsureStableOrdering = false });
+            return Ok(new PageResult<Help>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
         [Route("get_by_type"), HttpGet]
         public async Task<Help> GetByType([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "moduleId")]int? moduleId = null, [FromQuery(Name = "route")]string route = "")
         {
-            var templates = await _helpRepository.GetByType(templateType, moduleId, route);
+            var templates = await _helpRepository.GetByType(templateType, LanguageType.NotSet, moduleId, route);
 
             return templates;
         }
@@ -94,7 +101,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_module_type"), HttpGet]
         public async Task<Help> GetModuleType([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "moduleType")]ModuleType moduleType, [FromQuery(Name = "moduleId")]int? moduleId = null)
         {
-            var templates = await _helpRepository.GetModuleType(templateType, moduleType, moduleId);
+            var templates = await _helpRepository.GetModuleType(templateType, moduleType, LanguageType.NotSet, moduleId);
 
             return templates;
         }
@@ -102,7 +109,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_first_screen"), HttpGet]
         public async Task<Help> GetFistScreen([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "firstscreen")]bool? firstscreen = false)
         {
-            var templates = await _helpRepository.GetFistScreen(templateType, firstscreen);
+            var templates = await _helpRepository.GetFistScreen(templateType, LanguageType.NotSet, firstscreen);
 
             return templates;
         }
@@ -110,7 +117,7 @@ namespace PrimeApps.Studio.Controllers
         [Route("get_custom_help"), HttpGet]
         public async Task<ICollection<Help>> GetCustomHelp([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "customhelp")]bool? customhelp = false)
         {
-            var templates = await _helpRepository.GetCustomHelp(templateType, customhelp);
+            var templates = await _helpRepository.GetCustomHelp(templateType, LanguageType.NotSet, customhelp);
 
             return templates;
         }
@@ -171,6 +178,5 @@ namespace PrimeApps.Studio.Controllers
 
             return Ok();
         }
-
     }
 }

@@ -312,15 +312,18 @@ namespace PrimeApps.Admin.Helpers
                         }
 
                         var storageHistoryLast = await historyStorageRepository.GetLast();
-                        storageHistoryLast.Tag = "1";
-
-                        await historyStorageRepository.Update(storageHistoryLast);
+                        if (storageHistoryLast != null)
+                        {
+                            storageHistoryLast.Tag = "1";
+                            await historyStorageRepository.Update(storageHistoryLast);
+                        }
                         
                         var databaseHistoryLast = await historyDatabaseRepository.GetLast();
-                        databaseHistoryLast.Tag = "1";
-
-                        await historyDatabaseRepository.Update(databaseHistoryLast);
-
+                        if (databaseHistoryLast != null)
+                        {
+                            databaseHistoryLast.Tag = "1";
+                            await historyDatabaseRepository.Update(databaseHistoryLast);
+                        }
                         await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}", $"{schema}://{app.Setting.AppDomain}", UnifiedStorage.PolicyType.TenantPolicy);
                         await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}",$"{schema}://{app.Setting.AuthDomain}", UnifiedStorage.PolicyType.TenantPolicy);
                         

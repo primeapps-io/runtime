@@ -1,131 +1,130 @@
 <div class="modal setup-modal modal-900" tabindex="-1" role="dialog">
-	<form name="menuForm" class="form-horizontal form-custom" ng-submit="save(menu, menuForm);" autocomplete="off"
-		  novalidate>
-		<div class="modal-header">
-			<div class="flex-between">
-				<h4 class="modal-title">{{menu.id ? 'Edit Menu' : 'New Menu'}}</h4>
-				<div>
-					<ul class="list-unstyled list-inline">
-						<li>
-							<button type="button" ng-disabled="saving"
-									ng-click="addNewMenuFormModal.hide();  wizardStep = 0;"
-									class="btn add-button btn-radius btn-gray">
-								<i class="fas fa-times"></i>{{ 'Common.Cancel' | translate }}
-							</button>
-						</li>
-						<li ng-if="!id && wizardStep > 0">
-							<button type="button" ng-disabled="saving" class="btn btn-radius btn-blue"
-									ng-click="validate(menuForm, false) ? $parent.$parent.$parent.wizardStep = 0 : false">
-								<i class="fas fa-angle-left"></i>{{ 'Common.Previous' | translate }}
-							</button>
-						</li>
-						<li ng-if="!id && wizardStep < 1">
-							<button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding"
-									ng-click="validate(menuForm, true) ? $parent.$parent.$parent.wizardStep = 1 : false">
-								{{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>
-							</button>
-						</li>
-						<li ng-if="id || wizardStep === 1">
-							<button type="submit" ladda="saving" class="btn add-button btn-radius btn-blue">
-								<i class="fas fa-save"></i>{{'Common.Save' | translate}}
-							</button>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</div>
+    <form name="menuForm" class="form-horizontal form-custom" ng-submit="save(menu, menuForm);" autocomplete="off"
+          novalidate>
+        <div class="modal-header">
+            <div class="flex-between">
+                <h4 class="modal-title">{{menu.id ? 'Edit Menu' : 'New Menu'}}</h4>
+                <div>
+                    <ul class="list-unstyled list-inline">
+                        <li>
+                            <button type="button" ng-disabled="saving"
+                                    ng-click="addNewMenuFormModal.hide();  wizardStep = 0;"
+                                    class="btn add-button btn-radius btn-gray">
+                                <i class="fas fa-times"></i>{{ 'Common.Cancel' | translate }}
+                            </button>
+                        </li>
+                        <li ng-if="!id && wizardStep > 0">
+                            <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue"
+                                    ng-click="validate(menuForm, false) ? $parent.$parent.$parent.wizardStep = 0 : false">
+                                <i class="fas fa-angle-left"></i>{{ 'Common.Previous' | translate }}
+                            </button>
+                        </li>
+                        <li ng-if="!id && wizardStep < 1">
+                            <button type="button" ng-disabled="saving" class="btn btn-radius btn-blue ng-binding"
+                                    ng-click="validate(menuForm, true) ? $parent.$parent.$parent.wizardStep = 1 : false">
+                                {{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>
+                            </button>
+                        </li>
+                        <li ng-if="id || wizardStep === 1">
+                            <button type="submit" ladda="saving" class="btn add-button btn-radius btn-blue">
+                                <i class="fas fa-save"></i>{{'Common.Save' | translate}}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-		<div class="modal-dialog scroll-style-4">
-			<div class="modal-content">
-				<div class="modal-contanier">
-					<div class="modal-body view-form">
-						<div class="megalist">
-							<div class="modal-menu">
-								<ul class="list-unstyled">
-									<li>
-										<a ng-class="{'active': wizardStep==0}"
-										   ng-click="validate(menuForm) ? $parent.$parent.wizardStep = 0 : false">{{'Menu.MenuInformation'|translate}}</a>
-									</li>
-									<li ng-class="{'disabled': loadingModal}">
-										<a ng-class="{'active': wizardStep==1}"
-										   ng-click="!loadingModal ? validate(menuForm) ? $parent.$parent.wizardStep = 1 : false: return;">{{'Menu.MenuSummary'|translate}}</a>
-									</li>
-								</ul>
-							</div>
-							<div ng-if="loadingModal"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-							<div class="section" id="section1" ng-show="wizardStep == 0 && !loadingModal">
-								<h4>{{'Menu.MenuInformation'|translate}}</h4>
-								<div class="panel">
-									<div class=" form-group"
-										 ng-class="{'has-error': menuForm.$submitted && menuForm.name_menu.$invalid}">
-										<label class="control-label">
-											{{'Menu.MenuName'|translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
-										</label>
-										<input name="name_menu" class="form-control" maxlength="50" required
-											   ng-model="menu.name" />
-									</div>
+        <div class="modal-dialog scroll-style-4">
+            <div class="modal-content">
+                <div class="modal-contanier">
+                    <div class="modal-body view-form">
+                        <div class="megalist">
+                            <div class="modal-menu">
+                                <ul class="list-unstyled">
+                                    <li>
+                                        <a ng-class="{'active': wizardStep==0}"
+                                           ng-click="validate(menuForm) ? $parent.$parent.wizardStep = 0 : false">{{'Menu.MenuInformation'|translate}}</a>
+                                    </li>
+                                    <li ng-class="{'disabled': loadingModal}">
+                                        <a ng-class="{'active': wizardStep==1}"
+                                           ng-click="!loadingModal ? validate(menuForm) ? $parent.$parent.wizardStep = 1 : false: return;">{{'Menu.MenuSummary'|translate}}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div ng-if="loadingModal"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                            <div class="section" id="section1" ng-show="wizardStep == 0 && !loadingModal">
+                                <h4>{{'Menu.MenuInformation'|translate}}</h4>
+                                <div class="panel">
+                                    <div class=" form-group"
+                                         ng-class="{'has-error': menuForm.$submitted && menuForm.name_menu.$invalid}">
+                                        <label class="control-label">
+                                            {{'Menu.MenuName'|translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
+                                        </label>
+                                        <input name="name_menu" class="form-control" maxlength="50" required
+                                               ng-model="menu.name" />
+                                    </div>
 
-									<div class="form-group">
-										<label class="control-label">{{'Menu.MenuDescription'|translate}}</label>
-										<textarea rows="2" name="menu_description" class="form-control" maxlength="200"
-												  auto-grow ng-model="menu.description"></textarea>
-									</div>
+                                    <div class="form-group">
+                                        <label class="control-label">{{'Menu.MenuDescription'|translate}}</label>
+                                        <textarea rows="2" name="menu_description" class="form-control" maxlength="200"
+                                                  auto-grow ng-model="menu.description"></textarea>
+                                    </div>
 
-									<div class=" form-group">
+                                    <div class=" form-group">
 
-										<label class="control-label newinput">
-											{{'Menu.DefaultMenu'|translate}}<input type="checkbox" name="default"
-																				   ng-model="$parent.menu.default"
-																				   ng-click="selectRow($event,record)"
-																				   ng-checked="isRowSelected(record.id) || isAllSelected" /><span></span>
-										</label>
-									</div>
-									<div ng-show="!menu.default" class="form-group"
-										 ng-class="{'has-error': menuForm.$submitted && menuForm.profile_name.$invalid}">
-										<label class="control-label">
-											{{'Setup.Nav.Tabs.Profiles'|translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
-										</label>
-										<select class="form-control"
-												name="profile_name"
-												ng-model="menu.profile"
-												ng-required="!menu.default"
-												ng-options="o as o['name'] for o in newProfiles | filter:{deleted:'!true'}">
-											<option value="">{{'Common.Select' | translate}}</option>
-										</select>
-									</div>
-								</div>
-							</div>
+                                        <label class="control-label newinput">
+                                            {{'Menu.DefaultMenu'|translate}}<input type="checkbox" name="default"
+                                                                                   ng-model="$parent.menu.default"
+                                                                                   ng-click="selectRow($event,record)"
+                                                                                   ng-checked="isRowSelected(record.id) || isAllSelected" /><span></span>
+                                        </label>
+                                    </div>
+                                    <div ng-show="!menu.default" class="form-group"
+                                         ng-class="{'has-error': menuForm.$submitted && menuForm.profile_name.$invalid}">
+                                        <label class="control-label">
+                                            {{'Setup.Nav.Tabs.Profiles'|translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
+                                        </label>
+                                        <select class="form-control"
+                                                name="profile_name"
+                                                ng-model="menu.profile"
+                                                ng-options="o as o['name_'+language] for o in newProfiles | filter:{deleted:'!true'}">
+                                            <option value="">{{'Common.Select' | translate}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
 
-							<div class="section" id="section2" ng-show="wizardStep == 1">
-								<h4>{{'Menu.MenuSummary'|translate}}</h4>
-								<div class="panel">
-									<div class="form-group">
-										<button type="button" ng-click="addItem()"
-												class="btn add-button btn-radius btn-blue">
-											<i class="fas fa-plus"></i>
-											{{'Menu.AddNewCategory' | translate}}
-										</button>
-									</div>
+                            <div class="section" id="section2" ng-show="wizardStep == 1">
+                                <h4>{{'Menu.MenuSummary'|translate}}</h4>
+                                <div class="panel">
+                                    <div class="form-group">
+                                        <button type="button" ng-click="addItem()"
+                                                class="btn add-button btn-radius btn-blue">
+                                            <i class="fas fa-plus"></i>
+                                            {{'Menu.AddNewCategory' | translate}}
+                                        </button>
+                                    </div>
 
-									<div ng-if="loadingModal"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                    <div ng-if="loadingModal"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
 
-									<div class="row">
-										<div class="col-sm-12">
-											<div ng-if="$parent.$parent.data.length > 0" ui-tree="treeOptions"
-												 id="tree-root" class="roleslist dragmenulist angular-ui-tree ">
-												<ol ui-tree-nodes ng-model="data">
-													<li ng-class="{'notvisible':node.disabled, 'category':!node.menuName}" ng-repeat="node in data" ui-tree-node ng-include="'view/app/visualization/menus/menuTree.html'"></li>
-												</ol>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</form>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div ng-if="$parent.$parent.data.length > 0" ui-tree="treeOptions"
+                                                 id="tree-root" class="roleslist dragmenulist angular-ui-tree ">
+                                                <ol ui-tree-nodes ng-model="data">
+                                                    <li ng-class="{'notvisible':node.disabled, 'category':!node.menuName}" ng-repeat="node in data" ui-tree-node ng-include="'view/app/visualization/menus/menuTree.html'"></li>
+                                                </ol>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 

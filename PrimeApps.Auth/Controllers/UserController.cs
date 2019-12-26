@@ -261,7 +261,7 @@ namespace PrimeApps.Auth.Controllers
                     if (profileSetting != null)
                     {
                         var hasUserCreatePermission = profileSetting["permissions"].Any(x => x.Value<string>() == "users");
-                        if(!hasUserCreatePermission)
+                        if (!hasUserCreatePermission)
                             return Unauthorized();
                     }
                     else
@@ -292,7 +292,10 @@ namespace PrimeApps.Auth.Controllers
                 LastName = addUserBindingModel.LastName,
                 FirstName = addUserBindingModel.FirstName,
                 Password = password,
-                Phone = addUserBindingModel.Phone
+                Phone = addUserBindingModel.Phone,
+                Language = addUserBindingModel.Language,
+                Culture = addUserBindingModel.Culture,
+                Currency = addUserBindingModel.Currency
             };
 
             PlatformUser platformUser = null;
@@ -300,9 +303,9 @@ namespace PrimeApps.Auth.Controllers
             {
                 var settings = new PlatformUserSetting
                 {
-                    Culture = tenant.Setting.Culture,
-                    Language = tenant.Setting.Language,
-                    Currency = tenant.Setting.Currency,
+                    Culture = string.IsNullOrEmpty(userModel.Culture) ? tenant.Setting.Culture : userModel.Culture,
+                    Language = string.IsNullOrEmpty(userModel.Language) ? tenant.Setting.Language : userModel.Language,
+                    Currency = string.IsNullOrEmpty(userModel.Currency) ? tenant.Setting.Currency : userModel.Currency,
                     TimeZone = tenant.Setting.TimeZone
                 };
 

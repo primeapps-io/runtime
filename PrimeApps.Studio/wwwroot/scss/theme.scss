@@ -1,10 +1,11 @@
+
 #subdomaintwo {
   background: none;
   position: absolute;
   bottom: 2px;
   right: -5px;
   border: none;
-} 
+}
 
 @keyframes pagepointmove {
   from {
@@ -419,7 +420,7 @@ $primeapps-color: #0D6FAA;
 }
 
 .go-live {
-   .swal2-actions {
+  .swal2-actions {
     justify-content: left !important;
   }
   .swal2-content {
@@ -2958,6 +2959,11 @@ button, select {
         background-color: rgba(206, 4, 4, 0.15) !important;
       }
     }
+    .mce-tinymce{
+      .mce-edit-area{
+        background-color: rgba(206, 4, 4, 0.15) !important;
+      }
+    }
   }
 
   .pagination {
@@ -4847,18 +4853,26 @@ button, select {
     }
   }
 
-  .action-button2-plus, .action-button2-delete {
-    width: 26px;
-    height: 26px;
-    line-height: 27px;
+  .action-button2-more, .action-button2-plus, .action-button2-delete {
+    width: 30px;
+    height: 30px;
     @include hoverEffect;
-    background: rgba(13, 111, 170, 0.5);
-    display: inline-block;
-    color: #FFF;
-    text-align: center;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0, 0, 0, 0.5);
     border-radius: 50%;
     margin: 7px 0px;
+    border: none;
 
+    &:hover {
+      background: rgba(0,0,0,0.1);
+    }
+  }
+  .action-button2-plus{
+    background: rgba(13, 111, 170, 0.5);
+    color: #FFF;
     &:hover {
       background: rgba(13, 111, 170, 1);
     }
@@ -4866,7 +4880,7 @@ button, select {
 
   .action-button2-delete {
     background: #E78D8F;
-
+    color: #FFF;
     &:hover {
       background: rgba(206, 4, 4, 1);
     }
@@ -5024,7 +5038,7 @@ button, select {
   .c-settings-table{
     table{
       margin-bottom: 20px;
-      
+
       tbody{
         tr{
           cursor: default;
@@ -5034,7 +5048,7 @@ button, select {
           &.black5{
             background: rgba(0,0,0,0.05);
             font-size: 90%;
-            
+
             &:hover{
               background: rgba(0,0,0,0.05);
             }

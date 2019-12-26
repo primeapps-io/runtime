@@ -101,7 +101,7 @@ angular.module('primeapps')
 							promises.push($http.get(config.apiUrl + 'menu/get/' + responseAccount.data.user.profile.id));
 							promises.push($http.get(config.apiUrl + 'settings/get_all/custom?userId=' + responseAccount.data.user.id));
 							promises.push($http.get(config.apiUrl + 'settings/get_all/1'));
-							promises.push($http.get(config.apiUrl + 'settings/get_by_key/1/custom_profile_permissions'));
+							promises.push($http.get(config.apiUrl + 'settings/get_by_key/1/custom_profile_permissions?userId='+responseAccount.data.user.id));
 
 							$q.all(promises)
 								.then(function (response) {
@@ -387,9 +387,15 @@ angular.module('primeapps')
 										if (messaging.SystemEMail)
 											messaging.SystemEMail.enable_ssl = messaging.SystemEMail.enable_ssl === 'True';
 
+										if (messaging.SystemEMail && messaging.SystemEMail.send_bulk_email_result)
+											messaging.SystemEMail.send_bulk_email_result = messaging.SystemEMail.send_bulk_email_result === 'True';
+
 										if (messaging.PersonalEMail)
 											messaging.PersonalEMail.enable_ssl = messaging.PersonalEMail.enable_ssl === 'True';
 
+										if (messaging.PersonalEMail && messaging.PersonalEMail.send_bulk_email_result)
+											messaging.PersonalEMail.send_bulk_email_result = messaging.PersonalEMail.send_bulk_email_result === 'True';
+										
 										$rootScope.system.messaging = messaging;
 									}
 
@@ -579,7 +585,8 @@ angular.module('primeapps')
 					section.display_detail = true;
 
 					var fieldEmail = {};
-					fieldEmail.name = 'name';
+					//fieldEmail.name = 'name';
+					fieldEmail.name = 'name_' + $rootScope.language;
 					fieldEmail.system_type = 'system';
 					fieldEmail.data_type = 'text_single';
 					fieldEmail.order = 2;

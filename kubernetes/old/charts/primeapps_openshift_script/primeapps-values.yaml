@@ -24,7 +24,7 @@ app:
     hostname: primeapps.okd.primeapps.io
     annotations:
       kubernetes.io/ingress.class: nginx
-      certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+      cert-manager.io/cluster-issuer: letsencrypt-prod
       kubernetes.io/tls-acme: "true"
     tls: true
   probes:
@@ -82,7 +82,7 @@ auth:
     hostname: primeapps-auth.okd.primeapps.io
     annotations:
       kubernetes.io/ingress.class: nginx
-      certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+      cert-manager.io/cluster-issuer: letsencrypt-prod
       kubernetes.io/tls-acme: "true"
     tls: true
   probes:

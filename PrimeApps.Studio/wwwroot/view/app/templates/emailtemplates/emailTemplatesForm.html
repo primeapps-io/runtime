@@ -34,7 +34,7 @@
                                         {{'Setup.Templates.Module' | translate}} <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span>
                                     </label>
                                     <select class="form-control pull-left"
-                                            ng-change="changeModule();"
+                                            ng-change="changeModule(newtemplate.moduleName.name)"
                                             ng-required="true"
                                             name="module"
                                             ng-disabled="moduleDisabled"
@@ -173,7 +173,7 @@
                                                 tabindex="999"
                                                 class="form-control"
                                                 ng-model="newtemplate.permissions"
-                                                display-property="name"
+                                                display-property="name_{{language}}"
                                                 key-property="id"
                                                 placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
                                                 replace-spaces-with-dashes="false"

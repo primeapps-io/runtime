@@ -8,7 +8,8 @@ namespace PrimeApps.Model.Common.Dashlet
     {
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string NameEn { get; set; }
+        public string NameTr { get; set; }
 
         public int XTileHeight { get; set; }
 

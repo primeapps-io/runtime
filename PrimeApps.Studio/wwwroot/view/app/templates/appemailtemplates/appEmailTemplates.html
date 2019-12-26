@@ -8,85 +8,8 @@
         </li>
     </ul>
 </div>
-
-<div class="tab-content table-responsive">
-    <table class="table" ng-show="loading">
-        <thead>
-        <tr>
-            <th>{{'Setup.Templates.TemplateName' | translate}}</th>
-            <th>Subject</th>
-            <th>Language</th>
-            <th>System Code</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="item in placeholderArray">
-            <td class="text-center">
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td> 
-            <td>
-                <div class="animated-background"></div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <table class="table" ng-show="!loading">
-        <thead>
-        <tr>
-            <th>{{'Setup.Templates.TemplateName' | translate}}</th>
-            <th>Subject</th>
-            <th>Language</th>
-            <th>System Code</th>
-        </tr>
-        </thead>
-        <tbody ng-show="!loading">
-        <tr ng-repeat="template in templates" ng-click="showFormModal(template);">
-            <td>{{template.name}}</td>
-            <td>{{template.subject}}</td>
-            <td>{{template.language}}</td>
-            <td>{{template.system_code}}</td>
-        </tr>
-        </tbody>
-    </table>
-    <div class="table-pagination">
-        <div>
-            <nav aria-label="Page navigation">
-                <div paging
-                     text-first="&laquo;"
-                     ul-class="pagination"
-                     active-class="active"
-                     page="requestModel.offset"
-                     page-size="requestModel.limit"
-                     total="pageTotal"
-                     scroll-top="true"
-                     hide-if-empty="true"
-                     show-prev-next="true"
-                     show-first-last="true"
-                     text-next-class="fas fa-chevron-right"
-                     text-prev-class="fas fa-chevron-left"
-                     text-first-class="fas fa-step-backward"
-                     text-last-class="fas fa-step-forward"
-                     paging-action="changePage(page)">
-                </div>
-            </nav>
-        </div>
-        <div class="total">Total {{pageTotal}}</div>
-        <div>
-            <span class="pagination-span">Items per page  </span>
-            <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
-                <option ng-selected="true" value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-                <option value="150">150</option>
-                <option value="200">200</option>
-            </select>
-        </div>
-    </div>
+ 
+<div class="tab-content">
+    <kendo-grid class="grid-theme grid-theme-center table-responsive" k-scope-field="grid" id="kendo-grid" k-options="mainGridOptions">
+    </kendo-grid>
 </div>

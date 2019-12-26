@@ -16,6 +16,8 @@ namespace PrimeApps.Model.Common.Messaging
         [DataMember]
         public string Message { get; set; }
         [DataMember]
+        public int TemplateId { get; set; }
+        [DataMember]
         public string PhoneField { get; set; }
     }
 }

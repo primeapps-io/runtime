@@ -87,8 +87,8 @@ namespace PrimeApps.Studio.Helpers
         public async Task<bool> CreateSample(int appId, ComponentModel component, int organizationId)
         {
             var enableGiteaIntegration = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);
-
-            if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
+            var giteaEnabled = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
+            if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(giteaEnabled))
             {
                 try
                 {
@@ -293,5 +293,7 @@ namespace PrimeApps.Studio.Helpers
                     return null;
             }
         }
+        
+        
     }
 }

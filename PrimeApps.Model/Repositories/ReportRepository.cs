@@ -29,31 +29,79 @@ namespace PrimeApps.Model.Repositories
             return count;
         }
 
-        public async Task<ICollection<Report>> Find(PaginationModel paginationModel, bool withIncludes = true)
+
+        public IQueryable<Report> Find()
         {
             var reports = DbContext.Reports
-                .Where(x => !x.Deleted)
-                .Include(x => x.Category)
-                .OrderByDescending(x => x.Id)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
+            .Where(x => !x.Deleted)
+            .Include(x => x.Category)
+            .OrderByDescending(x => x.Id);
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            return reports;
+        }
+
+        public async Task<JArray> ChartFilter(FindRequest request, string aggregationField, string currentCulture, string tenantLanguage, string moduleName, IConfiguration configuration, IPicklistRepository picklistRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, int timezoneOffset = 180, bool roleBasedEnabled = true, bool showDisplayValue = true)
+        {
+            var data = new JArray();
+            
+            var noneLabel = tenantLanguage == "tr" ? "(Boş)" : "(None)";
+            
+            var findRequest = new FindRequest
             {
-                var propertyInfo = typeof(Report).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
+                Fields = new List<string>(),
+                SortField = request.SortField,
+                SortDirection = request.SortDirection,
+                GroupBy = request.GroupBy
+            };
 
-                if (paginationModel.OrderType == "asc")
-                {
-                    reports = reports.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    reports = reports.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
+            string currencyFilterValue = null;
 
+            findRequest.Fields.Add(aggregationField);
+            findRequest.Fields.Add(request.GroupBy);
+
+            if (request.Filters != null && request.Filters.Count > 0)
+            {
+                findRequest.Filters = new List<Filter>();
+
+                foreach (var reportFilter in request.Filters)
+                {
+                    findRequest.Filters.Add(new Filter {Field = reportFilter.Field, Operator = reportFilter.Operator, Value = reportFilter.Value, No = reportFilter.No});
+
+                    if (reportFilter.Field == "currency")
+                        currencyFilterValue = reportFilter.Value.ToString();
+                }
             }
 
-            return await reports.ToListAsync();
+            var records = recordRepository.Find(moduleName, findRequest, true, 180);
+
+            var module = await moduleRepository.GetByName(moduleName);
+
+            var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository, tenantLanguage: tenantLanguage);
+
+            foreach (var record in records)
+            {
+                var dataItem = new JObject();
+                dataItem["value"] = record.First().First();
+
+                if (aggregationField != request.GroupBy)
+                    record[aggregationField] = record.First().First();
+
+                var recordFormatted = await RecordHelper.FormatRecordValues(module, (JObject) record, moduleRepository, picklistRepository, configuration, null, tenantLanguage, currentCulture, timezoneOffset,
+                    lookupModules, currencyPicklistValue: currencyFilterValue, userLanguage: tenantLanguage);
+
+                dataItem["label"] = !recordFormatted[request.GroupBy].IsNullOrEmpty() ? recordFormatted[request.GroupBy] : noneLabel;
+                dataItem["valueFormatted"] = recordFormatted[aggregationField];
+
+                if (showDisplayValue)
+                {
+                    dataItem["displayValue"] = recordFormatted[aggregationField];
+                    dataItem["tooltext"] = dataItem["label"] + ", " + recordFormatted[aggregationField];
+                }
+
+                data.Add(dataItem);
+            }
+
+            return data;
         }
 
         public async Task<JArray> GetDashletReportData(int reportId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true, bool showDisplayValue = true)
@@ -220,7 +268,7 @@ namespace PrimeApps.Model.Repositories
                         if (aggregation.Field != report.GroupField)
                             record[aggregation.Field] = record.First().First();
 
-                        var recordFormatted = await RecordHelper.FormatRecordValues(report.Module, (JObject)record, moduleRepository, picklistRepository, configuration, appUser.TenantGuid, appUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules, currencyPicklistValue: currencyFilterValue);
+                        var recordFormatted = await RecordHelper.FormatRecordValues(report.Module, (JObject)record, moduleRepository, picklistRepository, configuration, appUser.TenantGuid, appUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules, currencyPicklistValue: currencyFilterValue, userLanguage: appUser.Language);
 
                         dataItem["label"] = !recordFormatted[report.GroupField].IsNullOrEmpty() ? recordFormatted[report.GroupField] : noneLabel;
                         dataItem["valueFormatted"] = recordFormatted[aggregation.Field];
@@ -266,6 +314,11 @@ namespace PrimeApps.Model.Repositories
 
                 foreach (var viewFilter in view.Filters)
                 {
+                    if (viewFilter.Field.Contains("."))
+                    {
+                        findRequest.Fields.Add(viewFilter.Field);
+                    }
+                    
                     viewFilter.Value = viewFilter.Value.Replace("[me]", appUser.TenantId.ToString());
                     viewFilter.Value = viewFilter.Value.Replace("[me.email]", appUser.Email);
 
@@ -390,7 +443,7 @@ namespace PrimeApps.Model.Repositories
             var reportCategories = DbContext.ReportCategories
                 .Where(x => !x.Deleted)
                 .OrderBy(x => x.Order);
-         
+
             return await reportCategories.ToListAsync();
         }
 

@@ -15,23 +15,25 @@ namespace PrimeApps.App.Helpers
     {
         public static Dashboard CreateEntity(DashboardBindingModel dashboardModel, UserItem user)
         {
-
-
             var dashboard = new Dashboard
             {
-                Name = dashboardModel.Name,
-                Description = dashboardModel.Description,
+                NameEn = dashboardModel.NameEn,
+                NameTr = dashboardModel.NameTr,
+                DescriptionEn = dashboardModel.DescriptionEn,
+                DescriptionTr = dashboardModel.DescriptionTr,
                 UserId = null,
                 ProfileId = null,
                 SharingType = dashboardModel.SharingType
             };
 
-            if (user.HasAdminProfile && dashboardModel.ProfileId != null && dashboardModel.SharingType == DashboardSharingType.Profile)
+            if (user.HasAdminProfile && dashboardModel.ProfileId != null &&
+                dashboardModel.SharingType == DashboardSharingType.Profile)
             {
                 dashboard.ProfileId = dashboardModel.ProfileId;
             }
 
-            if (!user.HasAdminProfile && dashboardModel.UserId != null && dashboardModel.SharingType == DashboardSharingType.Me)
+            if (!user.HasAdminProfile && dashboardModel.UserId != null &&
+                dashboardModel.SharingType == DashboardSharingType.Me)
             {
                 dashboard.UserId = dashboardModel.UserId;
             }
@@ -43,16 +45,18 @@ namespace PrimeApps.App.Helpers
         {
             var dashboard = new Dashboard
             {
-                Name = dashboardModel.Name,
-                Description = dashboardModel.Description,
+                NameEn = dashboardModel.NameEn,
+                NameTr = dashboardModel.NameTr,
+                DescriptionEn = dashboardModel.DescriptionEn,
+                DescriptionTr = dashboardModel.DescriptionTr,
                 UserId = dashboardModel.UserId,
                 ProfileId = dashboardModel.ProfileId,
                 SharingType = dashboardModel.SharingType
             };
-
         }
 
-        public static async Task<Dashlet> CreateEntityDashlet(DashletBindingModel dashletModel, IDashboardRepository _dashboardRepository, IReportRepository _reportRepository)
+        public static async Task<Dashlet> CreateEntityDashlet(DashletBindingModel dashletModel,
+            IDashboardRepository _dashboardRepository, IReportRepository _reportRepository)
         {
             if (dashletModel.ViewId.HasValue)
             {
@@ -66,14 +70,13 @@ namespace PrimeApps.App.Helpers
                         widget.Icon = dashletModel.Icon != null ? dashletModel.Icon : widget.Icon;
                         await _reportRepository.UpdateWidget(widget);
                     }
-
                 }
                 else
                 {
-
                     var widgetModel = new Widget
                     {
-                        Name = dashletModel.Name,
+                        NameEn = dashletModel.NameEn,
+                        NameTr = dashletModel.NameTr,
                         Color = dashletModel.Color,
                         Icon = dashletModel.Icon,
                         WidgetType = WidgetType.SummaryCount,
@@ -88,7 +91,8 @@ namespace PrimeApps.App.Helpers
 
             var dashlet = new Dashlet
             {
-                Name = dashletModel.Name,
+                NameEn = dashletModel.NameEn,
+                NameTr = dashletModel.NameTr,
                 DashletArea = DashletArea.Dashboard,
                 DashletType = dashletModel.DashletType,
                 ChartId = dashletModel.ChartId,
@@ -102,9 +106,9 @@ namespace PrimeApps.App.Helpers
             return dashlet;
         }
 
-        public static async Task<Dashlet> UpdateEntityDashlet(DashletBindingModel dashletModel, Dashlet dashlet, IDashboardRepository _dashboardRepository, IReportRepository _reportRepository)
+        public static async Task<Dashlet> UpdateEntityDashlet(DashletBindingModel dashletModel, Dashlet dashlet,
+            IDashboardRepository _dashboardRepository, IReportRepository _reportRepository)
         {
-
             if (dashletModel.ViewId.HasValue)
             {
                 var widget = await _dashboardRepository.GetWidgetByViewId(dashletModel.ViewId.Value);
@@ -114,15 +118,17 @@ namespace PrimeApps.App.Helpers
                     widget.ViewId = dashletModel.ViewId.Value;
                     widget.Color = dashletModel.Color != null ? dashletModel.Color : widget.Color;
                     widget.Icon = dashletModel.Icon != null ? dashletModel.Icon : widget.Icon;
-                    widget.Name = dashletModel.Name;
-                   
+                    widget.NameEn = dashletModel.NameEn;
+                    widget.NameTr = dashletModel.NameTr;
+
                     await _reportRepository.UpdateWidget(widget);
                 }
                 else
                 {
-
                     var widgetModel = new Widget
-                    {   Name= dashletModel.Name,
+                    {
+                        NameEn = dashletModel.NameEn,
+                        NameTr = dashletModel.NameTr,
                         Color = dashletModel.Color,
                         Icon = dashletModel.Icon,
                         WidgetType = WidgetType.SummaryCount,
@@ -134,19 +140,24 @@ namespace PrimeApps.App.Helpers
                 }
             }
 
+            if (dashletModel.ChartId.HasValue)
+                dashlet.ChartId = dashletModel.ChartId;
 
-            dashlet.Name = dashletModel.Name;           
+            dashlet.NameEn = dashletModel.NameEn;
+            dashlet.NameTr = dashletModel.NameTr;
             dashlet.XTileHeight = dashletModel.XTileHeight;
             dashlet.YTileLength = dashletModel.YTileLength;
 
             return dashlet;
         }
+
         public static ChartViewModel MapToViewModel(Chart chart)
         {
             var ChartViewModel = new ChartViewModel
             {
                 Id = chart.Id,
-                Name = chart.Caption
+                NameEn = chart.CaptionEn,
+                NameTr = chart.CaptionTr
             };
 
             return ChartViewModel;
@@ -162,7 +173,8 @@ namespace PrimeApps.App.Helpers
             var WidgetViewModel = new WidgetViewModel
             {
                 Id = widget.Id,
-                Name = widget.Name
+                NameEn = widget.NameEn,
+                NameTr = widget.NameTr
             };
 
             return WidgetViewModel;

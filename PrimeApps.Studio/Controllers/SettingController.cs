@@ -13,6 +13,9 @@ using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNet.OData.Query;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -53,15 +56,16 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        [Route("find")]
+        public IActionResult Find(ODataQueryOptions<Setting> queryOptions)
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "setting", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var components = await _settingRepository.Find(paginationModel);
+            var components = _settingRepository.Find();
 
-            return Ok(components);
+            var queryResults = (IQueryable<Setting>)queryOptions.ApplyTo(components, new ODataQuerySettings() { EnsureStableOrdering = false });
+            return Ok(new PageResult<Setting>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
         [Route("get/{id:int}"), HttpGet] //Onyl get for Custom type
@@ -69,7 +73,7 @@ namespace PrimeApps.Studio.Controllers
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "setting", RequestTypeEnum.View))
                 return StatusCode(403);
-             
+
             var result = await _settingRepository.GetByIdWithType(id, SettingType.Custom);
 
             return Ok(result);

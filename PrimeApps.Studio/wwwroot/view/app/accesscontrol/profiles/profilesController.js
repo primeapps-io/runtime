@@ -2,11 +2,10 @@
 
 angular.module('primeapps')
 
-    .controller('ProfilesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ProfilesService', 'LayoutService', '$http', 'config', '$popover', '$location',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ProfilesService, LayoutService, $http, config, $popover, $location) {
+    .controller('ProfilesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ProfilesService', 'LayoutService', '$http', 'config', '$popover', '$location', '$localStorage',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ProfilesService, LayoutService, $http, config, $popover, $location, $localStorage) {
 
-            $scope.$parent.activeMenuItem = 'profiles';
-            $scope.activePage = 1;
+            $scope.$parent.activeMenuItem = 'profiles'; 
             $rootScope.breadcrumblist[2].title = 'Profiles';
             $scope.loading = true;
             $scope.moduleLead = $filter('filter')($rootScope.appModules, { name: 'leads' }, true)[0];
@@ -44,29 +43,11 @@ angular.module('primeapps')
                     "name": $filter('translate')('Layout.Menu.Homepage')
                 });
             }
-
-            $scope.requestModel = {
-                limit: '10',
-                offset: 0
-            };
-
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-            $scope.generator(10);
-
-            ProfilesService.count().then(function (response) {
-                $scope.pageTotal = response.data;
-            });
-
-
+              
             function getProfile() {
                 $scope.profiles = null; //Geçici çözüm detaylı bakılacak.
                 $scope.loading = true;
-                ProfilesService.find($scope.requestModel, 2).then(function (response) {
+                ProfilesService.getAll().then(function (response) {
                     $scope.profiles = ProfilesService.getProfiles(response.data, $rootScope.appModules, false);
                     $scope.profilesCopy = $scope.profiles;
                     $scope.profile = {};
@@ -89,13 +70,15 @@ angular.module('primeapps')
                     $scope.profile.smtp_settings = false;
                     $scope.profile.home = false;
                     $scope.profile.collective_annual_leave = false;
+                    $scope.profile.parent_id = 0;
+
                     $scope.profile.permissions = $filter('filter')($scope.profiles, {
                         is_persistent: true,
                         has_admin_rights: true
                     })[0].permissions;
                     //Create
                     var dashboard = $filter('filter')($scope.startPageList, { value: "Dashboard" }, true)[0];
-                    $scope.profile.PageStart = dashboard;
+                    $scope.profile.start_page = dashboard;
 
                     $scope.loading = false;
                 })
@@ -168,10 +151,10 @@ angular.module('primeapps')
 
             $scope.SetStartPage = function () {
 
-                var setValue = $scope.profile.PageStart.value;
+                var setValue = $scope.profile.start_page.value;
                 $scope.profile[setValue] = true;
 
-                if ($scope.profile.PageStart.value === "Newsfeed") {
+                if ($scope.profile.start_page.value === "Newsfeed") {
                     var startPageNewsfeedControl = $filter('filter')($scope.profile.Permissions, { Type: 3 }, true)[0];
                     startPageNewsfeedControl.Read = true;
                 }
@@ -202,7 +185,7 @@ angular.module('primeapps')
             }
 
             $scope.descriptionChange = function () {
-                if ($scope.profile.description)
+                if ($scope.profile.description_en)
                     $scope.requiredColor = "";
                 else
                     $scope.requiredColor = 'background-color:#f8dada';
@@ -224,10 +207,12 @@ angular.module('primeapps')
                 $scope.saving = true;
                 var result = null;
 
-                $scope.profile.start_page = $scope.profile.PageStart.valueLower;
-                var setPage = $filter('filter')($scope.startPageList, { value: $scope.profile.PageStart.value }, true)[0];
+                if ($scope.profile.start_page.valueLower) {
+                    $scope.profile.start_page = $scope.profile.start_page.valueLower;
+                    var setPage = $filter('filter')($scope.startPageList, { value: $scope.profile.start_page.value }, true)[0];
 
-                $scope.profile[setPage.value] = true;
+                    $scope.profile[setPage.valueLower] = true;
+                }
 
                 if ($scope.profile.startpage === "newsfeed") {
                     var startPageNewsfeedControl = $filter('filter')($scope.profile.Permissions, { Type: 3 }, true)[0];
@@ -241,7 +226,10 @@ angular.module('primeapps')
                 }
 
                 if (!$scope.profile.id) {
+                    $scope.profile.id = 0;
+
                     result = ProfilesService.create($scope.profile);
+
                 } else {
                     result = ProfilesService.update($scope.profile);
                 }
@@ -250,27 +238,29 @@ angular.module('primeapps')
                     $scope.profileSubmit = false;
                     $scope.saving = false;
                     $scope.profileFormModal.hide();
-                    $scope.changePage($scope.activePage);
                     toastr.success($filter('translate')('Setup.Profiles.SubmitSuccess'));
-                    if (!$scope.profile.id) {
-                        $scope.pageTotal++;
-                    }
+                    $scope.grid.dataSource.read();
+
                     if (response.data && response.data != null) {
                         $rootScope.appProfiles.push(response.data);
                     }
+
                 }).catch(function () {
                     $scope.profileSubmit = false;
+                    $scope.saving = false;
                 });
                 // }
             };
 
             var editProfile = function (profile) {
                 if (profile.id) {
-                    $scope.profile = $filter('filter')($scope.profiles, { id: profile.id }, true)[0];
+                    var data = [profile];
+                    $scope.profile = ProfilesService.getProfiles(data, $rootScope.appModules, false)[0];
+                    // $scope.profile = profile;//$filter('filter')($scope.profiles, { id: profile.id }, true)[0];
 
                     //Update
                     var setPageStart = $filter('filter')($scope.startPageList, { valueLower: $scope.profile.start_page }, true)[0];
-                    $scope.profile.PageStart = setPageStart;
+                    $scope.profile.start_page = setPageStart;
 
                     if ($scope.profile.parent_id != 0) {
                         $scope.profile.parent_id = $filter('filter')($scope.profiles, { id: $scope.profile.parent_id }, true)[0];
@@ -279,14 +269,15 @@ angular.module('primeapps')
             };
 
             var cloneProfile = function (profile) {
-                var profile = $filter('filter')($scope.profiles, { id: profile.id }, true)[0];
-                $scope.profile = profile;
+                //var profile = $filter('filter')($scope.profiles, { id: profile.id }, true)[0];
+                var data = [profile];
+                $scope.profile = ProfilesService.getProfiles(data, $rootScope.appModules, false)[0];
                 delete $scope.profile.user_ids;
                 delete $scope.profile.is_persistent;
                 delete $scope.profile.CreatedBy;
                 delete $scope.profile.id;
                 var setPageStart = $filter('filter')($scope.startPageList, { valueLower: $scope.profile.start_page }, true)[0];
-                $scope.profile.PageStart = setPageStart;
+                $scope.profile.start_page = setPageStart;
                 $scope.profile.parent_id = $filter('filter')($scope.profiles, { id: profile.parent_id }, true)[0];
             };
 
@@ -318,22 +309,23 @@ angular.module('primeapps')
                     $scope.profile.smtp_settings = false;
                     $scope.profile.home = false;
                     $scope.profile.collective_annual_leave = false;
+                    $scope.profile.parent_id = 0;
                     $scope.profile.permissions = $filter('filter')($scope.profilesCopy, {
                         is_persistent: true,
                         has_admin_rights: true
                     })[0].permissions;
                     //Create
                     var dashboard = $filter('filter')($scope.startPageList, { value: "Dashboard" }, true)[0];
-                    $scope.profile.PageStart = dashboard;
+                    $scope.profile.start_page = dashboard;
                 }
 
                 $scope.profileFormModal = $scope.profileFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/accesscontrol/profiles/profileForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/accesscontrol/profiles/profileForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
                 $scope.profileFormModal.$promise.then(function () {
                     $scope.profileFormModal.show();
                 });
@@ -353,7 +345,7 @@ angular.module('primeapps')
                             angular.element(elem.closest('tr')).addClass('animated-background');
                             ProfilesService.delete(profile.id)
                                 .then(function () {
-                                    $scope.pageTotal--;
+                                    $scope.grid.dataSource.read();
                                     //var index = $rootScope.appModules.indexOf(module);
                                     // $rootScope.appModules.splice(index, 1);
 
@@ -371,6 +363,105 @@ angular.module('primeapps')
                                 });
                         }
                     });
+            };
+
+            $scope.goUrl = function (emailTemp) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.showFormModal(emailTemp, false);
+                }
+            };
+
+            //For Kendo UI
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/profile/find",
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                Name: { type: "string" },
+                                Description: { type: "string" }
+                            }
+                        }
+                    }
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                noRecords: true,
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter) {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
+                },
+                rowTemplate: function (profile) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + profile.name_en + '</td>';
+                    trTemp += '<td class="text-left">' + profile.description_en + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                altRowTemplate: function (profile) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + profile.name_en + '</td>';
+                    trTemp += '<td class="text-left">' + profile.description_en + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+
+                    {
+                        field: 'NameEn',
+                        title: $filter('translate')('Setup.Profiles.ProfileName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+
+                    {
+                        field: 'DescriptionEn',
+                        title: $filter('translate')('Setup.Profiles.ProfileDescription'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
             };
         }
     ]);

@@ -107,6 +107,10 @@ namespace PrimeApps.Model.Migrations.StudioDB
                     b.Property<int>("OrganizationId")
                         .HasColumnName("organization_id");
 
+                    b.Property<string>("Secret")
+                        .HasColumnName("secret")
+                        .HasMaxLength(4000);
+
                     b.Property<int>("TempletId")
                         .HasColumnName("templet_id");
 
@@ -664,7 +668,7 @@ namespace PrimeApps.Model.Migrations.StudioDB
             modelBuilder.Entity("PrimeApps.Model.Entities.Studio.AppDraftTemplate", b =>
                 {
                     b.HasOne("PrimeApps.Model.Entities.Studio.AppDraft", "App")
-                        .WithMany()
+                        .WithMany("Templates")
                         .HasForeignKey("AppId")
                         .OnDelete(DeleteBehavior.Cascade);
 

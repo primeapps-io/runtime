@@ -17,7 +17,7 @@ namespace PrimeApps.Model.Helpers
 {
     public class PackageHelper
     {
-        public static async Task<bool> All(JObject app, string studioSecret, bool clearAllRecords, string dbName, string version, IConfiguration configuration, IUnifiedStorage storage, List<HistoryStorage> historyStorages, IHostingEnvironment hostingEnvironment)
+        public static async Task<bool> All(JObject app, bool clearAllRecords, string dbName, string version, IConfiguration configuration, IUnifiedStorage storage, List<HistoryStorage> historyStorages, IHostingEnvironment hostingEnvironment)
         {
             var PDEConnectionString = configuration.GetConnectionString("StudioDBConnection");
             var postgresPath = PostgresHelper.GetPostgresBinaryPath(configuration, hostingEnvironment);
@@ -152,7 +152,6 @@ namespace PrimeApps.Model.Helpers
                     File.AppendAllText(logPath, "\u001b[31m" + DateTime.Now + " : Unhandle exception. While zipping package folder. Error : " + e.Message + "\u001b[39m" + Environment.NewLine);
                 }
 
-
                 /*if (!result)
                     File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while editing records... \u001b[39m" + Environment.NewLine);
                 */
@@ -215,7 +214,7 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static async Task<bool> Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, JObject app, string studioSecret, string dbName, string version, int deploymentId, IConfiguration configuration, IUnifiedStorage storage, IHostingEnvironment hostingEnvironment)
+        public static async Task<bool> Diffs(List<HistoryDatabase> historyDatabases, List<HistoryStorage> historyStorages, JObject app, string dbName, string version, int deploymentId, IConfiguration configuration, IUnifiedStorage storage, IHostingEnvironment hostingEnvironment)
         {
             var root = DataHelper.GetDataDirectoryPath(configuration, hostingEnvironment);
 
@@ -360,7 +359,10 @@ namespace PrimeApps.Model.Helpers
                 var columns = PostgresHelper.Read(connectionString, dbName, GetUserFKColumnsSql(table.ToString()), "array");
 
                 if (!columns.HasValues) continue;
-
+                
+                if(((JArray)columns).Count == 1 && ((JArray)columns).First["column_name"].ToString() == "user_id")
+                    continue;
+                
                 sqls.Add(UpdateUserFkRecordSql(table.ToString(), columns));
                 /*dropCommand = PostgresHelper.Read(connectionString, dbName, ColumnIsExistsSql(table.ToString(), "id"), "hasRows");
                 var idColumnIsExists = dropCommand;
@@ -413,6 +415,10 @@ namespace PrimeApps.Model.Helpers
             foreach (var column in columns)
             {
                 var columnName = column["column_name"];
+                
+                if(columnName.ToString() == "user_id")
+                    continue;
+
                 sql.Append(columnName + " = 1,");
             }
 

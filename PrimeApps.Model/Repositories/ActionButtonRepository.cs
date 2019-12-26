@@ -18,7 +18,7 @@ namespace PrimeApps.Model.Repositories
         {
         }
 
-        public async Task<ICollection<ActionButtonViewModel>> GetByModuleId(int id)
+        public async Task<ICollection<ActionButtonViewModel>> GetByModuleId(int id, string language = "en")
         {
             var actionButtons = new List<ActionButtonViewModel>();
 
@@ -33,7 +33,7 @@ namespace PrimeApps.Model.Repositories
                 {
                     Id = actionButtonItem.Id,
                     ActionType = actionButtonItem.Type,
-                    Name = actionButtonItem.Name,
+                    Name = language == "en" ? actionButtonItem.NameEn : actionButtonItem.NameTr,
                     Template = actionButtonItem.Template,
                     ModuleId = id,
                     Icon = actionButtonItem.Icon,
@@ -117,33 +117,18 @@ namespace PrimeApps.Model.Repositories
             return await count.CountAsync();
         }
 
-        public async Task<ICollection<ActionButton>> Find(int id, PaginationModel paginationModel)
+        public async Task<ICollection<ActionButton>> Find(int id)
         {
             var actionButtons = DbContext.ActionButtons
-                .Where(x => !x.Deleted)
-                .Include(x => x.Permissions)
-                .OrderByDescending(x => x.Id)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
+            .Include(x => x.Permissions)
+            .Include(x => x.Module)
+            .Where(x => !x.Deleted);
 
             if (id > 0)
                 actionButtons = actionButtons.Where(x => x.ModuleId == id);
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(ActionButton).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
 
-                if (paginationModel.OrderType == "asc")
-                {
-                    actionButtons = actionButtons.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    actionButtons = actionButtons.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
-            }
-
-            return await actionButtons.ToListAsync();
+            return await actionButtons.OrderByDescending(x => x.Id).ToListAsync();
         }
     }
 }

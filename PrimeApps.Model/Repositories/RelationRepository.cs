@@ -16,104 +16,81 @@ using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Repositories
 {
-	public class RelationRepository : RepositoryBaseTenant, IRelationRepository
-	{
-		private Warehouse _warehouse;
+    public class RelationRepository : RepositoryBaseTenant, IRelationRepository
+    {
+        private Warehouse _warehouse;
 
-		public RelationRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public RelationRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
-		public RelationRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext, configuration)
-		{
-			_warehouse = warehouse;
-		}
-
-		public async Task<int> Count(int id)
-		{
-			var count = DbContext.Relations
-						.Where(x => !x.Deleted);
-
-			if (id > 0)
-				count = count.Where(x => x.ModuleId == id);
-
-			return await count.CountAsync();
-		}
-
-        public ICollection<Relation> Find(int id, PaginationModel paginationModel)
+        public RelationRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext, configuration)
         {
-            var relations = GetPaginationGQuery(id, paginationModel)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit).ToList();
+            _warehouse = warehouse;
+        }
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Relation).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
+        public async Task<int> Count(int id)
+        {
+            var count = DbContext.Relations
+                        .Where(x => !x.Deleted);
 
-                if (paginationModel.OrderType == "asc")
-                {
-                    relations = relations.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
-                }
-                else
-                {
-                    relations = relations.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
-                }
+            if (id > 0)
+                count = count.Where(x => x.ModuleId == id);
 
-            }
+            return await count.CountAsync();
+        }
+
+        public IQueryable<Relation> Find(int id)
+        {
+            var relations = DbContext.Relations
+                            .Where(relation => !relation.Deleted);
+
+            if (id > 0)
+                relations = relations.Where(x => x.ModuleId == id);
+
+            relations = relations.Include(relation => relation.ParentModule)
+                                 .OrderByDescending(x => x.Id);
 
             return relations;
         }
 
         public async Task<Relation> GetById(int id)
-		{
-			var relation = await GetRelationQuery()
-				.FirstOrDefaultAsync(x => x.Id == id && !x.Deleted);
+        {
+            var relation = await GetRelationQuery()
+                .FirstOrDefaultAsync(x => x.Id == id && !x.Deleted);
 
-			return relation;
-		}
+            return relation;
+        }
 
-		public async Task<ICollection<Relation>> GetAll()
-		{
-			var relations = await GetRelationQuery()
-				.Where(x => !x.Deleted)
-				.ToListAsync();
+        public async Task<ICollection<Relation>> GetAll()
+        {
+            var relations = await GetRelationQuery()
+                .Where(x => !x.Deleted)
+                .ToListAsync();
 
-			return relations;
-		}
+            return relations;
+        }
 
-		public async Task<ICollection<Relation>> GetAllDeleted()
-		{
-			var relations = await GetRelationQuery()
-				.Where(x => x.Deleted)
-				.ToListAsync();
+        public async Task<ICollection<Relation>> GetAllDeleted()
+        {
+            var relations = await GetRelationQuery()
+                .Where(x => x.Deleted)
+                .ToListAsync();
 
-			return relations;
-		}
+            return relations;
+        }
 
-		public async Task<Relation> GetRelation(int id)
-		{
-			var relation = await DbContext.Relations
-				.FirstOrDefaultAsync(x => x.Id == id && !x.Deleted);
+        public async Task<Relation> GetRelation(int id)
+        {
+            var relation = await DbContext.Relations
+                .FirstOrDefaultAsync(x => x.Id == id && !x.Deleted);
 
-			return relation;
-		}
+            return relation;
+        }
 
-		private IQueryable<Relation> GetRelationQuery()
-		{
-			return DbContext.Relations
-				.Include(relation => relation.ParentModule);
-		}
+        private IQueryable<Relation> GetRelationQuery()
+        {
+            return DbContext.Relations
+                .Include(relation => relation.ParentModule);
+        }
 
-		private IQueryable<Relation> GetPaginationGQuery(int id, PaginationModel paginationModel, bool withIncludes = true)
-		{
-			var relations = DbContext.Relations
-							.Where(relation => !relation.Deleted);
-			if (id > 0)
-				relations = relations.Where(x => x.ModuleId == id);
-
-			relations = relations.Include(relation => relation.ParentModule)
-								  .OrderByDescending(x => x.Id);
-
-			return relations;
-
-		}
-	}
+    }
 }

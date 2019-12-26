@@ -1,6 +1,6 @@
 <div class="modal message-modal" tabindex="-1" role="dialog" ng-controller="BulkSMSController">
     <div class="modal-dialog">
-        <div class="modal-content" style="width:500px;margin:auto;">
+        <div class="modal-content" style="width:600px;margin:auto;">
             <div ng-show="formType === 'sms'">
                 <form name="smsModalForm" class="form-horizontal form-custom" ng-submit="submitSMS()" autocomplete="off" novalidate>
                     <div class="modal-header clearfix">
@@ -32,8 +32,7 @@
                                 <label class="col-sm-3 control-label" style="text-align:left">SMS Alanı</label>
                                 <div class="col-md-9" ng-class="{'has-error': smsModalForm.$submitted && smsModalForm.phoneField.$invalid}">
                                     <select class="form-control ng-animate-disabled sender-alias" name="phoneFields" ng-model="phoneField"
-                                            ng-options="field.label + ' ' + field.labelExt for field in moduleFields">
-                                    </select>
+                                            ng-options="field.label + ' ' + field.labelExt for field in moduleFields"></select>
                                 </div>
                             </div>
                             <div class="form-group templa-space" ng-class="{'has-error': smsModalForm.$submitted && smsModalForm.label.$invalid}" style="margin-top: 20px;">
@@ -41,26 +40,20 @@
                                     <label> <label style="color: #990000">*</label> {{'SMS.Message' | translate}}</label>
                                     <textarea class="sms-textarea"
                                               ng-change="calculateSMS(tinymceModel)"
-                                              mentio-id="'tinyMceTextArea'"
-                                              mentio name="tinymceModel"
-                                              mentio-typed-text="typedTerm"
-                                              mentio-require-leading-space="true"
+                                              readonly 
                                               ng-required="true"
-                                              ng-model="tinymceModel"
-                                    ></textarea>
-                                    <mentio-menu class="mention-scrollbar" style="height:120px" id="style-1" id="hastmenu" mentio-for="'tinyMceTextArea'" mentio-trigger-char="'#'" mentio-items="tags" mentio-template-url="tag-mentions.tpl" mentio-search="searchTags(term)" mentio-select="getTagTextRaw(item)"></mentio-menu>
+                                              ng-model="tinymceModel"></textarea>
                                 </div>
                             </div>
                             <!--ment.io modal script-->
-                            <script type="text/ng-template" id="tag-mentions.tpl">
+                            <!--<script type="text/ng-template" id="tag-mentions.tpl">
                                 <ul class="ment-tags">
-                                    <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
-                                        class="list-group-item clearfix"
+                                    <li class="item list-group-item clearfix" mentio-menu-item="tag" ng-repeat="tag in items" 
                                         ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
                                         {{tag.label}}
                                     </li>
                                 </ul>
-                            </script>
+                            </script>-->
                             <div class="form-group" ng-show="smsModalForm.$submitted && smsModalForm.$invalid">
                                 <div class="col-sm-offset-2 col-sm-8">
                                     <div class="callout callout-danger">
@@ -69,11 +62,11 @@
                                 </div>
                             </div>
                             <div class="col-sm-4 sms-footer">
-                                <p class="pull-left">{{'Common.ParameterMessage' | translate}}</p>
+                                <p class="pull-left" ng-if="!template">{{'Template.ChooseTemplate' | translate}}</p>
                                 <div class="col-sm-4 form-inline pull-right">
                                     <label>{{'SMS.EstimatedSMSCount' | translate}}: </label> <span>{{totalSMS}}</span>
                                 </div>
-                                <button type="submit" class="btn btn-w-md btn-primary" ng-disabled="!phoneField" ladda="submittingModal"><i class="fa fa-check-circle pull-left pull-right"></i> {{'SMS.Send' | translate}}</button>
+                                <button type="submit" class="btn btn-w-md btn-primary" ng-disabled="!phoneField || !template" ladda="submittingModal"><i class="fa fa-check-circle pull-left pull-right"></i> {{'SMS.Send' | translate}}</button>
                                 <button type="button" class="btn btn-custom" ng-show="!template" ng-click="formType = 'template';setTemplate()" ng-disabled="saving">{{'Template.NewTemplate' | translate}}</button>
                                 <button type="button" class="btn btn-custom" ng-show="template" ng-click="formType = 'template';setTemplate()" ng-disabled="saving">{{'Template.EditTemplate' | translate}}</button>
                             </div>
@@ -146,8 +139,7 @@
                                               mentio-require-leading-space="true"
                                               ng-required="true"
                                               ng-model="smstemplate.tinymce_content"
-                                              mentio-iframe-element="iframeElement['tinymceTemplateEdit']"
-                                    ></textarea>
+                                              mentio-iframe-element="iframeElement['tinymceTemplateEdit']"></textarea>
                                     <mentio-menu class="mention-scrollbar" style="height:120px" id="style-2" id="hastmenu2" mentio-for="'tinyMceTextArea2'" mentio-trigger-char="'#'" mentio-items="tags" mentio-template-url="/tag-mentions.tpl" mentio-search="searchTags(term)" mentio-select="getTagTextRaw(item)"></mentio-menu>
                                 </div>
                             </div>
@@ -174,12 +166,12 @@
                                     <label>{{'SMS.EstimatedSMSCount' | translate}}: </label> <span>{{totalSMS}}</span>
                                 </div>
                             </div>
-                                <div class="col-sm-8 clearfix pull-right">
-                                    <button type="submit" class="btn btn-w-md btn-primary pull-right" ng-show="!template" ladda="submittingModal">{{'Template.TemplateSave' | translate}}</button>
-                                    <button type="submit" class="btn btn-w-md btn-primary pull-right" ng-show="template" ladda="submittingModal">{{'Template.UpdateTemplate' | translate}}</button>
-                                    <button type="button" class="btn btn-danger pull-right" style="margin-right:5px" ng-show="template" action="templateDelete();formType = 'sms';" confirm-click placement="top" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ladda="emailUpdating">{{'Template.TemplateDelete' | translate}}</button>
-                                    <button type="button" class="btn btn-custom pull-right" style="margin-right:5px" ng-click="formType = 'sms';backTemplate()" ng-click="formType = 'template'" ng-disabled="saving">{{'Template.Back' | translate}}</button>
-                                </div>
+                            <div class="col-sm-8 clearfix pull-right">
+                                <button type="submit" class="btn btn-w-md btn-primary pull-right" ng-show="!template" ladda="submittingModal">{{'Template.TemplateSave' | translate}}</button>
+                                <button type="submit" class="btn btn-w-md btn-primary pull-right" ng-show="template" ladda="submittingModal">{{'Template.UpdateTemplate' | translate}}</button>
+                                <button type="button" class="btn btn-danger pull-right" style="margin-right:5px" ng-show="template" action="templateDelete();formType = 'sms';" confirm-click placement="top" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ladda="emailUpdating">{{'Template.TemplateDelete' | translate}}</button>
+                                <button type="button" class="btn btn-custom pull-right" style="margin-right:5px" ng-click="formType = 'sms';backTemplate()" ng-click="formType = 'template'" ng-disabled="saving">{{'Template.Back' | translate}}</button>
+                            </div>
                         </div>
                     </div>
                 </form>

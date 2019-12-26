@@ -77,9 +77,10 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 
                     using (var settingReporsitory = new SettingRepository(dbContext, _configuration))
                     using (var notifitionRepository = new NotificationRepository(dbContext, _configuration))
+                    using (var templateRepository = new TemplateRepository(dbContext, _configuration))
                     {
 
-                        settingReporsitory.CurrentUser = notifitionRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
+                        settingReporsitory.CurrentUser = notifitionRepository.CurrentUser = templateRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
 
                         /// get sms settings.
                         var smsSettings = settingReporsitory.Get(SettingType.SMS);
@@ -126,6 +127,13 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                             }
 
                             query = smsNotification.Query;
+
+                            if (int.TryParse(smsNotification.Template, out int templateId))
+                            {
+                                var template = await templateRepository.GetById(templateId);
+                                smsNotification.Template = template.Content;
+                            }
+
                             messageTemplate = smsNotification.Template;
                             moduleId = smsNotification.ModuleId.ToString();
                             language = smsNotification.Lang;
@@ -168,7 +176,17 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                             smsNotification.Status = bulkSMSStatus;
                             composerResult.ProviderResponse = smsResponse.Status.ToString();
                             dbContext.Entry(smsNotification).State = EntityState.Modified;
+
+                            /**DataBase'de fazladan yer kaplamaması için Body'leri null setliyoruz*/
+                            foreach (var message in composerResult.Messages)
+                            {
+                                message.Body = null;
+                            }
                             smsNotification.Result = JsonConvert.SerializeObject(composerResult);
+
+                            if (templateId > 0)
+                                smsNotification.Template = templateId.ToString();
+
                             dbContext.SaveChanges();
 
                             ///Cleanup
@@ -341,12 +359,12 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                                             }
                                         }
 
-                                        string formattedMessage = FormatMessage(messageFields, messageBody, record);
+                                        string formattedMessage = FormatMessage(messageFields, messageBody, record);  //DB perfonmans to deleted
 
                                         JObject messageStatus = new JObject();
 
                                         messageStatus["number"] = phoneNumber;
-                                        messageStatus["message"] = formattedMessage;
+                                        ///messageStatus["message"] = formattedMessage;  //Deleted for DB perfonmans
                                         messageStatus["status"] = status.ToString();
                                         messageStatus["sms_id"] = smsId;
                                         messageStatus["record_primary_value"] = record[phoneField]?.ToString();

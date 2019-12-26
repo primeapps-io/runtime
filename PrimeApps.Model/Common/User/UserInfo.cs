@@ -62,6 +62,13 @@ namespace PrimeApps.Model.Common.User
         /// </summary>
         [DataMember]
         public string tenantLanguage { get; set; }
+        
+        /// <summary>
+        ///Language
+        /// </summary>
+        [DataMember]
+        public string Language { get; set; }
+
 
         /// <summary>
         /// User profiles

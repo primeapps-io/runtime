@@ -10,7 +10,7 @@ global:
   modsecurity: false
 
 image:
-  tag: "1.19.277.1-debian"
+  tag: "1.19.354.1-debian"
   pullPolicy: "IfNotPresent"
 
 auth:
@@ -32,6 +32,8 @@ admin:
   storage:
     class: "default"
     size: "10Gi"
+  postgresPath: "/usr/bin/"
+  dataDirectory: "/data/primeapps/"
   sentryDsn: "https://your:dsn@log.primeapps.io/3"
   
 postgresoperator:

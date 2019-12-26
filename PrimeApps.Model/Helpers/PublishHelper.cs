@@ -4,17 +4,24 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Storage;
+using Sentry.Protocol;
+using HistoryRepository = PrimeApps.Model.Context.HistoryRepository;
 
 namespace PrimeApps.Model.Helpers
 {
@@ -104,7 +111,7 @@ namespace PrimeApps.Model.Helpers
                 var sqls = new string[] { };
 
                 if (!string.IsNullOrEmpty(scriptsText))
-                    sqls = scriptsText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                    sqls = scriptsText.Split(Environment.NewLine);
 
                 File.AppendAllText(logPath,
                     "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." + Environment.NewLine);
@@ -214,8 +221,13 @@ namespace PrimeApps.Model.Helpers
             var releaseList = new List<Release>();
             bool result;
 
-            var identityUrl = configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
+            var localAuth = configuration.GetValue("AppSettings:AuthenticationServerURLLocal", string.Empty);
+            var identityUrl =  !string.IsNullOrEmpty(localAuth)
+                ? localAuth
+                : configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
+
             var logFileName = "";
+         
             foreach (var obj in versions.OfType<object>().Select((version, index) => new { version, index }))
             {
                 var version = obj.version;
@@ -242,47 +254,72 @@ namespace PrimeApps.Model.Helpers
                         "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Platform application creating..." +
                         Environment.NewLine);
 
-                    var secret = Guid.NewGuid().ToString().Replace("-", string.Empty);
-                    var secretEncrypt = CryptoHelper.Encrypt(secret);
-                    result = PublishHelper.CreatePlatformApp(PREConnectionString, app, secretEncrypt, appUrl, authUrl);
+                  
+                    result = PublishHelper.CreatePlatformApp(PREConnectionString, app, CryptoHelper.Encrypt(app["secret"].ToString()), appUrl, authUrl);
 
                     if (!result)
+                    {
                         File.AppendAllText(logPath,
                             "\u001b[90m" + DateTime.Now + "\u001b[39m" +
                             " : \u001b[93m Unhandle exception while creating platform app... \u001b[39m" +
                             Environment.NewLine);
-
+                    
+                        ErrorHandler.LogMessage($"App: app{app["id"]}, Version: {version}, Create platform application error.",SentryLevel.Error);
+                    }
+                    
                     var token = studioToken;
+                
+                    if (!string.IsNullOrEmpty(localAuth))
+                    {
+                        var authIntegrationEmail = "app@primeapps.io";
+                        var authIntegrationPassword = "123456";
+                        var clientId = configuration.GetValue("AppSettings:ClientId", string.Empty);
+                        var clientSecret = "secret";
+
+                        token = await GetAuthToken(identityUrl, authIntegrationPassword, authIntegrationEmail, clientId, clientSecret);
+                    }
 
                     if (!string.IsNullOrEmpty(token))
                     {
                         //var applicationUrl = string.Format(configuration.GetValue("AppSettings:AppUrl", string.Empty), app["name"].ToString());
                         var addClientResult = await CreateClient(appUrl, identityUrl, token, app["name"].ToString(),
-                            app["label"].ToString(), secret, useSsl);
+                            app["label"].ToString(), app["secret"].ToString(), useSsl);
 
                         if (string.IsNullOrEmpty(addClientResult))
                         {
-                            var clientResult = await AddClientUrl(
-                                configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty), token,
-                                appUrl, useSsl);
+                            var clientResult = await AddClientUrl(identityUrl, token, appUrl, useSsl);
                             if (!string.IsNullOrEmpty(clientResult))
+                            {
                                 File.AppendAllText(logPath,
                                     "\u001b[90m" + DateTime.Now + "\u001b[39m" +
                                     " : \u001b[93m Unhandle exception while adding app url to client... \u001b[39m" +
                                     Environment.NewLine);
+                            
+                                ErrorHandler.LogMessage($"App: app{app["id"]}, Version: {version}, Add client url error. Message: {clientResult}",SentryLevel.Error);
+                            }
                         }
                         else
+                        {
                             File.AppendAllText(logPath,
                                 "\u001b[90m" + DateTime.Now + "\u001b[39m" +
                                 " : \u001b[93m Unhandle exception while creating app client... Error: " +
                                 addClientResult + " \u001b[39m" + Environment.NewLine);
+                        
+                            ErrorHandler.LogMessage($"App: app{app["id"]}, Version: {version}, Create client error. Message: {addClientResult}",SentryLevel.Error);
+                        }
                     }
 
-                    //Add auth and app url to amazon s3 bucket policy.
-                    await storage.AddHttpReferrerUrlToBucket($"app{app["id"]}",
-                        useSsl ? "https://" : "http://" + authUrl, UnifiedStorage.PolicyType.TenantPolicy);
-                    await storage.AddHttpReferrerUrlToBucket($"app{app["id"]}",
-                        useSsl ? "https://" : "http://" + appUrl, UnifiedStorage.PolicyType.TenantPolicy);
+                    try
+                    {
+                        await storage.AddHttpReferrerUrlToBucket($"app{app["id"]}",
+                            (useSsl ? "https://" : "http://") + authUrl, UnifiedStorage.PolicyType.TenantPolicy);
+                        await storage.AddHttpReferrerUrlToBucket($"app{app["id"]}",
+                            (useSsl ? "https://" : "http://") + appUrl, UnifiedStorage.PolicyType.TenantPolicy);
+                    }
+                    catch (Exception e)
+                    {
+                        ErrorHandler.LogMessage($"App: app{app["id"]}, Version: {version}, Add storage profile permission error. Message: {e.Message}",SentryLevel.Error);
+                    }
                 }
                 else if (!createPlatformApp && obj.index == 0)
                 {
@@ -310,7 +347,7 @@ namespace PrimeApps.Model.Helpers
 
                 try
                 {
-                    var path = Path.Combine(rootPath, "packages", dbName, version.ToString());
+                    var path = Path.Combine(rootPath, "packages", databaseName, version.ToString());
 
                     if (Directory.Exists(path))
                         Directory.Delete(path, true);
@@ -402,6 +439,8 @@ namespace PrimeApps.Model.Helpers
                                 Environment.NewLine);
                             break;
                         }
+                        
+                        EfMigrate(configuration, databaseName);
                     }
                     else
                     {
@@ -435,6 +474,10 @@ namespace PrimeApps.Model.Helpers
                             }*/
                             templateCopied = true;
                         }
+                        else
+                        {
+                            PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, dbName, true);
+                        }
                     }
 
                     if (File.Exists(scriptPath))
@@ -443,7 +486,7 @@ namespace PrimeApps.Model.Helpers
                         var sqls = new string[] { };
 
                         if (!string.IsNullOrEmpty(scriptsText))
-                            sqls = scriptsText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                            sqls = scriptsText.Split(Environment.NewLine);
 
                         File.AppendAllText(logPath,
                             "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." +
@@ -601,7 +644,7 @@ namespace PrimeApps.Model.Helpers
             {
                 var clientRequest = new JObject
                 {
-                    ["urls"] = useSsl ? "https://" : "http://" + url,
+                    ["urls"] = (useSsl ? "https://" : "http://") + url,
                 };
 
                 client.DefaultRequestHeaders.Accept.Clear();
@@ -613,6 +656,9 @@ namespace PrimeApps.Model.Helpers
 
                 if (!response.IsSuccessStatusCode)
                 {
+                    if (response.StatusCode == HttpStatusCode.Unauthorized)
+                        return "Unauthorized";
+                    
                     var resp = await response.Content.ReadAsStringAsync();
                     return resp;
                 }
@@ -635,8 +681,8 @@ namespace PrimeApps.Model.Helpers
                     ["always_send_client_claims"] = true,
                     ["require_consent"] = false,
                     ["client_secrets"] = secret,
-                    ["redirect_uris"] = useSsl ? "https://" : "http://" + $"{appUrl}/signin-oidc",
-                    ["post_logout_redirect_uris"] = useSsl ? "https://" : "http://" + $"{appUrl}/signout-callback-oidc",
+                    ["redirect_uris"] = (useSsl ? "https://" : "http://") + $"{appUrl}/signin-oidc",
+                    ["post_logout_redirect_uris"] = (useSsl ? "https://" : "http://") + $"{appUrl}/signout-callback-oidc",
                     ["allowed_scopes"] = "openid;profile;email;api1",
                     ["access_token_life_time"] = 864000
                 };
@@ -650,8 +696,10 @@ namespace PrimeApps.Model.Helpers
 
                 if (!response.IsSuccessStatusCode)
                 {
+                    if (response.StatusCode == HttpStatusCode.Unauthorized)
+                        return "Unauthorized";
+            
                     var resp = await response.Content.ReadAsStringAsync();
-
                     return resp;
                 }
 
@@ -660,7 +708,7 @@ namespace PrimeApps.Model.Helpers
         }
 
         public static async Task<string> GetAuthToken(string authUrl, string studioSecret, string integrationEmail,
-            string clientId)
+            string clientId, string clientSecret)
         {
             using (var httpClient = new HttpClient())
             {
@@ -670,7 +718,7 @@ namespace PrimeApps.Model.Helpers
                     { "username", integrationEmail },
                     { "password", studioSecret },
                     { "client_id", clientId },
-                    { "client_secret", studioSecret }
+                    { "client_secret", clientSecret }
                 };
 
                 var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token")
@@ -874,6 +922,32 @@ namespace PrimeApps.Model.Helpers
             {
                 ErrorHandler.LogError(e, "PublishHelper UpdatePlatformApp method error.");
                 return false;
+            }
+        }
+
+        private static void EfMigrate(IConfiguration configuration, string databaseName)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<TenantDBContext>();
+            var connString = Postgres.GetConnectionString(configuration.GetConnectionString("TenantDBConnection"), databaseName);
+            optionsBuilder.UseNpgsql(connString, x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, HistoryRepository>();
+            using (var tenantDatabaseContext = new TenantDBContext(optionsBuilder.Options, configuration))
+            {
+                var migrator = tenantDatabaseContext.Database.GetService<IMigrator>();
+                var pendingMigrations = tenantDatabaseContext.Database.GetPendingMigrations().ToList();
+                if (pendingMigrations.Any())
+                {
+                    try
+                    {
+                        foreach (var targetMigration in pendingMigrations)
+                        {
+                            migrator.Migrate(targetMigration);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorHandler.LogError(ex,"PublishHelper EfMigrate DbName: " + databaseName);
+                    }
+                }
             }
         }
     }

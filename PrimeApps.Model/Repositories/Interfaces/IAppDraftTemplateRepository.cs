@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Common;
+using System.Linq;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
@@ -14,8 +15,9 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<List<AppDraftTemplate>> GetAll(int appId);
         Task<int> Create(AppDraftTemplate template);
         Task<int> Update(AppDraftTemplate template);
-        Task<ICollection<AppDraftTemplate>> Find(PaginationModel paginationModel, int? appId);
+        IQueryable<AppDraftTemplate> Find();
         int Count(int appId);
         Task<AppDraftTemplate> Get(int id);
+        Task<int> DeleteSoft(AppDraftTemplate template);
     }
 }

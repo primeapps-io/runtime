@@ -137,7 +137,8 @@ namespace PrimeApps.Admin.Jobs
                             newRelease.Version = release.Version;
                             newRelease.EndTime = release.EndTime;
                             newRelease.Status = release.Status;
-
+                            newRelease.UpdatedById = 1;
+                            
                             await releaseRepository.Update(newRelease);
                         }
                         else
@@ -149,7 +150,8 @@ namespace PrimeApps.Admin.Jobs
                                 StartTime = release.StartTime,
                                 Status = release.Status,
                                 Settings = release.Settings,
-                                Version = release.Version
+                                Version = release.Version,
+                                CreatedById = 1
                             };
 
                             await releaseRepository.Create(releaseNew);
@@ -206,7 +208,8 @@ namespace PrimeApps.Admin.Jobs
                                     TenantId = int.Parse(tenantObj.id.ToString()),
                                     StartTime = DateTime.Now,
                                     Version = version,
-                                    AppId = appId
+                                    AppId = appId,
+                                    CreatedById = 1
                                 };
 
                                 await releaseRepository.Create(releaseModel);
@@ -217,14 +220,16 @@ namespace PrimeApps.Admin.Jobs
                                 {
                                     releaseModel.EndTime = DateTime.Now;
                                     releaseModel.Status = ReleaseStatus.Succeed;
-
+                                    releaseModel.UpdatedById = 1;
+                                    
                                     await releaseRepository.Update(releaseModel);
                                 }
                                 else
                                 {
                                     releaseModel.EndTime = DateTime.Now;
                                     releaseModel.Status = ReleaseStatus.Failed;
-
+                                    releaseModel.UpdatedById = 1;
+                                    
                                     await releaseRepository.Update(releaseModel);
                                     break;
                                 }
@@ -241,7 +246,8 @@ namespace PrimeApps.Admin.Jobs
                                         {
                                             Id = release.Id,
                                             EndTime = DateTime.Now,
-                                            Status = ReleaseStatus.Succeed
+                                            Status = ReleaseStatus.Succeed,
+                                            UpdatedById = 1
                                         });
                                     }
                                     else
@@ -253,6 +259,7 @@ namespace PrimeApps.Admin.Jobs
 
                     var pointerRelease = await releaseRepository.Get(pointerReleaseId);
                     pointerRelease.Status = ReleaseStatus.Succeed;
+                    pointerRelease.UpdatedById = 1;
                     await releaseRepository.Update(pointerRelease);
 
                     var rootPath = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);

@@ -80,29 +80,14 @@ namespace PrimeApps.Model.Repositories
             return null;*/
         }
 
-        public async Task<ICollection<Package>> Find(int appId, PaginationModel paginationModel)
+        public IQueryable<Package> Find(int appId)
         {
             var packages = DbContext.Packages
                 .Include(x => x.AppDraft)
                 .Where(x => !x.Deleted & x.AppId == appId)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
+                .OrderByDescending(x => x.Id);
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Package).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    packages = packages.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    packages = packages.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
-            }
-
-            return await packages.ToListAsync();
+            return packages;
         }
 
         public async Task<int> Create(Package package)

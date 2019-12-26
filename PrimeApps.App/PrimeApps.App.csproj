@@ -7,8 +7,8 @@
         <UserSecretsId>aspnet-PrimeApps.App-8EEB8A48-F97E-4E87-98F4-E854B24F1B76</UserSecretsId>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Aspose.Cells" Version="18.12.0" />
-        <PackageReference Include="Aspose.Words" Version="19.1.0" />
+    <PackageReference Include="Aspose.Cells" Version="19.11.0" />
+    <PackageReference Include="Aspose.Words" Version="19.12.0" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.100.1" />
     <PackageReference Include="AWSSDK.S3" Version="3.3.104.36" />
         <PackageReference Include="Hangfire" Version="1.7.0-beta4" />

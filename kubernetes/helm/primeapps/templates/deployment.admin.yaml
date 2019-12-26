@@ -6,21 +6,21 @@ metadata:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
     chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-    k8s-admin: "{{.Release.Name}}-admin"
+    k8s-app: "{{.Release.Name}}-admin"
 spec:
   replicas: 1
   strategy:
     type: RollingUpdate
   selector:
     matchLabels:
-      k8s-admin: "{{.Release.Name}}-admin"
+      k8s-app: "{{.Release.Name}}-admin"
   template:
     metadata:
       labels:
         heritage: {{.Release.Service | quote }}
         release: {{.Release.Name | quote }}
         chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-        k8s-admin: "{{.Release.Name}}-admin"
+        k8s-app: "{{.Release.Name}}-admin"
     spec:
       volumes:
         - name: "self-signed-ssl"
@@ -28,7 +28,7 @@ spec:
             secretName: "{{.Release.Name}}-admin-selfsigned-ssl"
         - name: admin-data-volume
           persistentVolumeClaim:
-            claimName: admin-data-volume-claim
+            claimName: primapps-admin
       containers:
         - name: "{{.Release.Name}}-admin"
           image: "primeapps/primeapps-admin:{{.Values.image.tag}}"
@@ -81,6 +81,11 @@ spec:
                 configMapKeyRef:
                   name: {{.Release.Name}}-admin-config
                   key: AuthenticationServerURL
+            - name: AppSettings__AuthenticationServerURLLocal
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: AuthenticationServerURLLocal                  
             - name: AppSettings__ClientId
               valueFrom:
                 configMapKeyRef:
@@ -120,14 +125,4 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: {{.Release.Name}}-admin-config
-                  key: SentryDsn
-        readinessProbe:
-          httpGet:
-            path: /healthz
-            port: 80
-            scheme: HTTP
-          initialDelaySeconds: 10
-          periodSeconds: 30
-          timeoutSeconds: 2
-          successThreshold: 1
-          failureThreshold: 1      
+                  key: SentryDsn  

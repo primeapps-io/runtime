@@ -47,475 +47,488 @@ namespace PrimeApps.App.Controllers
 		private IConfiguration _configuration;
 		private IServiceScopeFactory _serviceScopeFactory;
 
-        public IBackgroundTaskQueue Queue { get; }
+		public IBackgroundTaskQueue Queue { get; }
 
-        public UserController(IApplicationRepository applicationRepository, IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, IBackgroundTaskQueue queue, Warehouse warehouse, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
-        {
-            _userRepository = userRepository;
-            _settingRepository = settingRepository;
-            _profileRepository = profileRepository;
-            _roleRepository = roleRepository;
-            _warehouse = warehouse;
-            _recordRepository = recordRepository;
-            _platformUserRepository = platformUserRepository;
-            _platformRepository = platformRepository;
-            _tenantRepository = tenantRepository;
-            _platformWarehouseRepository = platformWarehouseRepository;
-            _applicationRepository = applicationRepository;
-            _serviceScopeFactory = serviceScopeFactory;
+		public UserController(IApplicationRepository applicationRepository, IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, IBackgroundTaskQueue queue, Warehouse warehouse, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+		{
+			_userRepository = userRepository;
+			_settingRepository = settingRepository;
+			_profileRepository = profileRepository;
+			_roleRepository = roleRepository;
+			_warehouse = warehouse;
+			_recordRepository = recordRepository;
+			_platformUserRepository = platformUserRepository;
+			_platformRepository = platformRepository;
+			_tenantRepository = tenantRepository;
+			_platformWarehouseRepository = platformWarehouseRepository;
+			_applicationRepository = applicationRepository;
+			_serviceScopeFactory = serviceScopeFactory;
 
-            Queue = queue;
+			Queue = queue;
 
-            //Set warehouse database name Ofisim to integration
-            //_warehouse.DatabaseName = "Ofisim";
-            _configuration = configuration;
-        }
+			//Set warehouse database name Ofisim to integration
+			//_warehouse.DatabaseName = "Ofisim";
+			_configuration = configuration;
+		}
 
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            SetContext(context);
-            SetCurrentUser(_userRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_settingRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_profileRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_roleRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_recordRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_platformUserRepository);
-            SetCurrentUser(_platformRepository);
-            SetCurrentUser(_tenantRepository);
-            SetCurrentUser(_platformWarehouseRepository);
-            SetCurrentUser(_applicationRepository);
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_userRepository, PreviewMode, TenantId, AppId);
+			SetCurrentUser(_settingRepository, PreviewMode, TenantId, AppId);
+			SetCurrentUser(_profileRepository, PreviewMode, TenantId, AppId);
+			SetCurrentUser(_roleRepository, PreviewMode, TenantId, AppId);
+			SetCurrentUser(_recordRepository, PreviewMode, TenantId, AppId);
+			SetCurrentUser(_platformUserRepository);
+			SetCurrentUser(_platformRepository);
+			SetCurrentUser(_tenantRepository);
+			SetCurrentUser(_platformWarehouseRepository);
+			SetCurrentUser(_applicationRepository);
 
-            base.OnActionExecuting(context);
-        }
+			base.OnActionExecuting(context);
+		}
 
-        /// <summary>
-        /// Gets avatar from blob storage by the file id.
-        /// </summary>
-        /// <param name="fileName">File name of the avatar</param>
-        /// <returns>Stream.</returns>
-        [Route("Avatar"), HttpPost]
-        public async Task<IActionResult> Avatar([FromQuery(Name = "fileName")]string fileName)
-        {
-            //get uploaded file from storage
-            var blob = AzureStorage.GetBlob("user-images", fileName, _configuration);
-            try
-            {
-                //if the file exists, fetchattributes method will fetch the attributes, otherwise it'll throw an exception/
-                await blob.FetchAttributesAsync();
+		/// <summary>
+		/// Gets avatar from blob storage by the file id.
+		/// </summary>
+		/// <param name="fileName">File name of the avatar</param>
+		/// <returns>Stream.</returns>
+		[Route("Avatar"), HttpPost]
+		public async Task<IActionResult> Avatar([FromQuery(Name = "fileName")]string fileName)
+		{
+			//get uploaded file from storage
+			var blob = AzureStorage.GetBlob("user-images", fileName, _configuration);
+			try
+			{
+				//if the file exists, fetchattributes method will fetch the attributes, otherwise it'll throw an exception/
+				await blob.FetchAttributesAsync();
 
-                //return await AzureStorage.DownloadToFileStreamResultAsync(file, fileName);
-                Response.Headers.Add("Content-Disposition", "attachment; filename=" + fileName);// force download
-                await blob.DownloadToStreamAsync(Response.Body);
-                return new EmptyResult();
-            }
-            catch (Exception)
-            {
-                //on any exception do nothing, continue and return no content status code, because that file does not exist.
-            }
+				//return await AzureStorage.DownloadToFileStreamResultAsync(file, fileName);
+				Response.Headers.Add("Content-Disposition", "attachment; filename=" + fileName);// force download
+				await blob.DownloadToStreamAsync(Response.Body);
+				return new EmptyResult();
+			}
+			catch (Exception)
+			{
+				//on any exception do nothing, continue and return no content status code, because that file does not exist.
+			}
 
-            return NotFound();
-        }
+			return NotFound();
+		}
 
-        /// <summary>
-        /// Changes users personal informations and preferences.
-        /// </summary>
-        /// <param name="user">The user.</param>
-        [Route("Edit"), HttpPost]
-        public async Task<IActionResult> Edit([FromBody]UserDTO user)
-        {
-            //get user to start modification.
-            PlatformUser userToEdit = await _platformUserRepository.GetSettings(AppUser.Id);
-            User tenantUserToEdit = _userRepository.GetById(AppUser.Id);
+		/// <summary>
+		/// Changes users personal informations and preferences.
+		/// </summary>
+		/// <param name="user">The user.</param>
+		[Route("Edit"), HttpPost]
+		public async Task<IActionResult> Edit([FromBody]UserDTO user)
+		{
+			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
-            if (user.picture != tenantUserToEdit.Picture && user.picture != null)
-            {
-                //if users avatar changed check update it.
-                //if (user.picture.Trim() == "")
-                //{
-                //if users avatar changed check update it.
+			//get user to start modification.
+			PlatformUser userToEdit = await _platformUserRepository.GetSettings(AppUser.Id);
+			User tenantUserToEdit = _userRepository.GetById(AppUser.Id);
 
-                //if (userToEdit.avatar != null)
-                //{
-                //    //if the user had an avatar already, remove it from AzureStorage.
-                //    // AzureStorage.RemoveFile("user-images", userToEdit.avatar);
-                //}
+			if (user.picture != tenantUserToEdit.Picture && user.picture != null)
+			{
+				//if users avatar changed check update it.
+				//if (user.picture.Trim() == "")
+				//{
+				//if users avatar changed check update it.
 
-                //update the new filename.
-                tenantUserToEdit.Picture = user.picture;
-                //}
-            }
+				//if (userToEdit.avatar != null)
+				//{
+				//    //if the user had an avatar already, remove it from AzureStorage.
+				//    // AzureStorage.RemoveFile("user-images", userToEdit.avatar);
+				//}
 
-            /// update other properties                   
-            userToEdit.FirstName = user.firstName;
-            userToEdit.LastName = user.lastName;
-            userToEdit.Setting.Phone = user.phone;
-            /// update tenant database properties
-            tenantUserToEdit.FirstName = user.firstName;
-            tenantUserToEdit.LastName = user.lastName;
-            tenantUserToEdit.FullName = user.firstName + " " + user.lastName;
-            tenantUserToEdit.Phone = user.phone;
+				//update the new filename.
+				tenantUserToEdit.Picture = user.picture;
+				//}
+			}
 
-            //Set warehouse database name
-            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
-            await _platformUserRepository.HardCodedUpdateUser(userToEdit);
-            //update users record.
-            await _userRepository.UpdateAsync(tenantUserToEdit);
+			/// update other properties                   
+			userToEdit.FirstName = user.firstName;
+			userToEdit.LastName = user.lastName;
+			userToEdit.Setting.Phone = user.phone;
+			if (!string.IsNullOrEmpty(user.culture))
+			{
+				userToEdit.Setting.Language = user.culture.Substring(0, 2);
+			}
+			/// update tenant database properties
+			tenantUserToEdit.FirstName = user.firstName;
+			tenantUserToEdit.LastName = user.lastName;
+			tenantUserToEdit.FullName = user.firstName + " " + user.lastName;
+			tenantUserToEdit.Phone = user.phone;
 
-            return Ok();
-        }
+			//Set warehouse database name
+			_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+			if (String.Equals(previewMode, "tenant"))
+			{
+				await _platformUserRepository.UpdateAsync(userToEdit);
+			}
+			else
+				await _platformUserRepository.HardCodedUpdateUser(userToEdit);
+			//update users record.
+			await _userRepository.UpdateAsync(tenantUserToEdit);
 
-        /// <summary>
-        /// Changes culture setting for the user.
-        /// </summary>
-        /// <param name="culture">The culture.</param>
-        [Route("ChangeCulture"), HttpPost]
-        public async Task<IActionResult> ChangeCulture([FromBody]string culture)
-        {
-            /// if it's an unknown or an unsupported culture do nothing.
-            if (!Helpers.Constants.CULTURES.Contains(culture))
-            {
-                return NotFound();
-            }
+			return Ok();
+		}
 
-            /// get user
-            PlatformUser user = await _platformUserRepository.GetSettings(AppUser.Id);
+		/// <summary>
+		/// Changes culture setting for the user.
+		/// </summary>
+		/// <param name="culture">The culture.</param>
+		[Route("ChangeCulture"), HttpPost]
+		public async Task<IActionResult> ChangeCulture([FromBody]string culture)
+		{
+			/// if it's an unknown or an unsupported culture do nothing.
+			if (!Helpers.Constants.CULTURES.Contains(culture))
+			{
+				return NotFound();
+			}
 
-            /// change culture and save it.
-            user.Setting.Culture = culture;
-            await _platformUserRepository.UpdateAsync(user);
+			/// get user
+			PlatformUser user = await _platformUserRepository.GetSettings(AppUser.Id);
 
-            ///Modify the culture in current session and update it globally in all sessions of the user.
-            AppUser.Culture = culture;
-            return Ok();
-        }
+			/// change culture and save it.
+			user.Setting.Culture = culture;
+			await _platformUserRepository.UpdateAsync(user);
 
-        /// <summary>
-        /// Changes currency setting for the user.
-        /// </summary>
-        /// <param name="currency"></param>
-        /// <returns></returns>
-        [Route("ChangeCurrency"), HttpPost]
-        public async Task<IActionResult> ChangeCurrency([FromBody]string currency)
-        {
-            /// if it's an unknown or an unsupported currency do nothing.
-            if (!Helpers.Constants.CURRENCIES.Contains(currency))
-            {
-                return NotFound();
-            }
+			///Modify the culture in current session and update it globally in all sessions of the user.
+			AppUser.Culture = culture;
+			return Ok();
+		}
 
-            ///get user
-            PlatformUser user = await _platformUserRepository.GetSettings(AppUser.Id);
-            //change culture and save it.
-            user.Setting.Currency = currency;
-            await _platformUserRepository.UpdateAsync(user);
+		/// <summary>
+		/// Changes currency setting for the user.
+		/// </summary>
+		/// <param name="currency"></param>
+		/// <returns></returns>
+		[Route("ChangeCurrency"), HttpPost]
+		public async Task<IActionResult> ChangeCurrency([FromBody]string currency)
+		{
+			/// if it's an unknown or an unsupported currency do nothing.
+			if (!Helpers.Constants.CURRENCIES.Contains(currency))
+			{
+				return NotFound();
+			}
 
-            ///Modify the currency in current session and update it globally in all sessions of the user.
-            AppUser.Currency = currency;
-            return Ok();
-        }
+			///get user
+			PlatformUser user = await _platformUserRepository.GetSettings(AppUser.Id);
+			//change culture and save it.
+			user.Setting.Currency = currency;
+			await _platformUserRepository.UpdateAsync(user);
 
-        [Route("get_users"), HttpGet]
-        public async Task<IActionResult> GetUsers()
-        {
-            try
-            {
-                var user = await _userRepository.GetUserInfoAsync(AppUser.Id);
+			///Modify the currency in current session and update it globally in all sessions of the user.
+			AppUser.Currency = currency;
+			return Ok();
+		}
 
-                if (user != null)
-                {
-                    var tenantUser = _userRepository.GetSubscriber();
+		[Route("get_users"), HttpGet]
+		public async Task<IActionResult> GetUsers()
+		{
+			try
+			{
+				var user = await _userRepository.GetUserInfoAsync(AppUser.Id, true, AppUser.Language);
 
-                    var tenant = await _tenantRepository.GetTenantInfo(AppUser.TenantId, tenantUser);
+				if (user != null)
+				{
+					var tenantUser = _userRepository.GetSubscriber();
 
-                    if (tenant != null)
-                        return Ok(tenant[0].users);
-                    else
-                        return BadRequest();
-                }
+					var tenant = await _tenantRepository.GetTenantInfo(AppUser.TenantId, tenantUser);
 
-                return Unauthorized();
-            }
-            catch (Exception ex)
-            {
-                if (ex.InnerException is PostgresException)
-                {
-                    var innerEx = (PostgresException)ex.InnerException;
+					if (tenant != null)
+						return Ok(tenant[0].users);
+					else
+						return BadRequest();
+				}
 
-                    if (innerEx.SqlState == PostgreSqlStateCodes.DatabaseDoesNotExist)
-                        return BadRequest("Account is deactivated and database is deleted.");
-                }
+				return Unauthorized();
+			}
+			catch (Exception ex)
+			{
+				if (ex.InnerException is PostgresException)
+				{
+					var innerEx = (PostgresException)ex.InnerException;
 
-                throw;
-            }
-        }
+					if (innerEx.SqlState == PostgreSqlStateCodes.DatabaseDoesNotExist)
+						return BadRequest("Account is deactivated and database is deleted.");
+				}
 
-        /// <summary>
-        /// Gets users account, we use this after login procedure as a first job to initialize client ui.
-        /// </summary>
-        /// <returns>Account.</returns>
-        [Route("MyAccount"), HttpPost]
-        public async Task<IActionResult> MyAccount()
-        {
-            var acc = new AccountInfo();
-            var apps = new List<UserAppInfo>();
-            var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
-            previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+				throw;
+			}
+		}
 
-            /*if (previewMode == "app")
+		/// <summary>
+		/// Gets users account, we use this after login procedure as a first job to initialize client ui.
+		/// </summary>
+		/// <returns>Account.</returns>
+		[Route("MyAccount"), HttpPost]
+		public async Task<IActionResult> MyAccount()
+		{
+			var acc = new AccountInfo();
+			var apps = new List<UserAppInfo>();
+			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
+			/*if (previewMode == "app")
                 acc.user = await _userRepository.GetUserInfoAsync(1, false);
             else*/
-            acc.user = await _userRepository.GetUserInfoAsync(AppUser.Id);
+			acc.user = await _userRepository.GetUserInfoAsync(AppUser.Id, true, AppUser.Language);
 
-            if (acc.user != null)
-            {
-                var tenant = await _tenantRepository.GetTenantInfo(AppUser.TenantId, null);
+			if (acc.user != null)
+			{
+				var tenant = await _tenantRepository.GetTenantInfo(AppUser.TenantId, null);
 
-                if (tenant == null || tenant.Count <= 0)
-                    return Ok(null);
+				if (tenant == null || tenant.Count <= 0)
+					return Ok(null);
 
-                acc.user.tenantLanguage = AppUser.TenantLanguage;
-                acc.instances = tenant;
-                var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
-                if (!string.IsNullOrEmpty(storageUrl))
-                {
-                    acc.imageUrl = storageUrl + "/record-detail-" + tenant[0].tenantId + "/";
-                }
+				acc.user.tenantLanguage = AppUser.TenantLanguage;
+				acc.user.Language = AppUser.Language;
 
-                /*Eğer previewmode değilse lisansları setle*/
-                if (String.Equals(previewMode, "tenant"))
-                {
-                    acc.user.userLicenseCount = tenant[0].licenses.UserLicenseCount;
-                    acc.user.moduleLicenseCount = tenant[0].licenses.ModuleLicenseCount;
-                    acc.user.hasAnalytics = tenant[0].licenses.AnalyticsLicenseCount > 0 ? true : false;
-                }
+				acc.instances = tenant;
+				var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
+				if (!string.IsNullOrEmpty(storageUrl))
+				{
+					acc.imageUrl = storageUrl + "/record-detail-" + tenant[0].tenantId + "/";
+				}
 
-                acc.user.tenantId = AppUser.TenantId;
-                acc.user.appId = AppUser.AppId;
-                acc.apps = apps;
+				/*Eğer previewmode değilse lisansları setle*/
+				if (String.Equals(previewMode, "tenant"))
+				{
+					acc.user.userLicenseCount = tenant[0].licenses.UserLicenseCount;
+					acc.user.moduleLicenseCount = tenant[0].licenses.ModuleLicenseCount;
+					acc.user.hasAnalytics = tenant[0].licenses.AnalyticsLicenseCount > 0 ? true : false;
+				}
 
-                if (acc.user.deactivated && previewMode != "app")
-                    throw new ApplicationException(HttpStatusCode.Status409Conflict.ToString());
+				acc.user.tenantId = AppUser.TenantId;
+				acc.user.appId = AppUser.AppId;
+				acc.apps = apps;
 
-                return Ok(acc);
-            }
+				if (acc.user.deactivated && previewMode != "app")
+					throw new ApplicationException(HttpStatusCode.Status409Conflict.ToString());
 
-            return Ok(null);
-        }
+				return Ok(acc);
+			}
 
-        [Route("ActiveDirectoryInfo"), HttpGet]
-        public async Task<IActionResult> GetAdInfo()
-        {
-            var accountOwner = await _platformUserRepository.GetUserByAutoId(AppUser.TenantId);
+			return Ok(null);
+		}
 
-            if (accountOwner == null || accountOwner.Id < 1) return Ok(false);
+		[Route("ActiveDirectoryInfo"), HttpGet]
+		public async Task<IActionResult> GetAdInfo()
+		{
+			var accountOwner = await _platformUserRepository.GetUserByAutoId(AppUser.TenantId);
 
-            var tenantId = accountOwner.Id;
-            var adTenant = await _tenantRepository.GetTenantInfo(tenantId, null);
+			if (accountOwner == null || accountOwner.Id < 1) return Ok(false);
 
-            var data = new
-            {
-                info = adTenant,
-                email = accountOwner.Email
-            };
+			var tenantId = accountOwner.Id;
+			var adTenant = await _tenantRepository.GetTenantInfo(tenantId, null);
 
-            return Ok(data);
-        }
+			var data = new
+			{
+				info = adTenant,
+				email = accountOwner.Email
+			};
 
-        [Route("get_all"), HttpGet]
-        public async Task<ICollection<User>> GetAll()
-        {
-            return await _userRepository.GetAllAsync();
-        }
+			return Ok(data);
+		}
 
-        [Route("add_user"), HttpPost]
-        public async Task<IActionResult> AddUser([FromBody]AddUserBindingModel addUserBindingModel)
-        {
-            var checkEmail = await _platformUserRepository.IsEmailAvailable(addUserBindingModel.Email, AppUser.AppId);
+		[Route("get_all"), HttpGet]
+		public async Task<ICollection<User>> GetAll()
+		{
+			return await _userRepository.GetAllAsync();
+		}
 
-            if (checkEmail == EmailAvailableType.NotAvailable)
-                return StatusCode(HttpStatusCode.Status409Conflict);
+		[Route("add_user"), HttpPost]
+		public async Task<IActionResult> AddUser([FromBody]AddUserBindingModel addUserBindingModel)
+		{
+			var checkEmail = await _platformUserRepository.IsEmailAvailable(addUserBindingModel.Email, AppUser.AppId);
 
-            //Set warehouse database name
-            //_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+			if (checkEmail == EmailAvailableType.NotAvailable)
+				return StatusCode(HttpStatusCode.Status409Conflict);
 
-            var appInfo = await _applicationRepository.Get(AppUser.AppId);
-            addUserBindingModel.TenantId = AppUser.TenantId;
-            addUserBindingModel.AppId = AppUser.AppId;
+			//Set warehouse database name
+			//_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
-            using (var httpClient = new HttpClient())
-            {
-                var token = Request.Headers["Authorization"];
+			var appInfo = await _applicationRepository.Get(AppUser.AppId);
+			addUserBindingModel.TenantId = AppUser.TenantId;
+			addUserBindingModel.AppId = AppUser.AppId;
 
-                var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_user";
-                httpClient.BaseAddress = new Uri(url);
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.ToString().Replace("Bearer ", ""));
+			using (var httpClient = new HttpClient())
+			{
+				var token = Request.Headers["Authorization"];
 
-                var json = JsonConvert.SerializeObject(addUserBindingModel);
-                var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
+				var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_user";
+				httpClient.BaseAddress = new Uri(url);
+				httpClient.DefaultRequestHeaders.Accept.Clear();
+				httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+				httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.ToString().Replace("Bearer ", ""));
 
-                if (!response.IsSuccessStatusCode)
-                    return BadRequest(response);
+				var json = JsonConvert.SerializeObject(addUserBindingModel);
+				var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
 
-                using (var content = response.Content)
-                {
-                    var stringResult = content.ReadAsStringAsync().Result;
-                    if (!string.IsNullOrEmpty(stringResult))
-                    {
-                        var jsonResult = JObject.Parse(stringResult);
+				if (!response.IsSuccessStatusCode)
+					return BadRequest(response);
 
-                        if (!string.IsNullOrEmpty(jsonResult["token"].ToString()) && !addUserBindingModel.DontSendMail)
-                        {
-                            var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Language, "email_confirm");
+				using (var content = response.Content)
+				{
+					var stringResult = content.ReadAsStringAsync().Result;
+					if (!string.IsNullOrEmpty(stringResult))
+					{
+						var jsonResult = JObject.Parse(stringResult);
 
-                            foreach (var template in templates)
-                            {
-                                if (template != null)
-                                {
-                                    template.Content = template.Content.Replace("{:FirstName}", addUserBindingModel.FirstName);
-                                    template.Content = template.Content.Replace("{:LastName}", addUserBindingModel.LastName);
-                                    template.Content = template.Content.Replace("{:Email}", addUserBindingModel.Email);
-                                    template.Content = template.Content.Replace("{:Url}", Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/account/confirmemail?email=" + addUserBindingModel.Email + "&code=" + WebUtility.UrlDecode(jsonResult["token"].ToString()));
+						if (!string.IsNullOrEmpty(jsonResult["token"].ToString()) && !addUserBindingModel.DontSendMail)
+						{
+							var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Language, "email_confirm");
 
-                                    Email notification = new Email(template.Subject, template.Content, _configuration, _serviceScopeFactory);
-                                    var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
-                                    if (req != null)
-                                    {
-                                        notification.AddRecipient((string)req["MailSenderEmail"]);
-                                        notification.AddToQueue((string)req["MailSenderEmail"], (string)req["MailSenderName"]);
-                                    }
-                                }
-                            }
-                        }
+							foreach (var template in templates)
+							{
+								if (template != null)
+								{
+									template.Content = template.Content.Replace("{:FirstName}", addUserBindingModel.FirstName);
+									template.Content = template.Content.Replace("{:LastName}", addUserBindingModel.LastName);
+									template.Content = template.Content.Replace("{:Email}", addUserBindingModel.Email);
+									template.Content = template.Content.Replace("{:Url}", Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/account/confirmemail?email=" + addUserBindingModel.Email + "&code=" + WebUtility.UrlDecode(jsonResult["token"].ToString()));
 
-
-                        return Ok(new JObject { ["password"] = jsonResult["password"].ToString() });
-                    }
-
-                    if (response.IsSuccessStatusCode)
-                        return Ok();
-
-                    return BadRequest();
-                }
-            }
-        }
+									Email notification = new Email(template.Subject, template.Content, _configuration, _serviceScopeFactory);
+									var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
+									if (req != null)
+									{
+										notification.AddRecipient((string)req["MailSenderEmail"]);
+										notification.AddToQueue((string)req["MailSenderEmail"], (string)req["MailSenderName"]);
+									}
+								}
+							}
+						}
 
 
-        [Route("update_user_currency_culture"), HttpPost]
-        public async Task<IActionResult> UpdateUserCurrencyCulture([FromBody]JObject User)
-        {
-            if (User["Id"].IsNullOrEmpty() || User["Culture"].IsNullOrEmpty() || User["Currency"].IsNullOrEmpty())
-                return BadRequest();
+						return Ok(new JObject { ["password"] = jsonResult["password"].ToString() });
+					}
 
-            var userId = (int)User["Id"];
-            PlatformUser userToEdit = await _platformUserRepository.GetSettings(userId);
-            User tenantUserToEdit = _userRepository.GetById(userId);
+					if (response.IsSuccessStatusCode)
+						return Ok();
 
-            userToEdit.Setting.Culture = (string)User["Culture"];
-            userToEdit.Setting.Currency = (string)User["Currency"];
+					return BadRequest();
+				}
+			}
+		}
 
-            tenantUserToEdit.Culture = (string)User["Culture"];
-            tenantUserToEdit.Currency = (string)User["Currency"];
 
-            //Set warehouse database name
-            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
-            await _platformUserRepository.HardCodedUpdateUser(userToEdit);
-            //update users record.
-            await _userRepository.UpdateAsync(tenantUserToEdit);
+		[Route("update_user_currency_culture"), HttpPost]
+		public async Task<IActionResult> UpdateUserCurrencyCulture([FromBody]JObject User)
+		{
+			if (User["Id"].IsNullOrEmpty() || User["Culture"].IsNullOrEmpty() || User["Currency"].IsNullOrEmpty())
+				return BadRequest();
 
-            return Ok(userId);
+			var userId = (int)User["Id"];
+			PlatformUser userToEdit = await _platformUserRepository.GetSettings(userId);
+			User tenantUserToEdit = _userRepository.GetById(userId);
 
-        }
+			userToEdit.Setting.Culture = (string)User["Culture"];
+			userToEdit.Setting.Currency = (string)User["Currency"];
 
-        [Route("send_user_password"), HttpPost]
-        public async Task<IActionResult> UserSendPassword([FromBody]JObject requestMail)
-        {
-            if (requestMail.IsNullOrEmpty())
-                return BadRequest();
+			tenantUserToEdit.Culture = (string)User["Culture"];
+			tenantUserToEdit.Currency = (string)User["Currency"];
 
-            var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Language, "send_password");
+			//Set warehouse database name
+			_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+			await _platformUserRepository.HardCodedUpdateUser(userToEdit);
+			//update users record.
+			await _userRepository.UpdateAsync(tenantUserToEdit);
 
-            foreach (var template in templates)
-            {
-                if (template != null)
-                {
-                    template.Content = template.Content.Replace("{:FullName}", requestMail["full_name"].ToString());
-                    template.Content = template.Content.Replace("{:Email}", requestMail["email"].ToString());
-                    template.Content = template.Content.Replace("{:Password}", requestMail["password"].ToString());
+			return Ok(userId);
+		}
 
-                    Email notification = new Email(template.Subject, template.Content, _configuration, _serviceScopeFactory);
-                    var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
-                    if (req != null)
-                    {
-                        notification.AddRecipient(requestMail["email"].ToString());
-                        notification.AddToQueue((string)req["MailSenderEmail"], (string)req["MailSenderName"]);
-                    }
-                }
-            }
+		[Route("send_user_password"), HttpPost]
+		public async Task<IActionResult> UserSendPassword([FromBody]JObject requestMail)
+		{
+			if (requestMail.IsNullOrEmpty())
+				return BadRequest();
 
-            return Ok();
-        }
+			var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Language, "send_password");
 
-        //TODO TenantId
-        [Route("get_user"), HttpGet]
-        public async Task<IActionResult> GetUser([FromQuery(Name = "email")]string email, [FromQuery(Name = "tenantId")]int tenantId)
-        {
-            if (!AppUser.Email.EndsWith("@ofisim.com"))
-                return StatusCode(HttpStatusCode.Status403Forbidden);
+			foreach (var template in templates)
+			{
+				if (template != null)
+				{
+					template.Content = template.Content.Replace("{:FullName}", requestMail["full_name"].ToString());
+					template.Content = template.Content.Replace("{:Email}", requestMail["email"].ToString());
+					template.Content = template.Content.Replace("{:Password}", requestMail["password"].ToString());
+
+					Email notification = new Email(template.Subject, template.Content, _configuration, _serviceScopeFactory);
+					var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
+					if (req != null)
+					{
+						notification.AddRecipient(requestMail["email"].ToString());
+						notification.AddToQueue((string)req["MailSenderEmail"], (string)req["MailSenderName"]);
+					}
+				}
+			}
+
+			return Ok();
+		}
+
+		//TODO TenantId
+		[Route("get_user"), HttpGet]
+		public async Task<IActionResult> GetUser([FromQuery(Name = "email")]string email, [FromQuery(Name = "tenantId")]int tenantId)
+		{
+			if (!AppUser.Email.EndsWith("@ofisim.com"))
+				return StatusCode(HttpStatusCode.Status403Forbidden);
 
             var userEntity = await _platformUserRepository.GetAsync(email);
 
-            if (userEntity == null)
-                return NotFound();
+			if (userEntity == null)
+				return NotFound();
 
-            var userTenant = userEntity.TenantsAsUser.Where(x => x.TenantId == tenantId);
+			var userTenant = userEntity.TenantsAsUser.Where(x => x.TenantId == tenantId);
 
-            if (userTenant == null)
-                return NotFound();
+			if (userTenant == null)
+				return NotFound();
 
-            _userRepository.TenantId = tenantId;
-            var user = _userRepository.GetById(userEntity.Id);
+			_userRepository.TenantId = tenantId;
+			var user = _userRepository.GetById(userEntity.Id);
 
-            var userModel = new
-            {
-                Id = user.Id,
-                TenantId = tenantId,
-                Email = user.Email,
-                CreatedAt = user.CreatedAt,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                FullName = user.FullName,
-                Phone = user.Phone,
-                IsSubscriber = user.IsSubscriber,
-                IsActive = user.IsActive,
-                Deleted = user.Deleted,
-                ProfileId = user.ProfileId,
-                RoleId = user.RoleId
-            };
+			var userModel = new
+			{
+				Id = user.Id,
+				TenantId = tenantId,
+				Email = user.Email,
+				CreatedAt = user.CreatedAt,
+				FirstName = user.FirstName,
+				LastName = user.LastName,
+				FullName = user.FullName,
+				Phone = user.Phone,
+				IsSubscriber = user.IsSubscriber,
+				IsActive = user.IsActive,
+				Deleted = user.Deleted,
+				ProfileId = user.ProfileId,
+				RoleId = user.RoleId
+			};
 
-            return Ok(userModel);
-        }
+			return Ok(userModel);
+		}
 
-        [Route("get_user_email_control"), HttpGet]
-        public async Task<EmailAvailableType> GetUserEmailControl(string email)
-        {
-            return await _platformUserRepository.IsEmailAvailable(email, AppUser.AppId);
-        }
+		[Route("get_user_email_control"), HttpGet]
+		public async Task<EmailAvailableType> GetUserEmailControl(string email)
+		{
+			return await _platformUserRepository.IsEmailAvailable(email, AppUser.AppId);
+		}
 
-        [Route("get_users_by_profile_ids"), HttpPost]
-        public async Task<IActionResult> GetUserByProfileIds([FromBody]List<int> ids)
-        {
-            var users = await _userRepository.GetByProfileIds(ids);
+		[Route("get_users_by_profile_ids"), HttpPost]
+		public async Task<IActionResult> GetUserByProfileIds([FromBody]List<int> ids)
+		{
+			var users = await _userRepository.GetByProfileIds(ids);
 
-            return Ok(users);
-        }
+			return Ok(users);
+		}
 
-        //TODO Removed
-        [Route("get_office_users"), HttpGet]
-        public IActionResult GetOfficeUsers()
-        {
-            /*var clientId = "7697cae4-0291-4449-8046-7b1cae642982";
+		//TODO Removed
+		[Route("get_office_users"), HttpGet]
+		public IActionResult GetOfficeUsers()
+		{
+			/*var clientId = "7697cae4-0291-4449-8046-7b1cae642982";
             var appKey = "J2YHu8tqkM8YJh8zgSj8XP0eJpZlFKgshTehIe5ITvU=";
             var graphResourceID = "https://graph.windows.net";
             var graphSettings = new GraphSettings
@@ -598,10 +611,10 @@ namespace PrimeApps.App.Controllers
             {
                 return Ok(false);
             }*/
-            return Ok();
-        }
+			return Ok();
+		}
 
-        /*
+		/*
         [Route("UpdateActiveDirectoryEmail"), HttpGet]
         public async Task<IActionResult> UpdateActiveDirectoryEmail(int userId, string email)
         {
@@ -628,7 +641,7 @@ namespace PrimeApps.App.Controllers
         }
 
         */
-        /*private async Task<string> GetTokenForGraph(string tenantID, string signedInUserID, string userObjectID, string clientId, string appKey, string graphResourceID)
+		/*private async Task<string> GetTokenForGraph(string tenantID, string signedInUserID, string userObjectID, string clientId, string appKey, string graphResourceID)
         {
              // get a token for the Graph without triggering any user interaction (from the cache, via multi-resource refresh token, etc)
             ClientCredential clientcred = new ClientCredential(clientId, appKey);
@@ -637,5 +650,5 @@ namespace PrimeApps.App.Controllers
             AuthenticationResult result = await authContext.AcquireTokenSilentAsync(graphResourceID, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
             return result.AccessToken;
         }*/
-    }
+	}
 }

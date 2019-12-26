@@ -2192,6 +2192,7 @@
     "Name": "Name",
     "TeamMember": "Team Member",
     "Organization": "Organization",
-    "AddNew": " New Team"
+    "AddNew": " New Team",
+    "SaveSuccess": "Team is saved successfully."
   }
 }

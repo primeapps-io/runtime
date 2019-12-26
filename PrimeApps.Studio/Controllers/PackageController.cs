@@ -20,6 +20,10 @@ using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
 using PrimeApps.Model.Storage;
+using Microsoft.AspNet.OData.Query;
+using System.Linq;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -110,15 +114,16 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        [Route("find")]
+        public IActionResult Find(ODataQueryOptions<Package> queryOptions)
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "package", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var packages = await _packageRepository.Find((int)AppId, paginationModel);
+            var packages = _packageRepository.Find((int)AppId);
 
-            return Ok(packages);
+            var queryResults = (IQueryable<Package>)queryOptions.ApplyTo(packages, new ODataQuerySettings() { EnsureStableOrdering = false });
+            return Ok(new PageResult<Package>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
         [Route("get/{id}"), HttpGet]
@@ -160,10 +165,10 @@ namespace PrimeApps.Studio.Controllers
 
             if (anyProcess != null)
                 return Conflict("A packaging process is currently in progress.");
-            
+
             var dbHistory = await _historyDatabaseRepository.GetLast();
-            
-            if(dbHistory?.Tag != null)
+
+            if (dbHistory?.Tag != null)
                 return Conflict("Please modify your app to create a new package.");
 
             var dbName = PreviewMode + (PreviewMode == "tenant" ? TenantId : AppId);
@@ -172,11 +177,11 @@ namespace PrimeApps.Studio.Controllers
             var version = currentBuildNumber + 1;
 
             var app = await _appDraftRepository.Get((int)AppId);
-            var appOptions = new JObject{ ["clear_all_records"] = true, ["enable_registration"] =  true };
-            
-            if(app.Setting != null && !string.IsNullOrEmpty(app.Setting.Options))
+            var appOptions = new JObject { ["clear_all_records"] = true, ["enable_registration"] = true };
+
+            if (app.Setting != null && !string.IsNullOrEmpty(app.Setting.Options))
                 appOptions = JObject.Parse(app.Setting.Options);
-            
+
             var packageModel = new Package()
             {
                 AppId = (int)AppId,

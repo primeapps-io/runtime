@@ -34,7 +34,7 @@ type: Opaque
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: admin-data-volume-claim
+  name: primapps-admin
   namespace: primeapps
   labels:
     k8s-app: "primeapps"
@@ -73,7 +73,7 @@ spec:
             secretName: primeapps-admin-selfsigned-ssl
         - name: admin-data-volume
           persistentVolumeClaim:
-            claimName: admin-data-volume-claim            
+            claimName: primapps-admin            
       containers:
         - name: primeapps-admin
           image: primeapps/primeapps-admin:1.19.328.2-debian
@@ -165,16 +165,6 @@ spec:
                 configMapKeyRef:
                   name: primeapps-admin-config
                   key: SentryDsn
-          readinessProbe:
-            httpGet:
-              path: /healthz
-              port: 80
-              scheme: HTTP
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            timeoutSeconds: 2
-            successThreshold: 1
-            failureThreshold: 1
 ---
 kind: Service
 apiVersion: v1

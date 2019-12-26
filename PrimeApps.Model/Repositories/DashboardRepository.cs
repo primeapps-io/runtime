@@ -91,7 +91,8 @@ namespace PrimeApps.Model.Repositories
 
             if (widget != null)
             {
-                widget.Name = name;
+                widget.NameEn = name;
+                widget.NameTr = name;
 
                 var result = await DbContext.SaveChangesAsync();
 

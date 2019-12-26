@@ -531,16 +531,7 @@ namespace PrimeApps.Auth.UI
                 }
             };
 
-            var createUserRespone =
-                await CreateUser(
-                    new RegisterInputModel
-                    {
-                        Email = model.Email,
-                        Password = model.Password,
-                        Culture = model.Culture,
-                        FirstName = model.FirstName,
-                        LastName = model.LastName
-                    }, application, "");
+            var createUserRespone = await CreateUser(new RegisterInputModel { Email = model.Email, Password = model.Password, Culture = model.Culture, FirstName = model.FirstName, LastName = model.LastName }, application, "");
 
             if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
                 return BadRequest(new {ErrorMessage = createUserRespone["Error"].ToString()});
@@ -1620,10 +1611,9 @@ namespace PrimeApps.Auth.UI
             if (applicationInfo != null)
             {
                 var token = "";
-                var culture = !string.IsNullOrEmpty(model.Culture)
-                    ? model.Culture
-                    : applicationInfo.ApplicationSetting.Culture;
-
+                var culture = !string.IsNullOrEmpty(model.Culture) ? model.Culture : applicationInfo.ApplicationSetting.Culture;
+                var language = !string.IsNullOrEmpty(culture) ? culture.Substring(0, 2) : applicationInfo.Language;
+                    
                 if (!externalLogin && !identityUser.EmailConfirmed)
                     token = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
 
@@ -1654,7 +1644,7 @@ namespace PrimeApps.Auth.UI
                         settings.Culture = culture;
                         settings.Language = culture.Substring(0, 2);
                         settings.TimeZone = "America/New_York";
-                        settings.Currency = culture.Substring(0, 2);
+                        settings.Currency = culture.Substring(0, 2) == "tr" ? "TRY" : "USD";;
                     }
                     else
                     {
@@ -1810,7 +1800,7 @@ namespace PrimeApps.Auth.UI
 
                         response["Success"] = true;
 
-                        Queue.QueueBackgroundWorkItem(x => _userHelper.CreateIntegrationUser(tenant.AppId, tenantId, applicationInfo.Name, applicationInfo.Secret, applicationInfo?.Domain));
+                        Queue.QueueBackgroundWorkItem(x => _userHelper.CreateIntegrationUser(tenant.AppId, tenantId, applicationInfo.Name, applicationInfo.Secret, applicationInfo?.Domain, language));
                     }
                     catch (Exception ex)
                     {

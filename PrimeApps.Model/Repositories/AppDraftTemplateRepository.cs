@@ -39,29 +39,13 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<ICollection<AppDraftTemplate>> Find(PaginationModel paginationModel, int? appId)
+        public IQueryable<AppDraftTemplate> Find()
         {
             var templates = DbContext.AppTemplates
-                .Where(x => !x.Deleted && x.Type == AppTemplateType.Email && x.AppId == appId)
-                .OrderByDescending(x => x.Id) //&& x.Active
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
+            .Where(x => !x.Deleted)
+            .OrderByDescending(x => x.Id);
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(AppDraftTemplate).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    templates = templates.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    templates = templates.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
-            }
-
-            return await templates.ToListAsync();
+            return templates;
         }
 
         public int Count(int appId)
@@ -72,6 +56,13 @@ namespace PrimeApps.Model.Repositories
         public async Task<AppDraftTemplate> Get(int id)
         {
             return await DbContext.AppTemplates.FirstOrDefaultAsync(x => x.Id == id);
+        }
+        
+        public async Task<int> DeleteSoft(AppDraftTemplate template)
+        {
+            template.Deleted = true;
+
+            return await DbContext.SaveChangesAsync();
         }
     }
 }

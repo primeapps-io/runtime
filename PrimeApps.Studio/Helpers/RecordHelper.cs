@@ -943,7 +943,7 @@ namespace PrimeApps.Studio.Helpers
 							if (field.LookupType == "users")
 								lookupModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
 							else if (field.LookupType == "profiles")
-								lookupModule = Model.Helpers.ModuleHelper.GetFakeProfileModule();
+								lookupModule = Model.Helpers.ModuleHelper.GetFakeProfileModule(tenant.Setting.Language);
 							else if (field.LookupType == "roles")
 								lookupModule = Model.Helpers.ModuleHelper.GetFakeRoleModule(tenant.Setting.Language);
 							else

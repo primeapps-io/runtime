@@ -69,10 +69,9 @@ namespace PrimeApps.Admin.Controllers
         [Route("Logout")]
         public async Task<IActionResult> Logout(int? id)
         {
-            var appInfo = await _applicationRepository.Get(Request.Host.Value);
             await HttpContext.SignOutAsync();
 
-            return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain);
+            return Redirect("https:///Account/Logout?returnUrl=" + Request.Scheme + "://" + Request.Host.Value);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

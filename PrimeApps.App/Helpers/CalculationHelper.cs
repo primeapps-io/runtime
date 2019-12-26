@@ -2897,10 +2897,13 @@ namespace PrimeApps.App.Helpers
 									else if (title != null && title.Value == "t" && !calisanRecord["sub_branch"].IsNullOrEmpty() && !calisanRecord["branch"].IsNullOrEmpty())
 									{
 										var subBranchRecord = recordRepository.GetById(branchModule, int.Parse(calisanRecord["sub_branch"].ToString()));
-										branchRecord = recordRepository.GetById(branchModule, int.Parse(calisanRecord["branch"].ToString()));
-										branchRecord = (bool)record["branch_manager"] ? branchRecord : subBranchRecord;
+										//branchRecord = recordRepository.GetById(branchModule, int.Parse(calisanRecord["branch"].ToString()));
+										/*Gelen Branch Üst Kırılımlardan Biri olabilir, Bu yüzden mevcut calisanRecord["sub_branch"] üzerinden parent_branches'e erişeceğiz*/
+										//branchRecord = recordRepository.GetById(branchModule, (int)subBranchRecord["parent_branch"]);
+										//branchRecord = (bool)record["branch_manager"] ? branchRecord : subBranchRecord;
+										branchRecord = subBranchRecord;
 										roleId = branchRecord != null && !branchRecord["branch"].IsNullOrEmpty() ? (int)branchRecord["branch"] : 0;
-										missingSchema = await MissingProfileSchema(new List<Profile>() { new Profile() { Name = (string)branchRecord["name"] } }, roleId, roleId, profileRepository, roleRepository, title);
+										missingSchema = await MissingProfileSchema(new List<Profile>() { new Profile() { NameEn = (string)branchRecord["name"], NameTr = (string)branchRecord["name"] } }, roleId, roleId, profileRepository, roleRepository, title);
 									}
 									else break;
 
@@ -2960,7 +2963,7 @@ namespace PrimeApps.App.Helpers
 											var user = await userRepository.GetByEmail(record[newEpostaFieldName.Value].ToString());
 											await roleRepository.RemoveUserAsync(user.Id, user.RoleId.Value);
 											await UpdateUserRoleAndProfile(user.Id, profileId, roleId, roleRepository, profileRepository);
-											await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);											
+											await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
 										}
 										else if (!differences["branch"].IsNullOrEmpty() || !differences["sub_branch"].IsNullOrEmpty() || !differences["profile"].IsNullOrEmpty() || !differences["branch_manager"].IsNullOrEmpty())
 										{
@@ -2973,6 +2976,7 @@ namespace PrimeApps.App.Helpers
 											{
 												var currentUserRoleId = await CreateMissingSchema(missingSchema, roleId, roleRepository, appUser, title);
 												var user = await userRepository.GetByEmail(record[newEpostaFieldName.Value].ToString());
+												await roleRepository.RemoveUserAsync(user.Id, user.RoleId.Value);
 												await UpdateUserRoleAndProfile(user.Id, profileId, (int)currentUserRoleId, roleRepository, profileRepository);
 												await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
 											}
@@ -3753,8 +3757,8 @@ namespace PrimeApps.App.Helpers
 
 					parentId = await roleRepository.CreateAsync(new Role()
 					{
-						LabelEn = schemaItem.Name,
-						LabelTr = schemaItem.Name,
+						LabelEn = schemaItem.NameEn,
+						LabelTr = schemaItem.NameTr,
 						DescriptionEn = null,
 						DescriptionTr = null,
 						Master = false,
@@ -3768,8 +3772,8 @@ namespace PrimeApps.App.Helpers
 				{
 					parentId = await roleRepository.CreateAsync(new Role()
 					{
-						LabelEn = "Standard-" + schemaItem.Name,
-						LabelTr = "Standart-" + schemaItem.Name,
+						LabelEn = "Standard-" + schemaItem.NameEn,
+						LabelTr = "Standart-" + schemaItem.NameTr,
 						DescriptionEn = null,
 						DescriptionTr = null,
 						Master = false,

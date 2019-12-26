@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ReportsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ReportsService', 'LayoutService', '$http', 'config', '$interval',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ReportsService, LayoutService, $http, config, $interval) {
+    .controller('ReportsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ReportsService', 'LayoutService', '$http', 'config', '$interval', '$localStorage',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ReportsService, LayoutService, $http, config, $interval, $localStorage) {
 
             $scope.$parent.activeMenuItem = 'reports';
             $rootScope.breadcrumblist[2].title = 'Reports';
@@ -30,41 +30,41 @@ angular.module('primeapps')
                 $rootScope.reportCategory = result.data;
             });
 
-            ReportsService.count()
-                .then(function (response) {
-                    $scope.pageTotal = response.data;
-                    $scope.changePage(1);
-                });
+            //ReportsService.count()
+            //    .then(function (response) {
+            //        $scope.pageTotal = response.data;
+            //        $scope.changePage(1);
+            //    });
 
-            $scope.changePage = function (page) {
-                $scope.loading = true;
+            //$scope.changePage = function (page) {
+            //    $scope.loading = true;
 
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+            //    if (page !== 1) {
+            //        var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
 
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
+            //        if (page > difference) {
+            //            if (Math.abs(page - difference) < 1)
+            //                --page;
+            //            else
+            //                page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+            //        }
+            //    }
 
-                $scope.activePage = page;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
+            //    $scope.activePage = page;
+            //    var requestModel = angular.copy($scope.requestModel);
+            //    requestModel.offset = page - 1;
 
-                ReportsService.find(requestModel)
-                    .then(function (response) {
-                        $scope.reports = response.data;
-                        $scope.loading = false;
-                    });
+            //    ReportsService.find(requestModel)
+            //        .then(function (response) {
+            //            $scope.reports = response.data;
+            //            $scope.loading = false;
+            //        });
 
-            };
+            //};
 
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage)
-            };
+            //$scope.changeOffset = function () {
+            //    $scope.changePage($scope.activePage)
+            //};
 
 
             $scope.openCategoryModal = function () {
@@ -114,7 +114,7 @@ angular.module('primeapps')
                 });
             }
 
-            $scope.deleteReport = function (report, event) {
+            $scope.deleteReport = function (id, event) {
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -126,14 +126,14 @@ angular.module('primeapps')
                         if (value) {
                             var elem = angular.element(event.srcElement);
                             angular.element(elem.closest('tr')).addClass('animated-background');
-                            ReportsService.deleteReport(report.id)
+                            ReportsService.deleteReport(id)
                                 .then(function () {
                                     $scope.pageTotal--;
                                     //var index = $rootScope.appModules.indexOf(module);
                                     // $rootScope.appModules.splice(index, 1);
-
+                                    $scope.grid.dataSource.read()
                                     angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                    $scope.changePage($scope.activePage);
+                                    //$scope.changePage($scope.activePage);
                                     toastr.success("Report is deleted successfully.", "Deleted!");
 
                                 })
@@ -147,10 +147,15 @@ angular.module('primeapps')
 
             $scope.addTemplateCategory = function () {
                 var category = {
-                    "name": '',
+                    "name_tr": '',
+                    "name_en": '',
                     order: 0,
                     edit: true
                 };
+
+                if (!angular.isArray($rootScope.reportCategory)) {
+                    $rootScope.reportCategory = [];
+                }
                 $rootScope.reportCategory.push(category);
             };
 
@@ -160,8 +165,15 @@ angular.module('primeapps')
 
             $scope.saveCategory = function (category) {
                 category.saving = true;
+
+                var categoryModel = {
+                    name_tr: category.name_en,
+                    name_en: category.name_en,
+                    id: category.id
+                };
+
                 if (!category.id) {
-                    ReportsService.createCategory(category).then(function (result) {
+                    ReportsService.createCategory(categoryModel).then(function (result) {
                         var resultCategory = result.data;
                         category.id = resultCategory.id;
                         toastr.success("Report category  is saved successfully.");
@@ -169,7 +181,7 @@ angular.module('primeapps')
                         category.edit = false;
                     });
                 } else {
-                    ReportsService.updateCategory(category).then(function (result) {
+                    ReportsService.updateCategory(categoryModel).then(function (result) {
                         var resultCategory = result.data;
                         category.id = resultCategory.id;
                         toastr.success("Report category  is saved successfully.");
@@ -258,6 +270,116 @@ angular.module('primeapps')
                         });
                     }
                 }, 100);
+            };
+
+            //For Kendo UI
+
+            $scope.goUrl = function (report) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.openReportDetail(report);
+                }
+            };
+
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/report/find",
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                Name: { type: "string" },
+                                Category: { type: "string" },
+                                ReportType: { type: "enums" }
+                            }
+                        }
+                    }
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                noRecords: true,
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter && e.field !== 'ReportType') {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
+                },
+                rowTemplate: function (report) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + report.name_en + '</td>';
+                    trTemp += '<td class="text-left">' + report.category.name_en + '</td>';
+                    trTemp += '<td class="text-capitalize">' + report.report_type + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); deleteReport(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                altRowTemplate: function (report) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + report.name_en + '</td>';
+                    trTemp += '<td class="text-left">' + report.category.name_en + '</td>';
+                    trTemp += '<td class="text-capitalize">' + report.report_type + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); deleteReport(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+                    {
+                        field: 'NameEn',
+                        title: $filter('translate')('Setup.Report.ReportName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+                    {
+                        field: 'Category.NameEn',
+                        title: $filter('translate')('Setup.Report.ReportCategory'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+                    {
+                        field: 'ReportType',
+                        title: 'Type',
+                        values: [
+                            { text: 'Summary', value: 'Summary' },
+                            { text: 'Tabular', value: 'Tabular' },
+                            { text: 'Single', value: 'Single' }
+                        ]
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
             };
         }
     ]);

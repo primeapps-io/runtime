@@ -64,7 +64,7 @@ namespace PrimeApps.App.Controllers
         [Route("Remove"), HttpPost]
         public async Task<IActionResult> Remove([FromBody]ProfileRemovalDTO RemovalRequest)
         {
-            await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.ID, RemovalRequest.TransferProfile.ID);
+            await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.Id, RemovalRequest.TransferProfile.Id);
 
 
             return Ok();
@@ -77,7 +77,7 @@ namespace PrimeApps.App.Controllers
         [Route("GetAll"), HttpPost]
         public async Task<IActionResult> GetAll()
         {
-            IEnumerable<ProfileWithUsersDTO> profileList = await _profileRepository.GetAllProfiles();
+            IEnumerable<ProfileWithUsersDTO> profileList = await _profileRepository.GetAllProfiles(AppUser.Language);
 
             return Ok(profileList);
         }

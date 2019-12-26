@@ -2,7 +2,7 @@
 GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 
-PORTAUTH=5020
+PORTAUTH=5000
 
 for i in "$@"
 do
@@ -24,4 +24,4 @@ cd PrimeApps.Auth
 export ASPNETCORE_ENVIRONMENT=Development
 export AppSettings__Authority="http://localhost:$PORTAUTH"
 
-dotnet run --urls="http://localhost:$PORTAUTH"
+dotnet PrimeApps.Auth.dll --urls="http://localhost:$PORTAUTH"

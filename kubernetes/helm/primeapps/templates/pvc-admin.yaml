@@ -1,7 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: admin-data-volume-claim
+  name: primapps-admin
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}

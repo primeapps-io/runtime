@@ -863,19 +863,22 @@ namespace PrimeApps.App.Helpers
 
                 foreach (var component in module.Components)
                 {
-                    if (component.Deleted || component.Type != ComponentType.Script || component.Place == ComponentPlace.GlobalConfig || string.IsNullOrEmpty(component.Content))
+                    if (component.Deleted || component.Type != ComponentType.Script || component.Place == ComponentPlace.GlobalConfig)
                         continue;
 
-                    if (component.Content.StartsWith("{appConfigs") && appConfigs.IsNullOrEmpty())
+                    if (appConfigs.IsNullOrEmpty() && ((!string.IsNullOrEmpty(component.CustomUrl) && component.CustomUrl.StartsWith("{appConfigs")) || (!string.IsNullOrEmpty(component.Content) && component.Content.Contains("{appConfigs"))))
                     {
                         component.Content = "console.error('Dynamic values not replaced. Because appConfigs is null.');";
                         continue;
                     }
 
-                    component.Content = ReplaceDynamicValues(component.Content, appConfigs);
+                    if (!string.IsNullOrEmpty(component.Content))
+                        component.Content = ReplaceDynamicValues(component.Content, appConfigs);
 
                     if (!string.IsNullOrEmpty(component.CustomUrl))
                     {
+                        component.CustomUrl = ReplaceDynamicValues(component.CustomUrl, appConfigs);
+
                         if (!IsTrustedUrl(component.CustomUrl, appConfigs))
                         {
                             component.Content = "console.error('" + component.Content + " is not a trusted url.');";
@@ -908,7 +911,6 @@ namespace PrimeApps.App.Helpers
                         catch
                         {
                             component.Content = "console.error('" + component.Content + " has connection error. Please check the url.');";
-                            continue;
                         }
                     }
                 }

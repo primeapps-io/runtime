@@ -15,13 +15,13 @@ namespace PrimeApps.Model.Repositories
 {
     public class NotificationRepository : RepositoryBaseTenant, INotificationRepository
     {
-        public NotificationRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public NotificationRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration){}
 
         public async Task<Notification> GetById(int id)
         {
             var notification = await DbContext.Notifications
-                .Include(x => x.CreatedBy)
-                .FirstOrDefaultAsync(r => r.Id == id && r.Deleted == false);
+				.Include(x => x.CreatedBy)
+				.FirstOrDefaultAsync(r => r.Id == id && !r.Deleted);
 
             return notification;
         }
@@ -31,7 +31,7 @@ namespace PrimeApps.Model.Repositories
             var notification = await GetById(notificationId);
             var settings = DbContext.Settings
                 .Include(x => x.CreatedBy)
-                .Where(r => r.Type == SettingType.Email && r.Deleted == false);
+                .Where(r => r.Type == SettingType.Email && !r.Deleted);
 
             if (queueItem.AccessLevel == AccessLevelEnum.Personal)
                 settings = settings.Where(r => r.UserId == notification.CreatedById);

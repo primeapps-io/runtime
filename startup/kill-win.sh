@@ -1,7 +1,8 @@
 #!/bin/bash
 
-PORTAUTH=5020
-PORTAPP=5021
+PORTAUTH=5000
+PORTAPP=5001
+PORTADMIN=5005
 
 for i in "$@"
 do
@@ -12,6 +13,9 @@ case $i in
     -pp=*|--port-app=*)
     PORTAPP="${i#*=}"
     ;;
+    -pp=*|--port-admin=*)
+    PORTADMIN="${i#*=}"
+    ;;    
     *)
     # unknown option
     ;;
@@ -20,6 +24,8 @@ done
 
 netstatAuth=$(netstat -aon | findstr $PORTAUTH)
 netstatApp=$(netstat -aon | findstr $PORTAPP)
+netstatAdmin=$(netstat -aon | findstr $PORTADMIN)
 
 /bin/kill -W -f "$(echo $netstatAuth | cut -d' ' -f5)"
 /bin/kill -W -f "$(echo $netstatApp | cut -d' ' -f5)"
+/bin/kill -W -f "$(echo $netstatAdmin | cut -d' ' -f5)"

@@ -3,6 +3,7 @@ using PrimeApps.Model.Entities.Tenant;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using PrimeApps.Model.Entities.Studio;
+using System.Linq;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
@@ -15,7 +16,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<List<Package>> GetAll(int appId);
         Task<Package> GetByVersion(int version);
         Task<Package> GetActiveProcess(int appId);
-        Task<ICollection<Package>> Find(int appId, PaginationModel paginationModel);
+        IQueryable<Package> Find(int appId);
         Task<int> Create(Package package);
         Task<int> Update(Package package);
         Task<int> Delete(Package package);

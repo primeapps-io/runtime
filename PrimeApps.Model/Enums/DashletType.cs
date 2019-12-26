@@ -11,6 +11,10 @@ namespace PrimeApps.Model.Enums
         Chart = 1,
 
         [EnumMember(Value = "widget")]
-        Widget = 2
+        Widget = 2,
+            
+       [EnumMember(Value = "component")]
+       Component = 3
+        
     }
 }

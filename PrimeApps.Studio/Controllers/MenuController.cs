@@ -3,6 +3,9 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -474,19 +477,19 @@ namespace PrimeApps.Studio.Controllers
 			return Ok(count);
 		}
 
-		[Route("find"), HttpPost]
-		public async Task<IActionResult> Find([FromBody] PaginationModel paginationModel)
-		{
-			var menus = await _menuRepository.Find(paginationModel);
+        [Route("find")]
+        public IActionResult Find(ODataQueryOptions<Menu> queryOptions)
+        {
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.View))
+                return StatusCode(403);
 
-			if (menus == null)
-				return Ok(null);
+            var views = _menuRepository.Find();
+            var queryResults = (IQueryable<Menu>)queryOptions.ApplyTo(views, new ODataQuerySettings() { EnsureStableOrdering = false });
+            return Ok(new PageResult<Menu>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
+        }
 
-			return Ok(menus);
-		}
 
-
-		[Route("get_menu_items/{id:int}"), HttpGet]
+        [Route("get_menu_items/{id:int}"), HttpGet]
 		public async Task<IActionResult> GetMenuItemsByMenuId([FromUri] int menuId)
 		{
 			var menuItems = await _menuRepository.GetMenuItemsByMenuId(menuId);

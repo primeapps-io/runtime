@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -74,18 +77,17 @@ namespace PrimeApps.Studio.Controllers
             return Ok(picklistsViewModel);
         }
 
-        [Route("get_page"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        [Route("get_page")]
+        public IActionResult Find(ODataQueryOptions<Picklist> queryOptions)
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "picklist", RequestTypeEnum.View))
                 return StatusCode(403);
+  
+            var picklists =  _picklistRepository.Find();
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            var queryResults = (IQueryable<Picklist>)queryOptions.ApplyTo(picklists, new ODataQuerySettings() { EnsureStableOrdering = false });
+            return Ok(new PageResult<Picklist>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
 
-            var picklists = await _picklistRepository.Find(paginationModel);
-
-            return Ok(picklists);
         }
 
         [Route("get_item_page/{id:int}"), HttpPost]

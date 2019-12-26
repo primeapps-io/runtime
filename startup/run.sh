@@ -4,4 +4,5 @@ NC='\033[0m' # No Color
 
 ./kill.sh "$@" &
 ./auth.sh "$@" &
-./app.sh "$@"
+./app.sh "$@" &
+./admin.sh "$@"

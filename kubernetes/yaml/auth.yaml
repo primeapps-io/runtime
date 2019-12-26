@@ -80,17 +80,17 @@ spec:
             - name: AppSettings__StorageUrl
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-studio-config
+                  name: primeapps-auth-config
                   key: StorageUrl
             - name: AppSettings__StorageAccessKey
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-studio-config
+                  name: primeapps-auth-config
                   key: StorageAccessKey
             - name: AppSettings__StorageSecretKey
               valueFrom:
                 configMapKeyRef:
-                  name: primeapps-studio-config
+                  name: primeapps-auth-config
                   key: StorageSecretKey
             - name: AppSettings__Authority
               valueFrom:
@@ -137,16 +137,6 @@ spec:
                 configMapKeyRef:
                   name: primeapps-auth-config
                   key: SentryDsn
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-              scheme: HTTP
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            timeoutSeconds: 2
-            successThreshold: 1
-            failureThreshold: 1
 ---
 kind: Service
 apiVersion: v1

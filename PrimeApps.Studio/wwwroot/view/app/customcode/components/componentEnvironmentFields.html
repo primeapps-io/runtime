@@ -1,134 +1,207 @@
-<form name="contentFormValidation" style="margin-top: 20px;" class="form-horizontal form-custom" ng-submit="save(contentFormValidation);" autocomplete="off" novalidate>
-	<div class="table-responsive c-settings-table">
-		<table class="table table-bordered">
-			<tbody>
-				<tr class="black5">
-					<td style="width:200px;">Trusted Urls</td>
-					<td >Key</td>
-					<td>Value</td>
-					<td></td>
-				</tr>
-				<tr ng-repeat="trustedUrlsParameter in trustedUrlsParameters">
-					<td colspan="4" style="padding:0px !important;">
-					    <table class="table table-bordered" style="margin-bottom: 0px;">
-						<tbody>
-						<tr>
-							<td style="width:200px;">Url</td>
-							<td><div class="form-group"><input class="form-control disabled" tabindex="2" disabled value="url"/></div></td>
-							<td><div class="form-group"><input type="text" class="form-control" tabindex="2" name="url" maxlength="300" ng-model="trustedUrlsParameter.urls"/></div></td>
-                            <td rowspan="4"  ng-show="trustedUrlsParameters.length > 1">  
-                                <a class="action-button2-delete" href ng-click="parameterRemove(trustedUrlsParameter, trustedUrlsParameters)">
+<form name="contentFormValidation" style="margin-top: 20px;" class="form-horizontal form-custom"
+      ng-submit="save(contentFormValidation);" autocomplete="off" novalidate>
+    <div class="table-responsive c-settings-table">
+        <table class="table table-bordered">
+            <tbody>
+            <tr ng-repeat="trustedUrlsParameter in trustedUrlsParameters" ng-mouseover="setIndex($index)">
+                <td colspan="3" style="padding:0px !important;">
+                    <table class="table table-bordered" style="margin-bottom: 0px;">
+                        <tbody>
+                        <tr ng-show="$first" class="black5">
+                            <td style="width: 200px; text-align: center;">Trusted Urls</td>
+                            <td>Key</td>
+                            <td>Value</td>
+                        </tr>
+                        <tr>
+                            <td ng-style="{'width': !$first ? '200px' : '0px'}" style="text-align: center;">
+                                <a class="action-button2-delete" href
+                                   ng-click="parameterRemove($index, trustedUrlsParameters)">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </td>
-						</tr>
-						<tr>
-							<td rowspan="2">Headers</td>
-							<td><div class="form-group"><input class="form-control disabled" disabled value="X-User-Id"></div></td>
-							<td><div class="form-group"><input type="text" class="form-control" name="x_user_id" maxlength="300" ng-model="trustedUrlsParameter.headers.x_user_id"/></div></td>
-						</tr>
-						<tr>
-							<td><div class="form-group"><input class="form-control disabled" disabled value="X-Tenant-Id"/></div></td>
-							<td><div class="form-group"><input type="text" class="form-control" name="x_tenant_id" maxlength="300" ng-model="trustedUrlsParameter.headers.x_tenant_id"/></div></td>
-						</tr>
-						</tbody>
-					</table>
-					</td>
-				</tr>
-                <tr>
-                    <td colspan="4">
-                        <a class="btn btn-radius btn-blue" href ng-click="parameterAdd(trustedUrlsParameters[trustedUrlsParameters.length-1], 1)">
-                            <i class="fas fa-plus"></i> Add New Trusted Urls
-                        </a>
-                    </td>
-                </tr>
-				<tr class="black5">
-					<td>Route Template Urls</td>
-					<td>Key</td>
-					<td>Value</td>
-					<td></td>
-				</tr>
-				<tr>
-					<td rowspan="{{routeParameters.length && routeParameters.length >0 ? routeParameters.length+1 : 1}}">Route Template Urls</td>
-				</tr>
-				<tr ng-repeat="routeParameter in routeParameters">
-					<td colspan="4" style="padding:0px !important;">
-						<table class="table table-bordered" style="margin-bottom: 0px;">
-							<tbody>
-							<tr>
-					<td><div class="form-group"><input class="form-control disabled" disabled value="route_template_urls"></div></td>
-					<td><div class="form-group"><input type="text" class="form-control" name="route_template_urls" maxlength="300" ng-model="routeParameter.route_template_urls"></div></td>
-					<td  ng-show="routeParameters.length > 1">
-						<a class="action-button2-delete" href ng-click="parameterRemove(routeParameter, routeParameters)">
-							<i class="fas fa-trash"></i>
-						</a>
-					</td>
-							</tr>
-							</tbody>
-						</table>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="4">
-						<a class="btn btn-radius btn-blue" href ng-click="parameterAdd(routeParameters[routeParameters.length-1], 2)">
-							<i class="fas fa-plus"></i> Add New Route Template Urls
-						</a>
-					</td>
-				</tr>
-				<tr class="black5">
-					<td>Imports</td>
-					<td>Key</td>
-					<td>Value</td>
-                    <td></td>
-				</tr>
-				<tr>
-					<td rowspan="2">Css</td>
-					<td><div class="form-group"><input class="form-control disabled" disabled value="before"></div></td>
-					<td colspan="2"><div class="form-group"><input type="text" class="form-control" name="css.before" placeholder="Separate with ;" maxlength="300" ng-model="content.imports.css.before"></div></td>
-                </tr>
-				<tr>
-					<td><div class="form-group"><input class="form-control disabled" disabled value="after"></div></td>
-					<td colspan="2"><div class="form-group"><input type="text" class="form-control" name="css.after" placeholder="Separate with ;" maxlength="300" ng-model="content.imports.css.after"></div></td>
-				</tr>
-				<tr>
-					<td rowspan="2">Js</td>
-					<td><div class="form-group"><input class="form-control disabled" disabled value="before"></div></td>
-					<td colspan="2"><div class="form-group"><input type="text" class="form-control" name="js.before" placeholder="Separate with ;" maxlength="300" ng-model="content.imports.js.before"></div></td>
-				</tr>
-				<tr>
-					<td><div class="form-group"><input class="form-control disabled" disabled value="after"></div></td>
-					<td colspan="2"><div class="form-group"><input type="text" class="form-control" name="js.after" placeholder="Separate with ;" maxlength="300" ng-model="content.imports.js.after"></div></td>
-				</tr>
-				<tr class="black5">
-					<td>Configs</td>
-					<td>Key</td>
-					<td>Value</td>
-                    <td></td>
-				</tr>
-				<tr ng-repeat="parameter in configParameters">
-					<td>{{$index+1}}</td>
-					<td><div class="form-group"><input type="text" ng-model="parameter.key" tabindex="2" class="form-control" maxlength="500" /></div></td>
-					<td><div class="form-group"><input type="text" ng-model="parameter.value" tabindex="2" class="form-control" maxlength="500" /></div></td>
-                    <td ng-show="configParameters.length > 1">
-                        <a class="action-button2-delete" href ng-click="parameterRemove(parameter, configParameters)">
-                            <i class="fas fa-trash"></i>
-                        </a>
-                    </td>
-				</tr>
-				<tr>
-					<td colspan="4">
-						<a class="btn btn-radius btn-blue" href ng-click="parameterAdd(configParameters[configParameters.length-1], 3)">
-							<i class="fas fa-plus"></i> Add New Parameter
-						</a>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+                            <td>
+                                <div class="form-group"><input class="form-control disabled" tabindex="2" disabled
+                                                               value="url"/></div>
+                            </td>
+                            <td>
+                                <div class="form-group"><input type="text" class="form-control" tabindex="2" name="url"
+                                                               maxlength="300" ng-model="trustedUrlsParameter.urls"/>
+                                </div>
+                            </td>
+                        </tr>
 
-	<div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;">
-		<button ng-click="$parent.$parent.$parent.$parent.$parent.$parent.$parent.save(contentFormValidation);" ladda="saving" class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;">
-			<i class="fas fa-save"></i>{{'Common.Save' | translate}}
-		</button>
-	</div>
+                        <tr ng-repeat="(key, value) in trustedUrlsParameter.headers">
+                            <td style="width: 200px; text-align: center;">
+                                <a class="action-button2-delete" href
+                                   ng-click="parameterRemove(undefined, trustedUrlsParameter.headers, key)">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <input ng-show="!key.contains('Custom')" disabled name="inputHeader" ng-model="key"
+                                           placeholder="Header" class="form-control"/>
+                                    <input ng-show="key.contains('Custom')" name="inputHeader"
+                                           ng-model="customInputObject[activeTab][key]"
+                                           ng-change="changeCustomInput(key, customInputObject[activeTab][key])"
+                                           placeholder="Header" class="form-control"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group"><input type="text" class="form-control"
+                                                               name="inputHead"
+                                                               maxlength="300"
+                                                               ng-model="trustedUrlsParameter.headers[key]"/></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">
+                                <a class="action-button2-plus" data-animation="am-flip-x" bs-dropdown
+                                   aria-haspopup="true" aria-expanded="false" href>
+                                    <i class="fas fa-plus"></i>
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li ng-repeat="header in headersArray[activeTab+$index]">
+                                        <a
+                                                ng-click="addHeader(header, trustedUrlsParameter.headers)">{{header}}</a>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align: right">
+                    <a class="btn btn-radius btn-blue" href
+                       ng-click="parameterAdd(trustedUrlsParameters[trustedUrlsParameters.length-1], 1)">
+                        <i class="fas fa-plus"></i> Add New Trusted Url
+                    </a>
+                </td>
+            </tr>
+            <tr class="black5">
+                <td style="width: 200px; text-align: center;">Route Template Urls</td>
+                <td>Key</td>
+                <td>Value</td>
+            </tr>
+            <tr ng-repeat="routeParameter in routeParameters">
+                <td style="text-align: center;">
+                    <!--ng-show="routeParameters.length > 1"-->
+                    <a class="action-button2-delete" href ng-click="parameterRemove($index, routeParameters)">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                    <a ng-show="$last" class="action-button2-plus" href
+                       ng-click="parameterAdd(routeParameters[routeParameters.length-1], 2)">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                </td>
+                <td>
+                    <div class="form-group"><input class="form-control disabled" disabled value="route_template_urls">
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group"><input type="text" class="form-control" name="route_template_urls"
+                                                   maxlength="300" ng-model="routeParameter.route_template_urls"></div>
+                </td>
+            </tr>
+            <tr ng-show="routeParameters.length < 1">
+                <td colspan="3" style="text-align: right">
+                    <a class="btn btn-radius btn-blue" href
+                       ng-click="parameterAdd(routeParameters[routeParameters.length-1], 2)">
+                        <i class="fas fa-plus"></i> Add New Route Template Url
+                    </a>
+                </td>
+            </tr>
+            <tr class="black5">
+                <td style="width: 200px; text-align: center;">Imports</td>
+                <td>Key</td>
+                <td>Value</td>
+            </tr>
+            <tr>
+                <td style="text-align: center;" rowspan="2">Css</td>
+                <td>
+                    <div class="form-group"><input class="form-control disabled" disabled value="before"></div>
+                </td>
+                <td>
+                    <div class="form-group"><input type="text" class="form-control" name="css.before"
+                                                   placeholder="Separate with ;" maxlength="300"
+                                                   ng-model="content.imports.css.before"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form-group"><input class="form-control disabled" disabled value="after"></div>
+                </td>
+                <td>
+                    <div class="form-group"><input type="text" class="form-control" name="css.after"
+                                                   placeholder="Separate with ;" maxlength="300"
+                                                   ng-model="content.imports.css.after"></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center;" rowspan="2">Js</td>
+                <td>
+                    <div class="form-group"><input class="form-control disabled" disabled value="before"></div>
+                </td>
+                <td>
+                    <div class="form-group"><input type="text" class="form-control" name="js.before"
+                                                   placeholder="Separate with ;" maxlength="300"
+                                                   ng-model="content.imports.js.before"></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form-group"><input class="form-control disabled" disabled value="after"></div>
+                </td>
+                <td>
+                    <div class="form-group"><input type="text" class="form-control" name="js.after"
+                                                   placeholder="Separate with ;" maxlength="300"
+                                                   ng-model="content.imports.js.after"></div>
+                </td>
+            </tr>
+            <tr class="black5">
+                <td style="width: 200px; text-align: center;">Configs</td>
+                <td>Key</td>
+                <td>Value</td>
+            </tr>
+            <tr ng-repeat="parameter in configParameters">
+                <td style="text-align: center;">
+                    <a class="action-button2-delete" href ng-click="parameterRemove($index, configParameters)">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                    <a ng-show="$last" class="action-button2-plus" href
+                       ng-click="parameterAdd(configParameters[configParameters.length-1], 3)">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                </td>
+                <td>
+                    <div class="form-group"><input type="text" ng-model="parameter.key" tabindex="2"
+                                                   class="form-control" maxlength="500"/></div>
+                </td>
+                <td>
+                    <div class="form-group"><input type="text" ng-model="parameter.value" tabindex="2"
+                                                   class="form-control" maxlength="500"/></div>
+                </td>
+            </tr>
+            <tr ng-show="configParameters.length<1">
+                <td colspan="3" style="text-align: right">
+                    <a class="btn btn-radius btn-blue" href
+                       ng-click="parameterAdd(configParameters[configParameters.length-1], 3)">
+                        <i class="fas fa-plus"></i> Add New Parameter
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;">
+        <button ng-click="$parent.$parent.$parent.$parent.$parent.$parent.$parent.save(contentFormValidation);"
+                ladda="saving" class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;">
+            <i class="fas fa-save"></i>{{'Common.Save' | translate}}
+        </button>
+    </div>
 </form>
