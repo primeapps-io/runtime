@@ -7,7 +7,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<bool>(
-                name: "smtp_settings",
+                name: "close_smtp_settings",
                 schema: "public",
                 table: "profiles",
                 nullable: false,
@@ -17,7 +17,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "smtp_settings",
+                name: "close_smtp_settings",
                 schema: "public",
                 table: "profiles");
         }

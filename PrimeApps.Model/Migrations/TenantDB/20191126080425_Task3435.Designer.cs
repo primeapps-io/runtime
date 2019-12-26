@@ -2933,8 +2933,8 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("SendSMS")
                         .HasColumnName("send_sms");
 
-                    b.Property<bool>("SmtpSettings")
-                        .HasColumnName("smtp_settings");
+                    b.Property<bool>("CloseSmtpSettings")
+                        .HasColumnName("close_smtp_settings");
 
                     b.Property<string>("StartPage")
                         .HasColumnName("startpage");

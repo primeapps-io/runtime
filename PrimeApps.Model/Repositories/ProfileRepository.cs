@@ -51,7 +51,7 @@ namespace PrimeApps.Model.Repositories
                 NameEn = newProfileDTO.NameEn,
                 NameTr = string.IsNullOrEmpty(newProfileDTO.NameTr) ? newProfileDTO.NameEn : newProfileDTO.NameTr,
                 Dashboard = newProfileDTO.Dashboard,
-                SmtpSettings = newProfileDTO.SmtpSettings,
+				CloseSmtpSettings = newProfileDTO.CloseSmtpSettings,
                 Home = newProfileDTO.Home,
                 CollectiveAnnualLeave = newProfileDTO.CollectiveAnnualLeave,
                 StartPage = newProfileDTO.StartPage,
@@ -152,7 +152,7 @@ namespace PrimeApps.Model.Repositories
             profileToUpdate.Report = updatedProfileDTO.Report;
             profileToUpdate.Newsfeed = updatedProfileDTO.Newsfeed;
             profileToUpdate.Dashboard = updatedProfileDTO.Dashboard;
-            profileToUpdate.SmtpSettings = updatedProfileDTO.SmtpSettings;
+            profileToUpdate.CloseSmtpSettings = updatedProfileDTO.CloseSmtpSettings;
             profileToUpdate.Home = updatedProfileDTO.Home;
             profileToUpdate.CollectiveAnnualLeave = updatedProfileDTO.CollectiveAnnualLeave;
             profileToUpdate.StartPage = updatedProfileDTO.StartPage;
@@ -327,7 +327,7 @@ namespace PrimeApps.Model.Repositories
                     Report = x.Report,
                     Dashboard = x.Dashboard,
                     Home = x.Home,
-                    SmtpSettings = x.SmtpSettings,
+                    SmtpSettings = x.CloseSmtpSettings,
                     CollectiveAnnualLeave = x.CollectiveAnnualLeave,
                     StartPage = x.StartPage,
                     ParentId = x.ParentId,
@@ -473,7 +473,7 @@ namespace PrimeApps.Model.Repositories
                     Report = x.Report,
                     Dashboard = x.Dashboard,
                     Home = x.Home,
-                    SmtpSettings = x.SmtpSettings,
+                    SmtpSettings = x.CloseSmtpSettings,
                     CollectiveAnnualLeave = x.CollectiveAnnualLeave,
                     StartPage = x.StartPage,
                     ParentId = x.ParentId,
