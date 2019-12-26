@@ -67,37 +67,37 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_by_type"), HttpGet]
-        public async Task<Help> GetByType([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "moduleId")]int? moduleId = null, [FromQuery(Name = "route")]string route = "")
+        public async Task<Help> GetByType([FromQuery(Name = "helpType")]ModalType helpType, [FromQuery(Name = "moduleId")]int? moduleId = null, [FromQuery(Name = "route")]string route = "")
         {
             var language = AppUser.Language.ToEnum<LanguageType>();
-            var templates = await _helpRepository.GetByType(templateType, language, moduleId, route);
+            var templates = await _helpRepository.GetByType(helpType, language, moduleId, route);
 
             return templates;
         }
 
         [Route("get_module_type"), HttpGet]
-        public async Task<Help> GetModuleType([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "moduleType")]ModuleType moduleType, [FromQuery(Name = "moduleId")]int? moduleId = null)
+        public async Task<Help> GetModuleType([FromQuery(Name = "helpType")]ModalType helpType, [FromQuery(Name = "moduleType")]ModuleType moduleType, [FromQuery(Name = "moduleId")]int? moduleId = null)
         {
             var language = AppUser.Language.ToEnum<LanguageType>();
-            var templates = await _helpRepository.GetModuleType(templateType, moduleType, language, moduleId);
+            var templates = await _helpRepository.GetModuleType(helpType, moduleType, language, moduleId);
 
             return templates;
         }
 
         [Route("get_first_screen"), HttpGet]
-        public async Task<Help> GetFistScreen([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "firstscreen")]bool? firstscreen = false)
+        public async Task<Help> GetFistScreen([FromQuery(Name = "helpType")]ModalType helpType, [FromQuery(Name = "firstscreen")]bool? firstscreen = false)
         {
             var language = AppUser.Language.ToEnum<LanguageType>();
-            var templates = await _helpRepository.GetFistScreen(templateType, language, firstscreen);
+            var templates = await _helpRepository.GetFistScreen(helpType, language, firstscreen);
 
             return templates;
         }
 
         [Route("get_custom_help"), HttpGet]
-        public async Task<ICollection<Help>> GetCustomHelp([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "customhelp")]bool? customhelp = false)
+        public async Task<ICollection<Help>> GetCustomHelp([FromQuery(Name = "helpType")]ModalType helpType, [FromQuery(Name = "customhelp")]bool? customhelp = false)
         {
             var language = AppUser.Language.ToEnum<LanguageType>();
-            var templates = await _helpRepository.GetCustomHelp(templateType, language, customhelp);
+            var templates = await _helpRepository.GetCustomHelp(helpType, language, customhelp);
 
             return templates;
         }
