@@ -396,6 +396,7 @@ angular.module('primeapps')
                     trTemp += '<td class="text-left">' + emailTemp.subject + '</td>';
                     trTemp += emailTemp.language === 'tr' ? '<td>Turkish</td>' : '<td>English</td>';
                     trTemp += '<td>' + emailTemp.system_code + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
                 altRowTemplate: function (emailTemp) {
@@ -404,6 +405,7 @@ angular.module('primeapps')
                     trTemp += '<td class="text-left">' + emailTemp.subject + '</td>';
                     trTemp += emailTemp.language === 'tr' ? '<td>Turkish</td>' : '<td>English</td>';
                     trTemp += '<td>' + emailTemp.system_code + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
                 pageable: {
@@ -440,35 +442,39 @@ angular.module('primeapps')
                     {
                         field: 'SystemCode',
                         title: 'Code',
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
                     }]
             };
+            
+            $scope.delete = function (template, event) {
+                var willDelete =
+                    swal({
+                        title: "Are you sure?",
+                        text: " ",
+                        icon: "warning",
+                        buttons: ['Cancel', 'Yes'],
+                        dangerMode: true
+                    }).then(function (value) {
+                        if (value) {
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
+                            AppEmailTemplatesService.delete(template.id)
+                                .then(function () {
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
+                                    $scope.grid.dataSource.read();
+                                    toastr.success($filter('translate')('Setup.Templates.DeleteSuccess' | translate), "Deleted!");
 
-            //$scope.delete = function (template) {
-            //    var willDelete =
-            //        swal({
-            //            title: "Are you sure?",
-            //            text: " ",
-            //            icon: "warning",
-            //            buttons: ['Cancel', 'Yes'],
-            //            dangerMode: true
-            //        }).then(function (value) {
-            //            if (value) {
-            //                AppEmailTemplatesService.delete(template.id)
-            //                    .then(function () {
-            //                        var templateToDeleteIndex = helper.arrayObjectIndexOf($scope.templates, template);
-            //                        $scope.templates.splice(templateToDeleteIndex, 1);
-            //                        toastr.success("Email template is deleted successfully.", "Deleted!");
+                                })
+                                .catch(function () {
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
 
-            //                    })
-            //                    .catch(function () {
-
-            //                        if ($scope.addNewHelpFormModal) {
-            //                            $scope.addNewHelpFormModal.hide();
-            //                            $scope.saving = false;
-            //                        }
-            //                    });
-            //            }
-            //        });
-            //};
+                                });
+                        }
+                    });
+            };
         }
     ]);

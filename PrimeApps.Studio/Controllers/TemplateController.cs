@@ -176,19 +176,38 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, [FromQuery]bool isAppTemplate = false)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.Delete))
                 return StatusCode(403);
 
-            var templateEntity = await _templateRepostory.GetById(id);
+            if (isAppTemplate)
+            {
+                var templateEntity = await _appDraftTemplateRepository.Get(id);
 
-            if (templateEntity == null)
-                return NotFound();
+                if (templateEntity == null)
+                    return NotFound();
+                
+                /**Buraya başka sytem_code'lara gelecek*/
+                if (templateEntity.SystemCode == "password_reset")
+                    return BadRequest("You couldn't delete this system_code(password_reset)!");
+                
+                await _appDraftTemplateRepository.DeleteSoft(templateEntity);
+                
+                return Ok();
+            }
+            else
+            {
+                var templateEntity = await _templateRepostory.GetById(id);
 
-            await _templateRepostory.DeleteSoft(templateEntity);
+                if (templateEntity == null)
+                    return NotFound();
 
-            return Ok();
+                await _templateRepostory.DeleteSoft(templateEntity);
+
+                return Ok();
+            }
+          
         }
 
         [Route("count"), HttpGet]
@@ -247,9 +266,7 @@ namespace PrimeApps.Studio.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            if (!template.Deleted)
-            {
+   
                 var templateEntity = await _appDraftTemplateRepository.Get(id);
 
                 if (templateEntity == null)
@@ -257,10 +274,7 @@ namespace PrimeApps.Studio.Controllers
 
                 TemplateHelper.UpdateEntity(null, null, null, template, templateEntity, true);
                 await _appDraftTemplateRepository.Update(templateEntity);
-                return Ok(templateEntity);
-            }
-            else
-                return BadRequest("Deleted value can't be true");
+                return Ok(templateEntity);          
         }
 
         [Route("count_app_email_template"), HttpGet]

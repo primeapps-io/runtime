@@ -57,5 +57,12 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.AppTemplates.FirstOrDefaultAsync(x => x.Id == id);
         }
+        
+        public async Task<int> DeleteSoft(AppDraftTemplate template)
+        {
+            template.Deleted = true;
+
+            return await DbContext.SaveChangesAsync();
+        }
     }
 }

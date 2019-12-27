@@ -79,13 +79,13 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<ICollection<Help>> GetAll(ModalType modalType = ModalType.NotSet, LanguageType language = LanguageType.NotSet)
+        public async Task<ICollection<Help>> GetAll(ModalType helpType = ModalType.NotSet, LanguageType language = LanguageType.NotSet)
         {
             var helps = DbContext.Helps
                 .Where(x => !x.Deleted);
 
-            if (modalType != ModalType.NotSet)
-                helps = helps.Where(x => x.ModalType == modalType);
+            if (helpType != ModalType.NotSet)
+                helps = helps.Where(x => x.ModalType == helpType);
 
             if (language != LanguageType.NotSet)
                 helps = helps.Where(x => x.Language == language);
@@ -95,11 +95,11 @@ namespace PrimeApps.Model.Repositories
             return await helps.ToListAsync();
         }
 
-        public async Task<Help> GetByType(ModalType templateType, LanguageType language = LanguageType.NotSet, int? moduleId = null, string route = "")
+        public async Task<Help> GetByType(ModalType helpType, LanguageType language = LanguageType.NotSet, int? moduleId = null, string route = "")
         {
             var helps = DbContext.Helps
                 .Where(x => x.Deleted == false)
-                .Where(x => x.ModalType == templateType);
+                .Where(x => x.ModalType == helpType);
 
             if (language != LanguageType.NotSet)
                 helps = helps.Where(x => x.Language == language);
@@ -115,11 +115,11 @@ namespace PrimeApps.Model.Repositories
             return await helps.FirstOrDefaultAsync();
         }
 
-        public async Task<Help> GetModuleType(ModalType templateType, ModuleType moduleType, LanguageType language = LanguageType.NotSet, int? moduleId = null)
+        public async Task<Help> GetModuleType(ModalType helpType, ModuleType moduleType, LanguageType language = LanguageType.NotSet, int? moduleId = null)
         {
             var helps = DbContext.Helps
                 .Where(x => x.Deleted == false)
-                .Where(x => x.ModalType == templateType)
+                .Where(x => x.ModalType == helpType)
                 .Where(x => x.ModuleType == moduleType);
 
             if (language != LanguageType.NotSet)
@@ -133,11 +133,11 @@ namespace PrimeApps.Model.Repositories
             return await helps.FirstOrDefaultAsync();
         }
 
-        public async Task<Help> GetFistScreen(ModalType templateType, LanguageType language = LanguageType.NotSet, bool? firstscreen = false)
+        public async Task<Help> GetFistScreen(ModalType helpType, LanguageType language = LanguageType.NotSet, bool? firstscreen = false)
         {
             var helps = DbContext.Helps
                 .Where(x => x.Deleted == false)
-                .Where(x => x.ModalType == templateType);
+                .Where(x => x.ModalType == helpType);
 
             if (language != LanguageType.NotSet)
                 helps = helps.Where(x => x.Language == language);
@@ -150,11 +150,11 @@ namespace PrimeApps.Model.Repositories
             return await helps.FirstOrDefaultAsync();
         }
 
-        public async Task<ICollection<Help>> GetCustomHelp(ModalType templateType, LanguageType language = LanguageType.NotSet, bool? customhelp = false)
+        public async Task<ICollection<Help>> GetCustomHelp(ModalType helpType, LanguageType language = LanguageType.NotSet, bool? customhelp = false)
         {
             var helps = DbContext.Helps
                 .Where(x => x.Deleted == false)
-                .Where(x => x.ModalType == templateType);
+                .Where(x => x.ModalType == helpType);
 
             if (language != LanguageType.NotSet)
                 helps = helps.Where(x => x.Language == language);
