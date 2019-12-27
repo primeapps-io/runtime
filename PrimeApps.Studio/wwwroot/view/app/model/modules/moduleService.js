@@ -48,7 +48,7 @@ angular.module('primeapps')
                 // delete: function (id) {
                 //     return $http.delete(config.apiUrl + 'module/delete/' + id);
                 // },
-                newField: function (dataType,order) {
+                newField: function (dataType, order) {
 
                     var field = {};
                     field.label_en = dataType.label.en;
@@ -416,6 +416,10 @@ angular.module('primeapps')
 
                 deleteModuleProfileSetting: function (id) {
                     return $http.delete(config.apiUrl + 'module_profile_settings/delete/' + id);
+                },
+
+                getNotUsedProfiles: function (id) {
+                    return $http.get(config.apiUrl + 'module_profile_settings/get_not_used_profiles/' + id);
                 },
 
                 getPicklists: function () {

@@ -441,7 +441,7 @@ angular.module('primeapps')
                                             MenusService.deleteMenuItems($scope.deleteArray).then(function onSuccess() {
                                                 toastr.success($filter('translate')('Menu.UpdateSucces'));
                                                 $scope.addNewMenuFormModal.hide();
-                                                $scope.changePage($scope.activePage);
+                                                //$scope.changePage($scope.activePage);
                                                 $scope.saving = false;
                                             }).catch(function () {
                                                 $scope.saving = false;
@@ -452,7 +452,7 @@ angular.module('primeapps')
                                             toastr.success($filter('translate')('Menu.UpdateSucces'));
                                             $scope.saving = false;
                                             $scope.addNewMenuFormModal.hide();
-                                            $scope.changePage($scope.activePage);
+                                            //$scope.changePage($scope.activePage);
                                         }
                                     }).catch(function () {
                                         $scope.saving = false;
@@ -462,7 +462,7 @@ angular.module('primeapps')
                                     toastr.success($filter('translate')('Menu.UpdateSucces'));
                                     $scope.saving = false;
                                     $scope.addNewMenuFormModal.hide();
-                                    $scope.changePage($scope.activePage);
+                                    //$scope.changePage($scope.activePage);
                                 }
                             });
                     }
@@ -476,7 +476,7 @@ angular.module('primeapps')
 
                                     toastr.success($filter('translate')('Menu.UpdateSucces'));
                                     $scope.addNewMenuFormModal.hide();
-                                    $scope.changePage($scope.activePage);
+                                    //$scope.changePage($scope.activePage);
                                     $scope.saving = false;
                                 }).catch(function () {
                                     $scope.saving = false;
@@ -487,7 +487,7 @@ angular.module('primeapps')
                                 toastr.success($filter('translate')('Menu.UpdateSucces'));
                                 $scope.saving = false;
                                 $scope.addNewMenuFormModal.hide();
-                                $scope.changePage($scope.activePage);
+                                //$scope.changePage($scope.activePage);
                             }
                         }).catch(function () {
                             $scope.saving = false;
@@ -498,13 +498,13 @@ angular.module('primeapps')
                             toastr.success($filter('translate')('Menu.UpdateSucces'));
                             $scope.saving = false;
                             $scope.addNewMenuFormModal.hide();
-                            $scope.changePage($scope.activePage);
+                            //$scope.changePage($scope.activePage);
                         });
                     } else {
                         toastr.success($filter('translate')('Menu.UpdateSucces'));
                         $scope.addNewMenuFormModal.hide();
                         $scope.saving = false;
-                        $scope.changePage($scope.activePage);
+                        //$scope.changePage($scope.activePage);
                     }
                 }
                 //If first create
@@ -531,7 +531,7 @@ angular.module('primeapps')
                         } else {
                             toastr.success($filter('translate')('Menu.MenuSaving'));
                             $scope.addNewMenuFormModal.hide();
-                            $scope.changePage($scope.activePage);
+                            //$scope.changePage($scope.activePage);
                             $scope.pageTotal += 1;
                             $scope.saving = false;
                         }

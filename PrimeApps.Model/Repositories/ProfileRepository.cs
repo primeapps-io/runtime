@@ -351,8 +351,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<IEnumerable<Profile>> GetAll()
         {
             return await DbContext.Profiles
-                .Where(x => !x.Deleted)
-                .Include(x => x.Permissions)
+                .Where(x => !x.Deleted) 
                 .OrderBy(x => x.CreatedAt).ToListAsync();
         }
 

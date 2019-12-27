@@ -17,14 +17,26 @@ angular.module('primeapps')
 
             $scope.module = angular.copy(module);
 
+
             $scope.multiselect = function () {
                 return $filter('filter')($rootScope.appProfiles, { deleted: false, has_admin_rights: false }, true);
             };
+
+            $scope.loadProfiles = function () {
+                ModuleService.getNotUsedProfiles($scope.module.id)
+                    .then(function (result) {
+                        if (result.data)
+                            $scope.profiles = result.data;
+                    });
+            };
+
+            $scope.loadProfiles();
 
             //show form modal
             $scope.showFormModal = function (profileSetting) {
                 $scope.currentProfileSetting = {};
                 $scope.icons = ModuleService.getIcons();
+
 
                 if (profileSetting) {
                     var profileList = [];
@@ -117,6 +129,7 @@ angular.module('primeapps')
                     toastr.success($filter('translate')('Setup.Modules.ModuleProfileSettingSaveSuccess'));
                     $scope.saving = false;
                     $scope.profileSettingsFormModal.hide();
+                    $scope.loadProfiles();
                 };
 
                 if (!profileSetting.id) {
@@ -161,7 +174,7 @@ angular.module('primeapps')
                                 .then(function () {
                                     $scope.grid.dataSource.read();
                                     toastr.success("Profile setting is deleted successfully.", "Deleted!");
-
+                                    $scope.loadProfiles();
                                 })
                                 .catch(function () {
                                     if ($scope.profileSettingsFormModal) {

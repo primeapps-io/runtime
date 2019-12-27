@@ -17,5 +17,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> DeleteSoft(ModuleProfileSetting moduleProfileSetting);
         Task<int> Count(int id);
         IQueryable<ModuleProfileSetting> Find();
+        Task<List<string>> GetUseProfileIdsByModuleId(int moduleId);
     }
 }

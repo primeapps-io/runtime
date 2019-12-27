@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common;
+using System.Linq.Dynamic.Core;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -71,6 +72,15 @@ namespace PrimeApps.Model.Repositories
                 .OrderByDescending(x => x.Id);
 
             return moduleProfilesSettings;
+        }
+
+        public async Task<List<string>> GetUseProfileIdsByModuleId(int moduleId)
+        {
+            var list = await DbContext.ModuleProfileSettings
+            .Where(x => !x.Deleted && x.ModuleId == moduleId)
+            .Select(y => y.Profiles).ToListAsync();
+
+            return list;
         }
     }
 }
