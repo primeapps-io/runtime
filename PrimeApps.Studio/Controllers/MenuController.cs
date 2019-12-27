@@ -389,7 +389,7 @@ namespace PrimeApps.Studio.Controllers
 						menuItem = await _menuRepository.GetMenuItemsById((int)request["module"][i]["nodes"][j]["id"]);
 						if (menuItem == null)
 							return NotFound();
-						menuItem = MenuHelper.UpdateMenuItems((JObject)request["module"][i]["nodes"][j], menuItem);
+						menuItem = MenuHelper.UpdateMenuItems((JObject)request["module"][i]["nodes"][j], menuItem, AppUser.Language);
 						await _menuRepository.UpdateMenuItem(menuItem);
 					}
 
@@ -436,7 +436,7 @@ namespace PrimeApps.Studio.Controllers
 				if (menuItem == null)
 					return NotFound();
 
-				menuItem = MenuHelper.UpdateMenuItems((JObject)request["menuLabel"][i], menuItem);
+				menuItem = MenuHelper.UpdateMenuItems((JObject)request["menuLabel"][i], menuItem, AppUser.Language);
 				await _menuRepository.UpdateMenuItem(menuItem);
 				//eğer daha önceden mevcut olan parent'ın childları varsa, childları update et
 
@@ -446,7 +446,7 @@ namespace PrimeApps.Studio.Controllers
 					if (menuItem == null)
 						return NotFound();
 
-					menuItem = MenuHelper.UpdateMenuItems((JObject)request["menuLabel"][i]["nodes"][j], menuItem);
+					menuItem = MenuHelper.UpdateMenuItems((JObject)request["menuLabel"][i]["nodes"][j], menuItem, AppUser.Language);
 					await _menuRepository.UpdateMenuItem(menuItem);
 				}
 			}
@@ -477,19 +477,19 @@ namespace PrimeApps.Studio.Controllers
 			return Ok(count);
 		}
 
-        [Route("find")]
-        public IActionResult Find(ODataQueryOptions<Menu> queryOptions)
-        {
-            if (!_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.View))
-                return StatusCode(403);
+		[Route("find")]
+		public IActionResult Find(ODataQueryOptions<Menu> queryOptions)
+		{
+			if (!_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.View))
+				return StatusCode(403);
 
-            var views = _menuRepository.Find();
-            var queryResults = (IQueryable<Menu>)queryOptions.ApplyTo(views, new ODataQuerySettings() { EnsureStableOrdering = false });
-            return Ok(new PageResult<Menu>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
-        }
+			var views = _menuRepository.Find();
+			var queryResults = (IQueryable<Menu>)queryOptions.ApplyTo(views, new ODataQuerySettings() { EnsureStableOrdering = false });
+			return Ok(new PageResult<Menu>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
+		}
 
 
-        [Route("get_menu_items/{id:int}"), HttpGet]
+		[Route("get_menu_items/{id:int}"), HttpGet]
 		public async Task<IActionResult> GetMenuItemsByMenuId([FromUri] int menuId)
 		{
 			var menuItems = await _menuRepository.GetMenuItemsByMenuId(menuId);
