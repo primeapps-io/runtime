@@ -201,3 +201,6 @@ FakesAssemblies/
 .vscode/*
 .history
 /.vscode
+
+programs/
+data/
