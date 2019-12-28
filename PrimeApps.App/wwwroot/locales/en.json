@@ -1265,7 +1265,8 @@
 					"Port": "Port",
 					"SSLEnable": "Secure Connection",
 					"WhatIsSSL": "It must be checked for the servers requiring secure connection (SSL)."
-				}
+				},
+				"DontSendBulkEmailResult": "Don't Send Notification E-Mail"
 			}
 		},
 		"Outlook": {
