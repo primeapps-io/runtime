@@ -351,7 +351,7 @@ namespace PrimeApps.Admin.Helpers
 
                         foreach (var seqTable in seqTables)
                         {
-                            PostgresHelper.Run(PREConnectionString, $"app{app.Id}",$"SELECT setval('{seqTable}', 10000, true); ");
+                            PostgresHelper.Run(PREConnectionString, $"app{app.Id}",$"SELECT setval('{seqTable}', 11000, true); ");
                         }
                         
                         PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{app.Id}", false);
@@ -393,17 +393,24 @@ namespace PrimeApps.Admin.Helpers
                         
                         if (!string.IsNullOrEmpty(tenant.Setting.Logo) && tenant.Setting.Logo.Contains("http"))
                         {
-                            var regex = new Regex(@"[\w-]+.(jpg|png|jpeg|ico)");
-                            var match = regex.Match(tenant.Setting.Logo);
-                            if (match.Success)
+                            try
                             {
-                                var webClient = new WebClient();
-                                var imageBytes = webClient.DownloadData(tenant.Setting.Logo);
-                                Stream stream = new MemoryStream(imageBytes);
+                                var regex = new Regex(@"[\w-]+.(jpg|png|jpeg|ico)");
+                                var match = regex.Match(tenant.Setting.Logo);
+                                if (match.Success)
+                                {
+                                    var webClient = new WebClient();
+                                    var imageBytes = webClient.DownloadData(tenant.Setting.Logo);
+                                    Stream stream = new MemoryStream(imageBytes);
                                     
-                                await _storage.Upload($"tenant{tenant.Id}/logos", match.Value, stream);
+                                    await _storage.Upload($"tenant{tenant.Id}/logos", match.Value, stream);
                                     
-                                tenant.Setting.Logo = $"tenant{tenant.Id}/logos/{match.Value}";
+                                    tenant.Setting.Logo = $"tenant{tenant.Id}/logos/{match.Value}";
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                SentrySdk.CaptureMessage("Tenant logo cannot uploaded. TenantId: " + tenant.Id + " Exception Message: " + e.Message);
                             }
                         }
 
