@@ -14,6 +14,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using PrimeApps.Admin.Services;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Entities.Tenant;
@@ -417,126 +418,130 @@ namespace PrimeApps.Admin.Helpers
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
-                var platformDbContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var tenantDbContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-
-                using (var tenantRepository = new TenantRepository(platformDbContext, _configuration))
-                using (var historyDatabaseRepository = new HistoryDatabaseRepository(tenantDbContext, _configuration))
-                using (var historyStorageRepository = new HistoryStorageRepository(tenantDbContext, _configuration))
+                using (var platformDbContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>())
+                using (var tenantDbContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>())
                 {
-                    var tenant = await tenantRepository.GetAsync(id);
-
-                    _currentUser = new CurrentUser { PreviewMode = "tenant", TenantId = tenant.Id, UserId = 1 };
-
-                    tenantRepository.CurrentUser = historyStorageRepository.CurrentUser = historyDatabaseRepository.CurrentUser = _currentUser;
-
-                    if (!string.IsNullOrEmpty(tenant.Setting.Logo) && tenant.Setting.Logo.Contains("http"))
+                    using (var tenantRepository = new TenantRepository(platformDbContext, _configuration))
+                    using (var historyDatabaseRepository = new HistoryDatabaseRepository(tenantDbContext, _configuration))
+                    using (var historyStorageRepository = new HistoryStorageRepository(tenantDbContext, _configuration))
                     {
-                        try
+                        var tenant = await tenantRepository.GetAsync(id);
+
+                        _currentUser = new CurrentUser { PreviewMode = "tenant", TenantId = tenant.Id, UserId = 1 };
+
+                        tenantRepository.CurrentUser = historyStorageRepository.CurrentUser = historyDatabaseRepository.CurrentUser = _currentUser;
+
+                        if (!string.IsNullOrEmpty(tenant.Setting.Logo) && tenant.Setting.Logo.Contains("http"))
                         {
-                            var regex = new Regex(@"[\w-]+.(jpg|png|jpeg|ico)");
-                            var match = regex.Match(tenant.Setting.Logo);
-                            if (match.Success)
+                            try
                             {
-                                var webClient = new WebClient();
-                                var imageBytes = webClient.DownloadData(tenant.Setting.Logo);
-                                Stream stream = new MemoryStream(imageBytes);
+                                var regex = new Regex(@"[\w-]+.(jpg|png|jpeg|ico)");
+                                var match = regex.Match(tenant.Setting.Logo);
+                                if (match.Success)
+                                {
+                                    var webClient = new WebClient();
+                                    var imageBytes = webClient.DownloadData(tenant.Setting.Logo);
+                                    Stream stream = new MemoryStream(imageBytes);
 
-                                await _storage.Upload($"tenant{tenant.Id}/logos", match.Value, stream);
+                                    await _storage.Upload($"tenant{tenant.Id}/logos", match.Value, stream);
 
-                                tenant.Setting.Logo = $"tenant{tenant.Id}/logos/{match.Value}";
+                                    tenant.Setting.Logo = $"tenant{tenant.Id}/logos/{match.Value}";
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                SentrySdk.CaptureMessage("Tenant logo cannot uploaded. TenantId: " + tenant.Id + " Exception Message: " + e.Message);
                             }
                         }
-                        catch (Exception e)
+
+                        await tenantRepository.UpdateAsync(tenant);
+
+                        await _storage.AddHttpReferrerUrlToBucket($"tenant{tenant.Id}", url, UnifiedStorage.PolicyType.TenantPolicy);
+
+                        var seqTables = new List<string>
                         {
-                            SentrySdk.CaptureMessage("Tenant logo cannot uploaded. TenantId: " + tenant.Id + " Exception Message: " + e.Message);
-                        }
-                    }
-
-                    await tenantRepository.UpdateAsync(tenant);
-
-                    await _storage.AddHttpReferrerUrlToBucket($"tenant{tenant.Id}", url, UnifiedStorage.PolicyType.TenantPolicy);
-
-                    var seqTables = new List<string>
-                    {
-                        "action_button_permissions_id_seq", "action_buttons_id_seq", "bpm_categories_id_seq",
-                        "bpm_record_filters_id_seq", "bpm_workflow_logs_id_seq", "bpm_workflows_id_seq",
-                        "calculations_id_seq", "charts_id_seq", "components_id_seq", "conversion_mappings_id_seq",
-                        "conversion_sub_modules_id_seq", "dashboard_id_seq", "dashlets_id_seq", "dependencies_id_seq",
-                        "deployments_component_id_seq", "deployments_function_id_seq", "documents_id_seq",
-                        "field_filters_id_seq", "field_permissions_id_seq", "fields_id_seq", "functions_id_seq",
-                        "helps_id_seq", "import_maps_id_seq", "imports_id_seq", "menu_id_seq", "menu_items_id_seq",
-                        "module_profile_settings_id_seq", "modules_id_seq", "notes_id_seq", "notifications_id_seq",
-                        "picklist_items_id_seq", "picklists_id_seq", "process_approvers_id_seq",
-                        "process_filters_id_seq", "processes_id_seq", "profile_permissions_id_seq",
-                        "profiles_id_seq", "relations_id_seq", "reminders_id_seq", "report_aggregations_id_seq",
-                        "report_categories_id_seq", "report_fields_id_seq", "report_filters_id_seq",
-                        "reports_id_seq", "roles_id_seq", "section_permissions_id_seq", "sections_id_seq",
-                        "settings_id_seq", "tags_id_seq", "template_permissions_id_seq", "templates_id_seq",
-                        "view_fields_id_seq", "view_filters_id_seq", "views_id_seq", "widgets_id_seq",
-                        "workflow_filters_id_seq", "workflows_id_seq"
-                    };
-
-                    foreach (var seqTable in seqTables)
-                    {
-                        PostgresHelper.Run(_configuration.GetConnectionString("PlatformDBConnection"), $"tenant{tenant.Id}", $"SELECT setval('{seqTable}', 500000, true); ");
-                    }
-
-                    var lastHdRecord = await historyDatabaseRepository.GetLast();
-
-                    if (lastHdRecord != null)
-                    {
-                        lastHdRecord.Tag = "1";
-                        await historyDatabaseRepository.Update(lastHdRecord);
-                    }
-                    else
-                    {
-                        var version = new HistoryDatabase
-                        {
-                            CommandText = "",
-                            TableName = "",
-                            CreatedByEmail = "studio@primeapps.io",
-                            ExecutedAt = DateTime.Now,
-                            Tag = "1",
-                            Deleted = false
+                            "action_button_permissions_id_seq", "action_buttons_id_seq", "bpm_categories_id_seq",
+                            "bpm_record_filters_id_seq", "bpm_workflow_logs_id_seq", "bpm_workflows_id_seq",
+                            "calculations_id_seq", "charts_id_seq", "components_id_seq", "conversion_mappings_id_seq",
+                            "conversion_sub_modules_id_seq", "dashboard_id_seq", "dashlets_id_seq", "dependencies_id_seq",
+                            "deployments_component_id_seq", "deployments_function_id_seq", "documents_id_seq",
+                            "field_filters_id_seq", "field_permissions_id_seq", "fields_id_seq", "functions_id_seq",
+                            "helps_id_seq", "import_maps_id_seq", "imports_id_seq", "menu_id_seq", "menu_items_id_seq",
+                            "module_profile_settings_id_seq", "modules_id_seq", "notes_id_seq", "notifications_id_seq",
+                            "picklist_items_id_seq", "picklists_id_seq", "process_approvers_id_seq",
+                            "process_filters_id_seq", "processes_id_seq", "profile_permissions_id_seq",
+                            "profiles_id_seq", "relations_id_seq", "reminders_id_seq", "report_aggregations_id_seq",
+                            "report_categories_id_seq", "report_fields_id_seq", "report_filters_id_seq",
+                            "reports_id_seq", "roles_id_seq", "section_permissions_id_seq", "sections_id_seq",
+                            "settings_id_seq", "tags_id_seq", "template_permissions_id_seq", "templates_id_seq",
+                            "view_fields_id_seq", "view_filters_id_seq", "views_id_seq", "widgets_id_seq",
+                            "workflow_filters_id_seq", "workflows_id_seq"
                         };
 
-                        try
+                        foreach (var seqTable in seqTables)
                         {
-                            await historyDatabaseRepository.Create(version);
+                            PostgresHelper.Run(_configuration.GetConnectionString("PlatformDBConnection"), $"tenant{tenant.Id}", $"SELECT setval('{seqTable}', 500000, true); ");
                         }
-                        catch (Exception e)
+
+                        var lastHdRecord = await historyDatabaseRepository.GetLast();
+
+                        if (lastHdRecord != null)
                         {
-                            SentrySdk.CaptureMessage("Tenant HistoryDatabase error. TenantId: " + tenant.Id + " Exception Message: " + e.Message);
+                            lastHdRecord.Tag = "1";
+                            await historyDatabaseRepository.Update(lastHdRecord);
+                        }
+                        else
+                        {
+                            var version = new HistoryDatabase
+                            {
+                                CommandText = "",
+                                TableName = "",
+                                CreatedByEmail = "studio@primeapps.io",
+                                ExecutedAt = DateTime.Now,
+                                Tag = "1",
+                                Deleted = false
+                            };
+
+                            try
+                            {
+                                await historyDatabaseRepository.Create(version);
+                            }
+                            catch (Exception e)
+                            {
+                                SentrySdk.CaptureMessage("Tenant HistoryDatabase error. TenantId: " + tenant.Id + " Exception Message: " + e.Message);
+                            }
+                        }
+
+                        var lastHsRecord = await historyStorageRepository.GetLast();
+
+                        if (lastHsRecord != null)
+                        {
+                            lastHsRecord.Tag = "1";
+                            await historyStorageRepository.Update(lastHsRecord);
+                        }
+                        else
+                        {
+                            var version = new HistoryStorage()
+                            {
+                                CreatedByEmail = "studio@primeapps.io",
+                                ExecutedAt = DateTime.Now,
+                                Tag = "1",
+                                Deleted = false
+                            };
+
+                            try
+                            {
+                                await historyStorageRepository.Create(version);
+                            }
+                            catch (Exception e)
+                            {
+                                SentrySdk.CaptureMessage("Tenant HistoryStorage error. TenantId: " + tenant.Id + " Exception Message: " + e.Message);
+                            }
                         }
                     }
 
-                    var lastHsRecord = await historyStorageRepository.GetLast();
-
-                    if (lastHsRecord != null)
-                    {
-                        lastHsRecord.Tag = "1";
-                        await historyStorageRepository.Update(lastHsRecord);
-                    }
-                    else
-                    {
-                        var version = new HistoryStorage()
-                        {
-                            CreatedByEmail = "studio@primeapps.io",
-                            ExecutedAt = DateTime.Now,
-                            Tag = "1",
-                            Deleted = false
-                        };
-
-                        try
-                        {
-                            await historyStorageRepository.Create(version);
-                        }
-                        catch (Exception e)
-                        {
-                            SentrySdk.CaptureMessage("Tenant HistoryStorage error. TenantId: " + tenant.Id + " Exception Message: " + e.Message);
-                        }
-                    }
+                    platformDbContext.Database.CloseConnection();
+                    tenantDbContext.Database.CloseConnection();
                 }
             }
 
