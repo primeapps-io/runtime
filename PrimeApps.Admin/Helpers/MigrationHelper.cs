@@ -15,7 +15,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using PrimeApps.Admin.Services;
+using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Entities.Tenant;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Storage;
 using Sentry;
 using Sentry.Protocol;
@@ -63,6 +65,7 @@ namespace PrimeApps.Admin.Helpers
                 using (var templateRepository = new TemplateRepository(tenantDbContext, _configuration))
                 using (var historyDatabaseRepository = new HistoryDatabaseRepository(tenantDbContext, _configuration))
                 using (var applicationRepository = new ApplicationRepository(platformDbContext, _configuration))
+                using (var releaseRepository = new ReleaseRepository(platformDbContext, _configuration))
                 using (var historyStorageRepository = new HistoryStorageRepository(tenantDbContext, _configuration))
                 {
                     foreach (var id in ids)
@@ -329,6 +332,21 @@ namespace PrimeApps.Admin.Helpers
                             databaseHistoryLast.Tag = "1";
                             await historyDatabaseRepository.Update(databaseHistoryLast);
                         }
+
+                        var release = new Release()
+                        {
+                            AppId = app.Id,
+                            CreatedById = 1,
+                            CreatedAt = DateTime.Now,
+                            Deleted = false,
+                            Status = ReleaseStatus.Succeed,
+                            Version = "1",
+                            StartTime = DateTime.Now,
+                            EndTime = DateTime.Now
+                        };
+                        
+                        await releaseRepository.Create(release);
+                        
                         await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}", $"{schema}://{app.Setting.AppDomain}", UnifiedStorage.PolicyType.TenantPolicy);
                         await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}",$"{schema}://{app.Setting.AuthDomain}", UnifiedStorage.PolicyType.TenantPolicy);
                         
