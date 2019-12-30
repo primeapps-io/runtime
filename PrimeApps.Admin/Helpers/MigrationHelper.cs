@@ -74,20 +74,20 @@ namespace PrimeApps.Admin.Helpers
 
                         if (app == null)
                             return;
-                        
+
                         _currentUser = new CurrentUser { PreviewMode = "app", TenantId = app.Id, UserId = 1 };
-                        
+
                         templateRepository.CurrentUser = historyStorageRepository.CurrentUser = historyDatabaseRepository.CurrentUser = _currentUser;
-                        
+
                         PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{app.Id}", true);
-                        
+
                         try
                         {
                             //Bucket yoksa oluşturuyor.
                             await _storage.CreateBucketIfNotExists($"app{app.Id}");
-                            
+
                             var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
-                            
+
                             //App tablosunda ki logo alanını kontrol ediyor.
                             if (!string.IsNullOrEmpty(app.Logo) && app.Logo.Contains("http"))
                             {
@@ -98,7 +98,7 @@ namespace PrimeApps.Admin.Helpers
                                     var webClient = new WebClient();
                                     var imageBytes = webClient.DownloadData(app.Logo);
                                     Stream stream = new MemoryStream(imageBytes);
-                                    
+
                                     await _storage.Upload($"app{app.Id}/app_logo", match.Value, stream);
                                     app.Logo = $"app{app.Id}/app_logo/{match.Value}";
                                 }
@@ -113,13 +113,13 @@ namespace PrimeApps.Admin.Helpers
 
                             if (string.IsNullOrEmpty(app.Setting.Currency))
                                 app.Setting.Currency = "USD";
-                            
+
                             if (string.IsNullOrEmpty(app.Setting.Culture))
                                 app.Setting.Culture = "en-US";
-                            
+
                             if (string.IsNullOrEmpty(app.Setting.TimeZone))
                                 app.Setting.TimeZone = "America/New_York";
-                            
+
                             if (string.IsNullOrEmpty(app.Setting.Language))
                                 app.Setting.Language = "en";
 
@@ -139,9 +139,9 @@ namespace PrimeApps.Admin.Helpers
                                             var webClient = new WebClient();
                                             var imageBytes = webClient.DownloadData(authTheme["logo"].ToString());
                                             Stream stream = new MemoryStream(imageBytes);
-                                    
+
                                             await _storage.Upload($"app{app.Id}/app_logo", match.Value, stream);
-                                            
+
                                             var history = new HistoryStorage
                                             {
                                                 MimeType = GetMimeType(match.Value),
@@ -152,12 +152,12 @@ namespace PrimeApps.Admin.Helpers
                                                 ExecutedAt = DateTime.Now,
                                                 CreatedByEmail = "studio@primeapps.io" ?? ""
                                             };
-                                            
+
                                             await historyStorageRepository.Create(history);
-                                            authTheme["logo"] =  $"app{app.Id}/app_logo/{match.Value}";
+                                            authTheme["logo"] = $"app{app.Id}/app_logo/{match.Value}";
                                         }
                                     }
-                                    
+
                                     if (authTheme["favicon"] != null && !string.IsNullOrEmpty(authTheme["favicon"].ToString()) && authTheme["favicon"].ToString().Contains("http"))
                                     {
                                         var regex = new Regex(@"[\w-]+.(jpg|png|jpeg|ico)");
@@ -167,9 +167,9 @@ namespace PrimeApps.Admin.Helpers
                                             var webClient = new WebClient();
                                             var imageBytes = webClient.DownloadData(authTheme["favicon"].ToString());
                                             Stream stream = new MemoryStream(imageBytes);
-                                    
+
                                             await _storage.Upload($"app{app.Id}/app_logo", match.Value, stream);
-                                            
+
                                             var history = new HistoryStorage
                                             {
                                                 MimeType = GetMimeType(match.Value),
@@ -180,7 +180,7 @@ namespace PrimeApps.Admin.Helpers
                                                 ExecutedAt = DateTime.Now,
                                                 CreatedByEmail = "studio@primeapps.io" ?? ""
                                             };
-                                            
+
                                             await historyStorageRepository.Create(history);
                                             authTheme["favicon"] = $"app{app.Id}/app_logo/{match.Value}";
                                         }
@@ -195,9 +195,9 @@ namespace PrimeApps.Admin.Helpers
                                             var webClient = new WebClient();
                                             var imageBytes = webClient.DownloadData(authTheme["banner"][0]["image"].ToString());
                                             Stream stream = new MemoryStream(imageBytes);
-                                    
+
                                             await _storage.Upload($"app{app.Id}/app_logo", match.Value, stream);
-                                            
+
                                             var history = new HistoryStorage
                                             {
                                                 MimeType = GetMimeType(match.Value),
@@ -208,10 +208,10 @@ namespace PrimeApps.Admin.Helpers
                                                 ExecutedAt = DateTime.Now,
                                                 CreatedByEmail = "studio@primeapps.io" ?? ""
                                             };
-                                            
+
                                             await historyStorageRepository.Create(history);
                                             authTheme["banner"][0]["image"] = $"app{app.Id}/app_logo/{match.Value}";
-                                        }                               
+                                        }
                                     }
 
                                     app.Setting.AuthTheme = JsonConvert.SerializeObject(authTheme);
@@ -228,10 +228,10 @@ namespace PrimeApps.Admin.Helpers
                                 {
                                     ["color"] = "#555198",
                                     ["title"] = "PrimeApps",
-                                    ["banner"] = new JArray {new JObject {["image"] = "", ["descriptions"] = ""}},
+                                    ["banner"] = new JArray { new JObject { ["image"] = "", ["descriptions"] = "" } },
                                 }.ToJsonString();
                             }
-                            
+
                             //App theme alanı kontrol ediliyor.
                             if (!string.IsNullOrEmpty(app.Setting.AppTheme))
                             {
@@ -248,9 +248,9 @@ namespace PrimeApps.Admin.Helpers
                                             var webClient = new WebClient();
                                             var imageBytes = webClient.DownloadData(appTheme["logo"].ToString());
                                             Stream stream = new MemoryStream(imageBytes);
-                                    
+
                                             await _storage.Upload($"app{app.Id}/app_logo", match.Value, stream);
-                                            
+
                                             var history = new HistoryStorage
                                             {
                                                 MimeType = GetMimeType(match.Value),
@@ -261,12 +261,12 @@ namespace PrimeApps.Admin.Helpers
                                                 ExecutedAt = DateTime.Now,
                                                 CreatedByEmail = "studio@primeapps.io" ?? ""
                                             };
-                                            
+
                                             await historyStorageRepository.Create(history);
                                             appTheme["logo"] = $"app{app.Id}/app_logo/{match.Value}";
                                         }
                                     }
-                                    
+
                                     if (appTheme["favicon"] != null && !string.IsNullOrEmpty(appTheme["favicon"].ToString()) && appTheme["favicon"].ToString().Contains("http"))
                                     {
                                         var regex = new Regex(@"[\w-]+.(jpg|png|jpeg|ico)");
@@ -276,9 +276,9 @@ namespace PrimeApps.Admin.Helpers
                                             var webClient = new WebClient();
                                             var imageBytes = webClient.DownloadData(appTheme["favicon"].ToString());
                                             Stream stream = new MemoryStream(imageBytes);
-                                    
+
                                             await _storage.Upload($"app{app.Id}/app_logo", match.Value, stream);
-                                            
+
                                             var history = new HistoryStorage
                                             {
                                                 MimeType = GetMimeType(match.Value),
@@ -289,12 +289,12 @@ namespace PrimeApps.Admin.Helpers
                                                 ExecutedAt = DateTime.Now,
                                                 CreatedByEmail = "studio@primeapps.io" ?? ""
                                             };
-                                            
+
                                             await historyStorageRepository.Create(history);
                                             appTheme["favicon"] = $"app{app.Id}/app_logo/{match.Value}";
                                         }
                                     }
-                                    
+
                                     app.Setting.AppTheme = JsonConvert.SerializeObject(appTheme);
                                 }
                                 catch (Exception e)
@@ -311,7 +311,6 @@ namespace PrimeApps.Admin.Helpers
                                     ["title"] = "PrimeApps",
                                 }.ToJsonString();
                             }
-
                         }
                         catch (Exception e)
                         {
@@ -325,7 +324,7 @@ namespace PrimeApps.Admin.Helpers
                             storageHistoryLast.Tag = "1";
                             await historyStorageRepository.Update(storageHistoryLast);
                         }
-                        
+
                         var databaseHistoryLast = await historyDatabaseRepository.GetLast();
                         if (databaseHistoryLast != null)
                         {
@@ -344,14 +343,14 @@ namespace PrimeApps.Admin.Helpers
                             StartTime = DateTime.Now,
                             EndTime = DateTime.Now
                         };
-                        
+
                         await releaseRepository.Create(release);
-                        
+
                         await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}", $"{schema}://{app.Setting.AppDomain}", UnifiedStorage.PolicyType.TenantPolicy);
-                        await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}",$"{schema}://{app.Setting.AuthDomain}", UnifiedStorage.PolicyType.TenantPolicy);
-                        
+                        await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}", $"{schema}://{app.Setting.AuthDomain}", UnifiedStorage.PolicyType.TenantPolicy);
+
                         await applicationRepository.Update(app);
-                        
+
                         var seqTables = new List<string>
                         {
                             "action_button_permissions_id_seq", "action_buttons_id_seq", "bpm_categories_id_seq",
@@ -374,7 +373,7 @@ namespace PrimeApps.Admin.Helpers
 
                         foreach (var seqTable in seqTables)
                         {
-                            PostgresHelper.Run(PREConnectionString, $"app{app.Id}",$"SELECT setval('{seqTable}', 11000, true); ");
+                            PostgresHelper.Run(PREConnectionString, $"app{app.Id}", $"SELECT setval('{seqTable}', 11000, true); ");
                         }
 
                         PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{app.Id}", false);
@@ -406,7 +405,7 @@ namespace PrimeApps.Admin.Helpers
                         if (!exists)
                             continue;
 
-                        _queue.QueueBackgroundWorkItem(token => UpdateTenant(id, url, lastTenantId));
+                        var result = await UpdateTenant(id, url, lastTenantId);
                     }
 
                     return true;
