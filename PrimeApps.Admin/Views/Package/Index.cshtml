@@ -19,10 +19,10 @@
 
                     <tr>
                         <th width="100%">Name</th>
-                        @if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.TenantIds != null && ViewBag.TenantIds.Count > 0)
+                        <!--@if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.TenantIds != null && ViewBag.TenantIds.Count > 0)
                         {
                             <th>Tenant Ids</th>
-                        }
+                        }-->
                         @if (ViewBag.LastRelease != null)
                         {
                             <th>Current Release Version</th>
@@ -40,12 +40,12 @@
                             <h3 class="pl-2 d-inline-block">@ViewBag.CurrentApp.Label</h3>
                         </td>
 
-                        @if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.TenantIds != null && ViewBag.TenantIds.Count > 0)
+                        <!--@if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.TenantIds != null && ViewBag.TenantIds.Count > 0)
                         {
                             <td class="align-middle text-center">
                                 <h3 class="mb-0">@string.Join(", ", ViewBag.TenantIds) </h3>
                             </td>
-                        }
+                        }-->
 
                         @if (ViewBag.LastRelease != null)
                         {
