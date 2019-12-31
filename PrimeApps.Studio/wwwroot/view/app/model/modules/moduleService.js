@@ -418,8 +418,8 @@ angular.module('primeapps')
                     return $http.delete(config.apiUrl + 'module_profile_settings/delete/' + id);
                 },
 
-                getNotUsedProfiles: function (id) {
-                    return $http.get(config.apiUrl + 'module_profile_settings/get_not_used_profiles/' + id);
+                getNotUsedProfiles: function (moduleId, id) {
+                    return $http.get(config.apiUrl + 'module_profile_settings/get_not_used_profiles/?moduleId=' + moduleId + (id ? '&id=' + id : ''));
                 },
 
                 getPicklists: function () {

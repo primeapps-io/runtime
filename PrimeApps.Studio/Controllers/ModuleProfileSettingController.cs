@@ -130,16 +130,26 @@ namespace PrimeApps.Studio.Controllers
             return Ok(new PageResult<ModuleProfileSetting>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
-        [Route("get_not_used_profiles/{id:int}"), HttpGet]
-        public async Task<IActionResult> GetProfiles(int id)
+        [Route("get_not_used_profiles"), HttpGet]
+        public async Task<IActionResult> GetProfiles(int moduleId, int? id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var idList = await _moduleProfileSettingRepository.GetUseProfileIdsByModuleId(id);
-            var profiles = await _profileRepository.GetAll();
 
-            var result = profiles.Where(x => !x.HasAdminRights && !idList.Distinct().Contains(x.Id.ToString())).ToList();
+            var idList = await _moduleProfileSettingRepository.GetUseProfileIdsByModuleId(moduleId);
+
+            if (id.HasValue)
+            {
+                var moduleProfile = await _moduleProfileSettingRepository.GetByIdBasic(id.Value);
+
+                if (moduleProfile != null)
+                    idList = idList.Except(string.Join(',', moduleProfile.ProfileList).Split(',')).ToList();
+            }
+
+            var profiles = await _profileRepository.GetAll();
+            idList = idList.Distinct().ToList();
+            var result = profiles.Where(x => !x.HasAdminRights && !idList.Contains(x.Id.ToString())).ToList();
 
             return Ok(result);
         }

@@ -80,7 +80,7 @@ namespace PrimeApps.Model.Repositories
             .Where(x => !x.Deleted && x.ModuleId == moduleId)
             .Select(y => y.Profiles).ToListAsync();
 
-            return list;
+            return string.Join(',', list).Split(',').ToList();
         }
     }
 }

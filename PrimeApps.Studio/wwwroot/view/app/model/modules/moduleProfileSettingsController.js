@@ -17,13 +17,12 @@ angular.module('primeapps')
 
             $scope.module = angular.copy(module);
 
-
             $scope.multiselect = function () {
                 return $filter('filter')($rootScope.appProfiles, { deleted: false, has_admin_rights: false }, true);
             };
 
-            $scope.loadProfiles = function () {
-                ModuleService.getNotUsedProfiles($scope.module.id)
+            $scope.loadProfiles = function (recordId) {
+                ModuleService.getNotUsedProfiles($scope.module.id, recordId)
                     .then(function (result) {
                         if (result.data)
                             $scope.profiles = result.data;
@@ -35,10 +34,11 @@ angular.module('primeapps')
             //show form modal
             $scope.showFormModal = function (profileSetting) {
                 $scope.currentProfileSetting = {};
-                $scope.icons = ModuleService.getIcons();
+                //$scope.icons = ModuleService.getIcons();
 
 
                 if (profileSetting) {
+                    $scope.loadProfiles(profileSetting.id);
                     var profileList = [];
                     if (profileSetting.profile_list.length > 0) {
                         for (var k = 0; k < profileSetting.profile_list.length; k++) {
@@ -51,8 +51,8 @@ angular.module('primeapps')
                     $scope.currentProfileSetting.profiles = profileList;
                     $scope.currentProfileSetting.pluralName = profileSetting.label_tr_plural;
                     $scope.currentProfileSetting.singularName = profileSetting.label_tr_singular;
-                    $scope.currentProfileSetting.menu_icon = profileSetting.menu_icon;
-                    $scope.currentProfileSetting.display = profileSetting.display;
+                    //$scope.currentProfileSetting.menu_icon = profileSetting.menu_icon;
+                    //$scope.currentProfileSetting.display = profileSetting.display;
 
                 }
 
@@ -60,8 +60,8 @@ angular.module('primeapps')
                     $scope.currentProfileSetting.isNew = true;
                     $scope.currentProfileSetting.pluralName = $scope.module.label_tr_plural;
                     $scope.currentProfileSetting.singularName = $scope.module.label_tr_singular;
-                    $scope.currentProfileSetting.menu_icon = $scope.module.menu_icon;
-                    $scope.currentProfileSetting.display = true;
+                    //$scope.currentProfileSetting.menu_icon = $scope.module.menu_icon;
+                    //$scope.currentProfileSetting.display = true;
                 }
 
 

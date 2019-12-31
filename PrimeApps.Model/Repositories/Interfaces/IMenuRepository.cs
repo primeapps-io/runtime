@@ -28,9 +28,9 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<MenuItem> GetMenuItemIdByName(string labelName, int menuId);
         Task<ICollection<MenuItem>> GetMenuItemsByMenuId(int menuId);
         Task<ICollection<MenuItem>> GetAllMenuItems();
-
         Task<int> Count();
         IQueryable<Menu> Find();
+        Task<List<string>> GetUseProfileIds();
 
     }
 }
