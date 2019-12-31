@@ -188,7 +188,7 @@
                         <a href="#/app/report?Id={{currentReport.id +'&categoryId='+ currentReport.category_id }}"
                            class="btn btn-sm btn-custom pull-right col-md-offset-0"
                            role="button" style="margin-left: 5px"
-                           ng-if="currentReport.created_by_id === user.ID  || user.profile.has_admin_rights">
+                           ng-if="currentReport.created_by_id === user.ID  || user.profile.has_admin_rights || permissionsReport.modify">
                             {{'Report.Edit' | translate}}
                         </a>
                         <a href="#/app/report?categoryId={{currentReport.category_id }}"
