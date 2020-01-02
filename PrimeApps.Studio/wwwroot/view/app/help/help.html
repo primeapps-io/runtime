@@ -11,7 +11,7 @@
         </ul>
     </div>
 </div>
-<div class="tab-content table-responsive">
+<div class="tab-content table-responsive" ng-if="false">
     <table class="table" ng-show="loading">
         <thead>
             <tr>
@@ -99,4 +99,8 @@
             </select>
         </div>
     </div>
+</div>
+<div class="tab-content">
+    <kendo-grid class="grid-theme grid-theme-center table-responsive" k-scope-field="grid" id="kendo-grid" k-options="mainGridOptions">
+    </kendo-grid>
 </div>

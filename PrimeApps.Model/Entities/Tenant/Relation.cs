@@ -18,7 +18,7 @@ namespace PrimeApps.Model.Entities.Tenant
 
         [Column("relation_type"), Required]
         public RelationType RelationType { get; set; }
-
+        
         [Column("relation_field"), MaxLength(50)]
         public string RelationField { get; set; }
 

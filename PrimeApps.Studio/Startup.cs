@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
-using System.Net.WebSockets;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
 using Hangfire;
-using Hangfire.PostgreSql;
 using Hangfire.Redis;
+using Microsoft.AspNet.OData.Builder;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -21,14 +21,13 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OData.Edm;
+using Microsoft.OData.UriParser;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Helpers;
-using PrimeApps.Model.Repositories;
-using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
 
@@ -81,6 +80,10 @@ namespace PrimeApps.Studio
                             .AllowCredentials();
                     });
             });
+
+            services.AddSingleton<ODataQueryStringFixer>();//For OData Filter Middlewares
+            services.AddOData();
+            services.AddODataQueryFilter();
 
             services.AddMvc(opt =>
                 {
@@ -190,7 +193,8 @@ namespace PrimeApps.Studio
                 ReceiveBufferSize = 4 * 1024
             };
 
-            app.UseWebSockets(new WebSocketOptions() {KeepAliveInterval = TimeSpan.FromSeconds(10)});
+            app.UseODataQueryStringFixer(); //For OData Filter Middleware
+            app.UseWebSockets(new WebSocketOptions() { KeepAliveInterval = TimeSpan.FromSeconds(10) });
             app.Use(async (ctx, next) =>
             {
                 if (ctx.Request.Path == "/log_stream")
@@ -224,7 +228,12 @@ namespace PrimeApps.Studio
                     name: "DefaultApi",
                     template: "api/{controller}/{id}"
                 );
+                /*
+                * These two option for odata controller.
+                */
+                routes.Select().Expand().Filter().OrderBy().MaxTop(null).Count();
+                routes.EnableDependencyInjection();
             });
         }
-    }
+    } 
 }

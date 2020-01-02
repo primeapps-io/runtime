@@ -16,6 +16,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> Update(ModuleProfileSetting moduleProfileSetting);
         Task<int> DeleteSoft(ModuleProfileSetting moduleProfileSetting);
         Task<int> Count(int id);
-        Task<ICollection<ModuleProfileSetting>> Find(PaginationModel paginationModel);
+        IQueryable<ModuleProfileSetting> Find();
     }
 }

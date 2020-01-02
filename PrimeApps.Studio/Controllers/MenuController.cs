@@ -3,6 +3,9 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -386,7 +389,7 @@ namespace PrimeApps.Studio.Controllers
 						menuItem = await _menuRepository.GetMenuItemsById((int)request["module"][i]["nodes"][j]["id"]);
 						if (menuItem == null)
 							return NotFound();
-						menuItem = MenuHelper.UpdateMenuItems((JObject)request["module"][i]["nodes"][j], menuItem);
+						menuItem = MenuHelper.UpdateMenuItems((JObject)request["module"][i]["nodes"][j], menuItem, AppUser.Language);
 						await _menuRepository.UpdateMenuItem(menuItem);
 					}
 
@@ -433,7 +436,7 @@ namespace PrimeApps.Studio.Controllers
 				if (menuItem == null)
 					return NotFound();
 
-				menuItem = MenuHelper.UpdateMenuItems((JObject)request["menuLabel"][i], menuItem);
+				menuItem = MenuHelper.UpdateMenuItems((JObject)request["menuLabel"][i], menuItem, AppUser.Language);
 				await _menuRepository.UpdateMenuItem(menuItem);
 				//eğer daha önceden mevcut olan parent'ın childları varsa, childları update et
 
@@ -443,7 +446,7 @@ namespace PrimeApps.Studio.Controllers
 					if (menuItem == null)
 						return NotFound();
 
-					menuItem = MenuHelper.UpdateMenuItems((JObject)request["menuLabel"][i]["nodes"][j], menuItem);
+					menuItem = MenuHelper.UpdateMenuItems((JObject)request["menuLabel"][i]["nodes"][j], menuItem, AppUser.Language);
 					await _menuRepository.UpdateMenuItem(menuItem);
 				}
 			}
@@ -474,15 +477,15 @@ namespace PrimeApps.Studio.Controllers
 			return Ok(count);
 		}
 
-		[Route("find"), HttpPost]
-		public async Task<IActionResult> Find([FromBody] PaginationModel paginationModel)
+		[Route("find")]
+		public IActionResult Find(ODataQueryOptions<Menu> queryOptions)
 		{
-			var menus = await _menuRepository.Find(paginationModel);
+			if (!_permissionHelper.CheckUserProfile(UserProfile, "menu", RequestTypeEnum.View))
+				return StatusCode(403);
 
-			if (menus == null)
-				return Ok(null);
-
-			return Ok(menus);
+			var views = _menuRepository.Find();
+			var queryResults = (IQueryable<Menu>)queryOptions.ApplyTo(views, new ODataQuerySettings() { EnsureStableOrdering = false });
+			return Ok(new PageResult<Menu>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
 		}
 
 

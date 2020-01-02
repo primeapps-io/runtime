@@ -353,7 +353,8 @@
     "ExchangeRatesMessage": "Central Bank of the Republic of Turkey {{date}} banknote  selling exchange rates",
     "UpdateSelecteds": "Update Selected",
     "ConvertToSalesInvoice": "Convert To Sales Invoice",
-    "ConvertToBuyingInvoice": "Convert To Buying Invoice"
+    "ConvertToBuyingInvoice": "Convert To Buying Invoice",
+    "UpdateRecordBulkSuccess":"Records has been updated successfully"
   },
   "View": {
     "Edit": "Edit View",
@@ -1264,7 +1265,8 @@
 					"Port": "Port",
 					"SSLEnable": "Secure Connection",
 					"WhatIsSSL": "It must be checked for the servers requiring secure connection (SSL)."
-				}
+				},
+				"DontSendBulkEmailResult": "Don't Send Notification E-Mail"
 			}
 		},
 		"Outlook": {

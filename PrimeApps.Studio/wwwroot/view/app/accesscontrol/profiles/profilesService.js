@@ -25,8 +25,8 @@ angular.module('primeapps')
 
                     angular.forEach(profiles, function (profile) {
                         if (profile.is_persistent && profile.has_admin_rights) {
-                            profile.name = $filter('translate')('Setup.Profiles.Administrator');
-                            profile.description = $filter('translate')('Setup.Profiles.AdministratorDescription');
+                            profile.name_en = $filter('translate')('Setup.Profiles.Administrator');
+                            profile.description_en = $filter('translate')('Setup.Profiles.AdministratorDescription');
                         }
 
                         //if (profile.is_persistent && !profile.has_admin_rights) {
@@ -46,21 +46,29 @@ angular.module('primeapps')
                                 var addPermission = true;
 
                                 switch (permission.type) {
-                                    case 1:/// Document
+                                    case 'Document':/// Document
+                                    case 1:
                                         permission.EntityTypeName = $filter('translate')('Layout.Menu.Documents');
                                         permission.order = 999;
+                                        permission.type = 1;
                                         break;
+                                    case 'Report':
                                     case 2:
                                         permission.EntityTypeName = $filter('translate')('Layout.Menu.Reports');
                                         permission.order = 1000;
+                                        permission.type = 2; 
                                         break;
+                                    case 'Newsfeed':
                                     case 3:
                                         permission.EntityTypeName = $filter('translate')('Feed.Feed');
                                         permission.Order = 1001;
+                                        permission.type = 3;
                                         break;
 
-                                    case 0:/// Module
+                                    case 'Module':/// Module
+                                    case 0:
                                         var module = $filter('filter')(modules, { id: permission.module_id }, true)[0];
+                                        permission.type = 0;
 
                                         if (module && module.order > 0) {
                                             permission.EntityTypeName = module["label_" + $rootScope.language + "_plural"];

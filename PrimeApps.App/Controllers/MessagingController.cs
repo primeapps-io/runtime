@@ -66,7 +66,7 @@ namespace PrimeApps.App.Controllers
                 Ids = ids,
                 Lang = AppUser.TenantLanguage,
                 Status = Model.Enums.NotificationStatus.Queued,
-                Template = string.IsNullOrEmpty(request.TemplateId.ToString()) ? request.Message : request.TemplateId.ToString(),
+                Template = request.TemplateId > 0 ? request.TemplateId.ToString() : request.Message,
                 QueueDate = DateTime.UtcNow,
                 PhoneField = request.PhoneField,
                 Rev = randomRevNumber,

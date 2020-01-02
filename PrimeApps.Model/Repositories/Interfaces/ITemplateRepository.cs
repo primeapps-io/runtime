@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Entities.Tenant;
@@ -18,7 +19,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 		Task<int> DeleteSoft(Template template);
 		Task<int> DeleteHard(Template template);
 		int Count(TemplateType templateType);
-		Task<ICollection<Template>> Find(PaginationModel paginationModel, TemplateType templateType);
-		Template GetByCode(string code, LanguageType language = LanguageType.Tr);
+        IQueryable<Template> Find(TemplateType templateType);
+        Template GetByCode(string code, LanguageType language = LanguageType.Tr);
 	}
 }

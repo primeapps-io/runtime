@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -75,42 +79,45 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        [Route("find")]
+        public IActionResult Find(ODataQueryOptions<Help> queryOptions)
         {
-            var helps = await _helpRepository.Find(paginationModel);
+            if (!_permissionHelper.CheckUserProfile(UserProfile, "help", RequestTypeEnum.View))
+                return StatusCode(403);
 
-            return Ok(helps);
+            var helps = _helpRepository.Find();
+            var queryResults = (IQueryable<Help>)queryOptions.ApplyTo(helps, new ODataQuerySettings() { EnsureStableOrdering = false });
+            return Ok(new PageResult<Help>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
         [Route("get_by_type"), HttpGet]
-        public async Task<Help> GetByType([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "moduleId")]int? moduleId = null, [FromQuery(Name = "route")]string route = "")
+        public async Task<Help> GetByType([FromQuery(Name = "helpType")]ModalType helpType, [FromQuery(Name = "moduleId")]int? moduleId = null, [FromQuery(Name = "route")]string route = "")
         {
-            var templates = await _helpRepository.GetByType(templateType, LanguageType.NotSet, moduleId, route);
+            var templates = await _helpRepository.GetByType(helpType, LanguageType.NotSet, moduleId, route);
 
             return templates;
         }
 
         [Route("get_module_type"), HttpGet]
-        public async Task<Help> GetModuleType([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "moduleType")]ModuleType moduleType, [FromQuery(Name = "moduleId")]int? moduleId = null)
+        public async Task<Help> GetModuleType([FromQuery(Name = "helpType")]ModalType helpType, [FromQuery(Name = "moduleType")]ModuleType moduleType, [FromQuery(Name = "moduleId")]int? moduleId = null)
         {
-            var templates = await _helpRepository.GetModuleType(templateType, moduleType, LanguageType.NotSet, moduleId);
+            var templates = await _helpRepository.GetModuleType(helpType, moduleType, LanguageType.NotSet, moduleId);
 
             return templates;
         }
 
         [Route("get_first_screen"), HttpGet]
-        public async Task<Help> GetFistScreen([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "firstscreen")]bool? firstscreen = false)
+        public async Task<Help> GetFistScreen([FromQuery(Name = "helpType")]ModalType helpType, [FromQuery(Name = "firstscreen")]bool? firstscreen = false)
         {
-            var templates = await _helpRepository.GetFistScreen(templateType, LanguageType.NotSet, firstscreen);
+            var templates = await _helpRepository.GetFistScreen(helpType, LanguageType.NotSet, firstscreen);
 
             return templates;
         }
 
         [Route("get_custom_help"), HttpGet]
-        public async Task<ICollection<Help>> GetCustomHelp([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "customhelp")]bool? customhelp = false)
+        public async Task<ICollection<Help>> GetCustomHelp([FromQuery(Name = "helpType")]ModalType helpType, [FromQuery(Name = "customhelp")]bool? customhelp = false)
         {
-            var templates = await _helpRepository.GetCustomHelp(templateType, LanguageType.NotSet, customhelp);
+            var templates = await _helpRepository.GetCustomHelp(helpType, LanguageType.NotSet, customhelp);
 
             return templates;
         }

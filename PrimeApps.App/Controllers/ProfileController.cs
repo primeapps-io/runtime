@@ -64,7 +64,7 @@ namespace PrimeApps.App.Controllers
         [Route("Remove"), HttpPost]
         public async Task<IActionResult> Remove([FromBody]ProfileRemovalDTO RemovalRequest)
         {
-            await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.ID, RemovalRequest.TransferProfile.ID);
+            await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.Id, RemovalRequest.TransferProfile.Id);
 
 
             return Ok();

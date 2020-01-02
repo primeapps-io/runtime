@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
@@ -15,7 +20,7 @@ using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.Studio.Controllers
 {
     [Route("api/module_profile_settings"), Authorize]
-	public class ModuleProfileSettingController : DraftBaseController
+    public class ModuleProfileSettingController : DraftBaseController
     {
         private IModuleProfileSettingRepository _moduleProfileSettingRepository;
         private IConfiguration _configuration;
@@ -28,15 +33,15 @@ namespace PrimeApps.Studio.Controllers
             _permissionHelper = permissionHelper;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_moduleProfileSettingRepository, PreviewMode, TenantId, AppId);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_moduleProfileSettingRepository, PreviewMode, TenantId, AppId);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("get_all"), HttpGet]
+        [Route("get_all"), HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var moduleProfileSettingEntities = await _moduleProfileSettingRepository.GetAllBasic();
@@ -61,7 +66,7 @@ namespace PrimeApps.Studio.Controllers
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/user_custom_shares/get/" + moduleProfileSettingEntity.Id, moduleProfileSettingEntity);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/user_custom_shares/get/" + moduleProfileSettingEntity.Id, moduleProfileSettingEntity);
             //return Created(Request.Scheme + "://" + Request.Host + "/api/user_custom_shares/get/" + moduleProfileSettingEntity.Id, moduleProfileSettingEntity);
         }
 
@@ -112,15 +117,13 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        [Route("find")]
+        public IActionResult Find(ODataQueryOptions<ModuleProfileSetting> queryOptions)
         {
-            var templates = await _moduleProfileSettingRepository.Find(paginationModel);
-
-            //if (templates == null)
-            //	return NotFound();
-
-            return Ok(templates);
+            var templates = _moduleProfileSettingRepository.Find();
+              
+            var queryResults = (IQueryable<ModuleProfileSetting>)queryOptions.ApplyTo(templates, new ODataQuerySettings() { EnsureStableOrdering = false });
+            return Ok(new PageResult<ModuleProfileSetting>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
     }
 }

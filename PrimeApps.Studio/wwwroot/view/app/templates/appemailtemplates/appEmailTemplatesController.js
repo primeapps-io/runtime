@@ -5,7 +5,7 @@ angular.module('primeapps')
     .controller('AppEmailTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'AppEmailTemplatesService', '$http', 'config', '$modal', '$localStorage', '$cookies',
         function ($rootScope, $scope, $state, $stateParams, $location, $filter, $cache, $q, helper, dragularService, operators, AppEmailTemplatesService, $http, config, $modal, $localStorage, $cookies) {
 
-            $scope.templateModules = $filter('filter')($rootScope.appModules, {deleted: false});
+            $scope.templateModules = $filter('filter')($rootScope.appModules, { deleted: false });
             $scope.$parent.activeMenuItem = 'appEmailTemplates';
 
             $rootScope.breadcrumblist[2].title = 'Email Templates';
@@ -40,11 +40,11 @@ angular.module('primeapps')
                     },
                     filters: {
                         mime_types: [
-                            {title: "Image files", extensions: "jpg,gif,png"},
+                            { title: "Image files", extensions: "jpg,gif,png" },
                         ],
                         max_file_size: "2mb"
                     },
-                    resize: {quality: 90}
+                    resize: { quality: 90 }
                 },
                 events: {
                     filesAdded: function (uploader, files) {
@@ -69,7 +69,7 @@ angular.module('primeapps')
                     fileUploaded: function (uploader, file, response) {
                         tinymce.activeEditor.windowManager.close();
                         var resp = JSON.parse(response.response);
-                        uploadSuccessCallback(resp.public_url, {alt: file.name});
+                        uploadSuccessCallback(resp.public_url, { alt: file.name });
                         uploadSuccessCallback = null;
                     },
                     error: function (file, error) {
@@ -104,7 +104,7 @@ angular.module('primeapps')
                     },
                     filters: {
                         mime_types: [
-                            {title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv"},
+                            { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
                         ],
                         max_file_size: "50mb"
                     }
@@ -131,7 +131,7 @@ angular.module('primeapps')
                     },
                     fileUploaded: function (uploader, file, response) {
                         var resp = JSON.parse(response.response);
-                        uploadSuccessCallback(config.storage_host + resp.public_url, {alt: file.name});
+                        uploadSuccessCallback(config.storage_host + resp.public_url, { alt: file.name });
                         uploadSuccessCallback = null;
                         tinymce.activeEditor.windowManager.close();
                     },
@@ -183,8 +183,8 @@ angular.module('primeapps')
                     toolbar: "addParameter | styleselect | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | table bullist numlist | link image imagetools |  cut copy paste | undo redo searchreplace | outdent indent | blockquote hr insertdatetime charmap | visualblocks code preview fullscreen",
                     menubar: 'false',
                     templates: [
-                        {title: 'Test template 1', content: 'Test 1'},
-                        {title: 'Test template 2', content: 'Test 2'}
+                        { title: 'Test template 1', content: 'Test 1' },
+                        { title: 'Test template 2', content: 'Test 2' }
                     ],
                     skin: 'lightgray',
                     theme: 'modern',
@@ -248,56 +248,7 @@ angular.module('primeapps')
                     $scope.template.isNew = false;
                 }
             };
-
-            $scope.requestModel = {
-                limit: '10',
-                offset: 0
-            };
-
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-
-            $scope.generator(10);
-            $scope.activePage = 1;
-            AppEmailTemplatesService.count($scope.currentApp.name).then(function (response) {
-                $scope.pageTotal = response.data;
-                $scope.changePage(1);
-            });
-
-
-            $scope.changePage = function (page) {
-                $scope.loading = true;
-
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
-
-                $scope.activePage = page;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-
-                AppEmailTemplatesService.find(requestModel, $scope.currentApp.name).then(function (response) {
-                    $scope.templates = response.data;
-                }).finally(function () {
-                    $scope.loading = false;
-                });
-            };
-
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage);
-            };
-
+             
             $scope.templateSave = function (uploadForm) {
 
                 if (uploadForm.$invalid) {
@@ -322,12 +273,10 @@ angular.module('primeapps')
                     template.id = $scope.currentTemplate.id;
                     AppEmailTemplatesService.update(template).then(function () {
                         $scope.addNewEmailTemplateFormModal.hide();
-                        $scope.changePage($scope.activePage);
                         toastr.success($filter('translate')('Template.SuccessMessage'));
                     }).catch(function () {
                         toastr.error($filter('translate')('Common.Error'));
                         $scope.addNewEmailTemplateFormModal.hide();
-                        $scope.changePage($scope.activePage);
                     }).finally(function () {
                         $scope.saving = false;
                     });
@@ -336,13 +285,11 @@ angular.module('primeapps')
                     AppEmailTemplatesService.create(template, $scope.currentApp.name).then(function () {
                         $scope.saving = false;
                         $scope.addNewEmailTemplateFormModal.hide();
-                        $scope.pageTotal++;
-                        $scope.changePage($scope.activePage);
+                        $scope.grid.dataSource.read()
                         toastr.success($filter('translate')('Template.SuccessMessage'));
                     }).catch(function () {
                         toastr.error($filter('translate')('Common.Error'));
                         $scope.addNewEmailTemplateFormModal.hide();
-                        $scope.changePage($scope.activePage);
                     });
                 }
 
@@ -388,32 +335,146 @@ angular.module('primeapps')
                 return tagsList;
             };
 
-            // $scope.delete = function (template) {
-            //     var willDelete =
-            //         swal({
-            //             title: "Are you sure?",
-            //             text: " ",
-            //             icon: "warning",
-            //             buttons: ['Cancel', 'Yes'],
-            //             dangerMode: true
-            //         }).then(function (value) {
-            //             if (value) {
-            //                 EmailTemplatesService.delete(template.id)
-            //                     .then(function () {
-            //                         var templateToDeleteIndex = helper.arrayObjectIndexOf($scope.templates, template);
-            //                         $scope.templates.splice(templateToDeleteIndex, 1);
-            //                         toastr.success("Email template is deleted successfully.", "Deleted!");
-            //
-            //                     })
-            //                     .catch(function () {
-            //
-            //                         if ($scope.addNewHelpFormModal) {
-            //                             $scope.addNewHelpFormModal.hide();
-            //                             $scope.saving = false;
-            //                         }
-            //                     });
-            //             }
-            //         });
-            // };
+            //For Kendo UI
+            $scope.goUrl = function (emailTemp) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.showFormModal(emailTemp);
+                }
+            };
+
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/template/find_app_email_template",
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                LabelEn: { type: "string" },
+                                Module: { type: "string" },
+                                Language: { type: "enums" }
+                            }
+                        }
+                    }
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                noRecords: true,
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter && e.field !== 'Language') {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
+                },
+                rowTemplate: function (emailTemp) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + '<div style="padding:12px 0px;">' + emailTemp.name + '</div>' + '</td>';
+                    trTemp += '<td class="text-left">' + emailTemp.subject + '</td>';
+                    trTemp += emailTemp.language === 'tr' ? '<td>Turkish</td>' : '<td>English</td>';
+                    trTemp += '<td>' + emailTemp.system_code + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                altRowTemplate: function (emailTemp) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + '<div style="padding:12px 0px;">' + emailTemp.name + '</div>' + '</td>';
+                    trTemp += '<td class="text-left">' + emailTemp.subject + '</td>';
+                    trTemp += emailTemp.language === 'tr' ? '<td>Turkish</td>' : '<td>English</td>';
+                    trTemp += '<td>' + emailTemp.system_code + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+
+                    {
+                        field: 'Name',
+                        title: $filter('translate')('Setup.Templates.TemplateName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+
+                    {
+                        field: 'Subject',
+                        title: 'Subject',
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+                    {
+                        field: 'Language',
+                        title: 'Language',
+                        values: [
+                            { text: 'Turkish', value: 'Tr' },
+                            { text: 'English', value: 'En' }]
+                    },
+                    {
+                        field: 'SystemCode',
+                        title: 'Code',
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
+            };
+            
+            $scope.delete = function (template, event) {
+                var willDelete =
+                    swal({
+                        title: "Are you sure?",
+                        text: " ",
+                        icon: "warning",
+                        buttons: ['Cancel', 'Yes'],
+                        dangerMode: true
+                    }).then(function (value) {
+                        if (value) {
+                            var elem = angular.element(event.srcElement);
+                            angular.element(elem.closest('tr')).addClass('animated-background');
+                            AppEmailTemplatesService.delete(template.id)
+                                .then(function () {
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
+                                    $scope.grid.dataSource.read();
+                                    toastr.success($filter('translate')('Setup.Templates.DeleteSuccess' | translate), "Deleted!");
+
+                                })
+                                .catch(function () {
+                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
+
+                                });
+                        }
+                    });
+            };
         }
     ]);

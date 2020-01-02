@@ -2,6 +2,7 @@
 using PrimeApps.Model.Entities.Tenant;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common;
+using System.Linq;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
@@ -11,7 +12,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<Picklist> GetBySystemCode(string systemcode);
         Task<ICollection<Picklist>> GetAll();
         Task<Picklist> GetPicklistByLabelEn(string labelEn);
-        Task<ICollection<Picklist>> Find(PaginationModel paginationModel);
+        IQueryable<Picklist> Find();
         Task<ICollection<Picklist>> Find(List<int> ids);
         Task<Picklist> GetItemPage(int id, PaginationModel paginationModel);
         Task<int> Count();

@@ -15,6 +15,13 @@ using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
 using PrimeApps.Model.Storage;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNet.OData.Query;
+using PrimeApps.Model.Entities.Studio;
+using System.Linq;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using PrimeApps.Model.Entities.Tenant;
+using System.Collections.Generic;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -31,7 +38,11 @@ namespace PrimeApps.Studio.Controllers
         private IPlatformRepository _platformRepository;
         private IPermissionHelper _permissionHelper;
 
-        public TemplateController(ITemplateRepository templateRepostory, IAppDraftTemplateRepository appDraftTemplateRepository, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IConfiguration configuration, IPlatformRepository platformRepository, IPermissionHelper permissionHelper, IAppDraftRepository appDraftRepository)
+        public TemplateController(ITemplateRepository templateRepostory,
+            IAppDraftTemplateRepository appDraftTemplateRepository, IUserRepository userRepository,
+            IRecordRepository recordRepository, IModuleRepository moduleRepository, IConfiguration configuration,
+            IPlatformRepository platformRepository, IPermissionHelper permissionHelper,
+            IAppDraftRepository appDraftRepository)
         {
             _templateRepostory = templateRepostory;
             _userRepository = userRepository;
@@ -70,29 +81,31 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("get_all"), HttpGet]
-        public async Task<IActionResult> GetAll([FromUri]TemplateType templateType) //JObject obj)// = TemplateType.NotSet, [FromQuery(Name = "moduleName")]string moduleName = "")	
+        public async Task<IActionResult>
+            GetAll([FromUri] TemplateType templateType) //JObject obj)// = TemplateType.NotSet, [FromQuery(Name = "moduleName")]string moduleName = "")	
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
 
-			var templates = await _templateRepostory.GetAll(templateType, LanguageType.NotSet, false);//, moduleName);
+            var templates = await _templateRepostory.GetAll(templateType, LanguageType.NotSet, false); //, moduleName);
 
             return Ok(templates);
         }
 
         [Route("get_all_list"), HttpGet]
-        public async Task<IActionResult> GetAllList(TemplateType type = TemplateType.NotSet, TemplateType excelType = TemplateType.NotSet, string moduleName = "")
+        public async Task<IActionResult> GetAllList(TemplateType type = TemplateType.NotSet,
+            TemplateType excelType = TemplateType.NotSet, string moduleName = "")
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
 
-			var templates = await _templateRepostory.GetAllList(LanguageType.NotSet, type, excelType, moduleName);
+            var templates = await _templateRepostory.GetAllList(LanguageType.NotSet, type, excelType, moduleName);
 
             return Ok(templates);
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody]TemplateBindingModel template)
+        public async Task<IActionResult> Create([FromBody] TemplateBindingModel template)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.Create))
                 return StatusCode(403);
@@ -107,14 +120,16 @@ namespace PrimeApps.Studio.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
             if (template.Chunks > 0)
-                await AzureStorage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks, _configuration);
+                await AzureStorage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType,
+                    string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks, _configuration);
 
             var uri = new Uri(Request.GetDisplayUrl());
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/template/get/" + templateEntity.Id, templateEntity);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/template/get/" + templateEntity.Id,
+                templateEntity);
         }
 
         [Route("create_excel"), HttpPost]
-        public async Task<IActionResult> CreateExcel([FromBody]TemplateBindingModel template)
+        public async Task<IActionResult> CreateExcel([FromBody] TemplateBindingModel template)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.Create))
                 return StatusCode(403);
@@ -129,13 +144,15 @@ namespace PrimeApps.Studio.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
             if (template.Chunks > 0)
-                await AzureStorage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks, _configuration);
+                await AzureStorage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType,
+                    string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks, _configuration);
 
-            return Created(Request.Scheme + "://" + Request.Host + "/api/template/get/" + templateEntity.Id, templateEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/template/get/" + templateEntity.Id,
+                templateEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update(int id, [FromBody]TemplateBindingModel template)
+        public async Task<IActionResult> Update(int id, [FromBody] TemplateBindingModel template)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.Update))
                 return StatusCode(403);
@@ -152,29 +169,49 @@ namespace PrimeApps.Studio.Controllers
             await _templateRepostory.Update(templateEntity);
 
             if (template.Chunks > 0)
-                await AzureStorage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks, _configuration);
+                await AzureStorage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType,
+                    string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks, _configuration);
 
             return Ok(templateEntity);
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, [FromQuery]bool isAppTemplate = false)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.Delete))
                 return StatusCode(403);
 
-            var templateEntity = await _templateRepostory.GetById(id);
+            if (isAppTemplate)
+            {
+                var templateEntity = await _appDraftTemplateRepository.Get(id);
 
-            if (templateEntity == null)
-                return NotFound();
+                if (templateEntity == null)
+                    return NotFound();
+                
+                /**Buraya başka sytem_code'lara gelecek*/
+                if (templateEntity.SystemCode == "password_reset")
+                    return BadRequest("You couldn't delete this system_code(password_reset)!");
+                
+                await _appDraftTemplateRepository.DeleteSoft(templateEntity);
+                
+                return Ok();
+            }
+            else
+            {
+                var templateEntity = await _templateRepostory.GetById(id);
 
-            await _templateRepostory.DeleteSoft(templateEntity);
+                if (templateEntity == null)
+                    return NotFound();
 
-            return Ok();
+                await _templateRepostory.DeleteSoft(templateEntity);
+
+                return Ok();
+            }
+          
         }
 
         [Route("count"), HttpGet]
-        public IActionResult Count([FromUri]TemplateType templateType)
+        public IActionResult Count([FromUri] TemplateType templateType)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
@@ -183,18 +220,20 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel, [FromUri]TemplateType templateType = 0)
+        [Route("find")]
+        public IActionResult Find(ODataQueryOptions<Template> queryOptions, [FromUri]TemplateType templateType = 0)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var templates = await _templateRepostory.Find(paginationModel, templateType);
-            return Ok(templates);
+            var temps = _templateRepostory.Find(templateType);
+
+            var queryResults = (IQueryable<Template>)queryOptions.ApplyTo(temps, new ODataQuerySettings() { EnsureStableOrdering = false });
+            return Ok(new PageResult<Template>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
         [Route("create_app_email_template"), HttpPost]
-        public async Task<IActionResult> CreateAppEmailTemplate([FromBody]AppTemplateBindingModel template)
+        public async Task<IActionResult> CreateAppEmailTemplate([FromBody] AppTemplateBindingModel template)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.Create))
                 return StatusCode(403);
@@ -215,20 +254,19 @@ namespace PrimeApps.Studio.Controllers
             await _appDraftTemplateRepository.Update(templateEntity);
 
             var uri = new Uri(Request.GetDisplayUrl());
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/template/get/" + templateEntity.Id, templateEntity);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/template/get/" + templateEntity.Id,
+                templateEntity);
         }
 
         [Route("update_app_email_template/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateAppEmailTemplate(int id, [FromBody]AppTemplateBindingModel template)
+        public async Task<IActionResult> UpdateAppEmailTemplate(int id, [FromBody] AppTemplateBindingModel template)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.Update))
                 return StatusCode(403);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            if (!template.Deleted)
-            {
+   
                 var templateEntity = await _appDraftTemplateRepository.Get(id);
 
                 if (templateEntity == null)
@@ -236,14 +274,11 @@ namespace PrimeApps.Studio.Controllers
 
                 TemplateHelper.UpdateEntity(null, null, null, template, templateEntity, true);
                 await _appDraftTemplateRepository.Update(templateEntity);
-                return Ok(templateEntity);
-            }
-            else
-                return BadRequest("Deleted value can't be true");
+                return Ok(templateEntity);          
         }
 
         [Route("count_app_email_template"), HttpGet]
-        public async Task<IActionResult> CountAppTemplate([FromUri]string currentAppName)
+        public async Task<IActionResult> CountAppTemplate([FromUri] string currentAppName)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
@@ -254,16 +289,16 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find_app_email_template"), HttpPost]
-        public async Task<IActionResult> FindAppTemplate([FromBody]PaginationModel paginationModel, [FromUri]string currentAppName)
+        [Route("find_app_email_template")]
+        public IActionResult FindAppEmailTemplate(ODataQueryOptions<AppDraftTemplate> queryOptions)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var app = await _appDraftRepository.GetByName(currentAppName.ToLower());
-            var templates = app != null ? await _appDraftTemplateRepository.Find(paginationModel, app.Id) : null;
-
-            return Ok(templates);
+            var views = _appDraftTemplateRepository.Find();
+            var queryResults = (IQueryable<AppDraftTemplate>)queryOptions.ApplyTo(views, new ODataQuerySettings() { EnsureStableOrdering = false });
+            return Ok(new PageResult<AppDraftTemplate>(queryResults, Request.ODataFeature().NextLink,
+                Request.ODataFeature().TotalCount));
         }
 
 

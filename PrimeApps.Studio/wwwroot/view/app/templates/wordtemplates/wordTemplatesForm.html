@@ -73,7 +73,7 @@
                         <div ng-show="fileUpload.queue.length > 0 || template.content" style="{{requiredColor}}">
                             <div class="uploadedfilename">
                                 <span class="uploadedfilenamein" ng-if="!template.content">{{fileUpload.queue[0]._file["name"]}}</span>
-                                <a class="uploadedfilenamein" href="{{getDownloadUrl(template)}}" target="_blank">{{template.content}}</a>
+                                <a class="uploadedfilenamein" ng-click="wordDownload(template)" target="_blank">{{template.content}}</a>
                                 <a class="clear-button" ng-disabled="saving" ng-click="remove()"><i class="fas fa-trash"></i></a>
                             </div>
                         </div>

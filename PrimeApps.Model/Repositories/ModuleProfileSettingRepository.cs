@@ -64,29 +64,13 @@ namespace PrimeApps.Model.Repositories
             return count;
         }
 
-        public async Task<ICollection<ModuleProfileSetting>> Find(PaginationModel paginationModel)
+        public IQueryable<ModuleProfileSetting> Find()
         {
             var moduleProfilesSettings = DbContext.ModuleProfileSettings
                 .Where(x => !x.Deleted)
-                .OrderByDescending(x => x.Id)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
+                .OrderByDescending(x => x.Id);
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(ModuleProfileSetting).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    moduleProfilesSettings = moduleProfilesSettings.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    moduleProfilesSettings = moduleProfilesSettings.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
-            }
-
-            return await moduleProfilesSettings.ToListAsync();
+            return moduleProfilesSettings;
         }
     }
 }

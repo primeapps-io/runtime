@@ -2,11 +2,12 @@
 
 angular.module('primeapps')
 
-    .controller('MenusController', ['$rootScope', '$scope', '$filter', '$state', '$modal', 'helper', 'MenusService', 'config', '$location', 'ModuleService', 'ProfilesService',
-        function ($rootScope, $scope, $filter, $state, $modal, helper, MenusService, config, $location, ModuleService, ProfilesService) {
+    .controller('MenusController', ['$rootScope', '$scope', '$filter', '$state', '$modal', 'helper', 'MenusService', 'config', '$location', 'ModuleService', 'ProfilesService', '$localStorage',
+        function ($rootScope, $scope, $filter, $state, $modal, helper, MenusService, config, $location, ModuleService, ProfilesService, $localStorage) {
 
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'menus';
+            $scope.newProfiles = angular.copy($rootScope.appProfiles);
 
             $rootScope.breadcrumblist[2].title = 'Menus';
 
@@ -25,49 +26,6 @@ angular.module('primeapps')
             $scope.requestModel = {
                 limit: '10',
                 offset: 0
-            };
-
-            $scope.activePage = 1;
-            MenusService.count().then(function (response) {
-                $scope.pageTotal = response.data;
-                $scope.changePage(1);
-            });
-
-            $scope.changePage = function (page) {
-                $scope.loading = true;
-
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
-
-                $scope.activePage = page;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-
-                MenusService.find(requestModel).then(function (response) {
-                    var menuList = response.data;
-                    ProfilesService.getAllBasic().then(function (response) {
-                        //$scope.newProfiles = response.data;
-                        $scope.newProfiles = ProfilesService.getProfiles(response.data, $rootScope.appModules, false);
-                        angular.forEach(menuList, function (menu) {
-                            menu.profile_name = $filter('filter')($scope.newProfiles, {id: menu.profile_id}, true)[0].name;
-                        });
-                        $scope.menuList = menuList;
-                        $scope.menuListState = menuList;
-                        $scope.loading = false;
-                    });
-                });
-            };
-
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage);
             };
 
             var isUpdate = false; // up and down menu is click
@@ -208,7 +166,7 @@ angular.module('primeapps')
                  * Yapılacaklar
                  * */
                 angular.forEach($scope.menuList, function (menu) {
-                    $filter('filter')($scope.newProfiles, {id: menu.profile_id}, true)[0].deleted = true;
+                    $filter('filter')($scope.newProfiles, { id: menu.profile_id }, true)[0].deleted = true;
                 });
 
                 if (id) {
@@ -249,7 +207,7 @@ angular.module('primeapps')
 
                             //If update, we added again all profiles
                             //Then, get selected profile and menuitems
-                            $scope.menu.profile = $scope.clone ? null : $filter('filter')($scope.newProfiles, {id: response.data.profile_id}, true)[0];
+                            $scope.menu.profile = $scope.clone ? null : $filter('filter')($scope.newProfiles, { id: response.data.profile_id }, true)[0];
                             //If clone deleted true
                             if ($scope.menu.profile) {
                                 $scope.menu.profile.deleted = false;
@@ -338,11 +296,11 @@ angular.module('primeapps')
             $scope.addItem = function (module) {
                 if (!module) {
                     module = {
-                       // label_tr_plural: "Yeni Kategori Adını Giriniz",
-                       // label_en_plural: "Enter New Category Name",
+                        // label_tr_plural: "Yeni Kategori Adını Giriniz",
+                        // label_en_plural: "Enter New Category Name",
                         menu_icon: "fa fa-square",
                         order: 0
-                       // display: true,/
+                        // display: true,/
                     };
                 }
 
@@ -383,7 +341,7 @@ angular.module('primeapps')
 
             $scope.addModule = function (menuNo) {
 
-                var menu = $filter('filter')($scope.data, {no: menuNo}, true)[0];
+                var menu = $filter('filter')($scope.data, { no: menuNo }, true)[0];
                 var labelMenu = {};
                 labelMenu.no = menu.nodes.length > 0 ? menu.nodes.length + 1 : 1;
                 labelMenu.name = $scope.menuModuleList !== null ? $scope.language === 'tr' ? $scope.menuModuleList.label_tr_plural : $scope.menuModuleList.label_en_plural : '';
@@ -396,8 +354,8 @@ angular.module('primeapps')
 
             $scope.selectModule = function (menuNo, labelNo, module) {
 
-                var menu = $filter('filter')($scope.data, {no: menuNo}, true)[0];
-                var menuItem = $filter('filter')(menu.nodes, {no: labelNo}, true)[0];
+                var menu = $filter('filter')($scope.data, { no: menuNo }, true)[0];
+                var menuItem = $filter('filter')(menu.nodes, { no: labelNo }, true)[0];
                 menuItem.name = module !== null ? $scope.language === 'tr' ? module.label_tr_plural : module.label_en_plural : '';
                 menuItem.menuName = module !== null ? module.name : '';
                 menuItem.route = module !== null ? module.route ? module.route : '' : '';
@@ -436,7 +394,7 @@ angular.module('primeapps')
                     for (var j = 0; j < copyData[i].nodes.length; j++) {
 
 
-                        var createItem = $filter('filter')(copyData[i].nodes, {id: 0}, true)[0];
+                        var createItem = $filter('filter')(copyData[i].nodes, { id: 0 }, true)[0];
                         copyData[i].nodes[j].no = j + 1; // countChield + 1;
                         copyData[i].nodes[j].menuId = count + 1;//count + 1;
                         copyData[i].nodes[j].menuNo = copyData[i].nodes[j].menuId;
@@ -564,8 +522,7 @@ angular.module('primeapps')
                             MenusService.createMenuItems($scope.createArray, menu[0].profile_id).then(function onSuccess() {
                                 toastr.success($filter('translate')('Menu.MenuSaving'));
                                 $scope.addNewMenuFormModal.hide();
-                                $scope.changePage($scope.activePage);
-                                $scope.pageTotal += 1;
+                                $scope.grid.dataSource.read();
                                 $scope.saving = false;
                             }).catch(function () {
                                 $scope.saving = false;
@@ -662,8 +619,7 @@ angular.module('primeapps')
                             MenusService.delete(id)
                                 .then(function () {
                                     angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                    $scope.pageTotal--;
-                                    $scope.changePage($scope.activePage);
+                                    $scope.grid.dataSource.read();
                                     toastr.success($filter('translate')('Menu.DeleteSuccess'));
                                     $scope.saving = false;
                                 })
@@ -765,6 +721,115 @@ angular.module('primeapps')
                     parentList.push(node.nodes[i]);
                 }
                 parentList.splice(index, 1);
+            };
+
+            $scope.goUrl = function (menu) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.showFormModal(menu.id);
+                }
+            };
+
+            //For Kendo UI
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/menu/find",
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                Name: { type: "string" },
+                                ProfileName: { type: "string" },
+                                Default: { type: "boolean" }
+                            }
+                        }
+                    }
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                noRecords: true,
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter) {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
+                },
+                rowTemplate: function (menu) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + menu.name + '</td>';
+                    trTemp += '<td class="text-left">' + menu.profile.name_en + '</td>';
+                    trTemp += menu.default ? '<td><span>' + $filter('translate')('Common.Yes') + '</span></td>' : '<td><span>' + $filter('translate')('Common.No') + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                altRowTemplate: function (menu) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + menu.name + '</td>';
+                    trTemp += '<td class="text-left">' + menu.profile.name_en + '</td>';
+                    trTemp += menu.default ? '<td><span>' + $filter('translate')('Common.Yes') + '</span></td>' : '<td><span>' + $filter('translate')('Common.No') + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+
+                    {
+                        field: 'Name',
+                        title: $filter('translate')('Menu.MenuName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+
+                    {
+                        field: 'Profile.NameEn',
+                        title: $filter('translate')('Menu.ProfileName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+                    {
+                        field: 'Default',
+                        title: $filter('translate')('Menu.DefaultMenu'),
+                        filterable: {
+                            messages: { isTrue: "Yes <span></span>", isFalse: "No <span></span>" },
+                        },
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
             };
 
         }

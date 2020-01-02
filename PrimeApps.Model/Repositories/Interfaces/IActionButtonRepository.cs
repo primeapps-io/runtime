@@ -15,7 +15,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 		Task<int> Update(ActionButton actionbutton);
 		Task<int> DeleteSoft(ActionButton actionbutton);
 		Task<int> Count(int id);
-		Task<ICollection<ActionButton>> Find(int id, PaginationModel paginationModel);
+		Task<ICollection<ActionButton>> Find(int id);
 
 
 	}

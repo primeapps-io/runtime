@@ -9,11 +9,16 @@ using PrimeApps.Model.Repositories;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using PrimeApps.Admin.Services;
+using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Entities.Tenant;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Storage;
 using Sentry;
 using Sentry.Protocol;
@@ -33,18 +38,21 @@ namespace PrimeApps.Admin.Helpers
         private IHttpContextAccessor _context;
         private IUnifiedStorage _storage;
         private IHostingEnvironment _hostingEnvironment;
+        private IBackgroundTaskQueue _queue;
 
         public MigrationHelper(IConfiguration configuration,
             IServiceScopeFactory serviceScopeFactory,
             IHttpContextAccessor context,
-            IUnifiedStorage storage, 
-            IHostingEnvironment hostingEnvironment)
+            IUnifiedStorage storage,
+            IHostingEnvironment hostingEnvironment,
+            IBackgroundTaskQueue queue)
         {
             _storage = storage;
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
             _context = context;
             _hostingEnvironment = hostingEnvironment;
+            _queue = queue;
         }
 
         public async Task AppMigration(string schema, bool isLocal, string[] ids)
@@ -58,6 +66,7 @@ namespace PrimeApps.Admin.Helpers
                 using (var templateRepository = new TemplateRepository(tenantDbContext, _configuration))
                 using (var historyDatabaseRepository = new HistoryDatabaseRepository(tenantDbContext, _configuration))
                 using (var applicationRepository = new ApplicationRepository(platformDbContext, _configuration))
+                using (var releaseRepository = new ReleaseRepository(platformDbContext, _configuration))
                 using (var historyStorageRepository = new HistoryStorageRepository(tenantDbContext, _configuration))
                 {
                     foreach (var id in ids)
@@ -66,20 +75,20 @@ namespace PrimeApps.Admin.Helpers
 
                         if (app == null)
                             return;
-                        
+
                         _currentUser = new CurrentUser { PreviewMode = "app", TenantId = app.Id, UserId = 1 };
-                        
+
                         templateRepository.CurrentUser = historyStorageRepository.CurrentUser = historyDatabaseRepository.CurrentUser = _currentUser;
-                        
+
                         PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{app.Id}", true);
-                        
+
                         try
                         {
                             //Bucket yoksa oluşturuyor.
                             await _storage.CreateBucketIfNotExists($"app{app.Id}");
-                            
+
                             var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
-                            
+
                             //App tablosunda ki logo alanını kontrol ediyor.
                             if (!string.IsNullOrEmpty(app.Logo) && app.Logo.Contains("http"))
                             {
@@ -90,7 +99,7 @@ namespace PrimeApps.Admin.Helpers
                                     var webClient = new WebClient();
                                     var imageBytes = webClient.DownloadData(app.Logo);
                                     Stream stream = new MemoryStream(imageBytes);
-                                    
+
                                     await _storage.Upload($"app{app.Id}/app_logo", match.Value, stream);
                                     app.Logo = $"app{app.Id}/app_logo/{match.Value}";
                                 }
@@ -105,13 +114,13 @@ namespace PrimeApps.Admin.Helpers
 
                             if (string.IsNullOrEmpty(app.Setting.Currency))
                                 app.Setting.Currency = "USD";
-                            
+
                             if (string.IsNullOrEmpty(app.Setting.Culture))
                                 app.Setting.Culture = "en-US";
-                            
+
                             if (string.IsNullOrEmpty(app.Setting.TimeZone))
                                 app.Setting.TimeZone = "America/New_York";
-                            
+
                             if (string.IsNullOrEmpty(app.Setting.Language))
                                 app.Setting.Language = "en";
 
@@ -131,9 +140,9 @@ namespace PrimeApps.Admin.Helpers
                                             var webClient = new WebClient();
                                             var imageBytes = webClient.DownloadData(authTheme["logo"].ToString());
                                             Stream stream = new MemoryStream(imageBytes);
-                                    
+
                                             await _storage.Upload($"app{app.Id}/app_logo", match.Value, stream);
-                                            
+
                                             var history = new HistoryStorage
                                             {
                                                 MimeType = GetMimeType(match.Value),
@@ -144,12 +153,12 @@ namespace PrimeApps.Admin.Helpers
                                                 ExecutedAt = DateTime.Now,
                                                 CreatedByEmail = "studio@primeapps.io" ?? ""
                                             };
-                                            
+
                                             await historyStorageRepository.Create(history);
-                                            authTheme["logo"] =  $"app{app.Id}/app_logo/{match.Value}";
+                                            authTheme["logo"] = $"app{app.Id}/app_logo/{match.Value}";
                                         }
                                     }
-                                    
+
                                     if (authTheme["favicon"] != null && !string.IsNullOrEmpty(authTheme["favicon"].ToString()) && authTheme["favicon"].ToString().Contains("http"))
                                     {
                                         var regex = new Regex(@"[\w-]+.(jpg|png|jpeg|ico)");
@@ -159,9 +168,9 @@ namespace PrimeApps.Admin.Helpers
                                             var webClient = new WebClient();
                                             var imageBytes = webClient.DownloadData(authTheme["favicon"].ToString());
                                             Stream stream = new MemoryStream(imageBytes);
-                                    
+
                                             await _storage.Upload($"app{app.Id}/app_logo", match.Value, stream);
-                                            
+
                                             var history = new HistoryStorage
                                             {
                                                 MimeType = GetMimeType(match.Value),
@@ -172,7 +181,7 @@ namespace PrimeApps.Admin.Helpers
                                                 ExecutedAt = DateTime.Now,
                                                 CreatedByEmail = "studio@primeapps.io" ?? ""
                                             };
-                                            
+
                                             await historyStorageRepository.Create(history);
                                             authTheme["favicon"] = $"app{app.Id}/app_logo/{match.Value}";
                                         }
@@ -187,9 +196,9 @@ namespace PrimeApps.Admin.Helpers
                                             var webClient = new WebClient();
                                             var imageBytes = webClient.DownloadData(authTheme["banner"][0]["image"].ToString());
                                             Stream stream = new MemoryStream(imageBytes);
-                                    
+
                                             await _storage.Upload($"app{app.Id}/app_logo", match.Value, stream);
-                                            
+
                                             var history = new HistoryStorage
                                             {
                                                 MimeType = GetMimeType(match.Value),
@@ -200,10 +209,10 @@ namespace PrimeApps.Admin.Helpers
                                                 ExecutedAt = DateTime.Now,
                                                 CreatedByEmail = "studio@primeapps.io" ?? ""
                                             };
-                                            
+
                                             await historyStorageRepository.Create(history);
                                             authTheme["banner"][0]["image"] = $"app{app.Id}/app_logo/{match.Value}";
-                                        }                               
+                                        }
                                     }
 
                                     app.Setting.AuthTheme = JsonConvert.SerializeObject(authTheme);
@@ -220,10 +229,10 @@ namespace PrimeApps.Admin.Helpers
                                 {
                                     ["color"] = "#555198",
                                     ["title"] = "PrimeApps",
-                                    ["banner"] = new JArray {new JObject {["image"] = "", ["descriptions"] = ""}},
+                                    ["banner"] = new JArray { new JObject { ["image"] = "", ["descriptions"] = "" } },
                                 }.ToJsonString();
                             }
-                            
+
                             //App theme alanı kontrol ediliyor.
                             if (!string.IsNullOrEmpty(app.Setting.AppTheme))
                             {
@@ -240,9 +249,9 @@ namespace PrimeApps.Admin.Helpers
                                             var webClient = new WebClient();
                                             var imageBytes = webClient.DownloadData(appTheme["logo"].ToString());
                                             Stream stream = new MemoryStream(imageBytes);
-                                    
+
                                             await _storage.Upload($"app{app.Id}/app_logo", match.Value, stream);
-                                            
+
                                             var history = new HistoryStorage
                                             {
                                                 MimeType = GetMimeType(match.Value),
@@ -253,12 +262,12 @@ namespace PrimeApps.Admin.Helpers
                                                 ExecutedAt = DateTime.Now,
                                                 CreatedByEmail = "studio@primeapps.io" ?? ""
                                             };
-                                            
+
                                             await historyStorageRepository.Create(history);
                                             appTheme["logo"] = $"app{app.Id}/app_logo/{match.Value}";
                                         }
                                     }
-                                    
+
                                     if (appTheme["favicon"] != null && !string.IsNullOrEmpty(appTheme["favicon"].ToString()) && appTheme["favicon"].ToString().Contains("http"))
                                     {
                                         var regex = new Regex(@"[\w-]+.(jpg|png|jpeg|ico)");
@@ -268,9 +277,9 @@ namespace PrimeApps.Admin.Helpers
                                             var webClient = new WebClient();
                                             var imageBytes = webClient.DownloadData(appTheme["favicon"].ToString());
                                             Stream stream = new MemoryStream(imageBytes);
-                                    
+
                                             await _storage.Upload($"app{app.Id}/app_logo", match.Value, stream);
-                                            
+
                                             var history = new HistoryStorage
                                             {
                                                 MimeType = GetMimeType(match.Value),
@@ -281,12 +290,12 @@ namespace PrimeApps.Admin.Helpers
                                                 ExecutedAt = DateTime.Now,
                                                 CreatedByEmail = "studio@primeapps.io" ?? ""
                                             };
-                                            
+
                                             await historyStorageRepository.Create(history);
                                             appTheme["favicon"] = $"app{app.Id}/app_logo/{match.Value}";
                                         }
                                     }
-                                    
+
                                     app.Setting.AppTheme = JsonConvert.SerializeObject(appTheme);
                                 }
                                 catch (Exception e)
@@ -303,7 +312,6 @@ namespace PrimeApps.Admin.Helpers
                                     ["title"] = "PrimeApps",
                                 }.ToJsonString();
                             }
-
                         }
                         catch (Exception e)
                         {
@@ -317,18 +325,33 @@ namespace PrimeApps.Admin.Helpers
                             storageHistoryLast.Tag = "1";
                             await historyStorageRepository.Update(storageHistoryLast);
                         }
-                        
+
                         var databaseHistoryLast = await historyDatabaseRepository.GetLast();
                         if (databaseHistoryLast != null)
                         {
                             databaseHistoryLast.Tag = "1";
                             await historyDatabaseRepository.Update(databaseHistoryLast);
                         }
+
+                        var release = new Release()
+                        {
+                            AppId = app.Id,
+                            CreatedById = 1,
+                            CreatedAt = DateTime.Now,
+                            Deleted = false,
+                            Status = ReleaseStatus.Succeed,
+                            Version = "1",
+                            StartTime = DateTime.Now,
+                            EndTime = DateTime.Now
+                        };
+
+                        await releaseRepository.Create(release);
+
                         await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}", $"{schema}://{app.Setting.AppDomain}", UnifiedStorage.PolicyType.TenantPolicy);
-                        await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}",$"{schema}://{app.Setting.AuthDomain}", UnifiedStorage.PolicyType.TenantPolicy);
-                        
+                        await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}", $"{schema}://{app.Setting.AuthDomain}", UnifiedStorage.PolicyType.TenantPolicy);
+
                         await applicationRepository.Update(app);
-                        
+
                         var seqTables = new List<string>
                         {
                             "action_button_permissions_id_seq", "action_buttons_id_seq", "bpm_categories_id_seq",
@@ -351,14 +374,14 @@ namespace PrimeApps.Admin.Helpers
 
                         foreach (var seqTable in seqTables)
                         {
-                            PostgresHelper.Run(PREConnectionString, $"app{app.Id}",$"SELECT setval('{seqTable}', 10000, true); ");
+                            PostgresHelper.Run(PREConnectionString, $"app{app.Id}", $"SELECT setval('{seqTable}', 11000, true); ");
                         }
-                        
+
                         PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{app.Id}", false);
                         await UpdateTenants(app.Id, $"{schema}://{app.Setting.AppDomain}");
                     }
-                    
-                    SentrySdk.CaptureMessage("Migration finished successfully.", SentryLevel.Info);
+
+                    SentrySdk.CaptureMessage("Tenants update started.", SentryLevel.Info);
                     //ErrorHandler.LogMessage("Migration finished successfully.");
                 }
             }
@@ -369,48 +392,72 @@ namespace PrimeApps.Admin.Helpers
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var platformDbContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var tenantDbContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 
                 using (var tenantRepository = new TenantRepository(platformDbContext, _configuration))
-                using (var historyDatabaseRepository = new HistoryDatabaseRepository(tenantDbContext, _configuration))
-                using (var historyStorageRepository = new HistoryStorageRepository(tenantDbContext, _configuration))
                 {
+                    tenantRepository.CurrentUser = new CurrentUser { PreviewMode = "app", TenantId = appId, UserId = 1 };
                     var tenantIds = await tenantRepository.GetByAppId(appId);
-                    
+                    var lastTenantId = tenantIds.ToList().Last();
+
                     foreach (var id in tenantIds)
                     {
-                        var tenant = await tenantRepository.GetAsync(id);
-                        var PREConnectionString = _configuration.GetConnectionString("PlatformDBConnection");
-
-                        var exists = PostgresHelper.Read(PREConnectionString, $"platform",$"SELECT 1 AS result FROM pg_database WHERE datname='tenant{tenant.Id}'", "hasRows");
+                        var exists = PostgresHelper.Read(_configuration.GetConnectionString("PlatformDBConnection"), $"platform", $"SELECT 1 AS result FROM pg_database WHERE datname='tenant{id}'", "hasRows");
 
                         if (!exists)
                             continue;
-                        
-                        _currentUser = new CurrentUser {PreviewMode = "tenant", TenantId = tenant.Id, UserId = 1};
+
+                        var result = await UpdateTenant(id, url, lastTenantId);
+                    }
+
+                    return true;
+                }
+            }
+        }
+
+        private async Task<bool> UpdateTenant(int id, string url, int lastTenantId)
+        {
+            using (var _scope = _serviceScopeFactory.CreateScope())
+            {
+                using (var platformDbContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>())
+                using (var tenantDbContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>())
+                {
+                    using (var tenantRepository = new TenantRepository(platformDbContext, _configuration))
+                    using (var historyDatabaseRepository = new HistoryDatabaseRepository(tenantDbContext, _configuration))
+                    using (var historyStorageRepository = new HistoryStorageRepository(tenantDbContext, _configuration))
+                    {
+                        var tenant = await tenantRepository.GetAsync(id);
+
+                        _currentUser = new CurrentUser { PreviewMode = "tenant", TenantId = tenant.Id, UserId = 1 };
 
                         tenantRepository.CurrentUser = historyStorageRepository.CurrentUser = historyDatabaseRepository.CurrentUser = _currentUser;
-                        
+
                         if (!string.IsNullOrEmpty(tenant.Setting.Logo) && tenant.Setting.Logo.Contains("http"))
                         {
-                            var regex = new Regex(@"[\w-]+.(jpg|png|jpeg|ico)");
-                            var match = regex.Match(tenant.Setting.Logo);
-                            if (match.Success)
+                            try
                             {
-                                var webClient = new WebClient();
-                                var imageBytes = webClient.DownloadData(tenant.Setting.Logo);
-                                Stream stream = new MemoryStream(imageBytes);
-                                    
-                                await _storage.Upload($"tenant{tenant.Id}/logos", match.Value, stream);
-                                    
-                                tenant.Setting.Logo = $"tenant{tenant.Id}/logos/{match.Value}";
+                                var regex = new Regex(@"[\w-]+.(jpg|png|jpeg|ico)");
+                                var match = regex.Match(tenant.Setting.Logo);
+                                if (match.Success)
+                                {
+                                    var webClient = new WebClient();
+                                    var imageBytes = webClient.DownloadData(tenant.Setting.Logo);
+                                    Stream stream = new MemoryStream(imageBytes);
+
+                                    await _storage.Upload($"tenant{tenant.Id}/logos", match.Value, stream);
+
+                                    tenant.Setting.Logo = $"tenant{tenant.Id}/logos/{match.Value}";
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                SentrySdk.CaptureMessage("Tenant logo cannot uploaded. TenantId: " + tenant.Id + " Exception Message: " + e.Message);
                             }
                         }
 
                         await tenantRepository.UpdateAsync(tenant);
 
                         await _storage.AddHttpReferrerUrlToBucket($"tenant{tenant.Id}", url, UnifiedStorage.PolicyType.TenantPolicy);
-                        
+
                         var seqTables = new List<string>
                         {
                             "action_button_permissions_id_seq", "action_buttons_id_seq", "bpm_categories_id_seq",
@@ -433,7 +480,7 @@ namespace PrimeApps.Admin.Helpers
 
                         foreach (var seqTable in seqTables)
                         {
-                            PostgresHelper.Run(PREConnectionString, $"tenant{tenant.Id}",$"SELECT setval('{seqTable}', 500000, true); ");
+                            PostgresHelper.Run(_configuration.GetConnectionString("PlatformDBConnection"), $"tenant{tenant.Id}", $"SELECT setval('{seqTable}', 500000, true); ");
                         }
 
                         var lastHdRecord = await historyDatabaseRepository.GetLast();
@@ -451,12 +498,20 @@ namespace PrimeApps.Admin.Helpers
                                 TableName = "",
                                 CreatedByEmail = "studio@primeapps.io",
                                 ExecutedAt = DateTime.Now,
-                                Tag = "1"
+                                Tag = "1",
+                                Deleted = false
                             };
 
-                            await historyDatabaseRepository.Create(version);
+                            try
+                            {
+                                await historyDatabaseRepository.Create(version);
+                            }
+                            catch (Exception e)
+                            {
+                                SentrySdk.CaptureMessage("Tenant HistoryDatabase error. TenantId: " + tenant.Id + " Exception Message: " + e.Message);
+                            }
                         }
-                        
+
                         var lastHsRecord = await historyStorageRepository.GetLast();
 
                         if (lastHsRecord != null)
@@ -470,18 +525,34 @@ namespace PrimeApps.Admin.Helpers
                             {
                                 CreatedByEmail = "studio@primeapps.io",
                                 ExecutedAt = DateTime.Now,
-                                Tag = "1"
+                                Tag = "1",
+                                Deleted = false
                             };
 
-                            await historyStorageRepository.Create(version);
+                            try
+                            {
+                                await historyStorageRepository.Create(version);
+                            }
+                            catch (Exception e)
+                            {
+                                SentrySdk.CaptureMessage("Tenant HistoryStorage error. TenantId: " + tenant.Id + " Exception Message: " + e.Message);
+                            }
                         }
                     }
 
-                    return true;
+                    platformDbContext.Database.CloseConnection();
+                    tenantDbContext.Database.CloseConnection();
                 }
             }
+
+            SentrySdk.CaptureMessage($"Tenant{id} update successfully.", SentryLevel.Info);
+
+            if (id == lastTenantId)
+                SentrySdk.CaptureMessage("All tenants updated successfully.", SentryLevel.Info);
+
+            return true;
         }
-        
+
         public string GetMimeType(string name)
         {
             var type = name.Split('.')[1];

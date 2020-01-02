@@ -32,7 +32,8 @@ angular.module('primeapps')
 					user_name: "",
 					password: "",
 					senders: [],
-					enable_ssl: false
+					enable_ssl: false,
+					dont_send_bulk_email_result: false
 				};
 			}
 
@@ -268,10 +269,16 @@ angular.module('primeapps')
 
 							if (messaging.SystemEMail)
 								messaging.SystemEMail.enable_ssl = messaging.SystemEMail.enable_ssl === 'True';
-
+							
+							if (messaging.SystemEMail && messaging.SystemEMail.dont_send_bulk_email_result)
+								messaging.SystemEMail.dont_send_bulk_email_result = messaging.SystemEMail.dont_send_bulk_email_result === 'True';
+							
 							if (messaging.PersonalEMail)
 								messaging.PersonalEMail.enable_ssl = messaging.PersonalEMail.enable_ssl === 'True';
 
+							if (messaging.PersonalEMail && messaging.PersonalEMail.dont_send_bulk_email_result)
+								messaging.PersonalEMail.dont_send_bulk_email_result = messaging.PersonalEMail.dont_send_bulk_email_result === 'True';
+							
 							$rootScope.system.messaging = messaging;
 						});
 

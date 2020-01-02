@@ -1,7 +1,5 @@
 using System;
 using System.Linq;
-using System.Net;
-using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +12,9 @@ using PrimeApps.Model.Enums;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using PrimeApps.Model.Common.Record;
 
 namespace PrimeApps.App.Controllers
 {
@@ -70,6 +71,35 @@ namespace PrimeApps.App.Controllers
             var report = await _reportRepository.GetById(Id);
 
             return Ok(report);
+        }
+
+        [Route("chart_filter"), HttpPost]
+        public async Task<IActionResult> ChartFilter(JObject request)
+        {
+            if (string.IsNullOrEmpty(request["module_name"].ToString()))
+                return BadRequest("module_name is required.");
+
+            if (string.IsNullOrEmpty(request["aggregation_field"].ToString()))
+                return BadRequest("aggregation_field is required.");
+            
+            var requestModel = JsonConvert.DeserializeObject<FindRequest>(JsonConvert.SerializeObject(request));
+            
+            var chartType = ChartType.Column3D;
+            var aggregation = AggregationType.Count;
+
+            if (!string.IsNullOrEmpty(request["chart_type"].ToString()))
+                chartType = Enum.Parse<ChartType>(request["chart_type"].ToString());
+
+            if (!string.IsNullOrEmpty(request["aggregation_type"].ToString()))
+                aggregation = Enum.Parse<AggregationType>(request["aggregation_type"].ToString());
+
+            var showDisplayValue = chartType != ChartType.Funnel && chartType != ChartType.Pyramid && aggregation != AggregationType.Count;
+            var currentCulture = AppUser.Culture ?? (AppUser.Language == "en" ? "en-US" : "tr-TR");
+
+
+            var result = await _reportRepository.ChartFilter(requestModel, request["aggregation_field"].ToString(), currentCulture, AppUser.TenantLanguage, request["model_name"].ToString(), _configuration, _picklistRepository, _recordRepository, _moduleRepository, showDisplayValue: showDisplayValue);
+
+            return Ok(result);
         }
 
         [Route("get_chart/{report:int}"), HttpGet]
@@ -171,7 +201,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] ReportBindingModel report)
         {
             _reportHelper.Validate(report, ModelState, _recordHelper.ValidateFilterLogic);
-         
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 

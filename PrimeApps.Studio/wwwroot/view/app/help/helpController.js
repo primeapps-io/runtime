@@ -4,7 +4,7 @@ angular.module('primeapps')
 
     .controller('HelpController', ['$rootScope', '$scope', 'HelpService', '$filter', '$window', '$modal', 'config', '$localStorage', '$location', '$cache', '$state', '$cookies', 'helper',
         function ($rootScope, $scope, HelpService, $filter, $window, $modal, config, $localStorage, $location, $cache, $state, $cookies, helper) {
-            $scope.moduleFilter = $filter('filter')($rootScope.appModules, {deleted: false});
+            $scope.moduleFilter = $filter('filter')($rootScope.appModules, { deleted: false });
             $scope.selectHelpRelation = 'any';
             $scope.isTimetrackerExist = false;
             $scope.$parent.collapsed = true;
@@ -34,64 +34,9 @@ angular.module('primeapps')
 
             if (!$scope.moduleFilter) {
                 HelpService.getBasicModules().then(function (result) {
-                    $scope.moduleFilter = $filter('filter')(result.data, {deleted: false});
+                    $scope.moduleFilter = $filter('filter')(result.data, { deleted: false });
                 });
             }
-
-            $scope.requestModel = {
-                limit: "10",
-                offset: 0
-            };
-
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-            $scope.generator(10);
-
-            HelpService.count().then(function (response) {
-                $scope.pageTotal = response.data;
-                $scope.changePage(1);
-            });
-
-
-            HelpService.find($scope.requestModel).then(function (response) {
-                $scope.helpsides = HelpService.process(response.data, $scope.moduleFilter, $scope.helpModalObj.routeModuleSide, $scope.helpEnums);
-                $scope.loading = false;
-            });
-
-            $scope.changePage = function (page) {
-                $scope.loading = true;
-
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
-
-                $scope.activePage = page;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-
-                HelpService.find(requestModel)
-                    .then(function (response) {
-                        $scope.helpsides = HelpService.process(response.data, $scope.moduleFilter, $scope.helpModalObj.routeModuleSide, $scope.helpEnums);
-                        $scope.loading = false;
-                    });
-
-            };
-
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage);
-            };
-
 
             if ($scope.id) {
                 location = window.location.hash.split('/')[3].split('?')[0];
@@ -254,11 +199,11 @@ angular.module('primeapps')
                     },
                     filters: {
                         mime_types: [
-                            {title: "Image files", extensions: "jpg,gif,png"},
+                            { title: "Image files", extensions: "jpg,gif,png" },
                         ],
                         max_file_size: "2mb"
                     },
-                    resize: {quality: 90}
+                    resize: { quality: 90 }
                 },
                 events: {
                     filesAdded: function (uploader, files) {
@@ -283,7 +228,7 @@ angular.module('primeapps')
                     fileUploaded: function (uploader, file, response) {
                         tinymce.activeEditor.windowManager.close();
                         var resp = JSON.parse(response.response);
-                        uploadSuccessCallback(config.storage_host + resp, {alt: file.name});
+                        uploadSuccessCallback(config.storage_host + resp, { alt: file.name });
                         uploadSuccessCallback = null;
                     },
                     error: function (file, error) {
@@ -362,8 +307,8 @@ angular.module('primeapps')
                 toolbar: "insertfile undo redo | styleselect | bold italic | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media imagetools | code preview fullscreen",
                 menubar: 'false',
                 templates: [
-                    {title: 'Test template 1', content: 'Test 1'},
-                    {title: 'Test template 2', content: 'Test 2'}
+                    { title: 'Test template 1', content: 'Test 1' },
+                    { title: 'Test template 2', content: 'Test 2' }
                 ],
                 skin: 'lightgray',
                 resize: false,
@@ -429,8 +374,8 @@ angular.module('primeapps')
                 toolbar: "insertfile undo redo | helpTemplate | styleselect | bold italic | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media imagetools | code preview fullscreen",
                 menubar: 'false',
                 templates: [
-                    {title: 'Test template 1', content: 'Test 1'},
-                    {title: 'Test template 2', content: 'Test 2'}
+                    { title: 'Test template 1', content: 'Test 1' },
+                    { title: 'Test template 2', content: 'Test 2' }
                 ],
                 skin: 'lightgray',
                 resize: false,
@@ -499,26 +444,26 @@ angular.module('primeapps')
                                 $scope.helpModalObj.selectHelp = 'list';
                                 $scope.helpModalObj.helpName = $scope.helpTemplatesSide.name;
                                 $scope.helpModalObj.tinymceModel = $scope.helpTemplatesSide.template;
-                                var selectListModule = $filter('filter')($scope.moduleFilter, {id: $scope.helpTemplatesSide.module_id})[0];
+                                var selectListModule = $filter('filter')($scope.moduleFilter, { id: $scope.helpTemplatesSide.module_id })[0];
                                 $scope.helpModalObj.modulePicklist = selectListModule;
                             } else if ($scope.helpTemplatesSide.module_type == "module_detail") {
                                 $scope.helpModalObj.selectHelp = 'detail';
                                 $scope.helpModalObj.helpName = $scope.helpTemplatesSide.name;
                                 $scope.helpModalObj.tinymceModel = $scope.helpTemplatesSide.template;
-                                var selectDetailModule = $filter('filter')($scope.moduleFilter, {id: $scope.helpTemplatesSide.module_id})[0];
+                                var selectDetailModule = $filter('filter')($scope.moduleFilter, { id: $scope.helpTemplatesSide.module_id })[0];
                                 $scope.helpModalObj.moduleDetail = selectDetailModule;
                             } else {
                                 $scope.helpModalObj.selectHelp = 'form';
                                 $scope.helpModalObj.helpName = $scope.helpTemplatesSide.name;
                                 $scope.helpModalObj.tinymceModel = $scope.helpTemplatesSide.template;
-                                var selectFormModule = $filter('filter')($scope.moduleFilter, {id: $scope.helpTemplatesSide.module_id})[0];
+                                var selectFormModule = $filter('filter')($scope.moduleFilter, { id: $scope.helpTemplatesSide.module_id })[0];
                                 $scope.helpModalObj.moduleForm = selectFormModule;
                             }
                         } else {
                             $scope.helpModalObj.selectHelpRelation = 'other';
                             $scope.helpModalObj.helpName = $scope.helpTemplatesSide.name;
                             $scope.helpModalObj.tinymceModel = $scope.helpTemplatesSide.template;
-                            var selectOtherPicklist = $filter('filter')($scope.helpModalObj.routeModuleSide, {value: $scope.helpTemplatesSide.route_url})[0];
+                            var selectOtherPicklist = $filter('filter')($scope.helpModalObj.routeModuleSide, { value: $scope.helpTemplatesSide.route_url })[0];
                             $scope.helpModalObj.routeModules = selectOtherPicklist;
 
                         }
@@ -533,16 +478,16 @@ angular.module('primeapps')
                     var currentHelpModule;
                     if (helpTemplate.modal_type === "modal") {
                         if (helpTemplate.module_id)
-                            currentHelpModule = $filter('filter')($scope.moduleFilter, {id: helpTemplate.module_id})[0];
+                            currentHelpModule = $filter('filter')($scope.moduleFilter, { id: helpTemplate.module_id })[0];
                         else
-                            currentHelpModule = $filter('filter')($scope.moduleFilter, {value: helpTemplate.route_url})[0];
+                            currentHelpModule = $filter('filter')($scope.moduleFilter, { value: helpTemplate.route_url })[0];
 
                         $scope.helpModalObj.modulePicklist = currentHelpModule;
                         $scope.helpModalObj.helpName = helpTemplate.name;
                         $scope.helpModalObj.tinymceModel = helpTemplate.template;
                     } else {
                         if (helpTemplate.module_id) {
-                            currentHelpModule = $filter('filter')($scope.moduleFilter, {id: helpTemplate.module_id})[0];
+                            currentHelpModule = $filter('filter')($scope.moduleFilter, { id: helpTemplate.module_id })[0];
                             $scope.helpModalObj.relationType = true;
                             if (helpTemplate.module_type === "module_form")
                                 $scope.helpModalObj.selectHelp = 'form';
@@ -552,7 +497,7 @@ angular.module('primeapps')
                                 $scope.helpModalObj.selectHelp = 'detail';
                         } else {
                             if (helpTemplate.route_url) {
-                                currentHelpModule = $filter('filter')($scope.moduleFilter, {value: helpTemplate.route_url})[0];
+                                currentHelpModule = $filter('filter')($scope.moduleFilter, { value: helpTemplate.route_url })[0];
                             }
                         }
                     }
@@ -571,11 +516,11 @@ angular.module('primeapps')
             };
 
             $scope.helpModalSave = function (HelpPage) {
-                
+
                 if (!HelpPage.$valid) {
                     if (HelpPage.$error.required)
                         toastr.error($filter('translate')('Module.RequiredError'));
-                    
+
                     return;
                 }
 
@@ -629,9 +574,8 @@ angular.module('primeapps')
                                 $scope.helpTemplates = response.data;
                                 $scope.saving = false;
                                 $scope.addNewHelpFormModal.hide();
-                                $scope.changePage($scope.activePage);
                                 toastr.success($filter('translate')('Setup.HelpGuide.HelPTemplatePublish'));
-                                $scope.pageTotal++;
+                                $scope.grid.dataSource.read();
                             });
 
                     });
@@ -640,15 +584,14 @@ angular.module('primeapps')
             };
 
             $scope.helpSideSave = function (HelpPage) {
-                
-                if (!HelpPage.$valid)
-                {
+
+                if (!HelpPage.$valid) {
                     if (HelpPage.$error.required)
                         toastr.error($filter('translate')('Module.RequiredError'));
-                    
+
                     return;
                 }
-                    
+
 
                 var help = {};
                 $scope.saving = true;
@@ -711,7 +654,7 @@ angular.module('primeapps')
                 } else {
                     $scope.moduleControl = false;
                     angular.forEach($scope.helpsides, function (item) {
-                        var moduleTypeControl = $filter('filter')($scope.helpEnums, {Name: item.module_type})[0];
+                        var moduleTypeControl = $filter('filter')($scope.helpEnums, { Name: item.module_type })[0];
 
                         if (item.module_id === help.module_id && moduleTypeControl.id === help.module_type) {
                             $scope.moduleControl = true;
@@ -725,12 +668,10 @@ angular.module('primeapps')
                                     $scope.helpTemplates = response.data;
                                     createHelpList();
                                     // $state.reload();
-                                    $scope.changePage($scope.activePage);
-                                    $scope.changeOffset();
                                     $scope.saving = false;
                                     $scope.addNewHelpFormSideModal.hide();
                                     toastr.success($filter('translate')('Setup.HelpGuide.HelPTemplatePublish'));
-                                    $scope.pageTotal++;
+                                    $scope.grid.dataSource.read();
 
                                 });
                         });
@@ -817,12 +758,11 @@ angular.module('primeapps')
                             angular.element(elem.closest('tr')).addClass('animated-background');
                             HelpService.delete(helpside.id)
                                 .then(function () {
-                                    $scope.pageTotal--;
+                                    $scope.grid.dataSource.read();
                                     //var index = $rootScope.appModules.indexOf(module);
                                     // $rootScope.appModules.splice(index, 1);
 
                                     angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                    $scope.changePage($scope.activePage);
                                     toastr.success("Help is deleted successfully.", "Deleted!");
 
                                 })
@@ -836,6 +776,122 @@ angular.module('primeapps')
                         }
                     });
             };
+
+            $scope.helpType = function (helpData) {
+                if (helpData.modal_type == "modal")
+                    return "Introduction";
+                else
+                    return "Help";
+            };
+
+            $scope.goUrl = function (emailTemp) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.showFormModal(emailTemp);
+                }
+            };
+
+            //For Kendo UI
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/help/find",
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: { 
+                                ModalType: { type: "enums" }
+                            }
+                        }
+                    }
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                noRecords: true,
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter && e.field !== 'ModalType') {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
+                },
+                rowTemplate: function (help) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    var relationModule = $filter('filter')($scope.appModules, { id: help.module_id })[0];
+                    var helpType = $scope.helpType(help, $scope.moduleFilter, $scope.helpEnums);
+                    trTemp += '<td class="text-left">' + help.name + '</td>';
+                    trTemp += '<td>' + helpType + '</td>';
+                    trTemp += '<td class="text-left">' + relationModule['label_' + $scope.language + '_plural'] + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                altRowTemplate: function (help) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    var relationModule = $filter('filter')($scope.appModules, { id: help.module_id })[0];
+                    var helpType = $scope.helpType(help, $scope.moduleFilter, $scope.helpEnums);
+                    trTemp += '<td class="text-left">' + help.name + '</td>';
+                    trTemp += '<td>' + helpType + '</td>';
+                    trTemp += '<td class="text-left">' + relationModule['label_' + $scope.language + '_plural'] + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+                    {
+                        field: 'Name',
+                        title: $filter('translate')('Setup.HelpGuide.HelpScreenName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+                    {
+                        field: 'ModalType',
+                        title: 'Type',
+                        values: [
+                            { text: 'Introduction', value: 'Modal' },
+                            { text: 'Help', value: 'SideModal' }]
+                    },
+                    {
+                        field: 'Module.LabelEnPlural',
+                        title: $filter('translate')('Setup.HelpGuide.HelpScreenRelation'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
+            };
         }
     ])
-;
+    ;

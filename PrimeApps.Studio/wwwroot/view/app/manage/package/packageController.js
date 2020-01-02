@@ -2,36 +2,16 @@
 
 angular.module('primeapps')
 
-    .controller('PackageController', ['$rootScope', '$scope', '$state', 'PackageService', '$timeout', '$sce', '$location', '$filter',
-        function ($rootScope, $scope, $state, PackageService, $timeout, $sce, $location, $filter) {
+    .controller('PackageController', ['$rootScope', '$scope', '$state', 'PackageService', '$timeout', '$sce', '$location', '$filter', '$localStorage',
+        function ($rootScope, $scope, $state, PackageService, $timeout, $sce, $location, $filter, $localStorage) {
             $scope.loading = true;
             $scope.activePage = 1;
-            $rootScope.runningPackages[$rootScope.currentApp.name] = {status: true};
+            $rootScope.runningPackages[$rootScope.currentApp.name] = { status: true };
 
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'packages';
             $rootScope.breadcrumblist[2].title = 'Packages';
-
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-
-            $scope.$on('package-created', function (event, args) {
-                $scope.reload();
-            });
-
-            $scope.generator(10);
-
-            $scope.requestModel = {
-                limit: "10",
-                offset: 0,
-                order_column: 'version',
-                order_type: 'desc'
-            };
-
+   
             $scope.app = $rootScope.currentApp;
 
             PackageService.getActiveProcess()
@@ -39,15 +19,15 @@ angular.module('primeapps')
                     var activeProcess = response.data;
 
                     if (activeProcess) {
-                        $rootScope.runningPackages[$scope.app.name] = {status: true};
+                        $rootScope.runningPackages[$scope.app.name] = { status: true };
                         $scope.openWS(activeProcess.id);
                     }
                     else {
-                        $rootScope.runningPackages[$scope.app.name] = {status: false};
+                        $rootScope.runningPackages[$scope.app.name] = { status: false };
                     }
                 })
                 .catch(function (response) {
-                    $rootScope.runningPackages[$scope.app.name] = {status: false};
+                    $rootScope.runningPackages[$scope.app.name] = { status: false };
                 });
 
             $scope.openWS = function (id) {
@@ -178,9 +158,9 @@ angular.module('primeapps')
                                 //$state.go('studio.app.packages');
 
                                 if ($location.$$path.contains('/packages'))
-                                    $scope.reload();
+                                    $scope.grid.dataSource.read();
 
-                                $rootScope.runningPackages[$scope.app.name] = {status: true};
+                                $rootScope.runningPackages[$scope.app.name] = { status: true };
                             })
                             .catch(function (response) {
                                 $scope.loading = false;
@@ -195,45 +175,9 @@ angular.module('primeapps')
                     }
                 });
             };
-
-            $scope.reload = function () {
-                PackageService.count()
-                    .then(function (response) {
-                        $scope.pageTotal = response.data;
-
-                        if ($scope.requestModel.offset != 0 && ($scope.requestModel.offset * $scope.requestModel.limit) >= $scope.pageTotal) {
-                            $scope.requestModel.offset = $scope.requestModel.offset - 1;
-                        }
-
-                        PackageService.find($scope.requestModel)
-                            .then(function (response) {
-                                $scope.packages = response.data;
-                                $scope.loading = false;
-                            });
-                    });
-            };
-
-            $scope.reload();
-
-            $scope.changePage = function (page) {
-                $scope.loading = true;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-
-                $scope.page = requestModel.offset + 1;
-                PackageService.find(requestModel)
-                    .then(function (response) {
-                        $scope.functions = response.data;
-                        $scope.loading = false;
-                    });
-            };
-
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage);
-            };
-
+  
             $scope.getTime = function (time) {
-                return moment(time).format("DD-MM-YYYY HH:ss");
+                return moment(time).format("DD-MM-YYYY HH:mm");
             };
 
             $scope.asHtml = function () {
@@ -250,5 +194,130 @@ angular.module('primeapps')
                         return $sce.trustAsHtml('<i style="color:rgba(16,124,16,1);" class="fas fa-check"></i>');
                 }
             };
+
+
+            //For Kendo UI
+            $scope.goUrl = function (item) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    //click event.
+                }
+            };
+
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/package/find",
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            },
+                            complete: function () {
+                                $scope.loadingDeployments = false;
+                                $scope.loading = false;
+                            },
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                Version: { type: "string" },
+                                StartTime: { type: "date" },
+                                EndTime: { type: "date" },
+                                Status: { type: "enums" }
+                            }
+                        }
+                    }
+
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                noRecords: true,
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter && e.field !== 'Status') {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
+                },
+                rowTemplate: function (e) {
+                    var trTemp = '<tr>';
+                    trTemp += '<td> <span>' + '<div style="padding:12px 0px;">' + e.version + '</div>' + '</span></td > ';
+                    trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
+                    trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
+                    trTemp += '<td style="text-align: center;" ng-bind-html="getIcon(dataItem.status)"></td></tr>';
+                    return trTemp;
+                },
+                altRowTemplate: function (e) {
+                    var trTemp = '<tr class="k-alt">';
+                    trTemp += '<td> <span>' + '<div style="padding:12px 0px;">' + e.version + '</div>' + '</span></td > ';
+                    trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
+                    trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
+                    trTemp += '<td style="text-align: center;" ng-bind-html="getIcon(dataItem.status)"></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [ 
+                    {
+                        field: 'Version',
+                        title: 'Version'
+                    },
+                    {
+                        field: 'StartTime',
+                        title: 'Start Time',
+                        filterable: {
+                            ui: function (element) {
+                                element.kendoDateTimePicker({
+                                    format: '{0: dd-MM-yyyy  hh:mm}'
+                                })
+                            }
+                        }
+                    },
+                    {
+                        field: 'EndTime',
+                        title: 'End Time',
+                        filterable: {
+                            ui: function (element) {
+                                element.kendoDateTimePicker({
+                                    format: '{0: dd-MM-yyyy  hh:mm}'
+                                })
+                            }
+                        }
+                    },
+                    {
+                        field: 'Status',
+                        title: 'Status',
+                        values: [
+                            { text: 'Running', value: 'Running' },
+                            { text: 'Failed', value: 'Failed' },
+                            { text: 'Succeed', value: 'Succeed' }
+                        ]
+                    }]
+            };
+
+            //For Kendo UI
         }
     ]);

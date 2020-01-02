@@ -22,7 +22,7 @@
         </ul>
     </div>
 </div>
-<div class="tab-content table-responsive">
+<div class="tab-content table-responsive" ng-if="false">
     <table class="table" ng-show="loading">
         <thead>
             <tr>
@@ -69,7 +69,7 @@
                 <td>{{template.name}}</td>
                 <td>{{template.module['label_'+language+'_plural']}}</td>
                 <td>{{template.active ? ('Setup.Modules.Active' | translate) : ('Setup.Modules.Passive' | translate)}}</td>
-                <td><a href="{{getDownloadUrl(template)}}" target="_blank">{{'Common.Download' | translate}}</a></td>
+              
                 <td class="text-right">
                     <div class="action-buttons-block">
                         <button ng-click="$event.stopPropagation(); delete(template.id, $event);" type="button"
@@ -116,4 +116,8 @@
             </select>
         </div>
     </div>
+</div>
+<div class="tab-content">
+    <kendo-grid class="grid-theme grid-theme-center table-responsive" k-scope-field="grid" id="kendo-grid" k-options="mainGridOptions">
+    </kendo-grid>
 </div>

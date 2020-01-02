@@ -52,17 +52,13 @@ namespace PrimeApps.Migrator.Helpers
 
                 using (var tenantDatabaseContext = new TenantDBContext(optionsBuilder.Options, _configuration))
                 {
-                    var migrator = tenantDatabaseContext.Database.GetService<IMigrator>();
                     var pendingMigrations = tenantDatabaseContext.Database.GetPendingMigrations().ToList();
 
                     if (pendingMigrations.Any())
                     {
                         try
                         {
-                            foreach (var targetMigration in pendingMigrations)
-                            {
-                                migrator.Migrate(targetMigration);
-                            }
+                            tenantDatabaseContext.Database.Migrate();
 
                             ((JArray)result["successful"]).Add(new JObject { ["name"] = databaseName, ["result"] = "success" });
                         }
@@ -91,18 +87,14 @@ namespace PrimeApps.Migrator.Helpers
 
                 using (var tenantDatabaseContext = new TenantDBContext(optionsBuilder.Options, _configuration))
                 {
-                    var migrator = tenantDatabaseContext.Database.GetService<IMigrator>();
                     var pendingMigrations = tenantDatabaseContext.Database.GetPendingMigrations().ToList();
 
                     if (pendingMigrations.Any())
                     {
                         try
                         {
-                            foreach (var targetMigration in pendingMigrations)
-                            {
-                                migrator.Migrate(targetMigration);
-                            }
-
+                            tenantDatabaseContext.Database.Migrate();
+                            
                             Postgres.FinalizeTemplateDatabaseUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
 
                             ((JArray)result["successful"]).Add(new JObject { ["name"] = databaseName, ["result"] = "success" });
@@ -132,17 +124,13 @@ namespace PrimeApps.Migrator.Helpers
 
                 using (var tenantDatabaseContext = new TenantDBContext(optionsBuilder.Options, _configuration))
                 {
-                    var migrator = tenantDatabaseContext.Database.GetService<IMigrator>();
                     var pendingMigrations = tenantDatabaseContext.Database.GetPendingMigrations().ToList();
 
                     if (pendingMigrations.Any())
                     {
                         try
                         {
-                            foreach (var targetMigration in pendingMigrations)
-                            {
-                                migrator.Migrate(targetMigration);
-                            }
+                            tenantDatabaseContext.Database.Migrate();
 
                             Postgres.FinalizeTemplateDatabaseUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
 
@@ -166,7 +154,6 @@ namespace PrimeApps.Migrator.Helpers
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var platformDbContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                var migrator = platformDbContext.Database.GetService<IMigrator>();
 
                 if (!string.IsNullOrWhiteSpace(connectionString))
                     platformDbContext.SetConnectionString(connectionString, _configuration);
@@ -177,10 +164,7 @@ namespace PrimeApps.Migrator.Helpers
                 {
                     try
                     {
-                        foreach (var targetMigration in pendingMigrations)
-                        {
-                            migrator.Migrate(targetMigration);
-                        }
+                        platformDbContext.Database.Migrate();
 
                         result["successful"] = new JObject { ["name"] = "platform", ["result"] = "success" };
                     }
@@ -201,7 +185,6 @@ namespace PrimeApps.Migrator.Helpers
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var studioDbContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
-                var migrator = studioDbContext.Database.GetService<IMigrator>();
 
                 if (!string.IsNullOrWhiteSpace(connectionString))
                     studioDbContext.SetConnectionString(connectionString, _configuration);
@@ -212,10 +195,7 @@ namespace PrimeApps.Migrator.Helpers
                 {
                     try
                     {
-                        foreach (var targetMigration in pendingMigrations)
-                        {
-                            migrator.Migrate(targetMigration);
-                        }
+                        studioDbContext.Database.Migrate();
 
                         result["successful"] = new JObject { ["name"] = "studio", ["result"] = "success" };
                     }

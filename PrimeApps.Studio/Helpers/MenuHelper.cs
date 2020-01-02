@@ -48,14 +48,17 @@ namespace PrimeApps.Studio.Helpers
 			return menuItem;
 		}
 
-		public static MenuItem UpdateMenuItems(JObject request, MenuItem menuItem)
+		public static MenuItem UpdateMenuItems(JObject request, MenuItem menuItem, string language)
 		{
 			menuItem.MenuId = menuItem.MenuId;
 			menuItem.ModuleId = menuItem.ModuleId;
 			menuItem.ParentId = (int)request["parentId"] > 0 ? (int?)request["parentId"] : null;
 			menuItem.Route = (string)request["menuName"]; //menuItem.Route;
-			menuItem.LabelEn = (string)request["name"];
-			menuItem.LabelTr = (string)request["name"];
+			if (language == "en")
+				menuItem.LabelEn = (string)request["name"];
+			else
+				menuItem.LabelTr = (string)request["name"];
+
 			menuItem.MenuIcon = (string)request["icon"];
 			menuItem.Order = (short)(int)request["no"];
 			menuItem.IsDynamic = (bool)request["isDynamic"];
