@@ -240,7 +240,7 @@ angular.module('primeapps')
                                         for (var j = 0; j < response.data[i].menu_items.length; j++) {
                                             // if (!response.data[i].menu_items[j].deleted) {
                                             var labelMenu = {};
-                                            labelMenu.name = response.data[i].menu_items[j].label_tr;
+                                            labelMenu.name = $scope.language === 'tr' ? response.data[i].menu_items[j].label_tr : response.data[i].menu_items[j].label_en;
                                             labelMenu.menuName = response.data[i].menu_items[j].route ? response.data[i].menu_items[j].route.replace('modules/', '') : '';
                                             labelMenu.no = j + 1;//response.data[i].menu_items[j].order;
                                             labelMenu.menuId = menuList.no;
@@ -316,6 +316,8 @@ angular.module('primeapps')
                 menuList.menuModuleType = !module.name ? "Tanım Giriş" : "Mevcut Modül";// !$scope.menu.moduleItem.id
                 menuList.isEdit = !module.display ? true : false;
                 menuList.name = $scope.language === 'tr' ? module.label_tr_plural : module.label_en_plural;
+                menuList.name_en = module.label_en_plural;
+                menuList.name_tr = module.label_tr_plural;
                 menuList.menuName = module.name; //$scope.menu.moduleItem.name;
                 menuList.id = 0;
                 menuList.isDynamic = module.system_type === "system" ? true : false;//module.id ? true : false;
