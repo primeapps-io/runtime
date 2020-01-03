@@ -28,7 +28,6 @@ data:
   EmailSMTPPort: "587"
   EmailSMTPUser: "apikey"
   EmailSMTPPassword: "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"
-  TestMode: "false"
   AuthenticationServerURL: "https://auth.primeapps.io"
   ClientId: "primeapps_studio"
   ClientSecret: "secret"
@@ -225,12 +224,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-studio-config
-                  key: EmailSMTPPassword
-            - name: AppSettings__TestMode
-              valueFrom:
-                configMapKeyRef:
-                  name: primeapps-studio-config
-                  key: TestMode
+                  key: EmailSMTPPassword          
             - name: AppSettings__AuthenticationServerURL
               valueFrom:
                 configMapKeyRef:

@@ -142,12 +142,8 @@ namespace PrimeApps.App.Bpm.Steps
                                     appDomain = "cagri";
                                     break;
                             }
-                            var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
-                            var subdomain = "";
-                            if (!string.IsNullOrEmpty(testMode))
-                            {
-                                subdomain = testMode == "true" ? "test" : appDomain;
-                            }
+                           
+                            var subdomain =  appDomain;                           
                             domain = string.Format(domain, subdomain);
                             //domain = "http://localhost:5554/";
 

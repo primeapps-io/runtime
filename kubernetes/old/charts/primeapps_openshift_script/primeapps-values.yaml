@@ -51,7 +51,6 @@ app:
       ClientSecret: "secret"
       ForwardHeaders: "true"
       HttpsRedirection: "true"
-      TestMode: "true"
       PreviewMode: "tenant"
     Sentry:
       Dsn: "https://494e887684744adfaa39328e539a2a95@sentry-dev.primeapps.io/3"

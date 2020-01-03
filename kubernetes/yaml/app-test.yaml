@@ -24,7 +24,6 @@ data:
   ClientSecret: "secret"
   ForwardHeaders: "true"
   HttpsRedirection: "true"
-  TestMode: "true"
   GoogleMapsApiKey: "AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o"
   SentryDsn: "https://6689a455217f446994a756650c03014e:95a248958d7e4affba79aa3157e2c7b7@log.primeapps.io/13"
 ---
@@ -168,12 +167,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-app-config-test
-                  key: HttpsRedirection
-            - name: AppSettings__TestMode
-              valueFrom:
-                configMapKeyRef:
-                  name: primeapps-app-config-test
-                  key: TestMode
+                  key: HttpsRedirection           
             - name: AppSettings__GoogleMapsApiKey
               valueFrom:
                 configMapKeyRef:
