@@ -56,7 +56,7 @@ angular.module('primeapps')
                     setWebHookHeaders();
 
                 } else {
-                   
+
                     $scope.currentActionButton = actionButton;
                     $scope.currentActionButton.action_button_name = actionButton['name_en'];
                     $scope.currentActionButton.action_button_url = actionButton.url;
@@ -554,7 +554,7 @@ angular.module('primeapps')
             $scope.goUrl = function (actionButton) {
                 var selection = window.getSelection();
                 if (selection.toString().length === 0) {
-                    $scope.showFormModal(actionButton); //click event.
+                    $scope.showFormModal(angular.copy(actionButton)); //click event.
                 }
             };
 
