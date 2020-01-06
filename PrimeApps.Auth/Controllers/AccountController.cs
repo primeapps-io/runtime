@@ -1553,7 +1553,7 @@ namespace PrimeApps.Auth.UI
 			if (tenant != null)
 			{
 				Postgres.DropDatabase(_tenantRepository.DbContext.Database.GetDbConnection().ConnectionString, tenant.Id, true);
-				await _storage.DeleteBucket($"tenant" + tenant.Id);
+				await _storage.DeleteBucket($"tenant{tenant.Id}");
 				//await tenantRepository.DeleteAsync(tenant);
 			}
 
