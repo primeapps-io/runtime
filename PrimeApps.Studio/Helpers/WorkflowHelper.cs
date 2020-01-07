@@ -852,14 +852,7 @@ namespace PrimeApps.Studio.Helpers
                                     break;
                             }
 
-                            var blobUrl = _configuration.GetValue("TestMode:BlobUrl", string.Empty);
-                            var subdomain = "";
-
-                            if (!string.IsNullOrEmpty(blobUrl))
-                            {
-                                subdomain = blobUrl == "true" ? "test" : appDomain;
-                            }
-
+                            var subdomain = appDomain;
                             domain = string.Format(domain, subdomain);
 
                             //domain = "http://localhost:5554/";

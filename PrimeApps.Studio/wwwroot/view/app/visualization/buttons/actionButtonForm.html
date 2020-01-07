@@ -34,6 +34,7 @@
                     <select name="type"
                             class="form-control ng-animate-disabled col-sm-8"
                             required
+                            ng-disabled="currentActionButton.id"
                             ng-model="currentActionButton.type"
                             ng-options="o.value as o.text for o in actionButtonTypes"></select>
                 </div>

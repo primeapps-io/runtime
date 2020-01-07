@@ -351,14 +351,16 @@ namespace PrimeApps.Model.Helpers
             var dropCommand = PostgresHelper.Read(connectionString, dbName, GetAllTablesSql(), "array");
             var tableData = dropCommand;
 
-            if (!tableData.HasValues) return null;
+            if (!tableData.HasValues) 
+                return null;
 
             foreach (var t in tableData)
             {
                 var table = t["table_name"];
                 var columns = PostgresHelper.Read(connectionString, dbName, GetUserFKColumnsSql(table.ToString()), "array");
 
-                if (!columns.HasValues) continue;
+                if (!columns.HasValues) 
+                    continue;
                 
                 if(((JArray)columns).Count == 1 && ((JArray)columns).First["column_name"].ToString() == "user_id")
                     continue;

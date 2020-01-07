@@ -125,12 +125,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: {{.Release.Name}}-app-config
-                  key: HttpsRedirection
-            - name: AppSettings__TestMode
-              valueFrom:
-                configMapKeyRef:
-                  name: {{.Release.Name}}-app-config
-                  key: TestMode
+                  key: HttpsRedirection            
             - name: AppSettings__GoogleMapsApiKey
               valueFrom:
                 configMapKeyRef:

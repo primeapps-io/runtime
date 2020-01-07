@@ -25,7 +25,6 @@ data:
   ClientSecret: "secret"
   ForwardHeaders: "true"
   HttpsRedirection: "true"
-  TestMode: "false"
   PreviewMode: "app"
   GoogleMapsApiKey: "AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o"
   PreviewClient: "primeapps_preview"
@@ -167,12 +166,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-app-preview-config
-                  key: HttpsRedirection
-            - name: AppSettings__TestMode
-              valueFrom:
-                configMapKeyRef:
-                  name: primeapps-app-preview-config
-                  key: TestMode
+                  key: HttpsRedirection           
             - name: AppSettings__PreviewMode
               valueFrom:
                 configMapKeyRef:

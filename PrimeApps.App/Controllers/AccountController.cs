@@ -73,7 +73,7 @@ namespace PrimeApps.App.Controllers
                 var templates = await _platformRepository.GetAppTemplate(int.Parse(request["app_id"].ToString()),
                     AppTemplateType.Email, request["culture"].ToString().Substring(0, 2), "email_confirm");
 
-                var appSettings = _platformRepository.GetAppSettings(appId);
+                var appSettings = await _platformRepository.GetAppSettings(appId);
 
                 foreach (var template in templates)
                 {
@@ -125,7 +125,7 @@ namespace PrimeApps.App.Controllers
 
             var appId = int.Parse(request["app_id"].ToString());
 
-            var appSettings = _platformRepository.GetAppSettings(appId);
+            var appSettings = await _platformRepository.GetAppSettings(appId);
 
             foreach (var template in templates)
             {

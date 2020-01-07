@@ -1,4 +1,4 @@
-﻿﻿
+﻿
 'use strict';
 
 angular.module('primeapps')
@@ -304,12 +304,12 @@ angular.module('primeapps')
                 $scope.fixedField = field;
 
                 $scope.fixedValueModal = $scope.fixedValueModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/data/fixedValue.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/data/fixedValue.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.fixedValueModal.$promise.then(function () {
                     $scope.fixedValueModal.show();
@@ -516,12 +516,12 @@ angular.module('primeapps')
                     return;
 
                 $scope.importMappingSaveModal = $scope.importMappingSaveModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/data/importMappingSave.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/data/importMappingSave.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.importMappingSaveModal.$promise.then(function () {
                     $scope.importMappingSaveModal.show();
@@ -992,6 +992,12 @@ angular.module('primeapps')
 
                 for (var i = 0; i < $scope.rows.length; i++) {
                     var row = $scope.rows[i];
+                    /**Eğer import edilmek istenen excel'de owner sütunu boş ise
+                     *defaultta işlemi  yapan kullanıcıyı setle
+                     **/
+                    if (!row[$scope.fieldMap["owner"]]) {
+                        row[$scope.fieldMap["owner"]] = $rootScope.user.full_name;
+                    }
 
                     for (var rowKey in row) {
                         if (row.hasOwnProperty(rowKey)) {

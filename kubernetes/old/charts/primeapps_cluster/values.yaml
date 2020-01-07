@@ -42,7 +42,6 @@
             EmailSMTPPort: '465'
             EmailSMTPUser: b12c70f7f50ca9
             EmailSMTPPassword: 2cfb87c728981a
-            TestMode: 'true'
             AuthenticationServerURL: http://localhost:5000
             ClientId: primeapps_studio
             ClientSecret: secret
@@ -114,7 +113,6 @@
             ClientSecret: secret
             ForwardHeaders: 'false'
             HttpsRedirection: 'false'
-            TestMode: 'true'
             PreviewMode: tenant
             GoogleMapsApiKey: AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o
             PreviewClient: primeapps_preview

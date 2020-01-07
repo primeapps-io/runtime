@@ -28,6 +28,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
 		Task<App> AppGetByName(string appName);
         AppTemplate GetTemplateBySystemCode(int appId, string systemCode, string language);
 
-        AppSetting GetAppSettings(int appId);
+        Task<AppSetting> GetAppSettings(int appId);
 	}
 }

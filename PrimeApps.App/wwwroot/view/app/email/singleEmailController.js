@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('primeapps')
-    .controller('SingleEMailController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', '$http', '$popover', 'ModuleService', 'TemplateService', '$cookies',
-        function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, $http, $popover, ModuleService, TemplateService, $cookies) {
+    .controller('SingleEMailController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', '$http', '$popover', 'ModuleService', 'TemplateService', '$cookies', 'components',
+        function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, $http, $popover, ModuleService, TemplateService, $cookies, components) {
             $scope.loadingModal = true;
             $scope.module = $filter('filter')($rootScope.modules, { name: $stateParams.type }, true)[0];
 
@@ -593,6 +593,7 @@ angular.module('primeapps')
                         $scope.subject,
                         $scope.attachmentLink,
                         $scope.attachmentName).then(function (response) {
+                            components.run('AfterSingleEmail', 'Script', $scope);
                             $scope.submittingModal = false;
                             $scope.mailModal.hide();
                             $scope.$parent.$parent.isAllSelected = false;

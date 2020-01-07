@@ -3065,7 +3065,7 @@ angular.module('primeapps')
                                 var cache = $cache.get(key);
 
                                 //clears other pages checkboxes and selected items array when page changed
-                                scope.selectedRows = [];
+                                //scope.selectedRows = [];
                                 scope.isAllSelected = false;
 
                                 if (!params.reloading && cache && !scope.parentModule) {

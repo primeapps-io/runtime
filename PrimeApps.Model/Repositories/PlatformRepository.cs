@@ -151,9 +151,9 @@ namespace PrimeApps.Model.Repositories
             return DbContext.AppTemplates.FirstOrDefault(x => x.AppId == appId && x.Language == language && x.SystemCode == systemCode && x.Active);
         }
 
-        public AppSetting GetAppSettings(int appId)
+        public async Task<AppSetting> GetAppSettings(int appId)
         {
-            return DbContext.AppSettings.SingleOrDefault(x => x.AppId == appId);
+            return await DbContext.AppSettings.SingleOrDefaultAsync(x => x.AppId == appId);
         }
     }
 }

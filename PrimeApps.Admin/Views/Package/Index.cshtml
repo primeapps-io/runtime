@@ -17,73 +17,83 @@
                 <table class="table table-bordered">
                     <thead>
 
-                    <tr>
-                        <th width="100%">Name</th>
-                        <!--@if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.TenantIds != null && ViewBag.TenantIds.Count > 0)
-                        {
-                            <th>Tenant Ids</th>
-                        }-->
-                        @if (ViewBag.LastRelease != null)
-                        {
-                            <th>Current Release Version</th>
-                        }
-                        <th>Last Release Version</th>
-                        <th></th>
-                    </tr>
+                        <tr>
+                            <th width="100%">Name</th>
+                            <!--@if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.TenantIds != null && ViewBag.TenantIds.Count > 0)
+    {
+        <th>Tenant Ids</th>
+    }-->
+                            @if (ViewBag.LastRelease != null)
+                            {
+                                <th>Current Release Version</th>
+                            }
+                            <th>Last Release Version</th>
+                            @if (ViewBag.AppSettings != null)
+                            {
+                                <th>Auth Url</th>
+                                <th>App Url</th>
+                            }
+                            <th></th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td class="align-middle">
-                            <div class="appicon" style="background-color: @ViewBag.CurrentApp.Color">
-                                <i class="@(ViewBag.CurrentApp.Icon ?? "fas fa-box-open")"></i>
-                            </div>
-                            <h3 class="pl-2 d-inline-block">@ViewBag.CurrentApp.Label</h3>
-                        </td>
-
-                        <!--@if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.TenantIds != null && ViewBag.TenantIds.Count > 0)
-                        {
-                            <td class="align-middle text-center">
-                                <h3 class="mb-0">@string.Join(", ", ViewBag.TenantIds) </h3>
+                        <tr>
+                            <td class="align-middle">
+                                <div class="appicon" style="background-color: @ViewBag.CurrentApp.Color">
+                                    <i class="@(ViewBag.CurrentApp.Icon ?? "fas fa-box-open")"></i>
+                                </div>
+                                <h3 class="pl-2 d-inline-block">@ViewBag.CurrentApp.Label</h3>
                             </td>
-                        }-->
 
-                        @if (ViewBag.LastRelease != null)
-                        {
-                            <td class="align-middle text-center">
-                                <h3 class="mb-0">@ViewBag.LastRelease?.Version</h3>
-                            </td>
-                        }
-                        <td class="align-middle text-center">
-                            <h3 class="mb-0">@(ViewBag.LastPackage != null ? ViewBag.LastPackage.Version : "You should create a package to publish the application. You can create a package on PrimeApps Studio Packages menu.")</h3>
-                        </td>
-                        <td class="align-middle">
-                            <button disabled="@(ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed)" class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="@(ViewBag.LastPackage == null ? "" : ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version ? "Already up to date" : ViewBag.ProcessActive ? "There is an another process. Please wait for it..." : "Click for publish!")" onclick="apply()">
-                                @if (ViewBag.ProcessActive)
-                                {
-                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                    <span class="btn-inner--text">Please wait...</span>
-                                }
-                                else
-                                {
-                                    <span class="btn-inner--icon">
-                                        <i class="ni ni-cloud-upload-96"></i>
-                                    </span>
-                                    <span class="btn-inner--text">@(ViewBag.LastRelease != null ? "Update" : "Publish")</span>
-                                }
+                            <!--@if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.TenantIds != null && ViewBag.TenantIds.Count > 0)
+    {
+        <td class="align-middle text-center">
+            <h3 class="mb-0">@string.Join(", ", ViewBag.TenantIds) </h3>
+        </td>
+    }-->
 
-                            </button>
-
-                            @if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.TenantIds != null && ViewBag.TenantIds.Count > 0)
+                            @if (ViewBag.LastRelease != null)
                             {
-                                <button class="btn ifn-icon btn-3 btn-warning btn-md" type="button" title="Click for Update Tenants!" onclick="tenantUpdate(@ViewBag.CurrentApp.Id, @ViewBag.ActiveOrganizationId)">
-                                    <span class="btn-inner--icon">
-                                        <i class="ni ni-cloud-upload-96"></i>
-                                    </span>
-                                    <span class="btn-inner--text">Update Tenants</span>
-                                </button>
+                                <td class="align-middle text-center">
+                                    <h3 class="mb-0">@ViewBag.LastRelease?.Version</h3>
+                                </td>
                             }
-                        </td>
-                    </tr>
+                            <td class="align-middle text-center">
+                                <h3 class="mb-0">@(ViewBag.LastPackage != null ? ViewBag.LastPackage.Version : "You should create a package to publish the application. You can create a package on PrimeApps Studio Packages menu.")</h3>
+                            </td>
+                            @if (ViewBag.AppSettings != null)
+                            {
+                                <td class="align-middle text-center"><h3 class="pl-2 d-inline-block">@ViewBag.AppSettings.AuthDomain</h3></td>
+                                <td class="align-middle text-center"><h3 class="pl-2 d-inline-block">@ViewBag.AppSettings.AppDomain</h3></td>
+                            }
+                            <td class="align-middle">
+                                <button disabled="@(ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed)" class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="@(ViewBag.LastPackage == null ? "" : ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version ? "Already up to date" : ViewBag.ProcessActive ? "There is an another process. Please wait for it..." : "Click for publish!")" onclick="apply()">
+                                    @if (ViewBag.ProcessActive)
+                                    {
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        <span class="btn-inner--text">Please wait...</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="btn-inner--icon">
+                                            <i class="ni ni-cloud-upload-96"></i>
+                                        </span>
+                                        <span class="btn-inner--text">@(ViewBag.LastRelease != null ? "Update" : "Publish")</span>
+                                    }
+
+                                </button>
+
+                                @if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.TenantIds != null && ViewBag.TenantIds.Count > 0)
+                                {
+                                    <button class="btn ifn-icon btn-3 btn-warning btn-md" type="button" title="Click for Update Tenants!" onclick="tenantUpdate(@ViewBag.CurrentApp.Id, @ViewBag.ActiveOrganizationId)">
+                                        <span class="btn-inner--icon">
+                                            <i class="ni ni-cloud-upload-96"></i>
+                                        </span>
+                                        <span class="btn-inner--text">Update Tenants</span>
+                                    </button>
+                                }
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
