@@ -235,6 +235,11 @@ namespace PrimeApps.Auth.Controllers
                 return BadRequest(ModelState);
             }
 
+            var appSetting = await _platformRepository.GetAppSettings(addUserBindingModel.AppId);
+
+            if (!appSetting.EnableAPIRegistration)
+                return StatusCode(StatusCodes.Status401Unauthorized, "Registeration not enable for this application");
+
             if (User?.Identity.IsAuthenticated == false)
                 return Unauthorized();
 
@@ -458,7 +463,7 @@ namespace PrimeApps.Auth.Controllers
             var user = _platformUserRepository.GetByEmail(tokenRequest.UserName);
 
             if (user == null) //!user.IsIntegrationUser || user.IntegrationUserClientId != tokenRequest.ClientId
-            //TODO: Make this method available to get token from PrimeApps CLI
+                              //TODO: Make this method available to get token from PrimeApps CLI
                 return new TokenResponse(HttpStatusCode.Unauthorized, "Unauthorized", "Unauthorized");
 
             var httpClient = new HttpClient();
