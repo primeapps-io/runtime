@@ -355,7 +355,11 @@ namespace PrimeApps.Auth.UI
 		public async Task<IActionResult> Register(string returnUrl = null)
 		{
 			var vm = await BuildRegisterViewModelAsync(returnUrl);
-
+			
+			//Preview'de register kapatıldı
+			if (vm.ApplicationInfo.Preview)			
+				return Redirect(returnUrl);		
+			
 			if (User?.Identity.IsAuthenticated == true)
 			{
 				if (!string.IsNullOrEmpty(vm.ApplicationInfo.Domain))
