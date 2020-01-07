@@ -72,12 +72,14 @@ angular.module('primeapps',
 
 			//var language = window.localStorage.getItem('NG_TRANSLATE_LANG_KEY');
 			var language = account.user.setting.language;
-			
 
 			if (!language && customLanguage)
 				language = customLanguage;
-			else if (!language && !customLanguage)
-				language = 'en';
+			else if (!language && !customLanguage) {
+				var browserLang = window.navigator.language || window.navigator.userLanguage;
+				language = browserLang === 'en' || browserLang === 'en-US' ? 'en' : 'tr';
+
+			}
 
 			window.localStorage.setItem('NG_TRANSLATE_LANG_KEY', language);
 			moment.locale(language);

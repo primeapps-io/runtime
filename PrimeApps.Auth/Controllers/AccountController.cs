@@ -348,21 +348,25 @@ namespace PrimeApps.Auth.UI
             return View(vm);
         }
 
-        /// <summary>
-        /// Register Page
-        /// </summary>
-        [HttpGet]
-        public async Task<IActionResult> Register(string returnUrl = null)
-        {
-            var vm = await BuildRegisterViewModelAsync(returnUrl);
-
-            if (User?.Identity.IsAuthenticated == true)
-            {
-                if (!string.IsNullOrEmpty(vm.ApplicationInfo.Domain))
-                    return Redirect(Request.Scheme + "://" + vm.ApplicationInfo.Domain);
-                else
-                    return RedirectToAction(nameof(AccountController.Index), "Account");
-            }
+		/// <summary>
+		/// Register Page
+		/// </summary>
+		[HttpGet]
+		public async Task<IActionResult> Register(string returnUrl = null)
+		{
+			var vm = await BuildRegisterViewModelAsync(returnUrl);
+			
+			//Preview'de register kapatıldı
+			if (vm.ApplicationInfo.Preview)			
+				return Redirect(returnUrl);		
+			
+			if (User?.Identity.IsAuthenticated == true)
+			{
+				if (!string.IsNullOrEmpty(vm.ApplicationInfo.Domain))
+					return Redirect(Request.Scheme + "://" + vm.ApplicationInfo.Domain);
+				else
+					return RedirectToAction(nameof(AccountController.Index), "Account");
+			}
 
             var registerPermission = vm.ApplicationInfo.ApplicationSetting.Options["enable_registration"];
 
@@ -1558,14 +1562,14 @@ namespace PrimeApps.Auth.UI
             }
         }
 
-        private async void DatabaseRollback(ApplicationUser user, bool newIdentityUser, bool newPlatformUser, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, Tenant tenant = null, PlatformUser platformUser = null)
-        {
-            if (tenant != null)
-            {
-                Postgres.DropDatabase(_tenantRepository.DbContext.Database.GetDbConnection().ConnectionString, tenant.Id, true);
-                await _storage.DeleteBucket($"tenant" + tenant.Id);
-                //await tenantRepository.DeleteAsync(tenant);
-            }
+		private async void DatabaseRollback(ApplicationUser user, bool newIdentityUser, bool newPlatformUser, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, Tenant tenant = null, PlatformUser platformUser = null)
+		{
+			if (tenant != null)
+			{
+				Postgres.DropDatabase(_tenantRepository.DbContext.Database.GetDbConnection().ConnectionString, tenant.Id, true);
+				await _storage.DeleteBucket($"tenant{tenant.Id}");
+				//await tenantRepository.DeleteAsync(tenant);
+			}
 
             if (newPlatformUser && platformUser != null)
                 await platformUserRepository.DeleteAsync(platformUser);
