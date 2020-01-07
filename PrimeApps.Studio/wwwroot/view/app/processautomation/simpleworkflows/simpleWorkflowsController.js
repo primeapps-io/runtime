@@ -1337,6 +1337,9 @@ angular.module('primeapps')
             $scope.save = function (workflowForm) {
                 $scope.saving = true;
 
+                if ($scope.id)
+                    $scope.getSummary();
+
                 if ($scope.sendNotificationIsNullOrEmpty(workflowForm))
                     delete $scope.workflowModel.send_notification;
 
