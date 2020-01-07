@@ -231,7 +231,8 @@ namespace PrimeApps.Auth.UI
                     GoogleAnalytics = app.Setting.GoogleAnalyticsCode,
                     ExternalLogin = app.Setting.ExternalAuth,
                     RegistrationType = app.Setting.RegistrationType,
-                    TenantOperationWebhook = app.Setting.TenantOperationWebhook
+                    TenantOperationWebhook = app.Setting.TenantOperationWebhook,
+                    Options = new JObject { ["enable_registration"] = app.Setting.EnableRegistration, ["enable_api_registration"] = app.Setting.EnableAPIRegistration }
                 },
                 Preview = preview,
                 Secret = app.Secret

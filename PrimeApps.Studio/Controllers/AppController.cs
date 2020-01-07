@@ -85,7 +85,7 @@ namespace PrimeApps.Studio.Controllers
 
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
-            
+
             var secret = Guid.NewGuid().ToString().Replace("-", string.Empty);
             var secretEncrypt = CryptoHelper.Encrypt(secret);
 
@@ -150,12 +150,12 @@ namespace PrimeApps.Studio.Controllers
             await Postgres.CreateDatabaseWithTemplet(_configuration.GetConnectionString("TenantDBConnection"), app.Id, model.TempletId);
             Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser));
 
-            if(Request.Host.Value.Contains("localhost"))
+            if (Request.Host.Value.Contains("localhost"))
                 await _storage.CreateBucketPolicy($"app{app.Id}", $"{Request.Scheme}://localhost:*", UnifiedStorage.PolicyType.StudioPolicy);
             else
             {
                 await _storage.CreateBucketPolicy($"app{app.Id}", $"{Request.Scheme}://*.primeapps.io", UnifiedStorage.PolicyType.StudioPolicy);
-                await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}",$"{Request.Scheme}://*.primeapps.app", UnifiedStorage.PolicyType.StudioPolicy);
+                await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}", $"{Request.Scheme}://*.primeapps.app", UnifiedStorage.PolicyType.StudioPolicy);
             }
 
             return Ok(app);
@@ -182,6 +182,7 @@ namespace PrimeApps.Studio.Controllers
 
             var options = JObject.Parse(app.Setting.Options);
             options["enable_registration"] = model.EnableRegistration;
+            options["enable_api_registration"] = model.EnableAPIRegistration;
             options["clear_all_records"] = model.ClearAllRecords;
 
             app.Setting.Options = options.ToJsonString();
@@ -309,7 +310,7 @@ namespace PrimeApps.Studio.Controllers
 
             return app != null ? Ok(app.AppTheme) : Ok(app);
         }
-        
+
         [Route("migration/{id:int}"), HttpGet]
         public async Task<IActionResult> Migration(int id)
         {
@@ -323,9 +324,9 @@ namespace PrimeApps.Studio.Controllers
                 {
                     Console.WriteLine("MATCH VALUE: " + match.Value);
                 }
-                
+
             }
-                
+
             return app != null ? Ok(app.Setting.AppTheme) : Ok(app);
         }
     }
