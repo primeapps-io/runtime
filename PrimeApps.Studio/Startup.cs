@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
 using Hangfire;
 using Hangfire.Redis;
-using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Extensions;
-using Microsoft.AspNet.OData.Query.Validators;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -21,15 +18,13 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OData.Edm;
-using Microsoft.OData.UriParser;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
+using StackExchange.Redis;
 
 namespace PrimeApps.Studio
 {
@@ -51,6 +46,13 @@ namespace PrimeApps.Studio
             AuthConfiguration(services, Configuration);
             var redisConnection = Configuration.GetConnectionString("RedisConnection");
             var redisConnectionPersist = redisConnection.Remove(redisConnection.Length - 1, 1) + "3";
+
+            //Data Protection
+            var redis = ConnectionMultiplexer.Connect(redisConnection);
+
+            services.AddDataProtection()
+            .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys2") 
+            .ProtectKeysWithDpapi();
 
             var hangfireStorage = new RedisStorage(redisConnectionPersist);
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
@@ -235,5 +237,5 @@ namespace PrimeApps.Studio
                 routes.EnableDependencyInjection();
             });
         }
-    } 
+    }
 }
