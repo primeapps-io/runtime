@@ -56,12 +56,14 @@ namespace PrimeApps.Studio.Controllers
             var appUser = new UserItem
             {
                 Id = platformUser.Id,
-                Email = platformUser.Email,
+                Email = platformUser.Email,           
                 FullName = platformUser.FirstName + " " + platformUser.LastName,
                 Currency = platformUser.Setting?.Currency,
                 Culture = platformUser.Setting?.Culture,
                 Language = platformUser.Setting?.Language,
-                TimeZone = platformUser.Setting?.TimeZone
+                TimeZone = platformUser.Setting?.TimeZone,
+                FirstName = platformUser.FirstName,
+                LastName = platformUser.LastName
             };
 
             return appUser;
