@@ -355,11 +355,7 @@ namespace PrimeApps.Auth.UI
 		public async Task<IActionResult> Register(string returnUrl = null)
 		{
 			var vm = await BuildRegisterViewModelAsync(returnUrl);
-			
-			//Preview'de register kapatıldı
-			if (vm.ApplicationInfo.Preview)			
-				return Redirect(returnUrl);		
-			
+
 			if (User?.Identity.IsAuthenticated == true)
 			{
 				if (!string.IsNullOrEmpty(vm.ApplicationInfo.Domain))
@@ -367,6 +363,10 @@ namespace PrimeApps.Auth.UI
 				else
 					return RedirectToAction(nameof(AccountController.Index), "Account");
 			}
+
+			//Preview'de register kapatıldı
+			if (vm.ApplicationInfo.Preview)
+				return RedirectToAction(nameof(AccountController.Login), "Account", new { returnUrl = vm.ReturnUrl });
 
 			var cookieLang = AuthHelper.CurrentLanguage(Request);
 
