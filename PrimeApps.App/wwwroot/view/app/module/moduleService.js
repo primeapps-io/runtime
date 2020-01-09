@@ -258,7 +258,7 @@ angular.module('primeapps')
                 },
 
                 sendEMail: function (moduleId, ids, query, isAllSelected, templateId, emailField, Cc, Bcc, senderAlias, senderEMail, providerType, attachmentContainer, subject, attachmentLink, attachmentName) {
-                    return $http.post(config.apiUrl + 'messaging/send_email', {
+                    return $http.post(config.apiUrl + 'messaging/send_email_job', {
                         "module_id": moduleId,
                         "Ids": ids,
                         "Query": query,
@@ -3065,7 +3065,7 @@ angular.module('primeapps')
                                 var cache = $cache.get(key);
 
                                 //clears other pages checkboxes and selected items array when page changed
-                                scope.selectedRows = [];
+                                //scope.selectedRows = [];
                                 scope.isAllSelected = false;
 
                                 if (!params.reloading && cache && !scope.parentModule) {

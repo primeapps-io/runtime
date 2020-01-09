@@ -431,14 +431,8 @@ namespace PrimeApps.App.Helpers
                                 appDomain = "cagri";
                                 break;
                         }
-
-                        var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
-                        var subdomain = "";
-                        if (!string.IsNullOrEmpty(testMode))
-                        {
-                            subdomain = testMode == "true" ? "test" : appDomain;
-                        }
-
+                    
+                        var subdomain =  appDomain;
                         domain = string.Format(domain, subdomain);
 
                         using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
@@ -1057,13 +1051,7 @@ namespace PrimeApps.App.Helpers
                                 break;
                         }
 
-                        var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
-                        var subdomain = "";
-                        if (!string.IsNullOrEmpty(testMode))
-                        {
-                            subdomain = testMode == "true" ? "test" : appDomain;
-                        }
-
+                        var subdomain =  appDomain;                        
                         domain = string.Format(domain, subdomain);
 
                         using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
@@ -1191,13 +1179,7 @@ namespace PrimeApps.App.Helpers
                                     break;
                             }
 
-                            var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
-                            var subdomain = "";
-                            if (!string.IsNullOrEmpty(testMode))
-                            {
-                                subdomain = testMode == "true" ? "test" : appDomain;
-                            }
-
+                            var subdomain =  appDomain;                           
                             domain = string.Format(domain, subdomain);
 
                             using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
@@ -1291,13 +1273,7 @@ namespace PrimeApps.App.Helpers
                                     break;
                             }
 
-                            var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
-                            var subdomain = "";
-                            if (!string.IsNullOrEmpty(testMode))
-                            {
-                                subdomain = testMode == "true" ? "test" : appDomain;
-                            }
-
+                            var subdomain = appDomain;
                             domain = string.Format(domain, subdomain);
 
                             using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
@@ -1466,13 +1442,7 @@ namespace PrimeApps.App.Helpers
                             break;
                     }
 
-                    var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
-                    var subdomain = "";
-                    if (!string.IsNullOrEmpty(testMode))
-                    {
-                        subdomain = testMode == "true" ? "test" : appDomain;
-                    }
-
+                    var subdomain = appDomain;
                     domain = string.Format(domain, subdomain);
 
                     using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))
@@ -1650,13 +1620,7 @@ namespace PrimeApps.App.Helpers
                             break;
                     }
 
-                    var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
-                    var subdomain = "";
-                    if (!string.IsNullOrEmpty(testMode))
-                    {
-                        subdomain = testMode == "true" ? "test" : appDomain;
-                    }
-
+                    var subdomain = appDomain;
                     domain = string.Format(domain, subdomain);
 
                     using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))//, cacheHelper))

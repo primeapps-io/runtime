@@ -41,7 +41,6 @@ namespace PrimeApps.App.Helpers
             {
                 if (actionButton.ActionType == ActionButtonEnum.ActionType.Scripting)
                 {
-                    actionButton.Template = _moduleHelper.ReplaceDynamicValues(actionButton.Url, appConfigs);
                     actionButton.Url = _moduleHelper.ReplaceDynamicValues(actionButton.Url, appConfigs);
 
                     if (!string.IsNullOrEmpty(actionButton.Url))
@@ -80,6 +79,10 @@ namespace PrimeApps.App.Helpers
                             actionButton.Template = "console.error('" + actionButton.Url + " has connection error. Please check the url.');";
                             continue;
                         }
+                    }
+                    else
+                    {
+                        actionButton.Template = _moduleHelper.ReplaceDynamicValues(actionButton.Template, appConfigs);
                     }
                 }
                 else if (actionButton.ActionType == ActionButtonEnum.ActionType.Webhook)

@@ -37,8 +37,8 @@ namespace PrimeApps.Studio.Helpers
 				ModuleId = moduleEntity != null ? moduleEntity?.Id : null,
 				ParentId = parent != null ? parent?.Id : null,
 				Route = moduleEntity != null ? moduleEntity.Name : request["route"].ToString(),
-				LabelEn = request["name"].ToString(),
-				LabelTr = request["name"].ToString(),
+				LabelEn = request["name_en"] != null ? request["name_en"].ToString() : request["name"].ToString(),
+				LabelTr = request["name_tr"] != null ? request["name_tr"].ToString() :request["name"].ToString(),
 				MenuIcon = request["icon"].ToString(),
 				Order = (short)(int)request["no"],
 				IsDynamic = (bool)request["isDynamic"],
@@ -48,14 +48,17 @@ namespace PrimeApps.Studio.Helpers
 			return menuItem;
 		}
 
-		public static MenuItem UpdateMenuItems(JObject request, MenuItem menuItem)
+		public static MenuItem UpdateMenuItems(JObject request, MenuItem menuItem, string language)
 		{
 			menuItem.MenuId = menuItem.MenuId;
 			menuItem.ModuleId = menuItem.ModuleId;
 			menuItem.ParentId = (int)request["parentId"] > 0 ? (int?)request["parentId"] : null;
 			menuItem.Route = (string)request["menuName"]; //menuItem.Route;
-			menuItem.LabelEn = (string)request["name"];
-			menuItem.LabelTr = (string)request["name"];
+			if (language == "en")
+				menuItem.LabelEn = (string)request["name"];
+			else
+				menuItem.LabelTr = (string)request["name"];
+
 			menuItem.MenuIcon = (string)request["icon"];
 			menuItem.Order = (short)(int)request["no"];
 			menuItem.IsDynamic = (bool)request["isDynamic"];

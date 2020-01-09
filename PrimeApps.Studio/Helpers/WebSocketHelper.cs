@@ -186,6 +186,7 @@ namespace PrimeApps.Studio.Helpers
             }
             catch (Exception ex)
             {
+                ErrorHandler.LogError(ex);
             }
         }
     }

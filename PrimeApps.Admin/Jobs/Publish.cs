@@ -180,6 +180,13 @@ namespace PrimeApps.Admin.Jobs
 
                     foreach (var tenantObj in tenants.OfType<object>().Select((id, index) => new {id, index}))
                     {
+                        var dbName = $"tenant{tenantObj.id}";
+
+                        var exists = PostgresHelper.Read(_configuration.GetConnectionString("PlatformDBConnection"), "platform", $"SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower('{dbName}');", "hasRows");
+                        
+                        if (!exists)
+                            continue;
+                        
                         versions = new List<string>();
                         foreach (var package in packages)
                         {
@@ -195,7 +202,6 @@ namespace PrimeApps.Admin.Jobs
 
                         foreach (var versionObj in versions.OfType<object>().Select((value, index) => new {value, index}))
                         {
-                            var dbName = $"tenant{tenantObj.id}";
                             var version = versionObj.value.ToString();
 
                             var release = await releaseRepository.Get(appId, version, int.Parse(tenantObj.id.ToString()));

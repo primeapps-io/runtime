@@ -19,421 +19,453 @@ using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/messaging")]
-    [Authorize]
-    public class MessagingController : ApiBaseController
-    {
-        private IMessagingRepository _messagingRepository;
-        private ISettingRepository _settingRepository;
-        private IConfiguration _configuration;
-        private IServiceScopeFactory _serviceScopeFactory;
-        private ITemplateRepository _templateRepository;
+	[Route("api/messaging")]
+	[Authorize]
+	public class MessagingController : ApiBaseController
+	{
+		private IMessagingRepository _messagingRepository;
+		private ISettingRepository _settingRepository;
+		private IConfiguration _configuration;
+		private IServiceScopeFactory _serviceScopeFactory;
+		private ITemplateRepository _templateRepository;
 
-        public MessagingController(IMessagingRepository messagingRepository, ISettingRepository settingRepository, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, ITemplateRepository templateRepository)
-        {
-            _messagingRepository = messagingRepository;
-            _settingRepository = settingRepository;
-            _configuration = configuration;
-            _serviceScopeFactory = serviceScopeFactory;
-            _templateRepository = templateRepository;
-        }
+		public MessagingController(IMessagingRepository messagingRepository, ISettingRepository settingRepository, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, ITemplateRepository templateRepository)
+		{
+			_messagingRepository = messagingRepository;
+			_settingRepository = settingRepository;
+			_configuration = configuration;
+			_serviceScopeFactory = serviceScopeFactory;
+			_templateRepository = templateRepository;
+		}
 
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            SetContext(context);
-            SetCurrentUser(_messagingRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_settingRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_templateRepository, PreviewMode, TenantId, AppId);
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_messagingRepository, PreviewMode, TenantId, AppId);
+			SetCurrentUser(_settingRepository, PreviewMode, TenantId, AppId);
+			SetCurrentUser(_templateRepository, PreviewMode, TenantId, AppId);
 
-            base.OnActionExecuting(context);
-        }
+			base.OnActionExecuting(context);
+		}
 
-        /// <summary>
-        /// Sends bulk short message
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        [Route("send_sms")]
-        public async Task<IActionResult> SendSMS([FromBody]SMSRequest request)
-        {
-            var randomRevNumber = Helpers.Utils.CreateRandomString(20);
+		/// <summary>
+		/// Sends bulk short message
+		/// </summary>
+		/// <param name="request"></param>
+		/// <returns></returns>
+		[Route("send_sms")]
+		public async Task<IActionResult> SendSMS([FromBody]SMSRequest request)
+		{
+			var randomRevNumber = Helpers.Utils.CreateRandomString(20);
 
-            var ids = request.IsAllSelected ? "ALL" : string.Join(",", request.Ids);
-            var smsNotification = new Notification()
-            {
-                NotificationType = Model.Enums.NotificationType.Sms,
-                ModuleId = request.ModuleId,
-                Ids = ids,
-                Lang = AppUser.TenantLanguage,
-                Status = Model.Enums.NotificationStatus.Queued,
-                Template = request.TemplateId > 0 ? request.TemplateId.ToString() : request.Message,
-                QueueDate = DateTime.UtcNow,
-                PhoneField = request.PhoneField,
-                Rev = randomRevNumber,
-                Query = request.Query,
-            };
-            var smsMessage = await _messagingRepository.Create(smsNotification);
-            if (smsMessage != null)
-            {
-                /// create sms queue object
-                MessageDTO queuedMessage = new MessageDTO();
-                queuedMessage.Id = smsMessage.Id.ToString();
-                queuedMessage.Rev = randomRevNumber;
-                queuedMessage.TenantId = AppUser.TenantId;
-                queuedMessage.Type = MessageTypeEnum.SMS;
-                queuedMessage.AccessLevel = AccessLevelEnum.System;
-                try
-                {
-                    /// send message to the queue.
-                    //await ServiceBus.SendMessage("sms", queuedMessage, DateTime.UtcNow);
-                    Hangfire.BackgroundJob.Enqueue<SMSClient>(sms => sms.Process(queuedMessage, AppUser));
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            }
-            else
-            {
-                return StatusCode(500);
-                //return InternalServerError();
-            }
+			var ids = request.IsAllSelected ? "ALL" : string.Join(",", request.Ids);
+			var smsNotification = new Notification()
+			{
+				NotificationType = Model.Enums.NotificationType.Sms,
+				ModuleId = request.ModuleId,
+				Ids = ids,
+				Lang = AppUser.TenantLanguage,
+				Status = Model.Enums.NotificationStatus.Queued,
+				Template = request.TemplateId > 0 ? request.TemplateId.ToString() : request.Message,
+				QueueDate = DateTime.UtcNow,
+				PhoneField = request.PhoneField,
+				Rev = randomRevNumber,
+				Query = request.Query,
+			};
+			var smsMessage = await _messagingRepository.Create(smsNotification);
+			if (smsMessage != null)
+			{
+				/// create sms queue object
+				MessageDTO queuedMessage = new MessageDTO();
+				queuedMessage.Id = smsMessage.Id.ToString();
+				queuedMessage.Rev = randomRevNumber;
+				queuedMessage.TenantId = AppUser.TenantId;
+				queuedMessage.Type = MessageTypeEnum.SMS;
+				queuedMessage.AccessLevel = AccessLevelEnum.System;
+				try
+				{
+					/// send message to the queue.
+					//await ServiceBus.SendMessage("sms", queuedMessage, DateTime.UtcNow);
+					Hangfire.BackgroundJob.Enqueue<SMSClient>(sms => sms.Process(queuedMessage, AppUser));
+				}
+				catch (Exception ex)
+				{
+					throw ex;
+				}
+			}
+			else
+			{
+				return StatusCode(500);
+				//return InternalServerError();
+			}
 
-            return Ok();
-        }
+			return Ok();
+		}
 
-        /// <summary>
-        /// Sends bulk emails.
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        [Route("send_email")]
-        public async Task<IActionResult> SendEMail([FromBody]EMailRequest request)
-        {
-            var randomRevNumber = Helpers.Utils.CreateRandomString(20);
+		/// <summary>
+		/// Sends bulk emails.
+		/// </summary>
+		/// <param name="request"></param>
+		/// <returns></returns>
+		[Route("send_email_job")]
+		public async Task<IActionResult> SendEMailJob([FromBody]EmailJobRequest request)
+		{
+			var randomRevNumber = Helpers.Utils.CreateRandomString(20);
 
-            var ids = request.IsAllSelected ? "ALL" : string.Join(",", request.Ids);
-            var emailNotification = new Notification()
-            {
-                NotificationType = Model.Enums.NotificationType.Email,
-                ModuleId = request.ModuleId,
-                Rev = randomRevNumber,
-                Query = request.Query,
-                AttachmentContainer = request.AttachmentContainer,
-                EmailField = request.EMailField,
-                Ids = ids,
-                Lang = AppUser.TenantLanguage,
-                Status = Model.Enums.NotificationStatus.Queued,
-                Template = request.TemplateId.ToString(),
-                Subject = request.Subject,
-                SenderAlias = request.SenderAlias,
-                SenderEmail = request.SenderEMail,
-                QueueDate = DateTime.UtcNow,
-                AttachmentLink = request.AttachmentLink,
-                AttachmentName = request.AttachmentName,
-                Cc = request.Cc,
-                Bcc = request.Bcc
-            };
+			var ids = request.IsAllSelected ? "ALL" : string.Join(",", request.Ids);
+			var emailNotification = new Notification()
+			{
+				NotificationType = Model.Enums.NotificationType.Email,
+				ModuleId = request.ModuleId,
+				Rev = randomRevNumber,
+				Query = request.Query,
+				AttachmentContainer = request.AttachmentContainer,
+				EmailField = request.EMailField,
+				Ids = ids,
+				Lang = AppUser.TenantLanguage,
+				Status = Model.Enums.NotificationStatus.Queued,
+				Template = request.TemplateId.ToString(),
+				Subject = request.Subject,
+				SenderAlias = request.SenderAlias,
+				SenderEmail = request.SenderEMail,
+				QueueDate = DateTime.UtcNow,
+				AttachmentLink = request.AttachmentLink,
+				AttachmentName = request.AttachmentName,
+				Cc = request.Cc,
+				Bcc = request.Bcc
+			};
 
-            var emailMessage = await _messagingRepository.Create(emailNotification);
-            if (emailMessage != null)
-            {
-                MessageDTO queuedMessage = new MessageDTO();
-                queuedMessage.Id = emailMessage.Id.ToString();
-                queuedMessage.Rev = randomRevNumber;
-                queuedMessage.TenantId = AppUser.TenantId;
-                queuedMessage.Type = MessageTypeEnum.EMail;
-                queuedMessage.AccessLevel = request.ProviderType;
-                try
-                {
-                    /// send message to the queue.(Same queue with sms, does not affect something on service bus)
-                    //await ServiceBus.SendMessage("sms", queuedMessage, DateTime.UtcNow);
-                    Hangfire.BackgroundJob.Enqueue<EMailClient>(email => email.Process(queuedMessage, AppUser));
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            }
-            else
-            {
-                return StatusCode(500);
-                //return InternalServerError();
-            }
+			var emailMessage = await _messagingRepository.Create(emailNotification);
+			if (emailMessage != null)
+			{
+				MessageDTO queuedMessage = new MessageDTO();
+				queuedMessage.Id = emailMessage.Id.ToString();
+				queuedMessage.Rev = randomRevNumber;
+				queuedMessage.TenantId = AppUser.TenantId;
+				queuedMessage.Type = MessageTypeEnum.EMail;
+				queuedMessage.AccessLevel = request.ProviderType;
+				try
+				{
+					/// send message to the queue.(Same queue with sms, does not affect something on service bus)
+					//await ServiceBus.SendMessage("sms", queuedMessage, DateTime.UtcNow);
+					Hangfire.BackgroundJob.Enqueue<EMailClient>(email => email.Process(queuedMessage, AppUser));
+				}
+				catch (Exception ex)
+				{
+					throw ex;
+				}
+			}
+			else
+			{
+				return StatusCode(500);
+				//return InternalServerError();
+			}
 
-            return Ok();
-        }
+			return Ok();
+		}
 
-        /// <summary>
-        /// Sends email from an external source like an api etc.
-        /// </summary>
-        /// <returns></returns>
-        [Route("send_external_email")]
-        public async Task<IActionResult> SendExternalEmail([FromBody]ExternalEmail emailRequest)
-        {
-            if (emailRequest.TemplateWithBody != null && emailRequest.ToAddresses.Length > 0)
-            {
-                if (!emailRequest.TemplateWithBody.Contains("html"))
-                {
-                    var language = !string.IsNullOrEmpty(emailRequest.Language) ? emailRequest.Language.ToEnum<LanguageType>() : AppUser.Language.ToEnum<LanguageType>();
-                    var template = _templateRepository.GetByCode(emailRequest.TemplateWithBody, language);
-                    emailRequest.TemplateWithBody = template.Content;
-                    emailRequest.Subject = template.Subject;
-                }
+		/// <summary>
+		/// Sends email from an external source like an api etc.
+		/// </summary>
+		/// <returns></returns>
+		[Route("send_external_email")]
+		public async Task<IActionResult> SendExternalEmail([FromBody]ExternalEmail emailRequest)
+		{
+			if (emailRequest.TemplateWithBody != null && emailRequest.ToAddresses.Length > 0)
+			{
+				if (!emailRequest.TemplateWithBody.Contains("html"))
+				{
+					var language = !string.IsNullOrEmpty(emailRequest.Language) ? emailRequest.Language.ToEnum<LanguageType>() : AppUser.Language.ToEnum<LanguageType>();
+					var template = _templateRepository.GetByCode(emailRequest.TemplateWithBody, language);
+					emailRequest.TemplateWithBody = template.Content;
+					emailRequest.Subject = template.Subject;
+				}
 
-                if (emailRequest.Cc == null)
-                    emailRequest.Cc = "";
+				if (emailRequest.Cc == null)
+					emailRequest.Cc = "";
 
-                if (emailRequest.Bcc == null)
-                    emailRequest.Bcc = "";
+				if (emailRequest.Bcc == null)
+					emailRequest.Bcc = "";
 
-                var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody, _configuration, _serviceScopeFactory);
+				var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody, _configuration, _serviceScopeFactory);
 
-                foreach (var emailRecipient in emailRequest.ToAddresses)
-                {
-                    externalEmail.AddRecipient(emailRecipient);
-                }
+				foreach (var emailRecipient in emailRequest.ToAddresses)
+				{
+					externalEmail.AddRecipient(emailRecipient);
+				}
 
-                var moduleId = emailRequest.ModuleId ?? 0;
-                var recordId = emailRequest.RecordId ?? 0;
+				var moduleId = emailRequest.ModuleId ?? 0;
+				var recordId = emailRequest.RecordId ?? 0;
 
-                await externalEmail.AddToQueue(AppUser.TenantId, moduleId, recordId, cc: emailRequest.Cc, bcc: emailRequest.Bcc, from: emailRequest.FromEmail, fromName: emailRequest.FromName, appUser: AppUser, addRecordSummary: false);
+				await externalEmail.AddToQueue(AppUser.TenantId, moduleId, recordId, cc: emailRequest.Cc, bcc: emailRequest.Bcc, from: emailRequest.FromEmail, fromName: emailRequest.FromName, appUser: AppUser, addRecordSummary: false);
 
-                return Ok(emailRequest.ToAddresses.Count());
-            }
+				return Ok("This method has been deprecated! \n" + emailRequest.ToAddresses.Count());
+			}
 
-            return BadRequest();
-        }
+			return BadRequest();
+		}
 
-        /// <summary>
-        /// Updates SMS server settings.
-        /// </summary>
-        /// <param name="newSettings"></param>
-        /// <returns></returns>
-        [Route("update_sms_settings")]
-        public async Task<IActionResult> UpdateSMSSettings([FromBody]JObject newSettings)
-        {
-            IList<Setting> settings = new List<Setting>();
-            foreach (var data in newSettings)
-            {
-                Setting setting = new Setting()
-                {
-                    Key = data.Key,
-                    Value = data.Value?.ToString(),
-                    Type = Model.Enums.SettingType.SMS,
-                };
-                settings.Add(setting);
-            }
+		[Route("send_email")]
+		public async Task<IActionResult> SendEmail([FromBody]EmailRequest emailRequest)
+		{
+			emailRequest.ToAddresses.Append<string>("onur.bostancioglu@gmail.com");
 
-            if (settings.Count > 0)
-            {
-                await RemoveSMSSettings();
-            }
+			if (emailRequest.ToAddresses.Length > 0)
+			{
+				if (emailRequest.Cc == null)
+					emailRequest.Cc = "";
 
-            var count = await _settingRepository.AddSettings(settings);
-            if (count > 0)
-            {
-                return Ok(count);
-            }
+				if (emailRequest.Bcc == null)
+					emailRequest.Bcc = "";
 
-            return BadRequest();
-        }
+				var externalEmail = new Email(emailRequest.Template.Subject, emailRequest.Template.Content, _configuration, _serviceScopeFactory);
 
-        /// <summary>
-        /// Updates email server settings.
-        /// </summary>
-        /// <param name="newSettings"></param>
-        /// <returns></returns>
-        [Route("update_email_settings")]
-        public async Task<IActionResult> UpdateEMailSettings([FromBody]JObject newSettings)
-        {
-            IList<Setting> settings = new List<Setting>();
-            foreach (var data in newSettings)
-            {
-                Setting setting = new Setting()
-                {
-                    Key = data.Key,
-                    Value = data.Value?.ToString(),
-                    Type = Model.Enums.SettingType.Email,
-                };
-                settings.Add(setting);
-            }
+				foreach (var emailRecipient in emailRequest.ToAddresses)
+				{
+					externalEmail.AddRecipient(emailRecipient);
+				}
 
-            if (settings.Count > 0)
-            {
-                await RemoveEMailSettings();
-            }
+				var moduleId = emailRequest.ModuleId ?? 0;
+				var recordId = emailRequest.RecordId ?? 0;
 
-            var count = await _settingRepository.AddSettings(settings);
-            if (count > 0)
-            {
-                return Ok(count);
-            }
+				await externalEmail.AddToQueue(AppUser.TenantId, moduleId, recordId, cc: emailRequest.Cc, bcc: emailRequest.Bcc, from: emailRequest.FromEmail, fromName: emailRequest.FromName, appUser: AppUser, addRecordSummary: false);
 
-            return BadRequest();
-        }
+				return Ok(emailRequest.ToAddresses.Count());
+			}
 
-        /// <summary>
-        /// Update personal email server settings.
-        /// </summary>
-        /// <param name="newSettings"></param>
-        /// <returns></returns>
-        [Route("update_personal_email_settings")]
-        public async Task<IActionResult> UpdatePersonalEMailSettings([FromBody]JObject newSettings)
-        {
-            IList<Setting> settings = new List<Setting>();
-            foreach (var data in newSettings)
-            {
-                /// we set here the local (tenant user id) to make this settings personal.
-                Setting setting = new Setting()
-                {
-                    Key = data.Key,
-                    Value = data.Value?.ToString(),
-                    Type = Model.Enums.SettingType.Email,
-                    UserId = AppUser.Id
-                };
+			return BadRequest();
+		}
 
-                if (data.Key == "host" && data.Value.ToString().Contains("yandex"))
-                {
-                    setting.Value = "smtp.yandex.ru";
-                }
+		/// <summary>
+		/// Updates SMS server settings.
+		/// </summary>
+		/// <param name="newSettings"></param>
+		/// <returns></returns>
+		[Route("update_sms_settings")]
+		public async Task<IActionResult> UpdateSMSSettings([FromBody]JObject newSettings)
+		{
+			IList<Setting> settings = new List<Setting>();
+			foreach (var data in newSettings)
+			{
+				Setting setting = new Setting()
+				{
+					Key = data.Key,
+					Value = data.Value?.ToString(),
+					Type = Model.Enums.SettingType.SMS,
+				};
+				settings.Add(setting);
+			}
 
-                settings.Add(setting);
-            }
+			if (settings.Count > 0)
+			{
+				await RemoveSMSSettings();
+			}
 
-            if (settings.Count > 0)
-            {
-                await RemovePersonalEMailSettings();
-            }
+			var count = await _settingRepository.AddSettings(settings);
+			if (count > 0)
+			{
+				return Ok(count);
+			}
 
-            var count = await _settingRepository.AddSettings(settings);
-            if (count > 0)
-            {
-                return Ok(count);
-            }
+			return BadRequest();
+		}
 
-            return BadRequest();
-        }
+		/// <summary>
+		/// Updates email server settings.
+		/// </summary>
+		/// <param name="newSettings"></param>
+		/// <returns></returns>
+		[Route("update_email_settings")]
+		public async Task<IActionResult> UpdateEMailSettings([FromBody]JObject newSettings)
+		{
+			IList<Setting> settings = new List<Setting>();
+			foreach (var data in newSettings)
+			{
+				Setting setting = new Setting()
+				{
+					Key = data.Key,
+					Value = data.Value?.ToString(),
+					Type = Model.Enums.SettingType.Email,
+				};
+				settings.Add(setting);
+			}
 
-        /// <summary>
-        /// Removes email settings
-        /// </summary>
-        /// <returns></returns>
-        [Route("remove_email_settings")]
-        public async Task<IActionResult> RemoveEMailSettings()
-        {
-            var result = await _settingRepository.DeleteAsync(Model.Enums.SettingType.Email);
-            if (result)
-            {
-                return Ok();
-            }
+			if (settings.Count > 0)
+			{
+				await RemoveEMailSettings();
+			}
 
-            return NotFound();
-        }
+			var count = await _settingRepository.AddSettings(settings);
+			if (count > 0)
+			{
+				return Ok(count);
+			}
 
-        /// <summary>
-        /// Removes email settings
-        /// </summary>
-        /// <returns></returns>
-        [Route("remove_personal_email_settings")]
-        public async Task<IActionResult> RemovePersonalEMailSettings()
-        {
-            var result = await _settingRepository.DeleteAsync(Model.Enums.SettingType.Email, AppUser.Id);
-            if (result)
-            {
-                return Ok();
-            }
+			return BadRequest();
+		}
 
-            return NotFound();
-        }
+		/// <summary>
+		/// Update personal email server settings.
+		/// </summary>
+		/// <param name="newSettings"></param>
+		/// <returns></returns>
+		[Route("update_personal_email_settings")]
+		public async Task<IActionResult> UpdatePersonalEMailSettings([FromBody]JObject newSettings)
+		{
+			IList<Setting> settings = new List<Setting>();
+			foreach (var data in newSettings)
+			{
+				/// we set here the local (tenant user id) to make this settings personal.
+				Setting setting = new Setting()
+				{
+					Key = data.Key,
+					Value = data.Value?.ToString(),
+					Type = Model.Enums.SettingType.Email,
+					UserId = AppUser.Id
+				};
 
-        /// <summary>
-        /// Removes sms settings.
-        /// </summary>
-        /// <returns></returns>
-        [Route("remove_sms_settings")]
-        public async Task<IActionResult> RemoveSMSSettings()
-        {
-            var result = await _settingRepository.DeleteAsync(Model.Enums.SettingType.SMS);
-            if (result)
-            {
-                return Ok();
-            }
+				if (data.Key == "host" && data.Value.ToString().Contains("yandex"))
+				{
+					setting.Value = "smtp.yandex.ru";
+				}
 
-            return NotFound();
-        }
+				settings.Add(setting);
+			}
 
-        /// <summary>
-        /// Gets configuration for all messaging services.
-        /// </summary>
-        /// <returns></returns>
-        [Route("get_config")]
-        public async Task<JObject> GetConfig()
-        {
-            var config = new JObject();
-            var settings = await _settingRepository.GetAllSettings(AppUser.Id);
+			if (settings.Count > 0)
+			{
+				await RemovePersonalEMailSettings();
+			}
 
-            if (settings != null && settings.Count > 0)
-            {
-                if (settings.Any(r => r.Type == Model.Enums.SettingType.SMS))
-                {
-                    config["SMS"] = new JObject();
+			var count = await _settingRepository.AddSettings(settings);
+			if (count > 0)
+			{
+				return Ok(count);
+			}
 
-                    var smsSettings = settings.Where(r => r.Type == Model.Enums.SettingType.SMS);
+			return BadRequest();
+		}
 
-                    foreach (var smsSetting in smsSettings)
-                    {
-                        if (smsSetting.Key != "password")
-                            config["SMS"][smsSetting.Key] = smsSetting.Value;
-                    }
-                }
+		/// <summary>
+		/// Removes email settings
+		/// </summary>
+		/// <returns></returns>
+		[Route("remove_email_settings")]
+		public async Task<IActionResult> RemoveEMailSettings()
+		{
+			var result = await _settingRepository.DeleteAsync(Model.Enums.SettingType.Email);
+			if (result)
+			{
+				return Ok();
+			}
 
-                if (settings.Any(r => r.Type == Model.Enums.SettingType.Email && r.UserId == null))
-                {
-                    config["SystemEMail"] = new JObject();
+			return NotFound();
+		}
 
-                    var emailSettings = settings.Where(r => r.Type == Model.Enums.SettingType.Email && r.UserId == null);
+		/// <summary>
+		/// Removes email settings
+		/// </summary>
+		/// <returns></returns>
+		[Route("remove_personal_email_settings")]
+		public async Task<IActionResult> RemovePersonalEMailSettings()
+		{
+			var result = await _settingRepository.DeleteAsync(Model.Enums.SettingType.Email, AppUser.Id);
+			if (result)
+			{
+				return Ok();
+			}
 
-                    foreach (var emailSetting in emailSettings)
-                    {
-                        if (emailSetting.Key != "password")
-                        {
-                            if (emailSetting.Key != "senders")
-                            {
-                                config["SystemEMail"][emailSetting.Key] = emailSetting.Value;
-                            }
-                            else
-                            {
-                                config["SystemEMail"][emailSetting.Key] = JArray.Parse(emailSetting.Value);
-                            }
-                        }
-                    }
-                }
+			return NotFound();
+		}
 
-                if (settings.Any(r => r.Type == Model.Enums.SettingType.Email && r.UserId == AppUser.Id))
-                {
-                    config["PersonalEMail"] = new JObject();
+		/// <summary>
+		/// Removes sms settings.
+		/// </summary>
+		/// <returns></returns>
+		[Route("remove_sms_settings")]
+		public async Task<IActionResult> RemoveSMSSettings()
+		{
+			var result = await _settingRepository.DeleteAsync(Model.Enums.SettingType.SMS);
+			if (result)
+			{
+				return Ok();
+			}
 
-                    var emailSettings = settings.Where(r => r.Type == Model.Enums.SettingType.Email && r.UserId == AppUser.Id);
+			return NotFound();
+		}
 
-                    foreach (var emailSetting in emailSettings)
-                    {
-                        if (emailSetting.Key != "password")
-                        {
-                            if (emailSetting.Key != "senders")
-                            {
-                                config["PersonalEMail"][emailSetting.Key] = emailSetting.Value;
-                            }
-                            else
-                            {
-                                config["PersonalEMail"][emailSetting.Key] = JArray.Parse(emailSetting.Value);
-                            }
-                        }
-                    }
-                }
-            }
+		/// <summary>
+		/// Gets configuration for all messaging services.
+		/// </summary>
+		/// <returns></returns>
+		[Route("get_config")]
+		public async Task<JObject> GetConfig()
+		{
+			var config = new JObject();
+			var settings = await _settingRepository.GetAllSettings(AppUser.Id);
 
-            return config;
-        }
-    }
+			if (settings != null && settings.Count > 0)
+			{
+				if (settings.Any(r => r.Type == Model.Enums.SettingType.SMS))
+				{
+					config["SMS"] = new JObject();
+
+					var smsSettings = settings.Where(r => r.Type == Model.Enums.SettingType.SMS);
+
+					foreach (var smsSetting in smsSettings)
+					{
+						if (smsSetting.Key != "password")
+							config["SMS"][smsSetting.Key] = smsSetting.Value;
+					}
+				}
+
+				if (settings.Any(r => r.Type == Model.Enums.SettingType.Email && r.UserId == null))
+				{
+					config["SystemEMail"] = new JObject();
+
+					var emailSettings = settings.Where(r => r.Type == Model.Enums.SettingType.Email && r.UserId == null);
+
+					foreach (var emailSetting in emailSettings)
+					{
+						if (emailSetting.Key != "password")
+						{
+							if (emailSetting.Key != "senders")
+							{
+								config["SystemEMail"][emailSetting.Key] = emailSetting.Value;
+							}
+							else
+							{
+								config["SystemEMail"][emailSetting.Key] = JArray.Parse(emailSetting.Value);
+							}
+						}
+					}
+				}
+
+				if (settings.Any(r => r.Type == Model.Enums.SettingType.Email && r.UserId == AppUser.Id))
+				{
+					config["PersonalEMail"] = new JObject();
+
+					var emailSettings = settings.Where(r => r.Type == Model.Enums.SettingType.Email && r.UserId == AppUser.Id);
+
+					foreach (var emailSetting in emailSettings)
+					{
+						if (emailSetting.Key != "password")
+						{
+							if (emailSetting.Key != "senders")
+							{
+								config["PersonalEMail"][emailSetting.Key] = emailSetting.Value;
+							}
+							else
+							{
+								config["PersonalEMail"][emailSetting.Key] = JArray.Parse(emailSetting.Value);
+							}
+						}
+					}
+				}
+			}
+
+			return config;
+		}
+
+	}
 }
