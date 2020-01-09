@@ -30,11 +30,12 @@ namespace PrimeApps.Auth.UI
 		{
 			var language = !string.IsNullOrEmpty(request.Cookies[".AspNetCore.Culture"]) ? request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 
-			// Login ve ya ForgotPassword ekranında kullanıcının dili setli değilse, tarayınıcın dilini defaultta setliyoruz.
+			//If user language did not detect in current screens, set browser default language.
 			if (string.IsNullOrEmpty(language))
 			{
-				var browserLang = request.Headers["Accept-Language"].ToString().Split(";").FirstOrDefault()?.Split(",").FirstOrDefault();
-				language = browserLang == "en-US" || browserLang == "en" ? "en" : "tr";
+				var defaultCulture = request.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture?.Culture?.Name;
+				var browserLang = request.GetTypedHeaders().AcceptLanguage.First()?.Value.Value;
+				language = (browserLang == "tr-TR" || browserLang == "tr" || defaultCulture == "tr-TR" || defaultCulture == "tr") ? "tr" : "en";
 			}
 
 			var cdnUrlStatic = "";
