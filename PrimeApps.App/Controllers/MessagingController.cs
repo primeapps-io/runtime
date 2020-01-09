@@ -251,6 +251,10 @@ namespace PrimeApps.App.Controllers
 					Value = data.Value?.ToString(),
 					Type = Model.Enums.SettingType.SMS,
 				};
+
+				if (data.Key == "password")
+					setting.Value = CryptoHelper.Encrypt(data.Value?.ToString());
+
 				settings.Add(setting);
 			}
 
