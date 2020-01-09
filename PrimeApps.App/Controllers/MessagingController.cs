@@ -207,9 +207,7 @@ namespace PrimeApps.App.Controllers
 
 		[Route("send_email")]
 		public async Task<IActionResult> SendEmail([FromBody]EmailRequest emailRequest)
-		{
-			emailRequest.ToAddresses.Append<string>("onur.bostancioglu@gmail.com");
-
+		{			
 			if (emailRequest.ToAddresses.Length > 0)
 			{
 				if (emailRequest.Cc == null)
