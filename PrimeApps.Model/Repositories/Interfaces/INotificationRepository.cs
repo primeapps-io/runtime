@@ -6,10 +6,10 @@ using PrimeApps.Model.Common.Messaging;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
-    public interface INotificationRepository  :IRepositoryBaseTenant
-    {
-        Task<Notification> GetById(int id);
+	public interface INotificationRepository : IRepositoryBaseTenant
+	{
+		Task<Notification> GetById(int id);
 
-        Task<List<Setting>> GetSetting(MessageDTO queueItem, int notificationId);
-    }
+		Task<List<Setting>> GetSetting(MessageDTO queueItem);
+	}
 }
