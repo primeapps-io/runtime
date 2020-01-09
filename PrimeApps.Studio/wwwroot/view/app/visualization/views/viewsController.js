@@ -286,6 +286,7 @@ angular.module('primeapps')
                 view.module_id = $scope.module.id;
                 view.label = $scope.view.label;
                 view.sharing_type = $scope.view.sharing_type;
+                view.system_type = $scope.view.system_type;
                 view.fields = [];
                 view.filters = [];
 
@@ -850,7 +851,8 @@ angular.module('primeapps')
                             id: "id",
                             fields: {
                                 LabelEn: { type: "string" },
-                                Module: { type: "string" }
+                                Module: { type: "string" },
+                                //: { type: "enums" }
                             }
                         }
                     }
@@ -861,7 +863,7 @@ angular.module('primeapps')
                 noRecords: true,
                 filterable: true,
                 filter: function (e) {
-                    if (e.filter) {
+                    if (e.filter && e.field !== 'SystemType') {
                         for (var i = 0; i < e.filter.filters.length; i++) {
                             e.filter.filters[i].ignoreCase = true;
                         }
@@ -871,6 +873,7 @@ angular.module('primeapps')
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left">' + view.label_en + '</td>';
                     trTemp += '<td class="text-left">' + view.module.label_en_singular + '</td>';
+                   // trTemp += '<td class="text-capitalize">' + view.system_type + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); deleteView(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
@@ -878,6 +881,7 @@ angular.module('primeapps')
                     var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left">' + view.label_en + '</td>';
                     trTemp += '<td class="text-left">' + view.module.label_en_singular + '</td>';
+                    //trTemp += '<td class="text-capitalize">' + view.system_type + '</td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); deleteView(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
@@ -889,7 +893,6 @@ angular.module('primeapps')
                     info: true,
                 },
                 columns: [
-
                     {
                         field: 'LabelEn',
                         title: $filter('translate')('View.ViewName'),
@@ -897,7 +900,6 @@ angular.module('primeapps')
                             'class': 'text-left'
                         },
                     },
-
                     {
                         field: 'Module.Name',
                         title: $filter('translate')('Setup.Modules.Name'),
@@ -905,6 +907,14 @@ angular.module('primeapps')
                             'class': 'text-left'
                         },
                     },
+                    //{
+                    //    field: 'SystemType',
+                    //    title: $filter('translate')('Common.SystemType'),
+                    //    values: [
+                    //        { text: 'System', value: 'System' },
+                    //        { text: 'Custom', value: 'Custom' },
+                    //        { text: 'Component', value: 'Component' }]
+                    //},
                     {
                         field: '',
                         title: '',

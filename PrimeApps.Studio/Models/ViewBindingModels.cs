@@ -17,6 +17,8 @@ namespace PrimeApps.Studio.Models
 
         public ViewSharingType SharingType { get; set; }
 
+        public SystemType SystemType { get; set; }
+
         [StringLength(200), BalancedParentheses, FilterLogic]
         public string FilterLogic { get; set; }
 
