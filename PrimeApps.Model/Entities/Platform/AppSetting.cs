@@ -60,6 +60,9 @@ namespace PrimeApps.Model.Entities.Platform
         [Column("enable_api_registration")]
         public bool EnableAPIRegistration { get; set; }
 
+        [Column("enable_ldap")]
+        public bool EnableLDAP { get; set; }
+
         public virtual App App { get; set; }
     }
 }

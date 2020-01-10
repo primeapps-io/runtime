@@ -54,5 +54,8 @@ namespace PrimeApps.Model.Common.App
 
         [JsonProperty("enable_api_registration"), DataMember(Name = "enable_api_registration")]
         public bool EnableAPIRegistration { get; set; }
+
+        [JsonProperty("enable_ldap"), DataMember(Name = "enable_ldap")]
+        public bool EnableLDAP { get; set; }
     }
 }
