@@ -42,5 +42,6 @@ namespace PrimeApps.Model.Common.App
         public string ExternalLogin { get; set; }
         public RegistrationType RegistrationType { get; set; }
         public string TenantOperationWebhook { get; set; }
+        public JObject Options { get; set; }
     }
 }

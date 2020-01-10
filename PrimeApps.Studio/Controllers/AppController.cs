@@ -89,11 +89,11 @@ namespace PrimeApps.Studio.Controllers
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
-			if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
-				return Forbid(ApiResponseMessages.PERMISSION);
+            if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
+                return Forbid(ApiResponseMessages.PERMISSION);
 
-			var secret = Guid.NewGuid().ToString().Replace("-", string.Empty);
-			var secretEncrypt = CryptoHelper.Encrypt(secret);
+            var secret = Guid.NewGuid().ToString().Replace("-", string.Empty);
+            var secretEncrypt = CryptoHelper.Encrypt(secret);
 
 			var app = new AppDraft
 			{
@@ -186,13 +186,13 @@ namespace PrimeApps.Studio.Controllers
 
 			Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser));
 
-			if (Request.Host.Value.Contains("localhost"))
-				await _storage.CreateBucketPolicy($"app{app.Id}", $"{Request.Scheme}://localhost:*", UnifiedStorage.PolicyType.StudioPolicy);
-			else
-			{
-				await _storage.CreateBucketPolicy($"app{app.Id}", $"{Request.Scheme}://*.primeapps.io", UnifiedStorage.PolicyType.StudioPolicy);
-				await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}", $"{Request.Scheme}://*.primeapps.app", UnifiedStorage.PolicyType.StudioPolicy);
-			}
+            if (Request.Host.Value.Contains("localhost"))
+                await _storage.CreateBucketPolicy($"app{app.Id}", $"{Request.Scheme}://localhost:*", UnifiedStorage.PolicyType.StudioPolicy);
+            else
+            {
+                await _storage.CreateBucketPolicy($"app{app.Id}", $"{Request.Scheme}://*.primeapps.io", UnifiedStorage.PolicyType.StudioPolicy);
+                await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}", $"{Request.Scheme}://*.primeapps.app", UnifiedStorage.PolicyType.StudioPolicy);
+            }
 
 			return Ok(app);
 		}
@@ -216,9 +216,10 @@ namespace PrimeApps.Studio.Controllers
 			app.Setting.AppDomain = model.AppDomain;
 			app.Setting.AuthDomain = model.AuthDomain;
 
-			var options = JObject.Parse(app.Setting.Options);
-			options["enable_registration"] = model.EnableRegistration;
-			options["clear_all_records"] = model.ClearAllRecords;
+            var options = JObject.Parse(app.Setting.Options);
+            options["enable_registration"] = model.EnableRegistration;
+            options["enable_api_registration"] = model.EnableAPIRegistration;
+            options["clear_all_records"] = model.ClearAllRecords;
 
 			app.Setting.Options = options.ToJsonString();
 
@@ -343,26 +344,26 @@ namespace PrimeApps.Studio.Controllers
 
 			var app = await _appDraftRepository.GetSettings(id);
 
-			return app != null ? Ok(app.AppTheme) : Ok(app);
-		}
+            return app != null ? Ok(app.AppTheme) : Ok(app);
+        }
 
-		[Route("migration/{id:int}"), HttpGet]
-		public async Task<IActionResult> Migration(int id)
-		{
-			var app = await _appDraftRepository.Get(id);
+        [Route("migration/{id:int}"), HttpGet]
+        public async Task<IActionResult> Migration(int id)
+        {
+            var app = await _appDraftRepository.Get(id);
 
-			if (!string.IsNullOrEmpty(app.Logo))
-			{
-				var regex = new Regex(@"[\w-]+.(jpg|png|jpeg)");
-				var match = regex.Match(app.Logo);
-				if (match.Success)
-				{
-					Console.WriteLine("MATCH VALUE: " + match.Value);
-				}
+            if (!string.IsNullOrEmpty(app.Logo))
+            {
+                var regex = new Regex(@"[\w-]+.(jpg|png|jpeg)");
+                var match = regex.Match(app.Logo);
+                if (match.Success)
+                {
+                    Console.WriteLine("MATCH VALUE: " + match.Value);
+                }
 
-			}
+            }
 
-			return app != null ? Ok(app.Setting.AppTheme) : Ok(app);
-		}
-	}
+            return app != null ? Ok(app.Setting.AppTheme) : Ok(app);
+        }
+    }
 }

@@ -214,33 +214,34 @@ namespace PrimeApps.Auth.UI
 				}
 			}
 
-			var application = new ApplicationInfoViewModel
-			{
-				Id = app.Id,
-				Name = app.Name,
-				Title = theme["title"].ToString(),
-				MultiLanguage = multiLanguage,
-				Logo = theme["logo"].ToString(),
-				Theme = theme,
-				Color = theme["color"].ToString(),
-				CustomDomain = false,
-				Language = language,
-				Favicon = theme["favicon"].ToString(),
-				CdnUrl = cdnUrlStatic,
-				Domain = app.Setting.AppDomain,
-				ApplicationSetting = new ApplicationSettingViewModel
-				{
-					Culture = app.Setting.Culture,
-					Currency = app.Setting.Currency,
-					TimeZone = app.Setting.TimeZone,
-					GoogleAnalytics = app.Setting.GoogleAnalyticsCode,
-					ExternalLogin = app.Setting.ExternalAuth,
-					RegistrationType = app.Setting.RegistrationType,
-					TenantOperationWebhook = app.Setting.TenantOperationWebhook
-				},
-				Preview = preview,
-				Secret = app.Secret
-			};
+            var application = new ApplicationInfoViewModel
+            {
+                Id = app.Id,
+                Name = app.Name,
+                Title = theme["title"].ToString(),
+                MultiLanguage = multiLanguage,
+                Logo = theme["logo"].ToString(),
+                Theme = theme,
+                Color = theme["color"].ToString(),
+                CustomDomain = false,
+                Language = language,
+                Favicon = theme["favicon"].ToString(),
+                CdnUrl = cdnUrlStatic,
+                Domain = app.Setting.AppDomain,
+                ApplicationSetting = new ApplicationSettingViewModel
+                {
+                    Culture = app.Setting.Culture,
+                    Currency = app.Setting.Currency,
+                    TimeZone = app.Setting.TimeZone,
+                    GoogleAnalytics = app.Setting.GoogleAnalyticsCode,
+                    ExternalLogin = app.Setting.ExternalAuth,
+                    RegistrationType = app.Setting.RegistrationType,
+                    TenantOperationWebhook = app.Setting.TenantOperationWebhook,
+                    Options = new JObject { ["enable_registration"] = app.Setting.EnableRegistration, ["enable_api_registration"] = app.Setting.EnableAPIRegistration }
+                },
+                Preview = preview,
+                Secret = app.Secret
+            };
 
 			return application;
 		}
