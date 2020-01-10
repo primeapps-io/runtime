@@ -213,10 +213,11 @@ namespace PrimeApps.Auth.UI
 
 			if (ModelState.IsValid)
 			{
+				var studioUrl = _configuration.GetValue("AppSettings:StudioUrl", string.Empty);
 				//ldap control
 				var useLdap = _configuration.GetSection("Ldap").GetChildren().FirstOrDefault();
-				if (useLdap != null)
-				{
+				if (!studioUrl.Contains(vm.ApplicationInfo.Domain) && useLdap != null)
+				{ 
 					var _userStore = (ILdapUserStore)HttpContext.RequestServices.GetService(typeof(ILdapUserStore));
 					var ldapUser = _userStore.ValidateCredentials(model.Username, model.Password);
 
@@ -233,11 +234,20 @@ namespace PrimeApps.Auth.UI
 
 						return View(vm);
 					}
+					
+					var platformUser = await _platformUserRepository.GetAsync(model.Username);
+
+					if (platformUser == null)
+					{
+						vm.Error = "WrongInfo";
+
+						if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+							return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vm);
+
+						return View(vm);
+					} 
 				}
-
-				var studioUrl = _configuration.GetValue("AppSettings:StudioUrl", string.Empty);
-				var previewMode = vm.ApplicationInfo.Preview ? "app" : "tenant";
-
+				
 				if (!string.IsNullOrEmpty(studioUrl) && studioUrl.Contains(vm.ApplicationInfo.Domain))
 				{
 					var platformUser = await _platformUserRepository.GetAsync(model.Username);
@@ -264,9 +274,9 @@ namespace PrimeApps.Auth.UI
 						}
 					}
 				}
-
-				var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password,
-					model.RememberLogin, lockoutOnFailure: false);
+				
+				var previewMode = vm.ApplicationInfo.Preview ? "app" : "tenant";
+				var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: false);
 				var validationSkipDomains = _configuration.GetValue("AppSettings:ValidationSkipDomains", string.Empty);
 				Array validationSkipDomainsArr = null;
 
