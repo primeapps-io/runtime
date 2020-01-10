@@ -372,7 +372,11 @@ namespace PrimeApps.Auth.UI
 					return Redirect(Request.Scheme + "://" + vm.ApplicationInfo.Domain);
 				else
 					return RedirectToAction(nameof(AccountController.Index), "Account");
-			}
+			} 
+
+            //Preview'de register kapatıldı
+            if (vm.ApplicationInfo.Preview)
+                return RedirectToAction(nameof(AccountController.Login), "Account", new { returnUrl = vm.ReturnUrl }); 
 
             var registerPermission = vm.ApplicationInfo.ApplicationSetting.Options["enable_registration"];
 
@@ -383,13 +387,8 @@ namespace PrimeApps.Auth.UI
 
                 return RedirectToAction(nameof(AccountController.Login), "Account", new { returnUrl = vm.ReturnUrl });
             }
-
+         
             var cookieLang = AuthHelper.CurrentLanguage(Request);
-			//Preview'de register kapatıldı
-			if (vm.ApplicationInfo.Preview)
-				return RedirectToAction(nameof(AccountController.Login), "Account", new { returnUrl = vm.ReturnUrl });
-
-			var cookieLang = AuthHelper.CurrentLanguage(Request);
 
             if (cookieLang != vm.Language)
                 return RedirectToAction(nameof(AccountController.ChangeLanguage), "Account",
