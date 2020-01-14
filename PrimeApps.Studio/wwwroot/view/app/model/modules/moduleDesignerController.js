@@ -437,7 +437,7 @@ angular.module('primeapps')
 
                             var sectionsCopied = angular.copy($filter('filter')($scope.module.sections, { deleted: '!true' }, true));
                             var fieldsCopied = angular.copy($filter('filter')($scope.module.fields, { deleted: '!true' }, true));
-                            var defaultFields = ['owner', 'created_by', 'created_at', 'updated_by', 'updated_at'];
+                            var defaultFields = ['owner', 'created_by', 'created_at', 'updated_by', 'updated_at','is_sample'];
                             var sectionNames = [];
 
                             for (var i = 0; i < sectionsCopied.length; i++) {
@@ -1614,7 +1614,7 @@ angular.module('primeapps')
 
             var checkRequiredFields = function () {
                 $scope.notValidFields = [];
-                var allowedFields = ['created_by', 'created_at', 'updated_by', 'updated_at', 'owner'];
+                var allowedFields = ['created_by', 'created_at', 'updated_by', 'updated_at', 'owner', 'is_sample'];
 
                 angular.forEach($scope.module.fields, function (field) {
                     var section = $filter('filter')($scope.module.sections, { name: field.section }, true)[0];
