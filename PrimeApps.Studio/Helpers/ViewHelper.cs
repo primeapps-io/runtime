@@ -16,13 +16,14 @@ namespace PrimeApps.Studio.Helpers
             var view = new View
             {
                 ModuleId = viewModel.ModuleId,
-                SystemType = SystemType.Custom,
+                SystemType = viewModel.SystemType,
                 LabelEn = viewModel.Label,
                 LabelTr = viewModel.Label,
                 SharingType = viewModel.SharingType != ViewSharingType.NotSet ? viewModel.SharingType : ViewSharingType.Me,
                 FilterLogic = viewModel.FilterLogic,
                 Fields = new List<ViewField>(),
-                Filters = new List<ViewFilter>()
+                Filters = new List<ViewFilter>(),
+                Default = viewModel.Default
             };
 
             CreateViewRelations(viewModel, view, userRepository);
@@ -36,6 +37,8 @@ namespace PrimeApps.Studio.Helpers
             view.LabelTr = viewModel.Label;
             view.SharingType = viewModel.SharingType != ViewSharingType.NotSet ? viewModel.SharingType : ViewSharingType.Me;
             view.FilterLogic = viewModel.FilterLogic;
+            view.SystemType = viewModel.SystemType;
+            view.Default = viewModel.Default;
 
             CreateViewRelations(viewModel, view, userRepository);
         }
@@ -55,7 +58,8 @@ namespace PrimeApps.Studio.Helpers
                 FilterLogic = view.FilterLogic,
                 CreatedBy = view.CreatedById,
                 Fields = new List<ViewFieldViewModel>(),
-                Filters = new List<ViewFilterViewModel>()
+                Filters = new List<ViewFilterViewModel>(),
+                Default = view.Default
             };
 
             foreach (var viewField in view.Fields)
@@ -133,7 +137,8 @@ namespace PrimeApps.Studio.Helpers
                 LabelTr = "Tüm " + module.LabelTrPlural,
                 Active = true,
                 SharingType = ViewSharingType.Everybody,
-                Fields = new List<ViewField>()
+                Fields = new List<ViewField>(),
+                Default = true
             };
 
             var primaryField = module.Fields.Single(x => x.Primary);

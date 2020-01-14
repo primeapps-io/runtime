@@ -103,6 +103,15 @@ namespace PrimeApps.Studio.Controllers
                 return BadRequest(ModelState);
 
             var viewEntity = ViewHelper.CreateEntity(view, _userRepository);
+
+            if (viewEntity.Default)
+            {
+                var defaultViewResult = await _viewRepository.ChangeDefaultView(viewEntity.ModuleId);
+
+                if (defaultViewResult < 1)
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            }
+
             var result = await _viewRepository.Create(viewEntity);
 
             if (result < 1)
@@ -149,6 +158,15 @@ namespace PrimeApps.Studio.Controllers
             }
 
             ViewHelper.UpdateEntity(view, viewEntity, _userRepository);
+
+            if (view.Default)
+            {
+                var defaultResult = await _viewRepository.ChangeDefaultView(view.ModuleId);
+
+                if (defaultResult < 1)
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            }
+
             await _viewRepository.Update(viewEntity, currentFieldIds, currentFilterIds);
 
             string name = AppUser.TenantLanguage == "tr" ? viewEntity.LabelTr : viewEntity.LabelEn;

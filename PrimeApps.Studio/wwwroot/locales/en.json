@@ -138,7 +138,8 @@
     "BankAndCaseChosen": "Please select only one of the bank and the cash.",
     "ChooseBankOrCase": "Please select a bank or cash.",
     "Settings": "Settings",
-    "SystemType": "System Type"
+    "SystemType": "System Type",
+    "Default": "Default"
   },
   "Auth": {
     "Email": "E-Mail",

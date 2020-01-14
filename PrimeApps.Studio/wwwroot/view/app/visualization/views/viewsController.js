@@ -63,7 +63,7 @@ angular.module('primeapps')
                             $scope.module = $filter('filter')($rootScope.appModules, { id: view.module_id }, true)[0];
                             $scope.view.label = $scope.view['label_' + $scope.language];
                             $scope.view.edit = true;
-
+                            $scope.view.editable = $scope.view.system_type === 'custom' ? true : false;
                             // $scope.isOwner = $scope.view.created_by === $rootScope.user.ID;
 
                             // if (!$scope.view) {
@@ -105,7 +105,7 @@ angular.module('primeapps')
 
             $scope.selectedModuleChanged = function (module) {
                 $scope.module = module;
-                moduleChanged($scope.module, true);
+                moduleChanged($scope.module, false);
             };
 
             $scope.$on('dragulardrop', function (e, el) {
@@ -286,7 +286,9 @@ angular.module('primeapps')
                 view.module_id = $scope.module.id;
                 view.label = $scope.view.label;
                 view.sharing_type = $scope.view.sharing_type;
+                $scope.changeViewType($scope.view.editable);
                 view.system_type = $scope.view.system_type;
+                view.default = $scope.view.default;
                 view.fields = [];
                 view.filters = [];
 
@@ -401,7 +403,6 @@ angular.module('primeapps')
                             }
 
                             viewState.active_view = response.data.id;
-                            $scope.grid.dataSource.read();
                             success();
                         })
                         .catch(function (data) {
@@ -428,7 +429,7 @@ angular.module('primeapps')
                     toastr.success("Filter is saved successfully.");
                     //$state.go('studio.app.filters');
                     $scope.addNewFiltersModal.hide();
-                    $scope.changePage($scope.activePage);
+                    $scope.grid.dataSource.read();
                 }
 
                 function error(data, status) {
@@ -814,6 +815,13 @@ angular.module('primeapps')
                 }
             };
 
+            $scope.changeViewType = function (value) {
+                if (value)
+                    $scope.view.system_type = 'custom';
+                else
+                    $scope.view.system_type = "system";
+            };
+
             $scope.goUrl = function (view) {
                 var selection = window.getSelection();
                 if (selection.toString().length === 0) {
@@ -852,7 +860,7 @@ angular.module('primeapps')
                             fields: {
                                 LabelEn: { type: "string" },
                                 Module: { type: "string" },
-                                //: { type: "enums" }
+                                Default: { type: "boolean" }
                             }
                         }
                     }
@@ -863,7 +871,7 @@ angular.module('primeapps')
                 noRecords: true,
                 filterable: true,
                 filter: function (e) {
-                    if (e.filter && e.field !== 'SystemType') {
+                    if (e.filter) {
                         for (var i = 0; i < e.filter.filters.length; i++) {
                             e.filter.filters[i].ignoreCase = true;
                         }
@@ -873,16 +881,16 @@ angular.module('primeapps')
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left">' + view.label_en + '</td>';
                     trTemp += '<td class="text-left">' + view.module.label_en_singular + '</td>';
-                   // trTemp += '<td class="text-capitalize">' + view.system_type + '</td>';
-                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); deleteView(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    trTemp += view.default ? '<td><span>' + $filter('translate')('Common.Yes') + '</span></td>' : '<td><span>' + $filter('translate')('Common.No') + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-disabled="dataItem.default" ng-click="$event.stopPropagation(); deleteView(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
                 altRowTemplate: function (view) {
                     var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left">' + view.label_en + '</td>';
                     trTemp += '<td class="text-left">' + view.module.label_en_singular + '</td>';
-                    //trTemp += '<td class="text-capitalize">' + view.system_type + '</td>';
-                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); deleteView(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    trTemp += view.default ? '<td><span>' + $filter('translate')('Common.Yes') + '</span></td>' : '<td><span>' + $filter('translate')('Common.No') + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-disabled="dataItem.default" ng-click="$event.stopPropagation(); deleteView(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
                 pageable: {
@@ -907,14 +915,13 @@ angular.module('primeapps')
                             'class': 'text-left'
                         },
                     },
-                    //{
-                    //    field: 'SystemType',
-                    //    title: $filter('translate')('Common.SystemType'),
-                    //    values: [
-                    //        { text: 'System', value: 'System' },
-                    //        { text: 'Custom', value: 'Custom' },
-                    //        { text: 'Component', value: 'Component' }]
-                    //},
+                    {
+                        field: 'Default',
+                        title: $filter('translate')('Menu.DefaultMenu'),
+                        filterable: {
+                            messages: { isTrue: "Yes <span></span>", isFalse: "No <span></span>" },
+                        },
+                    },
                     {
                         field: '',
                         title: '',

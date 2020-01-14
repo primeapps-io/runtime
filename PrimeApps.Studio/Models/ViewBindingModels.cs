@@ -28,6 +28,8 @@ namespace PrimeApps.Studio.Models
         public List<Filter> Filters { get; set; }
 
         public List<int> Shares { get; set; }
+
+        public bool Default { get; set; }
     }
 
     public class ViewFieldBindingModel

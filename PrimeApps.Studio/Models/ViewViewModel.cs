@@ -16,6 +16,7 @@ namespace PrimeApps.Studio.Models
         public ViewSharingType SharingType { get; set; }
         public string FilterLogic { get; set; }
         public int CreatedBy { get; set; }
+        public bool Default { get; set; }
         public List<ViewFieldViewModel> Fields { get; set; }
         public List<ViewFilterViewModel> Filters { get; set; }
         public List<UserBasicViewModel> Shares { get; set; }

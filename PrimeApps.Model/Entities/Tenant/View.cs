@@ -32,6 +32,9 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("filter_logic"), MaxLength(200)]
         public string FilterLogic { get; set; }
 
+        [Column("default")]
+        public bool Default { get; set; }
+
         public virtual Module Module { get; set; }
 
         public ICollection<ViewField> Fields { get; set; }
