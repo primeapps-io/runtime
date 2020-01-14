@@ -22,13 +22,14 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Storage;
 using Sentry;
 using Sentry.Protocol;
+using PrimeApps.Model.Entities.Studio;
 
 namespace PrimeApps.Admin.Helpers
 {
 	public interface IMigrationHelper
 	{
-		Task AppMigration(string schema, bool isLocal, string[] ids);
-		Task CreateModuleField(string[] ids, bool isPDE);
+		Task AppMigration(string schema, bool isLocal, string[] ids);		
+		Task ApplyMigrations(List<int> ids);
 	}
 
 	public class MigrationHelper : IMigrationHelper
@@ -624,10 +625,9 @@ namespace PrimeApps.Admin.Helpers
 			}
 		}
 
-		public async Task CreateModuleField(string[] ids, bool isPDE)
+		public async Task ApplyMigrations(List<int> ids)//List<AppDraft> apps)
 		{
 			var PREConnectionString = _configuration.GetConnectionString("PlatformDBConnection");
-			var lastAppId = int.Parse(ids[ids.Length - 1]);
 
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
@@ -637,19 +637,19 @@ namespace PrimeApps.Admin.Helpers
 					{
 						foreach (var id in ids)
 						{
-							var app = await applicationRepository.Get(int.Parse(id));
+							var app = await applicationRepository.Get(id);
 
 							if (app == null)
 								return;
 
-							await UpdateAppModuleFields(app.Id, PREConnectionString, isPDE, lastAppId);
+							await UpdateAppModuleFieldsAndSettings(id, PREConnectionString);
 						}
 					}
 				}
 			}
 		}
 
-		public async Task UpdateAppModuleFields(int appId, string PREConnectionString, bool isPDE, int lastAppId)
+		public async Task UpdateAppModuleFieldsAndSettings(int appId, string PREConnectionString)
 		{
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
@@ -658,53 +658,45 @@ namespace PrimeApps.Admin.Helpers
 				{
 					using (var tenantRepository = new TenantRepository(platformDbContext, _configuration))
 					using (var moduleRepository = new ModuleRepository(tenantDbContext, _configuration))
+					using (var settingRepository = new SettingRepository(tenantDbContext, _configuration))
 					{
 						_currentUser = new CurrentUser { PreviewMode = "app", TenantId = appId, UserId = 1 };
-						moduleRepository.CurrentUser = _currentUser;
+						moduleRepository.CurrentUser = settingRepository.CurrentUser = _currentUser;
 
 						PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", true);
 						await UpdateModules(moduleRepository);
+						await UpdateSetting(settingRepository);
 						PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", false);
 
-						if (!isPDE)
+						var tenantIds = await tenantRepository.GetByAppId(appId);
+						var lastTenantId = tenantIds.Count > 0 ? tenantIds.ToList().Last() : 0;
+
+						foreach (var tenantId in tenantIds)
 						{
-							var tenantIds = await tenantRepository.GetByAppId(appId);
-							var lastTenantId = tenantIds.Count > 0 ? tenantIds.ToList().Last() : 0;
+							var exists = PostgresHelper.Read(_configuration.GetConnectionString("PlatformDBConnection"), $"platform", $"SELECT 1 AS result FROM pg_database WHERE datname='tenant{tenantId}'", "hasRows");
 
-							foreach (var tenantId in tenantIds)
-							{
-								var exists = PostgresHelper.Read(_configuration.GetConnectionString("PlatformDBConnection"), $"platform", $"SELECT 1 AS result FROM pg_database WHERE datname='tenant{tenantId}'", "hasRows");
+							if (!exists)
+								continue;
 
-								if (!exists)
-									continue;
-
-								await UpdateTenantModuleFields(tenantId, lastTenantId);
-							}
-						}
-						else
-						{
-							if (appId == lastAppId)
-							{
-								SentrySdk.CaptureMessage("All apps updated successfully.", SentryLevel.Info);
-								tenantDbContext.Database.CloseConnection();
-							}
+							await UpdateTenantModuleFieldsAndFields(tenantId, lastTenantId);
 						}
 					}
 				}
 			}
 		}
 
-		public async Task UpdateTenantModuleFields(int tenantId, int lastTenantId)
+		public async Task UpdateTenantModuleFieldsAndFields(int tenantId, int lastTenantId)
 		{
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				using (var tenantDbContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>())
 				{
+					using (var settingRepository = new SettingRepository(tenantDbContext, _configuration))
 					using (var moduleRepository = new ModuleRepository(tenantDbContext, _configuration))
 					{
 						_currentUser = new CurrentUser { PreviewMode = "tenant", TenantId = tenantId, UserId = 1 };
-						moduleRepository.CurrentUser = _currentUser;
-
+						moduleRepository.CurrentUser = settingRepository.CurrentUser = _currentUser;
+						await UpdateSetting(settingRepository);
 						await UpdateModules(moduleRepository);
 					}
 					tenantDbContext.Database.CloseConnection();
@@ -756,5 +748,15 @@ namespace PrimeApps.Admin.Helpers
 			return modules;
 		}
 
+		public async Task UpdateSetting(SettingRepository settingRepository)
+		{
+			var settings = await settingRepository.GetAllSettings();
+			var settingsPasswordList = settings.Where(r => r.Key == "password");
+			foreach (var settingPassword in settingsPasswordList)
+			{
+				settingPassword.Value = CryptoHelper.Encrypt(settingPassword?.Value);
+				await settingRepository.Update(settingPassword);
+			}
+		}
 	}
 }

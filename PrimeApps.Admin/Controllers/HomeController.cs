@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Admin.Helpers;
 using PrimeApps.Admin.Models;
 using PrimeApps.Admin.Services;
+using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.Admin.Controllers
@@ -95,13 +97,5 @@ namespace PrimeApps.Admin.Controllers
 			return Ok();
 		}
 
-		[Route("module_field_migration")]
-		public IActionResult Migration1([FromQuery] string ids, [FromQuery] bool isPDE = false)
-		{
-			//var isLocal = Request.Host.Value.Contains("localhost");
-			//var schema = Request.Scheme;
-			_queue.QueueBackgroundWorkItem(token => _migrationHelper.CreateModuleField(ids.Split(","), isPDE));
-			return Ok();
-		}
 	}
 }
