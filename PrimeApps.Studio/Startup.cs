@@ -47,12 +47,12 @@ namespace PrimeApps.Studio
             var redisConnection = Configuration.GetConnectionString("RedisConnection");
             var redisConnectionPersist = redisConnection.Remove(redisConnection.Length - 1, 1) + "3";
 
-            //Data Protection
-            var redis = ConnectionMultiplexer.Connect(redisConnection);
+            ////Data Protection
+            //var redis = ConnectionMultiplexer.Connect(redisConnection);
 
-            services.AddDataProtection()
-            .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys2") 
-            .ProtectKeysWithDpapi();
+            //services.AddDataProtection()
+            //.PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys2")  
+            //.ProtectKeysWithDpapi();
 
             var hangfireStorage = new RedisStorage(redisConnectionPersist);
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
