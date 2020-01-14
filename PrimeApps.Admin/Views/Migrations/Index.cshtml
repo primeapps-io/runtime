@@ -1,0 +1,75 @@
+﻿@using PrimeApps.Model.Common.Organization
+@{
+	var organizations = ViewBag.Organizations as List<OrganizationModel>;
+	var currentOrganizationId = ViewBag.ActiveOrganizationId;
+	var apps = organizations?.FirstOrDefault(x => x.Id == int.Parse(currentOrganizationId))?.Apps;
+}
+<div class="container-fluid pt-5">
+	<div class="header-body">
+		<div class="table-responsive own-table">
+			<table class="table table-bordered">
+				<thead>
+
+					<tr>
+						<th width="100%">Organization Name</th>
+						@*@for (int i = 0; i < apps.Count; i++)
+							{
+								<th>@(i + 1). App's Name</th>
+							}*@
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="align-middle">
+							<div class="appicon" style="background-color: @(organizations?.FirstOrDefault(x => x.Id == int.Parse(currentOrganizationId))?.Color ?? "#0D6FAA")">
+								<i class="@(organizations?.FirstOrDefault(x => x.Id == int.Parse(currentOrganizationId))?.Icon ?? "ni ni-planet")"></i>
+							</div>
+							<h3 class="pl-2 d-inline-block">@organizations?.FirstOrDefault(x => x.Id == int.Parse(currentOrganizationId))?.Label</h3>
+						</td>
+						@*@foreach (var app in apps)
+							{
+								<td class="align-middle">
+									<div class="appicon" style="background-color: @app.Color">
+										<i class="@(app.Icon ?? "fas fa-box-open")"></i>
+									</div>
+									<h3 class="pl-2 d-inline-block">@app.Label</h3>
+								</td>
+							}*@
+
+						<td class="align-middle">
+							<button class="btn btn-icon btn-3 btn-primary btn-md" disabled="@(apps.Count<1)" onclick="applyMigrations()">
+								@if (ViewBag.ProcessActive)
+								{
+									<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+									<span class="btn-inner--text">Please wait...</span>
+								}
+								else
+								{
+									<span class="btn-inner--icon">
+										<i class="ni ni-cloud-upload-96"></i>
+									</span>
+									<span class="btn-inner--text">Apply Migrations</span>
+								}
+							</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	function applyMigrations() {
+		$.ajax({
+			url:'/applymigrations',
+				@*'@Url.Action("applymigrations", "Migrations")',*@
+			data: {
+				orgId: @ViewBag.ActiveOrganizationId
+                }
+		}).done(function (data) {
+
+		});
+	}
+</script>
