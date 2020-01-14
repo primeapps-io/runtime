@@ -110,12 +110,12 @@ namespace PrimeApps.App.Controllers
 		[Route("send_email_job")]
 		public async Task<IActionResult> SendEMailJob([FromBody]EmailJobRequest request)
 		{
-			var randomRevNumber = Helpers.Utils.CreateRandomString(20);
+			var randomRevNumber = Utils.CreateRandomString(20);
 
 			var ids = request.IsAllSelected ? "ALL" : string.Join(",", request.Ids);
 			var emailNotification = new Notification()
 			{
-				NotificationType = Model.Enums.NotificationType.Email,
+				NotificationType = NotificationType.Email,
 				ModuleId = request.ModuleId,
 				Rev = randomRevNumber,
 				Query = request.Query,
@@ -123,7 +123,7 @@ namespace PrimeApps.App.Controllers
 				EmailField = request.EMailField,
 				Ids = ids,
 				Lang = AppUser.TenantLanguage,
-				Status = Model.Enums.NotificationStatus.Queued,
+				Status = NotificationStatus.Queued,
 				Template = request.TemplateId.ToString(),
 				Subject = request.Subject,
 				SenderAlias = request.SenderAlias,
@@ -208,8 +208,6 @@ namespace PrimeApps.App.Controllers
 		[Route("send_email")]
 		public async Task<IActionResult> SendEmail([FromBody]EmailRequest emailRequest)
 		{
-			emailRequest.ToAddresses.Append<string>("onur.bostancioglu@gmail.com");
-
 			if (emailRequest.ToAddresses.Length > 0)
 			{
 				if (emailRequest.Cc == null)
@@ -253,6 +251,10 @@ namespace PrimeApps.App.Controllers
 					Value = data.Value?.ToString(),
 					Type = Model.Enums.SettingType.SMS,
 				};
+
+				if (data.Key == "password")
+					setting.Value = CryptoHelper.Encrypt(data.Value?.ToString());
+
 				settings.Add(setting);
 			}
 
@@ -287,6 +289,10 @@ namespace PrimeApps.App.Controllers
 					Value = data.Value?.ToString(),
 					Type = Model.Enums.SettingType.Email,
 				};
+
+				if (data.Key == "password")
+					setting.Value = CryptoHelper.Encrypt(data.Value?.ToString());
+
 				settings.Add(setting);
 			}
 
@@ -320,7 +326,7 @@ namespace PrimeApps.App.Controllers
 				{
 					Key = data.Key,
 					Value = data.Value?.ToString(),
-					Type = Model.Enums.SettingType.Email,
+					Type = SettingType.Email,
 					UserId = AppUser.Id
 				};
 
@@ -328,6 +334,9 @@ namespace PrimeApps.App.Controllers
 				{
 					setting.Value = "smtp.yandex.ru";
 				}
+
+				if (data.Key == "password")
+					setting.Value = CryptoHelper.Encrypt(data.Value?.ToString());
 
 				settings.Add(setting);
 			}
