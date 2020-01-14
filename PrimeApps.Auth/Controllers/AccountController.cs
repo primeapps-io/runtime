@@ -355,11 +355,7 @@ namespace PrimeApps.Auth.UI
 		public async Task<IActionResult> Register(string returnUrl = null)
 		{
 			var vm = await BuildRegisterViewModelAsync(returnUrl);
-			
-			//Preview'de register kapatıldı
-			if (vm.ApplicationInfo.Preview)			
-				return Redirect(returnUrl);		
-			
+
 			if (User?.Identity.IsAuthenticated == true)
 			{
 				if (!string.IsNullOrEmpty(vm.ApplicationInfo.Domain))
@@ -367,6 +363,10 @@ namespace PrimeApps.Auth.UI
 				else
 					return RedirectToAction(nameof(AccountController.Index), "Account");
 			}
+
+			//Preview'de register kapatıldı
+			if (vm.ApplicationInfo.Preview)
+				return RedirectToAction(nameof(AccountController.Login), "Account", new { returnUrl = vm.ReturnUrl });
 
 			var cookieLang = AuthHelper.CurrentLanguage(Request);
 
@@ -1670,6 +1670,11 @@ namespace PrimeApps.Auth.UI
 					}
 
 					platformUser = await _platformUserRepository.GetWithTenants(model.Email);
+					/**Studio'ya kullanıcı kayıt olurken platform user oluşturuluyor, ama user_tenants'a bir kayıt eklenmiyordu.
+					 * Studio'ya kayıt olan kullanıcının oluşturmuş olduğu herhangi bir app'i preview edebilmesi için eklenmiştir. 
+					 * **/
+					platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1, PlatformUser = platformUser });
+					await _platformUserRepository.UpdateAsync(platformUser);
 				}
 
 				if (applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Tenant)

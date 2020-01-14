@@ -258,7 +258,7 @@ angular.module('primeapps')
                 },
 
                 sendEMail: function (moduleId, ids, query, isAllSelected, templateId, emailField, Cc, Bcc, senderAlias, senderEMail, providerType, attachmentContainer, subject, attachmentLink, attachmentName) {
-                    return $http.post(config.apiUrl + 'messaging/send_email', {
+                    return $http.post(config.apiUrl + 'messaging/send_email_job', {
                         "module_id": moduleId,
                         "Ids": ids,
                         "Query": query,

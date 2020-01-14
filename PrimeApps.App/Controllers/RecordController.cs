@@ -544,7 +544,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("create_bulk/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
-		public async Task<IActionResult> CreateBulk(string module, [FromBody]JArray records)
+		public async Task<IActionResult> CreateBulk(string module, [FromBody]JArray records, [FromQuery(Name = "convertPicklists")]bool? convertPicklists = true)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
@@ -556,7 +556,7 @@ namespace PrimeApps.App.Controllers
 				if (moduleEntity == null || record == null)
 					return BadRequest();
 
-				var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, appUser: AppUser);
+				var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, (bool)convertPicklists, appUser: AppUser);
 
 				if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
 					return StatusCode(resultBefore, ModelState);

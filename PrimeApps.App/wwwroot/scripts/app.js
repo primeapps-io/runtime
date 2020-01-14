@@ -76,8 +76,9 @@ angular.module('primeapps',
 			if (!language && customLanguage)
 				language = customLanguage;
 			else if (!language && !customLanguage) {
+				//window.navigator.userLanguage working for only IE 10.
 				var browserLang = window.navigator.language || window.navigator.userLanguage;
-				language = browserLang === 'en' || browserLang === 'en-US' ? 'en' : 'tr';
+				language = browserLang === 'tr' || browserLang === 'tr-TR' ? 'tr' : 'en';
 
 			}
 

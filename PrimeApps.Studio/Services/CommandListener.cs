@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
@@ -91,7 +91,7 @@ namespace PrimeApps.Studio.Services
                     var executedAt = DateTime.Now;
                     var email = _context?.HttpContext?.User?.FindFirst("email").Value;
 
-                    if (command.Connection?.Database != CurrentUser.PreviewMode + CurrentUser.TenantId)
+                    if (command.Connection?.Database != CurrentUser?.PreviewMode + CurrentUser?.TenantId)
                         _currentUser = null;
 
                     var currentUser = CurrentUser;
@@ -111,6 +111,14 @@ namespace PrimeApps.Studio.Services
                         if (sql.StartsWith("INSERT INTO"))
                         {
                             var tableName = Model.Helpers.PackageHelper.GetTableName(sql);
+                            /** Studio/AppController'da studio kullanıcısının oluşturacağı herhangi bir app'i preview edebilmesi için
+                             * App oluşturulduktan hemen sonra "App/User" tablosuna, studio kullanıcısını eklemekteyiz.
+                             * Burada bu kontrolü yapma sebebimiz. App yeni oluştuğu için X-App-Id vb. değişkenler tanımlı olmadığı için
+                             * CurrentUser null gelmektedir.
+                             */
+                            if (tableName == "public.users" || tableName == "public.user_tenants")
+                                continue;
+
                             var check = PostgresHelper.Read(_configuration.GetConnectionString("StudioDBConnection"),
                                 _command.Connection.Database,
                                 $"SELECT column_name FROM information_schema.columns WHERE table_name='{tableName.Split("public.")[1]}' and column_name='id';",
