@@ -59,6 +59,7 @@ cp "$basePath/setup/plist/postgres-pre.plist" postgres-pre.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pre.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pre.plist
 launchctl load postgres-pre.plist
+cp postgres-pre.plist ~/Library/LaunchAgents/
 
 sleep 3 # Sleep 3 seconds for postgres services wakeup
 
@@ -84,6 +85,7 @@ cp "$basePath/setup/plist/minio-pre.plist" minio-pre.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" minio-pre.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" minio-pre.plist
 launchctl load minio-pre.plist
+cp minio-pre.plist ~/Library/LaunchAgents/
 
 # Init cache instance
 echo -e "${GREEN}Initializing cache instances...${NC}"
@@ -96,6 +98,7 @@ cp "$basePath/setup/plist/redis-pre.plist" redis-pre.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" redis-pre.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" redis-pre.plist
 launchctl load redis-pre.plist
+cp redis-pre.plist ~/Library/LaunchAgents/
 
 # Create directory for dump, package, git, etc.
 mkdir "$basePath/data/primeapps"
