@@ -3,6 +3,9 @@
 if [[ "$OSTYPE" == "msys" ]]
 then
 	./reset-win.sh
+elif [[ "$OSTYPE" == "darwin"* ]]
+then
+    ./reset-mac.sh	
 else
-	./reset-unix.sh
+	./reset-linux.sh
 fi

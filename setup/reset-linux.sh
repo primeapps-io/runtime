@@ -9,7 +9,9 @@ cd ..
 basePath=$(pwd [-LP])
 
 echo -e "${GREEN}Stoping services...${NC}"
-#TODO: stop services here
+systemctl stop postgres-pre
+systemctl stop minio-pre
+systemctl stop redis-pre
 
 sleep 3 # Sleep 3 seconds for stop all services
 
@@ -26,6 +28,8 @@ tar -xzf minio_pre.tar.gz minio_pre
 tar -xzf redis_pre.tar.gz redis_pre
 
 echo -e "${GREEN}Starting services...${NC}"
-#TODO: start services here
+systemctl start postgres-pre
+systemctl start minio-pre
+systemctl start redis-pre
 
 echo -e "${BLUE}Completed${NC}"
