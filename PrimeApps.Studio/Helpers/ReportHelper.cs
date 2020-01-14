@@ -65,7 +65,8 @@ namespace PrimeApps.Studio.Helpers
                 FilterLogic = reportModel.FilterLogic,
                 Fields = new List<ReportField>(),
                 Filters = new List<ReportFilter>(),
-                Aggregations = new List<ReportAggregation>()
+                Aggregations = new List<ReportAggregation>(),
+                SystemType = reportModel.SystemType != SystemType.NotSet ? reportModel.SystemType : SystemType.System
             };
 
             CreateReportRelations(reportModel, report);
@@ -85,6 +86,7 @@ namespace PrimeApps.Studio.Helpers
             report.SortDirection = reportModel.SortDirection;
             report.SharingType = reportModel.SharingType != ReportSharingType.NotSet ? reportModel.SharingType : ReportSharingType.Me;
             report.FilterLogic = reportModel.FilterLogic;
+            report.SystemType = reportModel.SystemType != SystemType.NotSet ? reportModel.SystemType : SystemType.System;
 
             CreateReportRelations(reportModel, report);
         }

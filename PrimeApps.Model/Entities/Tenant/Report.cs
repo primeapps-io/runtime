@@ -47,6 +47,9 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("filter_logic"), MaxLength(200)]
         public string FilterLogic { get; set; }
 
+        [Column("system_type")]
+        public SystemType SystemType { get; set; }
+
         public virtual Module Module { get; set; }
 
         public virtual TenantUser User { get; set; }

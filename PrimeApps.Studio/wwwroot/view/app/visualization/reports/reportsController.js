@@ -26,10 +26,13 @@ angular.module('primeapps')
                 offset: 0
             };
 
-            ReportsService.getAllCategory().then(function (result) {
-                $rootScope.reportCategory = result.data;
-            });
+            var getAllCategory = function () {
+                ReportsService.getAllCategory().then(function (result) {
+                    $rootScope.reportCategory = result.data;
+                });
+            }
 
+            getAllCategory();
             //ReportsService.count()
             //    .then(function (response) {
             //        $scope.pageTotal = response.data;
@@ -69,6 +72,8 @@ angular.module('primeapps')
 
             $scope.openCategoryModal = function () {
                 $scope.bindPicklistDragDrop();
+                getAllCategory();
+
                 $scope.categoryModal = $scope.categoryModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/visualization/reports/categoryModal.html',
