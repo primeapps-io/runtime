@@ -10,7 +10,7 @@ namespace PrimeApps.Studio.Helpers
 			var newMenu = new Menu()
 			{
 				Name = menu.Name,
-				ProfileId = menu.ProfileId,
+				Profiles = menu.Profiles,
 				Default = menu.Default,
 				Deleted = menu.Deleted,
 				Description = menu.Description,
@@ -24,7 +24,7 @@ namespace PrimeApps.Studio.Helpers
 			updateMenu.Name = menu.Name;
 			updateMenu.Description = menu.Description;
 			updateMenu.Default = menu.Default;
-			updateMenu.ProfileId = menu.ProfileId;
+			updateMenu.Profiles = menu.Profiles;
 
 			return updateMenu;
 		}
