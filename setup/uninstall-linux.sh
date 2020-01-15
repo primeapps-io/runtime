@@ -9,7 +9,18 @@ cd ..
 basePath=$(pwd [-LP])
 
 echo -e "${GREEN}Deleting services...${NC}"
-#TODO: delete services here
+systemctl stop postgres-pre
+systemctl stop minio-pre
+systemctl stop redis-pre
+systemctl disable postgres-pre
+systemctl disable minio-pre
+systemctl disable redis-pre
+rm /etc/systemd/system/postgres-pre.service
+rm /etc/systemd/system/minio-pre.service
+rm /etc/systemd/system/redis-pre.service
+
+systemctl daemon-reload
+systemctl reset-failed
 
 echo -e "${GREEN}Deleting $basePath/data...${NC}"
 rm -rf "$basePath/data"
