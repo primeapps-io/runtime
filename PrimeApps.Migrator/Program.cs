@@ -83,9 +83,9 @@ namespace PrimeApps.Migrator
                 switch (command)
                 {
                     case "update-tenants":
-                        result = databaseMigration.UpdateTenantOrAppDatabases("tenant", connectionString);
-                        break;
-                    case "update-apps":
+                            result = databaseMigration.UpdateTenantOrAppDatabases("tenant", connectionString);
+                            break;
+                        case "update-apps":
                         result = databaseMigration.UpdateTenantOrAppDatabases("app", connectionString);
                         break;
                     case "update-templates":
@@ -93,6 +93,9 @@ namespace PrimeApps.Migrator
                         break;
                     case "update-templets":
                         result = databaseMigration.UpdateTempletDatabases(connectionString);
+                        break;
+                    case "update-pde-templet":
+                        result = databaseMigration.UpdatePdeTemplet(connectionString);
                         break;
                     case "update-platform":
                         result = databaseMigration.UpdatePlatformDatabase(connectionString);
