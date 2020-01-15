@@ -19,6 +19,10 @@ angular.module('primeapps')
                         if (!$rootScope.breadcrumblist) {
                             $rootScope.breadcrumblist = [{}, {}, {}];
                         }
+
+                        config['storage_host'] = blobUrl + '/';
+                        $rootScope.config = config;
+                        
                         def.resolve($rootScope.organizations);
                         helper.hideLoader();
                     });
@@ -84,7 +88,8 @@ angular.module('primeapps')
                                     profile_is_admin: profile.has_admin_rights,
                                     type: 'full'
                                 });
-                            } else {
+                            }
+                            else {
                                 section.permissions.push({
                                     id: sectionPermission.id,
                                     profile_id: profile.id,
@@ -129,7 +134,8 @@ angular.module('primeapps')
                                     var operatorLookup = operators[operatorIdLookup];
                                     field.operators.push(operatorLookup);
                                 }
-                            } else {
+                            }
+                            else {
                                 field.operators.push(operators.equals);
                                 field.operators.push(operators.not_equal);
                                 field.operators.push(operators.empty);
@@ -138,16 +144,19 @@ angular.module('primeapps')
                                 if (field.lookup_type === 'users') {
                                     var lookupModule = $filter('filter')($rootScope.modules, {name: 'users'}, true)[0];
                                     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
-                                } else if (field.lookup_type === 'profiles') {
+                                }
+                                else if (field.lookup_type === 'profiles') {
                                     var lookupModule = $filter('filter')($rootScope.modules, {name: 'profiles'}, true)[0];
                                     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
-                                } else if (field.lookup_type === 'roles') {
+                                }
+                                else if (field.lookup_type === 'roles') {
                                     var lookupModule = $filter('filter')($rootScope.modules, {name: 'roles'}, true)[0];
                                     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
                                 }
                             }
 
-                        } else {
+                        }
+                        else {
                             for (var n = 0; n < field.dataType.operators.length; n++) {
                                 var operatorId = field.dataType.operators[n];
                                 var operator = operators[operatorId];
@@ -228,7 +237,8 @@ angular.module('primeapps')
                                 }
 
                                 module.display_dependencies.push(displayDependency);
-                            } else {
+                            }
+                            else {
                                 if (dependency.value_map && !angular.isArray(dependency.value_map)) {
                                     dependency.value_maps = {};
 
@@ -278,6 +288,7 @@ angular.module('primeapps')
                             var result = response[2];
                             $rootScope.currentApp = result.data;
                             $rootScope.currentApp.user_profile = response[3].data;
+
                             $rootScope.currentOrganization = $filter('filter')($rootScope.organizations, {id: parseInt($rootScope.currentApp.organization_id)}, true)[0];
 
                             if (!angular.isArray($rootScope.breadcrumblist))

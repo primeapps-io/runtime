@@ -15,7 +15,7 @@ metadata:
     nginx.ingress.kubernetes.io/server-snippet: |-
       add_header X-Robots-Tag "noindex, nofollow";
     {{- if eq .Values.global.tls.type "letsencrypt" }}
-    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     {{- end }}
     {{- if .Values.global.modsecurity }}
     nginx.ingress.kubernetes.io/enable-modsecurity: "true"

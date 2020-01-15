@@ -1,0 +1,28 @@
+<div class="setup-title">
+    <h2>Packages</h2>
+    <ul class="list-unstyled list-inline">
+        <li>
+            <button class="btn add-button" ladda="runningPackages[currentApp.name].status" ng-click="createPackage()">
+                <i class="fas fa-plus"></i>New Package
+            </button>
+        </li>
+    </ul>
+</div>
+<div class="tab-content">
+    <div class="grid-theme grid-theme-center table-responsive" kendo-grid="grid" id="kendo-grid" k-options="mainGridOptions">
+    </div>
+</div> 
+
+<div ng-if="!loading && runningPackages[app.name] && runningPackages[app.name].status && (runningPackages[app.name].logs && runningPackages[app.name].logs  != '')" class="function" id="logger" style="padding-top: 20px;">
+    <div style="" id="log-screen">
+        <div class="tab-content">
+            <div class="ui grid">
+                <div class="sixteen wide column content" style="padding:0px;">
+                    <div class="subpanel-body" style="top:0;left:0;right:0;bottom:0;background-color:black; border-radius: 5px;">
+                        <pre id="logArea" data-ng-bind-html="asHtml()" style="color: white !important;padding-left: 10px !important;padding-top: 10px !important;padding-bottom: 10px !important;max-height: 300px !important;min-height: 100px;"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

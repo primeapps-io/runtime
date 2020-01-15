@@ -5,9 +5,9 @@ metadata:
   name: primeapps-auth-config-test
   namespace: primeapps
 data:
-  AuthDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=auth;command timeout=0;keepalive=30;"
-  TenantDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=test;command timeout=0;keepalive=30;"
-  PlatformDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+  AuthDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=auth;command timeout=0;keepalive=30;maximum pool size=1000;"
+  TenantDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=test;command timeout=0;keepalive=30;maximum pool size=1000;"
+  PlatformDBConnection: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
   Authority: "https://auth-test.primeapps.io"
   ForwardHeaders: "true"
   HttpsRedirection: "true"
@@ -94,17 +94,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-auth-config-test
-                  key: SentryDsn
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-              scheme: HTTP
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            timeoutSeconds: 2
-            successThreshold: 1
-            failureThreshold: 1                  
+                  key: SentryDsn                
 ---
 kind: Service
 apiVersion: v1

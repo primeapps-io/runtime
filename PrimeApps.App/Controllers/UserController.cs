@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -9,7 +8,7 @@ using Npgsql;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.App.Services;
-using PrimeApps.App.Storage;
+using PrimeApps.Model.Storage;
 using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Common.UserApps;
 using PrimeApps.Model.Entities.Platform;
@@ -17,26 +16,21 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using PrimeApps.Model.Repositories.Interfaces;
-using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.SqlServer.Management.Smo;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using User = PrimeApps.Model.Entities.Tenant.TenantUser;
-using Utils = PrimeApps.App.Helpers.Utils;
 
 namespace PrimeApps.App.Controllers
 {
-	[Route("api/User")]
+    [Route("api/User")]
 	public class UserController : ApiBaseController
 	{
 		private IUserRepository _userRepository;
@@ -129,6 +123,9 @@ namespace PrimeApps.App.Controllers
 		[Route("Edit"), HttpPost]
 		public async Task<IActionResult> Edit([FromBody]UserDTO user)
 		{
+			var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+			previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
+
 			//get user to start modification.
 			PlatformUser userToEdit = await _platformUserRepository.GetSettings(AppUser.Id);
 			User tenantUserToEdit = _userRepository.GetById(AppUser.Id);
@@ -155,6 +152,10 @@ namespace PrimeApps.App.Controllers
 			userToEdit.FirstName = user.firstName;
 			userToEdit.LastName = user.lastName;
 			userToEdit.Setting.Phone = user.phone;
+			if (!string.IsNullOrEmpty(user.culture))
+			{
+				userToEdit.Setting.Language = user.culture.Substring(0, 2);
+			}
 			/// update tenant database properties
 			tenantUserToEdit.FirstName = user.firstName;
 			tenantUserToEdit.LastName = user.lastName;
@@ -163,7 +164,12 @@ namespace PrimeApps.App.Controllers
 
 			//Set warehouse database name
 			_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
-			await _platformUserRepository.HardCodedUpdateUser(userToEdit);
+			if (String.Equals(previewMode, "tenant"))
+			{
+				await _platformUserRepository.UpdateAsync(userToEdit);
+			}
+			else
+				await _platformUserRepository.HardCodedUpdateUser(userToEdit);
 			//update users record.
 			await _userRepository.UpdateAsync(tenantUserToEdit);
 
@@ -225,7 +231,7 @@ namespace PrimeApps.App.Controllers
 		{
 			try
 			{
-				var user = await _userRepository.GetUserInfoAsync(AppUser.Id);
+				var user = await _userRepository.GetUserInfoAsync(AppUser.Id, true, AppUser.Language);
 
 				if (user != null)
 				{
@@ -270,7 +276,7 @@ namespace PrimeApps.App.Controllers
 			/*if (previewMode == "app")
                 acc.user = await _userRepository.GetUserInfoAsync(1, false);
             else*/
-			acc.user = await _userRepository.GetUserInfoAsync(AppUser.Id);
+			acc.user = await _userRepository.GetUserInfoAsync(AppUser.Id, true, AppUser.Language);
 
 			if (acc.user != null)
 			{
@@ -280,6 +286,8 @@ namespace PrimeApps.App.Controllers
 					return Ok(null);
 
 				acc.user.tenantLanguage = AppUser.TenantLanguage;
+				acc.user.Language = AppUser.Language;
+
 				acc.instances = tenant;
 				var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
 				if (!string.IsNullOrEmpty(storageUrl))
@@ -407,6 +415,32 @@ namespace PrimeApps.App.Controllers
 			}
 		}
 
+
+		[Route("update_user_currency_culture"), HttpPost]
+		public async Task<IActionResult> UpdateUserCurrencyCulture([FromBody]JObject User)
+		{
+			if (User["Id"].IsNullOrEmpty() || User["Culture"].IsNullOrEmpty() || User["Currency"].IsNullOrEmpty())
+				return BadRequest();
+
+			var userId = (int)User["Id"];
+			PlatformUser userToEdit = await _platformUserRepository.GetSettings(userId);
+			User tenantUserToEdit = _userRepository.GetById(userId);
+
+			userToEdit.Setting.Culture = (string)User["Culture"];
+			userToEdit.Setting.Currency = (string)User["Currency"];
+
+			tenantUserToEdit.Culture = (string)User["Culture"];
+			tenantUserToEdit.Currency = (string)User["Currency"];
+
+			//Set warehouse database name
+			_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+			await _platformUserRepository.HardCodedUpdateUser(userToEdit);
+			//update users record.
+			await _userRepository.UpdateAsync(tenantUserToEdit);
+
+			return Ok(userId);
+		}
+
 		[Route("send_user_password"), HttpPost]
 		public async Task<IActionResult> UserSendPassword([FromBody]JObject requestMail)
 		{
@@ -443,7 +477,7 @@ namespace PrimeApps.App.Controllers
 			if (!AppUser.Email.EndsWith("@ofisim.com"))
 				return StatusCode(HttpStatusCode.Status403Forbidden);
 
-			var userEntity = await _platformUserRepository.Get(email);
+            var userEntity = await _platformUserRepository.GetAsync(email);
 
 			if (userEntity == null)
 				return NotFound();

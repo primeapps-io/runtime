@@ -63,26 +63,13 @@ namespace PrimeApps.Model.Repositories
                 .ToListAsync();
         }
 
-        public async Task<ICollection<Team>> Find(PaginationModel paginationModel, int organizationId)
+        public IQueryable<Team> Find(int organizationId)
         {
-            var teams = await GetByOrganizationId(organizationId);
-            teams = teams.Skip(paginationModel.Offset * paginationModel.Limit)
-            .Take(paginationModel.Limit).ToList();
-
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Team).GetProperty(paginationModel.OrderColumn);
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    teams = teams.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
-                }
-                else
-                {
-                    teams = teams.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
-                }
-
-            }
+            var teams = DbContext.Teams
+                .Include(x => x.TeamUsers)
+                .Include(x=>x.Organization)
+                .Where(x => x.OrganizationId == organizationId && !x.Deleted)
+                .OrderByDescending(x => x.Id);
 
             return teams;
 

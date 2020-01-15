@@ -66,7 +66,8 @@
                                             <span class="required-label">(required)</span>
                                         </label>
                                         <input name="name" class="form-control" maxlength="50" required
-                                               ng-model="reportModel.name"/>
+                                               ng-model="reportModel.name_en"/>
+                                         
                                     </div>
                                     <div class="form-group"
                                          ng-class="{'has-error': reportForm.$submitted && reportForm.module_id.$invalid}">
@@ -94,7 +95,7 @@
                                                 name="category_id"
                                                 required
                                                 ng-model="reportModel.category_id"
-                                                ng-options="o.id as o.name for o in reportCategory | orderBy:'order'">
+                                                ng-options="o.id as o.name_en for o in reportCategory | orderBy:'order'">
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
                                     </div>
@@ -653,7 +654,7 @@
                                         <input class="form-control"
                                                id="xaxis_name"
                                                required
-                                               ng-model="reportModel.chart.xaxis_name"
+                                               ng-model="reportModel.chart.xaxis_name_en"
                                                name="xaxis_name"/>
                                     </div>
                                     <div class="form-group"
@@ -665,8 +666,9 @@
                                         <input class="form-control"
                                                id="yaxis_name"
                                                required
-                                               ng-model="reportModel.chart.yaxis_name"
+                                               ng-model="reportModel.chart.yaxis_name_en"
                                                name="yaxis_name"/>
+                                        
                                     </div>
                                 </div>
 
@@ -722,7 +724,7 @@
                                             {{'Report.ReportName' | translate}}:
                                         </label>
                                         <div class="col-sm-5">
-                                            <span> {{ reportModel.name }} </span>
+                                            <span> {{ reportModel.name_en }} </span>
                                         </div>
                                     </div>
                                     <div class="row ">

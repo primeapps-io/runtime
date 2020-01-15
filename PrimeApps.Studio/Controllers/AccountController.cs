@@ -195,7 +195,7 @@ namespace PrimeApps.Studio.Controllers
 
             var url = Request.Scheme + "://" + applicationInfo.Setting.AuthDomain +
                       "/Account/ResetPassword?code={0}&guid={1}&returnUrl={2}";
-            var user = await _platformUserRepository.Get(request["email"].ToString());
+            var user = await _platformUserRepository.GetAsync(request["email"].ToString());
 
             var templates = await _platformRepository.GetAppTemplate(int.Parse(request["app_id"].ToString()),
                 AppTemplateType.Email, request["culture"].ToString().Substring(0, 2), "password_reset");

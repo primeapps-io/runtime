@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common;
+using System.Linq.Dynamic.Core;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -64,29 +65,22 @@ namespace PrimeApps.Model.Repositories
             return count;
         }
 
-        public async Task<ICollection<ModuleProfileSetting>> Find(PaginationModel paginationModel)
+        public IQueryable<ModuleProfileSetting> Find()
         {
             var moduleProfilesSettings = DbContext.ModuleProfileSettings
                 .Where(x => !x.Deleted)
-                .OrderByDescending(x => x.Id)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
+                .OrderByDescending(x => x.Id);
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(ModuleProfileSetting).GetProperty(paginationModel.OrderColumn);
+            return moduleProfilesSettings;
+        }
 
-                if (paginationModel.OrderType == "asc")
-                {
-                    moduleProfilesSettings = moduleProfilesSettings.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    moduleProfilesSettings = moduleProfilesSettings.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
-            }
+        public async Task<List<string>> GetUseProfileIdsByModuleId(int moduleId)
+        {
+            var list = await DbContext.ModuleProfileSettings
+            .Where(x => !x.Deleted && x.ModuleId == moduleId)
+            .Select(y => y.Profiles).ToListAsync();
 
-            return await moduleProfilesSettings.ToListAsync();
+            return string.Join(',', list).Split(',').ToList();
         }
     }
 }

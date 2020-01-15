@@ -25,9 +25,9 @@ namespace PrimeApps.Model.Repositories
         public bool AvailableForDeployment(int functionId)
         {
             return DbContext.DeploymentsFunction
-                       .Count(x => x.FunctionId == functionId && x.Status == DeploymentStatus.Running && !x.Deleted) == 0;
+                       .Count(x => x.FunctionId == functionId && x.Status == ReleaseStatus.Running && !x.Deleted) == 0;
         }
-       
+
         public async Task<DeploymentFunction> Get(int id)
         {
             return await DbContext.DeploymentsFunction
@@ -44,30 +44,12 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<ICollection<DeploymentFunction>> Find(int functionId, PaginationModel paginationModel)
+        public IQueryable<DeploymentFunction> Find(int functionId)
         {
-            var deployments = await DbContext.DeploymentsFunction
+            var deployments = DbContext.DeploymentsFunction
                 .Include(x => x.Function)
                 .Where(x => !x.Deleted & x.FunctionId == functionId)
-                .OrderByDescending(x => x.BuildNumber)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit)
-                .ToListAsync();
-
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    deployments = deployments.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
-                }
-                else
-                {
-                    deployments = deployments.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
-                }
-
-            }
+                .OrderByDescending(x => x.BuildNumber);
 
             return deployments;
         }

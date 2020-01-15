@@ -2,72 +2,17 @@
 
 angular.module('primeapps')
 
-    .controller('DependenciesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', 'helper', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'DependenciesService', 'LayoutService', 'ModuleService', '$timeout', '$location',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, helper, $cache, systemRequiredFields, systemReadonlyFields, DependenciesService, LayoutService, ModuleService, $timeout, $location) {
+    .controller('DependenciesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', 'helper', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'DependenciesService', 'LayoutService', 'ModuleService', '$timeout', '$location', '$localStorage',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, helper, $cache, systemRequiredFields, systemReadonlyFields, DependenciesService, LayoutService, ModuleService, $timeout, $location, $localStorage) {
 
             //$scope.$parent.menuTopTitle = "Models";
             //$scope.$parent.activeMenu = "model";
             $scope.$parent.activeMenuItem = "dependencies";
-
             $rootScope.breadcrumblist[2].title = 'Dependencies';
+            $scope.dependencies = [];
 
             $scope.id = $location.search().id ? $location.search().id : 0;
-
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-            $scope.generator(10);
-
-            $scope.loading = true;
-            $scope.picklist = [];
-            $scope.picklistsModule = {};
-
-            $scope.requestModel = {
-                limit: '10',
-                offset: 0
-            };
-
-            $scope.activePage = 1;
-            DependenciesService.count($scope.id).then(function (response) {
-                $scope.pageTotal = response.data;
-                $scope.changePage(1);
-            });
-
-            $scope.changePage = function (page) {
-
-                $scope.loading = true;
-
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
-
-                $scope.activePage = page;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-
-                DependenciesService.find($scope.id, requestModel).then(function (response) {
-                    var dependencies = response.data;
-                    // $scope.dependencies = DependenciesService.processDependencies(dependencies);
-                    $scope.dependencies = dependencies;
-                    $scope.dependenciesState = $scope.dependencies;
-                    $scope.loading = false;
-                });
-            };
-
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage);
-            };
-
+  
             $scope.moduleChanged = function () {
 
                 $scope.parentDisplayFields = [];
@@ -96,6 +41,7 @@ angular.module('primeapps')
 
             var getFields = function () {
 
+                //$scope.dependencies = $scope.grid.dataSource.data();
 
                 angular.forEach($scope.module.fields, function (field) {
 
@@ -286,19 +232,19 @@ angular.module('primeapps')
                 $scope.parentPicklist = [];
                 if (parentField.picklist_id) {
                     DependenciesService.getPicklist(parentField.picklist_id).then(function (picklists) {
-                            var copyPicklist = angular.copy(picklists.data.items);
-                            $scope.parentPicklist = $filter('filter')(copyPicklist, { inactive: '!true' });
-                            if (childField.picklist_id) {
-                                DependenciesService.getPicklist(childField.picklist_id).then(function (picklists) {
-                                    var copyPicklist = angular.copy(picklists.data.items);
-                                    var childPicklist = $filter('filter')(copyPicklist, { inactive: '!true' });
-                                    angular.forEach($scope.parentPicklist, function (picklistItem) {
-                                        picklistItem.childPicklist = childPicklist;
-                                    });
+                        var copyPicklist = angular.copy(picklists.data.items);
+                        $scope.parentPicklist = $filter('filter')(copyPicklist, { inactive: '!true' });
+                        if (childField.picklist_id) {
+                            DependenciesService.getPicklist(childField.picklist_id).then(function (picklists) {
+                                var copyPicklist = angular.copy(picklists.data.items);
+                                var childPicklist = $filter('filter')(copyPicklist, { inactive: '!true' });
+                                angular.forEach($scope.parentPicklist, function (picklistItem) {
+                                    picklistItem.childPicklist = childPicklist;
                                 });
-                            }
-                            return $scope.parentPicklist;
+                            });
                         }
+                        return $scope.parentPicklist;
+                    }
                     );
                 }
             };
@@ -331,18 +277,19 @@ angular.module('primeapps')
                     DependenciesService.getDependency(dependency.id).then(function (response) {
                         var dependency = DependenciesService.processDependencies(response.data);
                         setCurrentDependency(dependency);
+                        $scope.dependencies = $scope.grid.dataSource.data();
                         $scope.moduleChanged();
                         $scope.getMappingOptions();
                     });
                 }
 
                 $scope.addNewDependencyModal = $scope.addNewDependencyModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/model/dependencies/dependencyForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/model/dependencies/dependencyForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.addNewDependencyModal.$promise.then(function () {
                     $scope.addNewDependencyModal.show();
@@ -375,11 +322,10 @@ angular.module('primeapps')
                     toastr.success($filter('translate')('Setup.Modules.DependencySaveSuccess'));
                     $scope.saving = false;
                     $scope.addNewDependencyModal.hide();
-                    $scope.changePage($scope.activePage);
+                    $scope.grid.dataSource.read();
                 };
 
                 var error = function () {
-                    $scope.dependencies = $scope.dependenciesState;
 
                     if ($scope.addNewDependencyModal) {
                         $scope.addNewDependencyModal.hide();
@@ -425,18 +371,11 @@ angular.module('primeapps')
                             DependenciesService.deleteModuleDependency(dependency.id)
                                 .then(function () {
                                     // var dependencyIndex = helper.arrayObjectIndexOf($scope.dependencies, dependency);
-                                    // $scope.dependencies.splice(dependencyIndex, 1);
-                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                    $scope.changePage($scope.activePage);
-                                    $scope.pageTotal--;
+                                    // $scope.dependencies.splice(dependencyIndex, 1); 
                                     toastr.success("Dependency is deleted successfully.", "Deleted!");
-
+                                    $scope.grid.dataSource.read();
                                 })
                                 .catch(function () {
-
-                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
-                                    $scope.dependencies = $scope.dependenciesState;
-
                                     if ($scope.addNewDependencyModal) {
                                         $scope.addNewDependencyModal.hide();
                                         $scope.saving = false;
@@ -489,5 +428,139 @@ angular.module('primeapps')
                     $scope.getPicklist();
                 }
             };
+
+            //For Kendo UI
+            $scope.goUrl = function (item) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.showFormModal(item); //click event.
+                }
+            };
+
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/dependency/find/" + $scope.id,
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                Module: { type: "string" },
+                                DependencyType: { type: "enums" },
+                                ParentField: { type: "string" },
+                                ChildField: { type: "string" },
+                                ChildSection: { type: "string" },
+                            }
+                        }
+                    }
+
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                noRecords: true,
+                filterable: {
+                    extra: false
+                },
+                filter: function (e) {
+                    if (e.filter && e.field !== 'DependencyType') {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
+                },
+                rowTemplate: function (e) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left"><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += e.dependency_type === 'display' ? '<td><span>' + $filter('translate')('Setup.Modules.DependencyTypeDisplay') + '</span></td>' :
+                        e.dependency_type === 'freeze' ? '<td><span>' + $filter('translate')('Setup.Modules.DependencyTypeFreeze') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.DependencyTypeValueChange') + '</span></td>';
+                    trTemp += '<td class="text-capitalize left"> <span>' + $filter('filter')(e.module.fields, { name: e.parent_field }, true)[0]['label_' + $scope.language] + '</span></td > ';
+                    trTemp += e.child_field ? '<td class="text-capitalize"> <span>' + $filter('filter')(e.module.fields, { name: e.child_field }, true)[0]['label_' + $scope.language] + '</span></td > ' : '<td><span>-</span></td>';
+                    trTemp += e.child_section ? '<td class="text-capitalize"> <span>' + $filter('filter')(e.module.sections, { name: e.child_section }, true)[0]['label_' + $scope.language] + '</span></td > ' : '<td><span>-</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+
+                    return trTemp;
+                },
+                altRowTemplate: function (e) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left"><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += e.dependency_type === 'display' ? '<td><span>' + $filter('translate')('Setup.Modules.DependencyTypeDisplay') + '</span></td>' :
+                        e.dependency_type === 'freeze' ? '<td><span>' + $filter('translate')('Setup.Modules.DependencyTypeFreeze') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.DependencyTypeValueChange') + '</span></td>';
+                    trTemp += '<td class="text-capitalize"> <span>' + $filter('filter')(e.module.fields, { name: e.parent_field }, true)[0]['label_' + $scope.language] + '</span></td > ';
+                    trTemp += e.child_field ? '<td class="text-capitalize"> <span>' + $filter('filter')(e.module.fields, { name: e.child_field }, true)[0]['label_' + $scope.language] + '</span></td > ' : '<td><span>-</span></td>';
+                    trTemp += e.child_section ? '<td class="text-capitalize"> <span>' + $filter('filter')(e.module.sections, { name: e.child_section }, true)[0]['label_' + $scope.language] + '</span></td > ' : '<td><span>-</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+                    {
+                        field: 'Module.LabelEnPlural',
+                        title: $filter('translate')('Setup.Templates.Module'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+                    {
+                        field: 'DependencyType',
+                        title: $filter('translate')('Setup.Modules.DependencyType'),
+                        values: [
+                            { text: 'Display', value: 'Display' },
+                            { text: 'List Text', value: 'ListText' },
+                            { text: 'List Value', value: 'ListValue' },
+                            { text: 'List Field', value: 'ListField' },
+                            { text: 'Lookup Text', value: 'LookupText' },
+                            { text: 'Lookup List', value: 'LookupList' },
+                            { text: 'Freeze', value: 'Freeze' },
+                            { text: 'Lookup Field', value: 'LookupField' }
+                        ]
+                    },
+                    {
+                        field: 'ParentField',
+                        title: $filter('translate')('Setup.Modules.DependencyParentField'),
+                    },
+                    {
+                        field: 'ChildField',
+                        title: $filter('translate')('Setup.Modules.DependencyChildField'),
+                    },
+                    {
+                        field: 'ChildSection',
+                        title: $filter('translate')('Setup.Modules.DependencyChildSection'),
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
+            };
+
+            //For Kendo UI
         }
     ]);

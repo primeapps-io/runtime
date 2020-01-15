@@ -1,0 +1,206 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: primeapps-admin-config
+  namespace: primeapps
+data:
+  TenantDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;maximum pool size=1000;"
+  PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
+  RedisConnection: "cache-redis-master.cache:6379,password=pr!m€Appsi0r,defaultDatabase=1,syncTimeout=30000"
+  StorageUrl: "https://storage.primeapps.io"
+  StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
+  StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
+  EnableJobs: "true"
+  AuthenticationServerURL: "https://auth.primeapps.io"
+  ClientId: "primeapps_studio"
+  ClientSecret: "secret"
+  ForwardHeaders: "true"
+  HttpsRedirection: "true"
+  StudioUrl: "https://studio.primeapps.io"
+  PostgresPath: "/usr/bin"
+  DataDirectory: "/data"
+  SentryDsn: "https://3acc3a10f5bf4892992e08f273b0bcee:0690e69fb3634ef89e03167da3e24be1@log.primeapps.io/59"
+---
+apiVersion: v1
+data:
+  aspnetapp.pfx: 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
+kind: Secret
+metadata:
+  name: primeapps-admin-selfsigned-ssl
+  namespace: primeapps
+type: Opaque
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: primapps-admin
+  namespace: primeapps
+  labels:
+    k8s-app: "primeapps"
+  annotations:
+    volume.alpha.kubernetes.io/storage-class: gp2
+    failure-domain.beta.kubernetes.io/zone: eu-west-1c
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: primeapps-admin
+  namespace: primeapps
+  labels:
+    k8s-app: "primeapps-admin"
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      k8s-app: primeapps-admin
+  template:
+    metadata:
+      labels:
+        k8s-app: primeapps-admin
+    spec:
+      volumes:
+        - name: "self-signed-ssl"
+          secret:
+            secretName: primeapps-admin-selfsigned-ssl
+        - name: admin-data-volume
+          persistentVolumeClaim:
+            claimName: primapps-admin            
+      containers:
+        - name: primeapps-admin
+          image: primeapps/primeapps-admin:1.19.328.2-debian
+          volumeMounts:
+            - mountPath: "/etc/self-signed-ssl"
+              name: self-signed-ssl
+            - mountPath: "/data"
+              name: admin-data-volume              
+          env:
+            - name: ASPNETCORE_Kestrel__Certificates__Default__Path
+              value: /etc/self-signed-ssl/aspnetapp.pfx
+            - name: ConnectionStrings__TenantDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: TenantDBConnection
+            - name: ConnectionStrings__PlatformDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: PlatformDBConnection
+            - name: ConnectionStrings__RedisConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: RedisConnection
+            - name: AppSettings__StorageUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: StorageUrl
+            - name: AppSettings__StorageAccessKey
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: StorageAccessKey
+            - name: AppSettings__StorageSecretKey
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: StorageSecretKey
+            - name: AppSettings__EnableJobs
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: EnableJobs
+            - name: AppSettings__AuthenticationServerURL
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: AuthenticationServerURL
+            - name: AppSettings__ClientId
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: ClientId
+            - name: AppSettings__ClientSecret
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: ClientSecret
+            - name: AppSettings__ForwardHeaders
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: ForwardHeaders
+            - name: AppSettings__HttpsRedirection
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: HttpsRedirection
+            - name: AppSettings__StudioUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: StudioUrl
+            - name: AppSettings__PostgresPath
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: PostgresPath
+            - name: AppSettings__DataDirectory
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: DataDirectory
+            - name: Sentry__Dsn
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: SentryDsn
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: primeapps-admin-service
+  namespace: primeapps
+spec:
+  type: "ClusterIP"
+  selector:
+    k8s-app: primeapps-admin
+  ports:
+    - name: "http"
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: primeapps-admin-ingress
+  namespace: primeapps
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
+    nginx.ingress.kubernetes.io/server-snippet: |-
+      add_header X-Robots-Tag "noindex, nofollow";
+spec:
+  tls:
+    - hosts:
+        - "admin.primeapps.io"
+      secretName: primeapps-wildcard-ssl
+  rules:
+    - host: "admin.primeapps.io"
+      http:
+        paths:
+          - path: "/"
+            backend:
+              serviceName: primeapps-admin-service
+              servicePort: 80

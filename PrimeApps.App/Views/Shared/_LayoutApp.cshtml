@@ -8,7 +8,7 @@
     var trustedUrls = new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
     var routeTemplateUrls = new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
     var appInfo = (ApplicationInfoViewModel)ViewBag.AppInfo;
-    var blobUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.BlobUrl : "";
+    var blobUrl = !string.IsNullOrWhiteSpace(ViewBag.BlobUrl) ? ViewBag.BlobUrl : "";
     var tenantId = ViewBag.TenantId;
     var token = ViewBag.Token;
     var appId = ViewBag.AppId;
@@ -32,6 +32,7 @@
     <title>@appInfo.Title</title>
     <link rel="icon" href="@Url.Content(appInfo.Favicon)" type="image/x-icon"/>
     <meta charset="utf-8"/>
+    <meta name="description" content="@appInfo.Description">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
     <meta http-equiv="Pragma" content="no-cache"/>
@@ -91,6 +92,7 @@
     var version = '@typeof(ControllerContext).Assembly.GetName().Version';
     var cdnUrl = '@ViewBag.CdnUrlDynamic';
     var customLanguage = '@appInfo.Language';
+    var tenantLanguage = '@ViewBag.tenantLanguage';
     var multiLanguage = ('@appInfo.MultiLanguage' !== 'False');
     var appLogo = '@Html.Raw(appInfo.Logo)';
     var components = @(new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Components)));

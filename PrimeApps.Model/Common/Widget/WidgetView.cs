@@ -7,7 +7,8 @@ namespace PrimeApps.Model.Common.Widget
         public int Id { get; set; }
         public WidgetType WidgetType { get; set; }
 
-        public string Name { get; set; }
+        public string NameEn { get; set; }
+        public string NameTr { get; set; }
 
         //For external widget for future usage
         public string LoadUrl { get; set; }

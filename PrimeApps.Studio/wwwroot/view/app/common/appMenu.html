@@ -72,13 +72,13 @@
                     <span>Scripts</span>
                 </a>
             </li>
-        <!--    <li ng-class="activeMenuItem ==='advancedWorkflows' ? 'active' :''">
-                <a href="/#/org/{{ orgId}}/app/{{ appId}}/advancedWorkflows" data-trigger="hover" data-type="info"
-                   data-title="Advanced Workflows" bs-tooltip data-placement="right">
-                    <i class="fas fa-project-diagram"></i>
-                    <span>Workflows</span>
-                </a>
-            </li>-->
+            <!--    <li ng-class="activeMenuItem ==='advancedWorkflows' ? 'active' :''">
+                    <a href="/#/org/{{ orgId}}/app/{{ appId}}/advancedWorkflows" data-trigger="hover" data-type="info"
+                       data-title="Advanced Workflows" bs-tooltip data-placement="right">
+                        <i class="fas fa-project-diagram"></i>
+                        <span>Workflows</span>
+                    </a>
+                </li>-->
             <li ng-class="activeMenuItem ==='functions' ? appLoading ? 'active blocked' : 'active' :''">
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/functions" data-trigger="hover" data-type="info"
                    data-title="Functions" bs-tooltip data-placement="right">
@@ -86,7 +86,13 @@
                     <span>Functions</span>
                 </a>
             </li>
-
+            <li ng-class="activeMenuItem ==='customsettings' ?  'active' :''">
+                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/customsettings" data-trigger="hover" data-type="info"
+                   data-title="Settings" bs-tooltip data-placement="right">
+                    <i class="fas fa-cogs"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
         </ul>
     </li>
     <li ng-class="subMenuOpen =='visualization' ? 'active sub-open':''"
@@ -113,7 +119,6 @@
                     <span>Reports</span>
                 </a>
             </li>
-
             <li ng-class="activeMenuItem ==='menus' ?'active' :''">
                 <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/menus" data-trigger="hover" data-type="info"
                    data-title="Menus" bs-tooltip data-placement="right">
@@ -121,7 +126,6 @@
                     <span>Menus</span>
                 </a>
             </li>
-
         </ul>
     </li>
     <li ng-class="subMenuOpen =='templates' ? 'active sub-open':''"
@@ -137,10 +141,16 @@
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/templatesEmail" data-trigger="hover" data-type="info"
                    data-title="Email" bs-tooltip data-placement="right">
                     <i class="fas fa-envelope"></i>
-                    <span>E-mail</span>
+                    <span>Email (Module)</span>
                 </a>
             </li>
-         
+            <li ng-class="activeMenuItem ==='appEmailTemplates' ? 'active' :''">
+                <a href="/#/org/{{orgId}}/app/{{appId}}/appEmailTemplates" data-trigger="hover" data-type="info"
+                   data-title="App Email Templates" bs-tooltip data-placement="right">
+                    <i class="fas fa-envelope"></i>
+                    <span>Email (App)</span>
+                </a>
+            </li>
             <li ng-class="activeMenuItem ==='templatesWord' ? 'active' :''">
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/templatesWord" data-trigger="hover" data-type="info"
                    data-title="Word Templates" bs-tooltip data-placement="right">
@@ -152,18 +162,9 @@
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/templatesExcel" data-trigger="hover" data-type="info"
                    data-title="Excel" bs-tooltip data-placement="right">
                     <i class="fas fa-file-excel"></i>
-                    <span>Spreadsheet </span>
+                    <span>Spreadsheet</span>
                 </a>
             </li>
-            
-            <li ng-class="activeMenuItem ==='appEmailTemplates' ? 'active' :''">
-                <a href="/#/org/{{orgId}}/app/{{appId}}/appEmailTemplates" data-trigger="hover" data-type="info"
-                   data-title="App Email Templates" bs-tooltip data-placement="right">
-                    <i class="fas fa-at"></i>
-                    <span>App Email Templates</span>
-                </a>
-            </li>
-
         </ul>
     </li>
     <li ng-click="openSubMenu('');$event.stopPropagation();" ng-class="activeMenuItem ==='components' ? 'active' :''">
@@ -215,11 +216,11 @@
         </a>
         <ul ng-click="$event.stopPropagation();">
             <!--<li ng-class="activeMenuItem ==='appDetails' ? 'active' :''">-->
-                <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/appDetails" data-trigger="hover" data-type="info"-->
-                   <!--data-title="App Details" bs-tooltip data-placement="right">-->
-                    <!--<i class="fas fa-cog"></i>-->
-                    <!--<span>App Details</span>-->
-                <!--</a>-->
+            <!--<a href="/#/org/{{ orgId}}/app/{{ appId}}/appDetails" data-trigger="hover" data-type="info"-->
+            <!--data-title="App Details" bs-tooltip data-placement="right">-->
+            <!--<i class="fas fa-cog"></i>-->
+            <!--<span>App Details</span>-->
+            <!--</a>-->
             <!--</li>-->
             <li ng-class="activeMenuItem ==='appCollaborators' ? 'active' :''">
                 <a href="/#/org/{{ orgId}}/app/{{ appId}}/appCollaborators" data-trigger="hover" data-type="info"
@@ -285,11 +286,11 @@
                     <span>Extensions</span>
                 </a>
             </li>
-            <li ng-class="activeMenuItem ==='customsettings' ?  'active' :''">
-                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/customsettings" data-trigger="hover" data-type="info"
-                   data-title="Settings" bs-tooltip data-placement="right">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
+            <li ng-class="activeMenuItem ==='packages' ?  'active' :''">
+                <a href="/#/org/{{currentOrgId}}/app/{{currentAppId}}/packages" data-trigger="hover" data-type="info"
+                   data-title="Packages" bs-tooltip data-placement="right">
+                    <i class="fas fa-rocket"></i>
+                    <span>Packages</span>
                 </a>
             </li>
         </ul>

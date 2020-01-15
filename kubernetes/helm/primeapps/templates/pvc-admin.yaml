@@ -1,0 +1,20 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: primapps-admin
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    k8s-admin: "{{.Release.Name}}-admin"
+  annotations:
+  {{- range $key, $value := .Values.annotations }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: "{{ .Values.admin.storage.size }}"
+  storageClassName: "{{ .Values.admin.storage.class }}"

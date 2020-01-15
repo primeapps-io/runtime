@@ -7,6 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -30,7 +33,7 @@ namespace PrimeApps.Studio.Controllers
         private IRelationRepository _relationRepository;
         private IUserRepository _userRepository;
         private IProfileRepository _profileRepository;
-        private ISettingRepository _settingRepository; 
+        private ISettingRepository _settingRepository;
         private IConfiguration _configuration;
         private Warehouse _warehouse;
         private IModuleHelper _moduleHelper;
@@ -83,7 +86,7 @@ namespace PrimeApps.Studio.Controllers
             var user = await _userRepository.GetByEmail(userModel.Email);
 
             if (user != null)
-                return BadRequest(new {message = "User already exist"});
+                return BadRequest(new { message = "User already exist" });
 
             var clientId = _configuration.GetValue("AppSettings:ClientId", string.Empty);
             string password = "";
@@ -92,7 +95,7 @@ namespace PrimeApps.Studio.Controllers
             {
                 var appInfo = await _applicationRepository.GetByNameAsync(clientId);
                 var organization = await _organizationRepository.Get(OrganizationId);
-                
+
                 using (var httpClient = new HttpClient())
                 {
                     var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_app_draft_user";
@@ -134,7 +137,7 @@ namespace PrimeApps.Studio.Controllers
                 }
             }
 
-            return StatusCode(201, new {password = password});
+            return StatusCode(201, new { password = password });
         }
 
         /// <summary>
@@ -180,6 +183,7 @@ namespace PrimeApps.Studio.Controllers
                 return BadRequest();
 
             user.IsActive = false;
+            user.Deleted = true;
             await _userRepository.UpdateAsync(user);
             var platformUser = await _platformUserRepository.Get(user.Id);
             var tenantUser = platformUser.TenantsAsUser.FirstOrDefault(x => x.TenantId == 1 & x.UserId == user.Id);
@@ -202,15 +206,16 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        [Route("find")]
+        public IActionResult Find(ODataQueryOptions<TenantUser> queryOptions)
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "app_draft_user", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var users = await _userRepository.Find(paginationModel);
+            var users = _userRepository.Find();
 
-            return Ok(users);
+            var queryResults = (IQueryable<TenantUser>)queryOptions.ApplyTo(users, new ODataQuerySettings() { EnsureStableOrdering = false });
+            return Ok(new PageResult<TenantUser>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
         [Route("send_email_password"), HttpPost]

@@ -36,6 +36,42 @@ namespace PrimeApps.Model.Common.Component
         public string Label { get; set; }
 
         [JsonProperty("status"), DataMember(Name = "status")]
-        public PublishStatus Status { get; set; }
+        public PublishStatusType Status { get; set; }
+
+        [JsonProperty("environments"), DataMember(Name = "environments"), MaxLength(10)]
+        public List<EnvironmentType> Environments { get; set; }
+
+        [JsonProperty("custom_url"), DataMember(Name = "custom_url")]
+        public string CustomUrl { get; set; }
+
+        public string EnvironmentValues
+        {
+            get
+            {
+                var list = new List<string>();
+
+                if (Environments != null)
+                {
+                    foreach (var env in Environments)
+                    {
+                        var value = (int) env;
+                        list.Add(value.ToString());
+                    }
+                }
+
+                return string.Join(",", list);
+            }
+
+            set
+            {
+                var list = value.Split(",");
+
+                foreach (var env in list)
+                {
+                    Environments.Add((EnvironmentType)Enum.Parse(typeof(EnvironmentType), env));
+                }
+
+            }
+        }
     }
 }

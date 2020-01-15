@@ -16,49 +16,49 @@
     </div>
 </div>
 
-<div class="tab-content table-responsive">
+<div class="tab-content table-responsive" ng-if="false">
     <table class="table" ng-show="loading">
         <thead>
-        <tr>
-            <th>{{'Setup.Report.ReportName' | translate}}</th>
-            <th>{{'Setup.Report.ReportCategory' | translate}}</th>
-            <th>{{'Setup.Report.ReportType' | translate}}</th>
-            <th width="70"></th>
-        </tr>
+            <tr>
+                <th>{{'Setup.Report.ReportName' | translate}}</th>
+                <th>{{'Setup.Report.ReportCategory' | translate}}</th>
+                <th>{{'Setup.Report.ReportType' | translate}}</th>
+                <th width="70"></th>
+            </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="item in placeholderArray">
+            <tr ng-repeat="item in placeholderArray">
 
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-        </tr>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+                <td>
+                    <div class="animated-background"></div>
+                </td>
+            </tr>
         </tbody>
     </table>
     <table class="table" ng-show="!loading">
         <thead>
-        <tr>
-            <th>{{'Setup.Report.ReportName' | translate}}</th>
-            <th>{{'Setup.Report.ReportCategory' | translate}}</th>
-            <th>{{'Setup.Report.ReportType' | translate}}</th>
-            <th width="50"></th>
-        </tr>
+            <tr>
+                <th>{{'Setup.Report.ReportName' | translate}}</th>
+                <th>{{'Setup.Report.ReportCategory' | translate}}</th>
+                <th>{{'Setup.Report.ReportType' | translate}}</th>
+                <th width="50"></th>
+            </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="report in reports | filter:{name:'!users'} | orderBy:['-system_type','order']"
-            ng-click="openReportDetail(report)">
+            <tr ng-repeat="report in reports | filter:{name:'!users'} | orderBy:['-system_type','order']"
+                ng-click="openReportDetail(report)">
 
             <td>
-                {{report.name}}
+                {{report.name_en}}
             </td>
             <td>
-                {{report.category.name}}
+                {{report.category.name_en}}
             </td>
             <td>
                 {{ report.report_type =='tabular' ? 'List':(report.report_type =='single') ? 'Single':'Summary' }}
@@ -110,4 +110,7 @@
         </div>
     </div>
 </div>
-
+<div class="tab-content">
+    <kendo-grid class="grid-theme grid-theme-center table-responsive" k-scope-field="grid" id="kendo-grid" k-options="mainGridOptions">
+    </kendo-grid>
+</div>

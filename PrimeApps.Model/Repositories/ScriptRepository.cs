@@ -15,19 +15,21 @@ namespace PrimeApps.Model.Repositories
 {
     public class ScriptRepository : RepositoryBaseTenant, IScriptRepository
     {
-        public ScriptRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public ScriptRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        {
+        }
 
         public async Task<int> Count()
         {
             return await DbContext.Components
-                           .Where(x => !x.Deleted && x.Type == ComponentType.Script).CountAsync();
+                .Where(x => !x.Deleted && x.Type == ComponentType.Script).CountAsync();
         }
 
         public async Task<Component> Get(int id)
         {
             return await DbContext.Components
-               .Where(x => !x.Deleted && x.Id == id && x.Type == ComponentType.Script)
-               .FirstOrDefaultAsync();
+                .Where(x => !x.Deleted && x.Id == id && x.Type == ComponentType.Script)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<Component> GetByName(string name)
@@ -38,32 +40,17 @@ namespace PrimeApps.Model.Repositories
         public async Task<bool> IsUniqueName(string name)
         {
             return await DbContext.Components
-               .Where(x => !x.Deleted && x.Name == name && x.Type == ComponentType.Script)
-               .AnyAsync();
+                .Where(x => !x.Deleted && x.Name == name && x.Type == ComponentType.Script)
+                .AnyAsync();
         }
 
-        public async Task<ICollection<Component>> Find(PaginationModel paginationModel)
+        public IQueryable<Component> Find()
         {
             var components = DbContext.Components
-                .Where(x => !x.Deleted && x.Type == ComponentType.Script)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
+                .Where(x => !x.Deleted && x.Type == ComponentType.Script && x.Place != ComponentPlace.GlobalConfig)
+                .OrderByDescending(x => x.Id);
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    components = components.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    components = components.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
-            }
-
-            return await components.ToListAsync();
+            return components;
         }
 
         public async Task<List<Component>> GetByPlace(ComponentPlace place)
@@ -95,6 +82,5 @@ namespace PrimeApps.Model.Repositories
             component.Deleted = true;
             return await DbContext.SaveChangesAsync();
         }
-
     }
 }

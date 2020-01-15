@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Common.ActionButton
@@ -20,6 +21,9 @@ namespace PrimeApps.Model.Common.ActionButton
         public string Headers { get; set; }
         public ActionButtonEnum.ActionTrigger Trigger { get; set; }
         public List<ActionButtonPermissionViewModel> Permissions { get; set; }
+
+        [JsonIgnore]
+        public string Environment { get; set; }
     }
 
     public class ActionButtonPermissionViewModel

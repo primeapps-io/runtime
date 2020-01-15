@@ -44,33 +44,17 @@ namespace PrimeApps.Model.Repositories
         public bool AvailableForDeployment(int componentId)
         {
             return DbContext.DeploymentsComponent
-                .Count(x => x.ComponentId == componentId && x.Status == DeploymentStatus.Running && !x.Deleted) == 0;
+                .Count(x => x.ComponentId == componentId && x.Status == ReleaseStatus.Running && !x.Deleted) == 0;
         }
 
-        public async Task<ICollection<DeploymentComponent>> Find(int componentId, PaginationModel paginationModel)
+        public IQueryable<DeploymentComponent> Find(int componentId)
         {
             var deployments = DbContext.DeploymentsComponent
                 .Include(x => x.Component)
                 .Where(x => !x.Deleted & x.ComponentId == componentId)
-                .OrderByDescending(x => x.BuildNumber)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
+                .OrderByDescending(x => x.BuildNumber);
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    deployments = deployments.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    deployments = deployments.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
-            }
-
-            return await deployments.ToListAsync();
+            return deployments;
         }
 
         public async Task<int> Create(DeploymentComponent deployment)

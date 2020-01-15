@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Amazon.S3;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -11,11 +12,13 @@ using PrimeApps.Auth.Data;
 using PrimeApps.Auth.Helpers;
 using PrimeApps.Auth.Models;
 using PrimeApps.Auth.Providers;
+using PrimeApps.Auth.Repositories;
+using PrimeApps.Auth.Repositories.IRepositories;
 using PrimeApps.Auth.Services;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Auth
 {
@@ -26,8 +29,8 @@ namespace PrimeApps.Auth
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("AuthDBConnection")));
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
-            services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>(), configuration));
+
             services.AddSingleton(configuration);
             services.AddHttpContextAccessor();
 
@@ -54,7 +57,9 @@ namespace PrimeApps.Auth
                 }
             }
 
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddHostedService<QueuedHostedService>();
+            services.AddAWSService<IAmazonS3>();
             services.AddScoped<IGiteaHelper, GiteaHelper>();
             services.AddScoped<IUserHelper, UserHelper>();
             services.AddSingleton<IProfileService, CustomProfileService>();
@@ -63,8 +68,10 @@ namespace PrimeApps.Auth
             services.AddTransient<IPlatformRepository, PlatformRepository>();
             services.AddTransient<IPlatformUserRepository, PlatformUserRepository>();
             services.AddTransient<IApplicationRepository, ApplicationRepository>();
+            services.AddTransient<IUnifiedStorage, UnifiedStorage>();
 
             services.AddScoped<SignInManager<ApplicationUser>, ApplicationSignInManager>();
+            services.AddTransient<IClientRepository, ClientRepository>();
         }
     }
 }

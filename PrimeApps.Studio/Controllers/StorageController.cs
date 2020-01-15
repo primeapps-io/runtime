@@ -1,14 +1,22 @@
 using System;
 using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Document;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
-using PrimeApps.Studio.Storage;
+using PrimeApps.Studio.Services;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -24,8 +32,12 @@ namespace PrimeApps.Studio.Controllers
         private IImportRepository _importRepository;
         private IUnifiedStorage _storage;
         private IConfiguration _configuration;
+        private IHistoryHelper _historyHelper;
+        private IBackgroundTaskQueue _queue;
+        private IHttpContextAccessor _context;
+        private IHostingEnvironment _hostingEnvironment;
 
-        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IImportRepository importRepository, IUnifiedStorage storage, IConfiguration configuration)
+        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IImportRepository importRepository, IUnifiedStorage storage, IConfiguration configuration, IHistoryHelper historyHelper, IBackgroundTaskQueue queue, IHttpContextAccessor context, IHostingEnvironment hostingEnvironment)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
@@ -36,6 +48,11 @@ namespace PrimeApps.Studio.Controllers
             _importRepository = importRepository;
             _storage = storage;
             _configuration = configuration;
+            _historyHelper = historyHelper;
+            _queue = queue;
+            _context = context;
+            _storage.FileUploadedEvent += FileUploaded;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -78,7 +95,6 @@ namespace PrimeApps.Studio.Controllers
         //    form.TryGetValue("type", out type);
         //    form.TryGetValue("container", out container);
         //    ObjectType objectType = UnifiedStorage.GetType(type);
-
 
         //    if (!string.IsNullOrWhiteSpace(container))
         //    {
@@ -133,13 +149,12 @@ namespace PrimeApps.Studio.Controllers
 
         //    return Json(response);
         //}
-
         [HttpPost("upload_attachment")]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> UploadWhole()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("attachment", OrganizationId, (int)AppId);
+            StringValues bucketName = UnifiedStorage.GetPath("attachment", PreviewMode, PreviewMode == "tenant" ? (int)TenantId : (int)AppId);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -157,10 +172,10 @@ namespace PrimeApps.Studio.Controllers
 
                 using (Stream stream = new MemoryStream(parser.FileContents))
                 {
-                    await _storage.Upload(bucketName, fileName, stream);
+                    await _storage.Upload(parser.Filename, bucketName, fileName, stream);
                 }
 
-                var url = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
+                var url = _storage.GetLink(bucketName, fileName);
 
                 //return content type.
                 return Ok(url);
@@ -175,7 +190,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> UploadTemplate()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("template", OrganizationId, (int)AppId);
+            StringValues bucketName = UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? (int)TenantId : (int)AppId);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -191,7 +206,7 @@ namespace PrimeApps.Studio.Controllers
 
                 using (Stream stream = new MemoryStream(parser.FileContents))
                 {
-                    await _storage.Upload(bucketName, uniqueName, stream);
+                    await _storage.Upload(parser.Filename, bucketName, uniqueName, stream);
                 }
 
                 var result = new DocumentUploadResult
@@ -214,7 +229,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> RecordFileUpload()
         {
             var parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("record", OrganizationId, (int)AppId);
+            StringValues bucketName = UnifiedStorage.GetPath("record", PreviewMode, PreviewMode == "tenant" ? (int)TenantId : (int)AppId);
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -254,6 +269,35 @@ namespace PrimeApps.Studio.Controllers
             return NotFound();
         }
 
+        [Route("download_file"), HttpPost]
+        public async Task<HttpResponseMessage> DownloadFile([FromBody]JObject request)
+        {
+            if (await _storage.FolderExists(request["bucket_name"].ToString()))
+            {
+                var tempPath = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);
+
+                var tmpFolder = Path.Combine(tempPath, "tmpVersionFolder");
+                var bucketName = request["bucket_name"].ToString();
+
+                if (Directory.Exists(Path.Combine(tmpFolder, bucketName)))
+                    Directory.Delete(Path.Combine(tmpFolder, bucketName), true);
+
+                if (!Directory.Exists(Path.Combine(tmpFolder, bucketName)))
+                    Directory.CreateDirectory(Path.Combine(tmpFolder, bucketName));
+
+                //await _storage.DownloadFolder(bucketName, $"releases\\{request["version"]}", tmpFolder + bucketName);
+                await _storage.DownloadByPath(request["bucket_name"].ToString() + request["path"], request["key"].ToString(), Path.Combine(tmpFolder, bucketName, request["key"].ToString()));
+
+                var response = new HttpResponseMessage(HttpStatusCode.OK);
+                var stream = new FileStream(Path.Combine(tmpFolder, bucketName, request["key"].ToString()), FileMode.Open);
+                response.Content = new StreamContent(stream);
+                response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+                return response;
+            }
+
+            return new HttpResponseMessage(HttpStatusCode.BadRequest);
+        }
 
         //[Route("download")]
         //public async Task<FileStreamResult> Download([FromQuery(Name = "fileId")] int fileId)
@@ -307,7 +351,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> UploadLogo()
         {
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            StringValues bucketName = UnifiedStorage.GetPath("applogo", OrganizationId, (int)AppId);
+            StringValues bucketName = UnifiedStorage.GetPath("applogo", PreviewMode, PreviewMode == "tenant" ? (int)TenantId : (int)AppId);
 
             if (parser.Success)
             {
@@ -335,10 +379,10 @@ namespace PrimeApps.Studio.Controllers
 
                 using (Stream stream = new MemoryStream(parser.FileContents))
                 {
-                    await _storage.Upload(bucketName, fileName, stream);
+                    await _storage.Upload(parser.Filename, bucketName, fileName, stream);
                 }
 
-                var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
+                var logo = _storage.GetLink(bucketName, fileName);
 
                 //return content type.
                 return Ok(logo);
@@ -389,5 +433,12 @@ namespace PrimeApps.Studio.Controllers
         //    //this request invalid because there is no file, return fail code to the client.
         //    return NotFound();
         //}
+
+        public void FileUploaded(string bucket, string key, string fileName)
+        {
+            var email = _context?.HttpContext?.User?.FindFirst("email").Value;
+            var currentUser = UserHelper.GetCurrentUser(_context);
+            _queue.QueueBackgroundWorkItem(token => _historyHelper.Storage(fileName, key, "PUT", bucket, email, currentUser));
+        }
     }
 }

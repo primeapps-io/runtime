@@ -27,7 +27,7 @@ namespace PrimeApps.App.Helpers
 {
     public interface IRecordHelper
     {
-        Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, ITagRepository tagRepository, ISettingRepository settingRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null);
+        Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, ITagRepository tagRepository, ISettingRepository settingRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null, bool customBulkUpdatePermission = false);
         Task<int> BeforeDelete(Module module, JObject record, UserItem appUser, IProcessRepository processRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, ModelStateDictionary modelState, Warehouse warehouse);
         void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true);
         void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180);
@@ -46,7 +46,7 @@ namespace PrimeApps.App.Helpers
         void SetCurrentUser(UserItem appUser);
     }
 
-    public delegate Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, ITagRepository tagRepository, ISettingRepository settingRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null);
+    public delegate Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, ITagRepository tagRepository, ISettingRepository settingRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null, bool customBulkUpdatePermission = false);
 
     public delegate Task UpdateStageHistory(JObject record, JObject currentRecord);
 
@@ -68,15 +68,19 @@ namespace PrimeApps.App.Helpers
         private IWorkflowHelper _workflowHelper;
         private IProcessHelper _processHelper;
         private ICalculationHelper _calculationHelper;
-        private IBpmHelper _bpmHelper;
+        //private IBpmHelper _bpmHelper;
         private IHttpContextAccessor _context;
-        private IWorkflowHost _workflowHost;
+        //private IWorkflowHost _workflowHost;
         private IModuleRepository _moduleRepository;
         private IModuleHelper _moduleHelper;
+        private IEnvironmentHelper _environmentHelper;
 
         public IBackgroundTaskQueue Queue { get; }
 
-        public RecordHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IAuditLogHelper auditLogHelper, INotificationHelper notificationHelper, IWorkflowHelper workflowHelper, IProcessHelper processHelper, ICalculationHelper calculationHelper, IBpmHelper bpmHelper, IBackgroundTaskQueue queue, IHttpContextAccessor context, IWorkflowHost workflowHost, IModuleRepository moduleRepository, IModuleHelper moduleHelper)
+        public RecordHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IAuditLogHelper auditLogHelper,
+            INotificationHelper notificationHelper, IWorkflowHelper workflowHelper, IProcessHelper processHelper, ICalculationHelper calculationHelper,
+             IBackgroundTaskQueue queue, IHttpContextAccessor context, IModuleRepository moduleRepository,
+            IModuleHelper moduleHelper, IEnvironmentHelper environmentHelper)
         {
             _context = context;
             _serviceScopeFactory = serviceScopeFactory;
@@ -87,10 +91,11 @@ namespace PrimeApps.App.Helpers
             _workflowHelper = workflowHelper;
             _processHelper = processHelper;
             _calculationHelper = calculationHelper;
-            _bpmHelper = bpmHelper;
-            _workflowHost = workflowHost;
+            //_bpmHelper = bpmHelper;
+            //_workflowHost = workflowHost;
             _moduleRepository = moduleRepository;
             _moduleHelper = moduleHelper;
+            _environmentHelper = environmentHelper;
 
             Queue = queue;
         }
@@ -102,15 +107,16 @@ namespace PrimeApps.App.Helpers
             _currentUser = currentUser;
             _auditLogHelper = new AuditLogHelper(configuration, serviceScopeFactory, currentUser);
             _notificationHelper = new NotificationHelper(configuration, serviceScopeFactory, currentUser);
-            _workflowHelper = new WorkflowHelper(configuration, serviceScopeFactory, currentUser, _moduleHelper);
+            _environmentHelper = new EnvironmentHelper(_configuration);
+            _workflowHelper = new WorkflowHelper(configuration, serviceScopeFactory, currentUser, _moduleHelper, _environmentHelper);
             _processHelper = new ProcessHelper(configuration, serviceScopeFactory, currentUser);
             _calculationHelper = new CalculationHelper(configuration, serviceScopeFactory, currentUser);
-            _bpmHelper = new BpmHelper(configuration, serviceScopeFactory, currentUser);
+            //_bpmHelper = new BpmHelper(configuration, serviceScopeFactory, currentUser);
 
             Queue = new BackgroundTaskQueue();
         }
 
-        public async Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, ITagRepository tagRepository, ISettingRepository settingRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null)
+        public async Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, ITagRepository tagRepository, ISettingRepository settingRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null, bool customBulkUpdatePermission = false)
         {
             //TODO: Validate metadata
             //TODO: Profile permission check
@@ -388,7 +394,7 @@ namespace PrimeApps.App.Helpers
                 return StatusCodes.Status403Forbidden;
             }
 
-            if (!record["id"].IsNullOrEmpty() && !modulePermission.Modify)
+            if (!record["id"].IsNullOrEmpty() && !modulePermission.Modify && !customBulkUpdatePermission)
             {
                 modelState.AddModelError(module.Name, $"You dont have profile permission for update '{module.Name}' module.");
                 return StatusCodes.Status403Forbidden;
@@ -471,6 +477,8 @@ namespace PrimeApps.App.Helpers
             if (!record.IsNullOrEmpty() && !record["process_id"].IsNullOrEmpty())
             {
                 var process = await processRepository.GetById((int)record["process_id"]);
+                process = _environmentHelper.DataFilter(process);
+
                 record["freeze"] = true;
 
                 if (appUser.HasAdminProfile)
@@ -968,7 +976,7 @@ namespace PrimeApps.App.Helpers
                             if (field.LookupType == "users")
                                 lookupModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
                             else if (field.LookupType == "profiles")
-                                lookupModule = Model.Helpers.ModuleHelper.GetFakeProfileModule();
+                                lookupModule = Model.Helpers.ModuleHelper.GetFakeProfileModule(tenant.Setting.Language);
                             else if (field.LookupType == "roles")
                                 lookupModule = Model.Helpers.ModuleHelper.GetFakeRoleModule(tenant.Setting.Language);
                             else

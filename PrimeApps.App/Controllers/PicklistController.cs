@@ -124,5 +124,19 @@ namespace PrimeApps.App.Controllers
 
             return Ok(picklistViewModel);
         }
+        
+        [Route("get_picklist_item_by_system_code"), HttpGet]
+        public async Task<IActionResult> GetPicklistItemBySystemCode([FromQuery]string systemcode)
+        {
+            if (systemcode == null)
+                return NotFound("Systemcode required");   
+            
+            var picklistItem = await _picklistRepository.GetItemBySystemCode(systemcode);
+
+            if (picklistItem == null)
+                return NotFound();   
+
+            return Ok(picklistItem);
+        }
     }
 }

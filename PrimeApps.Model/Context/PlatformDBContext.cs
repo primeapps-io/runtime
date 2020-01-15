@@ -5,14 +5,19 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Model.Context
 {
     public class PlatformDBContext : DbContext
     {
+        private IConfiguration _configuration;
         public int? UserId { get; set; }
 
-        public PlatformDBContext(DbContextOptions<PlatformDBContext> options) : base(options) { }
+        public PlatformDBContext(DbContextOptions<PlatformDBContext> options, IConfiguration configuration) : base(options)
+        {
+            _configuration = configuration;
+        }
 
         public PlatformDBContext(IConfiguration configuration)
         {
@@ -44,6 +49,14 @@ namespace PrimeApps.Model.Context
         public int GetCurrentUserId()
         {
             return UserId ?? 0;
+        }
+
+        public void SetConnectionString(string connectionString, IConfiguration configuration)
+        {
+            var dbConnection = Database.GetDbConnection();
+
+            if (dbConnection.State != System.Data.ConnectionState.Open)
+                dbConnection.ConnectionString = Postgres.GetConnectionString(configuration.GetConnectionString("PlatformDBConnection"), "platform", connectionString);
         }
 
         private void SetDefaultValues()
@@ -100,7 +113,7 @@ namespace PrimeApps.Model.Context
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<UserTenant>()
-               .HasKey(t => new { t.UserId, t.TenantId });
+                .HasKey(t => new { t.UserId, t.TenantId });
 
             modelBuilder.Entity<UserTenant>()
                 .HasOne(pt => pt.PlatformUser)
@@ -113,9 +126,9 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey(pt => pt.TenantId);
 
             modelBuilder.Entity<App>()
-               .HasMany(p => p.Tenants)
-               .WithOne(i => i.App)
-               .HasForeignKey(b => b.AppId);
+                .HasMany(p => p.Tenants)
+                .WithOne(i => i.App)
+                .HasForeignKey(b => b.AppId);
 
             modelBuilder.Entity<Tenant>()
                 .HasOne(p => p.Owner)
@@ -161,12 +174,6 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<AppTemplate>().HasIndex(x => x.SystemCode);
             modelBuilder.Entity<AppTemplate>().HasIndex(x => x.Active);
 
-            //ExchangeRate
-            modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Date);
-            modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Year);
-            modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Month);
-            modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Day);
-
             //PlatformWarehouse
             modelBuilder.Entity<PlatformWarehouse>().HasIndex(x => x.DatabaseName);
             modelBuilder.Entity<PlatformWarehouse>().HasIndex(x => x.Completed);
@@ -191,17 +198,24 @@ namespace PrimeApps.Model.Context
             //UserTenants
             modelBuilder.Entity<UserTenant>().HasIndex(x => x.UserId);
             modelBuilder.Entity<UserTenant>().HasIndex(x => x.TenantId);
+
+            //Release
+            modelBuilder.Entity<Release>().HasIndex(x => x.AppId);
+            modelBuilder.Entity<Release>().HasIndex(x => x.TenantId);
+            modelBuilder.Entity<Release>().HasIndex(x => x.StartTime);
+            modelBuilder.Entity<Release>().HasIndex(x => x.EndTime);
+            modelBuilder.Entity<Release>().HasIndex(x => x.Status);
         }
 
         public DbSet<PlatformUser> Users { get; set; }
         public DbSet<PlatformUserSetting> UserSettings { get; set; }
+        public DbSet<Release> Releases { get; set; }
         public DbSet<App> Apps { get; set; }
         public DbSet<AppSetting> AppSettings { get; set; }
         public DbSet<AppTemplate> AppTemplates { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<TenantSetting> TenantSettings { get; set; }
         public DbSet<TenantLicense> TenantLicenses { get; set; }
-        public DbSet<ExchangeRate> ExchangeRates { get; set; }
         public DbSet<PlatformWarehouse> Warehouses { get; set; }
         public DbSet<UserTenant> UserTenants { get; set; }
     }

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
 using MimeMapping;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -27,7 +28,7 @@ using PrimeApps.Model.Helpers.QueryTranslation;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Models;
-using PrimeApps.Studio.Storage;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -48,6 +49,7 @@ namespace PrimeApps.Studio.Controllers
         private IUnifiedStorage _storage;
 
         private IRecordHelper _recordHelper;
+
         public AttachController(ITenantRepository tenantRepository, IDocumentRepository documentRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository, IPicklistRepository picklistRepository, ISettingRepository settingsRepository, IRecordHelper recordHelper, INoteRepository noteRepository, IConfiguration configuration, IHostingEnvironment hostingEnvironment, IUnifiedStorage unifiedStorage, IServiceScopeFactory serviceScopeFactory, IViewRepository viewRepository, IUnifiedStorage storage)
         {
             _tenantRepository = tenantRepository;
@@ -83,7 +85,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("export")]
-        public async Task<IActionResult> Export([FromQuery(Name = "module")]string module, [FromQuery(Name = "id")]int id, [FromQuery(Name = "templateId")]int templateId, [FromQuery(Name = "format")]string format, [FromQuery(Name = "locale")]string locale, [FromQuery(Name = "timezoneOffset")]int timezoneOffset = 180, [FromQuery(Name = "save")] bool save = false)
+        public async Task<IActionResult> Export([FromQuery(Name = "module")]string module, [FromQuery(Name = "id")]int id, [FromQuery(Name = "templateId")]int templateId, [FromQuery(Name = "format")]string format, [FromQuery(Name = "locale")]string locale, [FromQuery(Name = "timezoneOffset")]int timezoneOffset = 180, [FromQuery(Name = "save")]bool save = false)
         {
             JObject record;
             var relatedModuleRecords = new Dictionary<string, JArray>();
@@ -91,6 +93,7 @@ namespace PrimeApps.Studio.Controllers
             var moduleEntity = await _moduleRepository.GetByName(module);
             var currentCulture = locale == "en" ? "en-US" : "tr-TR";
 
+            SetAsposeLicence(true);
 
             if (moduleEntity == null)
             {
@@ -124,7 +127,7 @@ namespace PrimeApps.Studio.Controllers
             }
 
             if (module == "profiles")
-                moduleEntity = Model.Helpers.ModuleHelper.GetFakeProfileModule();
+                moduleEntity = Model.Helpers.ModuleHelper.GetFakeProfileModule(AppUser.TenantLanguage);
 
             if (module == "roles")
                 moduleEntity = Model.Helpers.ModuleHelper.GetFakeRoleModule(AppUser.TenantLanguage);
@@ -175,7 +178,6 @@ namespace PrimeApps.Studio.Controllers
                 await templateBlob.DownloadToStreamAsync(template, Microsoft.WindowsAzure.Storage.AccessCondition.GenerateEmptyCondition(), new Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions(), new Microsoft.WindowsAzure.Storage.OperationContext());
 
                 doc = new Aspose.Words.Document(template);
-
             }
 
             // Add related module records.
@@ -225,7 +227,6 @@ namespace PrimeApps.Studio.Controllers
             var mimeType = MimeUtility.GetMimeMapping(fileName);
             if (save)
             {
-
                 await AzureStorage.UploadFile(0, outputStream, "temp", fileName, mimeType, _configuration);
                 var blob = await AzureStorage.CommitFile(fileName, Guid.NewGuid().ToString().Replace("-", "") + "." + format, mimeType, "pub", 1, _configuration);
 
@@ -233,10 +234,9 @@ namespace PrimeApps.Studio.Controllers
                 var blobUrl = _configuration.GetValue("AppSettings:BlobUrl", string.Empty);
                 if (!string.IsNullOrEmpty(blobUrl))
                 {
-                    var result = new { filename = fileName, fileurl = $"{blobUrl}{blob.Uri.AbsolutePath}" };
+                    var result = new {filename = fileName, fileurl = $"{blobUrl}{blob.Uri.AbsolutePath}"};
                     return Ok(result);
                 }
-
             }
             //rMessage.Content = new StreamContent(outputStream);
             //rMessage.Content.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
@@ -458,12 +458,12 @@ namespace PrimeApps.Studio.Controllers
                 if (moduleEntity.Name == relation.RelatedModule)
                 {
                     relatedModuleEntity = moduleEntity;
-                    relatedLookupModules = new List<Module> { moduleEntity };
+                    relatedLookupModules = new List<Module> {moduleEntity};
                 }
                 else
                 {
                     relatedModuleEntity = await _moduleRepository.GetByNameBasic(relation.RelatedModule);
-                    relatedLookupModules = new List<Module> { relatedModuleEntity };
+                    relatedLookupModules = new List<Module> {relatedModuleEntity};
                 }
 
                 var recordsFormatted = new JArray();
@@ -499,6 +499,7 @@ namespace PrimeApps.Studio.Controllers
                 {
                     item.Text = Regex.Replace(item.Text, "<.*?>", string.Empty).Replace("&nbsp;", " ");
                 }
+
                 notes.AddRange(noteList);
             }
 
@@ -540,6 +541,7 @@ namespace PrimeApps.Studio.Controllers
                         if (!record["currency"].IsNullOrEmpty())
                             product["currency"] = (string)record["currency"];
                     }
+
                     var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(quoteProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, quoteProductsLookupModules);
 
                     if (!productFormatted["separator"].IsNullOrEmpty())
@@ -605,6 +607,7 @@ namespace PrimeApps.Studio.Controllers
 
                 relatedModuleRecords.Add("order_products", productsFormatted);
             }
+
             if (module == "purchase_orders" && doc.Range.Text.Contains("{{#foreach purchase_order_products}}"))
             {
                 var orderFields = await _recordHelper.GetAllFieldsForFindRequest("purchase_order_products");
@@ -687,6 +690,7 @@ namespace PrimeApps.Studio.Controllers
                         if (!record["currency"].IsNullOrEmpty())
                             product["currency"] = (string)record["currency"];
                     }
+
                     var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
 
                     productsFormatted.Add(productFormatted);
@@ -833,7 +837,6 @@ namespace PrimeApps.Studio.Controllers
         [Route("UploadAvatar"), HttpPost]
         public async Task<IActionResult> UploadAvatar()
         {
-
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
 
             if (parser.Success)
@@ -885,10 +888,10 @@ namespace PrimeApps.Studio.Controllers
                 //return content type.
                 return Ok(parser.ContentType);
             }
+
             //this is not a valid request so return fail.
             return Ok("Fail");
         }
-
 
         [Route("upload_logo")]
         [ProducesResponseType(typeof(string), 200)]
@@ -947,12 +950,13 @@ namespace PrimeApps.Studio.Controllers
                 //return content type.
                 return Ok(parser.ContentType);
             }
+
             //this is not a valid request so return fail.
             return Ok("Fail");
         }
 
         [Route("download")]
-        public async Task<EmptyResult> Download([FromQuery(Name = "fileId")] int FileId)
+        public async Task<EmptyResult> Download([FromQuery(Name = "fileId")]int FileId)
         {
             var doc = await _documentRepository.GetById(FileId);
             if (doc != null)
@@ -988,8 +992,6 @@ namespace PrimeApps.Studio.Controllers
                 //there is no such file, return
                 throw new Exception("Document does not exist in the storage!");
             }
-
-
         }
 
         //[Route("download_template"), HttpGet]
@@ -1041,6 +1043,8 @@ namespace PrimeApps.Studio.Controllers
                 throw new HttpRequestException("Module field is required");
             }
 
+            SetAsposeLicence();
+
             var moduleEntity = await _moduleRepository.GetByName(module);
             var fields = moduleEntity.Fields.OrderBy(x => x.Id).ToList();
             var nameModule = AppUser.Culture.Contains("tr") ? moduleEntity.LabelTrPlural : moduleEntity.LabelEnPlural;
@@ -1054,8 +1058,8 @@ namespace PrimeApps.Studio.Controllers
             var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
             var currentCulture = locale == "en" ? "en-US" : "tr-TR";
             var formatDate = currentCulture == "tr-TR" ? "dd.MM.yyyy" : "M/d/yyyy";
-            var formatDateTime = currentCulture == "tr-TR" ? "dd.MM.yyyy HH:mm" : "M/d/yyyy h:mm a";
-            var formatTime = currentCulture == "tr-TR" ? "HH:mm" : "h:mm a";
+            var formatDateTime = currentCulture == "tr-TR" ? "dd.MM.yyyy HH:mm" : "M/d/yyyy h:mm";
+            var formatTime = currentCulture == "tr-TR" ? "HH:mm" : "h:mm";
             var format = "";
 
             var findRequest = new FindRequest();
@@ -1130,6 +1134,7 @@ namespace PrimeApps.Studio.Controllers
                             break;
                     }
             }
+
             for (int j = 0; j < records.Count; j++)
             {
                 var record = records[j];
@@ -1193,6 +1198,7 @@ namespace PrimeApps.Studio.Controllers
                         dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
                     }
                 }
+
                 dt.Rows.Add(dr);
             }
 
@@ -1211,8 +1217,6 @@ namespace PrimeApps.Studio.Controllers
             return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
-
-
         [Route("export_excel_view")]
         [Obsolete]
         public async Task<ActionResult> ExportExcelView([FromQuery(Name = "module")]string module, int viewId, int profileId, string locale = "", bool? normalize = false, int? timezoneOffset = 180, string listFindRequestJson = "", bool isViewFields = false)
@@ -1221,6 +1225,8 @@ namespace PrimeApps.Studio.Controllers
             {
                 throw new HttpRequestException("Module field is required");
             }
+
+            SetAsposeLicence();
 
             var moduleEntity = await _moduleRepository.GetByName(module);
             var moduleFields = moduleEntity.Fields.Where(x => !x.Deleted).OrderBy(x => x.Id).ToList();
@@ -1347,7 +1353,7 @@ namespace PrimeApps.Studio.Controllers
                         var fieldJson = JsonConvert.SerializeObject(field, serializerSettings);
                         var fieldClone = JsonConvert.DeserializeObject<Field>(fieldJson, serializerSettings);
 
-                        fieldClone.StyleInput = viewField.Field;//Mecburen eklendi. Fatih Sever ekledi :) Asagidaki döngüde ihtiyaç olduğu için bu sekilde eklendi.
+                        fieldClone.StyleInput = viewField.Field; //Mecburen eklendi. Fatih Sever ekledi :) Asagidaki döngüde ihtiyaç olduğu için bu sekilde eklendi.
 
                         viewFields.Add(fieldClone);
                     }
@@ -1367,7 +1373,7 @@ namespace PrimeApps.Studio.Controllers
                         var viewFieldLookupJson = JsonConvert.SerializeObject(viewFieldLookup, serializerSettings);
                         var viewFieldLookupClone = JsonConvert.DeserializeObject<Field>(viewFieldLookupJson, serializerSettings);
 
-                        viewFieldLookupClone.StyleInput = viewField.Field;//Mecburen eklendi. Fatih Sever ekledi :) Asagidaki döngüde ihtiyaç olduğu için bu sekilde eklendi.
+                        viewFieldLookupClone.StyleInput = viewField.Field; //Mecburen eklendi. Fatih Sever ekledi :) Asagidaki döngüde ihtiyaç olduğu için bu sekilde eklendi.
 
                         viewFields.Add(viewFieldLookupClone);
                     }
@@ -1427,7 +1433,6 @@ namespace PrimeApps.Studio.Controllers
                     {
                         labelLocale = label;
                     }
-
                 }
 
                 if (!dt.Columns.Contains(labelLocale))
@@ -1472,6 +1477,7 @@ namespace PrimeApps.Studio.Controllers
                     }
                 }
             }
+
             for (int j = 0; j < records.Count; j++)
             {
                 var record = records[j];
@@ -1500,7 +1506,6 @@ namespace PrimeApps.Studio.Controllers
 
                     if (field.DataType != DataType.Lookup)
                     {
-
                         switch (field.DataType)
                         {
                             case DataType.Number:
@@ -1536,7 +1541,6 @@ namespace PrimeApps.Studio.Controllers
 
                         else
                             dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
-
                     }
                 }
 
@@ -1566,6 +1570,8 @@ namespace PrimeApps.Studio.Controllers
             {
                 throw new HttpRequestException("Module field is required");
             }
+
+            SetAsposeLicence();
 
             var moduleEntity = await _moduleRepository.GetByName(module);
             var Module = await _moduleRepository.GetByName(module);
@@ -1616,7 +1622,6 @@ namespace PrimeApps.Studio.Controllers
 
             if (listFindRequest.Filters != null && listFindRequest.Filters.Count > 0)
             {
-
                 findRequest.Filters = new List<Filter>();
 
                 foreach (var viewFilter in listFindRequest.Filters)
@@ -1801,6 +1806,7 @@ namespace PrimeApps.Studio.Controllers
                             dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
                         }
                     }
+
                     dt.Rows.Add(dr);
                 }
 
@@ -1817,6 +1823,7 @@ namespace PrimeApps.Studio.Controllers
                     var toRange = worksheetReport.Cells.CreateRange(0, 0, 1, 1);
                     toRange.CopyValue(fromRange);
                 }
+
                 workbook.Worksheets.RemoveAt("Data");
                 workbook.Worksheets.RemoveAt("Report Formula");
 
@@ -1832,7 +1839,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("download_template")]
-        public async Task<FileStreamResult> DownloadTemplate([FromQuery(Name = "fileId")] int fileId, string tempType, int appId, int organizationId)
+        public async Task<FileStreamResult> DownloadTemplate([FromQuery(Name = "fileId")]int fileId, string tempType, int appId, int organizationId)
         {
             var type = "";
             if (tempType == "excel")
@@ -1843,7 +1850,16 @@ namespace PrimeApps.Studio.Controllers
             var temp = await _templateRepository.GetById(fileId);
             if (temp != null)
             {
-                return await _storage.Download(UnifiedStorage.GetPath("template", organizationId, appId), temp.Content, temp.Name + type);
+                var file = await _storage.Download(UnifiedStorage.GetPath("record", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), temp.Content, temp.Name + type);
+
+                var result = new FileStreamResult(file.ResponseStream, file.Headers.ContentType)
+                {
+                    FileDownloadName = temp.Name + type,
+                    LastModified = file.LastModified,
+                    EntityTag = new EntityTagHeaderValue(file.ETag)
+                };
+
+                return result;
             }
             else
             {
@@ -1860,6 +1876,8 @@ namespace PrimeApps.Studio.Controllers
             {
                 throw new HttpRequestException("Module field is required");
             }
+
+            SetAsposeLicence();
 
             var moduleEntity = await _moduleRepository.GetByName(module);
             var template = await _templateRepository.GetById(templateId);
@@ -1909,7 +1927,6 @@ namespace PrimeApps.Studio.Controllers
 
             if (listFindRequest.Filters != null && listFindRequest.Filters.Count > 0)
             {
-
                 findRequest.Filters = new List<Filter>();
 
                 foreach (var viewFilter in listFindRequest.Filters)
@@ -2010,7 +2027,6 @@ namespace PrimeApps.Studio.Controllers
                                 dt.Columns.Add(format).DataType = typeof(string);
                                 break;
                         }
-
                     }
                     else
                         switch (field.DataType)
@@ -2096,6 +2112,7 @@ namespace PrimeApps.Studio.Controllers
                             dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
                         }
                     }
+
                     dt.Rows.Add(dr);
                 }
 
@@ -2120,7 +2137,6 @@ namespace PrimeApps.Studio.Controllers
                 memory.Position = 0;
 
                 return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
-
             }
         }
 
@@ -2133,7 +2149,6 @@ namespace PrimeApps.Studio.Controllers
                 {
                     if (profileId == permission.ProfileId && permission.Type == FieldPermissionType.None)
                         return false;
-
                 }
             }
 
@@ -2155,6 +2170,30 @@ namespace PrimeApps.Studio.Controllers
 
             return true;
         }
+
+        private void SetAsposeLicence(bool isWord = false)
+        {
+            var licenceData = _configuration.GetValue("AppSettings:AsposeLicence", string.Empty);
+
+            if (string.IsNullOrEmpty(licenceData))
+                return;
+
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(licenceData);
+            writer.Flush();
+            stream.Position = 0;
+
+            if (isWord)
+            {
+                Aspose.Words.License licence = new Aspose.Words.License();
+                licence.SetLicense(stream);
+            }
+            else
+            {
+                Aspose.Cells.License licence = new Aspose.Cells.License();
+                licence.SetLicense(stream);
+            }
+        }
     }
 }
-

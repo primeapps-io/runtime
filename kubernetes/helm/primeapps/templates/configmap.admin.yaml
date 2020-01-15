@@ -1,0 +1,22 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: "{{.Release.Name}}-admin-config"
+data:
+  TenantDBConnection: "server={{.Values.postgresoperator.serverName}}.primeapps.svc.cluster.local;port=5432;username=postgres;password={{.Values.postgresoperator.password}};database=prod;command timeout=0;keepalive=30;maximum pool size=1000;"
+  PlatformDBConnection: "server={{.Values.postgresoperator.serverName}}.primeapps.svc.cluster.local;port=5432;username=postgres;password={{.Values.postgresoperator.password}};database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
+  RedisConnection: "{{.Release.Name}}-redis-master.primeapps:6379,password={{.Values.redis.password}},defaultDatabase=1,syncTimeout=30000"
+  StorageUrl: "https://{{.Values.minio.domain}}"
+  StorageAccessKey: "{{.Values.minio.accessKey}}"
+  StorageSecretKey: "{{.Values.minio.secretKey}}"
+  EnableJobs: "true"
+  AuthenticationServerURL: "https://auth.primeapps.io"
+  AuthenticationServerURLLocal: "https://{{.Values.auth.domain}}"
+  ClientId: "primeapps_studio"
+  ClientSecret: "secret"
+  ForwardHeaders: "true"
+  HttpsRedirection: "true"
+  StudioUrl: "https://studio.primeapps.io"
+  PostgresPath: "{{.Values.admin.postgresPath}}"
+  DataDirectory: "{{.Values.admin.dataDirectory}}"
+  SentryDsn: "{{.Values.admin.sentryDsn}}"

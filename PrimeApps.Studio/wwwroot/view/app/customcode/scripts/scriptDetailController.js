@@ -28,8 +28,9 @@ angular.module('primeapps')
             $scope.activePage = 1;
 
             $scope.app = $rootScope.currentApp;
-            $scope.organization = $filter('filter')($rootScope.organizations, {id: $scope.orgId})[0];
+            $scope.organization = $filter('filter')($rootScope.organizations, { id: $scope.orgId })[0];
             $scope.giteaUrl = giteaUrl;
+            $scope.environments = ScriptsService.getEnvironments();
 
             if (!$scope.name) {
                 $state.go('studio.app.scripts');
@@ -41,45 +42,26 @@ angular.module('primeapps')
 
             $scope.deployments = [];
 
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
+            //$scope.generator = function (limit) {
+            //    $scope.placeholderArray = [];
+            //    for (var i = 0; i < limit; i++) {
+            //        $scope.placeholderArray[i] = i;
+            //    }
+            //};
 
-            $scope.generator(10);
+            //$scope.generator(10);
 
-            $scope.requestModel = {
-                limit: "10",
-                offset: 0
-            };
+            $scope.environmentChange = function (env, index, otherValue) {
+                otherValue = otherValue || false;
 
-            $scope.changePage = function (page) {
-                $scope.loadingDeployments = true;
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+                if (index === 2) {
+                    $scope.environments[1].selected = true;
+                    $scope.environments[1].disabled = !!env.selected;
 
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    if (otherValue) {
+                        $scope.environments[2].selected = otherValue;
                     }
                 }
-
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-                ScriptsDeploymentService.find($scope.script.id, requestModel)
-                    .then(function (response) {
-                        $scope.deployments = response.data;
-                        $scope.loadingDeployments = false;
-                    })
-                    .catch(function (response) {
-                        toastr.error($filter('translate')('Common.Error'));
-                        $scope.loadingDeployments = false;
-                    });
-
             };
 
             $scope.getTime = function (time) {
@@ -97,9 +79,6 @@ angular.module('primeapps')
                 }
             };
 
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage);
-            };
 
             ScriptsService.getByName($scope.name)
                 .then(function (response) {
@@ -107,8 +86,12 @@ angular.module('primeapps')
                         toastr.error('Script Not Found !');
                         $state.go('studio.app.scripts');
                     }
+
                     $scope.scriptCopy = angular.copy(response.data);
                     $scope.script = response.data;
+
+                    if ($scope.script.custom_url)
+                        $scope.tabManage.activeTab = 'settings';
 
                     ScriptsDeploymentService.count($scope.script.id)
                         .then(function (response) {
@@ -118,8 +101,16 @@ angular.module('primeapps')
                     if (!$scope.script.place_value)
                         $scope.script.place_value = $scope.script.place;
 
+                    if ($scope.script.environment && $scope.script.environment.indexOf(',') > -1)
+                        $scope.script.environments = $scope.script.environment.split(',');
+                    else
+                        $scope.script.environments = $scope.script.environment;
+
+                    angular.forEach($scope.script.environments, function (envValue) {
+                        $scope.environmentChange($scope.environments[envValue - 1], envValue - 1, true);
+                    });
+
                     $scope.script.place = $scope.componentPlaceEnums[$scope.script.place_value];
-                    $scope.changePage(1);
                     $scope.loading = false;
                 });
 
@@ -198,12 +189,25 @@ angular.module('primeapps')
             };
 
             $scope.save = function (FormValidation) {
-                if (!FormValidation.$valid){
-                    toastr.error($filter('translate')('Setup.Modules.RequiredError'));
+                if (!FormValidation.$valid) {
+                    if (FormValidation.custom_url.$invalid)
+                        toastr.error("Please enter a valid url.");
+                    else
+                        toastr.error($filter('translate')('Setup.Modules.RequiredError'));
+
                     return;
                 }
-                
+
                 $scope.saving = true;
+
+                $scope.script.environments = [];
+                angular.forEach($scope.environments, function (env) {
+                    if (env.selected)
+                        $scope.script.environments.push(env.value);
+                });
+
+                delete $scope.script.environment;
+                delete $scope.script.environment_list;
 
                 ScriptsService.update($scope.script)
                     .then(function (response) {
@@ -222,9 +226,7 @@ angular.module('primeapps')
                 ScriptsService.deploy($scope.script.name)
                     .then(function (response) {
                         toastr.success("Deployment Started");
-                        $scope.pageTotal = $scope.pageTotal + 1;
-                        $scope.activePage = 1;
-                        $scope.changePage(1);
+                        $scope.grid.dataSource.read();
                     })
                     .catch(function (response) {
                         $scope.loadingDeployments = false;
@@ -236,5 +238,131 @@ angular.module('primeapps')
                         }
                     });
             };
+
+
+            //For Kendo UI
+
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = function () {
+                if ($scope.script.custom_url)
+                    return null;
+                else
+                    return {
+                        dataSource: {
+                            type: "odata-v4",
+                            page: 1,
+                            pageSize: 10,
+                            serverPaging: true,
+                            serverFiltering: true,
+                            serverSorting: true,
+                            transport: {
+                                read: {
+                                    url: "/api/deployment_component/find/" + $scope.script.id,
+                                    type: 'GET',
+                                    dataType: "json",
+                                    beforeSend: function (req) {
+                                        req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                        req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                        req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                                    },
+                                    complete: function () {
+                                        $scope.loadingDeployments = false;
+                                    },
+                                }
+                            },
+                            schema: {
+                                data: "items",
+                                total: "count",
+                                model: {
+                                    id: "id",
+                                    fields: {
+                                        StartTime: { type: "date" },
+                                        EndTime: { type: "date" },
+                                        Version: { type: "string" },
+                                        Status: { type: "enums" }
+                                    }
+                                }
+                            }
+
+                        },
+                        scrollable: false,
+                        persistSelection: true,
+                        sortable: true,
+                        noRecords: true,
+                        filterable: true,
+                        filter: function (e) {
+                            if (e.filter && e.field !== 'Status') {
+                                for (var i = 0; i < e.filter.filters.length; i++) {
+                                    e.filter.filters[i].ignoreCase = true;
+                                }
+                            }
+                        },
+                        rowTemplate: function (e) {
+                            var trTemp = '<tr>';
+                            trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
+                            trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
+                            trTemp += '<td> <span>' + e.version + '</span></td > ';
+                            trTemp += '<td style="text-align: center;" ng-bind-html="getIcon(dataItem.status)"></td></tr>';
+                            return trTemp;
+                        },
+                        altRowTemplate: function (e) {
+                            var trTemp = '<tr class="k-alt">';
+                            trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
+                            trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
+                            trTemp += '<td> <span>' + e.version + '</span></td > ';
+                            trTemp += '<td style="text-align: center;" ng-bind-html="getIcon(dataItem.status)"></td></tr>';
+                            return trTemp;
+                        },
+                        pageable: {
+                            refresh: true,
+                            pageSize: 10,
+                            pageSizes: [10, 25, 50, 100],
+                            buttonCount: 5,
+                            info: true,
+                        },
+                        columns: [
+                            {
+                                field: 'StartTime',
+                                title: 'Start Time',
+                                filterable: {
+                                    ui: function (element) {
+                                        element.kendoDateTimePicker({
+                                            format: '{0: dd-MM-yyyy}'
+                                        })
+                                    }
+                                }
+                            },
+                            {
+                                field: 'EndTime',
+                                title: 'End Time',
+                                filterable: {
+                                    ui: function (element) {
+                                        element.kendoDateTimePicker({
+                                            format: '{0: dd-MM-yyyy}'
+                                        })
+                                    }
+                                }
+                            },
+                            {
+                                field: 'Version',
+                                title: 'Version'
+                            },
+                            {
+                                field: 'Status',
+                                title: 'Status',
+                                values: [
+                                    { text: 'Running', value: 'Running' },
+                                    { text: 'Failed', value: 'Failed' },
+                                    { text: 'Succeed', value: 'Succeed' }
+                                ]
+                            }]
+                    };
+            };
+
+            angular.element(document).ready(function () {
+                $scope.mainGridOptions();
+            });
+            //For Kendo UI
         }
     ]);

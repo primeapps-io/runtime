@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using PrimeApps.Model.Entities.Tenant;
 using System.Threading.Tasks;
-using PrimeApps.Model.Common;
-using PrimeApps.Model.Helpers;
+using System.Linq;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
@@ -13,6 +12,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<ICollection<Dependency>> GetAllDeleted();
         Task<Dependency> GetDependency(int id);
         Task<int> Count(int id);
-        ICollection<Dependency> Find(int id, PaginationModel paginationModel);
+        Task<ICollection<Dependency>> Find(int id);
     }
 }

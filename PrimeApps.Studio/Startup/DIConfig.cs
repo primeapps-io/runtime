@@ -5,11 +5,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
-using PrimeApps.Studio.Storage;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Studio
 {
@@ -20,12 +21,12 @@ namespace PrimeApps.Studio
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
             services.AddDbContext<StudioDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("StudioDBConnection")));
-            services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
-            services.AddScoped(p => new StudioDBContext(p.GetService<DbContextOptions<StudioDBContext>>()));
+            services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>(), configuration));
+            services.AddScoped(p => new StudioDBContext(p.GetService<DbContextOptions<StudioDBContext>>(), configuration));
 
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton(configuration);
             services.AddHttpContextAccessor();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.TryAddSingleton(configuration);
 
             //Register all repositories
             foreach (var assembly in new[] { "PrimeApps.Model" })
@@ -51,7 +52,6 @@ namespace PrimeApps.Studio
             }
 
             services.AddHostedService<QueuedHostedService>();
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
             services.AddScoped<ICacheHelper, CacheHelper>();
             services.AddScoped<IRecordHelper, Helpers.RecordHelper>();
@@ -64,7 +64,7 @@ namespace PrimeApps.Studio
             services.AddScoped<IWorkflowHelper, WorkflowHelper>();
             services.AddScoped<IProcessHelper, ProcessHelper>();
             services.AddScoped<IDocumentHelper, DocumentHelper>();
-            services.AddScoped<IBpmHelper, BpmHelper>();
+            //services.AddScoped<IBpmHelper, BpmHelper>();
             services.AddScoped<IRoleHelper, RoleHelper>();
             services.AddScoped<IGiteaHelper, GiteaHelper>();
             services.AddScoped<INotificationHelper, NotificationHelper>();
@@ -77,7 +77,12 @@ namespace PrimeApps.Studio
             services.AddScoped<Warehouse, Warehouse>();
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
             services.AddScoped<IReportHelper, ReportHelper>();
-            services.AddScoped<IPosgresHelper, PosgresHelper>();
+            services.AddScoped<IPackageHelper, Helpers.PackageHelper>();
+            services.AddScoped<IMigrationHelper, MigrationHelper>();
+
+            services.TryAddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.TryAddSingleton<IHistoryHelper, HistoryHelper>();
+            services.TryAddSingleton<IWebSocketHelper, WebSocketHelper>();
         }
     }
 }

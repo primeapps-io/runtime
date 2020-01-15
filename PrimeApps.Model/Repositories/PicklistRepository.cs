@@ -56,29 +56,12 @@ namespace PrimeApps.Model.Repositories
             return picklists;
         }
 
-        public async Task<ICollection<Picklist>> Find(PaginationModel paginationModel)
+
+        public IQueryable<Picklist> Find()
         {
-            var picklist = DbContext.Picklists
-                .Where(x => !x.Deleted)
-                .OrderByDescending(x => x.Id)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
+            var picklists = DbContext.Picklists.Where(q => !q.Deleted).OrderByDescending(q => q.Id);
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Picklist).GetProperty(paginationModel.OrderColumn);
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    picklist = picklist.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    picklist = picklist.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
-            }
-
-            return await picklist.ToListAsync();
+            return picklists;
         }
 
         public async Task<Picklist> GetItemPage(int id, PaginationModel paginationModel)
@@ -101,7 +84,7 @@ namespace PrimeApps.Model.Repositories
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
-                var propertyInfo = typeof(PicklistItem).GetProperty(paginationModel.OrderColumn);
+                var propertyInfo = typeof(PicklistItem).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
 
                 if (paginationModel.OrderType == "asc")
                 {
@@ -216,7 +199,7 @@ namespace PrimeApps.Model.Repositories
 
             return await DbContext.SaveChangesAsync();
         }
-        
+
         public async Task<int> Update(Picklist picklist)
         {
             return await DbContext.SaveChangesAsync();

@@ -5,10 +5,10 @@ metadata:
   name: primeapps-app-preview-config
   namespace: primeapps
 data:
-  TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
-  PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+  TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;maximum pool size=1000;"
+  PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
   RedisConnection: "cache-redis-master.cache:6379,password=pr!m€Appsi0r,defaultDatabase=1,syncTimeout=30000"
-  StorageUrl: "https://storage.primeapps.io"
+  StorageUrl: "https://storage-pde.primeapps.io"
   StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
   StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
   EnableJobs: "true"
@@ -25,12 +25,11 @@ data:
   ClientSecret: "secret"
   ForwardHeaders: "true"
   HttpsRedirection: "true"
-  TestMode: "false"
   PreviewMode: "app"
   GoogleMapsApiKey: "AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o"
   PreviewClient: "primeapps_preview"
-  SentryDsn: "https://9f004ecf59ff428a8a980b8684ca8aa4:b2332eb76fca4866b48d421dad70ea5c@log.primeapps.io/5"
   StudioUrl: "https://studio.primeapps.io"
+  SentryDsn: "https://9f004ecf59ff428a8a980b8684ca8aa4:b2332eb76fca4866b48d421dad70ea5c@log.primeapps.io/5"
 ---
 apiVersion: v1
 data:
@@ -167,12 +166,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-app-preview-config
-                  key: HttpsRedirection
-            - name: AppSettings__TestMode
-              valueFrom:
-                configMapKeyRef:
-                  name: primeapps-app-preview-config
-                  key: TestMode
+                  key: HttpsRedirection           
             - name: AppSettings__PreviewMode
               valueFrom:
                 configMapKeyRef:
@@ -192,17 +186,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-app-preview-config
-                  key: SentryDsn
-          readinessProbe:
-            httpGet:
-              path: /healthz
-              port: 80
-              scheme: HTTP
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            timeoutSeconds: 2
-            successThreshold: 1
-            failureThreshold: 1                  
+                  key: SentryDsn              
 ---
 kind: Service
 apiVersion: v1

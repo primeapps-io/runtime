@@ -1,0 +1,50 @@
+﻿@using PrimeApps.Model.Common.Organization
+@{
+    var organizations = ViewBag.Organizations as List<OrganizationModel>;
+    var currentOrganizationId = ViewBag.ActiveOrganizationId;
+    var apps = organizations?.FirstOrDefault(x => x.Id == int.Parse(currentOrganizationId))?.Apps;
+}
+<div class="container-fluid pt-5">
+    <div class="header-body">
+        <!-- Card stats -->
+        <div class="row">
+            @if (apps != null && apps.Count > 0)
+            {
+                foreach (var app in apps)
+                {
+                    <div class="col-12 col-sm-4 col-md-4 col-lg-3 ">
+                        <div class="appbox2 text-center"  onclick="location.href = '@Url.Action("Index", "Package", new {appId = app.Id, orgId = ViewBag.ActiveOrganizationId})'">
+                            <div class="appicon2" style="background-color: @app.Color">
+                                <i class="@(app.Icon ?? "fas fa-box-open")"></i>
+                            </div>
+                            <div class="apptext">
+                                <div>
+                                    <h3>@app.Label</h3>
+                                    <h4>@app.Description</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <h5 style="color: #8e3232 !important; font-weight: bold;" class="card-title text-muted mb-0">Organization hasn't yet any application.</h5>
+            }
+        </div>
+        @if (ViewBag.lastVersion != null)
+        {
+            <div class="row">
+                <div class="col-xl-3 col-lg-6 b-card">
+                    <div class="card card-stats mb-4 mb-xl-0" style="cursor: pointer;">
+                        <div class="card-body">
+                            <div class="row">
+                                @ViewBag.lastVersion.Version
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

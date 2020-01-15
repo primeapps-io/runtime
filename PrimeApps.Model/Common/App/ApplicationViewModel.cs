@@ -19,6 +19,7 @@ namespace PrimeApps.Model.Common.App
         public string Name { get; set; }
         public string Title { get; set; }
         public string Logo { get; set; }
+        public string Description { get; set; }
         public string Color { get; set; }
         public bool CustomDomain { get; set; }
         public JObject Theme { get; set; }
@@ -41,5 +42,6 @@ namespace PrimeApps.Model.Common.App
         public string ExternalLogin { get; set; }
         public RegistrationType RegistrationType { get; set; }
         public string TenantOperationWebhook { get; set; }
+        public JObject Options { get; set; }
     }
 }

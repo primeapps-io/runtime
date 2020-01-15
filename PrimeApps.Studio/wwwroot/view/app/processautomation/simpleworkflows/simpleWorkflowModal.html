@@ -128,16 +128,26 @@
                                         </label>
                                     </div>
 
+                                    <div class="form-group">
+                                        <label class="col-sm-12"> Environment </label>
+                                        <div ng-repeat="env in environments">
+                                            <label class="newinput checkbox-inline">
+                                                <input type="checkbox" name="env{{$index}}" ng-model="env.selected" ng-change="environmentChange(env,$index)" ng-disabled="env.disabled" value="{{env.value}}" title="{{env.name}}" />{{env.name}}
+                                                <span></span>
+                                            </label>
+                                            <br />
+                                        </div>
+                                    </div>
                                     <!--<div class="form-group" ng-show="workflowForm.$submitted && (workflowForm.workflowName.$error.required || workflowForm.module.$error.required || workflowForm.$error.operations)">
-                                                                            <div class="callout callout-danger">
-                                                                                <p ng-if="workflowForm.workflowName.$error.required || workflowForm.module.$error.required">{{'Module.RequiredError' | translate}}</p>
-                                                                                <p ng-if="workflowForm.$error.operations">{{'Setup.Workflow.OperationRequiredError' | translate}}</p>
-                                                                            </div>
-                                                                        </div>
-                                    -->
+                                            <div class="callout callout-danger">
+                                                <p ng-if="workflowForm.workflowName.$error.required || workflowForm.module.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                                <p ng-if="workflowForm.$error.operations">{{'Setup.Workflow.OperationRequiredError' | translate}}</p>
+                                            </div>
+                                        </div>
+    -->
                                     <!-- <div ng-if="showPermissionWarning" class="callout callout-warning">
 
-                                     </div>-->
+     </div>-->
                                 </div>
                             </div>
                             <div class="section" ng-show="$parent.$parent.$parent.$parent.wizardStep == 1">
@@ -1391,54 +1401,52 @@
                                                 GET
                                                 <span></span>
                                             </label>
-                                        </div>
-                                        <div class="form-inline" style="margin-bottom: 30px;">
-                                            <label class="col-sm-12">{{'Setup.Workflow.WebHookParameters' | translate}}</label>
-                                        </div>
-                                        <div>
-                                            <div class="form-group">
-                                                <table class="table">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>{{'Setup.Workflow.ParameterName' | translate}}</th>
-                                                            <th>{{'Setup.Workflow.SelectedModule' | translate}}</th>
-                                                            <th>{{'Setup.Workflow.SelectedField' | translate}}</th>
-                                                            <th></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr ng-repeat="parameter in hookParameters">
-                                                            <td>
-                                                                <input type="text" required ng-model="parameter.parameterName" tabindex="2" class="form-control" maxlength="500" />
-                                                            </td>
-                                                            <td>
-                                                                <select class="form-control"
-                                                                        name="hookModule"
-                                                                        tabindex="1"
-                                                                        required
-                                                                        ng-model="parameter.selectedModule"
-                                                                        ng-options="o as o['label_' + language + '_singular'] for o in parameter.selectedModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
-                                                                    <option value="">{{'Setup.Workflow.SelectModule' | translate}}</option>
-                                                                </select>
-                                                            </td>
-                                                            <td>
-                                                                <select class="form-control"
-                                                                        name="hookField"
-                                                                        tabindex="2"
-                                                                        required
-                                                                        ng-model="parameter.selectedField"
-                                                                        ng-options="o as o['label_' + language] for o in parameter.selectedModule.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.id">
-                                                                    <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
-                                                                </select>
-                                                            </td>
-                                                            <td>
-                                                                <a class="action-button2-delete" href ng-show="hookParameters.length > 1" ng-click="workflowModuleParameterRemove(parameter)"><i class="fas fa-trash"></i></a>
-                                                                <a class="action-button2-plus" href ng-show="$last" ng-click="workflowModuleParameterAdd(parameter)"><i class="fas fa-plus"></i></a>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
+                                        </div> 
+                                        <div class="form-group">
+                                            <div class="form-inline" style="margin-bottom: 30px;">
+                                                <label class="col-sm-12">{{'Setup.Workflow.WebHookParameters' | translate}}</label>
                                             </div>
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>{{'Setup.Workflow.ParameterName' | translate}}</th>
+                                                        <th>{{'Setup.Workflow.SelectedModule' | translate}}</th>
+                                                        <th>{{'Setup.Workflow.SelectedField' | translate}}</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr ng-repeat="parameter in hookParameters">
+                                                        <td>
+                                                            <input type="text" required ng-model="parameter.parameterName" tabindex="2" class="form-control" maxlength="500" />
+                                                        </td>
+                                                        <td>
+                                                            <select class="form-control"
+                                                                    name="hookModule"
+                                                                    tabindex="1"
+                                                                    required
+                                                                    ng-model="parameter.selectedModule"
+                                                                    ng-options="o as o['label_' + language + '_singular'] for o in parameter.selectedModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                                                <option value="">{{'Setup.Workflow.SelectModule' | translate}}</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <select class="form-control"
+                                                                    name="hookField"
+                                                                    tabindex="2"
+                                                                    required
+                                                                    ng-model="parameter.selectedField"
+                                                                    ng-options="o as o['label_' + language] for o in parameter.selectedModule.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.id">
+                                                                <option value="">{{'Setup.Workflow.SelectField' | translate}}</option>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <a class="action-button2-delete" href ng-show="hookParameters.length > 1" ng-click="workflowModuleParameterRemove(parameter)"><i class="fas fa-trash"></i></a>
+                                                            <a class="action-button2-plus" href ng-show="$last" ng-click="workflowModuleParameterAdd(parameter)"><i class="fas fa-plus"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                         <div class="form-group" ng-show="workflowForm.actions.$error.actionRequired">
                                             <input name="actions" type="hidden" ng-model="taskFields.subject.name">

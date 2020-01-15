@@ -8,18 +8,17 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
-using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Organization;
 using PrimeApps.Model.Entities.Platform;
-using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Helpers;
-using PrimeApps.Studio.Storage;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Studio.Controllers
 {
-    [Route("api/user"), Authorize(AuthenticationSchemes = "Bearer"), ActionFilters.CheckHttpsRequire, ResponseCache(CacheProfileName = "Nocache")]
+    [Route("api/user"), Authorize(AuthenticationSchemes = "Bearer"), ActionFilters.CheckHttpsRequire,
+     ResponseCache(CacheProfileName = "Nocache")]
     public class UserController : BaseController
     {
         private IConfiguration _configuration;
@@ -30,7 +29,9 @@ namespace PrimeApps.Studio.Controllers
         private IStudioUserRepository _studioUserRepository;
         private IUnifiedStorage _storage;
 
-        public UserController(IConfiguration configuration, IPlatformUserRepository platformUserRepository, IAppDraftRepository appDraftRepository, IOrganizationRepository organizationRepository, ITeamRepository teamRepository, IStudioUserRepository consoleUserRepository, IUnifiedStorage storage)
+        public UserController(IConfiguration configuration, IPlatformUserRepository platformUserRepository,
+            IAppDraftRepository appDraftRepository, IOrganizationRepository organizationRepository,
+            ITeamRepository teamRepository, IStudioUserRepository consoleUserRepository, IUnifiedStorage storage)
         {
             _platformUserRepository = platformUserRepository;
             _appDraftRepository = appDraftRepository;
@@ -73,11 +74,10 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("apps"), HttpPost]
-        public async Task<IActionResult> Apps([FromBody]JObject request)
+        public async Task<IActionResult> Apps([FromBody] JObject request)
         {
             var search = "";
             var page = 0;
-            var status = PublishStatus.NotSet;
 
             if (request != null)
             {
@@ -85,19 +85,16 @@ namespace PrimeApps.Studio.Controllers
                     search = request["search"].ToString();
 
                 if (!request["page"].IsNullOrEmpty())
-                    page = (int)request["page"];
-
-                if (!request["status"].IsNullOrEmpty())
-                    status = (PublishStatus)int.Parse(request["status"].ToString());
+                    page = (int) request["page"];
             }
 
-            var apps = await _appDraftRepository.GetAllByUserId(AppUser.Id, search, page, status);
+            var apps = await _appDraftRepository.GetAllByUserId(AppUser.Id, search, page);
 
             return Ok(apps);
         }
 
         [Route("organizations"), HttpGet]
-        public async Task<IActionResult> Organizations()
+        public async Task<IActionResult> Organizations([FromQuery] bool? includeApp)
         {
             var organizationUsers = await _organizationRepository.GetByUserId(AppUser.Id);
 
@@ -122,6 +119,12 @@ namespace PrimeApps.Studio.Controllers
                     Role = organizationUser.Role
                 };
 
+                if (includeApp.HasValue && (bool)includeApp)
+                {
+                    var apps = await _appDraftRepository.GetUserApps(AppUser.Id, organizationUser.Organization.Id);
+                    organization.Apps = apps;
+                }
+
                 organizations.Add(organization);
             }
 
@@ -129,7 +132,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("edit"), HttpPut]
-        public async Task<IActionResult> PlatformUserUpdate([FromBody]PlatformUser user)
+        public async Task<IActionResult> PlatformUserUpdate([FromBody] PlatformUser user)
         {
             var platformUser = _platformUserRepository.GetByEmail(user.Email);
 
@@ -171,10 +174,10 @@ namespace PrimeApps.Studio.Controllers
 
                 using (Stream stream = new MemoryStream(parser.FileContents))
                 {
-                    await _storage.Upload(bucketName, fileName, stream);
+                    await _storage.Upload(parser.Filename, bucketName, fileName, stream);
                 }
 
-                var logo = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
+                var logo = _storage.GetLink(bucketName, fileName);
 
                 //return content type.
                 return Ok(logo);

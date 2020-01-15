@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.App.Services;
-using PrimeApps.App.Storage;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
 using System;
@@ -11,6 +10,9 @@ using System.Linq;
 using System.Reflection;
 using PrimeApps.App.Bpm.Steps;
 using WarehouseHelper = PrimeApps.App.Jobs.Warehouse;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using PrimeApps.App.Helpers;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.App
 {
@@ -20,7 +22,7 @@ namespace PrimeApps.App
         {
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
-            services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
+            services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>(), configuration));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton(configuration);
             services.AddHttpContextAccessor();
@@ -48,6 +50,8 @@ namespace PrimeApps.App
                 }
             }
 
+            services.TryAddSingleton<IHistoryHelper, HistoryHelper>();
+
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
@@ -63,25 +67,25 @@ namespace PrimeApps.App
             services.AddScoped<Helpers.IReportHelper, Helpers.ReportHelper>();
             services.AddScoped<Helpers.IPowerBiHelper, Helpers.PowerBiHelper>();
             services.AddScoped<Helpers.IRoleHelper, Helpers.RoleHelper>();
-            services.AddScoped<Helpers.IBpmHelper, Helpers.BpmHelper>();
+            //services.AddScoped<Helpers.IBpmHelper, Helpers.BpmHelper>();
             services.AddScoped<Helpers.IAnalyticsHelper, Helpers.AnalyticsHelper>();
             services.AddScoped<Helpers.IActionButtonHelper, Helpers.ActionButtonHelper>();
             services.AddScoped<Notifications.INotificationHelper, Notifications.NotificationHelper>();
             services.AddScoped<Notifications.IActivityHelper, Notifications.ActivityHelper>();
             services.AddScoped<Helpers.IFunctionHelper, Helpers.FunctionHelper>();
+            services.AddScoped<Helpers.IEnvironmentHelper, Helpers.EnvironmentHelper>();
             services.AddScoped<WarehouseHelper, WarehouseHelper>();
             services.AddScoped<Warehouse, Warehouse>();
             services.AddScoped<Jobs.Email.Email, Jobs.Email.Email>();
             services.AddScoped<Jobs.Messaging.EMail.EMailClient, Jobs.Messaging.EMail.EMailClient>();
             services.AddScoped<Jobs.Messaging.SMS.SMSClient, Jobs.Messaging.SMS.SMSClient>();
             services.AddScoped<Jobs.Reminder.Activity, Jobs.Reminder.Activity>();
-            services.AddScoped<Jobs.ExchangeRate, Jobs.ExchangeRate>();
             services.AddScoped<Jobs.TrialNotification, Jobs.TrialNotification>();
             services.AddScoped<Jobs.AccountDeactivate, Jobs.AccountDeactivate>();
             services.AddScoped<Jobs.UpdateLeave, Jobs.UpdateLeave>();
             services.AddScoped<Jobs.EmployeeCalculation, Jobs.EmployeeCalculation>();
             services.AddScoped<Jobs.AccountCleanup, Jobs.AccountCleanup>();
-            
+
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
             services.AddTransient<ApprovalStep>();
             services.AddTransient<DataCreateStep>();

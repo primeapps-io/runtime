@@ -46,12 +46,15 @@ namespace PrimeApps.App.Helpers
     {
         private IConfiguration _configuration;
         private IAuditLogHelper _auditLogHelper;
+        private IEnvironmentHelper _environmentHelper;
         public IBackgroundTaskQueue Queue { get; }
 
 
-        public ModuleHelper(IAuditLogHelper auditLogHelper, IBackgroundTaskQueue queue, IConfiguration configuration)
+        public ModuleHelper(IAuditLogHelper auditLogHelper, IEnvironmentHelper environmentHelper, IBackgroundTaskQueue queue,
+            IConfiguration configuration)
         {
             _auditLogHelper = auditLogHelper;
+            _environmentHelper = environmentHelper;
             _configuration = configuration;
             Queue = queue;
         }
@@ -860,20 +863,23 @@ namespace PrimeApps.App.Helpers
 
                 foreach (var component in module.Components)
                 {
-                    if (component.Deleted || component.Type != ComponentType.Script || component.Place == ComponentPlace.GlobalConfig || string.IsNullOrEmpty(component.Content))
+                    if (component.Deleted || component.Type != ComponentType.Script || component.Place == ComponentPlace.GlobalConfig)
                         continue;
 
-                    if (component.Content.StartsWith("{appConfigs") && appConfigs.IsNullOrEmpty())
+                    if (appConfigs.IsNullOrEmpty() && ((!string.IsNullOrEmpty(component.CustomUrl) && component.CustomUrl.StartsWith("{appConfigs")) || (!string.IsNullOrEmpty(component.Content) && component.Content.Contains("{appConfigs"))))
                     {
                         component.Content = "console.error('Dynamic values not replaced. Because appConfigs is null.');";
                         continue;
                     }
 
-                    component.Content = ReplaceDynamicValues(component.Content, appConfigs);
+                    if (!string.IsNullOrEmpty(component.Content))
+                        component.Content = ReplaceDynamicValues(component.Content, appConfigs);
 
-                    if (component.Content.StartsWith("http"))
+                    if (!string.IsNullOrEmpty(component.CustomUrl))
                     {
-                        if (!IsTrustedUrl(component.Content, appConfigs))
+                        component.CustomUrl = ReplaceDynamicValues(component.CustomUrl, appConfigs);
+
+                        if (!IsTrustedUrl(component.CustomUrl, appConfigs))
                         {
                             component.Content = "console.error('" + component.Content + " is not a trusted url.');";
                             continue;
@@ -884,18 +890,18 @@ namespace PrimeApps.App.Helpers
                             using (var httpClient = new HttpClient())
                             {
                                 httpClient.DefaultRequestHeaders.Accept.Clear();
-                                var response = await httpClient.GetAsync(component.Content);
+                                var response = await httpClient.GetAsync(component.CustomUrl);
                                 var content = await response.Content.ReadAsStringAsync();
 
                                 if (!response.IsSuccessStatusCode)
                                 {
-                                    component.Content = "console.error('" + component.Content + " response error. Http Status Code: " + response.StatusCode + "');";
+                                    component.Content = "console.error('" + component.CustomUrl + " response error. Http Status Code: " + response.StatusCode + "');";
                                     continue;
                                 }
 
                                 if (string.IsNullOrWhiteSpace(content))
                                 {
-                                    component.Content = "console.warn('" + component.Content + " has empty content.');";
+                                    component.Content = "console.warn('" + component.CustomUrl + " has empty content.');";
                                     continue;
                                 }
 
@@ -905,7 +911,6 @@ namespace PrimeApps.App.Helpers
                         catch
                         {
                             component.Content = "console.error('" + component.Content + " has connection error. Please check the url.');";
-                            continue;
                         }
                     }
                 }
@@ -917,6 +922,7 @@ namespace PrimeApps.App.Helpers
         public async Task<JObject> GetGlobalConfig(IComponentRepository componentRepository)
         {
             var globalConfigEntity = await componentRepository.GetGlobalConfig();
+            globalConfigEntity = _environmentHelper.DataFilter(globalConfigEntity);
 
             if (globalConfigEntity == null || string.IsNullOrWhiteSpace(globalConfigEntity.Content))
                 return null;

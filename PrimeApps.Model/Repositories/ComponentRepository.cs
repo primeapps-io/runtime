@@ -26,8 +26,8 @@ namespace PrimeApps.Model.Repositories
         public async Task<Component> Get(int id)
         {
             return await DbContext.Components
-                .Where(x => !x.Deleted && x.Id == id && x.Type == ComponentType.Component)
-                .FirstOrDefaultAsync();
+               .Where(x => !x.Deleted && x.Id == id && x.Type == ComponentType.Component)
+               .FirstOrDefaultAsync();
         }
 
         public async Task<Component> Get(string name)
@@ -37,28 +37,13 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<ICollection<Component>> Find(PaginationModel paginationModel)
+        public IQueryable<Component> Find()
         {
             var components = DbContext.Components
                 .Where(x => !x.Deleted && x.Type == ComponentType.Component)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
+                .OrderByDescending(x => x.Id);
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    components = components.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    components = components.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
-            }
-
-            return await components.ToListAsync();
+            return components;
         }
 
         public async Task<List<Component>> GetByType(ComponentType type)

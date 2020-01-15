@@ -10,7 +10,7 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = $scope.currentApp.label;
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'functions';
-
+            $scope.environments = FunctionsService.getEnvironments();
             $scope.functionNameValid = null;
             $scope.isFunctionNameBlur = false;
             $scope.page = 1;
@@ -108,7 +108,7 @@ angular.module('primeapps')
                     $scope.function.dependencies = "";
                 }
                 else {
-                    var runtime = $filter('filter')($scope.runtimes, {value: $scope.function.runtime}, true)[0];
+                    var runtime = $filter('filter')($scope.runtimes, { value: $scope.function.runtime }, true)[0];
                     $scope.function.handler = "module.handler";
                     $scope.function.dependencies = runtime.editorDependencySample;
                 }
@@ -120,63 +120,29 @@ angular.module('primeapps')
              $state.go('studio.apps', { organizationId: $scope.orgId });
              }*/
 
+            $scope.environmentChange = function (env, index, otherValue) {
+                otherValue = otherValue || false;
+
+                if (index === 2) {
+                    $scope.environments[1].selected = true;
+                    $scope.environments[1].disabled = !!env.selected;
+
+                    if (otherValue) {
+                        $scope.environments[2].selected = otherValue;
+                    }
+                }
+            };
+
             $scope.function = {};
             $scope.functions = [];
             $scope.loading = true;
             $rootScope.breadcrumblist[2].title = 'Functions';
 
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-
-            $scope.generator(10);
-
-            $scope.requestModel = {
-                limit: "10",
-                offset: 0
-            };
-
-            $scope.reload = function () {
-                FunctionsService.count()
-                    .then(function (response) {
-                        $scope.pageTotal = response.data;
-
-                        if ($scope.requestModel.offset != 0 && ($scope.requestModel.offset * $scope.requestModel.limit) >= $scope.pageTotal) {
-                            $scope.requestModel.offset = $scope.requestModel.offset - 1;
-                        }
-
-                        FunctionsService.find($scope.requestModel)
-                            .then(function (response) {
-                                $scope.functions = response.data;
-                                $scope.loading = false;
-                            });
-                    });
-            };
-
-            $scope.reload();
-
-            $scope.changePage = function (page) {
-                $scope.loading = true;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-
-                $scope.page = requestModel.offset + 1;
-                FunctionsService.find(requestModel)
-                    .then(function (response) {
-                        $scope.functions = response.data;
-                        $scope.loading = false;
-                    });
-            };
-
-            $scope.changeOffset = function () {
-                $scope.changePage(1);
-            };
-
             $scope.createModal = function () {
                 $scope.function = {};
+                $scope.environments = FunctionsService.getEnvironments();
+                $scope.environments[0].selected = true;
+
                 $scope.createFormModal = $scope.createFormModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/customcode/functions/functionFormModal.html',
@@ -184,6 +150,7 @@ angular.module('primeapps')
                     backdrop: 'static',
                     show: false
                 });
+
                 $scope.createFormModal.$promise.then(function () {
                     $scope.createFormModal.show();
                 });
@@ -194,19 +161,26 @@ angular.module('primeapps')
             };
 
             $scope.save = function (functionFormValidation) {
-                if (!functionFormValidation.$valid){
+                if (!functionFormValidation.$valid) {
                     toastr.error($filter('translate')('Module.RequiredError'));
                     return;
                 }
-                
+
                 $scope.saving = true;
                 $scope.function.content_type = 'text';
+                $scope.function.environments = [];
+
+                angular.forEach($scope.environments, function (env) {
+                    if (env.selected)
+                        $scope.function.environments.push(env.value);
+                });
+
                 FunctionsService.create($scope.function)
                     .then(function (response) {
                         $scope.saving = false;
                         $scope.createFormModal.hide();
                         toastr.success("Function is created successfully.");
-                        $state.go('studio.app.functionDetail', {name: $scope.function.name});
+                        $state.go('studio.app.functionDetail', { name: $scope.function.name });
                     })
                     .catch(function (response) {
                         $scope.saving = false;
@@ -229,11 +203,11 @@ angular.module('primeapps')
                             if (name) {
                                 FunctionsService.delete(name)
                                     .then(function (response) {
-                                        $scope.reload();
+                                        $scope.grid.dataSource.read();
                                         toastr.success("Function is deleted successfully.", "Deleted!");
                                     })
                                     .catch(function () {
-                                        angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
+                                        $scope.grid.dataSource.read();
                                     });
                             }
                         }
@@ -318,5 +292,132 @@ angular.module('primeapps')
                     }
                 }
             }
+
+            //For Kendo UI
+            $scope.goUrl = function (item) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $state.go('studio.app.functionDetail', { name: item.name }); //click event.
+                }
+            };
+
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/functions/find",
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                CreatedAt: { type: "date" }
+                            }
+                        },
+                        parse: function (data) {
+                            for (var i = 0; i < data.items.length; i++) {
+                                var module = $filter('filter')($scope.modules, { id: data.items[i].module_id }, true);
+                                if (module && module.length > 0)
+                                    data.items[i].module = angular.copy(module[0]);
+                            }
+
+                            return data;
+                        }
+                    }
+
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                noRecords: true,
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter) {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
+                },
+                rowTemplate: function (e) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td> <span>' + e.name + '</span></td > ';
+                    trTemp += '<td><span>' + e.label + '</span></td>';
+                    trTemp += '<td><span>' + e.runtime + '</span></td>';
+                    trTemp += '<td><span>' + e.handler + '</span></td>';
+                    trTemp += '<td><span>' + $scope.getTime(e.created_at) + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.name, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                altRowTemplate: function (e) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td> <span>' + e.name + '</span></td > ';
+                    trTemp += '<td><span>' + e.label + '</span></td>';
+                    trTemp += '<td><span>' + e.runtime + '</span></td>';
+                    trTemp += '<td><span>' + e.handler + '</span></td>';
+                    trTemp += '<td><span>' + $scope.getTime(e.created_at) + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.name, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+                    {
+                        field: 'Name',
+                        title: 'Identifier',
+                    },
+                    {
+                        field: 'Label',
+                        title: 'Label',
+                    },
+                    {
+                        field: 'Runtime',
+                        title: 'Runtime',
+                    },
+                    {
+                        field: 'Handler',
+                        title: 'Handler',
+                    },
+                    {
+                        field: 'CreatedAt',
+                        title: 'Creation Time', 
+                        filterable: {
+                            ui: function (element) {
+                                element.kendoDateTimePicker({
+                                    format: '{0: dd-MM-yyyy  hh:mm}'
+                                })
+                            }
+                        }
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
+            };
+            //For Kendo UI
+
         }
     ]);

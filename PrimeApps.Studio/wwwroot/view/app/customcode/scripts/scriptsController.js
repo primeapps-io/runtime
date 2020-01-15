@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ScriptsController', ['$rootScope', '$scope', '$state', '$timeout', 'ScriptsService', '$modal', 'componentPlaces', 'componentPlaceEnums', '$filter', 'helper',
-        function ($rootScope, $scope, $state, $timeout, ScriptsService, $modal, componentPlaces, componentPlaceEnums, $filter, helper) {
+    .controller('ScriptsController', ['$rootScope', '$scope', '$state', '$timeout', 'ScriptsService', '$modal', 'componentPlaces', 'componentPlaceEnums', '$filter', 'helper', '$localStorage',
+        function ($rootScope, $scope, $state, $timeout, ScriptsService, $modal, componentPlaces, componentPlaceEnums, $filter, helper, $localStorage) {
             $scope.$parent.activeMenuItem = 'scripts';
             $rootScope.breadcrumblist[2].title = 'Scripts';
             $scope.scripts = [];
@@ -14,74 +14,18 @@ angular.module('primeapps')
             $scope.componentPlaces = componentPlaces;
             $scope.componentPlaceEnums = componentPlaceEnums;
             $scope.modules = $rootScope.appModules;
-            $scope.activePage = 1;
+            $scope.environments = ScriptsService.getEnvironments();
 
-            $scope.requestModel = {
-                limit: "10",
-                offset: 0
-            };
+            $scope.environmentChange = function (env, index, otherValue) {
+                otherValue = otherValue || false;
 
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
+                if (index === 2) {
+                    $scope.environments[1].selected = true;
+                    $scope.environments[1].disabled = !!env.selected;
 
-            $scope.generator(10);
-
-            var count = function () {
-                ScriptsService.count().then(function (response) {
-                    $scope.pageTotal = response.data;
-                    $scope.changePage(1);
-                });
-            };
-            count();
-
-            $scope.changePage = function (page) {
-                $scope.loading = true;
-
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    if (otherValue) {
+                        $scope.environments[2].selected = otherValue;
                     }
-                }
-
-                $scope.requestModel.offset = page;
-
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-                $scope.activePage = requestModel.offset + 1;
-                ScriptsService.find(requestModel)
-                    .then(function (response) {
-                        if (response.data) {
-                            $scope.scripts = response.data;
-                            setModule(response.data);
-                        }
-                        $scope.loading = false;
-                    })
-                    .catch(function (reason) {
-                        $scope.loading = false;
-                    });
-
-            };
-
-            $scope.changePage(1);
-
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage)
-            };
-
-            var setModule = function (data) {
-                for (var i = 0; i < data.length; i++) {
-                    var module = $filter('filter')($scope.modules, { id: data[i].module_id }, true);
-                    if (module && module.length > 0)
-                        data[i].module = angular.copy(module[0]);
                 }
             };
 
@@ -89,10 +33,23 @@ angular.module('primeapps')
                 $scope.saving = true;
 
                 if (!scriptForm.$valid || !$scope.scriptNameValid) {
+                    if (scriptForm.custom_url.$invalid)
+                        toastr.error("Please enter a valid url.");
+                    else
+                        toastr.error($filter('translate')('Setup.Modules.RequiredError'));
+
                     $scope.saving = false;
-                    toastr.error($filter('translate')('Setup.Modules.RequiredError'));
                     return;
                 }
+
+                $scope.scriptModel.environments = [];
+                angular.forEach($scope.environments, function (env) {
+                    if (env.selected)
+                        $scope.scriptModel.environments.push(env.value);
+                });
+
+                delete $scope.scriptModel.environment;
+                delete $scope.scriptModel.environment_list;
 
                 if ($scope.id) {
                     ScriptsService.update($scope.scriptModel)
@@ -100,7 +57,7 @@ angular.module('primeapps')
                             if (response.data) {
                                 toastr.success("Script is updated successfully.");
                                 $scope.cancel();
-                                $scope.changeOffset();
+                                $scope.grid.dataSource.read();
                             }
                             $scope.saving = false;
                         })
@@ -120,7 +77,7 @@ angular.module('primeapps')
                                 $scope.saving = false;
                             }
                             $scope.saving = false;
-                            //$scope.changeOffset(1);
+                            $scope.grid.dataSource.read();
                         }).catch(function (reason) {
                             toastr.error($filter('translate')('Common.Error'));
                             $scope.saving = false;
@@ -152,7 +109,7 @@ angular.module('primeapps')
                                 }
 
                                 script.deleting = false;
-                                $scope.changeOffset();
+                                $scope.grid.dataSource.read();
                             }).catch(function (reason) {
                                 toastr.error($filter('translate')('Error'));
                                 script.deleting = false;
@@ -172,7 +129,6 @@ angular.module('primeapps')
                 $scope.scriptModel.name = helper.getSlug($scope.scriptModel.label, '-');
                 $scope.scriptNameBlur($scope.scriptModel);
             };
-
 
             $scope.scriptNameBlur = function (name) {
                 //if ($scope.isScriptNameBlur && $scope.scriptNameValid)
@@ -217,8 +173,6 @@ angular.module('primeapps')
                     });
             };
 
-
-
             $scope.showFormModal = function (script) {
                 if (script) {
                     $scope.scriptModel = $filter('filter')($scope.scripts, { id: script.id }, true)[0];
@@ -228,7 +182,18 @@ angular.module('primeapps')
 
                     $scope.scriptModel.place = $scope.componentPlaceEnums[$scope.scriptModel.place_value];
                     $scope.id = script.id;
+
+                    if (script.environment && script.environment.indexOf(',') > -1)
+                        $scope.scriptModel.environments = script.environment.split(',');
+                    else
+                        $scope.scriptModel.environments = script.environment;
+
+                    angular.forEach($scope.scriptModel.environments, function (envValue) {
+                        $scope.environmentChange($scope.environments[envValue - 1], envValue - 1, true);
+                    });
                 }
+                else
+                    $scope.environments[0].selected = true;
 
                 $scope.scriptFormModal = $scope.scriptFormModal || $modal({
                     scope: $scope,
@@ -264,6 +229,119 @@ angular.module('primeapps')
                     .catch(function (response) {
                     });
             };
+
+            //For Kendo UI
+            $scope.goUrl = function (script) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $state.go('studio.app.scriptDetail', { name: script.name }); //click event.
+                }
+            };
+
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/script/find",
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                        },
+                        parse: function (data) {
+                            for (var i = 0; i < data.items.length; i++) {
+                                var module = $filter('filter')($scope.modules, { id: data.items[i].module_id }, true);
+                                if (module && module.length > 0)
+                                    data.items[i].module = angular.copy(module[0]);
+                            }
+
+                            return data;
+                        }
+                    }
+
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                noRecords: true,
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter) {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
+                },
+                rowTemplate: function (e) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left"><span>' + e.label + '</span></td>';
+                    trTemp += '<td class="text-left"> <span>' + e.name + '</span></td > ';
+                    trTemp += '<td class="text-left"><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                altRowTemplate: function (e) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left"><span>' + e.label + '</span></td>';
+                    trTemp += '<td class="text-left"> <span>' + e.name + '</span></td > ';
+                    trTemp += '<td class="text-left"><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+                    {
+                        field: 'Label',
+                        title: 'Label',
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+                    {
+                        field: 'Name',
+                        title: 'Identifier',
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+                    {
+                        field: 'Module.Label' + $scope.language + 'Plural',
+                        title: $filter('translate')('Setup.Modules.Name'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
+            };
+            //For Kendo UI
 
         }
     ]);

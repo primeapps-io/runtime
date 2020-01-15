@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using PrimeApps.Model.Common.Annotations;
 using PrimeApps.Model.Common.Record;
@@ -27,7 +28,7 @@ namespace PrimeApps.Studio.Models
 
         [Required]
         public ProcessTriggerTime TriggerTime { get; set; }
-        
+
         public string ApproverField { get; set; }
 
         public bool Active { get; set; }
@@ -38,6 +39,35 @@ namespace PrimeApps.Studio.Models
         public List<Filter> Filters { get; set; }
 
         public List<ApproversBindingModel> Approvers { get; set; }
+
+        public List<EnvironmentType> Environments { get; set; }
+
+        public string EnvironmentValues
+        {
+            get
+            {
+                var list = new List<string>();
+
+                foreach (var env in Environments)
+                {
+                    var value = (int)env;
+                    list.Add(value.ToString());
+                }
+
+                return string.Join(",", list);
+            }
+
+            set
+            {
+                var list = value.Split(",");
+
+                foreach (var env in list)
+                {
+                    Environments.Add((EnvironmentType)Enum.Parse(typeof(EnvironmentType), env));
+                }
+
+            }
+        }
     }
 
     public class ApproversBindingModel

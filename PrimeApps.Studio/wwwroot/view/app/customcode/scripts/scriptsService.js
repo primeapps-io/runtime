@@ -1,7 +1,7 @@
 angular.module('primeapps')
 
-    .factory('ScriptsService', ['$rootScope', '$http', 'config',
-        function ($rootScope, $http, config) {
+    .factory('ScriptsService', ['$rootScope', '$http', 'config','environments',
+        function ($rootScope, $http, config, environments) {
             return {
                 get: function (id) {
                     return $http.get(config.apiUrl + 'script/get/' + id);
@@ -29,6 +29,9 @@ angular.module('primeapps')
                 },
                 deploy: function (name) {
                     return $http.get(config.apiUrl + 'script/deploy/' + name);
-                }
+                },
+                getEnvironments: function () {
+                    return environments.data;
+                },
             };
         }]);

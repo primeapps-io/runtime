@@ -29,7 +29,7 @@ namespace PrimeApps.App.Controllers
         {
             if (AppUser != null)
             {
-                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = appId ?? (tenantId ?? 0), PreviewMode = previewMode };
+                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = (previewMode == "app" ? appId : tenantId) ?? 0, PreviewMode = previewMode };
             }
         }
 
@@ -90,7 +90,7 @@ namespace PrimeApps.App.Controllers
                 appUser.Language = "en";
 
             if (string.IsNullOrEmpty(appUser.TimeZone))
-                appUser.TimeZone = "America/Chicago";
+                appUser.TimeZone = "America/New_York";
 
             var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
             var previewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);

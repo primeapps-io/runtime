@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -6,13 +9,15 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.App;
 using PrimeApps.Model.Entities.Studio;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Studio.Constants;
 using PrimeApps.Studio.Helpers;
-using PrimeApps.Studio.Models;
 using PrimeApps.Studio.Services;
+using PrimeApps.Model.Storage;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.Studio.Controllers
 {
@@ -27,6 +32,8 @@ namespace PrimeApps.Studio.Controllers
         private IOrganizationRepository _organizationRepository;
         private IPermissionHelper _permissionHelper;
         private IGiteaHelper _giteaHelper;
+        private IUnifiedStorage _storage;
+        private IUserRepository _userRepository;
 
         public AppController(IConfiguration configuration,
             IBackgroundTaskQueue queue,
@@ -35,7 +42,9 @@ namespace PrimeApps.Studio.Controllers
             ICollaboratorsRepository collaboratorRepository,
             IOrganizationRepository organizationRepository,
             IPermissionHelper permissionHelper,
-            IGiteaHelper giteaHelper)
+            IGiteaHelper giteaHelper,
+            IUnifiedStorage storage,
+            IUserRepository userRepository)
         {
             Queue = queue;
             _configuration = configuration;
@@ -45,6 +54,8 @@ namespace PrimeApps.Studio.Controllers
             _organizationRepository = organizationRepository;
             _permissionHelper = permissionHelper;
             _giteaHelper = giteaHelper;
+            _storage = storage;
+            _userRepository = userRepository;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -68,18 +79,21 @@ namespace PrimeApps.Studio.Controllers
             //                return Forbid(ApiResponseMessages.PERMISSION);
 
             var app = await _appDraftRepository.Get(id);
-
+            app.Secret = CryptoHelper.Decrypt(app.Secret);
             return Ok(app);
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody] AppDraftModel model)
+        public async Task<IActionResult> Create([FromBody]AppDraftModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
+
+            var secret = Guid.NewGuid().ToString().Replace("-", string.Empty);
+            var secretEncrypt = CryptoHelper.Encrypt(secret);
 
             var app = new AppDraft
             {
@@ -89,10 +103,36 @@ namespace PrimeApps.Studio.Controllers
                 Logo = model.Logo,
                 OrganizationId = OrganizationId,
                 TempletId = model.TempletId,
-                Status = PublishStatus.Draft,
                 Color = model.Color,
                 Icon = model.Icon,
+                Secret = secretEncrypt,
                 Setting = new AppDraftSetting()
+                {
+                    AuthDomain = _configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty).Replace("https://", string.Empty).Replace("http://", string.Empty),
+                    AppDomain = string.Format(_configuration.GetValue("AppSettings:AppUrl", string.Empty), model.Name),
+                    Currency = "USD",
+                    Culture = "en-US",
+                    TimeZone = "America/New_York",
+                    Language = "en",
+                    AuthTheme = new JObject()
+                    {
+                        ["color"] = "#555198",
+                        ["title"] = "PrimeApps",
+                        ["banner"] = new JArray { new JObject { ["image"] = "", ["descriptions"] = "" } },
+                    }.ToJsonString(),
+                    AppTheme = new JObject()
+                    {
+                        ["color"] = "#555198",
+                        ["title"] = "PrimeApps",
+                    }.ToJsonString(),
+                    MailSenderName = "PrimeApps",
+                    MailSenderEmail = "app@primeapps.io",
+                    Options = new JObject
+                    {
+                        ["enable_registration"] = true,
+                        ["clear_all_records"] = true
+                    }.ToJsonString()
+                }
             };
 
             var result = await _appDraftRepository.Create(app);
@@ -101,23 +141,64 @@ namespace PrimeApps.Studio.Controllers
                 return BadRequest("An error occurred while creating an app");
 
             app.Collaborators = new List<AppCollaborator>
-                {new AppCollaborator {UserId = AppUser.Id, Profile = ProfileEnum.Manager}};
+            {
+                new AppCollaborator
+                {
+                    UserId = AppUser.Id, Profile = ProfileEnum.Manager
+                }
+            };
 
             var resultUpdate = await _appDraftRepository.Update(app);
 
             if (resultUpdate < 0)
                 return BadRequest("An error occurred while creating an app");
 
-            await Postgres.CreateDatabaseWithTemplet(_configuration.GetConnectionString("TenantDBConnection"), app.Id,
-                model.TempletId);
-            Queue.QueueBackgroundWorkItem(token =>
-                _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser));
+            await Postgres.CreateDatabaseWithTemplet(_configuration.GetConnectionString("TenantDBConnection"), app.Id, model.TempletId);
+
+            /**Studio kullanıcısının mevcut app'i preview edebilmesi için
+			 * App oluşturulduktan sonra, user tablosuna mevcut studio kullanıcısını eklemekteyiz.
+			 */
+            var tenantUser = new TenantUser
+            {
+                Id = AppUser.Id,
+                FirstName = AppUser.FirstName,
+                IsActive = true,
+                LastName = AppUser.LastName,
+                Email = AppUser.Email,
+                FullName = AppUser.FullName,
+                ProfileId = 1,
+                RoleId = 1,
+                Culture = AppUser.Culture,
+                Currency = AppUser.Currency
+            };
+
+            _userRepository.CurrentUser = new CurrentUser { UserId = 1, TenantId = app.Id, PreviewMode = "app" };
+            await _userRepository.CreateAsync(tenantUser);
+            var platformUser = await _platformUserRepository.GetWithTenants(AppUser.Email);
+            /**Daha önceden studio'ya kayıt oluşmuş kullanıcıların,  user_tenants'ta bir kayıdı bulunmuyordu.
+			 * Eski studio kullanıcısının yeni oluşturacağı app'i preview edebilmesi user_tenant tablosuna ilgili kaydı eklemeliz. 		
+			 */
+            if (platformUser.TenantsAsUser.Count == 0)
+            {
+                platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1, PlatformUser = platformUser });
+                await _platformUserRepository.UpdateAsync(platformUser);
+            }
+
+            Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser));
+
+            if (Request.Host.Value.Contains("localhost"))
+                await _storage.CreateBucketPolicy($"app{app.Id}", $"{Request.Scheme}://localhost:*", UnifiedStorage.PolicyType.StudioPolicy);
+            else
+            {
+                await _storage.CreateBucketPolicy($"app{app.Id}", $"{Request.Scheme}://*.primeapps.io", UnifiedStorage.PolicyType.StudioPolicy);
+                await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}", $"{Request.Scheme}://*.primeapps.app", UnifiedStorage.PolicyType.StudioPolicy);
+            }
 
             return Ok(app);
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update(int id, [FromBody] AppDraftModel model)
+        public async Task<IActionResult> Update(int id, [FromBody]AppDraftModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -129,13 +210,23 @@ namespace PrimeApps.Studio.Controllers
             app.Label = model.Label;
             app.Description = model.Description;
             app.Logo = model.Logo;
-            app.Status = model.Status;
             app.Icon = model.Icon;
             app.Color = model.Color;
 
-            var result = await _appDraftRepository.Update(app);
+            app.Setting.AppDomain = model.AppDomain;
+            app.Setting.AuthDomain = model.AuthDomain;
 
-            return Ok(result);
+            var options = JObject.Parse(app.Setting.Options);
+            options["enable_registration"] = model.EnableRegistration;
+            options["enable_api_registration"] = model.EnableAPIRegistration;
+            options["enable_ldap"] = model.EnableLDAP;
+            options["clear_all_records"] = model.ClearAllRecords;
+
+            app.Setting.Options = options.ToJsonString();
+
+            await _appDraftRepository.Update(app);
+
+            return Ok(app);
         }
 
         [Route("delete/{id:int}"), HttpDelete]
@@ -153,29 +244,25 @@ namespace PrimeApps.Studio.Controllers
             return Ok(result);
         }
 
-        [Route("get_all"), HttpPost]
-        public async Task<IActionResult> Organizations([FromBody] JObject request)
-        {
-            var search = "";
-            var page = 0;
-            var status = PublishStatus.NotSet;
+        /*[Route("get_all"), HttpPost]
+		public async Task<IActionResult> Organizations([FromBody]JObject request)
+		{
+			var search = "";
+			var page = 0;
 
-            if (request != null)
-            {
-                if (!request["search"].IsNullOrEmpty())
-                    search = request["search"].ToString();
+			if (request != null)
+			{
+				if (!request["search"].IsNullOrEmpty())
+					search = request["search"].ToString();
 
-                if (request["page"].IsNullOrEmpty())
-                    page = (int) request["page"];
+				if (request["page"].IsNullOrEmpty())
+					page = (int)request["page"];
+			}
 
-                if (!request["status"].IsNullOrEmpty())
-                    status = (PublishStatus) int.Parse(request["status"].ToString());
-            }
+			var organizations = await _appDraftRepository.GetAllByUserId(AppUser.Id, search, page);
 
-            var organizations = await _appDraftRepository.GetAllByUserId(AppUser.Id, search, page, status);
-
-            return Ok(organizations);
-        }
+			return Ok(organizations);
+		}*/
 
         [Route("is_unique_name"), HttpGet]
         public async Task<IActionResult> IsUniqueName(string name)
@@ -201,7 +288,7 @@ namespace PrimeApps.Studio.Controllers
 
 
         [Route("update_auth_theme/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateAuthTheme(int id, [FromBody] JObject model)
+        public async Task<IActionResult> UpdateAuthTheme(int id, [FromBody]JObject model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -224,7 +311,7 @@ namespace PrimeApps.Studio.Controllers
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
-            var app = await _appDraftRepository.GetAuthTheme(id);
+            var app = await _appDraftRepository.GetSettings(id);
 
             if (app != null)
                 return Ok(app.AuthTheme);
@@ -233,7 +320,7 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("update_app_theme/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateAppTheme(int id, [FromBody] JObject model)
+        public async Task<IActionResult> UpdateAppTheme(int id, [FromBody]JObject model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -256,12 +343,28 @@ namespace PrimeApps.Studio.Controllers
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
-            var app = await _appDraftRepository.GetAppTheme(id);
+            var app = await _appDraftRepository.GetSettings(id);
 
-            if (app != null)
-                return Ok(app.AppTheme);
-            else
-                return Ok(app);
+            return app != null ? Ok(app.AppTheme) : Ok(app);
+        }
+
+        [Route("migration/{id:int}"), HttpGet]
+        public async Task<IActionResult> Migration(int id)
+        {
+            var app = await _appDraftRepository.Get(id);
+
+            if (!string.IsNullOrEmpty(app.Logo))
+            {
+                var regex = new Regex(@"[\w-]+.(jpg|png|jpeg)");
+                var match = regex.Match(app.Logo);
+                if (match.Success)
+                {
+                    Console.WriteLine("MATCH VALUE: " + match.Value);
+                }
+
+            }
+
+            return app != null ? Ok(app.Setting.AppTheme) : Ok(app);
         }
     }
 }

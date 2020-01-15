@@ -1,6 +1,6 @@
 <div class="setup-title">
-    <h2>{{selectedTeam ? selectedTeam.name:'Teams'}}</h2>
-    <ul class="list-unstyled list-inline"  >
+    <h2>Teams</h2>
+    <ul class="list-unstyled list-inline">
         <li>
             <button class="btn add-button" ng-click="addNewTeam()">
                 <i class="fas fa-plus"></i> {{'Team.AddNew' | translate}}
@@ -8,105 +8,7 @@
         </li>
     </ul>
 </div>
-
 <div class="tab-content">
-    <div class="table-responsive" ng-show="loading">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>{{'Team.Name' | translate}}</th>
-                    <th>{{'Team.TeamMember' | translate}}</th>
-                    <th>{{'Team.Organization' | translate}}</th>
-                    <th width="70"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="item in placeholderArray">
-                    <td>
-                        <div class="animated-background"></div>
-                    </td>
-                    <td>
-                        <div class="animated-background"></div>
-                    </td>
-                    <td>
-                        <div class="animated-background"></div>
-                    </td>
-                    <td>
-                        <div class="animated-background"></div>
-                    </td>
-                </tr>
-
-            </tbody>
-        </table>
+    <div class="grid-theme grid-theme-center table-responsive" kendo-grid="grid" id="kendo-grid" k-options="mainGridOptions">
     </div>
-    <div class="table-responsive" ng-show="!loading">
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>{{'Team.Name' | translate}}</th>
-                    <th>{{'Team.TeamMember' | translate}}</th>
-                    <th>{{'Team.Organization' | translate}}</th>
-                    <th style="width: 50px;"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-click="selectTeam(team.id);addNewTeam(team.id);" ng-repeat="team in teamArray">
-                    <td>
-                        <div class="user-info">
-                            <div class="user-image">
-                                <i ng-class="team.icon"></i>
-                            </div>
-                            <div class="user-text">
-                                <h2 class="ng-binding">{{team.name}}</h2>
-                            </div>
-                        </div>
-                    </td>
-                    <td>{{team.team_users ? team.team_users.length:0}}</td>
-                    <td>{{team.organizationName}}</td>
-                    <td class="text-right">
-                        <div class="action-buttons-block">
-                            <button ng-click="$event.stopPropagation();delete(team)" ladda="team.deleting" type="button" class="action-buttons-delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="table-pagination">
-            <div>
-                <nav aria-label="Page navigation">
-                    <div paging
-                         text-first="&laquo;"
-                         ul-class="pagination"
-                         active-class="active"
-                         page="page"
-                         page-size="requestModel.limit"
-                         total="pageTotal"
-                         scroll-top="true"
-                         hide-if-empty="true"
-                         show-prev-next="true"
-                         show-first-last="true"
-                         text-next-class="fas fa-chevron-right"
-                         text-prev-class="fas fa-chevron-left"
-                         text-first-class="fas fa-step-backward"
-                         text-last-class="fas fa-step-forward"
-                         paging-action="changePage(page)">
-                    </div>
-                </nav>
-            </div>
-            <div class="total">Total {{pageTotal}}</div>
-            <div>
-                <span class="pagination-span">{{'Common.ItemPerPage' | translate}}  </span>
-                <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
-                    <option ng-selected="true" value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                    <option value="150">150</option>
-                    <option value="200">200</option>
-                </select>
-            </div>
-        </div>
-    </div>
-</div>
+</div> 

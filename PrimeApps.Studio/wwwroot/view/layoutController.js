@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scope', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'operations', 'blockUI', '$cache', 'helps', 'LayoutService', 'AuthService', '$sessionStorage', '$sce', '$modal', 'FileUploader',
-    function ($rootScope, $scope, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, $popover, entityTypes, guidEmpty, component, convert, helper, operations, blockUI, $cache, helps, LayoutService, AuthService, $sessionStorage, $sce, $modal, FileUploader) {
+angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scope', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'operations', 'blockUI', '$cache', 'helps', 'LayoutService', 'AuthService', '$sessionStorage', '$sce', '$modal', 'FileUploader', '$timeout',
+    function ($rootScope, $scope, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, $popover, entityTypes, guidEmpty, component, convert, helper, operations, blockUI, $cache, helps, LayoutService, AuthService, $sessionStorage, $sce, $modal, FileUploader, $timeout) {
         $rootScope.checkUserProfile = helper.checkUserProfile;
 
         angular.element($window).on('load resize', function () {
@@ -10,7 +10,8 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $rootScope.toggleClass = 'toggled full-toggled';
                     $rootScope.subtoggleClass = 'full-toggled2';
                 });
-            } else {
+            }
+            else {
                 $scope.$apply(function () {
                     $rootScope.toggleClass = '';
                     $rootScope.subtoggleClass = '';
@@ -18,12 +19,15 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             }
         });
 
+        if (!$rootScope.runningPackages)
+            $rootScope.runningPackages = {};
+
         $rootScope.toggledSubMenu = function () {
             $rootScope.subtoggleClass = $rootScope.subtoggleClass === 'full-toggled2' ? '' : 'full-toggled2';
         };
 
         $rootScope.toggledOrgMenu = function () {
-            $rootScope.toggleClass = $rootScope.toggleClass === 'toggled full-toggled' ? '' : 'toggled full-toggled'; 
+            $rootScope.toggleClass = $rootScope.toggleClass === 'toggled full-toggled' ? '' : 'toggled full-toggled';
         };
 
         $scope.nameBlur = false;
@@ -61,7 +65,6 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         };
 
         $scope.preview = function () {
-
             //  if (!$scope.appLoading && $scope.appModules.length > 0) {
             $rootScope.previewActivating = true;
 
@@ -80,7 +83,8 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                         });
                         $rootScope.previewActivating = false;
                         return;
-                    } else {
+                    }
+                    else {
                         LayoutService.getPreviewToken()
                             .then(function (response) {
                                 $scope.previewActivating = false;
@@ -137,9 +141,11 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
                 if (currentUrl.charAt(index - 1) === ':') {
                     currentUrl = value ? currentUrl.replace(':' + key, value) : currentUrl.replace(':' + key, '');
-                } else if (currentUrl.charAt(index - 1) === '?') {
+                }
+                else if (currentUrl.charAt(index - 1) === '?') {
                     currentUrl = value ? currentUrl.replace('?' + key, '?' + key + '=' + value) : currentUrl.replace('?' + key, '');
-                } else if (currentUrl.charAt(index - 1) === '&') {
+                }
+                else if (currentUrl.charAt(index - 1) === '&') {
                     currentUrl = value ? currentUrl.replace('&' + key, '&' + key + '=' + value) : currentUrl.replace('&' + key, '');
                 }
             });
@@ -148,7 +154,6 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 $state.reload();
             }
         };
-
 
         $scope.toggleAppMenu = function ($timeout) {
             angular.element($scope.appLauncher).toggleClass('toggled');
@@ -164,16 +169,26 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         };
 
         $scope.colors = [
-            { value: '#D72A20' },
-            { value: '#833CA3' },
-            { value: '#17ACFE' },
-            { value: '#33ffff' },
-            { value: '#229C51' },
-            { value: '#FFAD1C' },
-            { value: '#1C3E7D' },
-            { value: '#C35E21' },
-            { value: '#F3C937' },
-            { value: '#6B2F5D' },
+            { value: '#D24D57' },
+            { value: '#BE90D4' },
+            { value: '#5AABE3' },
+            { value: '#87D37C' },
+            { value: '#F4D03E' },
+            { value: '#B8BEC2' },
+            
+            { value: '#DC3023' },
+            { value: '#8E44AD' },
+            { value: '#19B5FE' },
+            { value: '#25A65B' },
+            { value: '#FFB61E' },
+            { value: '#959EA4' },
+
+            { value: '#C3272B' },
+            { value: '#763668' },
+            { value: '#1F4688' },
+            { value: '#006442' },
+            { value: '#CA6924' },
+            { value: '#4D5C66' }, 
         ];
 
         $scope.newOrganization = function () {
@@ -189,7 +204,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
 
             var orgColor = $scope.colors[Math.floor(Math.random() * $scope.colors.length)].value;
             $scope.organization.color = orgColor;
-            $scope.organization.icon = 'fas fa-building';
+            //$scope.organization.icon = 'fas fa-building';
 
             $scope.organizationFormModal = $scope.organizationFormModal || $modal({
                 scope: $scope,
@@ -210,7 +225,6 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             //$scope.organization = {};
             $scope.nameValid = null;
             $scope.nameBlur = false;
-
 
         };
 
@@ -254,7 +268,8 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                                 $scope.nameValid = null;
                                 $scope.nameBlur = false;
                             });
-                    } else {
+                    }
+                    else {
                         $scope.nameValid = false;
                         $scope.organizationSaving = false;
                     }
@@ -311,7 +326,8 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                     $scope.nameChecking = false;
                     if (response.data) {
                         $scope.nameValid = true;
-                    } else {
+                    }
+                    else {
                         $scope.nameValid = false;
                     }
                 })

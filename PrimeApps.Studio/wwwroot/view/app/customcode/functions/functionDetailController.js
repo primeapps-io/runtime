@@ -13,7 +13,7 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = $scope.currentApp.label;
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'functions';
-
+            $scope.environments = FunctionsService.getEnvironments();
             $scope.app = $rootScope.currentApp;
             $scope.tabManage = {
                 activeTab: "overview"
@@ -25,35 +25,48 @@ angular.module('primeapps')
 
             $scope.deployments = [];
 
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
+            $scope.environmentChange = function (env, index, otherValue) {
+                otherValue = otherValue || false;
+
+                if (index === 2) {
+                    $scope.environments[1].selected = true;
+                    $scope.environments[1].disabled = !!env.selected;
+
+                    if (otherValue) {
+                        $scope.environments[2].selected = otherValue;
+                    }
                 }
             };
 
-            $scope.generator(10);
+            //$scope.generator = function (limit) {
+            //    $scope.placeholderArray = [];
+            //    for (var i = 0; i < limit; i++) {
+            //        $scope.placeholderArray[i] = i;
+            //    }
+            //};
 
-            $scope.requestModel = {
-                limit: "10",
-                offset: 0
-            };
+            //$scope.generator(10);
 
-            $scope.changePage = function (page) {
-                $scope.loadingDeployments = true;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-                FunctionsDeploymentService.find($scope.function.id, requestModel)
-                    .then(function (response) {
-                        $scope.deployments = response.data;
-                        $scope.loadingDeployments = false;
-                    })
-                    .catch(function (response) {
-                        toastr.error($filter('translate')('Common.Error'));
-                        $scope.loadingDeployments = false;
-                    });
+            //$scope.requestModel = {
+            //    limit: "10",
+            //    offset: 0
+            //};
 
-            };
+            //$scope.changePage = function (page) {
+            //    $scope.loadingDeployments = true;
+            //    var requestModel = angular.copy($scope.requestModel);
+            //    requestModel.offset = page - 1;
+            //    FunctionsDeploymentService.find($scope.function.id, requestModel)
+            //        .then(function (response) {
+            //            $scope.deployments = response.data;
+            //            $scope.loadingDeployments = false;
+            //        })
+            //        .catch(function (response) {
+            //            toastr.error($filter('translate')('Common.Error'));
+            //            $scope.loadingDeployments = false;
+            //        });
+
+            //};
 
             $scope.getTime = function (deployment, type) {
                 if (type === 'start') {
@@ -86,15 +99,15 @@ angular.module('primeapps')
             };
 
             $scope.runtimes = [
-                {id: 1, name: "dotnetcore (2.0)", value: "dotnetcore2.0", type: "cs", editor: "csharp", editorDependencySample: "<Project Sdk=\"Microsoft.NET.Sdk\">\n\n  <PropertyGroup>\n    <TargetFramework>netstandard2.0</TargetFramework>\n  </PropertyGroup>\n\n  <ItemGroup>\n    <PackageReference Include=\"Kubeless.Functions\" Version=\"0.1.1\" />\n  </ItemGroup>\n\n</Project>", editorCodeSample: "using System;\r\nusing Kubeless.Functions;\r\nusing Newtonsoft.Json.Linq;\r\n\r\npublic class {{handler.class}}\r\n{\r\n    public object {{handler.method}}(Event k8Event, Context k8Context)\r\n    {\r\n        var obj = new JObject();\r\n        obj[\"data\"] = k8Event.Data.ToString();\r\n        \r\n        return obj;\r\n    }\r\n}"},
-                {id: 2, name: "python (2.7)", value: "python2.7", type: "py", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  "},
-                {id: 3, name: "python (3.4)", value: "python3.4", type: "py", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  "},
-                {id: 4, name: "python (3.6)", value: "python3.6", type: "py", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  "},
-                {id: 5, name: "nodejs (6)", value: "nodejs6", type: "js", editor: "javascript", editorDependencySample: "{\n    \"name\": \"hellonodejs\",\n    \"version\": \"0.0.1\",\n    \"dependencies\": {\n        \"end-of-stream\": \"^1.4.1\",\n        \"from2\": \"^2.3.0\",\n        \"lodash\": \"^4.17.5\"\n    }\n}", editorCodeSample: "'use strict';\r\n\r\nconst _ = require('lodash');\r\n\r\nmodule.exports = {\r\n    {{handler.method}}: (event, context) => {\r\n        _.assign(event.data, {date: new Date().toTimeString()})\r\n        return JSON.stringify(event.data);\r\n    },\r\n};"},
-                {id: 6, name: "nodejs (8)", value: "nodejs8", type: "js", editor: "javascript", editorDependencySample: "{\n    \"name\": \"hellonodejs\",\n    \"version\": \"0.0.1\",\n    \"dependencies\": {\n        \"end-of-stream\": \"^1.4.1\",\n        \"from2\": \"^2.3.0\",\n        \"lodash\": \"^4.17.5\"\n    }\n}", editorCodeSample: "'use strict';\r\n\r\nconst _ = require('lodash');\r\n\r\nmodule.exports = {\r\n    {{handler.method}}: (event, context) => {\r\n        _.assign(event.data, {date: new Date().toTimeString()})\r\n        return JSON.stringify(event.data);\r\n    },\r\n};"},
-                {id: 7, name: "ruby (2.4)", value: "ruby2.4", type: "rb", editor: "ruby", editorDependencySample: "source 'https://rubygems.org'\n\ngem 'logging'", editorCodeSample: "require 'logging'\r\n\r\ndef {{handler.method}}(event, context)\r\n  logging = Logging.logger(STDOUT)\r\n  logging.info \"it works!\"\r\n  \"hello world\"\r\nend"},
-                {id: 8, name: "php (7.2)", value: "php7.2", type: "php", editor: "php", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "\n<?php\n\nfunction {{handler.method}}($event, $context) {\n  return \"Hello World\";\n}\n"},
-                {id: 9, name: "go (1.10)", value: "go1.10", type: "go", editor: "golang", editorDependencySample: "\n[[constraint]]\n  name = \"github.com/sirupsen/logrus\"\n  branch = \"master\"", editorCodeSample: "package kubeless\r\n\r\nimport (\r\n\t\"github.com/kubeless/kubeless/pkg/functions\"\r\n\t\"github.com/sirupsen/logrus\"\r\n)\r\n\r\n// Hello sample function with dependencies\r\nfunc {{handler.method}}(event functions.Event, context functions.Context) (string, error) {\r\n\tlogrus.Info(event.Data)\r\n\treturn \"Hello world!\", nil\r\n}"},
+                { id: 1, name: "dotnetcore (2.0)", value: "dotnetcore2.0", type: "cs", editor: "csharp", editorDependencySample: "<Project Sdk=\"Microsoft.NET.Sdk\">\n\n  <PropertyGroup>\n    <TargetFramework>netstandard2.0</TargetFramework>\n  </PropertyGroup>\n\n  <ItemGroup>\n    <PackageReference Include=\"Kubeless.Functions\" Version=\"0.1.1\" />\n  </ItemGroup>\n\n</Project>", editorCodeSample: "using System;\r\nusing Kubeless.Functions;\r\nusing Newtonsoft.Json.Linq;\r\n\r\npublic class {{handler.class}}\r\n{\r\n    public object {{handler.method}}(Event k8Event, Context k8Context)\r\n    {\r\n        var obj = new JObject();\r\n        obj[\"data\"] = k8Event.Data.ToString();\r\n        \r\n        return obj;\r\n    }\r\n}" },
+                { id: 2, name: "python (2.7)", value: "python2.7", type: "py", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  " },
+                { id: 3, name: "python (3.4)", value: "python3.4", type: "py", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  " },
+                { id: 4, name: "python (3.6)", value: "python3.6", type: "py", editor: "python", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "def {{handler.method}}(event, context):\n  print event['data']\n  return event['data']\n  " },
+                { id: 5, name: "nodejs (6)", value: "nodejs6", type: "js", editor: "javascript", editorDependencySample: "{\n    \"name\": \"hellonodejs\",\n    \"version\": \"0.0.1\",\n    \"dependencies\": {\n        \"end-of-stream\": \"^1.4.1\",\n        \"from2\": \"^2.3.0\",\n        \"lodash\": \"^4.17.5\"\n    }\n}", editorCodeSample: "'use strict';\r\n\r\nconst _ = require('lodash');\r\n\r\nmodule.exports = {\r\n    {{handler.method}}: (event, context) => {\r\n        _.assign(event.data, {date: new Date().toTimeString()})\r\n        return JSON.stringify(event.data);\r\n    },\r\n};" },
+                { id: 6, name: "nodejs (8)", value: "nodejs8", type: "js", editor: "javascript", editorDependencySample: "{\n    \"name\": \"hellonodejs\",\n    \"version\": \"0.0.1\",\n    \"dependencies\": {\n        \"end-of-stream\": \"^1.4.1\",\n        \"from2\": \"^2.3.0\",\n        \"lodash\": \"^4.17.5\"\n    }\n}", editorCodeSample: "'use strict';\r\n\r\nconst _ = require('lodash');\r\n\r\nmodule.exports = {\r\n    {{handler.method}}: (event, context) => {\r\n        _.assign(event.data, {date: new Date().toTimeString()})\r\n        return JSON.stringify(event.data);\r\n    },\r\n};" },
+                { id: 7, name: "ruby (2.4)", value: "ruby2.4", type: "rb", editor: "ruby", editorDependencySample: "source 'https://rubygems.org'\n\ngem 'logging'", editorCodeSample: "require 'logging'\r\n\r\ndef {{handler.method}}(event, context)\r\n  logging = Logging.logger(STDOUT)\r\n  logging.info \"it works!\"\r\n  \"hello world\"\r\nend" },
+                { id: 8, name: "php (7.2)", value: "php7.2", type: "php", editor: "php", editorDependencySample: "from hellowithdepshelper import foo", editorCodeSample: "\n<?php\n\nfunction {{handler.method}}($event, $context) {\n  return \"Hello World\";\n}\n" },
+                { id: 9, name: "go (1.10)", value: "go1.10", type: "go", editor: "golang", editorDependencySample: "\n[[constraint]]\n  name = \"github.com/sirupsen/logrus\"\n  branch = \"master\"", editorCodeSample: "package kubeless\r\n\r\nimport (\r\n\t\"github.com/kubeless/kubeless/pkg/functions\"\r\n\t\"github.com/sirupsen/logrus\"\r\n)\r\n\r\n// Hello sample function with dependencies\r\nfunc {{handler.method}}(event functions.Event, context functions.Context) (string, error) {\r\n\tlogrus.Info(event.Data)\r\n\treturn \"Hello world!\", nil\r\n}" },
                 {
                     id: 10,
                     name: "java (1.8)",
@@ -113,7 +126,7 @@ angular.module('primeapps')
             $scope.functionForm = {};
             $scope.loading = true;
             //var currentOrganization = $localStorage.get("currentApp");
-            $scope.organization = $filter('filter')($rootScope.organizations, {id: $scope.orgId})[0];
+            $scope.organization = $filter('filter')($rootScope.organizations, { id: $scope.orgId })[0];
             $scope.giteaUrl = giteaUrl;
 
             /*$scope.aceOption = {
@@ -140,13 +153,22 @@ angular.module('primeapps')
                     $scope.functionCopy = angular.copy(response.data);
                     $scope.function = response.data;
 
+                    if ($scope.function.environment && $scope.function.environment.indexOf(',') > -1)
+                        $scope.function.environments = $scope.function.environment.split(',');
+                    else
+                        $scope.function.environments = $scope.function.environment;
+
+                    angular.forEach($scope.function.environments, function (envValue) {
+                        $scope.environmentChange($scope.environments[envValue - 1], envValue - 1, true);
+                    });
+
+
                     FunctionsDeploymentService.count($scope.function.id)
                         .then(function (response) {
                             $scope.pageTotal = response.data;
 
                         });
 
-                    $scope.changePage(1);
                     $scope.loading = false;
                 });
 
@@ -163,7 +185,7 @@ angular.module('primeapps')
             });
 
             $scope.getFileType = function () {
-                return $filter('filter')($scope.runtimes, {value: $scope.function.runtime})[0].type;
+                return $filter('filter')($scope.runtimes, { value: $scope.function.runtime })[0].type;
             };
 
             $scope.closeModal = function () {
@@ -245,9 +267,9 @@ angular.module('primeapps')
                                             $scope.logsLoading = false;
                                         }
                                     }).catch(function () {
-                                    toastr.error('An error occurred while getting the logs!');
-                                    $scope.refreshLogs = false;
-                                })
+                                        toastr.error('An error occurred while getting the logs!');
+                                        $scope.refreshLogs = false;
+                                    })
                             }
                         }
                         else {
@@ -282,6 +304,15 @@ angular.module('primeapps')
 
                 $scope.saving = true;
 
+                $scope.function.environments = [];
+                angular.forEach($scope.environments, function (env) {
+                    if (env.selected)
+                        $scope.function.environments.push(env.value);
+                });
+
+                delete $scope.function.environment;
+                delete $scope.function.environment_list;
+
                 FunctionsService.update($scope.name, $scope.function)
                     .then(function (response) {
                         $scope.functionCopy = angular.copy($scope.function);
@@ -295,9 +326,7 @@ angular.module('primeapps')
                 FunctionsService.deploy($scope.function.name)
                     .then(function (response) {
                         toastr.success("Deployment Started");
-                        $scope.pageTotal = $scope.pageTotal + 1;
-                        $scope.activePage = 1;
-                        $scope.changePage(1);
+                        $scope.grid.dataSource.read();
                     })
                     .catch(function (response) {
                         $scope.loadingDeployments = false;
@@ -310,5 +339,124 @@ angular.module('primeapps')
                         }
                     });
             };
+
+            //For Kendo UI
+
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = function () {
+
+                return {
+                    dataSource: {
+                        type: "odata-v4",
+                        page: 1,
+                        pageSize: 10,
+                        serverPaging: true,
+                        serverFiltering: true,
+                        serverSorting: true,
+                        transport: {
+                            read: {
+                                url: "/api/deployment_function/find/" + $scope.function.id,
+                                type: 'GET',
+                                dataType: "json",
+                                beforeSend: function (req) {
+                                    req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                    req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                    req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                                },
+                                complete: function () {
+                                    $scope.loadingDeployments = false;
+                                },
+                            }
+                        },
+                        schema: {
+                            data: "items",
+                            total: "count",
+                            model: {
+                                id: "id",
+                                fields: {
+                                    StartTime: { type: "date" },
+                                    EndTime: { type: "date" },
+                                    Status: { type: "enums" }
+                                }
+                            }
+                        }
+
+                    },
+                    scrollable: false,
+                    persistSelection: true,
+                    sortable: true,
+                    noRecords: true,
+                    filterable: true,
+                    filter: function (e) {
+                        if (e.filter && e.field !== 'Status') {
+                            for (var i = 0; i < e.filter.filters.length; i++) {
+                                e.filter.filters[i].ignoreCase = true;
+                            }
+                        }
+                    },
+                    rowTemplate: function (e) {
+                        var trTemp = '<tr>';
+                        trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
+                        trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
+                        trTemp += '<td> <span>' + e.version + '</span></td > ';
+                        trTemp += '<td style="text-align: center;" ng-bind-html="getIcon(dataItem.status)"></td></tr>';
+                        return trTemp;
+                    },
+                    altRowTemplate: function (e) {
+                        var trTemp = '<tr class="k-alt">';
+                        trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
+                        trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
+                        trTemp += '<td> <span>' + e.version + '</span></td > ';
+                        trTemp += '<td style="text-align: center;" ng-bind-html="getIcon(dataItem.status)"></td></tr>';
+                        return trTemp;
+                    },
+                    pageable: {
+                        refresh: true,
+                        pageSize: 10,
+                        pageSizes: [10, 25, 50, 100],
+                        buttonCount: 5,
+                        info: true,
+                    },
+                    columns: [
+                        {
+                            field: 'StartTime',
+                            title: 'Start Time',
+                            filterable: {
+                                ui: function (element) {
+                                    element.kendoDateTimePicker({
+                                        format: '{0: dd-MM-yyyy}'
+                                    })
+                                }
+                            }
+                        },
+                        {
+                            field: 'EndTime',
+                            title: 'End Time',
+                            filterable: {
+                                ui: function (element) {
+                                    element.kendoDateTimePicker({
+                                        format: '{0: dd-MM-yyyy}'
+                                    })
+                                }
+                            }
+                        },
+                        {
+                            field: 'Version',
+                            title: 'Version'
+                        },
+                        {
+                            field: 'Status',
+                            title: 'Status',
+                            values: [
+                                { text: 'Running', value: 'Running' },
+                                { text: 'Failed', value: 'Failed' },
+                                { text: 'Succeed', value: 'Succeed' }
+                            ]
+                        }]
+                };
+            };
+
+            //For Kendo UI
         }
     ]);

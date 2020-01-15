@@ -38,29 +38,38 @@ namespace PrimeApps.Model.Repositories
             return count;
         }
 
-        public async Task<ICollection<Module>> Find(PaginationModel paginationModel)
+        //public async Task<ICollection<Module>> Find(PaginationModel paginationModel)
+        //{
+        //    var modules = DbContext.Modules
+        //        .Where(x => !x.Deleted && x.Order != 0)
+        //        .OrderByDescending(x => x.Id)
+        //        .Skip(paginationModel.Offset * paginationModel.Limit)
+        //        .Take(paginationModel.Limit);
+
+        //    if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+        //    {
+        //        var propertyInfo = typeof(Module).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
+
+        //        if (paginationModel.OrderType == "asc")
+        //        {
+        //            modules = modules.OrderBy(x => propertyInfo.GetValue(x, null));
+        //        }
+        //        else
+        //        {
+        //            modules = modules.OrderByDescending(x => propertyInfo.GetValue(x, null));
+        //        }
+        //    }
+
+        //    return await modules.ToListAsync();
+        //}
+
+        public IQueryable<Module> Find()
         {
             var modules = DbContext.Modules
-                .Where(x => !x.Deleted && x.Order != 0)
-                .OrderByDescending(x => x.Id)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
+            .Where(x => !x.Deleted && x.Order != 0)
+            .OrderByDescending(x => x.Id);
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    modules = modules.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    modules = modules.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
-            }
-
-            return await modules.ToListAsync();
+            return modules;
         }
 
         public async Task<ICollection<Module>> GetAllBasic()

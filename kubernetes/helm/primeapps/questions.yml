@@ -10,7 +10,7 @@ questions:
   group: "Container Images"
   subquestions:
   - variable: image.tag
-    default: "1.19.277.1-debian"
+    default: "1.19.354.1-debian"
     description: "PrimeApps Docker image tag. https://hub.docker.com/u/primeapps"
     type: string
     label: Image Tag
@@ -33,6 +33,13 @@ questions:
   required: true
   label: App Domain
   group: "Domain and SSL Settings"
+- variable: admin.domain
+  default: "admin.yourdomain.com"
+  description: "Domain for PrimeApps Admin"
+  type: string
+  required: true
+  label: Admin Domain
+  group: "Domain and SSL Settings"  
 - variable: global.tls.type
   default: "letsencrypt"
   description: "TLS type for Nginx Ingress"
@@ -168,21 +175,21 @@ questions:
   description: "Storage class for persistent volume"
   type: string
   required: true
-  label: Class
+  label: Storage Class
   group: "Cache Settings"
 - variable: redis.master.persistence.size
   default: "20Gi"
   description: "Storage size for persistent volume - Master"
   type: string
   required: true
-  label: Size
+  label: Storage Size - Master
   group: "Cache Settings"
 - variable: redis.slave.persistence.size
   default: "20Gi"
   description: "Storage size for persistent volume - Slave"
   type: string
   required: true
-  label: Size
+  label: Storage Size - Slave
   group: "Cache Settings"
 - variable: minio.install
   default: true
@@ -190,42 +197,56 @@ questions:
   type: boolean
   required: true
   label: Install Minio
-  group: "Storage Settings"
+  group: "Object Storage Settings"
 - variable: minio.domain
   default: "storage.yourdomain.com"
   description: "Storage Domain"
   type: string
   required: true
   label: Install Minio
-  group: "Storage Settings"
+  group: "Object Storage Settings"
 - variable: minio.accessKey
   default: "AKIAIOSFODNN7EXAMPLE"
   description: "Access key"
   type: string
   required: true
   label: Access Key
-  group: "Storage Settings"
+  group: "Object Storage Settings"
 - variable: minio.secretKey
   default: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
   description: "Secret key"
   type: string
   required: true
   label: Secret Key
-  group: "Storage Settings"
+  group: "Object Storage Settings"
 - variable: minio.persistence.storageClass
   default: "standard"
   description: "Storage class for persistent volume"
   type: string
   required: true
-  label: Class
-  group: "Storage Settings"
+  label: Storage Class
+  group: "Object Storage Settings"
 - variable: minio.persistence.size
   default: "50Gi"
   description: "Storage size for persistent volume"
   type: string
   required: true
-  label: Size
-  group: "Storage Settings"
+  label: Storage Size
+  group: "Object Storage Settings"
+- variable: admin.storage.class
+  default: "standard"
+  description: "Storage class for persistent volume"
+  type: string
+  required: true
+  label: Admin Storage Class
+  group: "Other Settings"
+- variable: admin.storage.size
+  default: "10Gi"
+  description: "Storage size for persistent volume"
+  type: string
+  required: true
+  label: Admin Storage Size
+  group: "Other Settings"  
 - variable: auth.sentryDsn
   default: "https://your:dsn@log.primeapps.io/1"
   description: "Sentry DSN (Auth)"
@@ -238,9 +259,15 @@ questions:
   type: string
   label: Sentry DSN (App)
   group: "Other Settings"
+- variable: admin.sentryDsn
+  default: "https://your:dsn@log.primeapps.io/3"
+  description: "Sentry DSN (Admin)"
+  type: string
+  label: Sentry DSN (Admin)
+  group: "Other Settings"  
 - variable: app.googleMapsApiKey
   default: "your-google-maps-api-key"
-  description: "Google Mapps API Key"
+  description: "Google Maps API Key"
   type: string
-  label: Google Mapps API Key
+  label: Google Maps API Key
   group: "Other Settings"

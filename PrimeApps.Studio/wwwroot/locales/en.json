@@ -1251,8 +1251,8 @@
         "UserName": "Username",
         "Password": "Password",
         "Senders": "Senders",
-        "Alias": "Sender Alias",
-        "Address": "E-Mail Address",
+        "Alias": "Sender Name",
+        "Address": "Sender E-Mail",
         "NewSenderAdd": " New Sender",
         "NoCustomSender": "There is no sender. You can add a new one by clicking 'Add' button.",
         "ProviderTitle": "Configured E-Mail Provider details:",
@@ -1433,7 +1433,9 @@
       "TemplateGuide15": " include in the list from the newly opened box on the left and stick them on the corresponding column on the table.)",
       "AddNewEmailTemplate": " New Email Template",
       "AddNewExcelTemplate": " New Spreadsheet",
-      "AddNewWordTemplate": " New Document"
+      "AddNewWordTemplate": " New Document",
+      "EmailTemplatesApp": "Email (App)",
+      "EmailTemplatesModule": "Email (Module)"
     },
     "Workflow": {
       "Title": "Business Rules",
@@ -2190,6 +2192,7 @@
     "Name": "Name",
     "TeamMember": "Team Member",
     "Organization": "Organization",
-    "AddNew": " New Team"
+    "AddNew": " New Team",
+    "SaveSuccess": "Team is saved successfully."
   }
 }

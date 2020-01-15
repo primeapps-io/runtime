@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -62,16 +65,16 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        [Route("find")]
+        public IActionResult Find(ODataQueryOptions<Component> queryOptions)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "script", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var scripts = await _scriptRepository.Find(paginationModel);
-            ;
+            var scripts = _scriptRepository.Find();
 
-            return Ok(scripts);
+            var queryResults = (IQueryable<Component>)queryOptions.ApplyTo(scripts, new ODataQuerySettings() { EnsureStableOrdering = false });
+            return Ok(new PageResult<Component>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
         [Route("get/{id:int}"), HttpGet]
@@ -125,6 +128,16 @@ namespace PrimeApps.Studio.Controllers
             if (checkName)
                 return Conflict();
 
+            if (model.Environments == null)
+            {
+                model.Environments = new List<EnvironmentType>()
+                {
+                    EnvironmentType.Development
+                };
+            }
+            else if (model.Environments.Count < 1)
+                model.Environments.Add(EnvironmentType.Development);
+
             var script = new Component
             {
                 Name = scriptName,
@@ -133,14 +146,19 @@ namespace PrimeApps.Studio.Controllers
                 Type = ComponentType.Script,
                 Place = model.Place,
                 Order = model.Order,
-                Status = PublishStatus.Draft,
-                Label = model.Label
+                Status = PublishStatusType.Draft,
+                Label = model.Label,
+                Environment = model.EnvironmentValues,
+                CustomUrl = model.CustomUrl
             };
 
-            var sampleCreated = await _componentHelper.CreateSampleScript((int)AppId, model, OrganizationId);
+            if (string.IsNullOrEmpty(model.CustomUrl))
+            {
+                var sampleCreated = await _componentHelper.CreateSampleScript((int)AppId, model, OrganizationId);
 
-            if (!sampleCreated)
-                return BadRequest("Script not created.");
+                if (!sampleCreated)
+                    return BadRequest("Script not created.");
+            }
 
             var result = await _scriptRepository.Create(script);
 
@@ -164,6 +182,17 @@ namespace PrimeApps.Studio.Controllers
             if (script == null)
                 return Forbid("Script not found!");
 
+
+            if (model.Environments == null)
+            {
+                model.Environments = new List<EnvironmentType>()
+                {
+                    EnvironmentType.Development
+                };
+            }
+            else if (model.Environments.Count < 1)
+                model.Environments.Add(EnvironmentType.Development);
+
             script.Content = model.Content ?? script.Content;
             script.ModuleId = model.ModuleId != 0 ? model.ModuleId : script.ModuleId;
             script.Type = ComponentType.Script;
@@ -171,6 +200,8 @@ namespace PrimeApps.Studio.Controllers
             script.Order = model.Order != 0 ? model.Order : script.Order;
             script.Status = model.Status;
             script.Label = model.Label;
+            script.Environment = model.EnvironmentValues;
+            script.CustomUrl = model.CustomUrl;
 
             var result = await _scriptRepository.Update(script);
 
@@ -237,7 +268,7 @@ namespace PrimeApps.Studio.Controllers
             var deployment = new DeploymentComponent
             {
                 ComponentId = script.Id,
-                Status = DeploymentStatus.Running,
+                Status = ReleaseStatus.Running,
                 Version = currentBuildNumber.ToString(),
                 BuildNumber = currentBuildNumber,
                 StartTime = DateTime.Now

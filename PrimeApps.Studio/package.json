@@ -10,8 +10,11 @@
     "gulp-strip-debug": "1.0.2",
     "gulp-uglify": "1.1.0",
     "run-sequence": "*",
-    "workbox-build": "^4.0.0"
+    "workbox-build": "^4.0.0",
+    "@progress/kendo-theme-bootstrap": "^4.6.0"
   },
   "scripts": {},
-  "dependencies": {}
+  "dependencies": {
+    
+  }
 }

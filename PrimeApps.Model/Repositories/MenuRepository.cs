@@ -20,7 +20,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<Menu> GetByProfileId(int id)
         {
             var menu = await DbContext.Menus
-                .FirstOrDefaultAsync(x => !x.Deleted && x.ProfileId == id);
+                .FirstOrDefaultAsync(x => !x.Deleted && x.ProfileList.Any(q => q == id.ToString()));
 
             return menu;
         }
@@ -87,7 +87,7 @@ namespace PrimeApps.Model.Repositories
                     LabelEn = module.LabelEnPlural,
                     LabelTr = module.LabelTrPlural,
                     MenuIcon = module.MenuIcon,
-                    Order = (short) (menuItems.Count + 1),
+                    Order = (short)(menuItems.Count + 1),
                     IsDynamic = module.SystemType == SystemType.Component ? false : true
                 };
 
@@ -151,9 +151,9 @@ namespace PrimeApps.Model.Repositories
         public async Task DeleteHardMenuItems(int id)
         {
             var menuItem = DbContext.MenuItems.Where(x => x.Id == id).SingleOrDefault();
-            
+
             DbContext.MenuItems.Remove(menuItem);
-             await DbContext.SaveChangesAsync();
+            await DbContext.SaveChangesAsync();
         }
 
         public async Task<int> UpdateMenuItem(MenuItem menuItem)
@@ -207,29 +207,22 @@ namespace PrimeApps.Model.Repositories
             return count;
         }
 
-        public async Task<ICollection<Menu>> Find(PaginationModel paginationModel)
+        public IQueryable<Menu> Find()
         {
-            var menus = DbContext.Menus
-                .Where(x => !x.Deleted)
-                .OrderByDescending(x => x.Id)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit);
+            var views = DbContext.Menus
+            .Where(x => !x.Deleted) //TODO profiles include
+            .OrderByDescending(x => x.Id);
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
+            return views;
+        }
 
-                if (paginationModel.OrderType == "asc")
-                {
-                    menus = menus.OrderBy(x => propertyInfo.GetValue(x, null));
-                }
-                else
-                {
-                    menus = menus.OrderByDescending(x => propertyInfo.GetValue(x, null));
-                }
-            }
+        public async Task<List<string>> GetUseProfileIds()
+        {
+            var list = await DbContext.Menus
+            .Where(x => !x.Deleted)
+            .Select(y => y.Profiles).ToListAsync();
 
-            return await menus.ToListAsync();
+            return string.Join(',', list).Split(',').ToList();
         }
     }
 }

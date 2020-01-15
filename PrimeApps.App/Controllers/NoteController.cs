@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -11,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
-using PrimeApps.App.Storage;
 using PrimeApps.Model.Common.Note;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Helpers;
@@ -19,7 +17,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-	[Route("api/note")]
+    [Route("api/note")]
 	[Authorize]
 
 	public class NoteController : ApiBaseController

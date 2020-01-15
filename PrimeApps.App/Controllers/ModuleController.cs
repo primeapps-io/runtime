@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using PrimeApps.App.Extensions;
 using PrimeApps.App.Models;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Constants;
@@ -13,7 +12,6 @@ using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
-using ModuleHelper = PrimeApps.App.Helpers.ModuleHelper;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -32,8 +30,11 @@ namespace PrimeApps.App.Controllers
         private IConfiguration _configuration;
         private Warehouse _warehouse;
         private IModuleHelper _moduleHelper;
+        private IEnvironmentHelper _environmentHelper;
 
-        public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository, IComponentRepository componentRepository, IModuleHelper moduleHelper, IConfiguration configuration)
+        public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository,
+            ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository, IComponentRepository componentRepository,
+            IModuleHelper moduleHelper, IConfiguration configuration, IEnvironmentHelper environmentHelper)
         {
             _moduleRepository = moduleRepository;
             _viewRepository = viewRepository;
@@ -44,6 +45,7 @@ namespace PrimeApps.App.Controllers
             _menuRepository = menuRepository;
             _componentRepository = componentRepository;
             _moduleHelper = moduleHelper;
+            _environmentHelper = environmentHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -88,8 +90,14 @@ namespace PrimeApps.App.Controllers
             var previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
             previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
 
-           if (previewMode == "tenant")
-               await _moduleHelper.ProcessScriptFiles(modules, _componentRepository);
+            foreach (var module in modules)
+            {
+                if (module.Components != null && module.Components.Count > 0)
+                    module.Components = _environmentHelper.DataFilter(module.Components.ToList());
+            }
+
+            if (previewMode == "tenant")
+                await _moduleHelper.ProcessScriptFiles(modules, _componentRepository);
 
             return modules;
         }

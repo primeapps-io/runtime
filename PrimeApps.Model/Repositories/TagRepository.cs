@@ -24,9 +24,9 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<Tag>> GetByFieldId(int id)
         {
-            var tags = DbContext.Tags.Where(x => !x.Deleted && x.FieldId == id);
+            var tags = await DbContext.Tags.Where(x => !x.Deleted && x.FieldId == id).ToListAsync();
 
-            return await tags.ToListAsync();
+            return tags;
         }
 
 

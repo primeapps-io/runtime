@@ -18,7 +18,7 @@ namespace PrimeApps.Model.Entities.Platform
         public string Content { get; set; }
 
         [JsonProperty("status"), Column("status")]
-        public PublishStatus Status { get; set; }
+        public PublishStatusType Status { get; set; }
 
         [JsonProperty("type"), Column("type")]
         public ComponentType Type { get; set; }

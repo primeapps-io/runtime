@@ -5,9 +5,12 @@ metadata:
   name: primeapps-auth-preview-config
   namespace: primeapps
 data:
-  AuthDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=auth;command timeout=0;keepalive=30;"
-  TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
-  PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+  AuthDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=auth;command timeout=0;keepalive=30;maximum pool size=1000;"
+  TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;maximum pool size=1000;"
+  PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
+  StorageUrl: "https://storage-pde.primeapps.io"
+  StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
+  StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
   Authority: "https://auth-preview.primeapps.io"
   ForwardHeaders: "true"
   HttpsRedirection: "true"
@@ -69,6 +72,21 @@ spec:
                 configMapKeyRef:
                   name: primeapps-auth-preview-config
                   key: PlatformDBConnection
+            - name: AppSettings__StorageUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: StorageUrl
+            - name: AppSettings__StorageAccessKey
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: StorageAccessKey
+            - name: AppSettings__StorageSecretKey
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: StorageSecretKey
             - name: AppSettings__Authority
               valueFrom:
                 configMapKeyRef:
@@ -113,17 +131,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-auth-preview-config
-                  key: SentryDsn
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-              scheme: HTTP
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            timeoutSeconds: 2
-            successThreshold: 1
-            failureThreshold: 1                  
+                  key: SentryDsn                 
 ---
 kind: Service
 apiVersion: v1

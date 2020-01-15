@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LibGit2Sharp;
 using LibGit2Sharp.Handlers;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,14 +38,16 @@ namespace PrimeApps.Studio.Helpers
         private IConfiguration _configuration;
         private IGiteaHelper _giteaHelper;
         private CurrentUser _currentUser;
+        private IHostingEnvironment _hostingEnvironment;
 
-        public ComponentHelper(IHttpContextAccessor context, IConfiguration configuration, IGiteaHelper giteaHelper, IServiceScopeFactory serviceScopeFactory)
+        public ComponentHelper(IHttpContextAccessor context, IConfiguration configuration, IGiteaHelper giteaHelper, IServiceScopeFactory serviceScopeFactory, IHostingEnvironment hostingEnvironment)
         {
             _context = context;
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
             _giteaHelper = giteaHelper;
             _currentUser = UserHelper.GetCurrentUser(_context);
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public async Task<JArray> GetAllFileNames(int appId, string componentName, int organizationId)
@@ -64,7 +67,7 @@ namespace PrimeApps.Studio.Helpers
                         {
                             var status = _giteaHelper.CloneRepository(repository["clone_url"].ToString(), repository["name"].ToString(), false);
 
-                            var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+                            var giteaDirectory = _configuration.GetValue("AppSettings:DataDirectory", string.Empty);
                             var localFolder = giteaDirectory + repository["name"];
 
                             var nameList = _giteaHelper.GetFileNames(localFolder, "components/" + componentName);
@@ -83,9 +86,9 @@ namespace PrimeApps.Studio.Helpers
 
         public async Task<bool> CreateSample(int appId, ComponentModel component, int organizationId)
         {
-            var enableGiteaIntegration = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
-
-            if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(enableGiteaIntegration))
+            var enableGiteaIntegration = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);
+            var giteaEnabled = _configuration.GetValue("AppSettings:GiteaEnabled", string.Empty);
+            if (!string.IsNullOrEmpty(enableGiteaIntegration) && bool.Parse(giteaEnabled))
             {
                 try
                 {
@@ -99,25 +102,27 @@ namespace PrimeApps.Studio.Helpers
                             if (repository != null)
                             {
                                 var localPath = _giteaHelper.CloneRepository(repository["clone_url"].ToString(), repository["name"].ToString());
-                                if (!Directory.Exists(localPath + $"/components/{component.Name}"))
+                                var path = Path.Combine(localPath, "components", component.Name);
+
+                                if (!Directory.Exists(path))
                                 {
-                                    Directory.CreateDirectory(localPath + $"/components/{component.Name}");
+                                    Directory.CreateDirectory(path);
 
                                     var files = new JArray()
                                     {
                                         new JObject
                                         {
-                                            ["filePath"] = $"components/{component.Name}/sample.html",
+                                            ["filePath"] = Path.Combine(path, "sample.html"),
                                             ["type"] = "html"
                                         },
                                         new JObject
                                         {
-                                            ["filePath"] = $"components/{component.Name}/sampleController.js",
+                                            ["filePath"] = Path.Combine(path, "sampleController.js"),
                                             ["type"] = "controller"
                                         },
                                         new JObject
                                         {
-                                            ["filePath"] = $"components/{component.Name}/sampleService.js",
+                                            ["filePath"] = Path.Combine(path, "sampleService.js"),
                                             ["type"] = "service"
                                         }
                                     };
@@ -128,7 +133,7 @@ namespace PrimeApps.Studio.Helpers
                                         {
                                             var sample = GetSampleComponent(file["type"].ToString());
 
-                                            using (var fs = System.IO.File.Create(localPath + "/" + file["filePath"].ToString()))
+                                            using (var fs = System.IO.File.Create((string)file["filePath"]))
                                             {
                                                 var info = new UTF8Encoding(true).GetBytes(sample);
                                                 // Add some information to the file.
@@ -193,13 +198,15 @@ namespace PrimeApps.Studio.Helpers
                         if (repository != null)
                         {
                             var localPath = _giteaHelper.CloneRepository(repository["clone_url"].ToString(), repository["name"].ToString());
-                            var fileName = $"/scripts/{script.Name}.js";
+                            var scriptsPath = Path.Combine(localPath, "scripts");
+                            Directory.CreateDirectory(scriptsPath);
+                            var fileName = Path.Combine(scriptsPath, $"{script.Name}.js");
 
                             using (var repo = new Repository(localPath))
                             {
                                 var sample = "console.log('Hello World!');";
 
-                                using (var fs = System.IO.File.Create(localPath + fileName))
+                                using (var fs = System.IO.File.Create(fileName))
                                 {
                                     var info = new UTF8Encoding(true).GetBytes(sample);
                                     // Add some information to the file.
@@ -286,5 +293,7 @@ namespace PrimeApps.Studio.Helpers
                     return null;
             }
         }
+        
+        
     }
 }

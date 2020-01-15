@@ -78,7 +78,10 @@ angular.module('primeapps')
         sub_list_loaded: 28,
         before_import: 29,
         empty_list: 30,
-        after_email: 31
+        after_bulk_email: 31,
+        before_bulk_email: 32,
+        before_modal_load: 33
+
     })
     .constant('componentPlaces', [
         { name: 'Field Change', value: 1 },
@@ -3353,6 +3356,24 @@ angular.module('primeapps')
             { "value": "fas fa-yen-sign", "label": "<i class=\"fas fa-yen-sign\"> Yen-Sign" },
             { "value": "fas fa-yin-yang", "label": "<i class=\"fas fa-yin-yang\"> Yin-Yang" }
         ]
+    })
+    .constant('environments', {
+        data: [{
+            name: 'Development',
+            value: 'development',
+            selected: true,
+            disabled: true
+        }, {
+            name: 'Test',
+            value: 'test',
+            selected: true,
+            disabled: true
+        }, {
+            name: 'Production',
+            value: 'production',
+            selected: true,
+            disabled: false
+        }]
     })
     .value('guidEmpty', '00000000-0000-0000-0000-000000000000')
 

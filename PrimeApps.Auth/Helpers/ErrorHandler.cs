@@ -1,6 +1,5 @@
 ﻿using Sentry;
 using System;
-using System.Diagnostics;
 
 namespace PrimeApps.Auth.Helpers
 {
@@ -13,13 +12,7 @@ namespace PrimeApps.Auth.Helpers
         /// <param name="message"></param>
         public static void LogError(Exception ex, string message = "")
         {
-            Exception exception = (Exception)Activator.CreateInstance(ex.GetType(), string.Format("{0} {1}", ex.Message, message));
-            
-            SentrySdk.CaptureException(exception);
-
-            if (Debugger.IsAttached)
-                throw ex;
-            
+            SentrySdk.CaptureException(ex);
         }
 
         /// <summary>

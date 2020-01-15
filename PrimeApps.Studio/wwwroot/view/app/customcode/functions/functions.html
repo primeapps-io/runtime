@@ -3,123 +3,15 @@
     <div>
         <ul class="list-unstyled list-inline">
             <li>
-                <button class="btn add-button" ng-click="createModal()"><i class="fas fa-plus"></i> New Function
+                <button class="btn add-button" ng-click="createModal()">
+                    <i class="fas fa-plus"></i> New Function
                 </button>
             </li>
         </ul>
     </div>
 </div>
-
-<div class="tab-content table-responsive">
-    <table class="table" ng-show="loading">
-        <thead>
-        <tr>
-            <th>Identifier</th>
-            <th>Label</th>
-            <th>Runtime</th>
-            <th>Handler</th>
-            <th>Creation Time</th>
-            <th width="50"></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-        <tr ng-repeat="item in placeholderArray">
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td>
-                <div class="animated-background"></div>
-            </td>
-            <td class="text-center">
-                <div class="animated-background"></div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <table class="table" ng-if="!loading">
-        <thead>
-        <tr>
-            <th>Identifier</th>
-            <th>Label</th>
-            <th>Runtime</th>
-            <th>Handler</th>
-            <th>Creation Time</th>
-            <th width="50"></th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="function in functions" ui-sref="studio.app.functionDetail({name:function.name})">
-            <td>{{function.name}}</td>
-            <td>{{function.label}}</td>
-            <td>{{function.runtime}}</td>
-            <td>{{function.handler}}</td>
-            <td>{{getTime(function.created_at)}}</td>
-            <td class="text-right">
-                <div class="action-buttons-block">
-                    <button ng-click="$event.stopPropagation();$parent.$parent.delete(function.name, $event)"
-                            type="button" class="action-buttons-delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                    <div class="spinner-border spinner-border-sm" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
-                <!--<button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                        action="deleteUser(user.user_id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                        confirm-yes="{{'Common.Yes' | translate}}"
-                        confirm-no="{{'Common.No' | translate}}">
-                    {{'Common.Remove' | translate}}
-                </button>-->
-            </td>
-        </tr>
-        </tbody>
-    </table>
-    <div class="table-pagination" ng-if="!loading">
-        <div>
-            <nav aria-label="Page navigation">
-                <div paging
-                     text-first="&laquo;"
-                     ul-class="pagination"
-                     active-class="active"
-                     page="page"
-                     page-size="requestModel.limit"
-                     total="pageTotal"
-                     scroll-top="true"
-                     hide-if-empty="true"
-                     show-prev-next="true"
-                     show-first-last="true"
-                     text-next-class="fas fa-chevron-right"
-                     text-prev-class="fas fa-chevron-left"
-                     text-first-class="fas fa-step-backward"
-                     text-last-class="fas fa-step-forward"
-                     paging-action="changePage(page)">
-                </div>
-            </nav>
-        </div>
-        <div class="total">Total {{pageTotal}}</div>
-        <div>
-            <span class="pagination-span">Items per page  </span>
-            <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
-                <option ng-selected="true" value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-                <option value="150">150</option>
-                <option value="200">200</option>
-            </select>
-        </div>
-    </div>
+ 
+<div class="tab-content">
+    <kendo-grid class="grid-theme grid-theme-center table-responsive" k-scope-field="grid" id="kendo-grid" k-options="mainGridOptions">
+    </kendo-grid>
 </div>

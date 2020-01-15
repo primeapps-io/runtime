@@ -32,16 +32,16 @@ angular.module('primeapps')
                 getByType: function (type, moduleId, route) {
                     moduleId = moduleId ? moduleId : null;
                     route = route ? route : null;
-                    return $http.get(config.apiUrl + 'help/get_by_type?templateType=' + type + '&moduleId=' + moduleId + '&route=' + route);
+                    return $http.get(config.apiUrl + 'help/get_by_type?helpType=' + type + '&moduleId=' + moduleId + '&route=' + route);
                 },
-                getModuleType: function (templateType, moduleType, moduleId) {
+                getModuleType: function (helpType, moduleType, moduleId) {
                     moduleId = moduleId ? moduleId : null;
-                    return $http.get(config.apiUrl + 'help/get_module_type?templateType=' + templateType + '&moduleType=' + moduleType + '&moduleId=' + moduleId);
+                    return $http.get(config.apiUrl + 'help/get_module_type?helpType=' + helpType + '&moduleType=' + moduleType + '&moduleId=' + moduleId);
                 },
 
-                getCustomHelp: function (templateType, customhelp) {
+                getCustomHelp: function (helpType, customhelp) {
 
-                    return $http.get(config.apiUrl + 'help/get_custom_help?templateType=' + templateType + '&customhelp=' + customhelp);
+                    return $http.get(config.apiUrl + 'help/get_custom_help?helpType=' + helpType + '&customhelp=' + customhelp);
                 },
 
                 process: function (helpsidesData, modules, routes, helpEnums) {

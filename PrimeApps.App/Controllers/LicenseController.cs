@@ -269,7 +269,7 @@ namespace PrimeApps.App.Controllers
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Status403Forbidden);
 
-            var subscriberUser = await _platformUserRepository.Get(email);
+            var subscriberUser = await _platformUserRepository.GetAsync(email);
             var user = await _userRepository.GetByEmail(email);
             var licenseSetting = await _settingRepository.GetByKeyAsync("HasAnalyticsLicense", subscriberUser.Id);
             if (licenseSetting == null && active)

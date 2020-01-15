@@ -8,20 +8,21 @@ using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Helpers;
 using Microsoft.Extensions.Configuration;
 using System;
+using Microsoft.Extensions.Primitives;
 
 namespace PrimeApps.App.Controllers
 {
     [Authorize, CheckHttpsRequire, ResponseCache(CacheProfileName = "Nocache")]
     public class MvcBaseController : BaseController
     {
-        public static int? AppId { get; set; }
-        public static int? TenantId { get; set; }
-        public static string PreviewMode { get; set; }
+        public int? AppId { get; set; }
+        public int? TenantId { get; set; }
+        public string PreviewMode { get; set; }
 
         public void SetContext(ActionExecutingContext context)
         {
             var email = context.HttpContext.User.FindFirst("email").Value;
-            var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
+            var configuration = (IConfiguration) HttpContext.RequestServices.GetService(typeof(IConfiguration));
 
             PreviewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);
             PreviewMode = !string.IsNullOrEmpty(PreviewMode) ? PreviewMode : "tenant";
@@ -56,7 +57,10 @@ namespace PrimeApps.App.Controllers
                 {
                     if (!context.HttpContext.Request.Headers.TryGetValue("X-App-Id", out var appIdValues))
                         if (!context.HttpContext.Request.Headers.TryGetValue("x-app-id", out appIdValues))
-                            context.Result = new UnauthorizedResult();
+                            if (string.IsNullOrWhiteSpace(context.HttpContext.Request.Cookies["app_id"]))
+                                context.Result = new UnauthorizedResult();
+                            else
+                                appIdValues = new StringValues(context.HttpContext.Request.Cookies["app_id"]);
 
                     if (appIdValues.Count == 0 || string.IsNullOrWhiteSpace(appIdValues[0]) ||
                         !int.TryParse(appIdValues[0], out appId))
@@ -78,9 +82,9 @@ namespace PrimeApps.App.Controllers
             //if (platformUser == null)
             //{
             var platformUserRepository =
-                (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(
+                (IPlatformUserRepository) context.HttpContext.RequestServices.GetService(
                     typeof(IPlatformUserRepository));
-            platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
+            platformUserRepository.CurrentUser = new CurrentUser {UserId = 1};
 
             if (appId > 0)
             {

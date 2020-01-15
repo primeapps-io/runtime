@@ -19,9 +19,8 @@ namespace PrimeApps.Studio.Helpers
                 ShowType = helpModel.ShowType,
                 ModuleType = helpModel.ModuleType,
                 Name = helpModel.Name,
-                CustomHelp = helpModel.CustomHelp
-
-
+                CustomHelp = helpModel.CustomHelp,
+                Language = helpModel.Language
             };
 
             return help;
@@ -38,12 +37,9 @@ namespace PrimeApps.Studio.Helpers
             help.ModuleType = helpModel.ModuleType;
             help.Name = helpModel.Name;
             help.CustomHelp = helpModel.CustomHelp;
-
-
+            help.Language = helpModel.Language;
+            
             return help;
         }
-
-
-
     }
 }

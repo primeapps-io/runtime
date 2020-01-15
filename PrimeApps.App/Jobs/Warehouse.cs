@@ -46,6 +46,7 @@ namespace PrimeApps.App.Jobs
 					var modules = await moduleRepository.GetAll();
 					var tenantLanguage = appUser.TenantLanguage;
 
+                    await _warehouseRepository.Create(request, modules, appUser.Email, tenantLanguage);
 					await _warehouseRepository.Create(request, modules, appUser.Email, tenantLanguage);
 
 					var menu = await _menuRepository.GetByProfileId((int)appUser.ProfileId);

@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using LibGit2Sharp;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Azure.KeyVault.Models;
@@ -80,15 +85,16 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        [Route("find")]
+        public IActionResult Find(ODataQueryOptions<Function> queryOptions)
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "functions", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var components = await _functionRepository.Find(paginationModel);
+            var functions = _functionRepository.Find();
 
-            return Ok(components);
+            var queryResults = (IQueryable<Function>)queryOptions.ApplyTo(functions);
+            return Ok(new PageResult<Function>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
         [Route("get/{id}"), HttpGet]
@@ -165,6 +171,16 @@ namespace PrimeApps.Studio.Controllers
             if (!checkName)
                 return Conflict("Function name already exist !");
 
+            if (function.Environments == null)
+            {
+                function.Environments = new List<EnvironmentType>()
+                {
+                    EnvironmentType.Development
+                };
+            }
+            else if (function.Environments.Count < 1)
+                function.Environments.Add(EnvironmentType.Development);
+
             var functionObj = new Function()
             {
                 Name = function.Name,
@@ -174,7 +190,8 @@ namespace PrimeApps.Studio.Controllers
                 ContentType = function.ContentType != FunctionContentType.NotSet ? function.ContentType : FunctionContentType.Text,
                 Runtime = function.Runtime,
                 Handler = function.Handler,
-                Status = PublishStatus.Draft
+                Status = PublishStatusType.Draft,
+                Environment = function.EnvironmentValues
             };
 
             function.Name = functionName;
@@ -224,6 +241,16 @@ namespace PrimeApps.Studio.Controllers
             if (func == null)
                 return BadRequest("Function not found.");
 
+            if (function.Environments == null)
+            {
+                function.Environments = new List<EnvironmentType>()
+                {
+                    EnvironmentType.Development
+                };
+            }
+            else if (function.Environments.Count < 1)
+                function.Environments.Add(EnvironmentType.Development);
+
             func.Name = function.Name;
             func.Label = function.Label;
             func.Dependencies = function.Dependencies;
@@ -232,6 +259,7 @@ namespace PrimeApps.Studio.Controllers
             //func.Runtime = function.Runtime;
             //func.Handler = function.Handler;
             func.Status = function.Status;
+            func.Environment = function.EnvironmentValues;
 
             var updateResult = await _functionRepository.Update(func);
 
@@ -404,7 +432,7 @@ namespace PrimeApps.Studio.Controllers
             var deployment = new DeploymentFunction
             {
                 FunctionId = function.Id,
-                Status = DeploymentStatus.Running,
+                Status = ReleaseStatus.Running,
                 Version = currentBuildNumber.ToString(),
                 BuildNumber = currentBuildNumber,
                 StartTime = DateTime.Now

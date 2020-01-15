@@ -27,5 +27,6 @@ namespace PrimeApps.Studio.Models
 
         public string HelpRelation { get; set; }
 
+        public LanguageType Language { get; set; }
     }
 }

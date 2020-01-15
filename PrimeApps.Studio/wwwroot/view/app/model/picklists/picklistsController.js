@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('PicklistsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'PicklistsService', '$modal', 'dragularService', '$timeout', '$interval', 'helper', 'FileUploader',
-        function ($rootScope, $scope, $filter, $state, $stateParams, PicklistsService, $modal, dragularService, $timeout, $interval, helper, FileUploader) {
+    .controller('PicklistsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'PicklistsService', '$modal', 'dragularService', '$timeout', '$interval', 'helper', 'FileUploader', '$localStorage',
+        function ($rootScope, $scope, $filter, $state, $stateParams, PicklistsService, $modal, dragularService, $timeout, $interval, helper, FileUploader, $localStorage) {
             $scope.$parent.activeMenuItem = 'picklists';
             $rootScope.breadcrumblist[2].title = 'Picklists';
             $scope.loading = true;
@@ -18,12 +18,7 @@ angular.module('primeapps')
             $scope.fixedField = {};
             $scope.activePage = 1;
             $scope.picklistModel = {};
-            $scope.wizardStep = 0;
-            $scope.requestModel = { //default page value
-                limit: "10",
-                offset: 0,
-                order_column: "label_en"
-            };
+            $scope.wizardStep = 0; 
 
             $scope.fields = [
                 { name: "name", label: "Name", required: true, order: 1 },
@@ -31,89 +26,7 @@ angular.module('primeapps')
                 { name: "value", label: "Value-1", required: false, order: 3 },
                 { name: "value2", label: "Value-2", required: false, order: 4 },
                 { name: "value3", label: "Value-3", required: false, order: 5 }];
-
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-
-            $scope.generator(10);
-
-
-
-            PicklistsService.getPage($scope.requestModel).then(function (response) {
-                if (response.data) {
-                    $scope.picklists = response.data;
-
-                    PicklistsService.count().then(function (count) {
-                        $scope.pageTotal = count.data;
-                        $scope.loading = false;
-                    }).catch(function (reason) {
-                        $scope.loading = false;
-                    });
-                }
-            }).catch(function (reason) {
-                $scope.loadingItem = false;
-            });
-
-            $scope.changePage = function (page) {
-                $scope.loading = true;
-
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
-
-                var requestModel = angular.copy($scope.requestModel);
-                if (page != 0)
-                    requestModel.offset = page - 1;
-                else
-                    requestModel.offset = 0;
-
-                PicklistsService.getPage(requestModel).then(function (response) {
-
-                    $scope.picklists = response.data;
-                    $scope.loading = false;
-                }).catch(function (reason) {
-                    $scope.loading = false;
-                });
-
-            };
-
-            $scope.changePageItem = function (page) {
-                $scope.loadingItem = true;
-
-                PicklistsService.get($scope.id).then(function (response) {
-                    $scope.picklist = response.data;
-                    PicklistsService.countItems($scope.id)
-                        .then(function (count) {
-                            if (count.data) {
-                                $scope.pageTotalItems = count.data;
-                                $scope.loadingItem = false;
-                            }
-                        }).catch(function (reason) {
-                            $scope.loadingItem = false;
-                            $scope.cancel();
-                        });
-                }).catch(function (reason) {
-                    $scope.loadingItem = false;
-                    $scope.cancel();
-                });
-
-            };
-
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage);
-            };
-
+                 
             $scope.selectPicklist = function (id) {
                 $scope.modalLoading = true;
                 PicklistsService.get(id)
@@ -279,7 +192,8 @@ angular.module('primeapps')
                             }
                             $scope.saving = false;
                             $scope.cancel();
-                            $scope.changeOffset();
+                            $scope.grid.dataSource.read();
+                            // $scope.changeOffset();
                         });
                 }
                 else {
@@ -292,7 +206,8 @@ angular.module('primeapps')
                             }
                             $scope.saving = false;
                             $scope.cancel();
-                            $scope.changeOffset();
+                            $scope.grid.dataSource.read();
+                            //$scope.changeOffset();
 
                             if (response.data) {
                                 $timeout(function () {
@@ -328,7 +243,8 @@ angular.module('primeapps')
                             .then(function (response) {
                                 if (response.data) {
                                     toastr.success($filter('translate')('Picklist.DeleteSuccess'));
-                                    $scope.changeOffset();
+                                    $scope.grid.dataSource.read();
+                                    //$scope.changeOffset();
                                 }
                             }).catch(function (reason) {
                                 $scope.loading = false;
@@ -408,16 +324,34 @@ angular.module('primeapps')
             $scope.deleteItem = function (item) {
                 item.deletingItem = true;
                 if ($scope.picklist && item.id) {
-                    PicklistsService.deleteItem(item.id)
-                        .then(function (response) {
-                            if (response.data) {
-                                toastr.success($filter('translate')('Picklist.DeleteItemSuccess'));
+
+                    var willDelete =
+                        swal({
+                            title: "Are you sure?",
+                            text: " ",
+                            icon: "warning",
+                            buttons: ['Cancel', 'Yes'],
+                            dangerMode: true
+                        }).then(function (value) {
+                            if (value) {
+
+                                PicklistsService.deleteItem(item.id)
+                                    .then(function (response) {
+                                        if (response.data) {
+                                            toastr.success($filter('translate')('Picklist.DeleteItemSuccess'));
+                                            item.deletingItem = false;
+                                            $scope.selectPicklist($scope.picklist.id);
+                                        }
+                                    }).catch(function (reason) {
+                                        item.deletingItem = false;
+                                    });
+
+                            } else {
                                 item.deletingItem = false;
-                                $scope.selectPicklist($scope.picklist.id);
                             }
-                        }).catch(function (reason) {
-                            item.deletingItem = false;
                         });
+
+
                 }
             };
 
@@ -699,6 +633,7 @@ angular.module('primeapps')
                 $scope.sheets = null;
                 $scope.fieldMap = null;
                 $scope.fixedField = null;
+                $scope.selectedSheet = null;
             };
 
             $scope.prepareItems = function () {
@@ -838,7 +773,7 @@ angular.module('primeapps')
                     .then(function (response) {
                         toastr.success("Picklist items are saved successfully.");
                         $scope.cancel();
-                        $scope.selectPicklist(picklist.id);
+                        $scope.selectPicklist($scope.id);
                         $scope.saving = false;
                     })
                     .catch(function (error) {
@@ -855,6 +790,138 @@ angular.module('primeapps')
                     });
             };
             //Excel  import Area
+            //For Kendo UI
+            $scope.goUrl = function (item) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.showFormModal(item, false); //click event.
+                }
+            };
 
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    sort: { field: 'id', dir: 'desc' },
+                    transport: {
+                        read: {
+                            url: "/api/picklist/get_page",
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                LabelEn: { type: "string" },
+                                SystemCode: { type: "string" },
+                                SystemType: { type: "enums" }
+                            }
+                        }
+                    }
+
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                noRecords: true,
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter && e.field !== 'SystemType') {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
+                },
+                rowTemplate: function (e) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left"><span>' + e['label_' + $scope.language] + '</span></td>';
+                    trTemp += e.system_code ? '<td><span>' + e.system_code + '</span></td>' : '<td><span></span></td>';
+                    trTemp += '<td class="text-capitalize"> <span>' + e.system_type + '</span></td > ';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> ' + actionButtonsTemplate + '</td></tr>';
+                    return trTemp;
+                },
+                altRowTemplate: function (e) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left"><span>' + e['label_' + $scope.language] + '</span></td>';
+                    trTemp += e.system_code ? '<td><span>' + e.system_code + '</span></td>' : '<td><span></span></td>';
+                    trTemp += '<td class="text-capitalize"> <span>' + e.system_type + '</span></td > ';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> ' + actionButtonsTemplate + '</td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+                    {
+                        field: 'LabelEn',
+                        title: $filter('translate')('Picklist.Name'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+                    {
+                        field: 'SystemCode',
+                        title: $filter('translate')('Picklist.SystemCode'),
+                    },
+                    {
+                        field: 'SystemType',
+                        title: 'Type',
+                        values: [
+                            { text: 'System', value: 'System' },
+                            { text: 'Custom', value: 'Custom' },
+                            { text: 'Component', value: 'Component' }
+                        ]
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
+            };
+
+            var actionButtonsTemplate = '   <div class="action-buttons-block">  ' +
+                '                       <button ng-click="$event.stopPropagation();" type="button" data-toggle="dropdown"  ' +
+                '                               class="action-button2-more"  ' +
+                '                               placement="bottom-right"  ' +
+                '                               data-animation="am-flip-x"  ' +
+                '                               data-container="body"  ' +
+                '                               bs-dropdown' +
+                '                               data-trigger="click"' +
+                '                               aria-haspopup="true" aria-expanded="false">  ' +
+                '                           <i class="fas fa-ellipsis-v"></i>  ' +
+                '                       </button>  ' +
+                '                       <ul class="dropdown-menu" role="menu">  ' +
+                '                           <li>  ' +
+                '                               <a href ng-click="$event.stopPropagation();showFormModal(dataItem, true)">  ' +
+                '                                   {{"Common.Edit" | translate}}  ' +
+                '                               </a>  ' +
+                '                           </li>  ' +
+                '                           <li>  ' +
+                '                               <a href ng-click="$event.stopPropagation(); delete(dataItem.id)">  ' +
+                '                                   {{"Common.Remove" | translate}}  ' +
+                '                               </a>  ' +
+                '                           </li>  ' +
+                '                       </ul>  ' +
+                '                  </div>  ';
+            //For Kendo UI
         }
     ]);

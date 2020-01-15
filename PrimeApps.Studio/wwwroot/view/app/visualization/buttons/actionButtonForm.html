@@ -34,8 +34,9 @@
                     <select name="type"
                             class="form-control ng-animate-disabled col-sm-8"
                             required
+                            ng-disabled="currentActionButton.id"
                             ng-model="currentActionButton.type"
-                            ng-options="o.value as o.type for o in actionButtonTypes"></select>
+                            ng-options="o.value as o.text for o in actionButtonTypes"></select>
                 </div>
                 <div class="form-group"
                      ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.trigger.$invalid}">
@@ -205,8 +206,8 @@
                                                 </select>
                                             </td>
                                             <td>
-                                                <a class="action-button2-delete" href ng-show="hookParameters.length > 1" ng-click="webhookParameterRemove(parameter)"><i class="fas fa-trash"></i></a>
-                                                <a class="action-button2-plus" href ng-show="$last" ng-click="webhookParameterAdd(parameter)"><i class="fas fa-plus"></i></a>
+                                                <a class="action-button2-delete" href="javascript:void(0);" ng-show="hookParameters.length > 1" ng-click="webhookParameterRemove(parameter)"><i class="fas fa-trash"></i></a>
+                                                <a class="action-button2-plus" href="javascript:void(0);" ng-show="$last" ng-click="webhookParameterAdd(parameter)"><i class="fas fa-plus"></i></a>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -221,11 +222,21 @@
                            name="css_class"
                            class="form-control ng-animate-disabled col-sm-8"
                            maxlength="100"
-                           ng-model="currentActionButton.css_class"> 
+                           ng-model="currentActionButton.css_class">
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-12"> Environment </label>
+                    <div ng-repeat="env in environments">
+                        <label class="newinput checkbox-inline">
+                            <input type="checkbox" name="env{{$index}}" ng-model="env.selected" ng-change="environmentChange(env,$index)" ng-disabled="env.disabled" value="{{env.value}}" title="{{env.name}}" />{{env.name}}
+                            <span></span>
+                        </label>
+                        <br />
+                    </div>
                 </div>
 
                 <div>
-                    <a href class="advanced-options-link" style="margin-top: 25px;" ng-click="$parent.$parent.showPermissions = !$parent.$parent.showPermissions">
+                    <a href="javascript:void(0);" class="advanced-options-link" style="margin-top: 25px;" ng-click="$parent.$parent.showPermissions = !$parent.$parent.showPermissions">
                         {{'Setup.Modules.Permissions' | translate}}
                         <i class="fa fa-caret-right" ng-if="!$parent.showPermissions"></i>
                         <i class="fa fa-caret-down" ng-if="$parent.showPermissions"></i>

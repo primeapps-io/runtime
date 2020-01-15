@@ -1,0 +1,16 @@
+[Unit]
+Description=MinIO-PRE-Test
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Environment=MINIO_ACCESS_KEY=storage-access-key
+Environment=MINIO_SECRET_KEY=storage-secret-key
+Type=simple
+Restart=always
+RestartSec=1
+User={{USER}}
+ExecStart={{PROGRAMS}}/minio/minio server --address :9003 {{DATA}}/minio_pre_test
+
+[Install]
+WantedBy=multi-user.target

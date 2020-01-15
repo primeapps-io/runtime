@@ -1,0 +1,342 @@
+﻿@using PrimeApps.Model.Common.Organization
+@using PrimeApps.Model.Enums
+@{
+    var organizations = ViewBag.Organizations as List<OrganizationModel>;
+    var apps = organizations?.FirstOrDefault(x => x.Id == int.Parse(ViewBag.ActiveOrganizationId))?.Apps;
+    var currentApp = ViewBag.CurrentApp;
+    var publishedBefore = ViewBag.LastRelease != null;
+    var processActive = ViewBag.ProcessActive.ToString().ToLower();
+    var releaseId = ViewBag.ReleaseId;
+}
+
+<div class="container-fluid pt-5">
+    <div class="header-body">
+        @if (ViewBag.LastPackage != null)
+        {
+            <div class="table-responsive own-table">
+                <table class="table table-bordered">
+                    <thead>
+
+                        <tr>
+                            <th width="100%">Name</th>
+                            <!--@if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.TenantIds != null && ViewBag.TenantIds.Count > 0)
+    {
+        <th>Tenant Ids</th>
+    }-->
+                            @if (ViewBag.LastRelease != null)
+                            {
+                                <th>Current Release Version</th>
+                            }
+                            <th>Last Release Version</th>
+                            @if (ViewBag.AppSettings != null)
+                            {
+                                <th>Auth Url</th>
+                                <th>App Url</th>
+                            }
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="align-middle">
+                                <div class="appicon" style="background-color: @ViewBag.CurrentApp.Color">
+                                    <i class="@(ViewBag.CurrentApp.Icon ?? "fas fa-box-open")"></i>
+                                </div>
+                                <h3 class="pl-2 d-inline-block">@ViewBag.CurrentApp.Label</h3>
+                            </td>
+
+                            <!--@if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.TenantIds != null && ViewBag.TenantIds.Count > 0)
+    {
+        <td class="align-middle text-center">
+            <h3 class="mb-0">@string.Join(", ", ViewBag.TenantIds) </h3>
+        </td>
+    }-->
+
+                            @if (ViewBag.LastRelease != null)
+                            {
+                                <td class="align-middle text-center">
+                                    <h3 class="mb-0">@ViewBag.LastRelease?.Version</h3>
+                                </td>
+                            }
+                            <td class="align-middle text-center">
+                                <h3 class="mb-0">@(ViewBag.LastPackage != null ? ViewBag.LastPackage.Version : "You should create a package to publish the application. You can create a package on PrimeApps Studio Packages menu.")</h3>
+                            </td>
+                            @if (ViewBag.AppSettings != null)
+                            {
+                                <td class="align-middle text-center"><h3 class="pl-2 d-inline-block">@ViewBag.AppSettings.AuthDomain</h3></td>
+                                <td class="align-middle text-center"><h3 class="pl-2 d-inline-block">@ViewBag.AppSettings.AppDomain</h3></td>
+                            }
+                            <td class="align-middle">
+                                <button disabled="@(ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed)" class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="@(ViewBag.LastPackage == null ? "" : ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version ? "Already up to date" : ViewBag.ProcessActive ? "There is an another process. Please wait for it..." : "Click for publish!")" onclick="apply()">
+                                    @if (ViewBag.ProcessActive)
+                                    {
+                                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        <span class="btn-inner--text">Please wait...</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="btn-inner--icon">
+                                            <i class="ni ni-cloud-upload-96"></i>
+                                        </span>
+                                        <span class="btn-inner--text">@(ViewBag.LastRelease != null ? "Update" : "Publish")</span>
+                                    }
+
+                                </button>
+
+                                @if ((ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed) && !ViewBag.ProcessActive && ViewBag.TenantIds != null && ViewBag.TenantIds.Count > 0)
+                                {
+                                    <button class="btn ifn-icon btn-3 btn-warning btn-md" type="button" title="Click for Update Tenants!" onclick="tenantUpdate(@ViewBag.CurrentApp.Id, @ViewBag.ActiveOrganizationId)">
+                                        <span class="btn-inner--icon">
+                                            <i class="ni ni-cloud-upload-96"></i>
+                                        </span>
+                                        <span class="btn-inner--text">Update Tenants</span>
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                You should create a package to publish the application. You can create a package on PrimeApps Studio Packages menu.
+            </div>
+        }
+        @*<div class="row" id="log" hidden>
+            <div class="col-xl-5 col-lg-10 b-card">
+                <div class="card card-stats mb-4 mb-xl-0">
+                    <div class="card-body">
+                        <div class="tab-content table-responsive">
+                            <pre style="color: white !important; padding-left: 10px !important; padding-top: 10px !important; padding-bottom: 10px !important; background-color: black !important;" data-ng-bind-html="goLive.logs" id="logData"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function apply() {
+
+        if (!publishedBefore) {
+            swal.fire({
+                title: 'Submit to confirm',
+                html:
+                    '<div style="z-index: 9999;border-bottom: 1px solid #d6d6d6;margin-bottom: 20px;" class="col-sm-12"></div><form class="">' +
+                        '<div class="form-row col-sm-12">' +
+                        '<div class="col-auto">' +
+                        '<div class="btn-group">' +
+                        '<button id="ssl" type="button" class="btn btn-light">http://</button>' +
+                        '<button type="button" class="btn btn-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                        '<span class="sr-only">Toggle Dropdown</span>' +
+                        '</button>' +
+                        '<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 37px, 0px);">' +
+                        '<a class="dropdown-item" href="#" onclick="setDropdown(\'http\')">http://</a>' +
+                        '<a class="dropdown-item" href="#" onclick="setDropdown(\'https\')">https://</a>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="col-auto col-sm-8">' +
+                        '<div class="input-group mb-4">' +
+                        '<input type="text" class="form-control " id="auth-url" placeholder="Auth Url">' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="form-row col-sm-12">' +
+                        '<div class="col-auto">' +
+                        '<div class="btn-group">' +
+                        '<button id="ssl" type="button" class="btn btn-light">http://</button>' +
+                        '<button type="button" class="btn btn-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                        '<span class="sr-only">Toggle Dropdown</span>' +
+                        '</button>' +
+                        '<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 37px, 0px); top: 0px; left: 0px; will-change: transform;">' +
+                        '<a class="dropdown-item" href="#" onclick="setDropdown(\'http\')">http://</a>' +
+                        '<a class="dropdown-item" href="#" onclick="setDropdown(\'https\')">https://</a>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="col-auto col-sm-8">' +
+                        '<div class="input-group mb-4">' +
+                        '<input type="text" class="form-control" id="app-url" placeholder="App Url">' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</form><div style="z-index: 9999;border-bottom: 1px solid #d6d6d6;z-index:0;" class="col-sm-12"></div>',
+                showCancelButton: true,
+                confirmButtonText: 'Confirm',
+                showLoaderOnConfirm: true,
+                buttonsStyling: false,
+                confirmButtonClass: 'btn btn-primary btn-lg',
+                cancelButtonClass: 'btn btn-lg',
+                preConfirm: function() {
+                    return new Promise(function(resolve) {
+                        var appUrl = $('#app-url').val();
+                        var authUrl = $('#auth-url').val();
+                        var useSSL = ($('#ssl').text().replace('://', '')) === 'https';
+
+                        if (!appUrl || !authUrl) {
+                            Swal.showValidationMessage(
+                                "App and Auth url are requred."
+                            );
+                            Swal.hideLoading();
+
+                        } else {
+                            resolve([
+                                appUrl,
+                                authUrl,
+                                useSSL
+                            ]);
+                        }
+                    });
+                },
+                allowOutsideClick: false
+            }).then(function(data) {
+                if (data) {
+                    if (data.dismiss)
+                        return;
+                    var appUrl = data.value[0];
+                    var authUrl = data.value[1];
+                    var userSSL = data.value[2];
+
+                    $.ajax({
+                        url: '@Url.Action("apply", "Package")',
+                        data: {
+                            id: @ViewBag.CurrentApp.Id,
+                            orgId: @ViewBag.ActiveOrganizationId,
+                            appUrl: appUrl,
+                            authUrl: authUrl,
+                            useSsl: userSSL
+                        }
+                    }).done(function(data) {
+                        //var url = updateQueryStringParameter(window.location.href, 'applying', true);
+                        //url = updateQueryStringParameter(url, 'release', data);
+                        if (data) {
+                            document.cookie = `app${@ViewBag.CurrentApp.Id}=${data}`;
+                        }
+                        location.reload();
+                    });
+                }
+            }).catch(swal.noop);
+        } else {
+            $.ajax({
+                url: '@Url.Action("apply", "Package")',
+                data: {
+                    id: @ViewBag.CurrentApp.Id,
+                    orgId: @ViewBag.ActiveOrganizationId
+                }
+            }).done(function(data) {
+                //var url = updateQueryStringParameter(window.location.href, 'applying', true);
+                if (data) {
+                    document.cookie = `app${@ViewBag.CurrentApp.Id}=${data}`;
+                }
+                //url = updateQueryStringParameter(url, 'release', data);
+                location.reload();
+            });
+        }
+    }
+
+    var publishedBefore = @Html.Raw(publishedBefore.ToString().ToLower());
+    var logData = document.getElementById('logData');
+    var logEditor = document.getElementById('log');
+    var log = '';
+    var goLive = {};
+    //logData.innerHTML = log;
+
+    var appyling = @Html.Raw(processActive);
+    var lastPackage = @Html.Raw(Json.Serialize(ViewBag.LastPackage));
+
+    function tenantUpdate(appId, orgId) {
+        if (!appId || !orgId)
+            return;
+
+        /*var http = new XMLHttpRequest();
+        http.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                logData.innerHTML = this.responseText;
+            }
+        };/*/
+
+        $.ajax({
+            url: '@Url.Action("updatetenants", "Package")',
+            data: {
+                id: @ViewBag.CurrentApp.Id,
+                orgId: @ViewBag.ActiveOrganizationId
+            }
+        }).done(function(data) {
+            //var url = updateQueryStringParameter(window.location.href, 'applying', true);
+            if (data) {
+                document.cookie = `app${@ViewBag.CurrentApp.Id}=${data}`;
+            }
+            location.reload();
+        });
+    };
+
+    if (appyling === true) {
+        setTimeout(function() {
+                openWS();
+            },
+            3000);
+
+    }
+
+    function openWS() {
+        //if ($scope.socket && $scope.socket.readyState !== WebSocket.CLOSED)
+        //    return;
+
+        var isHttps = location.protocol === 'https:';
+        var socket = new WebSocket((isHttps ? 'wss' : 'ws') +'://' + location.host + '/log_stream');
+        socket.onopen = function(e) {
+            socket.send(JSON.stringify({
+                'X-App-Id': @ViewBag.CurrentApp.Id,
+                'X-Tenant-Id': 1,
+                'X-Organization-Id': @ViewBag.ActiveOrganizationId,
+                'release_id': @releaseId
+            }));
+        };
+
+        socket.onclose = function(e) {
+            document.cookie = `app${@ViewBag.CurrentApp.Id}= ; expires = Thu, 01 Jan 1970 00:00:00 GMT`;
+            console.log(e);
+            location.reload();
+        };
+
+        socket.onerror = function(e) {
+            document.cookie = `app${@ViewBag.CurrentApp.Id}= ; expires = Thu, 01 Jan 1970 00:00:00 GMT`;
+            console.log(e);
+        };
+
+        socket.onmessage = function(e) {
+            /*logEditor.hidden = false;
+            goLive.logs = e.data;
+            logData.innerHTML = e.data;*/
+        };
+    };
+
+
+    function updateQueryStringParameter(uri, key, value) {
+        var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+        var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+        if (uri.match(re)) {
+            return uri.replace(re, '$1' + key + "=" + value + '$2');
+        } else {
+            return uri + separator + key + "=" + value;
+        }
+    }
+
+    function getCookie(name) {
+        var value = "; " + document.cookie;
+        var parts = value.split("; " + name + "=");
+        if (parts.length == 2) return parts.pop().split(";").shift();
+    }
+
+    function setDropdown(data) {
+        $('.btn-group #ssl').text(data + '://');
+    }
+
+</script>

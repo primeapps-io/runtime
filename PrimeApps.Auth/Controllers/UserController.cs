@@ -42,7 +42,6 @@ namespace PrimeApps.Auth.Controllers
         private IRoleRepository _roleRepository;
         private readonly IEventService _events;
         private IConfiguration _configuration;
-
         private IUserHelper _userHelper;
 
         public UserController(
@@ -94,7 +93,7 @@ namespace PrimeApps.Auth.Controllers
             //_platformUserRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = addUserBindingModel.TenantId };
             var currentPlatformUser = await _platformUserRepository.GetWithSettings(email);
 
-            var platformUser = await _platformUserRepository.Get(addUserBindingModel.Email);
+            var platformUser = await _platformUserRepository.GetAsync(addUserBindingModel.Email);
 
             var password = Utils.GenerateRandomUnique(8);
 
@@ -172,7 +171,7 @@ namespace PrimeApps.Auth.Controllers
             //_platformUserRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = addUserBindingModel.TenantId };
             var currentPlatformUser = await _platformUserRepository.GetWithSettings(email);
 
-            var platformUser = await _platformUserRepository.Get(addUserBindingModel.Email);
+            var platformUser = await _platformUserRepository.GetAsync(addUserBindingModel.Email);
 
             var password = Utils.GenerateRandomUnique(8);
 
@@ -236,6 +235,11 @@ namespace PrimeApps.Auth.Controllers
                 return BadRequest(ModelState);
             }
 
+            var appSetting = await _platformRepository.GetAppSettings(addUserBindingModel.AppId);
+
+            if (!appSetting.EnableAPIRegistration)
+                return StatusCode(StatusCodes.Status401Unauthorized, "Registeration not enable for this application");
+
             if (User?.Identity.IsAuthenticated == false)
                 return Unauthorized();
 
@@ -262,7 +266,7 @@ namespace PrimeApps.Auth.Controllers
                     if (profileSetting != null)
                     {
                         var hasUserCreatePermission = profileSetting["permissions"].Any(x => x.Value<string>() == "users");
-                        if(!hasUserCreatePermission)
+                        if (!hasUserCreatePermission)
                             return Unauthorized();
                     }
                     else
@@ -293,7 +297,10 @@ namespace PrimeApps.Auth.Controllers
                 LastName = addUserBindingModel.LastName,
                 FirstName = addUserBindingModel.FirstName,
                 Password = password,
-                Phone = addUserBindingModel.Phone
+                Phone = addUserBindingModel.Phone,
+                Language = addUserBindingModel.Language,
+                Culture = addUserBindingModel.Culture,
+                Currency = addUserBindingModel.Currency
             };
 
             PlatformUser platformUser = null;
@@ -301,9 +308,9 @@ namespace PrimeApps.Auth.Controllers
             {
                 var settings = new PlatformUserSetting
                 {
-                    Culture = tenant.Setting.Culture,
-                    Language = tenant.Setting.Language,
-                    Currency = tenant.Setting.Currency,
+                    Culture = string.IsNullOrEmpty(userModel.Culture) ? tenant.Setting.Culture : userModel.Culture,
+                    Language = string.IsNullOrEmpty(userModel.Language) ? tenant.Setting.Language : userModel.Language,
+                    Currency = string.IsNullOrEmpty(userModel.Currency) ? tenant.Setting.Currency : userModel.Currency,
                     TimeZone = tenant.Setting.TimeZone
                 };
 
@@ -317,7 +324,7 @@ namespace PrimeApps.Auth.Controllers
             }
             else
             {
-                platformUser = await _platformUserRepository.Get(addUserBindingModel.Email);
+                platformUser = await _platformUserRepository.GetAsync(addUserBindingModel.Email);
             }
 
             var appInfo = await _applicationRepository.Get(addUserBindingModel.AppId);
@@ -455,7 +462,8 @@ namespace PrimeApps.Auth.Controllers
         {
             var user = _platformUserRepository.GetByEmail(tokenRequest.UserName);
 
-            if (user == null || !user.IsIntegrationUser || user.IntegrationUserClientId != tokenRequest.ClientId)
+            if (user == null) //!user.IsIntegrationUser || user.IntegrationUserClientId != tokenRequest.ClientId
+                              //TODO: Make this method available to get token from PrimeApps CLI
                 return new TokenResponse(HttpStatusCode.Unauthorized, "Unauthorized", "Unauthorized");
 
             var httpClient = new HttpClient();

@@ -1,11 +1,17 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Profile;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -13,39 +19,39 @@ using PrimeApps.Studio.Helpers;
 
 namespace PrimeApps.Studio.Controllers
 {
-	[Route("api/profile")]
-	public class ProfileController : DraftBaseController
-	{
-		private IRelationRepository _relationRepository;
+    [Route("api/profile")]
+    public class ProfileController : DraftBaseController
+    {
+        private IRelationRepository _relationRepository;
         private IUserRepository _userRepository;
         private IProfileRepository _profileRepository;
-		private ISettingRepository _settingRepository; 
-		private IConfiguration _configuration;
-		private Warehouse _warehouse;
-		private IModuleHelper _moduleHelper;
+        private ISettingRepository _settingRepository;
+        private IConfiguration _configuration;
+        private Warehouse _warehouse;
+        private IModuleHelper _moduleHelper;
         private IPermissionHelper _permissionHelper;
 
-        public ProfileController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration,IHelpRepository helpRepository,IUserRepository userRepository, IPermissionHelper permissionHelper)
-		{
-			_relationRepository = relationRepository;
-			_profileRepository = profileRepository;
-			_settingRepository = settingRepository;			
-			_warehouse = warehouse;
-			_configuration = configuration;
-			_moduleHelper = moduleHelper;
+        public ProfileController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration, IHelpRepository helpRepository, IUserRepository userRepository, IPermissionHelper permissionHelper)
+        {
+            _relationRepository = relationRepository;
+            _profileRepository = profileRepository;
+            _settingRepository = settingRepository;
+            _warehouse = warehouse;
+            _configuration = configuration;
+            _moduleHelper = moduleHelper;
             _userRepository = userRepository;
             _permissionHelper = permissionHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_relationRepository, PreviewMode, AppId, TenantId);
-			SetCurrentUser(_profileRepository, PreviewMode, AppId, TenantId);
-			SetCurrentUser(_settingRepository, PreviewMode, AppId, TenantId);
+        {
+            SetContext(context);
+            SetCurrentUser(_relationRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_profileRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_settingRepository, PreviewMode, AppId, TenantId);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
         /// <summary>
         /// Creates a new profile.
@@ -59,9 +65,9 @@ namespace PrimeApps.Studio.Controllers
             //Set Warehouse
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
-           var profile = await _profileRepository.CreateAsync(NewProfile, AppUser.TenantLanguage);
+            var profile = await _profileRepository.CreateAsync(NewProfile, AppUser.TenantLanguage);
 
-		  return Ok(profile);
+            return Ok(profile);
         }
 
         /// <summary>
@@ -90,7 +96,7 @@ namespace PrimeApps.Studio.Controllers
             if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.Delete))
                 return StatusCode(403);
 
-            await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.ID, RemovalRequest.TransferProfile.ID);
+            await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.Id, RemovalRequest.TransferProfile.Id);
 
 
             return Ok();
@@ -168,18 +174,15 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        [Route("find")]
+        public IActionResult Find(ODataQueryOptions<Profile> queryOptions)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "profile", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var templates = await _profileRepository.Find(paginationModel);
-
-            //if (templates == null)
-            //	return NotFound();
-
-            return Ok(templates);
+            var profiles = _profileRepository.Find();
+            var queryResults = (IQueryable<Profile>)queryOptions.ApplyTo(profiles, new ODataQuerySettings() { EnsureStableOrdering = false });
+            return Ok(new PageResult<Profile>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
     }

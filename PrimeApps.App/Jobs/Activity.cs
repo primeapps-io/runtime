@@ -125,7 +125,7 @@ namespace PrimeApps.App.Jobs.Reminder
 				startDate = reminderStart.AddMinutes(reminder.TimeZoneOffset).ToString("dd.MM.yyyy HH:mm"),
 				endDate = eventEnd.AddMinutes(reminder.TimeZoneOffset).ToString("dd.MM.yyyy HH:mm");
 
-				var user = await platformUserRepository.Get(usr.Email);
+				var user = await platformUserRepository.GetAsync(usr.Email);
 				var appUser = new UserItem
 				{
 					AppId = _appUser.AppId,
@@ -162,7 +162,7 @@ namespace PrimeApps.App.Jobs.Reminder
 				string userName = string.Format("{0} {1}", usr.FirstName, usr.LastName),
 					startDate = reminderStart.AddMinutes(reminder.TimeZoneOffset).ToString("dd.MM.yyyy HH:mm");
 
-				var user = await platformUserRepository.Get(usr.Email);
+				var user = await platformUserRepository.GetAsync(usr.Email);
 				var appUser = new UserItem
 				{
 					AppId = _appUser.AppId,
@@ -207,7 +207,7 @@ namespace PrimeApps.App.Jobs.Reminder
 
 				string userName = string.Format("{0} {1}", usr.FirstName, usr.LastName);
 
-				var user = await platformUserRepository.Get(usr.Email);
+				var user = await platformUserRepository.GetAsync(usr.Email);
 
 				/// send notification email.
 				var appUser = new UserItem

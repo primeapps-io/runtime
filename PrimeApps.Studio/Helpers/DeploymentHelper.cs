@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
@@ -13,10 +12,9 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using PrimeApps.Studio.Storage;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Studio.Helpers
 {
@@ -101,9 +99,9 @@ namespace PrimeApps.Studio.Helpers
                         var deployment = await _deploymentFunctionRepository.Get(deploymentId);
 
                         if (!response.IsSuccessStatusCode)
-                            deployment.Status = DeploymentStatus.Failed;
+                            deployment.Status = ReleaseStatus.Failed;
                         else
-                            deployment.Status = DeploymentStatus.Succeed;
+                            deployment.Status = ReleaseStatus.Succeed;
 
                         deployment.EndTime = DateTime.Now;
 
@@ -159,28 +157,28 @@ namespace PrimeApps.Studio.Helpers
                                     writer.Flush();
                                     stream.Position = 0;
 
-                                    await _storage.Upload(bucketName, fileName, stream);
+                                    await _storage.Upload(path, bucketName, fileName, stream);
 
                                     if (content["app"] != null && content["app"]["templateFile"].ToString() == fileName)
                                     {
-                                        var url = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
+                                        var url = _storage.GetLink(bucketName, fileName);
                                         content["app"]["templateUrl"] = url;
                                     }
                                     else
                                     {
-                                        var url = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddYears(100));
+                                        var url = _storage.GetLink(bucketName, fileName);
                                         content["files"].FirstOrDefault(i => i.Type == JTokenType.String && (string)i == fileName)?.Replace(url);
                                     }
                                 }
-                                
+
                                 component.Content = JsonConvert.SerializeObject(content);
                                 await _componentRepository.Update(component);
 
-                                deployment.Status = DeploymentStatus.Succeed;
+                                deployment.Status = ReleaseStatus.Succeed;
                             }
                             catch (Exception ex)
                             {
-                                deployment.Status = DeploymentStatus.Failed;
+                                deployment.Status = ReleaseStatus.Failed;
                                 ErrorHandler.LogError(ex, "Component deployment error.");
                             }
 
@@ -190,7 +188,7 @@ namespace PrimeApps.Studio.Helpers
                         }
                         else
                         {
-                            deployment.Status = DeploymentStatus.Failed;
+                            deployment.Status = ReleaseStatus.Failed;
                             deployment.EndTime = DateTime.Now;
                             await _deploymentComponentRepository.Update(deployment);
                             ErrorHandler.LogError(new Exception("Repository not found !!"), "Script deployment error.");
@@ -231,11 +229,11 @@ namespace PrimeApps.Studio.Helpers
                             try
                             {
                                 code = File.ReadAllText(localPath + "/" + fileName);
-                                deployment.Status = DeploymentStatus.Succeed;
+                                deployment.Status = ReleaseStatus.Succeed;
                             }
                             catch (Exception ex)
                             {
-                                deployment.Status = DeploymentStatus.Failed;
+                                deployment.Status = ReleaseStatus.Failed;
                                 ErrorHandler.LogError(ex, "Script deployment error.");
                             }
 
@@ -252,7 +250,7 @@ namespace PrimeApps.Studio.Helpers
                         }
                         else
                         {
-                            deployment.Status = DeploymentStatus.Failed;
+                            deployment.Status = ReleaseStatus.Failed;
                             deployment.EndTime = DateTime.Now;
                             await _deploymentComponentRepository.Update(deployment);
                             ErrorHandler.LogError(new Exception("Repository not found !!"), "Script deployment error.");

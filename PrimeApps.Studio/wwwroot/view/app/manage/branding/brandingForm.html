@@ -55,7 +55,7 @@
                                                 <div style="position: relative">
                                                     <img ng-src="{{authFavicon.image}}" class="resultimg"
                                                          style="height: 64px; max-width: 100%; "/>
-                                                    <img ng-src="{{authTheme.favicon}}"
+                                                    <img ng-src="{{config.storage_host + authTheme.favicon}}"
                                                          style="height: 64px; max-width: 100%" ng-show="!authFavicon">
                                                     <div class="action-buttons-block">
                                                         <button type="button" class="action-buttons-delete"
@@ -107,7 +107,7 @@
                                         <div class="iconandcolor">
                                             <div>
                                                 <div style="position: relative">
-                                                    <img ng-src="{{authLogo.image || authTheme.logo }}"
+                                                    <img ng-src="{{authLogo.image || (config.storage_host + authTheme.logo) }}"
                                                          class="resultimg"
                                                          style="height: 64px; max-width: 100%; "/>
                                                     <div class="action-buttons-block">
@@ -229,7 +229,7 @@
                                         <div class="iconandcolor">
                                             <div>
                                                 <div style="position: relative">
-                                                    <img ng-src="{{authBanner.image || authTheme.banner}}"
+                                                    <img ng-src="{{authBanner.image || (config.storage_host + authTheme.banner)}}"
                                                          class="resultimg"
                                                          style="height: 64px; max-width: 100%; "/>
                                                     <div class="action-buttons-block">
@@ -293,7 +293,7 @@
                                         <div class="iconandcolor">
                                             <div>
                                                 <div style="position: relative">
-                                                    <img ng-src="{{appThemeFavicon.image || appTheme.favicon}}"
+                                                    <img ng-src="{{appThemeFavicon.image || (config.storage_host + appTheme.favicon)}}"
                                                          class="resultimg"
                                                          style="height: 64px; max-width: 100%; "/>
                                                     <div class="action-buttons-block">
@@ -346,7 +346,7 @@
                                         <div class="iconandcolor">
                                             <div>
                                                 <div style="position: relative">
-                                                    <img ng-src="{{appThemeLogo.image || appTheme.logo}}"
+                                                    <img ng-src="{{appThemeLogo.image || (config.storage_host + appTheme.logo)}}"
                                                          class="resultimg"
                                                          style="height: 64px; max-width: 100%; "/>
                                                     <div class="action-buttons-block">

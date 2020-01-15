@@ -54,38 +54,59 @@
             </div>
 
             <div class="tab-content" style="padding: 50px;" ng-show="!pageLoading">
-                <form name="appDetails" class="form-horizontal form-custom" autocomplete="off" novalidate>
-                    <div class="text-center">
-                        <div class="file-uploader" style="background: none;">
-                            <div class="organization-icon" style="background-color: {{orgModel.color}}">
-                                <i class="{{orgModel.icon}}"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div ng-class="{'has-error': organizationForm.$submitted && organizationForm.name.$invalid}">
-                            <div class="colorpickx" style="text-align:center;background:unset;margin-bottom:unset;">
-                                <div style="display:inline-block;">
-                                    <span ng-repeat="color in colors" ng-click="orgModel.color=color.value" ng-class="{'active':orgModel.color==color.value}" style="background: {{color.value}}"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group form-group icon-search-list">
-                        <label class="required-field">Organization Icon</label>
-                        <ui-select ng-model="orgModel.icon" ng-disabled="ctrl.disabled" ng-change="changeIcon();">
-                            <ui-select-match placeholder="Select an icon">
+                <form name="appDetails" class="form-horizontal form-custom" autocomplete="off" novalidate> 
+                    <div class="form-group"> 
+                        <div>
+                            <div class="flex-evenly" style="justify-content:center;flex-direction:column;">
                                 <div>
-                                    <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
-                                    <span ng-ifcolorpicker="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
-                                </div>
-                            </ui-select-match>
-                            <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
-                                <div ng-bind-html="icon.label"></div>
-                            </ui-select-choices>
+                                    <div ng-style="{background:orgModel.color}" class="appicon org" title="">
+                                        <i class="{{orgModel.icon}}"></i>
+                                        <div class="icon-search-list">
+                                            <ui-select ng-model="orgModel.icon" ng-disabled="ctrl.disabled" ng-change="changeIcon();">
+                                                <ui-select-match placeholder="Select an icon">
+                                                    <div>
+                                                        <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+                                                        <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
+                                                    </div>
+                                                </ui-select-match>
+                                                <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+                                                    <div ng-bind-html="icon.label"></div>
+                                                </ui-select-choices>
+                                            </ui-select>
 
-                        </ui-select>
-                    </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="appcolor">
+                                        <span ng-click="orgModel.color='#D24D57'" ng-class="orgModel.color =='#D24D57' ? 'active':''" style="background: #D24D57;"></span>
+                                        <span ng-click="orgModel.color='#BE90D4'" ng-class="orgModel.color =='#BE90D4' ? 'active':'' " style="background: #BE90D4;"></span>
+                                        <span ng-click="orgModel.color='#5AABE3'" ng-class="orgModel.color =='#5AABE3' ? 'active':'' " style="background: #5AABE3;"></span>
+                                        <span ng-click="orgModel.color='#87D37C'" ng-class="orgModel.color =='#87D37C' ? 'active':'' " style="background: #87D37C;"></span>
+                                        <span ng-click="orgModel.color='#F4D03E'" ng-class="orgModel.color =='#F4D03E' ? 'active':'' " style="background: #F4D03E;"></span>
+                                        <span ng-click="orgModel.color='#B8BEC2'" ng-class="orgModel.color =='#B8BEC2' ? 'active':'' " style="background: #B8BEC2;"></span>
+                                    </div>
+                                    <div class="appcolor">
+                                        <span ng-click="orgModel.color='#DC3023'" ng-class="orgModel.color =='#DC3023' ? 'active':''" style="background: #DC3023;"></span>
+                                        <span ng-click="orgModel.color='#8E44AD'" ng-class="orgModel.color =='#8E44AD' ? 'active':''" style="background: #8E44AD;"></span>
+                                        <span ng-click="orgModel.color='#19B5FE'" ng-class="orgModel.color =='#19B5FE' ? 'active':''" style="background: #19B5FE;"></span>
+                                        <span ng-click="orgModel.color='#25A65B'" ng-class="orgModel.color =='#25A65B' ? 'active':''" style="background: #25A65B;"></span>
+                                        <span ng-click="orgModel.color='#FFB61E'" ng-class="orgModel.color =='#FFB61E' ? 'active':''" style="background: #FFB61E;"></span>
+                                        <span ng-click="orgModel.color='#959EA4'" ng-class="orgModel.color =='#959EA4' ? 'active':''" style="background: #959EA4;"></span>
+                                    </div>
+                                    <div class="appcolor">
+                                        <span ng-click="orgModel.color='#C3272B'" ng-class="orgModel.color =='#C3272B' ? 'active':''" style="background: #C3272B;"></span>
+                                        <span ng-click="orgModel.color='#763668'" ng-class="orgModel.color =='#763668' ? 'active':''" style="background: #763668;"></span>
+                                        <span ng-click="orgModel.color='#1F4688'" ng-class="orgModel.color =='#1F4688' ? 'active':''" style="background: #1F4688;"></span>
+                                        <span ng-click="orgModel.color='#006442'" ng-class="orgModel.color =='#006442' ? 'active':''" style="background: #006442;"></span>
+                                        <span ng-click="orgModel.color='#CA6924'" ng-class="orgModel.color =='#CA6924' ? 'active':''" style="background: #CA6924;"></span>
+                                        <span ng-click="orgModel.color='#4D5C66'" ng-class="orgModel.color =='#4D5C66' ? 'active':''" style="background: #4D5C66;"></span>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                    </div> 
                     <div class="form-group" ng-class="{'has-error': appDetails.$submitted && appDetails.label.$invalid}">
                         <label class="required-field">Organization Name <span style="color: #999" class="required-label">({{'Common.Required' | translate }})</span></label>
                         <div>

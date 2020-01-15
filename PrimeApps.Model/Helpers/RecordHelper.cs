@@ -108,7 +108,7 @@ namespace PrimeApps.Model.Helpers
 						if (lookupModule.Name == "users" && lookupField.Name != "id" && lookupField.Name != "email" && lookupField.Name != "phone" && lookupField.Name != "full_name")
 							continue;
 
-						if (lookupModule.Name == "profiles" && lookupField.Name != "id" && lookupField.Name != "name")
+						if (lookupModule.Name == "profiles" && lookupField.Name != "id" && lookupField.Name != "name_tr" && lookupField.Name != "name_en")
 							continue;
 
 						if (lookupModule.Name == "roles" && lookupField.Name != "id" && lookupField.Name != "label_en" && lookupField.Name != "label_tr")
@@ -380,6 +380,7 @@ namespace PrimeApps.Model.Helpers
 					sortSql = null;
 
 					#region #2452 lookup alanlarda sort problemi
+
 					/*
                      * Lookup bir alan sort edilirken primary key e göre değilde id ye göre sort ediyordu.
                      */
@@ -419,12 +420,12 @@ namespace PrimeApps.Model.Helpers
 			if (!isAggregate)
 			{
 				sql += $"SELECT {fieldsSql}\n" +
-					  $"FROM {tableName}\n";
+					   $"FROM {tableName}\n";
 			}
 			else
 			{
 				sql += $"SELECT {aggregateFieldsSql} \nFROM \n(\nSELECT {fieldsSql}\n" +
-					$"FROM {tableName} ";
+					   $"FROM {tableName} ";
 			}
 
 			if (string.IsNullOrEmpty(findRequest.ManyToMany) && moduleName != "quote_products" && moduleName != "order_products" && moduleName != "purchase_order_products")//Approval Processes
@@ -468,14 +469,14 @@ namespace PrimeApps.Model.Helpers
 			if (!isAggregate)
 			{
 				sql += $"ORDER BY {sortSql} NULLS LAST\n" +
-				   $"LIMIT {limit}\n" +
-				   $"OFFSET {findRequest.Offset};\n" +
-				   "EXECUTE SelectQuery";
+					   $"LIMIT {limit}\n" +
+					   $"OFFSET {findRequest.Offset};\n" +
+					   "EXECUTE SelectQuery";
 			}
 			else
 			{
 				sql += $"ORDER BY {sortSql} NULLS LAST\n" +
-					") sub\n";
+					   ") sub\n";
 
 				if (!string.IsNullOrWhiteSpace(findRequest.GroupBy))
 				{
@@ -529,10 +530,11 @@ namespace PrimeApps.Model.Helpers
 									if (myArray[i].ToString().ToLower().Contains("ı") || myArray[i].ToString().Contains("I"))
 										myArray.Add(myArray[i].ToString().Replace("ı", "i").Replace("I", "ı"));
 								}
+
 								filter.Value = myArray;
 
 								selectQuery += GetQueryParameterValue(filter, timezoneOffset) + ", ";
-							} //end
+							}//end
 							else
 								selectQuery += GetQueryParameterValue(filter, timezoneOffset) + ", ";
 						}
@@ -564,6 +566,7 @@ namespace PrimeApps.Model.Helpers
 									if (myArray[i].ToString().ToLower().Contains("ı") || myArray[i].ToString().Contains("I"))
 										myArray.Add(myArray[i].ToString().Replace("ı", "i").Replace("I", "ı"));
 								}
+
 								filter.Value = myArray;
 								selectQuery += GetQueryParameterValue(filter, timezoneOffset) + ", ";
 							}
@@ -751,6 +754,7 @@ namespace PrimeApps.Model.Helpers
 								}
 							}
 						}
+
 						if (!string.IsNullOrWhiteSpace(value))
 							command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = value.Split('|'), NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Varchar });
 						else
@@ -923,6 +927,7 @@ namespace PrimeApps.Model.Helpers
 						columns.Add("\"forecast_quarter\"");
 						values.Add("@forecast_quarter");
 					}
+
 					break;
 				case "current_accounts":
 					if (!record["transaction_type_system"].IsNullOrEmpty())
@@ -931,6 +936,7 @@ namespace PrimeApps.Model.Helpers
 						columns.Add("\"transaction_type_system\"");
 						values.Add("@transaction_type_system");
 					}
+
 					break;
 				case "quotes":
 				case "sales_invoices":
@@ -978,6 +984,7 @@ namespace PrimeApps.Model.Helpers
 						columns.Add("\"exchange_rate_eur_usd\"");
 						values.Add("@exchange_rate_eur_usd");
 					}
+
 					break;
 			}
 		}
@@ -1076,6 +1083,7 @@ namespace PrimeApps.Model.Helpers
 						command.Parameters.Add(new NpgsqlParameter { ParameterName = "activity_type_system", NpgsqlValue = (string)record["activity_type_system"], NpgsqlDbType = NpgsqlDbType.Varchar });
 						sets.Add("\"activity_type_system\" = @activity_type_system");
 					}
+
 					break;
 				case "opportunities":
 					if (!record["forecast_type"].IsNullOrEmpty())
@@ -1107,6 +1115,7 @@ namespace PrimeApps.Model.Helpers
 						command.Parameters.Add(new NpgsqlParameter { ParameterName = "forecast_quarter", NpgsqlValue = (int)record["forecast_quarter"], NpgsqlDbType = NpgsqlDbType.Integer });
 						sets.Add("\"forecast_quarter\" = @forecast_quarter");
 					}
+
 					break;
 				case "current_accounts":
 					if (!record["transaction_type_system"].IsNullOrEmpty())
@@ -1114,6 +1123,7 @@ namespace PrimeApps.Model.Helpers
 						command.Parameters.Add(new NpgsqlParameter { ParameterName = "transaction_type_system", NpgsqlValue = (string)record["transaction_type_system"], NpgsqlDbType = NpgsqlDbType.Varchar });
 						sets.Add("\"transaction_type_system\" = @transaction_type_system");
 					}
+
 					break;
 				case "quotes":
 				case "sales_invoices":
@@ -1155,6 +1165,7 @@ namespace PrimeApps.Model.Helpers
 						command.Parameters.Add(new NpgsqlParameter { ParameterName = "exchange_rate_eur_usd", NpgsqlValue = (decimal)record["exchange_rate_eur_usd"], NpgsqlDbType = NpgsqlDbType.Numeric });
 						sets.Add("\"exchange_rate_eur_usd\" = @exchange_rate_eur_usd");
 					}
+
 					break;
 			}
 		}
@@ -1665,6 +1676,7 @@ namespace PrimeApps.Model.Helpers
 				record[field.Name] = string.Join("|", picklistLabels);
 			}
 		}
+
 		public static void TagToString(Module module, JObject record)
 		{
 			foreach (var field in module.Fields)
@@ -1905,7 +1917,7 @@ namespace PrimeApps.Model.Helpers
 			return sql;
 		}
 
-		public static async Task<JObject> FormatRecordValues(Module module, JObject record, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, Guid tenantGuid, string picklistLanguage, string currentCulture, int timezoneMinutesFromUtc = 180, ICollection<Module> lookupModules = null, bool convertImage = false, bool formatNumeric = true, string currencyPicklistValue = null)
+		public static async Task<JObject> FormatRecordValues(Module module, JObject record, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, Guid? tenantGuid, string picklistLanguage, string currentCulture, int timezoneMinutesFromUtc = 180, ICollection<Module> lookupModules = null, bool convertImage = false, bool formatNumeric = true, string currencyPicklistValue = null, string userLanguage = null)
 		{
 			var recordNew = new JObject();
 
@@ -1978,6 +1990,7 @@ namespace PrimeApps.Model.Helpers
 						{
 							recordNew[property.Key] = (decimal)property.Value;
 						}
+
 						break;
 					case DataType.NumberAuto:
 						if (formatNumeric)
@@ -1994,6 +2007,7 @@ namespace PrimeApps.Model.Helpers
 						{
 							recordNew[property.Key] = (decimal)property.Value;
 						}
+
 						break;
 					case DataType.Currency:
 						if (formatNumeric)
@@ -2057,6 +2071,7 @@ namespace PrimeApps.Model.Helpers
 						{
 							recordNew[property.Key] = (decimal)property.Value;
 						}
+
 						break;
 					case DataType.Date:
 						var formatDate = currentCulture == "tr-TR" ? "dd.MM.yyyy" : "M/d/yyyy";
@@ -2091,13 +2106,27 @@ namespace PrimeApps.Model.Helpers
 							var url = "";
 							if (!string.IsNullOrEmpty(blobUrl))
 							{
-								url = blobUrl + "/record-detail-" + tenantGuid + "/" + property.Value;
+								if (tenantGuid != null)
+									url = blobUrl + "/record-detail-" + tenantGuid + "/" + property.Value;
+								else
+									url = blobUrl + "/records/" + property.Value;
 							}
+
 							var img = "<img src=\"" + url + "\" width=\"100%\">";
 							recordNew[property.Key] = img;
 						}
 						else
 							recordNew[property.Key] = property.Value;
+
+						break;
+					case DataType.Picklist:
+						if (!string.IsNullOrEmpty(userLanguage) && picklistLanguage != userLanguage)
+						{
+							var picklistItem = await picklistRepository.FindItemByLabel(field.PicklistId.Value, property.Value.ToString(), picklistLanguage);
+							recordNew[property.Key] = userLanguage == "en" ? picklistItem.LabelEn : picklistItem.LabelTr;
+						}
+						else
+							recordNew[property.Key] = property.Value.ToString();
 
 						break;
 					default:
@@ -2228,6 +2257,7 @@ namespace PrimeApps.Model.Helpers
 						{
 							ids.Add(Convert.ToInt32(value));
 						}
+
 						return $"{field} NOT IN ({String.Join(",", ids)})";
 				}
 			}
@@ -2254,6 +2284,7 @@ namespace PrimeApps.Model.Helpers
 						{
 							ids.Add((int)value);
 						}
+
 						return $"{field} NOT IN ({String.Join(",", ids)})";
 				}
 			}
@@ -2288,7 +2319,7 @@ namespace PrimeApps.Model.Helpers
 			switch (filter.Operator)
 			{
 				case Operator.Is:
-					if (filter.Value.ToString().IndexOfAny(trChar.ToCharArray()) > -1) //"Turkish i problem" fix
+					if (filter.Value.ToString().IndexOfAny(trChar.ToCharArray()) > -1)//"Turkish i problem" fix
 						return $"(LOWER({field}) SIMILAR TO ${filterIndex})";
 
 					return $"LOWER({field}) = ${filterIndex}";
@@ -2328,8 +2359,6 @@ namespace PrimeApps.Model.Helpers
 				default:
 					return string.Empty;
 			}
-
-
 		}
 
 		private static Dictionary<int, string> GetFieldsDictionary(Module module)
@@ -2371,7 +2400,7 @@ namespace PrimeApps.Model.Helpers
 						lookupModuleNames.Add(field.LookupType);
 
 					if (field.LookupType != "profiles")
-						lookupModules.Add(ModuleHelper.GetFakeProfileModule());
+						lookupModules.Add(ModuleHelper.GetFakeProfileModule(tenantLanguage));
 
 					if (field.LookupType != "roles")
 						lookupModules.Add(ModuleHelper.GetFakeRoleModule(tenantLanguage));
@@ -2423,6 +2452,5 @@ namespace PrimeApps.Model.Helpers
 
 			return resultData;
 		}
-
 	}
 }

@@ -5,22 +5,29 @@ metadata:
   name: primeapps-studio-config
   namespace: primeapps
 data:
-  TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
-  PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
-  StudioDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=studio;command timeout=0;keepalive=30;"
-  TenantDBConnectionTest: "	server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;"
-  PlatformDBConnectionTest: "	server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;"
+  TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;maximum pool size=1000;"
+  PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
+  StudioDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=studio;command timeout=0;keepalive=30;maximum pool size=1000;"
+  TenantDBConnectionProd: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;maximum pool size=1000;",
+  PlatformDBConnectionProd: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;maximum pool size=1000;",
+  TenantDBConnectionTest: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;maximum pool size=1000;"
+  PlatformDBConnectionTest: "server=pre-test.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
   RedisConnection: "cache-redis-master.cache:6379,password=pr!m€Appsi0r,defaultDatabase=1,syncTimeout=30000"
-  StorageUrl: "https://storage.primeapps.io"
+  StorageUrl: "https://storage-pde.primeapps.io"
   StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
   StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
+  StorageUrlProd: "https://storage.primeapps.io",
+  StorageAccessKeyProd: "47059d03d1224a4505c517aaca18ef55",
+  StorageSecretKeyProd: "998321ed439a32dfc364b4e9884e9879",
+  StorageUrlTest: "https://storage-test.primeapps.io",
+  StorageAccessKeyTest: "47059d03d1224a4505c517aaca18ef55",
+  StorageSecretKeyTest: "998321ed439a32dfc364b4e9884e9879",
   EnableJobs: "true"
   EmailSMTPEnableSsl: "true"
   EmailSMTPHost: "smtp.sendgrid.net"
   EmailSMTPPort: "587"
   EmailSMTPUser: "apikey"
   EmailSMTPPassword: "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"
-  TestMode: "false"
   AuthenticationServerURL: "https://auth.primeapps.io"
   ClientId: "primeapps_studio"
   ClientSecret: "secret"
@@ -33,9 +40,9 @@ data:
   GiteaUrl: "https://git.primeapps.io"
   GiteaEmail: "primeapps"
   GiteaPassword: "pr!m€Appsi0g"
-  GiteaDirectory: "/data/git/"
-  PostgresPath: "/usr/bin/"
-  DumpDirectory: "/data/dump/"
+  PostgresPath: "/usr/bin"
+  DataDirectory: "/data"
+  AppUrl: "{0}.primeapps.app"
   SentryDsn: "https://a6d7a462d9184c5698ab07aa38b8a896:a915b64d63574d29b98998a69cbdc848@log.primeapps.io/2"
 ---
 apiVersion: v1
@@ -118,6 +125,16 @@ spec:
                 configMapKeyRef:
                   name: primeapps-studio-config
                   key: StudioDBConnection
+            - name: ConnectionStrings__TenantDBConnectionProd
+                valueFrom:
+                  configMapKeyRef:
+                    name: primeapps-studio-config
+                    key: TenantDBConnectionProd
+            - name: ConnectionStrings__PlatformDBConnectionProd
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: PlatformDBConnectionProd
             - name: ConnectionStrings__TenantDBConnectionTest
               valueFrom:
                 configMapKeyRef:
@@ -148,6 +165,36 @@ spec:
                 configMapKeyRef:
                   name: primeapps-studio-config
                   key: StorageSecretKey
+            - name: AppSettings__StorageUrlProd
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: StorageUrlProd
+            - name: AppSettings__StorageAccessKeyProd
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: StorageAccessKeyProd
+            - name: AppSettings__StorageSecretKeyProd
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: StorageSecretKeyProd
+            - name: AppSettings__StorageUrlTest
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: StorageUrlTest
+            - name: AppSettings__StorageAccessKeyTest
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: StorageAccessKeyTest
+            - name: AppSettings__StorageSecretKeyTest
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: StorageSecretKeyTest
             - name: AppSettings__EnableJobs
               valueFrom:
                 configMapKeyRef:
@@ -177,12 +224,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-studio-config
-                  key: EmailSMTPPassword
-            - name: AppSettings__TestMode
-              valueFrom:
-                configMapKeyRef:
-                  name: primeapps-studio-config
-                  key: TestMode
+                  key: EmailSMTPPassword          
             - name: AppSettings__AuthenticationServerURL
               valueFrom:
                 configMapKeyRef:
@@ -243,21 +285,21 @@ spec:
                 configMapKeyRef:
                   name: primeapps-studio-config
                   key: GiteaPassword
-            - name: AppSettings__GiteaDirectory
-              valueFrom:
-                configMapKeyRef:
-                  name: primeapps-studio-config
-                  key: GiteaDirectory
             - name: AppSettings__PostgresPath
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-studio-config
                   key: PostgresPath
-            - name: AppSettings__DumpDirectory
+            - name: AppSettings__DataDirectory
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-studio-config
-                  key: DumpDirectory
+                  key: DataDirectory
+            - name: AppSettings__AppUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-studio-config
+                  key: AppUrl            
             - name: Sentry__Dsn
               valueFrom:
                 configMapKeyRef:

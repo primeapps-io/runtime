@@ -42,6 +42,7 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Common.App;
 using IdentityServer.LdapExtension.UserStore;
 using Microsoft.SqlServer.Management.Smo;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Auth.UI
 {
@@ -64,8 +65,8 @@ namespace PrimeApps.Auth.UI
         private IRecordRepository _recordRepository;
         private IGiteaHelper _giteaHelper;
         private IUserHelper _userHelper;
+        private IUnifiedStorage _storage;
         public IBackgroundTaskQueue Queue { get; }
-
         public IConfiguration _configuration { get; }
 
         public AccountController(
@@ -86,7 +87,8 @@ namespace PrimeApps.Auth.UI
             IRecordRepository recordRepository,
             IGiteaHelper giteaHelper,
             IUserHelper userHelper,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IUnifiedStorage storage)
         {
             _configuration = configuration;
             _giteaHelper = giteaHelper;
@@ -105,6 +107,7 @@ namespace PrimeApps.Auth.UI
             _roleRepository = roleRepository;
             _recordRepository = recordRepository;
             _userHelper = userHelper;
+            _storage = storage;
 
             Queue = queue;
         }
@@ -210,9 +213,12 @@ namespace PrimeApps.Auth.UI
 
             if (ModelState.IsValid)
             {
-                //ldap control
-                var useLdap = _configuration.GetSection("Ldap").GetChildren().FirstOrDefault();
-                if (useLdap != null)
+                var studioUrl = _configuration.GetValue("AppSettings:StudioUrl", string.Empty);
+
+                //LDAP login enable control only for application login
+                var useLDAP = vm.ApplicationInfo.ApplicationSetting.Options["enable_ldap"];
+
+                if (!studioUrl.Contains(vm.ApplicationInfo.Domain) && !useLDAP.IsNullOrEmpty() && (bool)useLDAP)
                 {
                     var _userStore = (ILdapUserStore)HttpContext.RequestServices.GetService(typeof(ILdapUserStore));
                     var ldapUser = _userStore.ValidateCredentials(model.Username, model.Password);
@@ -230,14 +236,23 @@ namespace PrimeApps.Auth.UI
 
                         return View(vm);
                     }
-                }
 
-                var studioUrl = _configuration.GetValue("AppSettings:StudioUrl", string.Empty);
-                var previewMode = vm.ApplicationInfo.Preview ? "app" : "tenant";
+                    var platformUser = await _platformUserRepository.GetAsync(model.Username);
+
+                    if (platformUser == null)
+                    {
+                        vm.Error = "WrongInfo";
+
+                        if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                            return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vm);
+
+                        return View(vm);
+                    }
+                }
 
                 if (!string.IsNullOrEmpty(studioUrl) && studioUrl.Contains(vm.ApplicationInfo.Domain))
                 {
-                    var platformUser = await _platformUserRepository.Get(model.Username);
+                    var platformUser = await _platformUserRepository.GetAsync(model.Username);
 
                     if (platformUser != null)
                     {
@@ -262,8 +277,8 @@ namespace PrimeApps.Auth.UI
                     }
                 }
 
-                var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password,
-                    model.RememberLogin, lockoutOnFailure: false);
+                var previewMode = vm.ApplicationInfo.Preview ? "app" : "tenant";
+                var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: false);
                 var validationSkipDomains = _configuration.GetValue("AppSettings:ValidationSkipDomains", string.Empty);
                 Array validationSkipDomainsArr = null;
 
@@ -359,6 +374,20 @@ namespace PrimeApps.Auth.UI
                     return Redirect(Request.Scheme + "://" + vm.ApplicationInfo.Domain);
                 else
                     return RedirectToAction(nameof(AccountController.Index), "Account");
+            }
+
+            //Preview'de register kapatıldı
+            if (vm.ApplicationInfo.Preview)
+                return RedirectToAction(nameof(AccountController.Login), "Account", new { returnUrl = vm.ReturnUrl });
+
+            var registerPermission = vm.ApplicationInfo.ApplicationSetting.Options["enable_registration"];
+
+            if (!registerPermission.IsNullOrEmpty() && (bool)registerPermission == false)
+            {
+                if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                    return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vm);
+
+                return RedirectToAction(nameof(AccountController.Login), "Account", new { returnUrl = vm.ReturnUrl });
             }
 
             var cookieLang = AuthHelper.CurrentLanguage(Request);
@@ -528,16 +557,7 @@ namespace PrimeApps.Auth.UI
                 }
             };
 
-            var createUserRespone =
-                await CreateUser(
-                    new RegisterInputModel
-                    {
-                        Email = model.Email,
-                        Password = model.Password,
-                        Culture = model.Culture,
-                        FirstName = model.FirstName,
-                        LastName = model.LastName
-                    }, application, "");
+            var createUserRespone = await CreateUser(new RegisterInputModel { Email = model.Email, Password = model.Password, Culture = model.Culture, FirstName = model.FirstName, LastName = model.LastName }, application, "");
 
             if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
                 return BadRequest(new { ErrorMessage = createUserRespone["Error"].ToString() });
@@ -806,8 +826,8 @@ namespace PrimeApps.Auth.UI
                     RedirectUri = Url.Action("ExternalLoginCallback"),
                     Items =
                     {
-                        { "returnUrl", returnUrl },
-                        { "scheme", provider },
+                        {"returnUrl", returnUrl},
+                        {"scheme", provider},
                     }
                 };
                 return Challenge(props, provider);
@@ -858,7 +878,18 @@ namespace PrimeApps.Auth.UI
                     var appInfo = await _applicationRepository.GetByNameAsync(clientId);
                     var userApp = platformUser?.TenantsAsUser.Where(x => x.Tenant.AppId == appInfo.Id);
 
-                    var theme = JObject.Parse(appInfo.Setting.AuthTheme);
+
+                    JObject theme = null;
+
+                    try
+                    {
+                        theme = JObject.Parse(appInfo.Setting.AuthTheme);
+                    }
+                    catch (Exception)
+                    {
+                        theme = JObject.Parse(JsonConvert.DeserializeObject(appInfo.Setting.AuthTheme).ToString());
+                    }
+
 
                     var _language = !string.IsNullOrEmpty(Request.Cookies[".AspNetCore.Culture"])
                         ? Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1]
@@ -1231,7 +1262,7 @@ namespace PrimeApps.Auth.UI
                     ReturnUrl = returnUrl,
                     Username = context?.LoginHint,
                     ExternalProviders = new ExternalProvider[]
-                        { new ExternalProvider { AuthenticationScheme = context.IdP } },
+                        {new ExternalProvider {AuthenticationScheme = context.IdP}},
                     ApplicationInfo = applicationInfo,
                     Language = applicationInfo.Language,
                     Success = success,
@@ -1293,7 +1324,7 @@ namespace PrimeApps.Auth.UI
         private async Task<LogoutViewModel> BuildLogoutViewModelAsync(string logoutId, string returnUrl, string error = null)
         {
             var vm = new LogoutViewModel
-                { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt, Error = error };
+            { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt, Error = error };
 
             vm.ReturnUrl = returnUrl;
 
@@ -1369,8 +1400,8 @@ namespace PrimeApps.Auth.UI
                     RedirectUri = Url.Action("ExternalLoginCallback"),
                     Items =
                     {
-                        { "returnUrl", returnUrl },
-                        { "scheme", AccountOptions.WindowsAuthenticationSchemeName },
+                        {"returnUrl", returnUrl},
+                        {"scheme", AccountOptions.WindowsAuthenticationSchemeName},
                     }
                 };
 
@@ -1547,13 +1578,15 @@ namespace PrimeApps.Auth.UI
         {
             if (tenant != null)
             {
-                Postgres.DropDatabase(_tenantRepository.DbContext.Database.GetDbConnection().ConnectionString,
-                    tenant.Id, true);
+                Postgres.DropDatabase(_tenantRepository.DbContext.Database.GetDbConnection().ConnectionString, tenant.Id, true);
+                await _storage.DeleteBucket($"tenant{tenant.Id}");
                 //await tenantRepository.DeleteAsync(tenant);
             }
 
             if (newPlatformUser && platformUser != null)
                 await platformUserRepository.DeleteAsync(platformUser);
+            else if (!newPlatformUser && tenant != null)
+                await _tenantRepository.DeleteAsync(tenant);
 
             if (newIdentityUser)
                 await _userManager.DeleteAsync(user);
@@ -1606,9 +1639,8 @@ namespace PrimeApps.Auth.UI
             if (applicationInfo != null)
             {
                 var token = "";
-                var culture = !string.IsNullOrEmpty(model.Culture)
-                    ? model.Culture
-                    : applicationInfo.ApplicationSetting.Culture;
+                var culture = !string.IsNullOrEmpty(model.Culture) ? model.Culture : applicationInfo.ApplicationSetting.Culture;
+                var language = !string.IsNullOrEmpty(culture) ? culture.Substring(0, 2) : applicationInfo.Language;
 
                 if (!externalLogin && !identityUser.EmailConfirmed)
                     token = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
@@ -1639,8 +1671,8 @@ namespace PrimeApps.Auth.UI
                     {
                         settings.Culture = culture;
                         settings.Language = culture.Substring(0, 2);
-                        settings.TimeZone = "America/Chicago";
-                        settings.Currency = culture.Substring(0, 2);
+                        settings.TimeZone = "America/New_York";
+                        settings.Currency = culture.Substring(0, 2) == "tr" ? "TRY" : "USD"; ;
                     }
                     else
                     {
@@ -1660,12 +1692,17 @@ namespace PrimeApps.Auth.UI
                     }
 
                     platformUser = await _platformUserRepository.GetWithTenants(model.Email);
+                    /**Studio'ya kullanıcı kayıt olurken platform user oluşturuluyor, ama user_tenants'a bir kayıt eklenmiyordu.
+					 * Studio'ya kayıt olan kullanıcının oluşturmuş olduğu herhangi bir app'i preview edebilmesi için eklenmiştir. 
+					 * **/
+                    platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1, PlatformUser = platformUser });
+                    await _platformUserRepository.UpdateAsync(platformUser);
                 }
 
                 if (applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Tenant)
                 {
                     var tenant1 = _platformRepository.GetTenant(1);
-                    
+
                     Tenant tenant = null;
                     //var tenantId = 2032;
                     try
@@ -1699,18 +1736,21 @@ namespace PrimeApps.Auth.UI
                         platformUser.TenantsAsOwner.Add(tenant);
                         await _platformUserRepository.UpdateAsync(platformUser);
 
-                        await Postgres.CreateDatabaseWithTemplate(
+                        var resultDatabaseCreate = await Postgres.CreateDatabaseWithTemplate(
                             _tenantRepository.DbContext.Database.GetDbConnection().ConnectionString, tenantId,
                             applicationInfo.Id);
 
+                        if (!resultDatabaseCreate)
+                            throw new Exception("Database cannot be created!");
+
                         _userRepository.CurrentUser = new CurrentUser
-                            { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                        { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
                         _profileRepository.CurrentUser = new CurrentUser
-                            { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                        { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
                         _roleRepository.CurrentUser = new CurrentUser
-                            { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                        { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
                         _recordRepository.CurrentUser = new CurrentUser
-                            { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                        { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
 
                         _profileRepository.TenantId = _roleRepository.TenantId =
                             _userRepository.TenantId = _recordRepository.TenantId = tenantId;
@@ -1748,8 +1788,8 @@ namespace PrimeApps.Auth.UI
                         //await _recordRepository.UpdateSampleData(platformUser);
                         //await Cache.ApplicationUser.Add(user.Email, user.Id);
                         //await Cache.User.Get(user.Id);
-
-                        var url = Request.Scheme + "://" + applicationInfo.Domain + "/api/account/user_created";
+                        string baseUrl = Request.Scheme + "://" + applicationInfo.Domain;
+                        string url = baseUrl + "/api/account/user_created";
 
                         var requestModel = new JObject
                         {
@@ -1785,11 +1825,15 @@ namespace PrimeApps.Auth.UI
                             }*/
                         }
 
+                        // Add storage policy to make all uploaded objects reachable within app domain.
+                        await _storage.CreateBucketPolicy($"tenant{tenant.Id}", baseUrl, UnifiedStorage.PolicyType.TenantPolicy);
+                        await _storage.CopyBucket($"app{applicationInfo.Id}", "templates", $"tenant{tenant.Id}", "templates");
+
                         Queue.QueueBackgroundWorkItem(x => AuthHelper.TenantOperationWebhook(applicationInfo, tenant, tenantUser));
 
                         response["Success"] = true;
 
-                        Queue.QueueBackgroundWorkItem(x => _userHelper.CreateIntegrationUser(tenant.AppId, tenantId, applicationInfo.Name, applicationInfo.Secret, applicationInfo?.Domain));
+                        Queue.QueueBackgroundWorkItem(x => _userHelper.CreateIntegrationUser(tenant.AppId, tenantId, applicationInfo.Name, applicationInfo.Secret, applicationInfo?.Domain, language));
                     }
                     catch (Exception ex)
                     {
@@ -1842,7 +1886,6 @@ namespace PrimeApps.Auth.UI
                                 "Studio user create failed. StatusCode: " + userCreatedResponse.StatusCode + ", Url: " +
                                 url + ", Request: " + requestModel.ToJsonString());
                         }
-
 
                         Queue.QueueBackgroundWorkItem(x => AuthHelper.StudioOperationWebhook(applicationInfo, platformUser));
                     }

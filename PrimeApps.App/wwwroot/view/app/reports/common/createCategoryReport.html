@@ -18,7 +18,7 @@
                             <div class="col-sm-8"
                                  ng-class="{'has-error': categorCreateForm.$submitted && reportCreateForm.Name.$invalid}">
                                 <input name="Name" class="for m-control" style="width: 200px;" required
-                                       ng-model="ReportCategory.name" type="text">
+                                       ng-model="ReportCategory['name_'+user.language]" type="text">
                             </div>
                         </div>
                         <div class="row"

@@ -34,7 +34,8 @@ namespace PrimeApps.Model.Repositories
         {
             Profile newProfile = new Profile()
             {
-                Description = newProfileDTO.Description,
+                DescriptionEn = newProfileDTO.DescriptionEn,
+                DescriptionTr = newProfileDTO.DescriptionTr,
                 HasAdminRights = newProfileDTO.HasAdminRights,
                 IsPersistent = false,
                 SendEmail = newProfileDTO.SendEmail,
@@ -47,7 +48,8 @@ namespace PrimeApps.Model.Repositories
                 Tasks = newProfileDTO.Tasks,
                 Calendar = newProfileDTO.Calendar,
                 Newsfeed = newProfileDTO.Newsfeed,
-                Name = newProfileDTO.Name,
+                NameEn = newProfileDTO.NameEn,
+                NameTr = string.IsNullOrEmpty(newProfileDTO.NameTr) ? newProfileDTO.NameEn : newProfileDTO.NameTr,
                 Dashboard = newProfileDTO.Dashboard,
                 Home = newProfileDTO.Home,
                 CollectiveAnnualLeave = newProfileDTO.CollectiveAnnualLeave,
@@ -65,15 +67,16 @@ namespace PrimeApps.Model.Repositories
                 Remove = true
             });
 
-            DbContext.ProfilePermissions.Add(new ProfilePermission()
-            {
-                Type = EntityType.Report,
-                Profile = newProfile,
-                Modify = true,
-                Read = true,
-                Write = true,
-                Remove = true
-            });
+            //Front tarafından default olarak geliyor. Yoksa Rapor iznini çokluyordu.
+            //DbContext.ProfilePermissions.Add(new ProfilePermission()
+            //{
+            //    Type = EntityType.Report,
+            //    Profile = newProfile,
+            //    Modify = true,
+            //    Read = true,
+            //    Write = true,
+            //    Remove = true
+            //});
 
             DbContext.ProfilePermissions.Add(new ProfilePermission()
             {
@@ -94,7 +97,8 @@ namespace PrimeApps.Model.Repositories
                     Read = permission.Read,
                     Remove = permission.Remove,
                     Write = permission.Write,
-                    Profile = newProfile
+                    Profile = newProfile,
+                    Type = (EntityType)permission.Type,
                 });
             }
 
@@ -125,12 +129,14 @@ namespace PrimeApps.Model.Repositories
         public async Task UpdateAsync(ProfileDTO updatedProfileDTO, string tenantLanguage)
         {
             Profile profileToUpdate = await DbContext.Profiles.Include(x => x.Permissions)
-                .Where(x => x.Id == updatedProfileDTO.ID).SingleOrDefaultAsync();
+                .Where(x => x.Id == updatedProfileDTO.Id).SingleOrDefaultAsync();
 
             if (profileToUpdate == null) return;
 
-            profileToUpdate.Name = updatedProfileDTO.Name;
-            profileToUpdate.Description = updatedProfileDTO.Description;
+            profileToUpdate.NameEn = updatedProfileDTO.NameEn;
+            profileToUpdate.NameTr = updatedProfileDTO.NameTr;
+            profileToUpdate.DescriptionEn = updatedProfileDTO.DescriptionEn;
+            profileToUpdate.DescriptionTr = updatedProfileDTO.DescriptionTr;
             profileToUpdate.HasAdminRights = updatedProfileDTO.HasAdminRights;
             profileToUpdate.SendSMS = updatedProfileDTO.SendSMS;
             profileToUpdate.SendEmail = updatedProfileDTO.SendEmail;
@@ -276,7 +282,7 @@ namespace PrimeApps.Model.Repositories
                     UserIDs = x.Users.Select(z => z.Id).ToList(),
                     Permissions = x.Permissions.Select(y => new ProfilePermissionLightDTO()
                     {
-                        Type = (int) y.Type,
+                        Type = (int)y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,
@@ -295,14 +301,14 @@ namespace PrimeApps.Model.Repositories
             return profile;
         }
 
-        public async Task<IEnumerable<ProfileWithUsersDTO>> GetAllProfiles()
+        public async Task<IEnumerable<ProfileWithUsersDTO>> GetAllProfiles(string language = "en")
         {
             return await DbContext.Profiles
                 .Select(x => new ProfileWithUsersDTO()
                 {
                     ID = x.Id,
-                    Description = x.Description,
-                    Name = x.Name,
+                    Description = language == "en" ? x.DescriptionEn : x.DescriptionTr,
+                    Name = language == "en" ? x.NameEn : x.NameTr,
                     IsPersistent = x.IsPersistent,
                     HasAdminRights = x.HasAdminRights,
                     SendEmail = x.SendEmail,
@@ -325,9 +331,9 @@ namespace PrimeApps.Model.Repositories
                     UserIds = x.Users.Select(z => z.Id).ToList(),
                     Permissions = x.Permissions.Select(y => new ProfilePermissionDTO()
                     {
-                        ID = x.Id,
+                        ID = y.Id,
                         ModuleId = y.ModuleId,
-                        Type = (int) y.Type,
+                        Type = (int)y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,
@@ -345,7 +351,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<IEnumerable<Profile>> GetAll()
         {
             return await DbContext.Profiles
-                .Where(x => !x.Deleted)
+                .Where(x => !x.Deleted) 
                 .OrderBy(x => x.CreatedAt).ToListAsync();
         }
 
@@ -428,27 +434,12 @@ namespace PrimeApps.Model.Repositories
             return count;
         }
 
-        public async Task<ICollection<ProfileWithUsersDTO>> Find(PaginationModel paginationModel)
+        public IQueryable<Profile> Find()
         {
-            var getPagination = await GetPaginationQuery(paginationModel);
-
-            var profiles = getPagination
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit).ToList();
-
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Profile).GetProperty(paginationModel.OrderColumn);
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    profiles = profiles.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
-                }
-                else
-                {
-                    profiles = profiles.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
-                }
-            }
+            var profiles = DbContext.Profiles
+                .Where(x => !x.Deleted)
+                .Include(x => x.Permissions)
+                .OrderByDescending(x => x.Id);
 
             return profiles;
         }
@@ -460,8 +451,8 @@ namespace PrimeApps.Model.Repositories
                 .Select(x => new ProfileWithUsersDTO()
                 {
                     ID = x.Id,
-                    Description = x.Description,
-                    Name = x.Name,
+                    Description = x.DescriptionEn,
+                    Name = x.NameEn,
                     IsPersistent = x.IsPersistent,
                     HasAdminRights = x.HasAdminRights,
                     SendEmail = x.SendEmail,
@@ -486,7 +477,7 @@ namespace PrimeApps.Model.Repositories
                     {
                         ID = x.Id,
                         ModuleId = y.ModuleId,
-                        Type = (int) y.Type,
+                        Type = (int)y.Type,
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,

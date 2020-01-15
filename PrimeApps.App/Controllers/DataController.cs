@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using Npgsql;
-using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Common.AuditLog;
 using PrimeApps.Model.Common.Document;

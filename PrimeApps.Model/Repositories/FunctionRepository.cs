@@ -21,6 +21,7 @@ namespace PrimeApps.Model.Repositories
                .Where(x => !x.Deleted)
                .CountAsync();
         }
+
         public async Task<bool> IsFunctionNameAvailable(string name)
         {
             return await DbContext.Functions
@@ -42,28 +43,10 @@ namespace PrimeApps.Model.Repositories
                .FirstOrDefaultAsync();
         }
 
-        public async Task<ICollection<Function>> Find(PaginationModel paginationModel)
+        public IQueryable<Function> Find()
         {
-            var functions = await DbContext.Functions
-                .Where(x => !x.Deleted)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit)
-                .ToListAsync();
-
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    functions = functions.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
-                }
-                else
-                {
-                    functions = functions.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
-                }
-
-            }
+            var functions = DbContext.Functions
+                .Where(x => !x.Deleted);
 
             return functions;
         }
@@ -84,7 +67,5 @@ namespace PrimeApps.Model.Repositories
             organization.Deleted = true;
             return await DbContext.SaveChangesAsync();
         }
-
-
     }
 }

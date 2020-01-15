@@ -66,7 +66,9 @@ namespace PrimeApps.Model.Repositories
 
 		public async Task<IList<Tenant>> GetAllActive()
 		{
-			return await DbContext.Tenants.Include(x => x.License).Where(x => !x.License.IsDeactivated).ToListAsync();
+			return await DbContext.Tenants
+				.Include(x => x.License)
+				.Where(x => !x.License.IsDeactivated).ToListAsync();
 		}
 
 		public async Task UpdateAsync(Tenant tenant)
@@ -164,7 +166,8 @@ namespace PrimeApps.Model.Repositories
 		{
 			var tenantIds = await DbContext.Tenants
 				.Include(x => x.License)
-				.Where(x => !x.License.IsDeactivated && x.AppId == appId)
+				.Include(x => x.Setting)
+				.Where(x => !x.License.IsDeactivated && x.AppId == appId && !x.Deleted)
 				.OrderBy(x => x.Id)
 				.Select(x => x.Id)
 				.ToListAsync();

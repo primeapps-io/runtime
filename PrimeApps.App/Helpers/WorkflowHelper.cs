@@ -1,5 +1,4 @@
-﻿using Humanizer.Localisation;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,14 +12,12 @@ using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
-using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -43,22 +40,27 @@ namespace PrimeApps.App.Helpers
         private IConfiguration _configuration;
         private IServiceScopeFactory _serviceScopeFactory;
         private IModuleHelper _moduleHelper;
+        private IEnvironmentHelper _environmentHelper;
 
-        public WorkflowHelper(IServiceScopeFactory serviceScopeFactory, IHttpContextAccessor context, IConfiguration configuration, IModuleHelper moduleHelper)
+        public WorkflowHelper(IServiceScopeFactory serviceScopeFactory, IHttpContextAccessor context, IConfiguration configuration,
+            IModuleHelper moduleHelper, IEnvironmentHelper environmentHelper)
         {
             _context = context;
             _currentUser = UserHelper.GetCurrentUser(_context, configuration);
             _serviceScopeFactory = serviceScopeFactory;
             _configuration = configuration;
             _moduleHelper = moduleHelper;
+            _environmentHelper = environmentHelper;
         }
 
-        public WorkflowHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser, IModuleHelper moduleHelper)
+        public WorkflowHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser,
+            IModuleHelper moduleHelper, IEnvironmentHelper environmentHelper)
         {
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
             _moduleHelper = moduleHelper;
             _currentUser = currentUser;
+            _environmentHelper = environmentHelper;
         }
 
         public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate, JObject previousRecord)
@@ -83,6 +85,7 @@ namespace PrimeApps.App.Helpers
                 {
                     _profileRepository.CurrentUser = _userRepository.CurrentUser = _picklistRepository.CurrentUser = _workflowRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _settingRepository.CurrentUser = _tagRepository.CurrentUser = _currentUser = componentRepository.CurrentUser = _currentUser;
                     var workflows = await _workflowRepository.GetAll(module.Id, true);
+                    workflows = _environmentHelper.DataFilter(workflows.ToList());
                     workflows = workflows.Where(x => x.OperationsArray.Contains(operationType.ToString())).ToList();
                     var culture = CultureInfo.CreateSpecificCulture(appUser.Culture);
 
@@ -714,6 +717,7 @@ namespace PrimeApps.App.Helpers
                                     client.DefaultRequestHeaders.TryAddWithoutValidation("X-App-Id", appUser.AppId.ToString());
                                     client.DefaultRequestHeaders.TryAddWithoutValidation("X-Tenant-Id", appUser.TenantId.ToString());
                                     client.DefaultRequestHeaders.TryAddWithoutValidation("X-User-Id", appUser.Id.ToString());
+                                    client.DefaultRequestHeaders.TryAddWithoutValidation("X-Tenant-Language", appUser.Language);
 
                                     if (webHook.Parameters != null)
                                     {

@@ -5,7 +5,7 @@ sleep 15
 
 create_and_wait_cluster(){
     echo -e "${GREEN}Creating Cluster...${NC}"
-    pgo create cluster -w $PGPASSWORD --metrics --pgbackrest --custom-config 'pgo-custom-pg-config' primeapps-database
+    pgo create cluster -w "$PGPASSWORD" --metrics --pgbackrest --custom-config 'pgo-custom-pg-config' primeapps-database
 
     until pg_isready; do echo Waiting for cluster...; sleep 15; done;
 }
@@ -16,25 +16,27 @@ create_and_restore_databases(){
     createdb --template=template0 --encoding=UTF8 platform
 
     echo -e "${GREEN}Restoring Databases...${NC}"
-    pg_restore -Fc -d platform /root/platform.dmp
-    pg_restore -Fc -d auth /root/auth.dmp
+    pg_restore --no-owner --role=postgres -Fc -d platform /root/platform.bak
+    pg_restore --no-owner --role=postgres -Fc -d auth /root/auth.bak
 }
 
 main(){
-echo -e "${GREEN}Checking Cluster...${NC}"
-if pg_isready; then
-    echo -e "${GREEN}Cluster is ready.${NC}"
-    echo -e "${GREEN}Checking databases...${NC}"
-    if psql -lqt | cut -d \| -f 1 | grep -qw platform; then
-        echo -e "${GREEN}Databases are ready.${NC}"
+    echo -e "${GREEN}Checking Cluster...${NC}"
+    
+    if pg_isready; then
+        echo -e "${GREEN}Cluster is ready.${NC}"
+        echo -e "${GREEN}Checking databases...${NC}"
+        if psql -lqt | cut -d \| -f 1 | grep -qw platform; then
+            echo -e "${GREEN}Databases are ready.${NC}"
+        else
+            create_and_restore_databases
+        fi
     else
+        create_and_wait_cluster
         create_and_restore_databases
     fi
-else
-    create_and_wait_cluster
-    create_and_restore_databases
-fi
-echo -e "${GREEN}Done!${NC}"
+    
+    echo -e "${GREEN}Done!${NC}"
 }
 
 main

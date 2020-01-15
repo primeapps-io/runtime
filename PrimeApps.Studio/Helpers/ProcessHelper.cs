@@ -321,7 +321,7 @@ namespace PrimeApps.Studio.Helpers
 
 								else
 								{
-									approverLookupModule = approverLookupField.LookupType == "profiles" ? Model.Helpers.ModuleHelper.GetFakeProfileModule() : approverLookupField.LookupType == "roles" ? Model.Helpers.ModuleHelper.GetFakeRoleModule(appUser.TenantLanguage) : Model.Helpers.ModuleHelper.GetFakeUserModule();
+									approverLookupModule = approverLookupField.LookupType == "profiles" ? Model.Helpers.ModuleHelper.GetFakeProfileModule(appUser.TenantLanguage) : approverLookupField.LookupType == "roles" ? Model.Helpers.ModuleHelper.GetFakeRoleModule(appUser.TenantLanguage) : Model.Helpers.ModuleHelper.GetFakeUserModule();
 								}
 
 								if (record[firstApprover.Split('.')[0] + "." + approverLookupName] == null)
@@ -359,7 +359,7 @@ namespace PrimeApps.Studio.Helpers
 
 									else
 									{
-										secondApproverLookupModule = secondApproverLookupField.LookupType == "profiles" ? Model.Helpers.ModuleHelper.GetFakeProfileModule() : secondApproverLookupField.LookupType == "roles" ? Model.Helpers.ModuleHelper.GetFakeRoleModule(appUser.TenantLanguage) : Model.Helpers.ModuleHelper.GetFakeUserModule();
+										secondApproverLookupModule = secondApproverLookupField.LookupType == "profiles" ? Model.Helpers.ModuleHelper.GetFakeProfileModule(appUser.TenantLanguage) : secondApproverLookupField.LookupType == "roles" ? Model.Helpers.ModuleHelper.GetFakeRoleModule(appUser.TenantLanguage) : Model.Helpers.ModuleHelper.GetFakeUserModule();
 									}
 
 									var secondApproverUserRecord = _recordRepository.GetById(secondApproverLookupModule, (int)record[secondApproverFieldName + "." + secondApproverLookupName], false);
@@ -414,12 +414,8 @@ namespace PrimeApps.Studio.Helpers
 								appDomain = "cagri";
 								break;
 						}
-						var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
-						var subdomain = "";
-						if (!string.IsNullOrEmpty(testMode))
-						{
-							subdomain = testMode == "true" ? "test" : appDomain;
-						}
+
+						var subdomain = appDomain;
 						domain = string.Format(domain, subdomain);
 						//var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
@@ -563,6 +559,16 @@ namespace PrimeApps.Studio.Helpers
 
 		public async Task<Process> CreateEntity(ProcessBindingModel processModel, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, Warehouse warehouse, UserItem appUser)
 		{
+			if (processModel.Environments == null)
+			{
+				processModel.Environments = new List<EnvironmentType>()
+				{
+					EnvironmentType.Development
+				};
+			}
+			else if (processModel.Environments.Count < 1)
+				processModel.Environments.Add(EnvironmentType.Development);
+
 			var process = new Process
 			{
 				ModuleId = processModel.ModuleId,
@@ -574,7 +580,8 @@ namespace PrimeApps.Studio.Helpers
 				ApproverType = processModel.ApproverType,
 				TriggerTime = processModel.TriggerTime,
 				ApproverField = processModel.ApproverField,
-				Profiles = processModel.Profiles
+				Profiles = processModel.Profiles,
+				Environment = processModel.EnvironmentValues
 			};
 
 			using (var _scope = _serviceScopeFactory.CreateScope())
@@ -731,7 +738,7 @@ namespace PrimeApps.Studio.Helpers
 
 						var approverField = new Field
 						{
-                            Name = "approver",
+							Name = "approver",
 							DataType = DataType.Lookup,
 							Deleted = false,
 							DisplayDetail = false,
@@ -758,8 +765,8 @@ namespace PrimeApps.Studio.Helpers
 						moduleChanges.FieldsAdded.Add(approverField);
 
 						var processDate = new Field
-                        {
-                            Name = "process_date",
+						{
+							Name = "process_date",
 							DataType = DataType.Date,
 							Deleted = false,
 							DisplayDetail = false,
@@ -783,8 +790,8 @@ namespace PrimeApps.Studio.Helpers
 						moduleChanges.FieldsAdded.Add(processDate);
 
 						var approverOrder = new Field
-                        {
-                            Name = "approver_order",
+						{
+							Name = "approver_order",
 							DataType = DataType.Number,
 							Deleted = false,
 							DisplayDetail = false,
@@ -809,8 +816,8 @@ namespace PrimeApps.Studio.Helpers
 
 						warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
-                        _moduleRepository.CurrentUser.UserId = 1;
-                        await _moduleRepository.AlterTable(module, moduleChanges, tenantLanguage);
+						_moduleRepository.CurrentUser.UserId = 1;
+						await _moduleRepository.AlterTable(module, moduleChanges, tenantLanguage);
 						await _moduleRepository.Update(module);
 					}
 
@@ -822,12 +829,24 @@ namespace PrimeApps.Studio.Helpers
 
 		public async Task UpdateEntity(ProcessBindingModel processModel, Process process, string tenantLanguage)
 		{
+			if (processModel.Environments == null)
+			{
+				processModel.Environments = new List<EnvironmentType>()
+				{
+					EnvironmentType.Development
+				};
+			}
+			else if (processModel.Environments.Count < 1)
+				processModel.Environments.Add(EnvironmentType.Development);
+
 			process.Name = processModel.Name;
 			process.Frequency = processModel.Frequency;
 			process.Active = processModel.Active;
 			process.OperationsArray = processModel.Operations;
 			process.Profiles = processModel.Profiles;
 			process.ApproverField = processModel.ApproverField;
+			process.Environment = processModel.EnvironmentValues;
+
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
@@ -1040,12 +1059,7 @@ namespace PrimeApps.Studio.Helpers
 								break;
 						}
 
-						var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
-						var subdomain = "";
-						if (!string.IsNullOrEmpty(testMode))
-						{
-							subdomain = testMode == "true" ? "test" : appDomain;
-						}
+						var subdomain = appDomain;
 						domain = string.Format(domain, subdomain);
 						//var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
@@ -1176,12 +1190,7 @@ namespace PrimeApps.Studio.Helpers
 									break;
 							}
 
-							var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
-							var subdomain = "";
-							if (!string.IsNullOrEmpty(testMode))
-							{
-								subdomain = testMode == "true" ? "test" : appDomain;
-							}
+							var subdomain = appDomain;
 							domain = string.Format(domain, subdomain);
 							//var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
@@ -1277,12 +1286,7 @@ namespace PrimeApps.Studio.Helpers
 									break;
 							}
 
-							var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
-							var subdomain = "";
-							if (!string.IsNullOrEmpty(testMode))
-							{
-								subdomain = testMode == "true" ? "test" : appDomain;
-							}
+							var subdomain = appDomain;
 							domain = string.Format(domain, subdomain);
 							//var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
@@ -1446,12 +1450,7 @@ namespace PrimeApps.Studio.Helpers
 							break;
 					}
 
-					var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
-					var subdomain = "";
-					if (!string.IsNullOrEmpty(testMode))
-					{
-						subdomain = testMode == "true" ? "test" : appDomain;
-					}
+					var subdomain = appDomain;
 					domain = string.Format(domain, subdomain);
 					//var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
@@ -1629,12 +1628,7 @@ namespace PrimeApps.Studio.Helpers
 							break;
 					}
 
-					var testMode = _configuration.GetValue("AppSettings:TestMode", string.Empty);
-					var subdomain = "";
-					if (!string.IsNullOrEmpty(testMode))
-					{
-						subdomain = testMode == "true" ? "test" : appDomain;
-					}
+					var subdomain = appDomain;
 					domain = string.Format(domain, subdomain);
 					//var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
@@ -1819,6 +1813,7 @@ namespace PrimeApps.Studio.Helpers
 				}
 			}
 		}
+
 
 		[Serializable]
 		public class ProcessFilterNotMatchException : Exception

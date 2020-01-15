@@ -11,18 +11,18 @@ namespace PrimeApps.Model.Context
 {
     public class TenantDBContext : DbContext
     {
+        private IConfiguration _configuration;
         public int? TenantId { get; set; }
-
         public int? UserId { get; set; }
 
-        public TenantDBContext(DbContextOptions<TenantDBContext> options) : base(options)
+        public TenantDBContext(DbContextOptions<TenantDBContext> options, IConfiguration configuration) : base(options)
         {
+            _configuration = configuration;
         }
 
         public TenantDBContext(int tenantId, IConfiguration configuration)
         {
             TenantId = tenantId;
-
             var dbConnection = Database.GetDbConnection();
 
             if (dbConnection.State != System.Data.ConnectionState.Open)
@@ -70,6 +70,11 @@ namespace PrimeApps.Model.Context
 
             System.Collections.Generic.IEnumerable<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry> entities = ChangeTracker.Entries().Where(x => x.Entity is BaseEntity && (x.State == EntityState.Added || x.State == EntityState.Modified));
 
+            var previewMode = "";
+            
+            if(_configuration != null)
+                previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
+            
             foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entity in entities)
             {
                 if (entity.State == EntityState.Added)
@@ -81,7 +86,7 @@ namespace PrimeApps.Model.Context
 
                     if (((BaseEntity)entity.Entity).CreatedById < 1 && currentUserId > 0)
                     {
-                        ((BaseEntity)entity.Entity).CreatedById = currentUserId;
+                        ((BaseEntity)entity.Entity).CreatedById = previewMode == "app" ? 1 : currentUserId;
                     }
                 }
                 else
@@ -93,7 +98,7 @@ namespace PrimeApps.Model.Context
 
                     if (!((BaseEntity)entity.Entity).UpdatedById.HasValue && currentUserId > 0)
                     {
-                        ((BaseEntity)entity.Entity).UpdatedById = currentUserId;
+                        ((BaseEntity)entity.Entity).UpdatedById = previewMode == "app" ? 1 : currentUserId;
                     }
                 }
             }
@@ -198,7 +203,7 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey(pt => pt.UserId);
 
             modelBuilder.Entity<TemplateShares>()
-                .HasKey(t => new { t.UserId, t.TemplateId });/*We must ensure the primary key constraint names are matching*/
+                .HasKey(t => new { t.UserId, t.TemplateId }); /*We must ensure the primary key constraint names are matching*/
 
             modelBuilder.Entity<TemplateShares>()
                 .HasOne(pt => pt.Template)
@@ -246,7 +251,8 @@ namespace PrimeApps.Model.Context
 
         public void BuildIndexes(ModelBuilder modelBuilder)
         {
-            //ActionButton
+            //ActionButton 
+            modelBuilder.Entity<ActionButton>().HasIndex(x => x.Environment);
             modelBuilder.Entity<ActionButton>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<ActionButton>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<ActionButton>().HasIndex(x => x.Deleted);
@@ -280,6 +286,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Chart>().HasIndex(x => x.Deleted);
 
             //Components
+            modelBuilder.Entity<Component>().HasIndex(x => x.Environment); 
             modelBuilder.Entity<Component>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Component>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Component>().HasIndex(x => x.Deleted);
@@ -288,6 +295,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Function>().HasIndex(x => x.Name).IsUnique();
             modelBuilder.Entity<Function>().HasIndex(x => x.Label);
             modelBuilder.Entity<Function>().HasIndex(x => x.Runtime);
+            modelBuilder.Entity<Function>().HasIndex(x => x.Environment);
             modelBuilder.Entity<Function>().HasIndex(x => x.Deleted);
 
             //ConversionMapping
@@ -372,8 +380,6 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Notification>().HasIndex(x => x.Deleted);
 
             //Picklist
-            modelBuilder.Entity<Picklist>().HasIndex(x => x.LabelEn).IsUnique();
-            modelBuilder.Entity<Picklist>().HasIndex(x => x.LabelTr).IsUnique();
             modelBuilder.Entity<Picklist>().HasIndex(x => x.SystemCode).IsUnique();
             modelBuilder.Entity<Picklist>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Picklist>().HasIndex(x => x.UpdatedAt);
@@ -388,6 +394,7 @@ namespace PrimeApps.Model.Context
             //Process
             modelBuilder.Entity<Process>().HasIndex(x => x.ModuleId);
             modelBuilder.Entity<Process>().HasIndex(x => x.Active);
+            modelBuilder.Entity<Process>().HasIndex(x => x.Environment);
             modelBuilder.Entity<Process>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Process>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Process>().HasIndex(x => x.Deleted);
@@ -504,10 +511,11 @@ namespace PrimeApps.Model.Context
 
             //Workflow
             modelBuilder.Entity<Workflow>().HasIndex(x => x.Active);
+            modelBuilder.Entity<Workflow>().HasIndex(x => x.Environment);
             modelBuilder.Entity<Workflow>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Workflow>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Workflow>().HasIndex(x => x.Deleted);
-
+             
             //WorkflowFilter
             modelBuilder.Entity<WorkflowFilter>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<WorkflowFilter>().HasIndex(x => x.UpdatedAt);
@@ -560,8 +568,18 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.EndTime);
             modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.Status);
             modelBuilder.Entity<DeploymentComponent>().HasIndex(x => x.ComponentId);
+
+            //HistoryDatabase
+            modelBuilder.Entity<HistoryDatabase>().HasIndex(x => x.Tag);
+            modelBuilder.Entity<HistoryDatabase>().HasIndex(x => x.TableName);
+
+            //HistoryStorage
+            modelBuilder.Entity<HistoryStorage>().HasIndex(x => x.Tag);
+            modelBuilder.Entity<HistoryStorage>().HasIndex(x => x.UniqueName);
         }
 
+        public DbSet<HistoryDatabase> HistoryDatabases { get; set; }
+        public DbSet<HistoryStorage> HistoryStorages { get; set; }
         public DbSet<TenantUser> Users { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<Profile> Profiles { get; set; }

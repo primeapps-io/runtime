@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -52,15 +56,17 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find/{functionId}"), HttpPost]
-        public async Task<IActionResult> Find(int functionId, [FromBody]PaginationModel paginationModel)
+        [Route("find/{functionId}")]
+        public IActionResult Find(int functionId, ODataQueryOptions<DeploymentFunction> queryOptions)
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "deployment_function", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var deployments = await _deploymentFunctionRepository.Find(functionId, paginationModel); ;
+            var deployments = _deploymentFunctionRepository.Find(functionId);
 
-            return Ok(deployments);
+            var queryResults = (IQueryable<DeploymentFunction>)queryOptions.ApplyTo(deployments, new ODataQuerySettings() { EnsureStableOrdering = false });
+            return Ok(new PageResult<DeploymentFunction>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
+
         }
 
         [Route("get/{id}"), HttpGet]
@@ -93,7 +99,7 @@ namespace PrimeApps.Studio.Controllers
                 BuildNumber = currentBuildNumber,
                 Version = currentBuildNumber.ToString(),
                 StartTime = DateTime.Now,
-                Status = DeploymentStatus.Running
+                Status = ReleaseStatus.Running
             };
 
             var createResult = await _deploymentFunctionRepository.Create(deploymentObj);

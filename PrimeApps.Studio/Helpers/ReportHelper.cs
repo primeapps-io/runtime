@@ -52,7 +52,8 @@ namespace PrimeApps.Studio.Helpers
         {
             var report = new Report
             {
-                Name = reportModel.Name,
+                NameEn = reportModel.NameEn,
+                NameTr = reportModel.NameEn,
                 ModuleId = reportModel.ModuleId,
                 ReportFeed = ReportFeed.Module,
                 ReportType = reportModel.ReportType,
@@ -74,7 +75,8 @@ namespace PrimeApps.Studio.Helpers
 
         public void UpdateEntity(ReportBindingModel reportModel, Report report)
         {
-            report.Name = reportModel.Name;
+            report.NameEn = reportModel.NameEn;
+            report.NameTr = reportModel.NameTr;
             report.ModuleId = reportModel.ModuleId;
             report.ReportType = reportModel.ReportType;
             report.CategoryId = reportModel.CategoryId;
@@ -162,7 +164,8 @@ namespace PrimeApps.Studio.Helpers
         {
             var reportCategory = new ReportCategory
             {
-                Name = reportCategoryModel.Name,
+                NameEn = reportCategoryModel.NameEn,
+                NameTr = reportCategoryModel.NameTr,
                 Order = reportCategoryModel.Order,
                 UserId = reportCategoryModel.UserId
             };
@@ -172,7 +175,8 @@ namespace PrimeApps.Studio.Helpers
 
         public ReportCategory UpdateCategoryEntity(ReportCategoryBindingModel reportCategoryModel, ReportCategory reportCategory)
         {
-            reportCategory.Name = reportCategoryModel.Name;
+            reportCategory.NameEn = reportCategoryModel.NameEn;
+            reportCategory.NameTr = reportCategoryModel.NameTr;
             reportCategory.Order = reportCategoryModel.Order;
             reportCategory.UserId = reportCategoryModel.UserId;
 
@@ -185,10 +189,14 @@ namespace PrimeApps.Studio.Helpers
             {
                 ReportId = reportId,
                 ChartType = chartModel.Type,
-                Caption = chartModel.Caption,
-                SubCaption = chartModel.SubCaption,
-                XaxisName = chartModel.XaxisName,
-                YaxisName = chartModel.YaxisName,
+                CaptionEn = chartModel.CaptionEn,
+                CaptionTr = chartModel.CaptionTr,
+                SubCaptionEn = chartModel.SubCaptionEn,
+                SubCaptionTr = chartModel.SubCaptionTr,
+                XaxisNameEn = chartModel.XaxisNameEn,
+                XaxisNameTr = chartModel.XaxisNameTr,
+                YaxisNameEn = chartModel.YaxisNameEn,
+                YaxisNameTr = chartModel.YaxisNameTr,
                 Theme = chartModel.Theme != ChartTheme.NotSet ? chartModel.Theme : ChartTheme.Zune
             };
 
@@ -198,10 +206,14 @@ namespace PrimeApps.Studio.Helpers
         public Chart UpdateChartEntity(ChartBindingModel chartModel, Chart chart)
         {
             chart.ChartType = chartModel.Type;
-            chart.Caption = chartModel.Caption;
-            chart.SubCaption = chartModel.SubCaption;
-            chart.XaxisName = chartModel.XaxisName;
-            chart.YaxisName = chartModel.YaxisName;
+            chart.CaptionEn = chartModel.CaptionEn;
+            chart.CaptionTr = chartModel.CaptionTr;
+            chart.SubCaptionEn = chartModel.SubCaptionEn;
+            chart.SubCaptionTr = chartModel.SubCaptionTr;
+            chart.XaxisNameEn = chartModel.XaxisNameEn;
+            chart.XaxisNameTr = chartModel.XaxisNameTr;
+            chart.YaxisNameEn = chartModel.YaxisNameEn;
+            chart.YaxisNameTr = chartModel.YaxisNameTr;
             chart.Theme = chartModel.Theme != ChartTheme.NotSet ? chartModel.Theme : ChartTheme.Zune;
 
             return chart;
@@ -213,7 +225,8 @@ namespace PrimeApps.Studio.Helpers
             {
                 ReportId = reportId,
                 WidgetType = widgetModel.WidgetType,
-                Name = widgetModel.Name,
+                NameEn = widgetModel.NameEn,
+                NameTr = widgetModel.NameTr,
                 Color = widgetModel.Color,
                 Icon = widgetModel.Icon
             };
@@ -224,7 +237,8 @@ namespace PrimeApps.Studio.Helpers
         public Widget UpdateWidgetEntity(WidgetBindingModel widgetModel, Widget widget)
         {
             widget.WidgetType = widgetModel.WidgetType;
-            widget.Name = widgetModel.Name;
+            widget.NameEn = widgetModel.NameEn;
+            widget.NameTr = widgetModel.NameTr;
             widget.Color = widgetModel.Color;
             widget.Icon = widgetModel.Icon;
 

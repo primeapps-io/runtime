@@ -118,6 +118,26 @@ namespace PrimeApps.Studio.Helpers
                     }
                 }
 
+                //Field filter load for lookup field
+                if (fieldModel.DataType == DataType.Lookup && fieldModel.Filters != null && fieldModel.Filters.Count > 0)
+                {
+                    fieldEntity.Filters = new List<FieldFilter>();
+
+                    foreach (var filter in fieldModel.Filters)
+                    {
+                        var filterEntity = new FieldFilter
+                        {
+                            FieldId = fieldEntity.Id,
+                            FilterField = filter.FilterField,
+                            Operator = filter.Operator,
+                            Value = filter.Value,
+                            No = 1
+                        };
+
+                        fieldEntity.Filters.Add(filterEntity);
+                    }
+                }
+
                 moduleEntity.Fields.Add(fieldEntity);
 
                 if (fieldModel.Encrypted)
@@ -136,6 +156,9 @@ namespace PrimeApps.Studio.Helpers
                     var encryptedFieldEntity = NewFieldEntity(encryptedField);
                     moduleEntity.Fields.Add(encryptedFieldEntity);
                 }
+
+
+
             }
 
             if (moduleModel.Relations != null && moduleModel.Relations.Count > 0)
@@ -296,6 +319,26 @@ namespace PrimeApps.Studio.Helpers
                             fieldEntity.Combination = fieldCombinationEntity;
                         }
 
+                        //Field filter load for lookup field
+                        if (fieldModel.DataType == DataType.Lookup && fieldModel.Filters != null && fieldModel.Filters.Count > 0)
+                        {
+                            fieldEntity.Filters = new List<FieldFilter>();
+
+                            foreach (var filter in fieldModel.Filters)
+                            {
+                                var filterEntity = new FieldFilter
+                                {
+                                    FieldId = fieldEntity.Id,
+                                    FilterField = filter.FilterField,
+                                    Operator = filter.Operator,
+                                    Value = filter.Value,
+                                    No = 1
+                                };
+
+                                fieldEntity.Filters.Add(filterEntity);
+                            }
+                        }
+
                         moduleEntity.Fields.Add(fieldEntity);
                         moduleChanges.FieldsAdded.Add(fieldEntity);
 
@@ -376,6 +419,42 @@ namespace PrimeApps.Studio.Helpers
                     fieldEntity.ShowAsDropdown = fieldModel.ShowAsDropdown;
                     fieldEntity.ViewType = fieldModel.ViewType;
                     fieldEntity.Position = fieldModel.Position;
+
+                    //Field filter load for lookup field
+                    if (fieldModel.DataType == DataType.Lookup && fieldModel.Filters != null && fieldModel.Filters.Count > 0)
+                    {
+                        foreach (var filter in fieldModel.Filters)
+                        {
+
+                            if (filter.Id.HasValue)
+                            {
+                                var filterEntity = fieldEntity.Filters.Where(x => x.Id == filter.Id && !x.Deleted).FirstOrDefault();
+
+                                if (filterEntity == null)
+                                    continue;
+
+                                filterEntity.FilterField = filter.FilterField;
+                                filterEntity.FieldId = filter.FieldId;
+                                filterEntity.Operator = filter.Operator;
+                                filterEntity.Value = filter.Value;
+                                filterEntity.Deleted = filter.Deleted;
+                                filterEntity.No = 1;
+                            }
+                            else
+                            {
+                                var filterEntity = new FieldFilter
+                                {
+                                    FieldId = fieldEntity.Id,
+                                    FilterField = filter.FilterField,
+                                    Operator = filter.Operator,
+                                    Value = filter.Value,
+                                    No = 1
+                                };
+
+                                fieldEntity.Filters.Add(filterEntity);
+                            }
+                        }
+                    }
 
                     if (fieldModel.Validation != null)
                     {

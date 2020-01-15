@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Entities.Studio;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -22,9 +23,10 @@ namespace PrimeApps.Studio.Helpers
                 Name = templateModel.Name,
                 Subject = templateModel.Subject,
                 Content = templateModel.Content,
-                Language = templateModel.Language,
+                Language = templateModel.Language == LanguageType.NotSet ? LanguageType.En : templateModel.Language,
                 Active = templateModel.Active,
-                SharingType = templateModel.SharingType
+                SharingType = templateModel.SharingType,
+                Code = templateModel.Code
             };
 
             if (templateModel.Permissions != null && templateModel.Permissions.Count > 0)
@@ -58,7 +60,7 @@ namespace PrimeApps.Studio.Helpers
                 Name = templateModel.Name,
                 Subject = templateModel.Subject,
                 Content = templateModel.Content,
-                Language = templateModel.Language,
+                Language = templateModel.Language == LanguageType.NotSet ? LanguageType.En : templateModel.Language,
                 Active = templateModel.Active,
                 SharingType = templateModel.SharingType
             };
@@ -84,18 +86,19 @@ namespace PrimeApps.Studio.Helpers
             return template;
         }
 
-        public static void UpdateEntity(TemplateBindingModel templateModel, Template template, IUserRepository userRepository, AppTemplateBindingModel appTemplateModel, AppTemplate appTemplate, bool isAppTemplate = false)
+        public static void UpdateEntity(TemplateBindingModel templateModel, Template template, IUserRepository userRepository, AppTemplateBindingModel appTemplateModel, AppDraftTemplate appDraftTemplate, bool isAppTemplate = false)
         {
             if (!isAppTemplate)
             {
                 template.Name = templateModel.Name;
                 template.Subject = templateModel.Subject;
                 template.Content = templateModel.Content;
-                template.Language = templateModel.Language;
+                template.Language = templateModel.Language == LanguageType.NotSet ? LanguageType.En : templateModel.Language;
                 template.SharingType = templateModel.SharingType;
                 template.Active = templateModel.Active;
                 template.Module = templateModel.Module;
                 template.UpdatedAt = DateTime.UtcNow;
+                template.Code = templateModel.Code;
 
                 if (templateModel.Permissions != null && templateModel.Permissions.Count > 0)
                 {
@@ -142,13 +145,14 @@ namespace PrimeApps.Studio.Helpers
             }
             else// if (isAppTemplate)
             {
-                appTemplate.Name = appTemplateModel.Name;
-                appTemplate.Subject = appTemplateModel.Subject;
-				appTemplate.Settings = appTemplateModel.Settings;
-                appTemplate.Content = appTemplateModel.Content;
-                appTemplate.Language = appTemplateModel.Language;
-                appTemplate.Active = appTemplateModel.Active;
-                appTemplate.UpdatedAt = DateTime.UtcNow;
+                appDraftTemplate.Name = appTemplateModel.Name;
+                appDraftTemplate.Subject = appTemplateModel.Subject;
+                appDraftTemplate.Settings = appTemplateModel.Settings;
+                appDraftTemplate.Content = appTemplateModel.Content;
+                appDraftTemplate.Language = appTemplateModel.Language;
+                appDraftTemplate.Active = appTemplateModel.Active;
+                appDraftTemplate.UpdatedAt = DateTime.UtcNow;
+                appDraftTemplate.SystemCode = appTemplateModel.SystemCode;
             }
         }
 
@@ -168,10 +172,10 @@ namespace PrimeApps.Studio.Helpers
             }
         }
 
-        public static AppTemplate CreateEntityAppTemplate(AppTemplateBindingModel appTemplate, int? appId)
+        public static AppDraftTemplate CreateEntityAppTemplate(AppTemplateBindingModel appTemplate, int? appId)
         {
 
-            var template = new AppTemplate
+            var template = new AppDraftTemplate
             {
                 Name = appTemplate.Name,
                 Subject = appTemplate.Subject,
@@ -180,13 +184,17 @@ namespace PrimeApps.Studio.Helpers
                 Active = appTemplate.Active,
                 Settings = appTemplate.Settings,
                 Type = AppTemplateType.Email,
-                AppId = (int)appId
+                AppId = (int)appId,
+                SystemCode = appTemplate.SystemCode,
             };
 
-            var systemCodes = appTemplate.Name.Split(" ");
-            foreach (var systemCode in systemCodes)
+            if (string.IsNullOrEmpty(appTemplate.SystemCode))
             {
-                template.SystemCode += systemCode.ToLower() + "_";
+                var systemCodes = appTemplate.Name.Split(" ");
+                foreach (var systemCode in systemCodes)
+                {
+                    template.SystemCode += systemCode.ToLower() + "_";
+                }
             }
 
             return template;

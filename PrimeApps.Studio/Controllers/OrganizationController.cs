@@ -185,7 +185,6 @@ namespace PrimeApps.Studio.Controllers
 
             var search = "";
             var page = 0;
-            var status = PublishStatus.NotSet;
 
             if (request != null)
             {
@@ -194,12 +193,9 @@ namespace PrimeApps.Studio.Controllers
 
                 if (!request["page"].IsNullOrEmpty())
                     page = (int)request["page"];
-
-                if (!request["status"].IsNullOrEmpty())
-                    status = (PublishStatus)int.Parse(request["status"].ToString());
             }
 
-            var apps = await _appDraftRepository.GetByOrganizationId(AppUser.Id, (int)request["organization_id"], search, page, status);
+            var apps = await _appDraftRepository.GetUserApps(AppUser.Id, (int)request["organization_id"], search, page);
 
 
             return Ok(apps);
@@ -213,7 +209,7 @@ namespace PrimeApps.Studio.Controllers
             if (organization == null)
                 return BadRequest(ApiResponseMessages.ORGANIZATION_NOT_FOUND);
 
-            var organizationApps = await _appDraftRepository.GetByOrganizationId(id, AppUser.Id);
+            var organizationApps = await _appDraftRepository.GetUserApps(id, AppUser.Id);
 
             var organizationDTO = new OrganizationModel
             {
@@ -331,7 +327,7 @@ namespace PrimeApps.Studio.Controllers
             if (result < 0)
                 return BadRequest("An error occurred while creating an organization");
 
-            Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateOrganization(model.Name, model.Label, AppUser.Email, Request.Cookies["gitea_token"]));
+            Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateOrganization(model.Name, model.Label, AppUser.Email, "token"));
 
             return Ok(organization.Id);
         }
@@ -397,8 +393,8 @@ namespace PrimeApps.Studio.Controllers
 
                 using (var httpClient = new HttpClient())
                 {
-                    var platformUser = await _platformUserRepository.Get(model.Email);
-                    
+                    var platformUser = await _platformUserRepository.GetAsync(model.Email);
+
                     if (platformUser == null)
                     {
                         var token = await HttpContext.GetTokenAsync("access_token");
@@ -409,16 +405,16 @@ namespace PrimeApps.Studio.Controllers
                         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Request.Headers["Authorization"].ToString().Substring("Basic ".Length).Trim());
 
                         model.AppName = appInfo.Name;
-                    
+
                         var json = JsonConvert.SerializeObject(model);
                         var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
 
                         if (!response.IsSuccessStatusCode)
                             return BadRequest(response);
-                        
-                        platformUser = await _platformUserRepository.Get(model.Email);
+
+                        platformUser = await _platformUserRepository.GetAsync(model.Email);
                     }
-                    
+
                     var studioUser = await _studioUserRepository.GetWithOrganizations(platformUser.Id);
 
                     if (studioUser == null)
@@ -455,7 +451,7 @@ namespace PrimeApps.Studio.Controllers
                     }
                 }
             }
-            
+
             return StatusCode(201, new {password = password});
         }
 
@@ -525,7 +521,7 @@ namespace PrimeApps.Studio.Controllers
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
-                var propertyInfo = typeof(Team).GetProperty(paginationModel.OrderColumn);
+                var propertyInfo = typeof(Team).GetProperty(char.ToUpper(paginationModel.OrderColumn[0]) + paginationModel.OrderColumn.Substring(1));
 
                 if (paginationModel.OrderType == "asc")
                 {
@@ -568,14 +564,14 @@ namespace PrimeApps.Studio.Controllers
 
             return Ok(result);
         }
-        
+
         [Route("is_user_exist"), HttpGet]
         public async Task<IActionResult> IsUserExist(string email)
         {
             if (string.IsNullOrEmpty(email))
                 return BadRequest("Email is required!");
 
-            var result = await _platformUserRepository.Get(email);
+            var result = await _platformUserRepository.GetAsync(email);
 
             return Ok(result);
         }

@@ -11,6 +11,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using Sentry;
 using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -29,8 +30,13 @@ namespace PrimeApps.Auth.UI
         {
             var language = !string.IsNullOrEmpty(request.Cookies[".AspNetCore.Culture"]) ? request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 
+            //If user language did not detect in current screens, set browser default language.
             if (string.IsNullOrEmpty(language))
-                language = "en";
+            {
+                var defaultCulture = request.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture?.Culture?.Name;
+                var browserLang = request.GetTypedHeaders().AcceptLanguage.First()?.Value.Value;
+                language = (browserLang == "tr-TR" || browserLang == "tr" || defaultCulture == "tr-TR" || defaultCulture == "tr") ? "tr" : "en";
+            }
 
             var cdnUrlStatic = "";
             var cdnUrl = configuration.GetValue("webOptimizer:cdnUrl", string.Empty);
@@ -58,7 +64,36 @@ namespace PrimeApps.Auth.UI
 
             var previewMode = configuration.GetValue("AppSettings:PreviewMode", string.Empty);
             var preview = !string.IsNullOrEmpty(previewMode) && previewMode == "app";
-            var defaultTheme = JObject.Parse(app.Setting.AuthTheme);
+
+            var defaultTheme = new JObject
+            {
+                ["logo"] = "/images/logo.png",
+                ["favicon"] = "/images/primeapps.ico",
+                ["color"] = "#555198",
+                ["title"] = "PrimeApps",
+                ["banner"] = new JArray()
+            };
+
+            var banner = new JObject
+            {
+                ["image"] = "/images/banner.svg",
+                ["descriptions"] = new JObject
+                {
+                    ["en"] = "Welcome to PrimeApps",
+                    ["tr"] = "PrimeApps’e Hoşgeldiniz"
+                }
+            };
+
+            ((JArray)defaultTheme["banner"]).Add(banner);
+
+            /*try
+            {
+                defaultTheme = JObject.Parse(app.Setting.AuthTheme);
+            }
+            catch (Exception e)
+            {
+                defaultTheme = JObject.Parse(JsonConvert.DeserializeObject(app.Setting.AuthTheme).ToString());
+            }*/
 
             if (preview)
             {
@@ -95,7 +130,29 @@ namespace PrimeApps.Auth.UI
             if (!multiLanguage)
                 language = app.Setting.Language;
 
-            var theme = JObject.Parse(app.Setting.AuthTheme);
+            JObject theme = null;
+
+            try
+            {
+                theme = JObject.Parse(app.Setting.AuthTheme);
+            }
+            catch (Exception)
+            {
+                theme = JObject.Parse(JsonConvert.DeserializeObject(app.Setting.AuthTheme).ToString());
+            }
+
+            if (theme["banner"] == null)
+            {
+                theme["banner"] = new JArray();
+                var themeBanner = new JObject
+                {
+                    ["image"] = null,
+                    ["descriptions"] = null
+                };
+                ((JArray)theme["banner"]).Add(themeBanner);
+            }
+
+            var storageUrl = configuration.GetValue("AppSettings:StorageUrl", string.Empty);
 
             //Preview mode'ta eğer ilgili app'e ait branding ayarları yoksa defaultta Primeapps
             if (theme["title"].IsNullOrEmpty())
@@ -107,6 +164,10 @@ namespace PrimeApps.Auth.UI
             {
                 theme["logo"] = defaultTheme["logo"];
             }
+            else
+            {
+                theme["logo"] = storageUrl + "/" + theme["logo"];
+            }
 
             if (theme["color"].IsNullOrEmpty())
             {
@@ -117,6 +178,10 @@ namespace PrimeApps.Auth.UI
             {
                 theme["favicon"] = defaultTheme["favicon"];
             }
+            else
+            {
+                theme["favicon"] = storageUrl + "/" + theme["favicon"];
+            }
 
             if (theme["banner"][0]["descriptions"].IsNullOrEmpty())
             {
@@ -126,6 +191,10 @@ namespace PrimeApps.Auth.UI
             if (theme["banner"][0]["image"].IsNullOrEmpty())
             {
                 theme["banner"][0]["image"] = defaultTheme["banner"][0]["image"];
+            }
+            else
+            {
+                theme["banner"][0]["image"] = storageUrl + "/" + theme["banner"][0]["image"].ToString();
             }
 
             if (!theme["headLine"].IsNullOrEmpty())
@@ -167,7 +236,13 @@ namespace PrimeApps.Auth.UI
                     GoogleAnalytics = app.Setting.GoogleAnalyticsCode,
                     ExternalLogin = app.Setting.ExternalAuth,
                     RegistrationType = app.Setting.RegistrationType,
-                    TenantOperationWebhook = app.Setting.TenantOperationWebhook
+                    TenantOperationWebhook = app.Setting.TenantOperationWebhook,
+                    Options = new JObject
+                    {
+                        ["enable_registration"] = app.Setting.EnableRegistration,
+                        ["enable_api_registration"] = app.Setting.EnableAPIRegistration,
+                        ["enable_ldap"] = app.Setting.EnableLDAP
+                    }
                 },
                 Preview = preview,
                 Secret = app.Secret

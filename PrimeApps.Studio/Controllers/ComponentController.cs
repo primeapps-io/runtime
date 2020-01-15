@@ -1,5 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.OData;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.AspNet.OData.Query;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
@@ -58,15 +63,16 @@ namespace PrimeApps.Studio.Controllers
             return Ok(count);
         }
 
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        [Route("find")]
+        public IActionResult Find(ODataQueryOptions<Component> queryOptions)
         {
             if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "component", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var components = await _componentRepository.Find(paginationModel);
+            var components = _componentRepository.Find();
 
-            return Ok(components);
+            var queryResults = (IQueryable<Component>)queryOptions.ApplyTo(components, new ODataQuerySettings() { EnsureStableOrdering = false });
+            return Ok(new PageResult<Component>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
 
         [Route("get/{id:int}"), HttpGet]
@@ -98,6 +104,16 @@ namespace PrimeApps.Studio.Controllers
             if (component != null)
                 return Conflict();
 
+            if (model.Environments == null)
+            {
+                model.Environments = new List<EnvironmentType>()
+                {
+                    EnvironmentType.Development
+                };
+            }
+            else if (model.Environments.Count < 1)
+                model.Environments.Add(EnvironmentType.Development);
+
             component = new Component
             {
                 Name = componentName,
@@ -106,8 +122,9 @@ namespace PrimeApps.Studio.Controllers
                 Type = ComponentType.Component,
                 Place = model.Place,
                 Order = model.Order,
-                Status = PublishStatus.Draft,
-                Label = model.Label
+                Status = PublishStatusType.Draft,
+                Label = model.Label,
+                Environment = model.EnvironmentValues
             };
 
             var sampleCreated = await _componentHelper.CreateSample((int)AppId, model, OrganizationId);
@@ -132,19 +149,36 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var component = await _componentRepository.Get(id);
+            var component = new Component();
+
+            if (model.Place == ComponentPlace.GlobalConfig)
+                component = await _componentRepository.GetGlobalConfig();
+            else
+                component = await _componentRepository.Get(id);
 
             if (component == null)
                 return Forbid("Component not found!");
 
+            if (model.Environments == null)
+            {
+                model.Environments = new List<EnvironmentType>();
+                model.Environments.Add(Model.Enums.EnvironmentType.Development);
+            }
+            else if (model.Environments.Count < 1)
+                model.Environments.Add(EnvironmentType.Development);
+
             component.Name = model.Name ?? component.Name;
             component.Content = model.Content ?? component.Content;
             component.ModuleId = model.ModuleId != 0 ? model.ModuleId : component.ModuleId;
-            component.Type = ComponentType.Component;
+            component.Type = model.Type != ComponentType.Component ? model.Type : ComponentType.Component;
             component.Place = model.Place != ComponentPlace.NotSet ? model.Place : component.Place;
             component.Order = model.Order != 0 ? model.Order : component.Order;
             component.Status = model.Status;
             component.Label = model.Label;
+            component.Environment = model.EnvironmentValues;
+
+
+
 
             await _componentRepository.Update(component);
 
@@ -204,7 +238,7 @@ namespace PrimeApps.Studio.Controllers
             var deployment = new DeploymentComponent()
             {
                 ComponentId = component.Id,
-                Status = DeploymentStatus.Running,
+                Status = ReleaseStatus.Running,
                 Version = currentBuildNumber.ToString(),
                 BuildNumber = currentBuildNumber,
                 StartTime = DateTime.Now
@@ -218,6 +252,12 @@ namespace PrimeApps.Studio.Controllers
             Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartComponentDeployment(component, (int)AppId, deployment.Id, OrganizationId));
 
             return Ok();
+        }
+
+        [Route("get_global_config"), HttpGet]
+        public async Task<Component> GetGlobalConfig()
+        {
+            return await _componentRepository.GetGlobalConfig();
         }
     }
 }

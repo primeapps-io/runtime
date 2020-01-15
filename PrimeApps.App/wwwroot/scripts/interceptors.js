@@ -8,10 +8,11 @@ angular.module('primeapps')
                 request: function (config) {
                     config.headers = config.headers || {};
                     var accessToken = $localStorage.read('access_token');
-
-                    if ((cdnUrl && config.url.indexOf(cdnUrl) > -1) || (blobUrl && config.url.indexOf(blobUrl) > -1) || (routeTemplateUrls && config.url.indexOf(routeTemplateUrls) > -1))
+                    
+                    if ((blobUrl && config.url.indexOf(blobUrl) > -1) || (routeTemplateUrls && routeTemplateUrls.length > 0 && routeTemplateUrls.indexOf(config.url) > -1))
                         config.headers['Access-Control-Allow-Origin'] = '*';
-                    else if (accessToken && config.url.indexOf('/token') < 0 && (blobUrl === '' || config.url.indexOf(blobUrl) < 0) && (routeTemplateUrls === '' || config.url.indexOf(routeTemplateUrls) < 0))
+                    
+                    if (accessToken && config.url.indexOf('/token') < 0 && (blobUrl === '' || config.url.indexOf(blobUrl) < 0) && (!routeTemplateUrls || routeTemplateUrls.length < 1 || routeTemplateUrls.indexOf(config.url) < 0))
                         config.headers['Authorization'] = 'Bearer ' + accessToken;
 
                     if ($rootScope.branchAvailable) {
@@ -33,15 +34,15 @@ angular.module('primeapps')
                                 case 'X-User-Id':
                                 case 'x-user-id':
                                 case 'user_id':
-                                    return $rootScope.user.id;
+                                    return account.user.id;
                                 case 'X-Tenant-Id':
                                 case 'x-tenant-id':
                                 case 'tenant_id':
-                                    return $rootScope.user.tenant_id;
+                                    return preview ? applicationId : tenantId;
                                 case 'X-App-Id':
                                 case 'x-app-id':
                                 case 'app_id':
-                                    return appId;
+                                    return applicationId ;
                                 case 'X-Auth-Key':
                                 case 'x-auth-key':
                                     return encryptedUserId;
@@ -49,6 +50,9 @@ angular.module('primeapps')
                                 case 'x-branch-id':
                                 case 'branch_id':
                                     return $rootScope.branchAvailable ? $rootScope.user.branchId : '';
+                                case 'X-Tenant-Language':
+                                case 'x-tenant-language':
+                                    return tenantLanguage  ;
                             }
                         };
 
@@ -104,21 +108,21 @@ angular.module('primeapps')
 
                     if (rejection.status === 403) {
                         $window.location.href = '#/app/dashboard';
-                        ngToast.create({content: $filter('translate')('Common.Forbidden'), className: 'danger'});
+                        ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'danger' });
                         return $q.reject(rejection);
                     }
 
                     if (rejection.status === 404) {
                         if (!rejection.config.ignoreNotFound) {
                             $window.location.href = '#/app/dashboard';
-                            ngToast.create({content: $filter('translate')(rejection.config.url.indexOf('/module') > -1 ? 'Common.NotFoundRecord' : 'Common.NotFound'), className: 'warning'});
+                            ngToast.create({ content: $filter('translate')(rejection.config.url.indexOf('/module') > -1 ? 'Common.NotFoundRecord' : 'Common.NotFound'), className: 'warning' });
                         }
 
                         return $q.reject(rejection);
                     }
 
                     if (!navigator.onLine || rejection.status === 421 || rejection.status === 429) {
-                        ngToast.create({content: $filter('translate')('Common.NetworkError'), className: 'warning'});
+                        ngToast.create({ content: $filter('translate')('Common.NetworkError'), className: 'warning' });
                         return $q.reject(rejection);
                     }
 
@@ -126,7 +130,7 @@ angular.module('primeapps')
                         return $q.reject(rejection);
                     }
 
-                    ngToast.create({content: $filter('translate')('Common.Error'), className: 'danger'});
+                    ngToast.create({ content: $filter('translate')('Common.Error'), className: 'danger' });
 
                     return $q.reject(rejection);
                 }

@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('ComponentsService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', '$cache', 'dataTypes', 'systemFields',
-        function ($rootScope, $http, config, $filter, $q, helper, $cache, dataTypes, systemFields) {
+    .factory('ComponentsService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', '$cache', 'dataTypes', 'systemFields', 'environments',
+        function ($rootScope, $http, config, $filter, $q, helper, $cache, dataTypes, systemFields, environments) {
             return {
                 get: function (id) {
                     return $http.get(config.apiUrl + 'component/get/' + id);
@@ -34,6 +34,12 @@ angular.module('primeapps')
                 },
                 deploy: function (id) {
                     return $http.get(config.apiUrl + 'component/deploy/' + id);
+                },
+                getEnvironments: function () {
+                    return environments.data;
+                },
+                getGlobalConfig: function () {
+                    return $http.get(config.apiUrl + 'component/get_global_config');
                 }
             };
         }]);

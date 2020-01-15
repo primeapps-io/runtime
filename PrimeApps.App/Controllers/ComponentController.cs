@@ -8,33 +8,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PrimeApps.Model.Enums;
+using PrimeApps.App.Helpers;
 
 namespace PrimeApps.App.Controllers
 {
-	[Route("api/component"), Authorize]
-	public class ComponentController : ApiBaseController
-	{
-		private IComponentRepository _componentRepository;
+    [Route("api/component"), Authorize]
+    public class ComponentController : ApiBaseController
+    {
+        private IComponentRepository _componentRepository;
+        private IEnvironmentHelper _environmentHelper;
 
-		public ComponentController(IComponentRepository componentRepository)
-		{
-			_componentRepository = componentRepository;
-		}
+        public ComponentController(IComponentRepository componentRepository, IEnvironmentHelper environmentHelper)
+        {
+            _componentRepository = componentRepository;
+            _environmentHelper = environmentHelper;
+        }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_componentRepository, PreviewMode, TenantId, AppId);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_componentRepository, PreviewMode, TenantId, AppId);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("get_by_type"), HttpGet]
-		public async Task<IActionResult> GetActionButtons([FromQuery(Name = "component_type")]ComponentType type)
-		{
-			var components = await _componentRepository.GetByType(type);
+        [Route("get_by_type"), HttpGet]
+        public async Task<IActionResult> GetActionButtons([FromQuery(Name = "component_type")]ComponentType type)
+        {
+            var components = await _componentRepository.GetByType(type);
 
-			return Ok(components);
-		}
-	}
+            components = _environmentHelper.DataFilter(components.ToList());
+
+            return Ok(components);
+        }
+    }
 }

@@ -5,14 +5,19 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Entities.Studio;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Model.Context
 {
     public class StudioDBContext : DbContext
     {
+        private IConfiguration _configuration;
         public int? UserId { get; set; }
 
-        public StudioDBContext(DbContextOptions<StudioDBContext> options) : base(options) { }
+        public StudioDBContext(DbContextOptions<StudioDBContext> options, IConfiguration configuration) : base(options)
+        {
+            _configuration = configuration;
+        }
 
         public StudioDBContext(IConfiguration configuration)
         {
@@ -44,6 +49,15 @@ namespace PrimeApps.Model.Context
         public int GetCurrentUserId()
         {
             return UserId ?? 0;
+        }
+
+        public void SetConnectionString(string connectionString, IConfiguration configuration)
+        {
+            var dbConnection = Database.GetDbConnection();
+
+            if (dbConnection.State != System.Data.ConnectionState.Open)
+                dbConnection.ConnectionString = Postgres.GetConnectionString(configuration.GetConnectionString("StudioDBConnection"), "studio", connectionString);
+            ;
         }
 
         private void SetDefaultValues()
@@ -82,7 +96,7 @@ namespace PrimeApps.Model.Context
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<TeamUser>()
-               .HasKey(t => new { t.UserId, t.TeamId });
+                .HasKey(t => new { t.UserId, t.TeamId });
 
             modelBuilder.Entity<TeamUser>()
                 .HasOne(pt => pt.StudioUser)
@@ -95,7 +109,7 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey(pt => pt.TeamId);
 
             modelBuilder.Entity<OrganizationUser>()
-               .HasKey(t => new { t.UserId, t.OrganizationId });
+                .HasKey(t => new { t.UserId, t.OrganizationId });
 
             modelBuilder.Entity<OrganizationUser>()
                 .HasOne(pt => pt.StudioUser)
@@ -148,18 +162,18 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<TeamUser>().HasIndex(x => x.UserId);
             modelBuilder.Entity<TeamUser>().HasIndex(x => x.TeamId);
 
-            //Deployment
-            modelBuilder.Entity<Deployment>().HasIndex(x => x.AppId);
-            modelBuilder.Entity<Deployment>().HasIndex(x => x.StartTime);
-            modelBuilder.Entity<Deployment>().HasIndex(x => x.EndTime);
-            modelBuilder.Entity<Deployment>().HasIndex(x => x.Status);
-            
-
+            //Package
+            modelBuilder.Entity<Package>().HasIndex(x => x.AppId);
+            modelBuilder.Entity<Package>().HasIndex(x => x.StartTime);
+            modelBuilder.Entity<Package>().HasIndex(x => x.EndTime);
+            modelBuilder.Entity<Package>().HasIndex(x => x.Status);
         }
+
         public DbSet<StudioUser> Users { get; set; }
         public DbSet<AppDraft> Apps { get; set; }
         public DbSet<AppDraftSetting> AppSettings { get; set; }
-        public DbSet<Deployment> Deployments { get; set; }
+        public DbSet<AppDraftTemplate> AppTemplates { get; set; }
+        public DbSet<Package> Packages { get; set; }
         public DbSet<AppCollaborator> AppCollaborators { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationUser> OrganizationUsers { get; set; }

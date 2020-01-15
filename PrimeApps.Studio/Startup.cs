@@ -1,21 +1,28 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Diagnostics;
+using System.Globalization;
 using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
 using Hangfire;
-using Hangfire.PostgreSql;
 using Hangfire.Redis;
+using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using PrimeApps.Model.Context;
+using PrimeApps.Studio.Helpers;
+using PrimeApps.Studio.Services;
 
 namespace PrimeApps.Studio
 {
@@ -67,6 +74,10 @@ namespace PrimeApps.Studio
                     });
             });
 
+            services.AddSingleton<ODataQueryStringFixer>();//For OData Filter Middlewares
+            services.AddOData();
+            services.AddODataQueryFilter();
+
             services.AddMvc(opt =>
                 {
                     opt.CacheProfiles.Add("Nocache",
@@ -101,6 +112,7 @@ namespace PrimeApps.Studio
 
             if (!string.IsNullOrEmpty(storageUrl))
             {
+                Environment.SetEnvironmentVariable("AWS_ENABLE_ENDPOINT_DISCOVERY", "false");
                 var awsOptions = Configuration.GetAWSOptions();
                 awsOptions.DefaultClientConfig.RegionEndpoint = RegionEndpoint.EUWest1;
                 awsOptions.DefaultClientConfig.ServiceURL = storageUrl;
@@ -122,6 +134,18 @@ namespace PrimeApps.Studio
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
+
+            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var databaseContext = scope.ServiceProvider.GetRequiredService<StudioDBContext>();
+                var queue = app.ApplicationServices.GetService<IBackgroundTaskQueue>();
+                var context = app.ApplicationServices.GetService<IHttpContextAccessor>();
+                var tracerHelper = app.ApplicationServices.GetService<IHistoryHelper>();
+
+                var listener = databaseContext.GetService<DiagnosticSource>();
+                (listener as DiagnosticListener).SubscribeWithAdapter(new CommandListener(queue, tracerHelper, context, Configuration));
+            }
+
 
             var forwardHeaders = Configuration.GetValue("AppSettings:ForwardHeaders", string.Empty);
             if (!string.IsNullOrEmpty(forwardHeaders) && bool.Parse(forwardHeaders))
@@ -156,6 +180,36 @@ namespace PrimeApps.Studio
 
             JobConfiguration(app, Configuration);
 
+            var webSocketOptions = new WebSocketOptions()
+            {
+                KeepAliveInterval = TimeSpan.FromSeconds(120),
+                ReceiveBufferSize = 4 * 1024
+            };
+
+            app.UseODataQueryStringFixer(); //For OData Filter Middleware
+            app.UseWebSockets(new WebSocketOptions() { KeepAliveInterval = TimeSpan.FromSeconds(10) });
+            app.Use(async (ctx, next) =>
+            {
+                if (ctx.Request.Path == "/log_stream")
+                {
+                    if (ctx.WebSockets.IsWebSocketRequest)
+                    {
+                        var webSocketHelper = (IWebSocketHelper)ctx.RequestServices.GetService(typeof(IWebSocketHelper));
+
+                        var wSocket = await ctx.WebSockets.AcceptWebSocketAsync();
+                        await webSocketHelper.LogStream(ctx, wSocket);
+                    }
+                    else
+                    {
+                        ctx.Response.StatusCode = 400;
+                    }
+                }
+                else
+                {
+                    await next();
+                }
+            });
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -167,6 +221,11 @@ namespace PrimeApps.Studio
                     name: "DefaultApi",
                     template: "api/{controller}/{id}"
                 );
+                /*
+                * These two option for odata controller.
+                */
+                routes.Select().Expand().Filter().OrderBy().MaxTop(null).Count();
+                routes.EnableDependencyInjection();
             });
         }
     }

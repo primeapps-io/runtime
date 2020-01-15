@@ -9,8 +9,10 @@ namespace PrimeApps.Studio.Models
 {
     public class ReportBindingModel
     {
-        [Required, StringLength(100)]
-        public string Name { get; set; }
+        [StringLength(100)]
+        public string NameEn { get; set; }
+        [StringLength(100)]
+        public string NameTr { get; set; }
 
         [Required, Range(1, int.MaxValue)]
         public int ModuleId { get; set; }
@@ -67,8 +69,10 @@ namespace PrimeApps.Studio.Models
 
     public class ReportCategoryBindingModel
     {
-        [Required, StringLength(100)]
-        public string Name { get; set; }
+        [StringLength(100)]
+        public string NameEn { get; set; }    
+        [StringLength(100)]
+        public string NameTr { get; set; }
 
         public int Order { get; set; }
 
@@ -80,15 +84,21 @@ namespace PrimeApps.Studio.Models
         [Required]
         public ChartType Type { get; set; }
 
-        [Required, StringLength(100)]
-        public string Caption { get; set; }
+        [StringLength(100)]
+        public string CaptionEn { get; set; }
+        [StringLength(100)]
+        public string CaptionTr { get; set; }
 
         [StringLength(200)]
-        public string SubCaption { get; set; }
+        public string SubCaptionEn { get; set; }    
+        [StringLength(200)]
+        public string SubCaptionTr { get; set; }
 
-        public string XaxisName { get; set; }
+        public string XaxisNameEn { get; set; }
+        public string XaxisNameTr { get; set; }
 
-        public string YaxisName { get; set; }
+        public string YaxisNameEn { get; set; }
+        public string YaxisNameTr { get; set; }
 
         public ChartTheme Theme { get; set; }
     }
@@ -99,7 +109,9 @@ namespace PrimeApps.Studio.Models
         public WidgetType WidgetType { get; set; }
 
         [Required, StringLength(100)]
-        public string Name { get; set; }
+        public string NameEn { get; set; }   
+        [Required, StringLength(100)]
+        public string NameTr { get; set; }
 
         public string Color { get; set; }
 

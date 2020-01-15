@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Studio.Models
@@ -25,6 +27,35 @@ namespace PrimeApps.Studio.Models
         public FunctionContentType ContentType { get; set; }
 
         [Required]
-        public PublishStatus Status { get; set; }
+        public PublishStatusType Status { get; set; }
+
+        public List<EnvironmentType> Environments { get; set; }
+
+        public string EnvironmentValues
+        {
+            get
+            {
+                var list = new List<string>();
+
+                foreach (var env in Environments)
+                {
+                    var value = (int)env;
+                    list.Add(value.ToString());
+                }
+
+                return string.Join(",", list);
+            }
+
+            set
+            {
+                var list = value.Split(",");
+
+                foreach (var env in list)
+                {
+                    Environments.Add((EnvironmentType)Enum.Parse(typeof(EnvironmentType), env));
+                }
+
+            }
+        }
     }
 }

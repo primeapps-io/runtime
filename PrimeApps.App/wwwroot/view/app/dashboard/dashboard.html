@@ -73,7 +73,7 @@
                             id="activeDashboard"
                             ng-model="activeDashboard"
                             name="activeDashboard"
-                            ng-options="o as o.name for o in dashboards"
+                            ng-options="o as o['name_'+user.language] for o in dashboards"
                             ng-change="changeDashboard()">
                     </select>
                 </div>
@@ -120,196 +120,13 @@
                         <div class="summary-count-value">{{dashlet.widget.widget_data.value}}
                             <i class="{{dashlet.widget.icon}}"></i>
                         </div>
-                        <div class="summary-count-text">{{dashlet.widget.name}}</div>
+                        <div class="summary-count-text">{{dashlet.widget['name_'+user.language]}}</div>
+                        
                     </div>
                 </div>
             </div>
         </div>
 
     </div>
-
-    <!--TODO: Delete after new dashboard development finished-->
-    <!--<div class="page dashboard-old" ng-if="!showNewDashboard">-->
-    <!--<div class="panel panel-default">-->
-    <!--<div class="panel-body">-->
-    <!--<div class="row">-->
-    <!--<div class="col-sm-6">-->
-    <!--<div class="subpanel">-->
-    <!--<div class="subpanel-heading">{{dashboard.table1.title[language] || 'Dashboard.LatestLeads' | translate}}</div>-->
-    <!--<div class="subpanel-body">-->
-    <!--<div class="table-list-custom table-responsive" ng-show="!isEmpty && !loading">-->
-    <!--<table class="table">-->
-    <!--<thead>-->
-    <!--<tr>-->
-    <!--<th>{{dashboard.table1.field1.label[language] || 'Dashboard.LeadName' | translate}}</th>-->
-    <!--<th>{{dashboard.table1.field2.label[language] || 'Dashboard.Company' | translate}}</th>-->
-    <!--<th>{{'Dashboard.CreatedAt' | translate}}</th>-->
-    <!--</tr>-->
-    <!--</thead>-->
-    <!--<tbody>-->
-    <!--<tr ng-repeat="record in records1">-->
-    <!--<td>-->
-    <!--<a href="#/app/module/{{dashboard.table1.module}}?id={{record.id}}&back=dashboard">-->
-    <!--<span ng-if="!dashboard.table1.field1.is_date">-->
-    <!--{{record[dashboard.table1.field1.name || 'full_name']}}-->
-    <!--</span>-->
-    <!--<span ng-if="dashboard.table1.field1.is_date">-->
-    <!--{{record[dashboard.table1.field1.name || 'full_name'] | date:'short'}}-->
-    <!--</span>-->
-    <!--</a>-->
-    <!--</td>-->
-    <!--<td>-->
-    <!--<span ng-if="!dashboard.table1.field2.is_date">-->
-    <!--{{record[dashboard.table1.field2.name || 'company']}}-->
-    <!--</span>-->
-    <!--<span ng-if="dashboard.table1.field2.is_date">-->
-    <!--{{record[dashboard.table1.field2.name || 'company'] | date:'short'}}-->
-    <!--</span>-->
-    <!--</td>-->
-    <!--<td>-->
-    <!--{{record.created_at | date:'short'}}-->
-    <!--</td>-->
-    <!--</tr>-->
-    <!--</tbody>-->
-    <!--</table>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--<div class="col-sm-6">-->
-    <!--<div class="subpanel">-->
-    <!--<div class="subpanel-heading">{{dashboard.table2.title[language] || 'Dashboard.LatestOpportunities' | translate}}</div>-->
-    <!--<div class="subpanel-body">-->
-    <!--<div class="table-list-custom table-responsive" ng-show="!isEmpty && !loading">-->
-    <!--<table class="table">-->
-    <!--<thead>-->
-    <!--<tr>-->
-    <!--<th>{{dashboard.table2.field1.label[language] || 'Dashboard.OpportunityName' | translate}}</th>-->
-    <!--<th>{{dashboard.table2.field2.label[language] || 'Dashboard.ClosingDate' | translate}}</th>-->
-    <!--<th>{{'Dashboard.CreatedAt' | translate}}</th>-->
-    <!--</tr>-->
-    <!--</thead>-->
-    <!--<tbody>-->
-    <!--<tr ng-repeat="record in records2">-->
-    <!--<td>-->
-    <!--<a href="#/app/module/{{dashboard.table2.module}}?id={{record.id}}&back=dashboard">-->
-    <!--<span ng-if="!dashboard.table2.field1.is_date">-->
-    <!--{{record[dashboard.table2.field1.name || 'name']}}-->
-    <!--</span>-->
-    <!--<span ng-if="dashboard.table2.field1.is_date">-->
-    <!--{{record[dashboard.table2.field1.name || 'name'] | date:'short'}}-->
-    <!--</span>-->
-    <!--</a>-->
-    <!--</td>-->
-    <!--<td>-->
-    <!--<span ng-if="!dashboard.table2.field2.is_date">-->
-    <!--{{record[dashboard.table2.field2.name || 'closing_date']}}-->
-    <!--</span>-->
-    <!--<span ng-if="dashboard.table2.field2.is_date">-->
-    <!--{{record[dashboard.table2.field2.name || 'closing_date'] | date:'short'}}-->
-    <!--</span>-->
-    <!--</td>-->
-    <!--<td>-->
-    <!--{{record.created_at | date:'short'}}-->
-    <!--</td>-->
-    <!--</tr>-->
-    <!--</tbody>-->
-    <!--</table>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--<div class="row">-->
-    <!--<div class="col-sm-6">-->
-    <!--<div class="subpanel">-->
-    <!--<div class="subpanel-heading">{{dashboard.table3.title[language] || 'Dashboard.LatestAccounts' | translate}}</div>-->
-    <!--<div class="subpanel-body">-->
-    <!--<div class="table-list-custom table-responsive" ng-show="!isEmpty && !loading">-->
-    <!--<table class="table">-->
-    <!--<thead>-->
-    <!--<tr>-->
-    <!--<th>{{dashboard.table3.field1.label[language] || 'Dashboard.AccountName' | translate}}</th>-->
-    <!--<th>{{dashboard.table3.field2.label[language] || 'Dashboard.Phone' | translate}}</th>-->
-    <!--<th>{{'Dashboard.CreatedAt' | translate}}</th>-->
-    <!--</tr>-->
-    <!--</thead>-->
-    <!--<tbody>-->
-    <!--<tr ng-repeat="record in records3">-->
-    <!--<td>-->
-    <!--<a href="#/app/module/{{dashboard.table3.module}}?id={{record.id}}&back=dashboard">-->
-    <!--<span ng-if="!dashboard.table3.field1.is_date">-->
-    <!--{{record[dashboard.table3.field1.name || 'name']}}-->
-    <!--</span>-->
-    <!--<span ng-if="dashboard.table3.field1.is_date">-->
-    <!--{{record[dashboard.table3.field1.name || 'name'] | date:'short'}}-->
-    <!--</span>-->
-    <!--</a>-->
-    <!--</td>-->
-    <!--<td>-->
-    <!--<span ng-if="!dashboard.table3.field2.is_date">-->
-    <!--{{record[dashboard.table3.field2.name || 'phone']}}-->
-    <!--</span>-->
-    <!--<span ng-if="dashboard.table3.field2.is_date">-->
-    <!--{{record[dashboard.table3.field2.name || 'phone'] | date:'short'}}-->
-    <!--</span>-->
-    <!--</td>-->
-    <!--<td>-->
-    <!--{{record.created_at | date:'short'}}-->
-    <!--</td>-->
-    <!--</tr>-->
-    <!--</tbody>-->
-    <!--</table>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--<div class="col-sm-6">-->
-    <!--<div class="subpanel">-->
-    <!--<div class="subpanel-heading">{{dashboard.table4.title[language] || 'Dashboard.LatestContacts' | translate}}</div>-->
-    <!--<div class="subpanel-body">-->
-    <!--<div class="table-list-custom table-responsive" ng-show="!isEmpty && !loading">-->
-    <!--<table class="table">-->
-    <!--<thead>-->
-    <!--<tr>-->
-    <!--<th>{{dashboard.table4.field1.label[language] || 'Dashboard.ContactName' | translate}}</th>-->
-    <!--<th>{{dashboard.table4.field2.label[language] || 'Common.EMail' | translate}}</th>-->
-    <!--<th>{{'Dashboard.CreatedAt' | translate}}</th>-->
-    <!--</tr>-->
-    <!--</thead>-->
-    <!--<tbody>-->
-    <!--<tr ng-repeat="record in records4">-->
-    <!--<td>-->
-    <!--<a href="#/app/module/{{dashboard.table4.module}}?id={{record.id}}&back=dashboard">-->
-    <!--<span ng-if="!dashboard.table4.field1.is_date">-->
-    <!--{{record[dashboard.table4.field1.name || 'full_name']}}-->
-    <!--</span>-->
-    <!--<span ng-if="dashboard.table4.field1.is_date">-->
-    <!--{{record[dashboard.table4.field1.name || 'full_name'] | date:'short'}}-->
-    <!--</span>-->
-    <!--</a>-->
-    <!--</td>-->
-    <!--<td>-->
-    <!--<span ng-if="!dashboard.table4.field2.is_date">-->
-    <!--{{record[dashboard.table4.field2.name || 'email']}}-->
-    <!--</span>-->
-    <!--<span ng-if="dashboard.table4.field2.is_date">-->
-    <!--{{record[dashboard.table4.field2.name || 'email'] | date:'short'}}-->
-    <!--</span>-->
-    <!--</td>-->
-    <!--<td>-->
-    <!--{{record.created_at | date:'short'}}-->
-    <!--</td>-->
-    <!--</tr>-->
-    <!--</tbody>-->
-    <!--</table>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!---->
+    
 </div>

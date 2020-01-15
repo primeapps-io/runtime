@@ -33,13 +33,14 @@ namespace PrimeApps.Studio.Controllers
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
-			var res = await _appDraftRepository.GetAppTheme(id);
+			var res = await _appDraftRepository.GetSettings(id);
 			var app = new AppDraftSetting();
 
 			if (res != null)
 			{
 				app.AuthTheme = res.AuthTheme;
 				app.AppTheme = res.AppTheme;
+                app.Options = res.Options;
 			}
 
 			return Ok(app);

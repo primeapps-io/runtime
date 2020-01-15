@@ -1,0 +1,128 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{.Release.Name}}-admin"
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    k8s-app: "{{.Release.Name}}-admin"
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      k8s-app: "{{.Release.Name}}-admin"
+  template:
+    metadata:
+      labels:
+        heritage: {{.Release.Service | quote }}
+        release: {{.Release.Name | quote }}
+        chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+        k8s-app: "{{.Release.Name}}-admin"
+    spec:
+      volumes:
+        - name: "self-signed-ssl"
+          secret:
+            secretName: "{{.Release.Name}}-admin-selfsigned-ssl"
+        - name: admin-data-volume
+          persistentVolumeClaim:
+            claimName: primapps-admin
+      containers:
+        - name: "{{.Release.Name}}-admin"
+          image: "primeapps/primeapps-admin:{{.Values.image.tag}}"
+          imagePullPolicy: "{{.Values.image.pullPolicy}}"
+          volumeMounts:
+            - mountPath: "/etc/self-signed-ssl"
+              name: self-signed-ssl
+            - mountPath: "/data"
+              name: admin-data-volume
+          env:
+            - name: ASPNETCORE_Kestrel__Certificates__Default__Path
+              value: /etc/self-signed-ssl/aspnetapp.pfx
+            - name: ConnectionStrings__TenantDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: TenantDBConnection
+            - name: ConnectionStrings__PlatformDBConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: PlatformDBConnection
+            - name: ConnectionStrings__RedisConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: RedisConnection
+            - name: AppSettings__StorageUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: StorageUrl
+            - name: AppSettings__StorageAccessKey
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: StorageAccessKey
+            - name: AppSettings__StorageSecretKey
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: StorageSecretKey
+            - name: AppSettings__EnableJobs
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: EnableJobs
+            - name: AppSettings__AuthenticationServerURL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: AuthenticationServerURL
+            - name: AppSettings__AuthenticationServerURLLocal
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: AuthenticationServerURLLocal                  
+            - name: AppSettings__ClientId
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: ClientId
+            - name: AppSettings__ClientSecret
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: ClientSecret
+            - name: AppSettings__ForwardHeaders
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: ForwardHeaders
+            - name: AppSettings__HttpsRedirection
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: HttpsRedirection
+            - name: AppSettings__StudioUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: StudioUrl
+            - name: AppSettings__PostgresPath
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: PostgresPath
+            - name: AppSettings__DataDirectory
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: DataDirectory
+            - name: Sentry__Dsn
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-admin-config
+                  key: SentryDsn  

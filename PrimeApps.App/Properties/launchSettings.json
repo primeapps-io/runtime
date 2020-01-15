@@ -22,26 +22,6 @@
         "AppSettings__EnableBpm": "false",
         "AppSettings__AuthenticationServerURL": "http://localhost:5001"
       }
-    },
-    "PrimeApps.App-OfisimCRM": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "applicationUrl": "http://localhost:5005",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "http://localhost:5005",
-        "AppSettings__ClientId": "ofisim-crm"
-      }
-    },
-    "PrimeApps.App-OfisimIK": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "applicationUrl": "http://localhost:5006",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "http://localhost:5006",
-        "AppSettings__ClientId": "ofisim-ik"
-      }
     }
   }
 }

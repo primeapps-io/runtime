@@ -30,13 +30,15 @@ namespace PrimeApps.Model.Entities.Tenant
 
         [Column("route_url")]
         public string RouteUrl { get; set; }
-
-
+        
         [Column("first_screen")]
         public bool FirstScreen { get; set; }
 
         [Column("custom_help")]
         public bool CustomHelp { get; set; }
+        
+        [Column("language"), Required]
+        public LanguageType Language { get; set; }
 
         [JsonIgnore]
         public virtual Module Module { get; set; }

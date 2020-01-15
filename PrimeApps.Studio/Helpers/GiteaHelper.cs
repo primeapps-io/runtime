@@ -13,6 +13,7 @@ using IdentityModel.Client;
 using LibGit2Sharp;
 using LibGit2Sharp.Handlers;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,15 +59,18 @@ namespace PrimeApps.Studio.Helpers
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IHttpContextAccessor _context;
         private IConfiguration _configuration;
+        private IHostingEnvironment _hostingEnvironment;
 
         public GiteaHelper(IHttpContextAccessor context,
             IConfiguration configuration,
-            IServiceScopeFactory serviceScopeFactory)
+            IServiceScopeFactory serviceScopeFactory,
+            IHostingEnvironment hostingEnvironment)
         {
             _context = context;
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
             Token = SetToken();
+            _hostingEnvironment = hostingEnvironment;
         }
 
         public async Task SyncCollaborators(int organizationId, string operation, int appId, int? teamId, int? userId)
@@ -136,7 +140,7 @@ namespace PrimeApps.Studio.Helpers
                     var ownerName = repo["owner"]["username"].ToString();
                     var currentGiteaUsers = await GetRepositoryCollaborators(ownerName, app.Name);
 
-                    using (var platformUserRepository = new PlatformUserRepository(platformDbContext, _configuration)) //, cacheHelper))
+                    using (var platformUserRepository = new PlatformUserRepository(platformDbContext, _configuration))//, cacheHelper))
                     {
                         foreach (var id in userIds)
                         {
@@ -216,7 +220,7 @@ namespace PrimeApps.Studio.Helpers
                             }
                         }*/
 
-                        names.Add(new JObject() {["path"] = e.Path});
+                        names.Add(new JObject() { ["path"] = e.Path });
                     }
                 }
 
@@ -306,11 +310,11 @@ namespace PrimeApps.Studio.Helpers
 
         public string CloneRepository(string cloneUrl, string folderName, bool deleteIfExist = true)
         {
-            var giteaDirectory = _configuration.GetValue("AppSettings:GiteaDirectory", string.Empty);
+            var giteaDirectory = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);
             if (string.IsNullOrEmpty(giteaDirectory))
                 return null;
 
-            var localFolder = giteaDirectory + folderName;
+            var localFolder = Path.Combine(giteaDirectory, "git", folderName);
 
             if (Directory.Exists(localFolder))
             {
@@ -349,7 +353,7 @@ namespace PrimeApps.Studio.Helpers
                     ["full_name"] = fullName
                 };
 
-                SetHeaders(client: httpClient, type: type, email: email);
+                SetHeaders(client: httpClient, type: type);
 
                 var giteaUrl = _configuration.GetValue("AppSettings:GiteaUrl", string.Empty);
                 var response = new HttpResponseMessage();
@@ -401,7 +405,7 @@ namespace PrimeApps.Studio.Helpers
                             ["readme"] = "Default"
                         };
 
-                        SetHeaders(client: httpClient, type: "token", email: appUser.Email);
+                        SetHeaders(client: httpClient, type: "token");
 
                         var url = "/api/v1/org/" + organization.Name + "/repos";
 
@@ -583,7 +587,7 @@ namespace PrimeApps.Studio.Helpers
 
         protected dynamic GetOptions(string type)
         {
-            var credential = new UsernamePasswordCredentials() {Username = Token, Password = String.Empty};
+            var credential = new UsernamePasswordCredentials() { Username = Token, Password = String.Empty };
             switch (type)
             {
                 case "fetch":

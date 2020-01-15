@@ -2,77 +2,21 @@
 
 angular.module('primeapps')
 
-    .controller('WordTemplatesController', ['$rootScope', '$scope', '$state', '$filter', 'WordTemplatesService', '$http', 'config', '$modal', '$cookies', 'ModuleService', 'FileUploader', 'helper',
-        function ($rootScope, $scope, $state, $filter, WordTemplatesService, $http, config, $modal, $cookies, ModuleService, FileUploader, helper) {
+    .controller('WordTemplatesController', ['$rootScope', '$scope', '$state', '$filter', 'WordTemplatesService', '$http', 'config', '$modal', '$cookies', 'ModuleService', 'FileUploader', 'helper', '$localStorage','$window',
+        function ($rootScope, $scope, $state, $filter, WordTemplatesService, $http, config, $modal, $cookies, ModuleService, FileUploader, helper, $localStorage, $window) {
 
             //$scope.$parent.menuTopTitle = "Templates";
             // $scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesWord';
-            WordTemplatesService.getAllModule()
+            /*WordTemplatesService.getAllModule()
                 .then(function (response) {
                     $scope.customModules = response.data;
-                });
+                });*/
 
             $rootScope.breadcrumblist[2].title = 'Document';
-
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-
-            $scope.generator(10);
-
+             
             $scope.loading = true;
-
-            $scope.requestModel = {
-                limit: '10',
-                offset: 0
-            };
-
-            $scope.activePage = 1;
-            WordTemplatesService.count("module").then(function (response) {
-                $scope.pageTotal = response.data;
-                $scope.changePage(1);
-            });
-
-            $scope.changePage = function (page) {
-                $scope.loading = true;
-
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
-                    }
-                }
-
-                $scope.activePage = page;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-
-                WordTemplatesService.find(requestModel, "module").then(function (response) {
-
-                    var templates = response.data;
-                    angular.forEach(templates, function (template) {
-                        template.module = $filter('filter')($rootScope.customModules, { name: template.module }, true)[0];
-                    });
-                    $scope.templates = templates;
-                    $scope.templatesState = templates;
-
-                }).finally(function () {
-                    $scope.loading = false;
-                });
-            };
-
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage);
-            };
-
+             
             $scope.showFormModal = function (template) {
                 $scope.requiredColor = "";
                 $scope.template = [];
@@ -84,17 +28,18 @@ angular.module('primeapps')
                     // fileUpload.queue[0] = []; //{ _file: { name: '' } };
                     setCurrentTemplate(template);
                     // $scope.getDownloadUrl(template);
-                } else {// if template, isNew we set the first value active
+                }
+                else {// if template, isNew we set the first value active
                     $scope.template.active = true;
                 }
 
                 $scope.addNewWordTemplateFormModal = $scope.addNewWordTemplateFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/templates/wordtemplates/wordTemplatesForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/templates/wordtemplates/wordTemplatesForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.addNewWordTemplateFormModal.$promise.then(function () {
                     $scope.addNewWordTemplateFormModal.show();
@@ -258,7 +203,8 @@ angular.module('primeapps')
                         uploadThenComplete(fileItem, tempInfo, status);
                     };
                     //$scope.fileUpload.uploader.start();
-                } else {
+                }
+                else {
                     if ($scope.templateFileCleared) {
                         fileUpload.queue[0].uploader.headers = header;
                         fileUpload.queue[0].headers = header;
@@ -267,7 +213,8 @@ angular.module('primeapps')
                             uploadThenComplete(fileItem, tempInfo, status);
                         };
                         //$scope.fileUpload.uploader.start();
-                    } else {
+                    }
+                    else {
                         var template = angular.copy($scope.template);
                         template.module = $scope.template.templateModule.name;
                         template.name = $scope.template.templateName;
@@ -287,20 +234,24 @@ angular.module('primeapps')
                 $scope.tempalteFieldName = "/" + $filter('translate')('Setup.Templates.TemplateFieldName');
                 $scope.selectedModule = null;
                 $scope.wordTemplateGuideModal = $scope.wordTemplateGuideModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/templates/wordtemplates/wordTemplateGuide.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/templates/wordtemplates/wordTemplateGuide.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.wordTemplateGuideModal.$promise.then(function () {
                     $scope.wordTemplateGuideModal.show();
                 });
             };
 
-            $scope.getDownloadUrl = function (template) {
-                return '/attach/download_template?fileId=' + template.id + "&tempType=" + template.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
+            //$scope.getDownloadUrl = function (template) {
+            //    console.log('');
+            //};
+
+            $scope.closeModal = function () {
+                $scope.clickDownloadCloseModal = true;
             };
 
             $scope.clearTemplateFile = function () {
@@ -315,13 +266,14 @@ angular.module('primeapps')
             };
 
             var setCurrentTemplate = function (template) {
+                var module = $filter('filter')($rootScope.appModules, { name: template.module }, true)[0];
                 /**template.name
                  * wordTemplates.html'deki değişken adıyla aynı olduğu için modal açıldığında wordTemplatesForm.html'de ki alan değişikliğinde wordTemplates.html'deki alan etkileniyor*/
                 $scope.templateFileCleared = false;
                 $scope.template = angular.copy(template);
                 $scope.template.templateName = template.name;
                 $scope.template.active = template.active;
-                $scope.template.templateModule = template.module;
+                $scope.template.templateModule = module;
                 $scope.currentContent = angular.copy(template.content);
             };
 
@@ -329,7 +281,7 @@ angular.module('primeapps')
                 $scope.saving = false;
                 toastr.success($filter('translate')('Setup.Templates.SaveSuccess'));
                 $scope.addNewWordTemplateFormModal.hide();
-                $scope.changePage($scope.activePage);
+                $scope.grid.dataSource.read();
                 $scope.pageTotal = create ? $scope.pageTotal++ : $scope.pageTotal;
             };
 
@@ -347,9 +299,9 @@ angular.module('primeapps')
                         if (module.name === 'order_products' && module.fields[i].lookup_type === 'sales_order')
                             continue;
 
-                        for (var j = 0; j < $scope.customModules.length; j++) {
-                            if (module.fields[i].lookup_type === $scope.customModules[j].name) {
-                                var lookupModule = angular.copy($scope.customModules[j]);
+                        for (var j = 0; j < $rootScope.appModules.length; j++) {
+                            if (module.fields[i].lookup_type === $rootScope.appModules[j].name) {
+                                var lookupModule = angular.copy($rootScope.appModules[j]);
                                 lookupModule.parent_field = module.fields[i];
                                 lookupModules.push(lookupModule);
                                 break;
@@ -419,7 +371,7 @@ angular.module('primeapps')
                 module.relatedModules = [];
 
                 if (module.name === 'quotes') {
-                    var quoteProductsModule = $filter('filter')($rootScope.customModules, { name: 'quote_products' }, true)[0];
+                    var quoteProductsModule = $filter('filter')($rootScope.appModules, { name: 'quote_products' }, true)[0];
                     ModuleService.getModuleByName(quoteProductsModule.name).then(function (response) {
                         quoteProductsModule = response.data;
                         getLookupModules(quoteProductsModule);
@@ -430,7 +382,7 @@ angular.module('primeapps')
                 }
 
                 if (module.name === 'sales_orders') {
-                    var orderProductsModule = $filter('filter')($rootScope.customModules, { name: 'order_products' }, true)[0];
+                    var orderProductsModule = $filter('filter')($rootScope.appModules, { name: 'order_products' }, true)[0];
                     ModuleService.getModuleByName(orderProductsModule.name).then(function (response) {
                         orderProductsModule = response.data;
                         getLookupModules(orderProductsModule);
@@ -441,7 +393,7 @@ angular.module('primeapps')
                 }
 
                 angular.forEach(module.relations, function (relation) {
-                    var relatedModule = $filter('filter')($rootScope.customModules, { name: relation.related_module }, true)[0];
+                    var relatedModule = $filter('filter')($rootScope.appModules, { name: relation.related_module }, true)[0];
                     ModuleService.getModuleByName(relatedModule.name).then(function (response) {
                         relatedModule = response.data;
                         if (relation.deleted || !relatedModule || relatedModule.order === 0)
@@ -453,7 +405,8 @@ angular.module('primeapps')
                             angular.forEach(relatedModule.fields, function (field) {
                                 field.name = relation.related_module + '_id.' + field.name;
                             });
-                        } else {
+                        }
+                        else {
                             getLookupModules(relatedModule);
                         }
 
@@ -498,8 +451,7 @@ angular.module('primeapps')
 
                             WordTemplatesService.delete(id).then(function () {
                                 angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                $scope.changePage($scope.activePage);
-                                $scope.pageTotal--;
+                                $scope.grid.dataSource.read();
                                 toastr.success($filter('translate')('Setup.Templates.DeleteSuccess' | translate));
                             }).catch(function () {
                                 angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
@@ -535,7 +487,8 @@ angular.module('primeapps')
                             .catch(function () {
                                 $scope.saving = false;
                             });
-                    } else {
+                    }
+                    else {
                         template.id = $scope.template.id;
 
                         WordTemplatesService.update(template)
@@ -546,10 +499,137 @@ angular.module('primeapps')
                                 $scope.saving = false;
                             });
                     }
-                } else {
+                }
+                else {
                     toastr.error($filter('translate')('Common.Error'));
                     $scope.saving = false;
                 }
+            };
+
+            $scope.wordDownload = function (wordTemp) {
+                $window.open('/attach/download_template?fileId=' + wordTemp.id + "&tempType=" + wordTemp.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId , "_blank");
+            };
+
+            $scope.goUrl = function (emailTemp) {
+                if (!$scope.clickDownloadCloseModal) {
+                    var selection = window.getSelection();
+                    if (selection.toString().length === 0) {
+                        $scope.showFormModal(emailTemp);
+                    }
+                }
+                $scope.clickDownloadCloseModal = false;
+            };
+
+            //For Kendo UI
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/template/find?TemplateType=module",
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                LabelEn: { type: "string" },
+                                Module: { type: "string" },
+                                Active: { type: "boolean" }
+                            }
+                        }
+                    }
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                noRecords: true,
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter) {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
+                },
+                rowTemplate: function (wordTemp) {
+                    var getUrl = '/attach/download_template?fileId=' + wordTemp.id + "&tempType=" + wordTemp.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + wordTemp.name + '</td>';
+                    trTemp += '<td class="text-left text-capitalize">' + wordTemp.module + '</td>';
+                    trTemp += wordTemp.active ? '<td><span>' + $filter('translate')('Setup.Modules.Active') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.Passive') + '</span></td>';
+                    trTemp += '<td>' + '<a href="' + getUrl + '" target="_blank" ng-click="closeModal();">' + $filter('translate')('Common.Download') + '</a>' + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                altRowTemplate: function (wordTemp) {
+                    var getUrl = '/attach/download_template?fileId=' + wordTemp.id + "&tempType=" + wordTemp.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId;
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left">' + wordTemp.name + '</td>';
+                    trTemp += '<td class="text-left text-capitalize">' + wordTemp.module + '</td>';
+                    trTemp += wordTemp.active ? '<td><span>' + $filter('translate')('Setup.Modules.Active') + '</span></td>' : '<td><span>' + $filter('translate')('Setup.Modules.Passive') + '</span></td>';
+                    trTemp += '<td>' + '<a href="' + getUrl + '" target="_blank" ng-click="closeModal();">' + $filter('translate')('Common.Download') + '</a>' + '</td>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+
+                    {
+                        field: 'Name',
+                        title: $filter('translate')('Setup.Templates.TemplateName'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+
+                    {
+                        field: 'Module',
+                        title: $filter('translate')('Setup.Templates.Module'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+                    {
+                        field: 'Active',
+                        title: $filter('translate')('Setup.Templates.Status'),
+                        filterable: {
+                            messages: { isTrue: $filter('translate')('Setup.Modules.Active') + "<span></span>", isFalse: $filter('translate')('Setup.Modules.Passive') + "<span></span>" },
+                        },
+                    },
+                    {
+                        field: 'Content',
+                        title: $filter('translate')('Setup.Templates.TemplateFile'),
+                        filterable: false,
+                        sortable: false
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
             };
         }
     ]);

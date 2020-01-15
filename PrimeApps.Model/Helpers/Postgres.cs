@@ -2,10 +2,10 @@
 using Npgsql;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using Sentry;
 
 namespace PrimeApps.Model.Helpers
 {
@@ -26,17 +26,9 @@ namespace PrimeApps.Model.Helpers
             builder.ConnectionString = string.IsNullOrWhiteSpace(externalConnectionString) ? connectionString : externalConnectionString;
 
             if (tenantId < 0)
-            {
-                //TODO: Added temporarily for Azure PostgreSQL bullshits. Delete this.
-                if (builder.ConnectionString.Contains("database.azure.com") || builder.ConnectionString.Contains("rds.amazonaws.com"))
-                    builder["database"] = "postgres";
-                else
-                    builder.Remove("database");
-            }
+                builder["database"] = "postgres";
             else
-            {
                 builder["database"] = database;
-            }
 
             return builder.ConnectionString;
         }
@@ -88,8 +80,7 @@ namespace PrimeApps.Model.Helpers
 
         public static async Task<bool> CreateDatabaseWithTemplate(string connectionString, string databaseName, string templateDbName, string previewMode)
         {
-            bool result = false;
-            int intResult = 0;
+            bool result;
 
             try
             {
@@ -99,21 +90,18 @@ namespace PrimeApps.Model.Helpers
 
                     using (var command = connection.CreateCommand())
                     {
-                        //TODO: Added temporarily for Azure PostgreSQL "permission denied for relation pg_database" bullshit. Delete this.
-                        if (connection.ConnectionString.Contains("database.azure.com") || connection.ConnectionString.Contains("rds.amazonaws.com"))
-                            command.CommandText = $"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '{templateDbName}' AND pid <> pg_backend_pid(); CREATE DATABASE \"{databaseName}\" ENCODING \"UTF8\" TEMPLATE \"{templateDbName}\";";
-                        else
-                            command.CommandText = $"CREATE DATABASE \"{databaseName}\" ENCODING \"UTF8\" TEMPLATE \"{templateDbName}\";";
+                        command.CommandText = $"CREATE DATABASE \"{databaseName}\" ENCODING \"UTF8\" TEMPLATE \"{templateDbName}\";";
 
-                        intResult = await command.ExecuteNonQueryAsync();
+                        var intResult = await command.ExecuteNonQueryAsync();
                         result = intResult < 0;
                     }
 
                     connection.Close();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                SentrySdk.CaptureException(ex);
                 result = false;
             }
 
@@ -161,7 +149,7 @@ namespace PrimeApps.Model.Helpers
             return result;
         }
 
-        public static IEnumerable<string> GetTenantDatabases(string connectionString, string prefix = "tenant", string externalConnectionString = null)
+        public static IEnumerable<string> GetTenantOrAppDatabases(string connectionString, string prefix = "tenant", string externalConnectionString = null)
         {
             JArray dbs = new JArray();
             try
@@ -192,28 +180,47 @@ namespace PrimeApps.Model.Helpers
 
         public static IEnumerable<string> GetTemplateDatabases(string connectionString, string externalConnectionString = null)
         {
-            JArray dbs = new JArray();
-            try
+            JArray dbs;
+
+            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
             {
-                using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
                 {
-                    connection.Open();
+                    command.CommandText = "SELECT datname FROM pg_database WHERE datname LIKE 'app%' AND datistemplate=true";
 
-                    using (var command = connection.CreateCommand())
+                    using (NpgsqlDataReader dataReader = command.ExecuteReader())
                     {
-                        command.CommandText = "SELECT datname FROM pg_database WHERE datname LIKE 'app%' OR datname AND datistemplate=true LIKE 'templet%' ORDER BY datname";
-
-                        using (NpgsqlDataReader dataReader = command.ExecuteReader())
-                        {
-                            dbs = dataReader.MultiResultToJArray();
-                        }
+                        dbs = dataReader.MultiResultToJArray();
                     }
-
-                    connection.Close();
                 }
+
+                connection.Close();
             }
-            catch (Exception)
+
+            return dbs.Select(x => x["datname"].ToString()).ToList();
+        }
+
+        public static IEnumerable<string> GetTempletDatabases(string connectionString, string externalConnectionString = null)
+        {
+            JArray dbs;
+
+            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
             {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = "SELECT datname FROM pg_database WHERE datname LIKE 'templet%' AND datistemplate=true";
+
+                    using (NpgsqlDataReader dataReader = command.ExecuteReader())
+                    {
+                        dbs = dataReader.MultiResultToJArray();
+                    }
+                }
+
+                connection.Close();
             }
 
             return dbs.Select(x => x["datname"].ToString()).ToList();
@@ -221,21 +228,18 @@ namespace PrimeApps.Model.Helpers
 
         public static void PrepareTemplateDatabaseForUpgrade(string connectionString, string dbName, string externalConnectionString = null)
         {
-            JArray dbs = new JArray();
-            List<string> dbList = new List<string>();
-
-            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1, externalConnectionString)))
+            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
             {
                 connection.Open();
+
                 using (var command = connection.CreateCommand())
                 {
-                    int intResult = 0;
-
                     command.CommandText = $"CREATE DATABASE \"{dbName}_new\" ENCODING \"UTF8\" TEMPLATE \"{dbName}\"";
 
-                    intResult = command.ExecuteNonQuery();
+                    var intResult = command.ExecuteNonQuery();
 
-                    if (intResult > -1) throw new Exception($"Template DB cannot be prepared for upgrade:{dbName}");
+                    if (intResult > -1)
+                        throw new Exception($"Template DB cannot be prepared for upgrade:{dbName}");
                 }
 
                 connection.Close();
@@ -244,54 +248,58 @@ namespace PrimeApps.Model.Helpers
 
         public static void FinalizeTemplateDatabaseUpgrade(string connectionString, string dbName, string externalConnectionString)
         {
-            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1, externalConnectionString)))
+            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
             {
                 connection.Open();
+
                 using (var command = connection.CreateCommand())
                 {
-                    int intResult = 0;
+                    command.CommandText = $"UPDATE pg_database SET datistemplate=true, datallowconn=false WHERE datname='{dbName}_new';";
+
+                    var intResult = command.ExecuteNonQuery();
+
+                    if (intResult < 1)
+                        throw new Exception($"Template DB cannot set as a template database:{dbName}");
 
 
-                    command.CommandText = $"update pg_database set datistemplate=true, datallowconn=false  where datname='{dbName}_new';";
-
-                    intResult = command.ExecuteNonQuery();
-
-                    if (intResult < 1) throw new Exception($"Template DB cannot set as a template database:{dbName}");
-
-
-                    command.CommandText = $"alter database \"{dbName}\" rename to \"{dbName}_old\";";
+                    command.CommandText = $"ALTER DATABASE \"{dbName}\" RENAME TO \"{dbName}_old\";";
 
                     intResult = command.ExecuteNonQuery();
 
-                    if (intResult > -1) throw new Exception($"Template DB cannot be switched (RENAMEOLD):{dbName}");
+                    if (intResult > -1)
+                        throw new Exception($"Template DB cannot be switched (RENAMEOLD):{dbName}");
 
 
-                    command.CommandText = $"select pg_terminate_backend(pg_stat_activity.pid) from pg_stat_activity where datname = '{dbName}_new' and pid <> pg_backend_pid();";
-
-                    intResult = command.ExecuteNonQuery();
-
-                    if (intResult > -1) throw new Exception($"Template DB cannot be switched (TERMINATECONN):{dbName}");
-
-
-                    command.CommandText = $"alter database \"{dbName}_new\" rename to \"{dbName}\";";
+                    command.CommandText = $"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = '{dbName}_new' and pid <> pg_backend_pid();";
 
                     intResult = command.ExecuteNonQuery();
 
-                    if (intResult > -1) throw new Exception($"Template DB cannot be switched (RENAMENEW):{dbName}");
+                    if (intResult > -1)
+                        throw new Exception($"Template DB cannot be switched (TERMINATECONN):{dbName}");
 
 
-                    command.CommandText = $"update pg_database set datistemplate=false where datname='{dbName}_old';";
-
-                    intResult = command.ExecuteNonQuery();
-
-                    if (intResult < 1) throw new Exception($"Template DB cannot be switched (NOTEMPLATE):{dbName}");
-
-
-                    command.CommandText = $"drop database \"{dbName}_old\";";
+                    command.CommandText = $"ALTER DATABASE \"{dbName}_new\" RENAME TO \"{dbName}\";";
 
                     intResult = command.ExecuteNonQuery();
 
-                    if (intResult > -1) throw new Exception($"Template DB cannot be switched (DROP):{dbName}");
+                    if (intResult > -1)
+                        throw new Exception($"Template DB cannot be switched (RENAMENEW):{dbName}");
+
+
+                    command.CommandText = $"UPDATE pg_database SET datistemplate=false WHERE datname='{dbName}_old';";
+
+                    intResult = command.ExecuteNonQuery();
+
+                    if (intResult < 1)
+                        throw new Exception($"Template DB cannot be switched (NOTEMPLATE):{dbName}");
+
+
+                    command.CommandText = $"DROP DATABASE \"{dbName}_old\";";
+
+                    intResult = command.ExecuteNonQuery();
+
+                    if (intResult > -1)
+                        throw new Exception($"Template DB cannot be switched (DROP):{dbName}");
                 }
 
                 connection.Close();
@@ -322,7 +330,7 @@ namespace PrimeApps.Model.Helpers
         {
             JArray result;
 
-            using (var connection = new NpgsqlConnection(GetConnectionString(databaseName, externalConnectionString)))
+            using (var connection = new NpgsqlConnection(GetConnectionString(externalConnectionString, databaseName)))
             {
                 connection.Open();
 

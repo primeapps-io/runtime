@@ -1,0 +1,16 @@
+<div class="setup-title">
+    <h2>Release # {{release.version}}<i ng-if="loading" style="margin-left: 15px;" class="fas fa-refresh" ng-class="loading ? 'fa-spin' : ''"></i></h2>
+    <div class="col-sm-12">
+        <button ng-disabled="loading" class="btn btn-radius btn-blue col-sm-2" style="margin-right: 10px;/* width: 50%; */float: right;" ng-click="distribute()">
+            <i class="fas fa-upload"></i> Go Live
+        </button>
+        <button ng-disabled="loading" class="btn btn-radius btn-blue col-sm-2" style="margin-right: 10px;/* width: 50%; */float: right;" ng-click="downloadPackage()">
+            <i class="far fa-file-archive"></i> Download Package
+        </button>
+    </div>
+</div>
+
+
+<div class="tab-content table-responsive">
+    <pre style="color: white !important;padding-left: 10px !important;padding-top: 10px !important;padding-bottom: 10px !important;background-color: black !important;" data-ng-bind-html="log"></pre>
+</div>

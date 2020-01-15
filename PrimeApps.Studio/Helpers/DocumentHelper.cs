@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Document;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
-using PrimeApps.Studio.Storage;
+using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Studio.Helpers
 {
@@ -18,7 +18,6 @@ namespace PrimeApps.Studio.Helpers
         bool UploadExcel(Stream stream, out DocumentUploadResult result);
         Task<string> Save(DocumentUploadResult result, string containerName);
         Task<int> UploadSampleDocuments(Guid instanceId, int appId, string language, IPlatformRepository _platformRepository);
-        string GetMimeType(string name);
     }
 
     public class DocumentHelper : IDocumentHelper
@@ -164,7 +163,7 @@ namespace PrimeApps.Studio.Helpers
             return 0;
         }
 
-        public string GetMimeType(string name)
+        public static string GetMimeType(string name)
         {
             var type = name.Split('.')[1];
             switch (type)

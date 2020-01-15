@@ -11,12 +11,14 @@ using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+
 namespace PrimeApps.App.Controllers
 {
     [Route("api/help"), Authorize]
-	public class HelpController : ApiBaseController
+    public class HelpController : ApiBaseController
     {
         private IHelpRepository _helpRepository;
         private IUserRepository _userRepository;
@@ -35,20 +37,20 @@ namespace PrimeApps.App.Controllers
             _picklistRepository = picklistRepository;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_helpRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_userRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_recordRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_profileRepository, PreviewMode, TenantId, AppId);
-			SetCurrentUser(_picklistRepository, PreviewMode, TenantId, AppId);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_helpRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_userRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_recordRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_profileRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_picklistRepository, PreviewMode, TenantId, AppId);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("get/{id:int}"), HttpGet]
+        [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> GetById(int id)
         {
             var helpEntity = await _helpRepository.GetById(id);
@@ -59,37 +61,43 @@ namespace PrimeApps.App.Controllers
         [Route("get_all"), HttpGet]
         public async Task<ICollection<Help>> GetAll([FromQuery(Name = "modalType")]ModalType modalType = ModalType.NotSet)
         {
-            return await _helpRepository.GetAll(modalType);
+            var language = AppUser.Language.ToEnum<LanguageType>();
+
+            return await _helpRepository.GetAll(modalType, language);
         }
 
         [Route("get_by_type"), HttpGet]
-        public async Task<Help> GetByType([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "moduleId")]int? moduleId = null, [FromQuery(Name = "route")]string route = "")
+        public async Task<Help> GetByType([FromQuery(Name = "helpType")]ModalType helpType, [FromQuery(Name = "moduleId")]int? moduleId = null, [FromQuery(Name = "route")]string route = "")
         {
-            var templates = await _helpRepository.GetByType(templateType, moduleId, route);
+            var language = AppUser.Language.ToEnum<LanguageType>();
+            var templates = await _helpRepository.GetByType(helpType, language, moduleId, route);
 
             return templates;
         }
 
         [Route("get_module_type"), HttpGet]
-        public async Task<Help> GetModuleType([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "moduleType")]ModuleType moduleType, [FromQuery(Name = "moduleId")]int? moduleId = null)
+        public async Task<Help> GetModuleType([FromQuery(Name = "helpType")]ModalType helpType, [FromQuery(Name = "moduleType")]ModuleType moduleType, [FromQuery(Name = "moduleId")]int? moduleId = null)
         {
-            var templates = await _helpRepository.GetModuleType(templateType, moduleType, moduleId);
+            var language = AppUser.Language.ToEnum<LanguageType>();
+            var templates = await _helpRepository.GetModuleType(helpType, moduleType, language, moduleId);
 
             return templates;
         }
 
         [Route("get_first_screen"), HttpGet]
-        public async Task<Help> GetFistScreen([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "firstscreen")]bool? firstscreen = false)
+        public async Task<Help> GetFistScreen([FromQuery(Name = "helpType")]ModalType helpType, [FromQuery(Name = "firstscreen")]bool? firstscreen = false)
         {
-            var templates = await _helpRepository.GetFistScreen(templateType, firstscreen);
+            var language = AppUser.Language.ToEnum<LanguageType>();
+            var templates = await _helpRepository.GetFistScreen(helpType, language, firstscreen);
 
             return templates;
         }
 
         [Route("get_custom_help"), HttpGet]
-        public async Task<ICollection<Help>> GetCustomHelp([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "customhelp")]bool? customhelp = false)
+        public async Task<ICollection<Help>> GetCustomHelp([FromQuery(Name = "helpType")]ModalType helpType, [FromQuery(Name = "customhelp")]bool? customhelp = false)
         {
-            var templates = await _helpRepository.GetCustomHelp(templateType, customhelp);
+            var language = AppUser.Language.ToEnum<LanguageType>();
+            var templates = await _helpRepository.GetCustomHelp(helpType, language, customhelp);
 
             return templates;
         }
@@ -108,7 +116,7 @@ namespace PrimeApps.App.Controllers
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/help/get/" + helpEntity.Id, helpEntity);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/help/get/" + helpEntity.Id, helpEntity);
             //return Created(Request.Scheme + "://" + Request.Host + "/api/help/get/" + helpEntity.Id, helpEntity);
         }
 
@@ -141,6 +149,5 @@ namespace PrimeApps.App.Controllers
 
             return Ok();
         }
-
     }
 }

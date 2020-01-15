@@ -31,16 +31,31 @@ namespace PrimeApps.Model.Common.App
         [JsonProperty("icon"), DataMember(Name = "icon")]
         public string Icon { get; set; }
 
+        [JsonProperty("app_domain"), DataMember(Name = "app_domain")]
+        public string AppDomain { get; set; }
+
+        [JsonProperty("auth_domain"), DataMember(Name = "auth_domain")]
+        public string AuthDomain { get; set; }
+
         [JsonProperty("templet_id"), DataMember(Name = "templet_id")]
         public int TempletId { get; set; }
 
         /*[JsonProperty("organization_id"), DataMember(Name = "organization_id")]
         public int OrganizationId { get; set; }*/
 
-        [JsonProperty("status"), DataMember(Name = "status")]
-        public PublishStatus Status { get; set; }
-
         [JsonProperty("use_tenant_settings"), DataMember(Name = "use_tenant_settings")]
         public bool UseTenantSettings { get; set; }
+
+        [JsonProperty("clear_all_records"), DataMember(Name = "clear_all_records")]
+        public bool ClearAllRecords { get; set; }
+
+        [JsonProperty("enable_registration"), DataMember(Name = "enable_registration")]
+        public bool EnableRegistration { get; set; }
+
+        [JsonProperty("enable_api_registration"), DataMember(Name = "enable_api_registration")]
+        public bool EnableAPIRegistration { get; set; }
+
+        [JsonProperty("enable_ldap"), DataMember(Name = "enable_ldap")]
+        public bool EnableLDAP { get; set; }
     }
 }

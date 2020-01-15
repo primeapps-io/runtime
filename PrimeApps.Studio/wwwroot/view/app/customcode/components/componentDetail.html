@@ -58,91 +58,7 @@ git push</code>
                         <div data-title="Deployments" name="deployment" bs-pane>
 
                             <div class="tab-content">
-                                <table class="table" ng-show="loadingDeployments">
-                                    <thead>
-                                    <tr>
-                                        <th>Start Time</th>
-                                        <th>End Time</th>
-                                        <th>Version</th>
-                                        <th>Status</th>
-                                        <th width="50"></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                    <tr ng-repeat="item in placeholderArray">
-                                        <td>
-                                            <div class="animated-background"></div>
-                                        </td>
-                                        <td>
-                                            <div class="animated-background"></div>
-                                        </td>
-                                        <td>
-                                            <div class="animated-background"></div>
-                                        </td>
-                                        <td>
-                                            <div class="animated-background"></div>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="animated-background"></div>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                                <table class="table" ng-if="!loadingDeployments && deployments.length !== 0">
-                                    <thead>
-                                    <tr>
-                                        <th>Start Time</th>
-                                        <th>End Time</th>
-                                        <th>Version</th>
-                                        <th>Status</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr ng-repeat="deployment in deployments">
-                                        <td>{{getTime(deployment.start_time)}}</td>
-                                        <td>{{getTime(deployment.end_time)}}</td>
-                                        <td>{{deployment.version}}</td>
-                                        <td style="text-align: center;" ng-bind-html="getIcon(deployment.status)"></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                                <div class="table-pagination">
-                                    <div>
-                                        <nav aria-label="Page navigation">
-                                            <div paging
-                                                 text-first="&laquo;"
-                                                 ul-class="pagination"
-                                                 active-class="active"
-                                                 page="$parent.$parent.$parent.$parent.activePage"
-                                                 page-size="$parent.$parent.$parent.$parent.requestModel.limit"
-                                                 total="$parent.$parent.$parent.$parent.pageTotal"
-                                                 scroll-top="true"
-                                                 hide-if-empty="true"
-                                                 show-prev-next="true"
-                                                 show-first-last="true"
-                                                 text-next-class="fas fa-chevron-right"
-                                                 text-prev-class="fas fa-chevron-left"
-                                                 text-first-class="fas fa-step-backward"
-                                                 text-last-class="fas fa-step-forward"
-                                                 paging-action="$parent.$parent.$parent.$parent.changePage(page)">
-                                            </div>
-                                        </nav>
-                                    </div>
-                                    <div>
-                                        Total Deployment {{$parent.$parent.$parent.$parent.pageTotal}}
-                                    </div>
-                                    <div>
-                                        <span class="pagination-span">Items per page  </span>
-                                        <select ng-model="$parent.$parent.$parent.$parent.$parent.requestModel.limit" class="items-per-page-select" ng-change="$parent.$parent.$parent.$parent.$parent.changeOffset()">
-                                            <option ng-selected="true" value="10">10</option>
-                                            <option value="25">25</option>
-                                            <option value="50">50</option>
-                                            <option value="100">100</option>
-                                            <option value="150">150</option>
-                                            <option value="200">200</option>
-                                        </select>
-                                    </div>
+                                <div class="grid-theme grid-theme-center table-responsive" kendo-grid="grid" id="kendo-grid" k-options="mainGridOptions">
                                 </div>
                             </div>
 
@@ -171,13 +87,12 @@ git push</code>
                                                    required
                                                    maxlength="300"
                                                    focus="true"
-                                                   ng-model="component.label"/>
+                                                   ng-model="component.label" />
                                         </div>
                                         <div class="form-group"
                                              ng-class="{'has-error': functionFormValidation.$submitted && functionFormValidation.module_id.$invalid}">
                                             <label class="col-sm-4 required-field">Module <span class="required-label">({{'Common.Required' | translate }})</span></label>
-                                            <select
-                                                    name="module_id"
+                                            <select name="module_id"
                                                     class="form-control ng-animate-disabled col-sm-8"
                                                     required
                                                     ng-disabled="true"
@@ -196,7 +111,7 @@ git push</code>
                                                        required
                                                        ng-disabled="true"
                                                        maxlength="300"
-                                                       ng-model="$parent.$parent.$parent.$parent.$parent.content.url"/>
+                                                       ng-model="$parent.$parent.$parent.$parent.$parent.content.url" />
                                             </div>
                                             <div class="col-sm-6" style="padding-left: 0px !important;padding-right: 0px !important;">
                                                 <input type="text"
@@ -204,7 +119,7 @@ git push</code>
                                                        class="form-control ng-animate-disabled col-sm-6"
                                                        maxlength="300"
                                                        placeholder="id&name"
-                                                       ng-model="$parent.$parent.$parent.$parent.$parent.content.url_parameters"/>
+                                                       ng-model="$parent.$parent.$parent.$parent.$parent.content.url_parameters" />
                                             </div>
                                         </div>
                                         <div class="form-group"
@@ -212,8 +127,7 @@ git push</code>
                                             <label class="col-sm-12 required-field">Template</label>
                                             <div class="col-sm-11" style="padding-left: 0px !important;">
                                                 <i ng-if="!$parent.$parent.$parent.$parent.$parent.content.templateUrl" class="fas fa-refresh ng-scope pull-right" ng-class="filesLoading ? 'fa-spin' : ''" style="z-index:999;position: absolute;right: 30px;top: 5px;font-size: 15px;cursor: pointer;padding: 7px;color: #0d6faa;" ng-click="getFileList()"></i>
-                                                <select
-                                                        name="module_id"
+                                                <select name="module_id"
                                                         class="form-control ng-animate-disabled col-sm-8"
                                                         ng-show="!$parent.$parent.$parent.$parent.$parent.content.templateUrl"
                                                         ng-model="$parent.$parent.$parent.$parent.$parent.component.content.app.templateFile"
@@ -226,10 +140,10 @@ git push</code>
                                                        ng-show="$parent.$parent.$parent.$parent.$parent.content.templateUrl"
                                                        maxlength="300"
                                                        focus="true"
-                                                       ng-model="$parent.$parent.$parent.$parent.$parent.component.content.app.templateFile"/>
+                                                       ng-model="$parent.$parent.$parent.$parent.$parent.component.content.app.templateFile" />
                                             </div>
                                             <label class="checkbox-inline newinput col-sm-1" style="padding-right: 0px !important;margin-top: 10px;">
-                                                <input type="checkbox" ng-model="$parent.$parent.$parent.$parent.$parent.content.templateUrl"/>
+                                                <input type="checkbox" ng-model="$parent.$parent.$parent.$parent.$parent.content.templateUrl" />
                                                 <small style="font-size:100%;">Url</small>
                                                 <span></span>
                                             </label>
@@ -242,7 +156,18 @@ git push</code>
                                                    class="form-control ng-animate-disabled col-sm-6"
                                                    maxlength="300"
                                                    placeholder="SampleController"
-                                                   ng-model="$parent.$parent.$parent.$parent.$parent.component.content.app.controller"/>
+                                                   ng-model="$parent.$parent.$parent.$parent.$parent.component.content.app.controller" />
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-sm-12"> Environment </label>
+                                            <div ng-repeat="env in environments">
+                                                <label class="newinput checkbox-inline" style="margin-bottom: 5px;">
+                                                    <input type="checkbox" name="env{{$index}}" ng-model="env.selected" ng-change="environmentChange(env,$index)" ng-disabled="env.disabled" value="{{env.value}}" title="{{env.name}}" />{{env.name}}
+                                                    <span></span>
+                                                </label>
+                                                <br />
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
@@ -285,17 +210,17 @@ git push</code>
             <div class="tab-content" style="padding: 20px;">
                 <div class="markdown" style="padding-bottom: 20px;">
                     <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;padding-right: 20px !important;border-radius: 5;">
-                        <code><div class="animated-background"></div></code>
+                    <code><div class="animated-background"></div></code>
                     </pre>
                 </div>
                 <div class="markdown" style="padding-bottom: 20px;">
                     <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;padding-right: 20px !important;border-radius: 5;">
-                        <code><div class="animated-background"></div></code>
+                    <code><div class="animated-background"></div></code>
                     </pre>
                 </div>
                 <div class="markdown" style="padding-bottom: 20px;">
                     <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;padding-right: 20px !important;border-radius: 5;">
-                        <code><div class="animated-background"></div></code>
+                    <code><div class="animated-background"></div></code>
                     </pre>
                 </div>
             </div>

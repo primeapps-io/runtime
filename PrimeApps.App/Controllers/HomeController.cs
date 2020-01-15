@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -29,13 +30,16 @@ namespace PrimeApps.App.Controllers
         private IServiceScopeFactory _serviceScopeFactory;
         private IApplicationRepository _applicationRepository;
         private IUserRepository _userRepository;
+        private IEnvironmentHelper _environmentHelper;
 
-        public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IApplicationRepository applicationRepository, IUserRepository userRepository)
+        public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IApplicationRepository applicationRepository,
+            IUserRepository userRepository, IEnvironmentHelper environmentHelper)
         {
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
             _applicationRepository = applicationRepository;
             _userRepository = userRepository;
+            _environmentHelper = environmentHelper;
         }
 
         [Authorize]
@@ -205,7 +209,7 @@ namespace PrimeApps.App.Controllers
 
             var jsonString = "";
             var hasAdminRight = false;
-
+            var tenantLanguage = "en";
             var componentRepository = (IComponentRepository)HttpContext.RequestServices.GetService(typeof(IComponentRepository));
             var scriptRepository = (IScriptRepository)HttpContext.RequestServices.GetService(typeof(IScriptRepository));
             var moduleRepository = (IModuleRepository)HttpContext.RequestServices.GetService(typeof(IModuleRepository));
@@ -213,12 +217,14 @@ namespace PrimeApps.App.Controllers
             scriptRepository.CurrentUser = componentRepository.CurrentUser = moduleRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
 
             var components = await componentRepository.GetByType(ComponentType.Component);
+            components = _environmentHelper.DataFilter(components.ToList());
 
             if (components.Count > 0)
                 jsonString = JsonConvert.SerializeObject(components);
 
             var globalSettings = await scriptRepository.GetGlobalSettings();
-
+            globalSettings = _environmentHelper.DataFilter(globalSettings);
+            
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
             var modules = await moduleRepository.GetAll();
             var modulesJson = JsonConvert.SerializeObject(modules, serializerSettings);
@@ -238,7 +244,22 @@ namespace PrimeApps.App.Controllers
                     var userInfo = await userRepository.GetUserInfoAsync(userId);
 
                     if (userInfo != null)
-                        hasAdminRight = userInfo.profile.HasAdminRights;
+                    {
+                         hasAdminRight = userInfo.profile.HasAdminRights;
+                         tenantLanguage = userInfo.tenantLanguage;
+                    }
+                       
+                }
+                
+                var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                using (var platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))
+                {
+                    platformUserRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
+                    var platformUser = await platformUserRepository.GetSettings(userId);
+                    if (platformUser != null)
+                    {
+                        account["user"] = JObject.Parse(JsonConvert.SerializeObject(platformUser, serializerSettings));
+                    }
                 }
             }
 
@@ -246,6 +267,7 @@ namespace PrimeApps.App.Controllers
             ViewBag.Components = jsonString;
             ViewBag.HasAdminRight = hasAdminRight;
             ViewBag.TenantId = tenantId;
+            ViewBag.TenantLanguage = tenantLanguage;
             ViewBag.AppId = appId;
             ViewBag.EncryptedUserId = CryptoHelper.Encrypt(userId.ToString(), ".btA99KnTp+%','L");
             ViewBag.GlobalSettings = globalSettings != null ? globalSettings.Content : null;

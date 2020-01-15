@@ -127,8 +127,8 @@ angular.module('primeapps')
                                         }
                                         var lowerCaseContent = content[i].toLowerCase();
                                         if ($filter('filter')(arr, {
-                                                code: lowerCaseContent
-                                            }, true).length > 0) {
+                                            code: lowerCaseContent
+                                        }, true).length > 0) {
                                             var difference;
                                             var arrEl = $filter('filter')(arr, {
                                                 code: lowerCaseContent
@@ -340,7 +340,7 @@ angular.module('primeapps')
                                 mime_types: [{
                                     title: "Image files",
                                     extensions: "jpg,gif,png"
-                                }, ],
+                                },],
                                 max_file_size: "2mb"
                             },
                             resize: {
@@ -359,18 +359,18 @@ angular.module('primeapps')
                                         name: 'container',
                                         label: '',
                                         html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
-                                    }, ],
+                                    },],
                                     buttons: []
                                 });
                             },
-                            uploadProgress: function (uploader, file) {},
+                            uploadProgress: function (uploader, file) { },
                             fileUploaded: function (uploader, file, response) {
-                                uploader.settings.multipart_params.response_list="";
+                                uploader.settings.multipart_params.response_list = "";
                                 uploader.settings.multipart_params.upload_id = 0;
 
                                 tinymce.activeEditor.windowManager.close();
                                 var resp = JSON.parse(response.response);
-                                uploadSuccessCallback(resp.public_url, {
+                                uploadSuccessCallback(config.storage_host+resp.public_url, {
                                     alt: file.name
                                 });
                                 uploadSuccessCallback = null;
@@ -387,7 +387,7 @@ angular.module('primeapps')
                                 }
                             },
                             error: function (file, error) {
-                                this.settings.multipart_params.response_list="";
+                                this.settings.multipart_params.response_list = "";
                                 this.settings.multipart_params.upload_id = 0;
 
                                 switch (error.code) {
@@ -424,7 +424,7 @@ angular.module('primeapps')
                                 mime_types: [{
                                     title: "Email Attachments",
                                     extensions: "pdf,doc,docx,xls,xlsx,csv"
-                                }, ],
+                                },],
                                 max_file_size: "50mb"
                             }
                         },
@@ -440,17 +440,17 @@ angular.module('primeapps')
                                         name: 'container',
                                         label: '',
                                         html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
-                                    }, ],
+                                    },],
                                     buttons: []
                                 });
                             },
-                            uploadProgress: function (uploader, file) {},
+                            uploadProgress: function (uploader, file) { },
                             fileUploaded: function (uploader, file, response) {
-                                this.settings.multipart_params.response_list="";
+                                this.settings.multipart_params.response_list = "";
                                 this.settings.multipart_params.upload_id = 0;
 
                                 var resp = JSON.parse(response.response);
-                                uploadSuccessCallback(resp.public_url, {
+                                uploadSuccessCallback(config.storage_host + resp.public_url, {
                                     alt: file.name
                                 });
                                 uploadSuccessCallback = null;
@@ -468,9 +468,9 @@ angular.module('primeapps')
                                 }
                             },
                             error: function (file, error) {
-                                this.settings.multipart_params.response_list="";
+                                this.settings.multipart_params.response_list = "";
                                 this.settings.multipart_params.upload_id = 0;
-                                
+
                                 switch (error.code) {
                                     case -600:
                                         tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxFileSizeExceeded'));
@@ -556,110 +556,110 @@ angular.module('primeapps')
                     };
 
                     var arr = [{
-                            code: 'pazartesi',
-                            type: 'day',
-                            value: 1
-                        },
-                        {
-                            code: 'salı',
-                            type: 'day',
-                            value: 2
-                        },
-                        {
-                            code: '&ccedil;arşamba',
-                            type: 'day',
-                            value: 3
-                        },
-                        {
-                            code: 'perşembe',
-                            type: 'day',
-                            value: 4
-                        },
-                        {
-                            code: 'cuma',
-                            type: 'day',
-                            value: 5
-                        },
-                        {
-                            code: 'cumartesi',
-                            type: 'day',
-                            value: 6
-                        },
-                        {
-                            code: 'pazar',
-                            type: 'day',
-                            value: 7
-                        },
-                        {
-                            code: 'bug&uuml;n',
-                            type: 'dayTime',
-                            value: 0
-                        },
-                        {
-                            code: 'yarın',
-                            type: 'dayTime',
-                            value: 1
-                        },
-                        {
-                            code: 'ocak',
-                            type: 'month',
-                            value: 1
-                        },
-                        {
-                            code: 'şubat',
-                            type: 'month',
-                            value: 2
-                        },
-                        {
-                            code: 'mart',
-                            type: 'month',
-                            value: 3
-                        },
-                        {
-                            code: 'nisan',
-                            type: 'month',
-                            value: 4
-                        },
-                        {
-                            code: 'mayıs',
-                            type: 'month',
-                            value: 5
-                        },
-                        {
-                            code: 'haziran',
-                            type: 'month',
-                            value: 6
-                        },
-                        {
-                            code: 'temmuz',
-                            type: 'month',
-                            value: 7
-                        },
-                        {
-                            code: 'ağustos',
-                            type: 'month',
-                            value: 8
-                        },
-                        {
-                            code: 'eyl&uuml;l',
-                            type: 'month',
-                            value: 9
-                        },
-                        {
-                            code: 'ekim',
-                            type: 'month',
-                            value: 10
-                        },
-                        {
-                            code: 'kasım',
-                            type: 'month',
-                            value: 11
-                        },
-                        {
-                            code: 'aralık',
-                            type: 'month',
-                            value: 12
-                        }
+                        code: 'pazartesi',
+                        type: 'day',
+                        value: 1
+                    },
+                    {
+                        code: 'salı',
+                        type: 'day',
+                        value: 2
+                    },
+                    {
+                        code: '&ccedil;arşamba',
+                        type: 'day',
+                        value: 3
+                    },
+                    {
+                        code: 'perşembe',
+                        type: 'day',
+                        value: 4
+                    },
+                    {
+                        code: 'cuma',
+                        type: 'day',
+                        value: 5
+                    },
+                    {
+                        code: 'cumartesi',
+                        type: 'day',
+                        value: 6
+                    },
+                    {
+                        code: 'pazar',
+                        type: 'day',
+                        value: 7
+                    },
+                    {
+                        code: 'bug&uuml;n',
+                        type: 'dayTime',
+                        value: 0
+                    },
+                    {
+                        code: 'yarın',
+                        type: 'dayTime',
+                        value: 1
+                    },
+                    {
+                        code: 'ocak',
+                        type: 'month',
+                        value: 1
+                    },
+                    {
+                        code: 'şubat',
+                        type: 'month',
+                        value: 2
+                    },
+                    {
+                        code: 'mart',
+                        type: 'month',
+                        value: 3
+                    },
+                    {
+                        code: 'nisan',
+                        type: 'month',
+                        value: 4
+                    },
+                    {
+                        code: 'mayıs',
+                        type: 'month',
+                        value: 5
+                    },
+                    {
+                        code: 'haziran',
+                        type: 'month',
+                        value: 6
+                    },
+                    {
+                        code: 'temmuz',
+                        type: 'month',
+                        value: 7
+                    },
+                    {
+                        code: 'ağustos',
+                        type: 'month',
+                        value: 8
+                    },
+                    {
+                        code: 'eyl&uuml;l',
+                        type: 'month',
+                        value: 9
+                    },
+                    {
+                        code: 'ekim',
+                        type: 'month',
+                        value: 10
+                    },
+                    {
+                        code: 'kasım',
+                        type: 'month',
+                        value: 11
+                    },
+                    {
+                        code: 'aralık',
+                        type: 'month',
+                        value: 12
+                    }
                     ];
 
                 }]
@@ -755,18 +755,18 @@ angular.module('primeapps')
                                             name: 'container',
                                             label: '',
                                             html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
-                                        }, ],
+                                        },],
                                         buttons: []
                                     });
                                 },
-                                uploadProgress: function (uploader, file) {},
+                                uploadProgress: function (uploader, file) { },
                                 fileUploaded: function (uploader, file, response) {
-                                    uploader.settings.multipart_params.response_list="";
+                                    uploader.settings.multipart_params.response_list = "";
                                     uploader.settings.multipart_params.upload_id = 0;
 
                                     tinymce.activeEditor.windowManager.close();
                                     var resp = JSON.parse(response.response);
-                                    uploadSuccessCallback(resp.public_url, {
+                                    uploadSuccessCallback(config.storage_host + resp.public_url, {
                                         alt: file.name
                                     });
                                     uploadSuccessCallback = null;
@@ -783,7 +783,7 @@ angular.module('primeapps')
                                     }
                                 },
                                 error: function (file, error) {
-                                    this.settings.multipart_params.response_list="";
+                                    this.settings.multipart_params.response_list = "";
                                     this.settings.multipart_params.upload_id = 0;
 
                                     switch (error.code) {
@@ -821,7 +821,7 @@ angular.module('primeapps')
                                     mime_types: [{
                                         title: "Email Attachments",
                                         extensions: "pdf,doc,docx,xls,xlsx,csv"
-                                    }, ],
+                                    },],
                                     max_file_size: "50mb"
                                 }
                             },
@@ -837,13 +837,13 @@ angular.module('primeapps')
                                             name: 'container',
                                             label: '',
                                             html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
-                                        }, ],
+                                        },],
                                         buttons: []
                                     });
                                 },
-                                uploadProgress: function (uploader, file) {},
+                                uploadProgress: function (uploader, file) { },
                                 fileUploaded: function (uploader, file, response) {
-                                    this.settings.multipart_params.response_list="";
+                                    this.settings.multipart_params.response_list = "";
                                     this.settings.multipart_params.upload_id = 0;
 
                                     var resp = JSON.parse(response.response);
@@ -865,9 +865,9 @@ angular.module('primeapps')
                                     }
                                 },
                                 error: function (file, error) {
-                                    this.settings.multipart_params.response_list="";
+                                    this.settings.multipart_params.response_list = "";
                                     this.settings.multipart_params.upload_id = 0;
-                                    
+
                                     switch (error.code) {
                                         case -600:
                                             tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxFileSizeExceeded'));

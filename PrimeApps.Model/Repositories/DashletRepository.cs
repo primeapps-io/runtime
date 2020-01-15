@@ -42,7 +42,8 @@ namespace PrimeApps.Model.Repositories
                 var dashletView = new DashletView
                 {
                     Id = dashlet.Id,
-                    Name = dashlet.Name,
+                    NameEn = dashlet.NameEn,
+                    NameTr = dashlet.NameTr,
                     XTileHeight = dashlet.XTileHeight,
                     YTileLength = dashlet.YTileLength,
                     DashletType = dashlet.DashletType,
@@ -61,12 +62,16 @@ namespace PrimeApps.Model.Repositories
                         Chart = new ChartView
                         {
                             Id = dashlet.Chart.Id,
-                            Caption = dashlet.Chart.Caption,
+                            CaptionEn = dashlet.Chart.CaptionEn,
+                            CaptionTr = dashlet.Chart.CaptionTr,
                             ChartType = dashlet.Chart.ChartType,
-                            Subcaption = dashlet.Chart.SubCaption,
+                            SubcaptionEn = dashlet.Chart.SubCaptionEn,
+                            SubcaptionTr = dashlet.Chart.SubCaptionTr,
                             Theme = dashlet.Chart.Theme,
-                            Xaxisname = dashlet.Chart.XaxisName,
-                            Yaxisname = dashlet.Chart.YaxisName,
+                            XaxisnameEn = dashlet.Chart.XaxisNameEn,
+                            XaxisnameTr = dashlet.Chart.XaxisNameTr,
+                            YaxisnameEn = dashlet.Chart.YaxisNameEn,
+                            YaxisnameTr = dashlet.Chart.YaxisNameEn,
                             ReportId = dashlet.Chart.ReportId.ToString(),
                             ReportModuleId = dashlet.Chart.Report.ModuleId,
                             ReportGroupField = dashlet.Chart.Report.GroupField,
@@ -93,7 +98,8 @@ namespace PrimeApps.Model.Repositories
                         Icon = dashlet.Widget.Icon,
                         WidgetType = dashlet.Widget.WidgetType,
                         LoadUrl = dashlet.Widget.LoadUrl,
-                        Name = dashlet.Widget.Name,
+                        NameEn = dashlet.Widget.NameEn,
+                        NameTr = dashlet.Widget.NameTr,
                         WidgetData = widgetData != null && widgetData.Count > 0 ? widgetData[0] : null,
                         ViewId = dashlet.Widget.ViewId != null ? dashlet.Widget.ViewId.Value : 0,
                         ReportId = dashlet.Widget.ReportId != null ? dashlet.Widget.ReportId.Value : 0

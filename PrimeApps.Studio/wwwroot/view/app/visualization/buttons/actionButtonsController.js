@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ActionButtonsController', ['$rootScope', '$scope', '$filter', '$modal', 'helper', '$cache', 'ModuleService', '$location', 'ActionButtonsService',
-        function ($rootScope, $scope, $filter, $modal, helper, $cache, ModuleService, $location, ActionButtonsService) {
+    .controller('ActionButtonsController', ['$rootScope', '$scope', '$filter', '$modal', 'helper', '$cache', 'ModuleService', '$location', 'ActionButtonsService', '$localStorage',
+        function ($rootScope, $scope, $filter, $modal, helper, $cache, ModuleService, $location, ActionButtonsService, $localStorage) {
 
             $scope.id = $location.search().id ? $location.search().id : 0;
             if ($scope.id > 0)
@@ -11,59 +11,20 @@ angular.module('primeapps')
 
             $rootScope.breadcrumblist[2].title = 'Buttons';
             $scope.$parent.activeMenuItem = 'buttons';
-
+            $scope.environments = angular.copy(ActionButtonsService.getEnvironments());
             $scope.actionButtons = [];
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-            $scope.generator(10);
 
-            $scope.loading = true;
+            $scope.environmentChange = function (env, index, otherValue) {
+                otherValue = otherValue || false;
 
-            $scope.requestModel = {
-                limit: "10",
-                offset: 0
-            };
+                if (index === 2) {
+                    $scope.environments[1].selected = true;
+                    $scope.environments[1].disabled = !!env.selected;
 
-            $scope.activePage = 1;
-            ActionButtonsService.count($scope.id).then(function (response) {
-                $scope.pageTotal = response.data;
-                $scope.changePage(1);
-            });
-
-            $scope.changePage = function (page) {
-                $scope.loading = true;
-                if (page !== 1) {
-                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
-
-                    if (page > difference) {
-                        if (Math.abs(page - difference) < 1)
-                            --page;
-                        else
-                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    if (otherValue) {
+                        $scope.environments[2].selected = otherValue;
                     }
                 }
-
-                $scope.activePage = page;
-                var requestModel = angular.copy($scope.requestModel);
-                requestModel.offset = page - 1;
-
-                ActionButtonsService.find($scope.id, requestModel).then(function (response) {
-                    $scope.actionButtons = response.data;
-                    for (var i = 0; i < response.data.length; i++) {
-                        $scope.actionButtons[i].parent_module = $filter('filter')($rootScope.appModules, { id: response.data[i].module_id }, true)[0];
-                        $scope.actionButtons[i].action_type = $scope.actionButtons[i].type;
-                    }
-                    $scope.actionbuttonState = angular.copy($scope.actionButtons);
-                    $scope.loading = false;
-                });
-            };
-
-            $scope.changeOffset = function () {
-                $scope.changePage($scope.activePage);
             };
 
             $scope.moduleChanged = function (isNew, actionButton) {
@@ -88,25 +49,51 @@ angular.module('primeapps')
                     parameter.parameterName = null;
                     parameter.selectedModules = $scope.hookModules;
                     parameter.selectedField = null;
+                    emptyEnvironment();
+                    $scope.environments[0].selected = true;
                     $scope.hookParameters.push(parameter);
+
                     setWebHookHeaders();
 
                 } else {
+
                     $scope.currentActionButton = actionButton;
-                    $scope.currentActionButton.action_button_name = actionButton.name;
+                    $scope.currentActionButton.action_button_name = actionButton['name_en'];
                     $scope.currentActionButton.action_button_url = actionButton.url;
-                    $scope.currentActionButton.module = actionButton.parent_module;
+                    $scope.currentActionButton.module = actionButton.parent_module || actionButton.module;
+                    $scope.currentActionButton.trigger = actionButton.trigger_clone;
+                    $scope.currentActionButton.action_type = actionButton.type;
+
+                    if (actionButton.environment && actionButton.environment.indexOf(',') > -1)
+                        $scope.currentActionButton.environments = actionButton.environment.split(',');
+                    else
+                        $scope.currentActionButton.environments = actionButton.environment;
+
+                    if ($scope.currentActionButton.environments === '' || !$scope.currentActionButton.environments)
+                        emptyEnvironment();
+                    else
+                        angular.forEach($scope.currentActionButton.environments, function (envValue) {
+                            $scope.environmentChange($scope.environments[envValue - 1], envValue - 1, true);
+                        });
+
                     $scope.moduleChanged(false, actionButton);
                 }
                 $scope.currentActionButtonState = angular.copy($scope.currentActionButton);
                 $scope.actionButtonTypes = [
                     {
-                        type: "Modal",
+                        text: "Modal",
+                        name: "ModalFrame",
                         value: 3
                     },
                     {
-                        type: "Webhook",
+                        text: "Webhook",
+                        name: "Webhook",
                         value: 2
+                    },
+                    {
+                        text: "Script",
+                        name: "Script",
+                        value: 1
                     }
                 ];
 
@@ -120,26 +107,26 @@ angular.module('primeapps')
                         value: 2
                     },
                     {
-                        name: $filter('translate')('Setup.Modules.All'),
-                        value: 3
-                    },
-                    {
                         name: $filter('translate')('Setup.Modules.List'),
                         value: 4
                     },
                     {
                         name: $filter('translate')('Setup.Modules.Relation'),
                         value: 5
+                    },
+                    {
+                        name: $filter('translate')('Setup.Modules.All'),
+                        value: 3
                     }
                 ];
 
                 $scope.formModal = $scope.formModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/visualization/buttons/actionButtonForm.html',
-                        animation: 'am-fade-and-slide-right',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/visualization/buttons/actionButtonForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.formModal.$promise.then(function () {
                     $scope.formModal.show();
@@ -197,6 +184,7 @@ angular.module('primeapps')
             };
 
             $scope.save = function (actionButtonForm) {
+                $scope.actionButtons = $scope.grid.dataSource.data();
 
                 if (!actionButtonForm.$valid) {
                     if (actionButtonForm.$error.required)
@@ -215,7 +203,6 @@ angular.module('primeapps')
 
                 actionButton.module_id = $scope.module.id;
                 actionButton.template = 'template';
-
                 actionButton.trigger = actionButton.triggerType;
 
                 delete actionButton.triggerType;
@@ -269,6 +256,15 @@ angular.module('primeapps')
                     actionButton.method_type = null;
                 }
 
+                actionButton.environments = [];
+                angular.forEach($scope.environments, function (env) {
+                    if (env.selected)
+                        actionButton.environments.push(env.value);
+                });
+
+                delete actionButton.environment;
+                delete actionButton.environment_list;
+
                 //TODOOO
 
                 if (!actionButton.id) {
@@ -284,43 +280,39 @@ angular.module('primeapps')
 
                             $scope.saving = false;
                             $scope.formModal.hide();
-                            $scope.pageTotal++;
-                            $scope.changePage($scope.activePage);
+                            //$scope.pageTotal++;
+                            //$scope.changePage($scope.activePage);
                             toastr.success($filter('translate')('Setup.Modules.ActionButtonSaveSuccess'));
-
+                            $scope.grid.dataSource.read();
 
                         }).catch(function () {
-                        $scope.actionButtons = $scope.actionbuttonState;
+                            $scope.actionButtons = $scope.actionbuttonState;
 
-                        if ($scope.formModal) {
-                            $scope.formModal.hide();
-                            $scope.saving = false;
-                        }
-                    });
+                            if ($scope.formModal) {
+                                $scope.formModal.hide();
+                                $scope.saving = false;
+                            }
+                        });
                 } else {
                     ModuleService.updateActionButton(actionButton)
                         .then(function (response) {
                             $scope.saving = false;
                             $scope.formModal.hide();
-                            $scope.changePage($scope.activePage);
+                            // $scope.changePage($scope.activePage);
                             toastr.success($filter('translate')('Setup.Modules.ActionButtonSaveSuccess'));
-
+                            $scope.grid.dataSource.read();
                         }).catch(function () {
-                        $scope.actionButtons = $scope.actionbuttonState;
+                            $scope.actionButtons = $scope.actionbuttonState;
 
-                        if ($scope.formModal) {
-                            $scope.formModal.hide();
-                            $scope.saving = false;
-                        }
-                    });
+                            if ($scope.formModal) {
+                                $scope.formModal.hide();
+                                $scope.saving = false;
+                            }
+                        });
                 }
             };
 
             $scope.delete = function (actionButton, event) {
-                // delete actionButton.$$hashKey;
-                // var deleteModel = angular.copy($scope.actionButtons);
-                // var actionButtonIndex = helper.arrayObjectIndexOf(deleteModel, actionButton);
-                // deleteModel.splice(actionButtonIndex, 1);
                 var willDelete =
                     swal({
                         title: "Are you sure?",
@@ -330,23 +322,12 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
-
-                            var elem = angular.element(event.srcElement);
-                            angular.element(elem.closest('tr')).addClass('animated-background');
-
                             ModuleService.deleteActionButton(actionButton.id)
                                 .then(function () {
-                                    // var actionButtonIndex = helper.arrayObjectIndexOf($scope.actionButtons, actionButton);
-                                    // $scope.actionButtons.splice(actionButtonIndex, 1);
-
-                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
-                                    $scope.pageTotal--;
-                                    $scope.changePage($scope.activePage);
                                     toastr.success($filter('translate')('Setup.Modules.ActionButtonDeleteSuccess'));
+                                    $scope.grid.dataSource.read();
                                 })
                                 .catch(function () {
-
-                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     $scope.actionButtons = $scope.actionButtonState;
 
                                     if ($scope.formModal) {
@@ -362,9 +343,14 @@ angular.module('primeapps')
                 angular.forEach($scope.currentActionButton, function (value, key) {
                     $scope.currentActionButton[key] = $scope.currentActionButtonState[key];
                 });
-
+                emptyEnvironment();
                 $scope.formModal.hide();
             };
+
+            var emptyEnvironment = function () {
+                $scope.environments = [];
+                $scope.environments = angular.copy(ActionButtonsService.getEnvironments());
+            }
 
             //Webhook
             var webhookParameters = function (isNew, actionButton) {
@@ -463,6 +449,9 @@ angular.module('primeapps')
 
             var conditions = function (actionButton) {
 
+                if (actionButton.action_type === 'Scripting')
+                    actionButton.type = 1;
+
                 if (actionButton.action_type === 'Webhook')
                     actionButton.type = 2;
 
@@ -560,5 +549,135 @@ angular.module('primeapps')
                     // }, 1000);
                 }
             };
+
+            //For Kendo UI
+            $scope.goUrl = function (actionButton) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.showFormModal(angular.copy(actionButton)); //click event.
+                }
+            };
+
+            var accessToken = $localStorage.read('access_token');
+
+            $scope.mainGridOptions = {
+                dataSource: {
+                    type: "odata-v4",
+                    page: 1,
+                    pageSize: 10,
+                    serverPaging: true,
+                    serverFiltering: true,
+                    serverSorting: true,
+                    transport: {
+                        read: {
+                            url: "/api/action_button/find/" + $scope.id,
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: function (req) {
+                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
+                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
+                            }
+                        }
+                    },
+                    schema: {
+                        data: "items",
+                        total: "count",
+                        model: {
+                            id: "id",
+                            fields: {
+                                Module: { type: "string" },
+                                Name: { type: "string" },
+                                Type: { type: "enums" },
+                                Trigger: { type: "enums" }
+                            }
+                        },
+                        parse: function (data) {
+                            for (var i = 0; i < data.items.length; i++) {
+                                data.items[i].trigger_clone = angular.copy(data.items[i].trigger);
+                                delete data.items[i].trigger;
+                            }
+
+                            return data;
+                        }
+                    }
+
+                },
+                scrollable: false,
+                persistSelection: true,
+                sortable: true,
+                noRecords: true,
+                filterable: true,
+                filter: function (e) {
+                    if (e.filter && e.field !== 'Type' && e.field !== 'Trigger') {
+                        for (var i = 0; i < e.filter.filters.length; i++) {
+                            e.filter.filters[i].ignoreCase = true;
+                        }
+                    }
+                },
+                rowTemplate: function (e) {
+                    var trTemp = '<tr ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left"><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += '<td class="text-left"><span>' + e['name_' + $scope.language] + '</span></td>';
+                    trTemp += e.type === 'Scripting' ? '<td class="text-capitalize"> <span>Script</span></td > ' : e.type === 'ModalFrame' ? '<td class="text-capitalize"> <span>Modal</span></td > ' : '<td class="text-capitalize"> <span>' + e.type + '</span></td > ';
+                    trTemp += '<td class="text-capitalize"> <span>' + e.trigger_clone + '</span></td > ';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                altRowTemplate: function (e) {
+                    var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
+                    trTemp += '<td class="text-left"><span>' + e.module['label_' + $scope.language + '_plural'] + '</span></td>';
+                    trTemp += '<td class="text-left"><span>' + e['name_' + $scope.language] + '</span></td>';
+                    trTemp += e.type === 'Scripting' ? '<td class="text-capitalize"> <span>Script</span></td > ' : e.type === 'ModalFrame' ? '<td class="text-capitalize"> <span>Modal</span></td > ' : '<td class="text-capitalize"> <span>' + e.type + '</span></td > ';
+                    trTemp += '<td class="text-capitalize"> <span>' + e.trigger_clone + '</span></td > ';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    return trTemp;
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 10,
+                    pageSizes: [10, 25, 50, 100],
+                    buttonCount: 5,
+                    info: true,
+                },
+                columns: [
+                    {
+                        field: 'Module.LabelEnPlural',
+                        title: $filter('translate')('Setup.Modules.Name'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+                    {
+                        field: 'Name' + $scope.language,
+                        title: $filter('translate')('Setup.Modules.ActionButtonLabel'),
+                        headerAttributes: {
+                            'class': 'text-left'
+                        },
+                    },
+                    {
+                        field: 'Type',
+                        title: $filter('translate')('Setup.Modules.ActionType'),
+                        values: [
+                            { text: 'Modal', value: 'ModalFrame' },
+                            { text: 'Webhook', value: 'Webhook' },
+                            { text: 'Script', value: 'Scripting' }]
+                    },
+                    {
+                        field: 'Trigger',
+                        title: $filter('translate')('Setup.Modules.DisplayPage'),
+                        values: [
+                            { text: 'Detail', value: 'Detail' },
+                            { text: 'All', value: 'All' },
+                            { text: 'List', value: 'List' },
+                            { text: 'Relation', value: 'Relation' }]
+                    },
+                    {
+                        field: '',
+                        title: '',
+                        width: "90px"
+                    }]
+            };
+            //For Kendo UI
         }
     ]);

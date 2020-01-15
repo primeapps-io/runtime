@@ -57,9 +57,10 @@ namespace PrimeApps.Studio.Helpers
 
             //if (platformUser == null)
             //{
+            var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+
             if (tenantId != 0)
             {
-                var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
                 platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
                 var platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
 
@@ -74,9 +75,10 @@ namespace PrimeApps.Studio.Helpers
             else
             {
                 // context.HttpContext.Items.Add("app_id", appId);
-
+                var platformUser = platformUserRepository.Get(email);
                 previewMode = "app";
                 tenantId = appId;
+                userId = platformUser.Id;
             }
 
             return new CurrentUser { TenantId = tenantId, UserId = userId, PreviewMode = previewMode };
