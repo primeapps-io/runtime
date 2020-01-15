@@ -33,7 +33,7 @@ namespace PrimeApps.Model.Helpers
 			var PREConnectionString = configuration.GetConnectionString("PlatformDBConnection");
 			var rootPath = DataHelper.GetDataDirectoryPath(configuration, hostingEnvironment);
 			var root = Path.Combine(rootPath, "tenant-update-logs");
-
+			
 			if (!Directory.Exists(root))
 				Directory.CreateDirectory(root);
 
@@ -116,7 +116,7 @@ namespace PrimeApps.Model.Helpers
 				File.AppendAllText(logPath,
 					"\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." + Environment.NewLine);
 
-				var result = PostgresHelper.RunAll(PREConnectionString, dbName, sqls);
+				var result = PostgresHelper.RunAll(PREConnectionString, dbName, sqls, version);
 
 				if (!result)
 				{
