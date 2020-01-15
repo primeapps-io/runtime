@@ -14,18 +14,18 @@ angular.module('primeapps')
                 delete: function (id) {
                     return $http.delete(config.apiUrl + 'menu/delete/' + id);
                 },
-                createMenuItems: function (module, profileId) {
-                    return $http.post(config.apiUrl + 'menu/create/menu_items', {module: module, profileId: profileId});
+                createMenuItems: function (module, id) {
+                    return $http.post(config.apiUrl + 'menu/create/menu_items', { module: module, menuId: id });
                 },
                 updateMenuItems: function (menuLabel) {
-                    return $http.put(config.apiUrl + 'menu/update/menu_items', {menuLabel: menuLabel});
+                    return $http.put(config.apiUrl + 'menu/update/menu_items', { menuLabel: menuLabel });
                 },
                 deleteMenuItems: function (ids) {
                     return $http({
                         method: 'DELETE',
                         url: config.apiUrl + 'menu/delete/menu_items',
                         data: ids,
-                        headers: {'Content-type': 'application/json;charset=utf-8'}
+                        headers: { 'Content-type': 'application/json;charset=utf-8' }
                     });
                 },
                 getMenuById: function (id) {
@@ -34,8 +34,8 @@ angular.module('primeapps')
                 getAllMenus: function () {
                     return $http.get(config.apiUrl + 'menu/get_all');
                 },
-                getMenuItem: function (profileId) {
-                    return $http.get(config.apiUrl + 'menu/get/' + profileId);
+                getMenuItem: function (id) {
+                    return $http.get(config.apiUrl + 'menu/get/' + id);
                 },
 
                 getIcons: function () {
@@ -48,7 +48,10 @@ angular.module('primeapps')
 
                 find: function (data) {
                     return $http.post(config.apiUrl + 'menu/find', data);
-                }
+                },
+                getNotUsedProfiles: function (id) {
+                    return $http.get(config.apiUrl + 'menu/get_not_used_profiles' + (id ? '/?id=' + id : ''));
+                },
             };
         }]);
 

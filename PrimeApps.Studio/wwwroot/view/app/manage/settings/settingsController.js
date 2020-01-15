@@ -30,6 +30,8 @@ angular.module('primeapps')
                 appModel.icon = $scope.app.icon;
                 appModel.color = $scope.app.color;
                 appModel.enable_registration = $scope.app.setting.options.enable_registration;
+                appModel.enable_api_registration = $scope.app.setting.options.enable_api_registration;
+                appModel.enable_ldap = $scope.app.setting.options.enable_ldap;
                 appModel.clear_all_records = $scope.app.setting.options.clear_all_records;
 
                 appModel.app_domain = $scope.app.setting.app_domain;

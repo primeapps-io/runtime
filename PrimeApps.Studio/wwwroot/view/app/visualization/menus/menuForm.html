@@ -85,12 +85,29 @@
                                         <label class="control-label">
                                             {{'Setup.Nav.Tabs.Profiles'|translate}} <span class="required-label">({{'Common.Required' | translate }})</span>
                                         </label>
-                                        <select class="form-control"
+                                        <!--<select class="form-control"
                                                 name="profile_name"
                                                 ng-model="menu.profile"
                                                 ng-options="o as o['name_'+language] for o in newProfiles | filter:{deleted:'!true'}">
                                             <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
+                                        </select>-->
+
+                                        <tags-input name="profile_name" 
+                                                    class="form-control"
+                                                    ng-model="menu.profiles"
+                                                    display-property="name_{{language}}"
+                                                    key-property="id"
+                                                    placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+                                                    replace-spaces-with-dashes="false"
+                                                    add-from-autocomplete-only="true"
+                                                    min-length="1"
+                                                    ng-required="!menu.default">
+                                            <auto-complete source="profiles"
+                                                           min-length="0"
+                                                           load-on-focus="true"
+                                                           load-on-empty="true"
+                                                           max-results-to-show="9999"></auto-complete>
+                                        </tags-input>
                                     </div>
                                 </div>
                             </div>

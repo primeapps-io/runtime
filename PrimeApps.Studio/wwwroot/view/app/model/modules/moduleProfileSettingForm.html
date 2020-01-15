@@ -2,7 +2,7 @@
     <form name="profileForm" class="form-horizontal form-custom" ng-submit="save(profileForm);" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="flex-between">
-                <h4 class="modal-title">Modül Profil Ayarları</h4>
+                <h4 class="modal-title">Module Profile Setting</h4>
                 <div>
                     <ul class="list-unstyled list-inline">
                         <!-- Burası Modalın kaydet vazgeç buttonların bulunduğu yer  -->
@@ -39,7 +39,7 @@
                                             add-from-autocomplete-only="true"
                                             min-length="1"
                                             ng-required="true">
-                                    <auto-complete source="multiselect()"
+                                    <auto-complete source="profiles"
                                                    min-length="0"
                                                    load-on-focus="true"
                                                    load-on-empty="true"
@@ -64,39 +64,7 @@
                                        ng-required="true"
                                        maxlength="50"
                                        ng-model="currentProfileSetting.singularName">
-                            </div>
-                            <div class="form-group icon-search-list">
-                                <label class="col-sm-4">{{'Common.Icon' | translate}}</label>
-                                <ui-select ng-model="currentProfileSetting.menu_icon" ng-disabled="ctrl.disabled">
-                                    <ui-select-match placeholder="Select an icon">
-                                        <div>
-                                            <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
-                                            <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
-                                        </div>
-                                    </ui-select-match>
-                                    <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
-                                        <div ng-bind-html="icon.label"></div>
-                                    </ui-select-choices>
-                                </ui-select>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-12 control-label">{{'Setup.Modules.DisplayOnMenu' | translate}}</label>
-                                <div class="col-sm-12">
-                                    <label class="radio-inline newinput">
-                                        <input type="radio" name="templateStatus" ng-value="true" ng-model="currentProfileSetting.display" />
-                                        {{'Common.Yes' | translate}}<span></span>
-                                    </label>
-                                    <label class="radio-inline newinput">
-                                        <input type="radio" name="templateStatus" ng-value="false" ng-model="currentProfileSetting.display" />
-                                        {{'Common.No' | translate}}<span></span>
-                                    </label>
-                                </div>
-                            </div>
-                          <!--  <div class="form-group" ng-show="profileForm.$submitted && profileForm.$invalid">
-                                <div class="callout callout-danger">
-                                    <p ng-if="profileForm.$error.required">{{'Module.RequiredError' | translate}}</p>
-                                </div>
-                            </div>-->
+                            </div> 
                         </div>
                     </div>
                 </div>

@@ -70,17 +70,20 @@ cp "$basePath/setup-pde/plist/postgres-pre.plist" postgres-pre.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pre.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pre.plist
 launchctl load postgres-pre.plist
+cp postgres-pre.plist ~/Library/LaunchAgents/
 
 cp "$basePath/setup-pde/plist/postgres-pde.plist" postgres-pde.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pde.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pde.plist
 launchctl load postgres-pde.plist
+cp postgres-pde.plist ~/Library/LaunchAgents/
 
 cp "$basePath/setup-pde/plist/postgres-pre-test.plist" postgres-pre-test.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pre-test.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pre-test.plist
 launchctl load postgres-pre-test.plist
 launchctl start io.primeapps.postgres.pre-test
+cp postgres-pre-test.plist ~/Library/LaunchAgents/
 
 sleep 3 # Sleep 3 seconds for postgres services wakeup
 
@@ -123,17 +126,20 @@ cp "$basePath/setup-pde/plist/minio-pre.plist" minio-pre.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" minio-pre.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" minio-pre.plist
 launchctl load minio-pre.plist
+cp minio-pre.plist ~/Library/LaunchAgents/
 
 cp "$basePath/setup-pde/plist/minio-pde.plist" minio-pde.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" minio-pde.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" minio-pde.plist
 launchctl load minio-pde.plist
+cp minio-pde.plist ~/Library/LaunchAgents/
 
 cp "$basePath/setup-pde/plist/minio-pre-test.plist" minio-pre-test.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" minio-pre-test.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" minio-pre-test.plist
 launchctl load minio-pre-test.plist
 launchctl start io.primeapps.minio.pre-test
+cp minio-pre-test.plist ~/Library/LaunchAgents/
 
 # Stop Minio-PRE-Test, not required for now
 sleep 3 # Sleep 3 seconds for minio wakeup
@@ -154,17 +160,20 @@ cp "$basePath/setup-pde/plist/redis-pre.plist" redis-pre.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" redis-pre.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" redis-pre.plist
 launchctl load redis-pre.plist
+cp redis-pre.plist ~/Library/LaunchAgents/
 
 cp "$basePath/setup-pde/plist/redis-pde.plist" redis-pde.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" redis-pde.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" redis-pde.plist
 launchctl load redis-pde.plist
+cp redis-pde.plist ~/Library/LaunchAgents/
 
 cp "$basePath/setup-pde/plist/redis-pre-test.plist" redis-pre-test.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" redis-pre-test.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" redis-pre-test.plist
 launchctl load redis-pre-test.plist
 launchctl start io.primeapps.redis.pre-test
+cp redis-pre-test.plist ~/Library/LaunchAgents/
 
 # Stop Redis-PRE-Test, not required for now
 sleep 3 # Sleep 3 seconds for redis wakeup
@@ -203,10 +212,12 @@ cp "$basePath/setup-pde/plist/gitea-pde.plist" gitea-pde.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" gitea-pde.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" gitea-pde.plist
 launchctl load gitea-pde.plist
+cp gitea-pde.plist ~/Library/LaunchAgents/
 
 echo -e "${GREEN}Creating admin user...${NC}"
-curl -s -L http://localhost:3000 > /dev/null
-sleep 5 # Sleep 5 seconds for gitea wakeup
+
+while ! echo exit | lsof -i :3000; do sleep 1; done # try to wakeup gitea
+
 ./gitea admin create-user --username=primeapps --password='123456' --email='admin@primeapps.io' --admin=true --must-change-password=false --config="$pathAppIni"
 
 echo -e "${GREEN}Creating template repository...${NC}"

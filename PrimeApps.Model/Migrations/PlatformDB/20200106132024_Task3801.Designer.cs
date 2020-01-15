@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PrimeApps.Model.Context;
@@ -9,9 +10,10 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.PlatformDB
 {
     [DbContext(typeof(PlatformDBContext))]
-    partial class PlatformDBContextModelSnapshot : ModelSnapshot
+    [Migration("20200106132024_Task3801")]
+    partial class Task3801
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -113,9 +115,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.Property<bool>("EnableAPIRegistration")
                         .HasColumnName("enable_api_registration");
-
-                    b.Property<bool>("EnableLDAP")
-                        .HasColumnName("enable_ldap");
 
                     b.Property<bool>("EnableRegistration")
                         .HasColumnName("enable_registration");

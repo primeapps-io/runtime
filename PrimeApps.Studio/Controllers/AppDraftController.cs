@@ -40,6 +40,7 @@ namespace PrimeApps.Studio.Controllers
 			{
 				app.AuthTheme = res.AuthTheme;
 				app.AppTheme = res.AppTheme;
+                app.Options = res.Options;
 			}
 
 			return Ok(app);

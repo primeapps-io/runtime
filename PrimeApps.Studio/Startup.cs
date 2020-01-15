@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
 using Hangfire;
 using Hangfire.Redis;
-using Microsoft.AspNet.OData.Builder;
 using Microsoft.AspNet.OData.Extensions;
-using Microsoft.AspNet.OData.Query.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -21,13 +17,10 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OData.Edm;
-using Microsoft.OData.UriParser;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
 
@@ -235,5 +228,5 @@ namespace PrimeApps.Studio
                 routes.EnableDependencyInjection();
             });
         }
-    } 
+    }
 }

@@ -30,10 +30,10 @@ namespace PrimeApps.Model.Common.App
 
         [JsonProperty("icon"), DataMember(Name = "icon")]
         public string Icon { get; set; }
-        
+
         [JsonProperty("app_domain"), DataMember(Name = "app_domain")]
         public string AppDomain { get; set; }
-        
+
         [JsonProperty("auth_domain"), DataMember(Name = "auth_domain")]
         public string AuthDomain { get; set; }
 
@@ -51,5 +51,11 @@ namespace PrimeApps.Model.Common.App
 
         [JsonProperty("enable_registration"), DataMember(Name = "enable_registration")]
         public bool EnableRegistration { get; set; }
+
+        [JsonProperty("enable_api_registration"), DataMember(Name = "enable_api_registration")]
+        public bool EnableAPIRegistration { get; set; }
+
+        [JsonProperty("enable_ldap"), DataMember(Name = "enable_ldap")]
+        public bool EnableLDAP { get; set; }
     }
 }
