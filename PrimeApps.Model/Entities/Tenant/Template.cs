@@ -37,6 +37,9 @@ namespace PrimeApps.Model.Entities.Tenant
 
         public List<TemplateShares> Shares { get; set; }
 
+        [Column("system_type")]
+        public SystemType SystemType { get; set; }
+
         public virtual ICollection<TemplatePermission> Permissions { get; set; }
     }
 }

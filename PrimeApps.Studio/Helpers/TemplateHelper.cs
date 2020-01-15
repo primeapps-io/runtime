@@ -26,7 +26,8 @@ namespace PrimeApps.Studio.Helpers
                 Language = templateModel.Language == LanguageType.NotSet ? LanguageType.En : templateModel.Language,
                 Active = templateModel.Active,
                 SharingType = templateModel.SharingType,
-                Code = templateModel.Code
+                Code = templateModel.Code,
+                SystemType = templateModel.SystemType == SystemType.NotSet ? SystemType.System : templateModel.SystemType
             };
 
             if (templateModel.Permissions != null && templateModel.Permissions.Count > 0)
@@ -99,6 +100,7 @@ namespace PrimeApps.Studio.Helpers
                 template.Module = templateModel.Module;
                 template.UpdatedAt = DateTime.UtcNow;
                 template.Code = templateModel.Code;
+                template.SystemType = templateModel.SystemType == SystemType.NotSet ? SystemType.System : templateModel.SystemType;
 
                 if (templateModel.Permissions != null && templateModel.Permissions.Count > 0)
                 {

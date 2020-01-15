@@ -292,6 +292,7 @@ angular.module('primeapps')
                     $scope.changeModule(module.name);
                     $scope.newtemplate.moduleName = module;
                     $scope.newtemplate.isNew = false;
+                    $scope.newtemplate.editable = template.system_type === 'custom' ? true : false;
 
                     if (template.shares)
                         $scope.newtemplate.shares = template.shares;
@@ -341,6 +342,9 @@ angular.module('primeapps')
                 template.code = $scope.newtemplate.template_code;
                 template.language = $scope.newtemplate.language;
                 template.active = $scope.newtemplate.active;
+                $scope.changeTempType($scope.newtemplate.editable);
+                template.system_type = $scope.newtemplate.system_type;
+
                 template.permissions = [];
 
                 if ($scope.newtemplate.permissions && $scope.newtemplate.permissions.length > 0) {
@@ -389,7 +393,6 @@ angular.module('primeapps')
                         $scope.addNewEmailTemplateFormModal.hide();
                         $scope.grid.dataSource.read();
                         toastr.success($filter('translate')('Template.SuccessMessage'));
-                        $scope.pageTotal++;
                     });
                 }
 
@@ -429,7 +432,6 @@ angular.module('primeapps')
                                 $scope.moduleDisabled = true;
                             } else {
                                 $scope.newtemplate = {};
-                                $scope.newtemplate.system_type = 'custom';
                                 $scope.newtemplate.sharing_type = 'everybody';
                                 newtemplate.permissions = [];
                                 $scope.currentTemplate = null;
@@ -439,7 +441,6 @@ angular.module('primeapps')
 
                 } else {
                     $scope.newtemplate = {};
-                    $scope.newtemplate.system_type = 'custom';
                     $scope.newtemplate.sharing_type = 'everybody';
                     $scope.currentTemplate = null;
                     $scope.moduleDisabled = false;
@@ -490,6 +491,12 @@ angular.module('primeapps')
                     });
             };
 
+            $scope.changeTempType = function (value) {
+                if (value)
+                    $scope.newtemplate.system_type = 'custom';
+                else
+                    $scope.newtemplate.system_type = "system";
+            };
 
             $scope.goUrl = function (emailTemp) {
                 var selection = window.getSelection();
@@ -551,7 +558,7 @@ angular.module('primeapps')
                     trTemp += '<td class="text-left">' + emailTemp.name + '</td>';
                     trTemp += '<td class="text-left text-capitalize">' + emailTemp.module + '</td>';
                     trTemp += emailTemp.language === 'tr' ? '<td>Turkish</td>' : '<td>English</td>';
-                    trTemp += '<td>' + emailTemp.code + '</td>';
+                    trTemp += emailTemp.code ? '<td>' + emailTemp.code + '</td>' : '<td></td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
@@ -560,7 +567,7 @@ angular.module('primeapps')
                     trTemp += '<td class="text-left">' + emailTemp.name + '</td>';
                     trTemp += '<td class="text-left text-capitalize">' + emailTemp.module + '</td>';
                     trTemp += emailTemp.language === 'tr' ? '<td>Turkish</td>' : '<td>English</td>';
-                    trTemp += '<td>' + emailTemp.code + '</td>';
+                    trTemp += emailTemp.code ? '<td>' + emailTemp.code + '</td>' : '<td></td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
@@ -571,7 +578,7 @@ angular.module('primeapps')
                     buttonCount: 5,
                     info: true,
                 },
-                columns: [ 
+                columns: [
                     {
                         field: 'Name',
                         title: $filter('translate')('Setup.Templates.TemplateName'),
