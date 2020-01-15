@@ -163,7 +163,7 @@ namespace PrimeApps.Studio.Controllers
                 throw;
             }
 
-            var sensitiveFieldsSettings = await _settingRepository.GetByKeyAsync("sensitive_read_" + moduleEntity.Name);
+            var sensitiveFieldsSettings = await _settingRepository.GetByKeyAsync("sensitive_read_" + module);
             string[] sensitiveFields = null;
             if (sensitiveFieldsSettings != null)
                 sensitiveFields = sensitiveFieldsSettings.Value.Split(',');
@@ -303,19 +303,23 @@ namespace PrimeApps.Studio.Controllers
                 sensitiveFields = sensitiveFieldsSettings.Value.Split(',');
             if (!AppUser.HasAdminProfile && !AppUser.IsIntegrationUser && sensitiveFields != null && sensitiveFields.Length > 0)
             {
-                var newRecord = records;
+                var newRecords = new JArray();
+
                 for (int i = 0; i < records.Count; i++)
                 {
-                    var record = records[i];
-                    foreach (var obj in record)
+                    JObject record = (JObject)records[i];
+
+                    foreach (var property in record)
                     {
-                        JProperty jProperty = obj.ToObject<JProperty>();
-                        string propertyName = jProperty.Name;
-                        if (sensitiveFields.Contains(propertyName))
-                            newRecord[i][propertyName] = null;
+                        string propertyName = property.Key;
+
+                        if (sensitiveFields.Contains(propertyName.Trim()))
+                            record[propertyName] = null;
                     }
+                    newRecords.Add(record);
                 }
-                records = newRecord;
+
+                records = newRecords;
             }
 
             return Ok(records);
