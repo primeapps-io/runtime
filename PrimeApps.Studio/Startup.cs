@@ -8,7 +8,6 @@ using Hangfire;
 using Hangfire.Redis;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -24,7 +23,6 @@ using Newtonsoft.Json.Serialization;
 using PrimeApps.Model.Context;
 using PrimeApps.Studio.Helpers;
 using PrimeApps.Studio.Services;
-using StackExchange.Redis;
 
 namespace PrimeApps.Studio
 {
@@ -46,13 +44,6 @@ namespace PrimeApps.Studio
             AuthConfiguration(services, Configuration);
             var redisConnection = Configuration.GetConnectionString("RedisConnection");
             var redisConnectionPersist = redisConnection.Remove(redisConnection.Length - 1, 1) + "3";
-
-            ////Data Protection
-            //var redis = ConnectionMultiplexer.Connect(redisConnection);
-
-            //services.AddDataProtection()
-            //.PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys2")  
-            //.ProtectKeysWithDpapi();
 
             var hangfireStorage = new RedisStorage(redisConnectionPersist);
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);

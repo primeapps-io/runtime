@@ -1,11 +1,8 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -19,17 +16,12 @@ namespace PrimeApps.Studio.Controllers
         private IConfiguration _configuration;
         private IBackgroundTaskQueue _queue;
         private IMigrationHelper _migrationHelper;
-        private IDataProtector _dataProctector;
-        private IKeyManager _keyManager;
 
-        public HomeController(IConfiguration configuration, IBackgroundTaskQueue queue, IMigrationHelper migrationHelper, IDataProtectionProvider protectionProvider, IKeyManager keyManager)
+        public HomeController(IConfiguration configuration, IBackgroundTaskQueue queue, IMigrationHelper migrationHelper)
         {
             _configuration = configuration;
             _queue = queue;
             _migrationHelper = migrationHelper;
-            
-            _dataProctector = protectionProvider.CreateProtector("Home"); 
-            _keyManager = keyManager;
         }
 
         [Authorize]
@@ -39,15 +31,7 @@ namespace PrimeApps.Studio.Controllers
 
             var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
             await SetValues(userId);
-
-            //TODO REMOVE
-            var test = _dataProctector.Protect(HttpContext.User.FindFirst("email").Value);
-            _keyManager.CreateNewKey(activationDate: DateTimeOffset.Now, expirationDate: DateTimeOffset.Now.AddMonths(1));
-
-            // var result = _dataProctector.Unprotect(test);
-            var list = _keyManager.GetAllKeys();
-            //TODO REMOVE
-
+            
             return View();
         }
 

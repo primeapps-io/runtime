@@ -8,16 +8,10 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="IdentityServer.LdapExtension" Version="2.1.0" />
-        <PackageReference Include="IdentityServer4" Version="2.4.0" />
-        <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.4.0" />
-        <PackageReference Include="IdentityServer4.Contrib.RedisStore" Version="2.1.2" />
-        <PackageReference Include="IdentityServer4.EntityFramework" Version="2.4.0" />
-        <PackageReference Include="IdentityServer4.EntityFramework.Storage" Version="2.4.0" />
-		<PackageReference Include="IdentityServer4.KeyManagement" Version="1.0.10" />
-		<PackageReference Include="IdentityServer4.KeyManagement.EntityFramework" Version="1.0.10" />
+        <PackageReference Include="IdentityServer4" Version="2.3.2" />
+        <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.3.0" />
+        <PackageReference Include="IdentityServer4.EntityFramework" Version="2.3.2" />
         <PackageReference Include="Microsoft.AspNetCore.App" />
-        <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="2.2.0" />
-        <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="2.2.5" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.0" PrivateAssets="all" />
         <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.2.0" />
         <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="4.4.2" />
@@ -27,6 +21,7 @@
         <PackageReference Include="AWSSDK.S3" Version="3.3.104.36" />
         <PackageReference Include="Sentry" Version="1.1.0" />
         <PackageReference Include="Sentry.AspNetCore" Version="1.1.0" />
+        <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="2.2.0" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />

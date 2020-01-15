@@ -13,8 +13,6 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Amazon.Runtime;
 using Amazon;
 using Amazon.S3;
-using StackExchange.Redis;
-using Microsoft.AspNetCore.DataProtection;
 
 namespace PrimeApps.Auth
 {
@@ -31,15 +29,6 @@ namespace PrimeApps.Auth
         {
             //Register DI
             DIRegister(services, Configuration);
-
-            var redisConnection = Configuration.GetConnectionString("RedisConnection");
-
-            //Data Protection
-            var redis = ConnectionMultiplexer.Connect(redisConnection);
-
-            services.AddDataProtection()
-            .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys2");
-
 
             //Configure Identity
             IdentityConfiguration(services, Configuration);
@@ -149,7 +138,6 @@ namespace PrimeApps.Auth
                 ctx.Response.Headers.Add("Content-Security-Policy", "default-src 'self' * 'unsafe-inline' 'unsafe-eval' data:");
                 await next();
             });
-             
 
             app.UseStaticFiles();
             app.UseIdentityServer();

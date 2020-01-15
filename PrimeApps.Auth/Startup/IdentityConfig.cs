@@ -7,9 +7,8 @@ using IdentityServer.LdapExtension.Extensions;
 using IdentityServer.LdapExtension.UserModel;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
-using IdentityServer4.KeyManagement.EntityFramework;
-using IdentityServer4.Contrib.RedisStore;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,9 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using PrimeApps.Auth.Data;
 using PrimeApps.Auth.Models;
-using IdentityServer4.EntityFramework.Stores;
 using StackExchange.Redis;
-using Microsoft.AspNetCore.DataProtection;
 
 namespace PrimeApps.Auth
 {
@@ -27,6 +24,17 @@ namespace PrimeApps.Auth
     {
         public static void IdentityConfiguration(IServiceCollection services, IConfiguration configuration)
         {
+            #region Data Protection
+            
+            var redisConnection = configuration.GetConnectionString("RedisConnection");
+            var redisConnectionPersist = redisConnection.Remove(redisConnection.Length - 1, 1) + "2";
+
+            var redis = ConnectionMultiplexer.Connect(redisConnectionPersist);
+            services.AddDataProtection()
+                .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
+
+            #endregion
+            
             services.AddIdentity<ApplicationUser, IdentityRole>(config =>
                 {
                     config.Password.RequiredLength = 6;
@@ -41,7 +49,6 @@ namespace PrimeApps.Auth
                 .AddDefaultTokenProviders();
 
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-            var redis = ConnectionMultiplexer.Connect(configuration.GetConnectionString("RedisConnection"));
             var ser = services.AddIdentityServer(options =>
                 {
                     options.Events.RaiseErrorEvents = true;
@@ -56,31 +63,8 @@ namespace PrimeApps.Auth
 
                     options.EnableTokenCleanup = false;
                     options.TokenCleanupInterval = 3600; //3600 (1 hour) 
-                }) 
-                //.AddRedisCaching(options =>
-                //{
-                //    options.RedisConnectionString = configuration.GetConnectionString("RedisConnection");
-                //    options.KeyPrefix = "token";
-                //})
-                //////.AddPersistedGrantStore<PersistedGrantStore>()
-                //.AddClientStoreCache<ClientStore>()
-                //.AddResourceStoreCache<ResourceStore>()
-                //.AddCorsPolicyCache<IdentityServer4.EntityFramework.Services.CorsPolicyService>()
-                //.AddProfileServiceCache<CustomProfileService>()
-                .AddSigningCredential(LoadCertificate())
-                .AddSigningKeyManagement(options =>
-                {
-                    options.InitializationDuration = TimeSpan.FromSeconds(5);
-                    options.InitializationSynchronizationDelay = TimeSpan.FromSeconds(1);
-
-                    options.KeyActivationDelay = TimeSpan.FromSeconds(10);
-                    options.KeyExpiration = TimeSpan.FromDays(1);
-                    options.Licensee = "DEMO";
-                    options.License = "eyJTb2xkRm9yIjowLjAsIktleVByZXNldCI6NiwiU2F2ZUtleSI6ZmFsc2UsIkxlZ2FjeUtleSI6ZmFsc2UsIlJlbmV3YWxTZW50VGltZSI6IjAwMDEtMDEtMDFUMDA6MDA6MDAiLCJhdXRoIjoiREVNTyIsImV4cCI6IjIwMjAtMDItMTJUMDA6MDA6MDQuOTU2ODEwOSswMDowMCIsImlhdCI6IjIwMjAtMDEtMTNUMDA6MDA6MDQiLCJvcmciOiJERU1PIiwiYXVkIjo1fQ==.ARaUh90xR8Ctp7/TSelbcXIjdRdwC5f/UHjVdrVX38jObv7zXWbyq5kdVjvAGe23Gqx9a2wUkORv2xuqvm61BhUHuNQ4EIu81QWRmZyG6DJwmhVctgAAfHNiP/he0wIN9aCUoaU9hafm3EuIYjt9G+5COus/m9POJIr42CWtpvrv+ScMaFqb00fOtFAcXxZbvkhB15Ef61JZkh7VW9c4bWOQIvqMnJDLQwsIXxVIBUdDhjC+Ss+qBk1FYSUJcudqmx/wLXHpmKmHCSCa4GWtkoBIEZvX+Aa/rAm3MSOuibuJK6VDKmik3jIbsOfeWsKe/5PXkE/Lx4j+guVV4k0EWQfqH30/T3bm1PJotsVENn5CkdpHeWBJuuEDidJxnWHLIkcizHHkEQwpMkWeN08Jq8qnYs0tuRZy4KIVJo/r5SwSgPx8L1uvC5vpHAeUwgd4OjzQtdmWDEOagiT6Ew5agNF1JpLgkPIkLFkhnOo2gTvlySMeDCHB8kKObdaeO5jWULgbo0lJWaK9ZH0Jruh4TabrXsRtPrnzUM5qb4Vrrz8L//2KCvkX0CeAxxxgRuIX/jvp34XoQjMixTLErDvZrkz54uBjIJvY9GcJvm8MgPgc70Evl/im7CljoKylV04sH6YWHzL1VeVmZ6BaHZyZlMdXR5VS0wxjGoZL6fFf0Gg=";
                 })
-                 .ProtectKeysWithDataProtection()
-                 .PersistKeysToDatabase(new DatabaseKeyManagementOptions { ConfigureDbContext = options => options.UseNpgsql(configuration.GetConnectionString("test")) })
-                .IdentityServer;
+                .AddSigningCredential(LoadCertificate());
 
             //Fix for localhost identity cookie conflict
             var authority = configuration.GetValue("AppSettings:Authority", string.Empty);
