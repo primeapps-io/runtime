@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using PrimeApps.Model.Enums;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrimeApps.Model.Entities.Tenant
@@ -91,6 +93,9 @@ namespace PrimeApps.Model.Entities.Tenant
 
         [Column("system_code")]
         public string SystemCode { get; set; }
+
+        [Column("system_type"), DefaultValue(SystemType.Custom)]
+        public SystemType SystemType { get; set; }
 
         public virtual IList<ProfilePermission> Permissions { get; set; }
 

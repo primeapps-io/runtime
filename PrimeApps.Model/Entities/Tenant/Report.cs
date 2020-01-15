@@ -1,5 +1,6 @@
 ﻿using PrimeApps.Model.Enums;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -47,7 +48,7 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("filter_logic"), MaxLength(200)]
         public string FilterLogic { get; set; }
 
-        [Column("system_type")]
+        [Column("system_type"), DefaultValue(SystemType.Custom)]
         public SystemType SystemType { get; set; }
 
         public virtual Module Module { get; set; }

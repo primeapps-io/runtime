@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using PrimeApps.Model.Enums;
@@ -32,7 +33,7 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("filter_logic"), MaxLength(200)]
         public string FilterLogic { get; set; }
 
-        [Column("default")]
+        [Column("default"), DefaultValue(false)]
         public bool Default { get; set; }
 
         public virtual Module Module { get; set; }

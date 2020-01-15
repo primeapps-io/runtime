@@ -145,6 +145,9 @@ namespace PrimeApps.App.Controllers
             if (templateEntity == null)
                 return NotFound();
 
+            if (templateEntity.SystemType == SystemType.System && templateEntity.TemplateType == TemplateType.Email)
+                return Forbid();
+
             await _templateRepostory.DeleteSoft(templateEntity);
 
             return Ok();

@@ -31,7 +31,7 @@
                             <td class="profile-description">{{profile.description}}</td>
                             <td class="text-right">
                                 <a ng-disabled="profile.is_persistent" href="#/app/setup/profile?clone={{profile.id}}" class="btn btn-xs btn-custom">{{'Common.Copy' | translate}}</a>
-                                <button type="button" id="deleteButton{{profile.id}}" class="btn btn-xs btn-custom" ng-disabled="profile.is_persistent" ng-click="showDeleteForm(profile)">{{'Common.Remove' | translate}}</button>
+                                <button type="button" id="deleteButton{{profile.id}}" class="btn btn-xs btn-custom" ng-disabled="profile.is_persistent || profile.system_type === 'system'" ng-click="showDeleteForm(profile)">{{'Common.Remove' | translate}}</button>
                             </td>
                         </tr>
                         </tbody>

@@ -67,13 +67,16 @@ angular.module('primeapps')
                             if (clone) {
                                 var profile = $filter('filter')($scope.profiles, { id: clone }, true)[0];
                                 $scope.profile = profile;
-                                delete  $scope.profile.name;
-                                delete  $scope.profile.user_ids;
-                                delete  $scope.profile.description;
-                                delete  $scope.profile.is_persistent;
-                                delete  $scope.profile.CreatedBy;
-                                delete  $scope.profile.id;
-                                var setPageStart = $filter('filter')($scope.startPageList, {valueLower: $scope.profile.start_page}, true)[0];
+
+                                delete $scope.profile.name;
+                                delete $scope.profile.user_ids;
+                                delete $scope.profile.description;
+                                delete $scope.profile.is_persistent;
+                                delete $scope.profile.CreatedBy;
+                                delete $scope.profile.id;
+                                delete $scope.profile.system_type;
+
+                                var setPageStart = $filter('filter')($scope.startPageList, { valueLower: $scope.profile.start_page }, true)[0];
                                 $scope.profile.PageStart = setPageStart;
                                 $scope.profile.parent_id = $filter('filter')($scope.profiles, { id: profile.parent_id }, true)[0];
                             }
@@ -169,6 +172,12 @@ angular.module('primeapps')
                     } else {
                         $scope.profile.parent_id = 0;
                     }
+
+                    //TODO new ui change.
+                    $scope.profile.name_tr = $scope.profile.name;
+                    $scope.profile.name_en = $scope.profile.name;
+                    $scope.profile.description_tr = $scope.profile.description;
+                    $scope.profile.description_en = $scope.profile.description;
 
                     if (!$scope.profile.id) {
                         result = ProfileService.create($scope.profile);

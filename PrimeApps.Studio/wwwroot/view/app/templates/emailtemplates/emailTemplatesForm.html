@@ -144,8 +144,7 @@
                                               mentio-iframe-element="iframeElement['tinymceTemplateEdit']"></textarea>
                                     <script type="text/ng-template" id="tag-mentions.tpl">
                                         <ul class="ment-tags">
-                                            <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
-                                                class="list-group-item clearfix"
+                                            <li class="item list-group-item clearfix" mentio-menu-item="tag" ng-repeat="tag in items" 
                                                 ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
                                                 {{tag.label}}
                                             </li>
@@ -190,7 +189,7 @@
                                 <div class=" form-group">
                                     <label class="control-label newinput">
                                         {{'Setup.Modules.Editable' | translate}} <span data-toggle="tooltip" title="If you activate it, this record can be edited or deleted on your application from by users."><i class="fas fa-info-circle"></i></span>
-                                        <input type="checkbox" name="editable" ng-model="newtemplate.editable" ng-change="changeViewType(newtemplate.editable)" ng-checked="newtemplate.system_type === 'custom'" />
+                                        <input type="checkbox" name="editable" ng-model="newtemplate.editable" ng-change="changeTempType(newtemplate.editable)" ng-checked="newtemplate.system_type === 'custom'" />
                                         <span></span>
                                     </label>
                                 </div>

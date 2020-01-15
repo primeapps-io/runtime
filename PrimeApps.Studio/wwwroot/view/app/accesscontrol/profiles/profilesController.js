@@ -5,7 +5,7 @@ angular.module('primeapps')
     .controller('ProfilesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ProfilesService', 'LayoutService', '$http', 'config', '$popover', '$location', '$localStorage',
         function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ProfilesService, LayoutService, $http, config, $popover, $location, $localStorage) {
 
-            $scope.$parent.activeMenuItem = 'profiles'; 
+            $scope.$parent.activeMenuItem = 'profiles';
             $rootScope.breadcrumblist[2].title = 'Profiles';
             $scope.loading = true;
             $scope.moduleLead = $filter('filter')($rootScope.appModules, { name: 'leads' }, true)[0];
@@ -43,7 +43,7 @@ angular.module('primeapps')
                     "name": $filter('translate')('Layout.Menu.Homepage')
                 });
             }
-              
+
             function getProfile() {
                 $scope.profiles = null; //Geçici çözüm detaylı bakılacak.
                 $scope.loading = true;
@@ -145,6 +145,7 @@ angular.module('primeapps')
                 $scope.profileSubmit = true;
                 $scope.saving = true;
                 var result = null;
+                $scope.changeProfileType($scope.profile.editable);
 
                 if ($scope.profile.start_page.valueLower) {
                     $scope.profile.start_page = $scope.profile.start_page.valueLower;
@@ -196,6 +197,7 @@ angular.module('primeapps')
                     var data = [profile];
                     $scope.profile = ProfilesService.getProfiles(data, $rootScope.appModules, false)[0];
                     // $scope.profile = profile;//$filter('filter')($scope.profiles, { id: profile.id }, true)[0];
+                    $scope.profile.editable = $scope.profile.system_type === 'custom';
 
                     //Update
                     var setPageStart = $filter('filter')($scope.startPageList, { valueLower: $scope.profile.start_page }, true)[0];
@@ -218,6 +220,7 @@ angular.module('primeapps')
                 var setPageStart = $filter('filter')($scope.startPageList, { valueLower: $scope.profile.start_page }, true)[0];
                 $scope.profile.start_page = setPageStart;
                 $scope.profile.parent_id = $filter('filter')($scope.profiles, { id: profile.parent_id }, true)[0];
+                $scope.profile.editable = $scope.profile.system_type === 'custom';
             };
 
             $scope.showFormModal = function (profile, isCopy) {
@@ -255,6 +258,8 @@ angular.module('primeapps')
                     //Create
                     var dashboard = $filter('filter')($scope.startPageList, { value: "Dashboard" }, true)[0];
                     $scope.profile.start_page = dashboard;
+                    $scope.profile.editable = false;
+                    $scope.profile.system_type = 'system';
                 }
 
                 $scope.profileFormModal = $scope.profileFormModal || $modal({
@@ -301,6 +306,13 @@ angular.module('primeapps')
                                 });
                         }
                     });
+            };
+
+            $scope.changeProfileType = function (value) {
+                if (value)
+                    $scope.profile.system_type = 'custom';
+                else
+                    $scope.profile.system_type = "system";
             };
 
             $scope.goUrl = function (emailTemp) {
