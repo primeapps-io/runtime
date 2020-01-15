@@ -32,7 +32,6 @@ namespace PrimeApps.Admin.Helpers
     public interface IMigrationHelper
     {
         Task AppMigration(string schema, bool isLocal, string[] ids);
-        Task ApplyMigrations(List<int> ids);
     }
 
     public class MigrationHelper : IMigrationHelper
