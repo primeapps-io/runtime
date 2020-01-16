@@ -510,7 +510,7 @@ namespace PrimeApps.App.Helpers
                     await _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest);
             }
 
-            var sensitiveFieldsSettings = await settingRepository.GetByKeyAsync("sensitive_write_" + module.Id);
+            var sensitiveFieldsSettings = await settingRepository.GetByKeyAsync("sensitive_write_" + module.Name);
             string[] sensitiveFields = null;
 
             if (sensitiveFieldsSettings != null)
@@ -522,8 +522,7 @@ namespace PrimeApps.App.Helpers
                 {
                     if (sensitiveFields.Contains(r.Key))
                     {
-                        modelState.AddModelError(module.Name, "Unauthorized");
-                        return StatusCodes.Status403Forbidden;
+                        record["freeze"] = true;
                     }
                 }
             }

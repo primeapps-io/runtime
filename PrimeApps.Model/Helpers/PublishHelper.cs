@@ -33,7 +33,7 @@ namespace PrimeApps.Model.Helpers
 			var PREConnectionString = configuration.GetConnectionString("PlatformDBConnection");
 			var rootPath = DataHelper.GetDataDirectoryPath(configuration, hostingEnvironment);
 			var root = Path.Combine(rootPath, "tenant-update-logs");
-
+			
 			if (!Directory.Exists(root))
 				Directory.CreateDirectory(root);
 
@@ -116,7 +116,7 @@ namespace PrimeApps.Model.Helpers
 				File.AppendAllText(logPath,
 					"\u001b[90m" + DateTime.Now + "\u001b[39m" + " : Scripts applying..." + Environment.NewLine);
 
-				var result = PostgresHelper.RunAll(PREConnectionString, dbName, sqls);
+				var result = PostgresHelper.RunAll(PREConnectionString, dbName, sqls, version);
 
 				if (!result)
 				{
@@ -812,7 +812,7 @@ namespace PrimeApps.Model.Helpers
 					DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) +
 					"', NULL, 'f', '" + app["name"] + "', '" + app["label"] + "', '" + app["description"] + "', '" +
 					app["logo"] + "', '" + app["use_tenant_settings"] + "', 0, '" + secret + "');",
-					$"INSERT INTO \"public\".\"app_settings\"(\"app_id\", \"app_domain\", \"auth_domain\", \"currency\", \"culture\", \"time_zone\", \"language\", \"auth_theme\", \"app_theme\", \"mail_sender_name\", \"mail_sender_email\", \"google_analytics_code\", \"tenant_operation_webhook\", \"registration_type\", \"enable_registration\") VALUES (" +
+					$"INSERT INTO \"public\".\"app_settings\"(\"app_id\", \"app_domain\", \"auth_domain\", \"currency\", \"culture\", \"time_zone\", \"language\", \"auth_theme\", \"app_theme\", \"mail_sender_name\", \"mail_sender_email\", \"google_analytics_code\", \"tenant_operation_webhook\", \"registration_type\", \"enable_registration\", \"enable_api_registration\") VALUES (" +
 					app["id"] + ", '" + appUrl + "', '" + authUrl + "', " +
 					(!string.IsNullOrEmpty(app["setting"]["currency"].ToString())
 						? "'" + app["setting"]["currency"] + "'"
@@ -846,7 +846,9 @@ namespace PrimeApps.Model.Helpers
 						: "NULL") + ", " +
 					(!string.IsNullOrEmpty(app["setting"]["tenant_operation_webhook"].ToString())
 						? "'" + app["setting"]["tenant_operation_webhook"] + "'"
-						: "NULL") + ", 2, '" + options["enable_registration"].ToString().Substring(0, 1).ToLower() +
+						: "NULL") + ", 2, '" + 
+					options["enable_registration"].ToString().Substring(0, 1).ToLower() +"','" +
+					options["enable_api_registration"].ToString().Substring(0, 1).ToLower() +
 					"');"
 				};
 
@@ -913,11 +915,12 @@ namespace PrimeApps.Model.Helpers
 						: "NULL") + ", tenant_operation_webhook = " +
 					(!string.IsNullOrEmpty(app["setting"]["tenant_operation_webhook"].ToString())
 						? "'" + app["setting"]["tenant_operation_webhook"] + "'"
-						: "NULL") + ", registration_type = 2, enable_registration = '" +
-					options["enable_registration"].ToString().Substring(0, 1).ToLower() + "' WHERE app_id = " +
-					app["id"] + ";"
+						: "NULL") + ","+
+					"registration_type = 2,"+
+					"enable_registration = '" + options["enable_registration"].ToString().Substring(0, 1).ToLower() + "',"+
+					"enable_api_registration = '" + options["enable_api_registration"].ToString().Substring(0, 1).ToLower() + "'" +
+					" WHERE app_id = " + app["id"] + ";"
 				};
-
 
 				foreach (var sql in sqls)
 				{
