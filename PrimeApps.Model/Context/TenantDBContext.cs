@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Entities.Tenant;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using System;
 using System.Linq;
@@ -71,10 +72,10 @@ namespace PrimeApps.Model.Context
             System.Collections.Generic.IEnumerable<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry> entities = ChangeTracker.Entries().Where(x => x.Entity is BaseEntity && (x.State == EntityState.Added || x.State == EntityState.Modified));
 
             var previewMode = "";
-            
-            if(_configuration != null)
+
+            if (_configuration != null)
                 previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
-            
+
             foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entity in entities)
             {
                 if (entity.State == EntityState.Added)
@@ -173,10 +174,19 @@ namespace PrimeApps.Model.Context
                 .WithOne(x => x.Profile)
                 .HasForeignKey(x => x.ProfileId);
 
+            modelBuilder.Entity<Profile>()
+                .HasOne(x => x.CreatedBy)
+                .WithMany()
+                .HasForeignKey(x => x.CreatedById);
+
+            modelBuilder.Entity<Profile>(q => { q.Property(x => x.SystemType).HasDefaultValue(SystemType.Custom); });
+
             modelBuilder.Entity<Role>()
                 .HasMany(x => x.Users)
                 .WithOne(x => x.Role)
                 .HasForeignKey(x => x.RoleId);
+
+            modelBuilder.Entity<Role>(q => { q.Property(x => x.SystemType).HasDefaultValue(SystemType.Custom); });
 
             modelBuilder.Entity<ProfilePermission>()
                 .HasOne(x => x.Profile)
@@ -215,6 +225,8 @@ namespace PrimeApps.Model.Context
                 .WithMany(t => t.SharedTemplates)
                 .HasForeignKey(pt => pt.UserId);
 
+            modelBuilder.Entity<Template>(q => { q.Property(x => x.SystemType).HasDefaultValue(SystemType.Custom); });
+
             modelBuilder.Entity<NoteLikes>()
                 .HasKey(t => new { t.UserId, t.NoteId });
 
@@ -241,10 +253,7 @@ namespace PrimeApps.Model.Context
                 .WithMany(t => t.SharedReports)
                 .HasForeignKey(pt => pt.UserId);
 
-            modelBuilder.Entity<Profile>()
-                .HasOne(x => x.CreatedBy)
-                .WithMany()
-                .HasForeignKey(x => x.CreatedById);
+            modelBuilder.Entity<Report>(q => { q.Property(x => x.SystemType).HasDefaultValue(SystemType.Custom); });
 
             BuildIndexes(modelBuilder);
         }
@@ -286,7 +295,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Chart>().HasIndex(x => x.Deleted);
 
             //Components
-            modelBuilder.Entity<Component>().HasIndex(x => x.Environment); 
+            modelBuilder.Entity<Component>().HasIndex(x => x.Environment);
             modelBuilder.Entity<Component>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Component>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Component>().HasIndex(x => x.Deleted);
@@ -515,7 +524,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Workflow>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Workflow>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Workflow>().HasIndex(x => x.Deleted);
-             
+
             //WorkflowFilter
             modelBuilder.Entity<WorkflowFilter>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<WorkflowFilter>().HasIndex(x => x.UpdatedAt);

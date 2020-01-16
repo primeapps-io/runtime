@@ -91,7 +91,8 @@ namespace PrimeApps.Model.Repositories
                 ReportsTo = x.ReportsToId,
                 ShareData = x.ShareData,
                 CreatedBy = x.CreatedById,
-                Users = x.Users.Select(y => y.Id).ToList()
+                Users = x.Users.Select(y => y.Id).ToList(),
+                SystemType = x.SystemType
             }).ToListAsync();
         }
 
@@ -176,10 +177,10 @@ namespace PrimeApps.Model.Repositories
             //    choosenRole.UpdatedById = tenantId;
 
             user.Role = choosenRole;
-			user.RoleId = roleID;
+            user.RoleId = roleID;
 
             string userIdString = userId.ToString();
-            ICollection<string> userIdArray = new List<string>() {userIdString};
+            ICollection<string> userIdArray = new List<string>() { userIdString };
 
             if (choosenRole.ShareData)
                 choosenRole.OwnersList.Add(userIdString);
@@ -208,7 +209,7 @@ namespace PrimeApps.Model.Repositories
             var choosenRole = await DbContext.Roles.FindAsync(roleID);
             var user = await DbContext.Users.FindAsync(UserId);
             string userIdString = userId.ToString();
-            ICollection<string> userIdArray = new List<string>() {userIdString};
+            ICollection<string> userIdArray = new List<string>() { userIdString };
 
             choosenRole.OwnersList.Remove(userIdString);
             await RemoveOwnersRecursiveAsync(choosenRole, userIdArray);
@@ -355,6 +356,7 @@ namespace PrimeApps.Model.Repositories
             roleToUpdate.LabelEn = role.LabelEn;
             roleToUpdate.LabelTr = role.LabelTr;
             roleToUpdate.ShareData = role.ShareData;
+            roleToUpdate.SystemType = role.SystemType;
             var userID = string.Empty;
             //The moved Role has been passed to a temporary variable to avoid spoofing the owner list.
             var tempOwnerList = roleToUpdate.OwnersList;

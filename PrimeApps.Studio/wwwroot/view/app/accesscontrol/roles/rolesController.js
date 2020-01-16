@@ -24,7 +24,7 @@ angular.module('primeapps')
             };
 
             $scope.rolesToTree = function (roles) {
-                var root = $filter('filter')(roles, {master: true})[0];
+                var root = $filter('filter')(roles, { master: true })[0];
                 var rootItem = $scope.getItem(root);
                 var subs = $scope.getChildren(roles, rootItem);
                 var tree = [];
@@ -51,7 +51,7 @@ angular.module('primeapps')
             };
 
             $scope.getChildren = function (roles, root) {
-                var children = $filter('filter')(roles, {reports_to: root.id}, true);
+                var children = $filter('filter')(roles, { reports_to: root.id }, true);
                 return children;
             };
 
@@ -74,8 +74,8 @@ angular.module('primeapps')
                 $scope.selectedRoleId = roleId;
                 //Delete butonuna basmadan önce adam edit butonuna basma filtreden dolayı roller tam gelmiyor.Bu yüzden tekrardan roles = rolesState yapıyoruz
                 $scope.roles = angular.copy($scope.rolesState);
-                $scope.transferRoles = $filter('filter')($scope.roles, {id: '!' + roleId});
-                $scope.transferRoles = $filter('filter')($scope.transferRoles, {reports_to: '!' + roleId});
+                $scope.transferRoles = $filter('filter')($scope.roles, { id: '!' + roleId });
+                $scope.transferRoles = $filter('filter')($scope.transferRoles, { reports_to: '!' + roleId });
 
                 ////TODO: Add loop here
                 //var reportsTo = $filter('filter')($scope.transferRoles, {reports_to: roleId})[0];
@@ -142,39 +142,41 @@ angular.module('primeapps')
                     $scope.role.share_data = false;
                     $scope.role_change = false;
                     $scope.reportsTo_disabled = true;
+                    $scope.role.editable = $scope.role.system_type === 'custom' ? true : false;
+
                     if (!$scope.id)
                         $scope.reportsTo_disabled = false;
 
-                   // RolesService.getAll()
-                       // .then(function (response) {
-                          //  $scope.allRoles = response.data;
-                            $scope.roles = $filter('filter')($scope.allRoles, {id: '!' + $scope.id});
-                            
-                            if ($scope.id) {
-                                checkChildRole($scope.id);
-                                $scope.role = $filter('filter')($scope.allRoles, {id: $scope.id}, true)[0];
-                                $scope.role.label = $scope.role['label_' + $scope.language];
-                                $scope.role.description = $scope.role['description_' + $scope.language];
+                    // RolesService.getAll()
+                    // .then(function (response) {
+                    //  $scope.allRoles = response.data;
+                    $scope.roles = $filter('filter')($scope.allRoles, { id: '!' + $scope.id });
 
-                                if (!$scope.role.master) {
-                                    $scope.role.reports_to = $filter('filter')($scope.allRoles, {id: $scope.role.reports_to}, true)[0].id;
-                                }
+                    if ($scope.id) {
+                        checkChildRole($scope.id);
+                        $scope.role = $filter('filter')($scope.allRoles, { id: $scope.id }, true)[0];
+                        $scope.role.label = $scope.role['label_' + $scope.language];
+                        $scope.role.description = $scope.role['description_' + $scope.language];
 
-                                if ($scope.role.share_data === undefined || $scope.role.share_data === null) {
-                                    $scope.role.share_data = false;
-                                }
+                        if (!$scope.role.master) {
+                            $scope.role.reports_to = $filter('filter')($scope.allRoles, { id: $scope.role.reports_to }, true)[0].id;
+                        }
 
-                                // angular.forEach($scope.role.users, function (userId) {
-                                //     var user = $filter('filter')($rootScope.workgroup.users, { id: userId }, true)[0];
-                                //
-                                //     if (user)
-                                //         $scope.roleUsers.push($filter('filter')($rootScope.users, { id: user.Id }, true)[0]);
-                                // });
-                            } else if (reportsTo) {
-                                $scope.role.reports_to = reportsTo;
-                            }
-                            $scope.loading = false;
-                       // });
+                        if ($scope.role.share_data === undefined || $scope.role.share_data === null) {
+                            $scope.role.share_data = false;
+                        }
+
+                        // angular.forEach($scope.role.users, function (userId) {
+                        //     var user = $filter('filter')($rootScope.workgroup.users, { id: userId }, true)[0];
+                        //
+                        //     if (user)
+                        //         $scope.roleUsers.push($filter('filter')($rootScope.users, { id: user.Id }, true)[0]);
+                        // });
+                    } else if (reportsTo) {
+                        $scope.role.reports_to = reportsTo;
+                    }
+                    $scope.loading = false;
+                    // });
                 } else {
                     //Editte roller filtrelendiği için rolleri tekrardan eski değerine eşitliyoruz
                     $scope.roles = angular.copy($scope.rolesState);
@@ -200,6 +202,7 @@ angular.module('primeapps')
                 if (roleForm.$valid) {
                     $scope.saving = true;
 
+                    $scope.changeRoleType($scope.role.editable);
                     var role = angular.copy($scope.role);
                     var result = null;
                     var roleChange = $scope.role_change;
@@ -234,8 +237,8 @@ angular.module('primeapps')
                     }).finally(function () {
                         $scope.saving = false;
                     });
-                } else if(roleForm.$invalid){
-                    
+                } else if (roleForm.$invalid) {
+
                     if (roleForm.$error.required)
                         toastr.error($filter('translate')('Module.RequiredError'));
 
@@ -246,16 +249,23 @@ angular.module('primeapps')
             $scope.roleUpdateChange = function () {
                 $scope.role_change = true;
             };
-            
+
             function checkChildRole(id) {
                 //Gelen roleId'ye ait alt rollerin olup olmadığını kontrol ediyoruz
-               var children  = $filter('filter')($scope.roles, {reports_to:  id});
-               //Mevcut roller arasında resports_to idleri gelen rolün idsine eşit olanları filtreliyoruz.
-               $scope.roles = $filter('filter')($scope.roles, {reports_to: '!' + id});
-               
-                angular.forEach(children,function (child) {
+                var children = $filter('filter')($scope.roles, { reports_to: id });
+                //Mevcut roller arasında resports_to idleri gelen rolün idsine eşit olanları filtreliyoruz.
+                $scope.roles = $filter('filter')($scope.roles, { reports_to: '!' + id });
+
+                angular.forEach(children, function (child) {
                     checkChildRole(child.id);
                 });
             }
+
+            $scope.changeRoleType = function (value) {
+                if (value)
+                    $scope.role.system_type = 'custom';
+                else
+                    $scope.role.system_type = "system";
+            };
         }
     ]);

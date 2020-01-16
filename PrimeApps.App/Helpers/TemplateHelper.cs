@@ -23,7 +23,7 @@ namespace PrimeApps.App.Helpers
                 Language = templateModel.Language,
                 Active = templateModel.Active,
                 SharingType = templateModel.SharingType,
-                SystemType =  SystemType.Custom
+                SystemType = SystemType.Custom
             };
 
             if (templateModel.Permissions != null && templateModel.Permissions.Count > 0)
@@ -58,7 +58,8 @@ namespace PrimeApps.App.Helpers
                 Content = templateModel.Content,
                 Language = templateModel.Language,
                 Active = templateModel.Active,
-                SharingType = templateModel.SharingType
+                SharingType = templateModel.SharingType,
+                SystemType = SystemType.Custom
             };
 
             if (templateModel.Permissions != null && templateModel.Permissions.Count > 0)

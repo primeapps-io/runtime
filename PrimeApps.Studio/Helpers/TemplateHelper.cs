@@ -63,7 +63,8 @@ namespace PrimeApps.Studio.Helpers
                 Content = templateModel.Content,
                 Language = templateModel.Language == LanguageType.NotSet ? LanguageType.En : templateModel.Language,
                 Active = templateModel.Active,
-                SharingType = templateModel.SharingType
+                SharingType = templateModel.SharingType,
+                SystemType = templateModel.SystemType == SystemType.NotSet ? SystemType.System : templateModel.SystemType
             };
 
             if (templateModel.Permissions != null && templateModel.Permissions.Count > 0)

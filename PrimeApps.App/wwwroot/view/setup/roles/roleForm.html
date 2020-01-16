@@ -1,93 +1,94 @@
 <div class="sub-menu">
-	<ul class="nav nav-tabs">
-		<li><a href="#/app/setup/users">{{'Setup.Nav.Tabs.Users' | translate}}</a></li>
-		<li><a href="#/app/setup/profiles">{{'Setup.Nav.Tabs.Profiles' | translate}}</a></li>
-		<li ng-if="!branchAvailable" class="active"><a href="#/app/setup/roles">{{'Setup.Nav.Tabs.Roles' | translate}}</a></li>
-		<li><a href="#/app/setup/usergroups">{{'Setup.Nav.Tabs.UserGroups' | translate}}</a></li>
-		<li><a href="#/app/setup/usercustomshares">{{'Setup.UserCustomShares.Title' | translate}}</a></li>
-	</ul>
+    <ul class="nav nav-tabs">
+        <li><a href="#/app/setup/users">{{'Setup.Nav.Tabs.Users' | translate}}</a></li>
+        <li><a href="#/app/setup/profiles">{{'Setup.Nav.Tabs.Profiles' | translate}}</a></li>
+        <li ng-if="!branchAvailable" class="active"><a href="#/app/setup/roles">{{'Setup.Nav.Tabs.Roles' | translate}}</a></li>
+        <li><a href="#/app/setup/usergroups">{{'Setup.Nav.Tabs.UserGroups' | translate}}</a></li>
+        <li><a href="#/app/setup/usercustomshares">{{'Setup.UserCustomShares.Title' | translate}}</a></li>
+    </ul>
 </div>
 <div class="panel panel-default setup-panel role-form">
-	<div class="panel-body">
-		<div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-		<div ng-show="!loading">
-			<div class="subpanel">
-				<h5 class="subpanel-heading">{{'Setup.Roles.Title2' | translate}}</h5>
-				<form name="roleForm" ng-submit="save()" novalidate>
-					<div class="subpanel-body">
-						<div class="row form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.name.$invalid}">
-							<label class="col-sm-3 control-label">{{'Setup.Roles.RoleName' | translate}}</label>
-							<div class="col-sm-9">
-								<input name="name" class="form-control" maxlength="200" required ng-model="role.label" />
-							</div>
-						</div>
-						<div class="row form-group">
-							<label class="col-sm-3 control-label">{{'Setup.Roles.RoleDescription' | translate}}</label>
-							<div class="col-sm-9">
-								<textarea rows="2" name="description" class="form-control" maxlength="200" auto-grow ng-model="role.description"></textarea>
-							</div>
-						</div>
-						<div ng-if="!role.master" class="row form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.reportsTo.$invalid}">
-							<label class="col-sm-3 control-label">{{'Setup.Roles.ReportsTo' | translate}}</label>
-							<div class="col-sm-9">
-								<ui-select name="reportsTo" style="width:300px;"
-										   on-select="roleUpdateChange()"
-										   ng-model="role.reports_to"
-										   ng-required="!role.master">
-									<ui-select-match>{{$select.selected[('label_'+language)]}}</ui-select-match>
-									<ui-select-choices repeat="item.id as item in roles | filter:{[('label_'+language)]:$select.search} | orderBy:('label_'+language)" value="{{$select.selected.id}}">
-										<div ng-bind-html="item[('label_'+language)] | highlight: $select.search" ng-attr-data-id="item.id"></div>
-									</ui-select-choices>
-								</ui-select>
-							</div>
-						</div>
-						<div class="row form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.share_data.$invalid}">
-							<label class="col-sm-3 control-label">{{'Setup.Roles.ShareData' | translate}}</label>
-							<div class="col-sm-9">
-								<label class="radio-inline" style="font-weight: 400 !important;"><input type="radio" name="shareData" ng-value="true" ng-model="role.share_data">{{'Setup.Roles.ShareDataYes' | translate}}</label>
-								<label class="radio-inline" style="font-weight: 400 !important;"><input type="radio" name="shareData" ng-value="false" ng-model="role.share_data">{{'Setup.Roles.ShareDataNo' | translate}}</label>
-							</div>
-						</div>
-						<div class="form-group" ng-show="roleForm.$submitted && roleForm.$invalid">
-							<div class="col-sm-12">
-								<div class="callout callout-danger">
-									<p ng-if="roleForm.$error.required">{{'Module.RequiredError' | translate}}</p>
-								</div>
-							</div>
-						</div>
-						<div class="form-group" style="margin-top: 40px; margin-bottom: 0;">
-							<button type="button" class="btn btn-custom" ng-click="cancel()">{{'Common.Cancel' | translate}}</button>
-							<button type="submit" class="btn btn-primary btn-w-lg" ladda="saving"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
-						</div>
-					</div>
-				</form>
-			</div>
-			<div class="subpanel" ng-if="id">
-				<h5 class="subpanel-heading">{{'Setup.Roles.Title3' | translate}}</h5>
-				<div class="empty-message" ng-if="roleUsers.length < 1">{{'Common.EmptyMessage' | translate}}</div>
-				<div class="table-responsive" ng-show="roleUsers.length > 0" style="padding-bottom: 10px">
-					<table class="table">
-						<thead>
-							<tr>
-								<th>{{'Setup.Users.UserEmail' | translate}}</th>
-								<th>{{'Setup.Users.UserFullName' | translate}}</th>
-								<th>{{'Setup.Users.UserStatus' | translate}}</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr ng-repeat="userItem in roleUsers | filter:{ is_active:true } track by userItem.id">
-								<td>{{userItem.email}}</td>
-								<td><span ng-if="userItem.id">{{userItem.full_name}}</span></td>
-								<td>
-									<span ng-if="userItem.is_subscriber">{{'Setup.Users.GroupOwner' | translate}}</span>
-									<span ng-if="userItem.id && !userItem.is_subscriber">{{'Setup.Users.UserStatus1' | translate}}</span>
-									<span ng-if="!userItem.id && !userItem.is_subscriber">{{'Setup.Users.UserStatus2' | translate}}</span>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="panel-body">
+        <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+        <div ng-show="!loading">
+            <div class="subpanel">
+                <h5 class="subpanel-heading">{{'Setup.Roles.Title2' | translate}}</h5>
+                <form name="roleForm" ng-submit="save()" novalidate>
+                    <div class="subpanel-body">
+                        <div class="row form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.name.$invalid}">
+                            <label class="col-sm-3 control-label">{{'Setup.Roles.RoleName' | translate}}</label>
+                            <div class="col-sm-9">
+                                <input name="name" class="form-control" maxlength="200" required ng-model="role.label" ng-disabled="role.system_type === 'system'" />
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <label class="col-sm-3 control-label">{{'Setup.Roles.RoleDescription' | translate}}</label>
+                            <div class="col-sm-9">
+                                <textarea rows="2" name="description" class="form-control" maxlength="200" auto-grow ng-model="role.description" ng-disabled="role.system_type === 'system'"></textarea>
+                            </div>
+                        </div>
+                        <div ng-if="!role.master" class="row form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.reportsTo.$invalid}">
+                            <label class="col-sm-3 control-label">{{'Setup.Roles.ReportsTo' | translate}}</label>
+                            <div class="col-sm-9">
+                                <ui-select name="reportsTo" style="width:300px;"
+                                           on-select="roleUpdateChange()"
+                                           ng-model="role.reports_to"
+                                           ng-required="!role.master"
+                                           ng-disabled="role.system_type === 'system'">
+                                    <ui-select-match>{{$select.selected[('label_'+language)]}}</ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in roles | filter:{[('label_'+language)]:$select.search} | orderBy:('label_'+language)" value="{{$select.selected.id}}">
+                                        <div ng-bind-html="item[('label_'+language)] | highlight: $select.search" ng-attr-data-id="item.id"></div>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                        </div>
+                        <div class="row form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.share_data.$invalid}">
+                            <label class="col-sm-3 control-label">{{'Setup.Roles.ShareData' | translate}}</label>
+                            <div class="col-sm-9">
+                                <label class="radio-inline" style="font-weight: 400 !important;"><input type="radio" name="shareData" ng-value="true" ng-model="role.share_data" ng-disabled="role.system_type === 'system'">{{'Setup.Roles.ShareDataYes' | translate}}</label>
+                                <label class="radio-inline" style="font-weight: 400 !important;"><input type="radio" name="shareData" ng-value="false" ng-model="role.share_data" ng-disabled="role.system_type === 'system'">{{'Setup.Roles.ShareDataNo' | translate}}</label>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="roleForm.$submitted && roleForm.$invalid">
+                            <div class="col-sm-12">
+                                <div class="callout callout-danger">
+                                    <p ng-if="roleForm.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 40px; margin-bottom: 0;">
+                            <button type="button" class="btn btn-custom" ng-click="cancel()">{{'Common.Cancel' | translate}}</button>
+                            <button type="submit" class="btn btn-primary btn-w-lg" ladda="saving" ng-disabled="role.system_type === 'system'"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="subpanel" ng-if="id">
+                <h5 class="subpanel-heading">{{'Setup.Roles.Title3' | translate}}</h5>
+                <div class="empty-message" ng-if="roleUsers.length < 1">{{'Common.EmptyMessage' | translate}}</div>
+                <div class="table-responsive" ng-show="roleUsers.length > 0" style="padding-bottom: 10px">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>{{'Setup.Users.UserEmail' | translate}}</th>
+                                <th>{{'Setup.Users.UserFullName' | translate}}</th>
+                                <th>{{'Setup.Users.UserStatus' | translate}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="userItem in roleUsers | filter:{ is_active:true } track by userItem.id">
+                                <td>{{userItem.email}}</td>
+                                <td><span ng-if="userItem.id">{{userItem.full_name}}</span></td>
+                                <td>
+                                    <span ng-if="userItem.is_subscriber">{{'Setup.Users.GroupOwner' | translate}}</span>
+                                    <span ng-if="userItem.id && !userItem.is_subscriber">{{'Setup.Users.UserStatus1' | translate}}</span>
+                                    <span ng-if="!userItem.id && !userItem.is_subscriber">{{'Setup.Users.UserStatus2' | translate}}</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -18,7 +18,7 @@
 
         <div class="modal-dialog scroll-style-4">
             <div ng-if="loading" class="page-loading2"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-            <div  ng-if="!loading" class="modal-content padding-0">
+            <div ng-if="!loading" class="modal-content padding-0">
                 <div class="modal-contanier">
                     <div class="modal-body">
                         <div id="field-form-body" class="modal-body">
@@ -54,8 +54,14 @@
                                             <label class="radio-inline newinput"><input type="radio" name="shareData" ng-value="false" ng-model="role.share_data">{{'Setup.Roles.ShareDataNo' | translate}}<span></span></label>
                                         </div>
                                     </div>
-
-                                   <!-- <div class="form-group" ng-show="roleForm.$submitted && roleForm.$invalid">
+                                    <div class=" form-group">
+                                        <label class="control-label newinput">
+                                            {{'Setup.Modules.Editable' | translate}} <span data-toggle="tooltip" title="If you activate it, this record can be edited or deleted on your application from by users."><i class="fas fa-info-circle"></i></span>
+                                            <input type="checkbox" name="editable" ng-model="role.editable" ng-change="changeRoleType(role.editable)" ng-checked="role.system_type === 'custom'" />
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                    <!-- <div class="form-group" ng-show="roleForm.$submitted && roleForm.$invalid">
                                         <div class="col-sm-12">
                                             <div class="callout callout-danger">
                                                 <p ng-if="roleForm.$error.required">{{'Module.RequiredError' | translate}}</p>

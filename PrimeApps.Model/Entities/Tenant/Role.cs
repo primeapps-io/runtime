@@ -1,5 +1,7 @@
-﻿using System;
+﻿using PrimeApps.Model.Enums;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -56,12 +58,15 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("system_code")]
         public string SystemCode { get; set; }
 
+        [Column("system_type"), DefaultValue(SystemType.Custom)]
+        public SystemType SystemType { get; set; }
+
         public virtual Role ReportsTo { get; set; }
 
         [InverseProperty("Role")]
         public virtual ICollection<TenantUser> Users { get; set; }
 
-        
+
         [NotMapped]
         private List<string> _ownersList { get; set; }
 
