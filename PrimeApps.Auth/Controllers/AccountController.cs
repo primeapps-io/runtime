@@ -1692,11 +1692,6 @@ namespace PrimeApps.Auth.UI
                     }
 
                     platformUser = await _platformUserRepository.GetWithTenants(model.Email);
-                    /**Studio'ya kullanıcı kayıt olurken platform user oluşturuluyor, ama user_tenants'a bir kayıt eklenmiyordu.
-					 * Studio'ya kayıt olan kullanıcının oluşturmuş olduğu herhangi bir app'i preview edebilmesi için eklenmiştir. 
-					 * **/
-                    platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1, PlatformUser = platformUser });
-                    await _platformUserRepository.UpdateAsync(platformUser);
                 }
 
                 if (applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Tenant)
@@ -1848,6 +1843,12 @@ namespace PrimeApps.Auth.UI
 
                 if (identityUser != null && applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Studio && !string.IsNullOrEmpty(studioUrl))
                 {
+                    /*
+                    * Add user to user_tenants table for preview own apps.
+                    */
+                    platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1, PlatformUser = platformUser });
+                    await _platformUserRepository.UpdateAsync(platformUser);
+                    
                     var cryptId = CryptoHelper.Encrypt(platformUser.Id.ToString());
                     var url = studioUrl + "/api/account/create";
 

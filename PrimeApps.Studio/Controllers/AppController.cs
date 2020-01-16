@@ -118,7 +118,7 @@ namespace PrimeApps.Studio.Controllers
                     {
                         ["color"] = "#555198",
                         ["title"] = "PrimeApps",
-                        ["banner"] = new JArray { new JObject { ["image"] = "", ["descriptions"] = "" } },
+                        ["banner"] = new JArray {new JObject {["image"] = "", ["descriptions"] = ""}},
                     }.ToJsonString(),
                     AppTheme = new JObject()
                     {
@@ -155,8 +155,8 @@ namespace PrimeApps.Studio.Controllers
 
             await Postgres.CreateDatabaseWithTemplet(_configuration.GetConnectionString("TenantDBConnection"), app.Id, model.TempletId);
 
-            /**Studio kullanıcısının mevcut app'i preview edebilmesi için
-			 * App oluşturulduktan sonra, user tablosuna mevcut studio kullanıcısını eklemekteyiz.
+            /*
+			 * Add app owner to app users table for preview app.
 			 */
             var tenantUser = new TenantUser
             {
@@ -172,15 +172,16 @@ namespace PrimeApps.Studio.Controllers
                 Currency = AppUser.Currency
             };
 
-            _userRepository.CurrentUser = new CurrentUser { UserId = 1, TenantId = app.Id, PreviewMode = "app" };
+            _userRepository.CurrentUser = new CurrentUser {UserId = 1, TenantId = app.Id, PreviewMode = "app"};
             await _userRepository.CreateAsync(tenantUser);
             var platformUser = await _platformUserRepository.GetWithTenants(AppUser.Email);
-            /**Daha önceden studio'ya kayıt oluşmuş kullanıcıların,  user_tenants'ta bir kayıdı bulunmuyordu.
-			 * Eski studio kullanıcısının yeni oluşturacağı app'i preview edebilmesi user_tenant tablosuna ilgili kaydı eklemeliz. 		
+            
+            /*
+			 * Add user to user_tenants table for preview apps. This controller work for old account.	
 			 */
-            if (platformUser.TenantsAsUser.Count == 0)
+            if (platformUser.TenantsAsUser.FirstOrDefault(x => x.TenantId == 1) == null)
             {
-                platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1, PlatformUser = platformUser });
+                platformUser.TenantsAsUser.Add(new UserTenant {TenantId = 1, PlatformUser = platformUser});
                 await _platformUserRepository.UpdateAsync(platformUser);
             }
 
@@ -361,7 +362,6 @@ namespace PrimeApps.Studio.Controllers
                 {
                     Console.WriteLine("MATCH VALUE: " + match.Value);
                 }
-
             }
 
             return app != null ? Ok(app.Setting.AppTheme) : Ok(app);
