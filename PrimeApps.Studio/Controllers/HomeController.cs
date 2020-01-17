@@ -16,7 +16,8 @@ namespace PrimeApps.Studio.Controllers
         private IConfiguration _configuration;
         private IBackgroundTaskQueue _queue;
         private IMigrationHelper _migrationHelper;
-        public HomeController(IConfiguration configuration,IBackgroundTaskQueue queue,IMigrationHelper migrationHelper)
+
+        public HomeController(IConfiguration configuration, IBackgroundTaskQueue queue, IMigrationHelper migrationHelper)
         {
             _configuration = configuration;
             _queue = queue;
@@ -30,7 +31,7 @@ namespace PrimeApps.Studio.Controllers
 
             var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
             await SetValues(userId);
-
+            
             return View();
         }
 
@@ -43,7 +44,7 @@ namespace PrimeApps.Studio.Controllers
 
             return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Register?ReturnUrl=/connect/authorize/callback?client_id=" + appInfo.Name + "%26redirect_uri=" + Request.Scheme + "%3A%2F%2F" + appInfo.Setting.AppDomain + "%2Fsignin-oidc%26response_type=code%20id_token&scope=openid%20profile%20api1%20email&response_mode=form_post");
         }
-        
+
         [Authorize, Route("set_gitea_token")]
         public async Task<IActionResult> SetGiteaToken()
         {
@@ -53,13 +54,13 @@ namespace PrimeApps.Studio.Controllers
 
             return Redirect(Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Register?ReturnUrl=/connect/authorize/callback?client_id=" + appInfo.Name + "%26redirect_uri=" + Request.Scheme + "%3A%2F%2F" + appInfo.Setting.AppDomain + "%2Fsignin-oidc%26response_type=code%20id_token&scope=openid%20profile%20api1%20email&response_mode=form_post");
         }
-        
+
         [HttpGet, Route("healthz")]
         public IActionResult Healthz()
         {
             return Ok();
         }
-        
+
         [HttpGet, Route("migration")]
         public IActionResult Migration()
         {
@@ -68,14 +69,14 @@ namespace PrimeApps.Studio.Controllers
             _queue.QueueBackgroundWorkItem(token => _migrationHelper.Apply(schema, isLocal));
             return Ok();
         }
-        
+
         private async Task SetValues(int userId)
         {
             ViewBag.Token = await HttpContext.GetTokenAsync("access_token");
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadToken(ViewBag.Token) as JwtSecurityToken;
             var emailConfirmed = jwtToken?.Claims.FirstOrDefault(claim => claim.Type == "email_confirmed")?.Value;
-            
+
             if (!string.IsNullOrEmpty(_configuration.GetValue("AppSettings:GiteaEnabled", string.Empty)) && bool.Parse(_configuration.GetValue("AppSettings:GiteaEnabled", string.Empty)))
             {
                 var giteaToken = jwtToken?.Claims.FirstOrDefault(claim => claim.Type == "gitea_token")?.Value;

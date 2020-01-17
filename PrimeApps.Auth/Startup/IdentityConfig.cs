@@ -8,6 +8,7 @@ using IdentityServer.LdapExtension.UserModel;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,7 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using PrimeApps.Auth.Data;
 using PrimeApps.Auth.Models;
-using PrimeApps.Auth.Providers;
+using StackExchange.Redis;
 
 namespace PrimeApps.Auth
 {
@@ -23,6 +24,17 @@ namespace PrimeApps.Auth
     {
         public static void IdentityConfiguration(IServiceCollection services, IConfiguration configuration)
         {
+            #region Data Protection
+            
+            var redisConnection = configuration.GetConnectionString("RedisConnection");
+            var redisConnectionPersist = redisConnection.Remove(redisConnection.Length - 1, 1) + "2";
+
+            var redis = ConnectionMultiplexer.Connect(redisConnectionPersist);
+            services.AddDataProtection()
+                .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
+
+            #endregion
+            
             services.AddIdentity<ApplicationUser, IdentityRole>(config =>
                 {
                     config.Password.RequiredLength = 6;
@@ -37,7 +49,6 @@ namespace PrimeApps.Auth
                 .AddDefaultTokenProviders();
 
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-
             var ser = services.AddIdentityServer(options =>
                 {
                     options.Events.RaiseErrorEvents = true;
@@ -50,8 +61,8 @@ namespace PrimeApps.Auth
                 {
                     options.ConfigureDbContext = opt => opt.UseNpgsql(configuration.GetConnectionString("AuthDBConnection"), sql => sql.MigrationsAssembly(migrationsAssembly));
 
-                    options.EnableTokenCleanup = true;
-                    options.TokenCleanupInterval = 3600; //3600 (1 hour)
+                    options.EnableTokenCleanup = false;
+                    options.TokenCleanupInterval = 3600; //3600 (1 hour) 
                 })
                 .AddSigningCredential(LoadCertificate());
 

@@ -111,6 +111,12 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<string>("Currency")
                         .HasColumnName("currency");
 
+                    b.Property<bool>("EnableAPIRegistration")
+                        .HasColumnName("enable_api_registration");
+
+                    b.Property<bool>("EnableLDAP")
+                        .HasColumnName("enable_ldap");
+
                     b.Property<bool>("EnableRegistration")
                         .HasColumnName("enable_registration");
 

@@ -99,7 +99,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 						/// this request has already been removed, do nothing and return success.
 						if (emailNotification == null) return true;
 
-						var emailSet = await notifitionRepository.GetSetting(emailQueueItem, notificationId);
+						var emailSet = await notifitionRepository.GetSetting(emailQueueItem);
 						// = databaseContext.Settings.Include(x => x.CreatedBy).Where(r =>
 						//        r.Type == Model.Enums.SettingType.Email &&
 						//        r.Deleted == false &&
@@ -114,7 +114,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
 						var provider = emailSet.FirstOrDefault(r => r.Key == "provider")?.Value;
 						var userName = emailSet.FirstOrDefault(r => r.Key == "user_name")?.Value;
-						var password = emailSet.FirstOrDefault(r => r.Key == "password")?.Value;
+						var password = CryptoHelper.Decrypt(emailSet.FirstOrDefault(r => r.Key == "password")?.Value);
 						var host = emailSet.FirstOrDefault(r => r.Key == "host")?.Value;
 						var sslValue = emailSet.FirstOrDefault(r => r.Key == "enable_ssl")?.Value;
 						var portValue = emailSet.FirstOrDefault(r => r.Key == "port")?.Value;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,7 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Storage;
+using Sentry.Protocol;
 using PublishHelper = PrimeApps.Model.Helpers.PublishHelper;
 
 namespace PrimeApps.Admin.Jobs
@@ -177,15 +179,19 @@ namespace PrimeApps.Admin.Jobs
                     var packages = await studioClient.PackageGetAll();
                     var lastPackageVersion = packages.Last().Version;
                     var versions = new List<string>();
-
+                    var logResult = new JObject();
                     foreach (var tenantObj in tenants.OfType<object>().Select((id, index) => new {id, index}))
                     {
                         var dbName = $"tenant{tenantObj.id}";
-
                         var exists = PostgresHelper.Read(_configuration.GetConnectionString("PlatformDBConnection"), "platform", $"SELECT datname FROM pg_catalog.pg_database WHERE lower(datname) = lower('{dbName}');", "hasRows");
-                        
+
                         if (!exists)
+                        {
+                            logResult[dbName] = "Tenant not exists";
                             continue;
+                        }
+                        
+                        logResult[dbName] = new JObject();
                         
                         versions = new List<string>();
                         foreach (var package in packages)
@@ -203,7 +209,7 @@ namespace PrimeApps.Admin.Jobs
                         foreach (var versionObj in versions.OfType<object>().Select((value, index) => new {value, index}))
                         {
                             var version = versionObj.value.ToString();
-
+                            
                             var release = await releaseRepository.Get(appId, version, int.Parse(tenantObj.id.ToString()));
 
                             if (release == null)
@@ -229,6 +235,7 @@ namespace PrimeApps.Admin.Jobs
                                     releaseModel.UpdatedById = 1;
                                     
                                     await releaseRepository.Update(releaseModel);
+                                    logResult[dbName][version] = "Success";
                                 }
                                 else
                                 {
@@ -237,6 +244,27 @@ namespace PrimeApps.Admin.Jobs
                                     releaseModel.UpdatedById = 1;
                                     
                                     await releaseRepository.Update(releaseModel);
+
+                                    try
+                                    {
+                                        var logPath = Path.Combine(Path.Combine(DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment), "tenant-update-logs"), $"update-{dbName}-version-{version}-log.txt");
+                                        var log = File.ReadAllText(logPath, Encoding.UTF8);
+                                    
+                                        logResult[dbName][version] = new JObject
+                                        {
+                                            ["Status"] = "Error",
+                                            ["Logs"] = log
+                                        };
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        logResult[dbName][version] = new JObject
+                                        {
+                                            ["Status"] = "Error",
+                                            ["Logs"] = "Log not found."
+                                        };
+                                    }
+                                    
                                     break;
                                 }
                             }
@@ -255,9 +283,31 @@ namespace PrimeApps.Admin.Jobs
                                             Status = ReleaseStatus.Succeed,
                                             UpdatedById = 1
                                         });
+                                        logResult[dbName][version] = "Success";
                                     }
                                     else
+                                    {
+                                        try
+                                        {
+                                            var logPath = Path.Combine(Path.Combine(DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment), "tenant-update-logs"), $"update-{dbName}-version-{version}-log.txt");
+                                            var log = File.ReadAllText(logPath, Encoding.UTF8);
+                                    
+                                            logResult[dbName][version] = new JObject
+                                            {
+                                                ["Status"] = "Error - Not First",
+                                                ["Logs"] = log
+                                            };
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            logResult[dbName][version] = new JObject
+                                            {
+                                                ["Status"] = "Error - Not First",
+                                                ["Logs"] = "Log not found."
+                                            };
+                                        }
                                         break;
+                                    }
                                 }
                             }
                         }
@@ -270,6 +320,7 @@ namespace PrimeApps.Admin.Jobs
 
                     var rootPath = DataHelper.GetDataDirectoryPath(_configuration, _hostingEnvironment);
                     Directory.Delete(Path.Combine(rootPath, "packages", $"app{appId}"), true);
+                    ErrorHandler.LogMessage("Update tenants has ended for app id : " + appId + ". Info json : " + logResult.ToJsonString(), SentryLevel.Info);
                 }
             }
         }

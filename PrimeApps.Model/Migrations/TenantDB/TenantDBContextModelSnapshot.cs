@@ -2007,8 +2007,8 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .IsRequired()
                         .HasColumnName("name");
 
-                    b.Property<int>("ProfileId")
-                        .HasColumnName("profile_id");
+                    b.Property<string>("Profiles")
+                        .HasColumnName("profiles");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnName("updated_at");
@@ -2019,8 +2019,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("ProfileId");
 
                     b.HasIndex("UpdatedById");
 
@@ -5218,11 +5216,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Tenant.Profile", "Profile")
-                        .WithMany()
-                        .HasForeignKey("ProfileId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")

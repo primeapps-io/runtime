@@ -7,29 +7,13 @@ angular.module('primeapps')
 
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'menus';
-            $scope.newProfiles = angular.copy($rootScope.appProfiles);
-
+            //$scope.newProfiles = angular.copy($rootScope.appProfiles); 
             $rootScope.breadcrumblist[2].title = 'Menus';
-
             $scope.icons = ModuleService.getIcons();
-
-            $scope.generator = function (limit) {
-                $scope.placeholderArray = [];
-                for (var i = 0; i < limit; i++) {
-                    $scope.placeholderArray[i] = i;
-                }
-            };
-            $scope.generator(10);
-
             $scope.loading = true;
-
-            $scope.requestModel = {
-                limit: '10',
-                offset: 0
-            };
-
             var isUpdate = false; // up and down menu is click
             var menuUpdate = false;
+
             var customModules = [
                 {
                     label_tr_singular: 'Pano',
@@ -150,9 +134,20 @@ angular.module('primeapps')
              }
          ];*/
 
+            $scope.loadProfiles = function (id) {
+                MenusService.getNotUsedProfiles(id)
+                    .then(function (result) {
+                        if (result.data)
+                            $scope.profiles = result.data;
+                    });
+            };
+
+            $scope.loadProfiles();
+
             $scope.showFormModal = function (id, cloneSettings) {
                 $scope.loadingModal = true;
                 $scope.id = id;
+                $scope.loadProfiles(id);
                 $scope.wizardStep = 0;
                 $scope.data = [];
                 $scope.menu = {};
@@ -165,9 +160,9 @@ angular.module('primeapps')
                  * Profile picklist filter, If exist delete from picklist
                  * Yapılacaklar
                  * */
-                angular.forEach($scope.menuList, function (menu) {
-                    $filter('filter')($scope.newProfiles, { id: menu.profile_id }, true)[0].deleted = true;
-                });
+                ////angular.forEach($scope.menuList, function (menu) {
+                ////    $filter('filter')($scope.newProfiles, { id: menu.profile_id }, true)[0].deleted = true;
+                ////});
 
                 if (id) {
                     setMenuList(id);
@@ -207,16 +202,29 @@ angular.module('primeapps')
 
                             //If update, we added again all profiles
                             //Then, get selected profile and menuitems
-                            $scope.menu.profile = $scope.clone ? null : $filter('filter')($scope.newProfiles, { id: response.data.profile_id }, true)[0];
-                            //If clone deleted true
-                            if ($scope.menu.profile) {
-                                $scope.menu.profile.deleted = false;
+                            if ($scope.clone)
+                                $scope.menu.profiles = [];
+                            else {
+                                $scope.menu.profiles = [];
+                                for (var a = 0; a < $scope.menu.profile_list.length; a++) {
+                                    var id = $scope.menu.profile_list[a];
+                                    var profile = $filter('filter')($rootScope.appProfiles, { id: parseInt(id) }, true)[0];
+
+                                    if (profile)
+                                        $scope.menu.profiles.push(profile);
+
+                                }
                             }
+                            ////$scope.menu.profile = $scope.clone ? null : $filter('filter')($scope.newProfiles, { id: response.data.profile_id }, true)[0];
+                            ////If clone deleted true
+                            ////if ($scope.menu.profile) {
+                            ////    $scope.menu.profile.deleted = false;
+                            ////}
                             // $scope.menu.profile.deleted = $scope.clone ? true : false;
 
                             $scope.loadingModal = true;
-                            //We use firstprofileId because maybe user was changed
-                            MenusService.getMenuItem($scope.menu.profile_id)
+
+                            MenusService.getMenuItem($scope.menu.id)
                                 .then(function onSuccess(response) {
                                     $scope.data = [];
                                     for (var i = 0; i < response.data.length; i++) {
@@ -433,7 +441,7 @@ angular.module('primeapps')
 
                         //we just check if createArray item isUpdate
 
-                        MenusService.createMenuItems($scope.createArray, !$scope.menu.default ? $scope.menu.profile.id : 1)
+                        MenusService.createMenuItems($scope.createArray, menu.id)
                             .then(function onSuccess() {
                                 if (isUpdate) {
                                     //Update
@@ -443,7 +451,7 @@ angular.module('primeapps')
                                             MenusService.deleteMenuItems($scope.deleteArray).then(function onSuccess() {
                                                 toastr.success($filter('translate')('Menu.UpdateSucces'));
                                                 $scope.addNewMenuFormModal.hide();
-                                                $scope.changePage($scope.activePage);
+                                                //$scope.changePage($scope.activePage);
                                                 $scope.saving = false;
                                             }).catch(function () {
                                                 $scope.saving = false;
@@ -454,7 +462,7 @@ angular.module('primeapps')
                                             toastr.success($filter('translate')('Menu.UpdateSucces'));
                                             $scope.saving = false;
                                             $scope.addNewMenuFormModal.hide();
-                                            $scope.changePage($scope.activePage);
+                                            //$scope.changePage($scope.activePage);
                                         }
                                     }).catch(function () {
                                         $scope.saving = false;
@@ -464,7 +472,7 @@ angular.module('primeapps')
                                     toastr.success($filter('translate')('Menu.UpdateSucces'));
                                     $scope.saving = false;
                                     $scope.addNewMenuFormModal.hide();
-                                    $scope.changePage($scope.activePage);
+                                    //$scope.changePage($scope.activePage);
                                 }
                             });
                     }
@@ -478,7 +486,7 @@ angular.module('primeapps')
 
                                     toastr.success($filter('translate')('Menu.UpdateSucces'));
                                     $scope.addNewMenuFormModal.hide();
-                                    $scope.changePage($scope.activePage);
+                                    //$scope.changePage($scope.activePage);
                                     $scope.saving = false;
                                 }).catch(function () {
                                     $scope.saving = false;
@@ -489,7 +497,7 @@ angular.module('primeapps')
                                 toastr.success($filter('translate')('Menu.UpdateSucces'));
                                 $scope.saving = false;
                                 $scope.addNewMenuFormModal.hide();
-                                $scope.changePage($scope.activePage);
+                                //$scope.changePage($scope.activePage);
                             }
                         }).catch(function () {
                             $scope.saving = false;
@@ -500,45 +508,50 @@ angular.module('primeapps')
                             toastr.success($filter('translate')('Menu.UpdateSucces'));
                             $scope.saving = false;
                             $scope.addNewMenuFormModal.hide();
-                            $scope.changePage($scope.activePage);
+                            //$scope.changePage($scope.activePage);
                         });
                     } else {
                         toastr.success($filter('translate')('Menu.UpdateSucces'));
                         $scope.addNewMenuFormModal.hide();
                         $scope.saving = false;
-                        $scope.changePage($scope.activePage);
+                        //$scope.changePage($scope.activePage);
                     }
                 }
                 //If first create
                 else {
                     menu = [
                         {
-                            profile_id: $scope.menu.default ? 1 : $scope.menu.profile.id,
+                            profiles: $scope.menu.default ? '' : $scope.menu.profiles.map(function (value) { return value.id }).toString(),
                             name: $scope.menu.name,
                             default: $scope.menu.default ? $scope.menu.default : false,
                             description: $scope.menu.description,
                         }];
 
-                    MenusService.create(menu).then(function () {
-                        if ($scope.createArray.length > 0) {
-                            MenusService.createMenuItems($scope.createArray, menu[0].profile_id).then(function onSuccess() {
+                    MenusService.create(menu).then(function (result) {
+                        if (result.data) {
+                            var menu = result.data;
+                            if ($scope.createArray.length > 0) {
+                                MenusService.createMenuItems($scope.createArray, menu[0].id).then(function onSuccess() {
+                                    toastr.success($filter('translate')('Menu.MenuSaving'));
+                                    $scope.addNewMenuFormModal.hide();
+                                    $scope.grid.dataSource.read();
+                                    $scope.saving = false;
+                                }).catch(function () {
+                                    $scope.saving = false;
+                                    $scope.addNewMenuFormModal.hide();
+                                });
+                            } else {
                                 toastr.success($filter('translate')('Menu.MenuSaving'));
                                 $scope.addNewMenuFormModal.hide();
-                                $scope.grid.dataSource.read();
+                                //$scope.changePage($scope.activePage);
+                                $scope.pageTotal += 1;
                                 $scope.saving = false;
-                            }).catch(function () {
-                                $scope.saving = false;
-                                $scope.addNewMenuFormModal.hide();
-                            });
-                        } else {
-                            toastr.success($filter('translate')('Menu.MenuSaving'));
-                            $scope.addNewMenuFormModal.hide();
-                            $scope.changePage($scope.activePage);
-                            $scope.pageTotal += 1;
-                            $scope.saving = false;
+                            }
                         }
                     });
                 }
+
+                $scope.loadProfiles();
             };
 
             $scope.edit = function (node) {
@@ -615,19 +628,20 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
-                            var elem = angular.element(event.srcElement);
-                            angular.element(elem.closest('tr')).addClass('animated-background');
+                            //var elem = angular.element(event.srcElement);
+                            //angular.element(elem.closest('tr')).addClass('animated-background');
 
                             MenusService.delete(id)
                                 .then(function () {
-                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
+                                    //angular.element(document.getElementsByClassName('ng-scope animated-background')).remove();
                                     $scope.grid.dataSource.read();
                                     toastr.success($filter('translate')('Menu.DeleteSuccess'));
                                     $scope.saving = false;
+                                    $scope.loadProfiles();
                                 })
                                 .catch(function () {
                                     $scope.menuList = $scope.menuListState;
-                                    angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
+                                    //angular.element(document.getElementsByClassName('ng-scope animated-background')).removeClass('animated-background');
                                     toastr.warning($filter('translate')('Common.Error'));
                                     if ($scope.addNewMenuFormModal) {
                                         $scope.addNewMenuFormModal.hide();
@@ -645,7 +659,7 @@ angular.module('primeapps')
                     name: $scope.menu.name,
                     description: $scope.description ? $scope.menu.description : '',
                     default: $scope.menu.default ? $scope.menu.default : false,
-                    profile_id: $scope.menu.default ? 1 : $scope.menu.profile.id
+                    profiles: $scope.menu.default ? '' : $scope.menu.profiles.map(function (value) { return value.id }).toString()
                 };
 
                 if (menuForm.name_menu.$dirty) {
@@ -654,7 +668,7 @@ angular.module('primeapps')
                 }
 
                 if (menuForm.profile_name.$dirty && !$scope.menu.default) {
-                    updateList.profile_id = $scope.menu.profile.id;
+                    updateList.profiles = $scope.menu.profiles.map(function (value) { return value.id }).toString();
                     res = true;
                 }
 
@@ -733,6 +747,18 @@ angular.module('primeapps')
             };
 
             //For Kendo UI
+            $scope.profileFilterList = [];
+            var profileDataList = $filter('filter')($rootScope.appProfiles, { deleted: false, has_admin_rights: false }, true);;
+
+            for (var i = 0; i < profileDataList.length; i++) {
+
+                var data = {
+                    text: profileDataList[i]['name_' + $scope.language],
+                    value: profileDataList[i].id.toString(),
+                };
+                $scope.profileFilterList.push(data);
+            }
+
             var accessToken = $localStorage.read('access_token');
 
             $scope.mainGridOptions = {
@@ -762,9 +788,24 @@ angular.module('primeapps')
                             id: "id",
                             fields: {
                                 Name: { type: "string" },
-                                ProfileName: { type: "string" },
+                                Profiles: { type: "string" },
                                 Default: { type: "boolean" }
                             }
+                        },
+                        parse: function (data) {
+                            for (var i = 0; i < data.items.length; i++) {
+                                var labels = [];
+
+                                for (var a = 0; a < data.items[i].profile_list.length; a++) {
+                                    var profile = $filter('filter')($rootScope.appProfiles, { id: parseInt(data.items[i].profile_list[a]) }, true)[0];
+
+                                    if (profile)
+                                        labels.push(profile['name_' + $scope.language]);
+                                }
+                                data.items[i].profile_names = angular.copy(labels);
+                            }
+
+                            return data;
                         }
                     }
                 },
@@ -783,7 +824,8 @@ angular.module('primeapps')
                 rowTemplate: function (menu) {
                     var trTemp = '<tr ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left">' + menu.name + '</td>';
-                    trTemp += '<td class="text-left">' + menu.profile.name_en + '</td>';
+                    trTemp += '<td class="text-left">' + menu.profile_names.join(', ') + '</td>';
+                    //trTemp += '<td class="text-left">' + menu.profile.name_en + '</td>';
                     trTemp += menu.default ? '<td><span>' + $filter('translate')('Common.Yes') + '</span></td>' : '<td><span>' + $filter('translate')('Common.No') + '</span></td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
@@ -791,7 +833,8 @@ angular.module('primeapps')
                 altRowTemplate: function (menu) {
                     var trTemp = '<tr class="k-alt" ng-click="goUrl(dataItem)">';
                     trTemp += '<td class="text-left">' + menu.name + '</td>';
-                    trTemp += '<td class="text-left">' + menu.profile.name_en + '</td>';
+                    trTemp += '<td class="text-left">' + menu.profile_names.join(', ') + '</td>';
+                    //trTemp += '<td class="text-left">' + menu.profile.name_en + '</td>';
                     trTemp += menu.default ? '<td><span>' + $filter('translate')('Common.Yes') + '</span></td>' : '<td><span>' + $filter('translate')('Common.No') + '</span></td>';
                     trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem.id, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
@@ -814,11 +857,17 @@ angular.module('primeapps')
                     },
 
                     {
-                        field: 'Profile.NameEn',
+                        field: 'Profiles',
                         title: $filter('translate')('Menu.ProfileName'),
                         headerAttributes: {
                             'class': 'text-left'
                         },
+                        filterable: {
+                            multi: true,
+                            search: false,
+                            operator: "contains"
+                        },
+                        values: $scope.profileFilterList
                     },
                     {
                         field: 'Default',

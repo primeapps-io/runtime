@@ -111,10 +111,8 @@ namespace PrimeApps.Studio.Services
                         if (sql.StartsWith("INSERT INTO"))
                         {
                             var tableName = Model.Helpers.PackageHelper.GetTableName(sql);
-                            /** Studio/AppController'da studio kullanıcısının oluşturacağı herhangi bir app'i preview edebilmesi için
-                             * App oluşturulduktan hemen sonra "App/User" tablosuna, studio kullanıcısını eklemekteyiz.
-                             * Burada bu kontrolü yapma sebebimiz. App yeni oluştuğu için X-App-Id vb. değişkenler tanımlı olmadığı için
-                             * CurrentUser null gelmektedir.
+                            /*
+                             * When app owners adding app user table for preview. We don't need to add history about it.
                              */
                             if (tableName == "public.users" || tableName == "public.user_tenants")
                                 continue;

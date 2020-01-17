@@ -25,11 +25,8 @@ programsPathEscape="${programsPath//\//\\/}"
 dataPath="$basePath/data"
 dataPathEscape="${dataPath//\//\\/}"
 su_user=$(id -un)
-user="primeapps"
+user=$(logname)
 
-if [ "$1" != "" ]; then
-    user=$1
-fi
 
 # Create programs directory
 mkdir programs
@@ -86,7 +83,7 @@ systemctl enable postgres-pre
 
 while ! echo exit | nc localhost 5436; do sleep 1; done
 
-echo -e "${GREEN}Creating Postgres Role{NC}"
+echo -e "${GREEN}Creating Postgres Role ${NC}"
 # Create postgres role
 echo -e "${GREEN}Creating postgres role for database instances...${NC}"
 sudo -u $user bash -c './psql -d postgres -h localhost -p 5436 -c "CREATE ROLE postgres SUPERUSER CREATEDB CREATEROLE LOGIN REPLICATION BYPASSRLS;"'

@@ -48,7 +48,7 @@ angular.module('primeapps')
                 // delete: function (id) {
                 //     return $http.delete(config.apiUrl + 'module/delete/' + id);
                 // },
-                newField: function (dataType,order) {
+                newField: function (dataType, order) {
 
                     var field = {};
                     field.label_en = dataType.label.en;
@@ -416,6 +416,10 @@ angular.module('primeapps')
 
                 deleteModuleProfileSetting: function (id) {
                     return $http.delete(config.apiUrl + 'module_profile_settings/delete/' + id);
+                },
+
+                getNotUsedProfiles: function (moduleId, id) {
+                    return $http.get(config.apiUrl + 'module_profile_settings/get_not_used_profiles/?moduleId=' + moduleId + (id ? '&id=' + id : ''));
                 },
 
                 getPicklists: function () {
@@ -1180,6 +1184,32 @@ angular.module('primeapps')
 
                     module.fields.push(field6);
 
+                    var field7 = {};
+                    field7.system_type = 'system';
+                    field7.data_type = 'checkbox';
+                    field7.dataType = $rootScope.dataTypesExtended.checkbox;
+                    field7.section = 'custom_section2';
+                    field7.section_column = 2;
+                    field7.name = 'is_sample';
+                    field7.label_en = defaultLabels.SampleDataEn;
+                    field7.label_tr = defaultLabels.SampleDataTr;
+                    field7.order = 7;
+                    field7.primary = false;
+                    field7.display_form = false;
+                    field7.display_detail = true;
+                    field7.display_list = true;
+                    field7.validation = {};
+                    field7.validation.required = false;
+                    field7.validation.readonly = false;
+                    field7.inline_edit = true;
+                    field7.editable = true;
+                    field7.show_label = true;
+                    field7.deleted = false;
+                    field7.systemReadonly = true;
+                    field7.systemRequired = true;
+                    
+                    module.fields.push(field7);
+                    
                     return module;
                 },
 
@@ -1205,7 +1235,7 @@ angular.module('primeapps')
                             var column = {};
                             column.column = columItem;
                             column.cells = [];
-
+                            
                             angular.forEach(module.fields, function (field) {
                                 if (field.section !== section.name || field.section_column !== columItem.no || field.deleted)
                                     return;
@@ -2240,5 +2270,7 @@ angular.module('primeapps')
         DataTypeCombinationEn: 'Combination',
         DataTypeCombinationTr: 'Birleşim',
         DataTypeCalculatedEn: 'Calculated',
-        DataTypeCalculatedTr: 'Hesaplama'
+        DataTypeCalculatedTr: 'Hesaplama',
+        SampleDataTr:'Örnek Kayıt',
+        SampleDataEn:'Sample Data',
     });
