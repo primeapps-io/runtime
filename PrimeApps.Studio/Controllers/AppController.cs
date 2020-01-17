@@ -155,35 +155,33 @@ namespace PrimeApps.Studio.Controllers
 
             await Postgres.CreateDatabaseWithTemplet(_configuration.GetConnectionString("TenantDBConnection"), app.Id, model.TempletId);
 
-            /*
-			 * Add app owner to app users table for preview app.
-			 */
-            var tenantUser = new TenantUser
-            {
-                Id = AppUser.Id,
-                FirstName = AppUser.FirstName,
-                IsActive = true,
-                LastName = AppUser.LastName,
-                Email = AppUser.Email,
-                FullName = AppUser.FullName,
-                ProfileId = 1,
-                RoleId = 1,
-                Culture = AppUser.Culture,
-                Currency = AppUser.Currency
-            };
+			#region #3793
+			//Add app owner to users table for preview application.
+			var tenantUser = new TenantUser
+			{
+				Id = AppUser.Id,
+				FirstName = AppUser.FirstName,
+				IsActive = true,
+				LastName = AppUser.LastName,
+				Email = AppUser.Email,
+				FullName = AppUser.FullName,
+				ProfileId = 1,
+				RoleId = 1,
+				Culture = AppUser.Culture,
+				Currency = AppUser.Currency
+			};
 
-            _userRepository.CurrentUser = new CurrentUser {UserId = 1, TenantId = app.Id, PreviewMode = "app"};
-            await _userRepository.CreateAsync(tenantUser);
-            var platformUser = await _platformUserRepository.GetWithTenants(AppUser.Email);
-            
-            /*
-			 * Add user to user_tenants table for preview apps. This controller work for old account.	
-			 */
-            if (platformUser.TenantsAsUser.FirstOrDefault(x => x.TenantId == 1) == null)
-            {
-                platformUser.TenantsAsUser.Add(new UserTenant {TenantId = 1, PlatformUser = platformUser});
-                await _platformUserRepository.UpdateAsync(platformUser);
-            }
+			_userRepository.CurrentUser = new CurrentUser { UserId = 1, TenantId = app.Id, PreviewMode = "app" };
+			await _userRepository.CreateAsync(tenantUser);
+			var platformUser = await _platformUserRepository.GetWithTenants(AppUser.Email);
+			
+			//Platform user_tenant table include this user with tenant_id = 1 for preview application.
+			if (platformUser.TenantsAsUser.FirstOrDefault(x => x.TenantId == 1) == null)
+			{
+				platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1, PlatformUser = platformUser });
+				await _platformUserRepository.UpdateAsync(platformUser);
+			}
+			#endregion
 
             Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser));
 

@@ -1691,8 +1691,18 @@ namespace PrimeApps.Auth.UI
                         return response;
                     }
 
-                    platformUser = await _platformUserRepository.GetWithTenants(model.Email);
-                }
+					platformUser = await _platformUserRepository.GetWithTenants(model.Email);
+
+					#region #3793
+
+					/* Add user to platform user_tenant table with tenant_id 1.
+					   This development made for default preview user. 
+					 */
+					platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1, PlatformUser = platformUser });
+					await _platformUserRepository.UpdateAsync(platformUser);
+
+					#endregion
+				}
 
                 if (applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Tenant)
                 {
