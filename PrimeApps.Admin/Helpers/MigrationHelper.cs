@@ -405,32 +405,32 @@ namespace PrimeApps.Admin.Helpers
             var tenantIdList = tenantIds.ToList();
             var lastTenantId = tenantIdList.Last();
 
-            foreach (var id in tenantIds)
-            {
-                var exists = PostgresHelper.Read(_configuration.GetConnectionString("PlatformDBConnection"), $"platform", $"SELECT 1 AS result FROM pg_database WHERE datname='tenant{id}'", "hasRows");
-
-                if (!exists)
-                    continue;
-
-                BackgroundJob.Enqueue<MigrationHelper>(x => x.UpdateTenant(id, url, lastTenantId));
-            }
-
-//            var parts = Math.Ceiling((double)tenantIdList.Count / 200);
-//
-//            for (var i = 0; i < tenantIdList.Count; i++)
+//            foreach (var id in tenantIds)
 //            {
-//                var tenantId = tenantIdList[i];
+//                var exists = PostgresHelper.Read(_configuration.GetConnectionString("PlatformDBConnection"), $"platform", $"SELECT 1 AS result FROM pg_database WHERE datname='tenant{id}'", "hasRows");
 //
-//                for (var j = 0; j < parts; j++)
-//                {
-//                    var time = TimeSpan.FromSeconds(1);
+//                if (!exists)
+//                    continue;
 //
-//                    if (i > j * 200)
-//                        time = TimeSpan.FromSeconds(j * 10);
-//
-//                    BackgroundJob.Schedule<MigrationHelper>(x => x.UpdateTenant(tenantId, url, lastTenantId), time);
-//                }
+//                BackgroundJob.Enqueue<MigrationHelper>(x => x.UpdateTenant(id, url, lastTenantId));
 //            }
+
+            var parts = Math.Ceiling((double)tenantIdList.Count / 200);
+
+            for (var i = 0; i < tenantIdList.Count; i++)
+            {
+                var tenantId = tenantIdList[i];
+
+                for (var j = 0; j < parts; j++)
+                {
+                    var time = TimeSpan.FromSeconds(10);
+
+                    if (i > j * 200)
+                        time = TimeSpan.FromSeconds(j * 30);
+
+                    BackgroundJob.Schedule<MigrationHelper>(x => x.UpdateTenant(tenantId, url, lastTenantId), time);
+                }
+            }
 
             return true;
         }
