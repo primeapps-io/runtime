@@ -385,14 +385,6 @@ namespace PrimeApps.Model.Repositories
 
             var result = await DbContext.Database.ExecuteSqlCommandAsync(sql);
 
-            if (tenantLanguage == "en")
-            {
-                var sqlDashlet = RecordHelper.GenerateSystemDashletUpdateSql(appId);
-
-                if (!string.IsNullOrEmpty(sqlDashlet))
-                    await DbContext.Database.ExecuteSqlCommandAsync(sqlDashlet);
-            }
-
             return result;
         }
 
