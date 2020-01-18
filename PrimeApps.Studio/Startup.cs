@@ -49,13 +49,22 @@ namespace PrimeApps.Studio
 
             //Configure Authentication
             AuthConfiguration(services, Configuration);
+            
+            //Redis connection
             var redisConnection = Configuration.GetConnectionString("RedisConnection");
-            var redisConnectionPersist = redisConnection.Remove(redisConnection.Length - 1, 1) + "3";
 
-            var hangfireStorage = new RedisStorage(redisConnectionPersist);
+            //Hangfire configuration
+            var redisStorageOptions = new RedisStorageOptions
+            {
+                Prefix = "{studio}:",
+                Db = 1
+            };
+            var hangfireStorage = new RedisStorage(redisConnection, redisStorageOptions);
+
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
             services.AddHangfire(x => x.UseStorage(hangfireStorage));
 
+            //Other configurations
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 var supportedCultures = new[]
