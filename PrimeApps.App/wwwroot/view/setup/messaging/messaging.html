@@ -43,7 +43,7 @@
                             <div class="form-group" show-errors>
                                 <label class="col-sm-3 control-label">{{'Setup.Messaging.SMS.Password' | translate}}</label>
                                 <div class="col-sm-9">
-                                    <input type="password" autocomplete="off"  class="form-control" required ng-model="smsModel.password" />
+                                    <input type="password" autocomplete="off" class="form-control" required ng-model="smsModel.password" />
                                 </div>
                             </div>
                             <div class="form-group" show-errors>
@@ -81,7 +81,7 @@
                 </div>
             </div>
             <!--E-Mail Settings-->
-            <div class="subpanel">
+            <div class="subpanel" ng-if="!user.profile.close_smtp_settings">
                 <h5 class="subpanel-heading">{{'Setup.Messaging.EMail.Title' | translate}}</h5>
                 <div class="subpanel-body">
                     <form name="emailForm" ng-submit="editEMail(emailModel)" class="form-horizontal" novalidate>

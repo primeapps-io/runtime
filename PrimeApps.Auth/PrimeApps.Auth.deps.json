@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.2",
-    "signature": "443c9dce61a18564fbfbc994b0310c1e52871cf2"
+    "signature": "4a7ac6728615000bf82f52b6d8ce097b93b4edf2"
   },
   "compilationOptions": {
     "defines": [
@@ -31,6 +31,7 @@
           "IdentityServer4.AspNetIdentity": "2.3.0",
           "IdentityServer4.EntityFramework": "2.3.2",
           "Microsoft.AspNetCore.App": "2.2.0",
+          "Microsoft.AspNetCore.DataProtection.StackExchangeRedis": "2.2.0",
           "Microsoft.Extensions.FileProviders.Embedded": "2.2.0",
           "Microsoft.IdentityModel.Clients.ActiveDirectory": "4.4.2",
           "Microsoft.NETCore.App": "2.2.0",
@@ -287,6 +288,21 @@
         },
         "compile": {
           "lib/netstandard2.0/IdentityServer4.Storage.dll": {}
+        }
+      },
+      "Microsoft.AspNetCore.DataProtection.StackExchangeRedis/2.2.0": {
+        "dependencies": {
+          "Microsoft.AspNetCore.DataProtection": "2.2.0",
+          "StackExchange.Redis": "2.0.519"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.AspNetCore.DataProtection.StackExchangeRedis.dll": {
+            "assemblyVersion": "2.2.0.0",
+            "fileVersion": "2.2.0.18316"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.AspNetCore.DataProtection.StackExchangeRedis.dll": {}
         }
       },
       "Microsoft.Azure.KeyVault/2.3.2": {
@@ -4585,6 +4601,13 @@
       "sha512": "sha512-oB+Dscf07/FlEzs5GmuCk+b4MquhfSX2V070kO3/q1JaDQY0bZA3fWvALm83DAej9WDilCZ1lwXQIganw43rNg==",
       "path": "identityserver4.storage/2.3.1",
       "hashPath": "identityserver4.storage.2.3.1.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.DataProtection.StackExchangeRedis/2.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-nXKu1W59ZrdlmqSx/PBSbq1YdgFxQpyNu5mdhfM7G7HvVcjxsLg2KCZf/FYI0yygd6r7qHTL07YWZbaHTUA44Q==",
+      "path": "microsoft.aspnetcore.dataprotection.stackexchangeredis/2.2.0",
+      "hashPath": "microsoft.aspnetcore.dataprotection.stackexchangeredis.2.2.0.nupkg.sha512"
     },
     "Microsoft.Azure.KeyVault/2.3.2": {
       "type": "package",
