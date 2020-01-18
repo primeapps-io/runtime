@@ -385,8 +385,10 @@ namespace PrimeApps.Auth.UI
             if (!registerPermission.IsNullOrEmpty() && (bool)registerPermission == false)
             {
                 if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
-                    return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vm);
-
+                {
+                    var vmLogin = await BuildLoginViewModelAsync(returnUrl);
+                    return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vmLogin);
+                }
                 return RedirectToAction(nameof(AccountController.Login), "Account", new { returnUrl = vm.ReturnUrl });
             }
 
@@ -1693,15 +1695,6 @@ namespace PrimeApps.Auth.UI
 
 					platformUser = await _platformUserRepository.GetWithTenants(model.Email);
 
-					#region #3793
-
-					/* Add user to platform user_tenant table with tenant_id 1.
-					   This development made for default preview user. 
-					 */
-					platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1, PlatformUser = platformUser });
-					await _platformUserRepository.UpdateAsync(platformUser);
-
-					#endregion
 				}
 
                 if (applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Tenant)
@@ -1853,11 +1846,15 @@ namespace PrimeApps.Auth.UI
 
                 if (identityUser != null && applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Studio && !string.IsNullOrEmpty(studioUrl))
                 {
-                    /*
-                    * Add user to user_tenants table for preview own apps.
-                    */
+                    #region #3793
+
+                    /* Add user to platform user_tenant table with tenant_id 1.
+                       This development made for default preview user. 
+                     */
                     platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1, PlatformUser = platformUser });
                     await _platformUserRepository.UpdateAsync(platformUser);
+
+                    #endregion
                     
                     var cryptId = CryptoHelper.Encrypt(platformUser.Id.ToString());
                     var url = studioUrl + "/api/account/create";
