@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,17 +17,31 @@ namespace PrimeApps.Admin.Controllers
 	[Authorize]
 	public class HomeController : Controller
 	{
-		private readonly IOrganizationHelper _organizationHelper;
-		private readonly IApplicationRepository _applicationRepository;
-		private readonly IPlatformUserRepository _platformUserRepository;
+        private IOrganizationHelper _organizationHelper;
+        private ITemplateRepository _templateRepository;
+        private IHistoryDatabaseRepository _historyDatabaseRepository;
+        private IApplicationRepository _applicationRepository;
+        private IReleaseRepository _releaseRepository;
+        private IHistoryStorageRepository _historyStorageRepository;
+        private ITenantRepository _tenantRepository;
 		private IBackgroundTaskQueue _queue;
 		private IMigrationHelper _migrationHelper;
 
-		public HomeController(IOrganizationHelper organizationHelper, IBackgroundTaskQueue queue, IMigrationHelper migrationHelper, IApplicationRepository applicationRepository, IPlatformUserRepository platformUserRepository)
+        public HomeController(IOrganizationHelper organizationHelper, IBackgroundTaskQueue queue, IMigrationHelper migrationHelper,
+            ITemplateRepository templateRepository,
+            IHistoryDatabaseRepository historyDatabaseRepository,
+            IApplicationRepository applicationRepository,
+            IReleaseRepository releaseRepository,
+            IHistoryStorageRepository historyStorageRepository,
+            ITenantRepository tenantRepository)
 		{
 			_organizationHelper = organizationHelper;
+            _templateRepository = templateRepository;
+            _historyDatabaseRepository = historyDatabaseRepository;
 			_applicationRepository = applicationRepository;
-			_platformUserRepository = platformUserRepository;
+            _releaseRepository = releaseRepository;
+            _historyStorageRepository = historyStorageRepository;
+            _tenantRepository = tenantRepository;
 			_queue = queue;
 			_migrationHelper = migrationHelper;
 		}
@@ -93,7 +108,10 @@ namespace PrimeApps.Admin.Controllers
 		{
 			var isLocal = Request.Host.Value.Contains("localhost");
 			var schema = Request.Scheme;
-			_queue.QueueBackgroundWorkItem(token => _migrationHelper.AppMigration(schema, isLocal, ids.Split(",")));
+            var idsArr = ids.Split(",");
+
+            BackgroundJob.Enqueue<MigrationHelper>(x => x.AppMigration(schema, isLocal, idsArr));
+
 			return Ok();
 		}
 
