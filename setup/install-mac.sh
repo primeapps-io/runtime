@@ -91,6 +91,8 @@ cp minio.plist ~/Library/LaunchAgents/
 echo -e "${GREEN}Initializing cache instances...${NC}"
 cd "$basePath/programs/redis"
 
+sed -i -e "s/stop-writes-on-bgsave-error yes/stop-writes-on-bgsave-error no/" redis.conf
+
 mkdir "$basePath/data/redis_pre"
 cp redis.conf "$basePath/data/redis_pre/redis.conf"
 
