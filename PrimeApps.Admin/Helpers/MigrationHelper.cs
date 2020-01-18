@@ -31,18 +31,15 @@ namespace PrimeApps.Admin.Helpers
 {
     public interface IMigrationHelper
     {
-        Task AppMigration(string schema, bool isLocal, string[] ids);
+        Task<bool> AppMigration(string schema, bool isLocal, string ids);
+        Task<bool> UpdateTenant(int id, string url, int lastTenantId);
     }
 
     public class MigrationHelper : IMigrationHelper
     {
         private CurrentUser _currentUser;
         private IConfiguration _configuration;
-        private IServiceScopeFactory _serviceScopeFactory;
-        private IHttpContextAccessor _context;
         private IUnifiedStorage _storage;
-        private IHostingEnvironment _hostingEnvironment;
-        private IBackgroundTaskQueue _queue;
         private ITemplateRepository _templateRepository;
         private IHistoryDatabaseRepository _historyDatabaseRepository;
         private IApplicationRepository _applicationRepository;
@@ -51,11 +48,7 @@ namespace PrimeApps.Admin.Helpers
         private ITenantRepository _tenantRepository;
 
         public MigrationHelper(IConfiguration configuration,
-            IServiceScopeFactory serviceScopeFactory,
-            IHttpContextAccessor context,
             IUnifiedStorage storage,
-            IHostingEnvironment hostingEnvironment,
-            IBackgroundTaskQueue queue,
             ITemplateRepository templateRepository,
             IHistoryDatabaseRepository historyDatabaseRepository,
             IApplicationRepository applicationRepository,
@@ -65,10 +58,6 @@ namespace PrimeApps.Admin.Helpers
         {
             _storage = storage;
             _configuration = configuration;
-            _serviceScopeFactory = serviceScopeFactory;
-            _context = context;
-            _hostingEnvironment = hostingEnvironment;
-            _queue = queue;
             _templateRepository = templateRepository;
             _historyDatabaseRepository = historyDatabaseRepository;
             _applicationRepository = applicationRepository;
@@ -78,16 +67,17 @@ namespace PrimeApps.Admin.Helpers
         }
 
         [QueueCustom]
-        public async Task AppMigration(string schema, bool isLocal, string[] ids)
+        public async Task<bool> AppMigration(string schema, bool isLocal, string ids)
         {
             var PREConnectionString = _configuration.GetConnectionString("PlatformDBConnection");
+            var idsArr = ids.Split(",");
 
-            foreach (var id in ids)
+            foreach (var id in idsArr)
             {
                 var app = await _applicationRepository.Get(int.Parse(id));
 
                 if (app == null)
-                    return;
+                    return false;
 
                 _currentUser = new CurrentUser { PreviewMode = "app", TenantId = app.Id, UserId = 1 };
 
@@ -396,6 +386,8 @@ namespace PrimeApps.Admin.Helpers
 
             SentrySdk.CaptureMessage("Tenants update started.", SentryLevel.Info);
             //ErrorHandler.LogMessage("Migration finished successfully.");
+
+            return true;
         }
 
         public async Task<bool> UpdateTenants(int appId, string url)
@@ -428,7 +420,7 @@ namespace PrimeApps.Admin.Helpers
                     if (i > j * 200)
                         time = TimeSpan.FromSeconds(j * 30);
 
-                    BackgroundJob.Schedule<MigrationHelper>(x => x.UpdateTenant(tenantId, url, lastTenantId), time);
+                    BackgroundJob.Schedule<IMigrationHelper>(x => x.UpdateTenant(tenantId, url, lastTenantId), time);
                 }
             }
 
