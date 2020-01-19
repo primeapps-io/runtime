@@ -47,6 +47,7 @@ namespace PrimeApps.Admin.Helpers
         private IReleaseRepository _releaseRepository;
         private IHistoryStorageRepository _historyStorageRepository;
         private ITenantRepository _tenantRepository;
+        private IServiceScopeFactory _serviceScopeFactory;
 
 		public MigrationHelper(IConfiguration configuration,
 			IUnifiedStorage storage,
@@ -55,7 +56,8 @@ namespace PrimeApps.Admin.Helpers
             IApplicationRepository applicationRepository,
             IReleaseRepository releaseRepository,
             IHistoryStorageRepository historyStorageRepository,
-            ITenantRepository tenantRepository)
+            ITenantRepository tenantRepository,
+			IServiceScopeFactory serviceScopeFactory)
 		{
 			_storage = storage;
 			_configuration = configuration;
@@ -65,6 +67,7 @@ namespace PrimeApps.Admin.Helpers
             _releaseRepository = releaseRepository;
             _historyStorageRepository = historyStorageRepository;
             _tenantRepository = tenantRepository;
+            _serviceScopeFactory = serviceScopeFactory;
 		}
 
         [QueueCustom]
@@ -679,7 +682,7 @@ namespace PrimeApps.Admin.Helpers
 						await UpdateSetting(settingRepository);
 						PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", false);
 
-						var tenantIds = await tenantRepository.GetByAppId(appId);
+						var tenantIds = await tenantRepository.GetIdsByAppId(appId);
 						var lastTenantId = tenantIds.Count > 0 ? tenantIds.ToList().Last() : 0;
 
 						foreach (var tenantId in tenantIds)
