@@ -22,7 +22,7 @@ namespace PrimeApps.Admin.Helpers
 
         public async Task<IList<int>> GetTenantIds(int appId)
         {
-            var tenantIds = await _tenantRepository.GetByAppId(appId);
+            var tenantIds = await _tenantRepository.GetIdsByAppId(appId);
             var firstTime = await _releaseRepository.FirstTime(appId);
 
             return firstTime ? null : tenantIds;
