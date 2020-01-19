@@ -86,8 +86,6 @@ namespace PrimeApps.Admin.Jobs
                             var release = await releaseRepository.Get(appId, package.Version);
                             if (release == null)
                                 versions.Add(package.Version);
-                            else
-                                break;
                         }
                     }
 
