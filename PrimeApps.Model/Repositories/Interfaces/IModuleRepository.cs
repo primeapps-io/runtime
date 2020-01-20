@@ -47,5 +47,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         IQueryable<Module> Find();
         Task<ICollection<Field>> GetModuleFieldByName(string moduleName);
         Task<Module> GetByIdFullModule(int id);
+        Task<Module> GetByNameFullModule(string name);
     }
 }
