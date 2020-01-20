@@ -615,6 +615,6 @@ namespace PrimeApps.Model.Repositories
                 if (userGroupList.Count > 0)
                     userGroups = string.Join(",", userGroupList);
             }
-        } 
+        }
     }
 }

@@ -11,7 +11,7 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'packages';
             $rootScope.breadcrumblist[2].title = 'Packages';
-   
+
             $scope.app = $rootScope.currentApp;
 
             PackageService.getActiveProcess()
@@ -58,7 +58,8 @@ angular.module('primeapps')
                         }
 
                         $rootScope.runningPackages[$scope.app.name].status = false;
-                        $rootScope.runningPackages[$scope.app.name].logs = "";
+                        $rootScope.runningPackages[$scope.app.name].logs = ""; 
+                        $scope.grid.dataSource.read();
                         $timeout(function () {
                             $scope.$apply();
                         });
@@ -70,7 +71,7 @@ angular.module('primeapps')
                                     if (response.data) {
                                         if (response.data.status !== 'running') {
                                             if (response.data.status === 'succeed') {
-                                                toastr.success("Your package is ready for app " + $scope.app.label + ".");
+                                                toastr.success("Your package is ready for app " + $scope.app.label + "."); 
                                             }
                                             else {
                                                 toastr.error("An unexpected error occurred while creating a package for app " + $scope.app.label + ".");
@@ -79,10 +80,11 @@ angular.module('primeapps')
                                             if (packagesPageActive) {
                                                 $rootScope.$broadcast('package-created');
                                             }
-                                            $rootScope.runningPackages[$scope.app.name].status = false;
+                                            $rootScope.runningPackages[$scope.app.name].status = false;   
+                                            $scope.grid.dataSource.read();
                                             $timeout(function () {
-                                                $scope.$apply();
-                                            });
+                                                $scope.$apply();   
+                                            }); 
                                         }
                                         else {
                                             $scope.openWS($scope.packageId);
@@ -153,14 +155,15 @@ angular.module('primeapps')
                             .then(function (response) {
                                 toastr.success("Package creation started.");
                                 $scope.loading = false;
-                                $scope.packageId = response.data;
-                                $scope.openWS(response.data);
-                                //$state.go('studio.app.packages');
+                                $scope.packageId = response.data; 
+                                $scope.grid.dataSource.read();
+                                $scope.openWS(response.data); 
 
-                                if ($location.$$path.contains('/packages'))
-                                    $scope.grid.dataSource.read();
+                                //$state.go('studio.app.packages'); 
+                                //if ($location.$$path.contains('/packages'))
+                                //    $scope.grid.dataSource.read();
 
-                                $rootScope.runningPackages[$scope.app.name] = { status: true };
+                                $rootScope.runningPackages[$scope.app.name] = { status: true }; 
                             })
                             .catch(function (response) {
                                 $scope.loading = false;
@@ -175,7 +178,7 @@ angular.module('primeapps')
                     }
                 });
             };
-  
+
             $scope.getTime = function (time) {
                 return moment(time).format("DD-MM-YYYY HH:mm");
             };
@@ -262,7 +265,7 @@ angular.module('primeapps')
                     trTemp += '<td> <span>' + '<div style="padding:12px 0px;">' + e.version + '</div>' + '</span></td > ';
                     trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
                     trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
-                    trTemp += '<td style="text-align: center;" ng-bind-html="getIcon(dataItem.status)"></td></tr>';
+                    trTemp += '<td style="text-align: center;">' + $scope.getIcon(e.status) + '</td></tr>';
                     return trTemp;
                 },
                 altRowTemplate: function (e) {
@@ -270,7 +273,7 @@ angular.module('primeapps')
                     trTemp += '<td> <span>' + '<div style="padding:12px 0px;">' + e.version + '</div>' + '</span></td > ';
                     trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
                     trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
-                    trTemp += '<td style="text-align: center;" ng-bind-html="getIcon(dataItem.status)"></td></tr>';
+                    trTemp += '<td style="text-align: center;">' + $scope.getIcon(e.status) + '</td></tr>';
                     return trTemp;
                 },
                 pageable: {
@@ -280,7 +283,7 @@ angular.module('primeapps')
                     buttonCount: 5,
                     info: true,
                 },
-                columns: [ 
+                columns: [
                     {
                         field: 'Version',
                         title: 'Version'

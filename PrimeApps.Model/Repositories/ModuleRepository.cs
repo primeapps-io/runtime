@@ -423,12 +423,6 @@ namespace PrimeApps.Model.Repositories
             return module;
         }
 
-        public async Task<Module> GetByNameFullModule(string name)
-        {
-            return await GetModuleFullQuery()
-                .FirstOrDefaultAsync(x => x.Name == name && !x.Deleted);
-        }
-
         private IQueryable<Module> GetModuleFullQuery()
         {
             return DbContext.Modules
@@ -442,7 +436,7 @@ namespace PrimeApps.Model.Repositories
                 .ThenInclude(field => field.Filters)
                 .Include(module => module.Fields)
                 .ThenInclude(field => field.Permissions)
-                .Include(module => module.Relations) 
+                .Include(module => module.Relations)
                 .Include(module => module.Dependencies)
                 .Include(module => module.Calculations)
                 .Include(module => module.Components);
