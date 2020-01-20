@@ -67,6 +67,7 @@ angular.module('primeapps')
                     $scope.profile.newsfeed = false;
                     $scope.profile.report = false;
                     $scope.profile.dashboard = true;
+                    $scope.profile.close_smtp_settings = true;
                     $scope.profile.home = false;
                     $scope.profile.collective_annual_leave = false;
                     $scope.profile.parent_id = 0;
@@ -87,6 +88,66 @@ angular.module('primeapps')
             }
 
             getProfile();
+
+            $scope.changePage = function (page) {
+                $scope.loading = true;
+
+                if (page !== 1) {
+                    var difference = Math.ceil($scope.pageTotal / $scope.requestModel.limit);
+
+                    if (page > difference) {
+                        if (Math.abs(page - difference) < 1)
+                            --page;
+                        else
+                            page = page - Math.abs(page - Math.ceil($scope.pageTotal / $scope.requestModel.limit))
+                    }
+                }
+
+                $scope.activePage = page;
+                var requestModel = angular.copy($scope.requestModel);
+                requestModel.offset = page - 1;
+
+                ProfilesService.find(requestModel, 2).then(function (response) {
+                    $scope.profiles = ProfilesService.getProfiles(response.data, $rootScope.appModules, false);
+                    $scope.profile = {};
+
+                    $scope.profile.has_admin_rights = false;
+                    $scope.profile.is_persistent = false;
+                    $scope.profile.business_intelligence = false;
+                    $scope.profile.send_email = false;
+                    $scope.profile.send_sms = false;
+                    $scope.profile.export_data = false;
+                    $scope.profile.import_data = false;
+                    $scope.profile.word_pdf_download = false;
+                    $scope.profile.lead_convert = false;
+                    $scope.profile.document_search = false;
+                    $scope.profile.tasks = false;
+                    $scope.profile.calendar = false;
+                    $scope.profile.newsfeed = false;
+                    $scope.profile.report = false;
+                    $scope.profile.dashboard = true;
+                    $scope.profile.close_smtp_settings = true;
+                    $scope.profile.home = false;
+                    $scope.profile.collective_annual_leave = false;
+                    $scope.profile.permissions = $filter('filter')($scope.profiles, {
+                        is_persistent: true,
+                        has_admin_rights: true
+                    })[0].permissions;
+                    //Create
+                    var dashboard = $filter('filter')($scope.startPageList, { value: "Dashboard" }, true)[0];
+                    $scope.profile.PageStart = dashboard;
+
+                    $scope.loading = false;
+
+                }).finally(function () {
+                    $scope.loading = false;
+                });
+
+            };
+
+            $scope.changeOffset = function () {
+                $scope.changePage($scope.activePage);
+            };
 
             $scope.SetStartPage = function () {
 
@@ -245,6 +306,7 @@ angular.module('primeapps')
                     $scope.profile.newsfeed = false;
                     $scope.profile.report = false;
                     $scope.profile.dashboard = true;
+                    $scope.profile.close_smtp_settings = true;
                     $scope.profile.home = false;
                     $scope.profile.collective_annual_leave = false;
                     $scope.profile.parent_id = 0;

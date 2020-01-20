@@ -55,11 +55,11 @@ echo -e "${GREEN}Initializing database instances...${NC}"
 # Register database instances
 echo -e "${GREEN}Registering database instances...${NC}"
 
-cp "$basePath/setup/plist/postgres-pre.plist" postgres-pre.plist
-sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pre.plist
-sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pre.plist
-launchctl load postgres-pre.plist
-cp postgres-pre.plist ~/Library/LaunchAgents/
+cp "$basePath/setup/plist/postgres.plist" postgres.plist
+sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres.plist
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres.plist
+launchctl load postgres.plist
+cp postgres.plist ~/Library/LaunchAgents/
 
 sleep 3 # Sleep 3 seconds for postgres services wakeup
 
@@ -81,24 +81,26 @@ echo -e "${GREEN}Restoring databases...${NC}"
 echo -e "${GREEN}Initializing storage instances...${NC}"
 cd "$basePath/programs/minio"
 
-cp "$basePath/setup/plist/minio-pre.plist" minio-pre.plist
-sed -i -e "s/{{DATA}}/$dataPathEscape/" minio-pre.plist
-sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" minio-pre.plist
-launchctl load minio-pre.plist
-cp minio-pre.plist ~/Library/LaunchAgents/
+cp "$basePath/setup/plist/minio.plist" minio.plist
+sed -i -e "s/{{DATA}}/$dataPathEscape/" minio.plist
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" minio.plist
+launchctl load minio.plist
+cp minio.plist ~/Library/LaunchAgents/
 
 # Init cache instance
 echo -e "${GREEN}Initializing cache instances...${NC}"
 cd "$basePath/programs/redis"
 
+sed -i -e "s/stop-writes-on-bgsave-error yes/stop-writes-on-bgsave-error no/" redis.conf
+
 mkdir "$basePath/data/redis_pre"
 cp redis.conf "$basePath/data/redis_pre/redis.conf"
 
-cp "$basePath/setup/plist/redis-pre.plist" redis-pre.plist
-sed -i -e "s/{{DATA}}/$dataPathEscape/" redis-pre.plist
-sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" redis-pre.plist
-launchctl load redis-pre.plist
-cp redis-pre.plist ~/Library/LaunchAgents/
+cp "$basePath/setup/plist/redis.plist" redis.plist
+sed -i -e "s/{{DATA}}/$dataPathEscape/" redis.plist
+sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" redis.plist
+launchctl load redis.plist
+cp redis.plist ~/Library/LaunchAgents/
 
 # Create directory for dump, package, git, etc.
 mkdir "$basePath/data/primeapps"

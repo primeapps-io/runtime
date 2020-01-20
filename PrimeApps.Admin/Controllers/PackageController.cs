@@ -156,7 +156,7 @@ namespace PrimeApps.Admin.Controllers
 			if (checkButton.Count == 0)
 				return BadRequest();
 
-			var tenantIds = await _tenantRepository.GetByAppId(id);
+            var tenantIds = await _tenantRepository.GetIdsByAppId(id);
 
 			if (tenantIds.Count == 0)
 				return NotFound();

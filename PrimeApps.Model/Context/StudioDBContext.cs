@@ -121,6 +121,7 @@ namespace PrimeApps.Model.Context
                 .WithMany(t => t.OrganizationUsers)
                 .HasForeignKey(pt => pt.OrganizationId);
 
+            
             BuildIndexes(modelBuilder);
         }
 
