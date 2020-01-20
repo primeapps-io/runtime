@@ -149,6 +149,8 @@ launchctl stop io.primeapps.minio.pre-test
 echo -e "${GREEN}Initializing cache instances...${NC}"
 cd "$basePath/programs/redis"
 
+sed -i -e "s/stop-writes-on-bgsave-error yes/stop-writes-on-bgsave-error no/" redis.conf
+
 mkdir "$basePath/data/redis_pre"
 mkdir "$basePath/data/redis_pde"
 mkdir "$basePath/data/redis_pre_test"

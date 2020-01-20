@@ -43,13 +43,22 @@ namespace PrimeApps.App
 
             //Configure Authentication
             AuthConfiguration(services, Configuration);
+            
+            //Redis connection
             var redisConnection = Configuration.GetConnectionString("RedisConnection");
 
-            var redisConnectionPersist = redisConnection.Remove(redisConnection.Length - 1, 1) + "2";
+            //Hangfire configuration
+            var redisStorageOptions = new RedisStorageOptions
+            {
+                Prefix = "{app}:",
+                Db = 1
+            };
+            var hangfireStorage = new RedisStorage(redisConnection, redisStorageOptions);
 
-            var hangfireStorage = new RedisStorage(redisConnectionPersist);
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
             services.AddHangfire(x => x.UseStorage(hangfireStorage));
+
+            //Other configurations
 
             /*// WorkflowCore
             services.AddWorkflow(cfg =>

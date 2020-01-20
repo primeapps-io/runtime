@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,19 +17,11 @@ namespace PrimeApps.Admin.Controllers
 	[Authorize]
 	public class HomeController : Controller
 	{
-		private readonly IOrganizationHelper _organizationHelper;
-		private readonly IApplicationRepository _applicationRepository;
-		private readonly IPlatformUserRepository _platformUserRepository;
-		private IBackgroundTaskQueue _queue;
-		private IMigrationHelper _migrationHelper;
+		private IOrganizationHelper _organizationHelper;
 
-		public HomeController(IOrganizationHelper organizationHelper, IBackgroundTaskQueue queue, IMigrationHelper migrationHelper, IApplicationRepository applicationRepository, IPlatformUserRepository platformUserRepository)
+        public HomeController(IOrganizationHelper organizationHelper)
 		{
 			_organizationHelper = organizationHelper;
-			_applicationRepository = applicationRepository;
-			_platformUserRepository = platformUserRepository;
-			_queue = queue;
-			_migrationHelper = migrationHelper;
 		}
 
 		[Route("")]
@@ -93,7 +86,9 @@ namespace PrimeApps.Admin.Controllers
 		{
 			var isLocal = Request.Host.Value.Contains("localhost");
 			var schema = Request.Scheme;
-			_queue.QueueBackgroundWorkItem(token => _migrationHelper.AppMigration(schema, isLocal, ids.Split(",")));
+
+            BackgroundJob.Enqueue<IMigrationHelper>(x => x.AppMigration(schema, isLocal, ids));
+
 			return Ok();
 		}
 

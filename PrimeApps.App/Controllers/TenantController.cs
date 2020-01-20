@@ -22,7 +22,7 @@ namespace PrimeApps.App.Controllers
             if (appId <= 0)
                 return BadRequest("app_id cannot be zero or negative.");
 
-            var tenantIds = await _tenantRepository.GetByAppId(appId);
+            var tenantIds = await _tenantRepository.GetIdsByAppId(appId);
 
             return Ok(tenantIds);
         }
