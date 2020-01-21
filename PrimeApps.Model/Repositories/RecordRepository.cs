@@ -662,10 +662,17 @@ namespace PrimeApps.Model.Repositories
                     {
                         record = SectionPermission(module, record, user, operation);
                         record = await RelationModulePermission(module, record, user, operation);
+                        ///Todo lookup alanlar için kontrol lazım.
                         return record;
                     }
                 case OperationType.read:
+                    if (isCustomSharePermission)
+                        return record;
 
+                    if (modulePermission == null)
+                    {
+
+                    }
                     return null;
                 case OperationType.delete:
 
@@ -783,7 +790,7 @@ namespace PrimeApps.Model.Repositories
                         }
                     }
 
-                    return userIdList.Any(q => q == user.Id.ToString()) || result;
+                    return (userIdList != null && userIdList.Any(q => q == user.Id.ToString())) || result;
                 }
             }
 
