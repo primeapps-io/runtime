@@ -642,7 +642,7 @@ namespace PrimeApps.Model.Helpers
 
 					if (relatedModule.Id > 0)
 					{
-						var childRecord = recordRepository.GetById(relatedModule, (int)record[fieldName + "." + relatedModuleName + ".id"]);
+						var childRecord = await recordRepository.GetById(relatedModule, (int)record[fieldName + "." + relatedModuleName + ".id"]);
 
 						if (!(bool)childRecord["is_sample"])
 							await recordRepository.Update(updateRequest, mainModule);

@@ -628,7 +628,7 @@ namespace PrimeApps.Model.Repositories
 
             var user = await DbContext.Users
             .Include(q => q.Profile)
-            .ThenInclude(q => q.Permissions.Where(x => x.Type == EntityType.Module))
+            .ThenInclude(q => q.Permissions)
             .Include(q => q.Groups)
             .FirstOrDefaultAsync(q => q.Id == userId);
 
@@ -643,7 +643,7 @@ namespace PrimeApps.Model.Repositories
 
             var isCustomSharePermission = SharedPermissionCheck(record, user, operation);
             //Module CRUD permisson control
-            var modulePermission = ProfilePermissionCheck(profile.Permissions.Where(q => q.ModuleId == module.Id).ToList(), operation);
+            var modulePermission = ProfilePermissionCheck(profile.Permissions.Where(q => q.ModuleId == module.Id && q.Type == EntityType.Module).ToList(), operation);
 
             switch (operation)
             {
@@ -741,8 +741,12 @@ namespace PrimeApps.Model.Repositories
 
         private bool SharedPermissionCheck(JObject record, TenantUser user, OperationType operation)
         {
+            var extraControl = false;
+
             if (operation == OperationType.read)
             {
+                extraControl = true;
+
                 if (!record["shared_users"].IsNullOrEmpty() || !record["shared_user_groups"].IsNullOrEmpty())
                 {
                     var userIdList = record["shared_users"].ToObject<List<string>>();
@@ -762,7 +766,7 @@ namespace PrimeApps.Model.Repositories
                 }
             }
 
-            if (operation == OperationType.update)
+            if (operation == OperationType.update || extraControl)
             {
                 if (!record["shared_users_edit"].IsNullOrEmpty() || !record["shared_user_groups_edit"].IsNullOrEmpty())
                 {
