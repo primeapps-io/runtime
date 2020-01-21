@@ -139,6 +139,7 @@ angular.module('primeapps')
             $scope.createPackage = function () {
 
                 $scope.package.protectModules = 'allModules';
+                $scope.package.selectedModules = [];
                 $scope.errorList = [];
 
                 $scope.packagePopup = $scope.packagePopup || $modal({
