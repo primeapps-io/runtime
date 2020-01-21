@@ -151,7 +151,7 @@ angular.module('primeapps')
                     $scope.subject = template.subject;
                     $scope.currentTemplate = template;
                     $scope.template_name = template.name;
-
+                    $scope.editPermission = template.system_type === 'custom';
                 }
                 else {
                     $scope.tinymceModel = null;

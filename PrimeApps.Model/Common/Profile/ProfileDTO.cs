@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using PrimeApps.Model.Enums;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace PrimeApps.Model.Common.Profile
@@ -62,5 +63,7 @@ namespace PrimeApps.Model.Common.Profile
         public int ParentId { get; set; }
         [DataMember]
         public IEnumerable<ProfilePermissionDTO> Permissions { get; set; }
+        [DataMember]
+        public SystemType SystemType { get; set; }
     }
 }

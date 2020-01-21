@@ -36,8 +36,8 @@
                                 <td>{{template.active ? ('Setup.Modules.Active' | translate) : ('Setup.Modules.Passive' | translate)}}</td>
                                 <td><a href="{{getDownloadUrl(template)}}" target="_blank">{{'Common.Download' | translate}}</a></td>
                                 <td class="text-right">
-                                    <a href="#/app/setup/template?id={{template.id}}" class="btn btn-xs btn-custom">{{'Common.Edit' | translate}}</a>
-                                    <button type="button" class="btn btn-xs btn-custom" href confirm-click action="delete(template)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Delete' | translate}}</button>
+                                    <a href="#/app/setup/template?id={{template.id}}" class="btn btn-xs btn-custom" ng-disabled="template.system_type === 'system'">{{'Common.Edit' | translate}}</a>
+                                    <button type="button" class="btn btn-xs btn-custom" href confirm-click action="delete(template)" ng-disabled="template.system_type === 'system'" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Delete' | translate}}</button>
                                 </td>
                             </tr>
                         </tbody>

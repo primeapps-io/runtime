@@ -17,6 +17,8 @@ namespace PrimeApps.Studio.Models
 
         public ViewSharingType SharingType { get; set; }
 
+        public SystemType SystemType { get; set; }
+
         [StringLength(200), BalancedParentheses, FilterLogic]
         public string FilterLogic { get; set; }
 
@@ -26,6 +28,8 @@ namespace PrimeApps.Studio.Models
         public List<Filter> Filters { get; set; }
 
         public List<int> Shares { get; set; }
+
+        public bool Default { get; set; }
     }
 
     public class ViewFieldBindingModel

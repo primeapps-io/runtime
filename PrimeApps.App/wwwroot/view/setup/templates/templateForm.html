@@ -21,6 +21,7 @@
                                     <label class="radio-inline detailWord">
                                         <input name="document_type" required type="radio" style="margin-left: -16px;"
                                                ng-model="document"
+                                               ng-disabled="template.system_type === 'system'"
                                                value="word">
                                         {{'Module.WordUpload' | translate }}
                                         <!--<span>Liste raporları verilerinizi daha basit şekilde listelemenizi sağlar.</span>-->
@@ -31,6 +32,7 @@
                                         <input name="document_type" required type="radio"
                                                ng-model="document"
                                                value="excel"
+                                               ng-disabled="template.system_type === 'system'"
                                                style="margin-left: -16px;">
                                         {{'Module.ExcelUploadTemplate' | translate }}
                                         <!--<span>enizi sağlar.</span>-->
@@ -49,6 +51,7 @@
                                         class="ng-animate-disabled form-control"
                                         ng-model="template.module"
                                         ng-required="true"
+                                        ng-disabled="template.system_type === 'system'"
                                         ng-options="moduleItem['label_'+language+'_plural'] for moduleItem in modules | orderNotZero | filter:{name:'!users'} | orderBy:['-system_type','order']">
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
@@ -57,19 +60,19 @@
                         <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
                             <label class="col-sm-3 control-label">{{'Setup.Templates.TemplateName' | translate}}</label>
                             <div class="col-sm-9">
-                                <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="template.name" />
+                                <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="template.name" ng-disabled="template.system_type === 'system'" />
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-3 control-label">{{'Setup.Templates.TemplateStatus' | translate}}</label>
                             <div class="col-sm-9" ng-init="template.active = true">
                                 <label class="radio-inline">
-                                    <input type="radio" name="templateStatus" ng-value="true" ng-model="template.active" />
+                                    <input type="radio" name="templateStatus" ng-value="true" ng-model="template.active" ng-disabled="template.system_type === 'system'" />
                                     {{'Setup.Templates.TemplateActive' | translate}}
                                 </label>
 
                                 <label class="radio-inline">
-                                    <input type="radio" name="templateStatus" ng-value="false" ng-model="template.active" />
+                                    <input type="radio" name="templateStatus" ng-value="false" ng-model="template.active" ng-disabled="template.system_type === 'system'" />
                                     {{'Setup.Templates.TemplateDeactive' | translate}}
                                 </label>
                             </div>
@@ -90,12 +93,12 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label">{{'Setup.Templates.TemplateFile' | translate}}</label>
                             <div class="col-sm-9">
-                            <span class="file-input btn btn-custom btn-sm btn-file" plupload="fileUpload" ng-disabled="fileUpload.uploader.files.length || (id && !templateFileCleared) || saving">
-                                {{'Setup.Templates.ChooseFiles' | translate}} <input id="uploadFile" type="file" name="fileUpload" accept=".docx,.doc" add-file="add-file" />
-                            </span>
+                                <span class="file-input btn btn-custom btn-sm btn-file" plupload="fileUpload" ng-disabled="fileUpload.uploader.files.length || (id && !templateFileCleared) || saving || template.system_type === 'system'">
+                                    {{'Setup.Templates.ChooseFiles' | translate}} <input id="uploadFile" type="file" name="fileUpload" accept=".docx,.doc" add-file="add-file" />
+                                </span>
                                 <span ng-show="fileUpload.uploader.files.length">{{fileUpload.uploader.files[0].name}}</span>
-                                <a href="{{templateDownloadUrl}}" target="_blank" ng-show="!fileUpload.uploader.files.length && id">{{template.content}}</a>
-                                <a class="btn btn-default clear-button" ng-show="fileUpload.uploader.files.length || (!templateFileCleared && id)" ng-disabled="saving" ng-click="clearTemplateFile()"><i class="fa fa-times-circle"></i></a>
+                                <a href="{{templateDownloadUrl}}" target="_blank" ng-show="!fileUpload.uploader.files.length && id" ng-disabled="template.system_type === 'system'">{{template.content}}</a>
+                                <a class="btn btn-default clear-button" ng-show="fileUpload.uploader.files.length || (!templateFileCleared && id)" ng-disabled="saving || template.system_type === 'system'" ng-click="clearTemplateFile()"><i class="fa fa-times-circle"></i></a>
                             </div>
                         </div>
                         <div class="form-group" ng-show="uploadForm.$submitted && uploadForm.$invalid">
@@ -117,6 +120,7 @@
                                         <tr>
                                             <th>{{'Setup.Modules.Profile' | translate}}</th>
                                             <th class="text-center">{{'Setup.Modules.PermissionShow' | translate}}</th>
+
                                             <!--<th class="text-center">{{'Setup.Modules.PermissionReadOnly' | translate}}</th>-->
                                             <th class="text-center">{{'Setup.Modules.PermissionNone' | translate}}</th>
                                         </tr>
@@ -124,9 +128,9 @@
                                     <tbody>
                                         <tr ng-repeat="permission in template.permissions | orderBy:'profile_id'">
                                             <td>{{permission.profile_name}}</td>
-                                            <td class="text-center user-not-select"><input type="radio" ng-model="permission.type" value="full" /></td>
+                                            <td class="text-center user-not-select"><input type="radio" ng-model="permission.type" value="full" ng-disabled="template.system_type === 'system'" /></td>
                                             <!--<td class="text-center user-not-select"><input type="radio" ng-model="permission.type" value="read_only" ng-disabled="permission.profile_is_admin" title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : ''}}" /></td>-->
-                                            <td class="text-center user-not-select"><input type="radio" ng-model="permission.type" value="none" ng-disabled="permission.profile_is_admin" title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : ''}}" /></td>
+                                            <td class="text-center user-not-select"><input type="radio" ng-model="permission.type" value="none" ng-disabled="permission.profile_is_admin || template.system_type === 'system'" title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : ''}}" /></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -135,7 +139,7 @@
                         <div class="form-group">
                             <div class="col-sm-offset-3 col-sm-9">
                                 <a href="#/app/setup/templates" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
-                                <button type="submit" class="btn btn-primary btn-w-lg" ng-disabled="!(fileUpload.uploader.files.length || (id && !templateFileCleared) || saving)" ladda="saving"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+                                <button type="submit" class="btn btn-primary btn-w-lg" ng-disabled="!(fileUpload.uploader.files.length || (id && !templateFileCleared) || saving) || template.system_type === 'system'" ladda="saving"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
                             </div>
                         </div>
                     </form>
@@ -149,6 +153,7 @@
                                         class="ng-animate-disabled form-control"
                                         ng-model="template.module"
                                         ng-required="true"
+                                        ng-disabled="template.system_type === 'system'"
                                         ng-options="moduleItem['label_'+language+'_plural'] for moduleItem in modules | orderNotZero | filter:{name:'!users'} | orderBy:['-system_type','order']">
                                     <option value="">{{'Common.Select' | translate}}</option>
                                 </select>
@@ -157,23 +162,30 @@
                         <div class="form-group" ng-class="{'has-error': uploadFormExcel.$submitted && uploadFormExcel.templateName.$invalid}">
                             <label class="col-sm-3 control-label">{{'Setup.Templates.TemplateName' | translate}}</label>
                             <div class="col-sm-9">
-                                <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="template.name" />
+                                <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="template.name" ng-disabled="template.system_type === 'system'" />
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-3 control-label">{{'Setup.Templates.TemplateStatus' | translate}}</label>
                             <div class="col-sm-9" ng-init="template.active = true">
                                 <label class="radio-inline">
-                                    <input type="radio" name="templateStatus" ng-value="true" ng-model="template.active" />
+                                    <input type="radio" name="templateStatus" ng-value="true" ng-model="template.active" ng-disabled="template.system_type === 'system'" />
                                     {{'Setup.Templates.TemplateActive' | translate}}
                                 </label>
 
                                 <label class="radio-inline">
-                                    <input type="radio" name="templateStatus" ng-value="false" ng-model="template.active" />
+                                    <input type="radio" name="templateStatus" ng-value="false" ng-model="template.active" ng-disabled="template.system_type === 'system'" />
                                     {{'Setup.Templates.TemplateDeactive' | translate}}
                                 </label>
                             </div>
                         </div>
+
+
+
+
+
+
+
                         <!--<div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.language.$invalid}">-->
                         <!--<label class="col-sm-3 control-label">{{'Setup.Templates.TemplateLanguage' | translate}}</label>-->
                         <!--<div class="col-sm-9">-->
@@ -190,12 +202,12 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label">{{'Setup.Templates.TemplateFile' | translate}}</label>
                             <div class="col-sm-9">
-                            <span class="file-input btn btn-custom btn-sm btn-file" plupload="fileUploadExcel" ng-disabled="fileUploadExcel.uploader.files.length || (id && !templateFileCleared) || saving">
-                                 {{'Module.ChooseFilesExcel' | translate}} <input id="uploadFile" type="file" name="fileUploadExcel" accept=".xls, .xlsx" add-file="add-file" />
-                            </span>
+                                <span class="file-input btn btn-custom btn-sm btn-file" plupload="fileUploadExcel" ng-disabled="fileUploadExcel.uploader.files.length || (id && !templateFileCleared) || saving || template.system_type === 'system'">
+                                    {{'Module.ChooseFilesExcel' | translate}} <input id="uploadFile" type="file" name="fileUploadExcel" accept=".xls, .xlsx" add-file="add-file" />
+                                </span>
                                 <span ng-show="fileUploadExcel.uploader.files.length">{{fileUploadExcel.uploader.files[0].name}}</span>
                                 <a href="{{templateDownloadUrl}}" target="_blank" ng-show="!fileUploadExcel.uploader.files.length && id">{{template.content}}</a>
-                                <a class="btn btn-default clear-button" ng-show="fileUploadExcel.uploader.files.length || (!templateFileCleared && id)" ng-disabled="saving" ng-click="clearTemplateFile()"><i class="fa fa-times-circle"></i></a>
+                                <a class="btn btn-default clear-button" ng-show="fileUploadExcel.uploader.files.length || (!templateFileCleared && id)" ng-disabled="saving || template.system_type === 'system'" ng-click="clearTemplateFile()"><i class="fa fa-times-circle"></i></a>
                             </div>
                         </div>
                         <div class="form-group" ng-show="uploadForm.$submitted && uploadForm.$invalid">
@@ -217,6 +229,7 @@
                                         <tr>
                                             <th>{{'Setup.Modules.Profile' | translate}}</th>
                                             <th class="text-center">{{'Setup.Modules.PermissionShow' | translate}}</th>
+
                                             <!--<th class="text-center">{{'Setup.Modules.PermissionReadOnly' | translate}}</th>-->
                                             <th class="text-center">{{'Setup.Modules.PermissionNone' | translate}}</th>
                                         </tr>
@@ -224,9 +237,9 @@
                                     <tbody>
                                         <tr ng-repeat="permission in template.permissions | orderBy:'profile_id'">
                                             <td>{{permission.profile_name}}</td>
-                                            <td class="text-center user-not-select"><input type="radio" ng-model="permission.type" value="full" /></td>
+                                            <td class="text-center user-not-select"><input type="radio" ng-model="permission.type" ng-disabled="template.system_type === 'system'" value="full" /></td>
                                             <!--<td class="text-center user-not-select"><input type="radio" ng-model="permission.type" value="read_only" ng-disabled="permission.profile_is_admin" title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : ''}}" /></td>-->
-                                            <td class="text-center user-not-select"><input type="radio" ng-model="permission.type" value="none" ng-disabled="permission.profile_is_admin" title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : ''}}" /></td>
+                                            <td class="text-center user-not-select"><input type="radio" ng-model="permission.type" value="none" ng-disabled="permission.profile_is_admin || template.system_type === 'system'" title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : ''}}" /></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -235,7 +248,7 @@
                         <div class="form-group">
                             <div class="col-sm-offset-3 col-sm-9">
                                 <a href="#/app/setup/templates" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
-                                <button type="submit" class="btn btn-primary btn-w-lg" ng-disabled="!(fileUploadExcel.uploader.files.length || (id && !templateFileCleared) || saving)" ladda="saving"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+                                <button type="submit" class="btn btn-primary btn-w-lg" ng-disabled="!(fileUploadExcel.uploader.files.length || (id && !templateFileCleared) || saving) || template.system_type === 'system'" ladda="saving"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
                             </div>
                         </div>
                     </form>

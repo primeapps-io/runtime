@@ -24,7 +24,6 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
 
             return view;
-
         }
 
         public async Task<ICollection<View>> GetAll(int moduleId)
@@ -175,6 +174,28 @@ namespace PrimeApps.Model.Repositories
                 return views.Where(x => x.ModuleId == id);
 
             return views;
+        }
+
+        public async Task<View> GetDefaultView(int id)
+        {
+            var view = await DbContext.Views
+            .FirstOrDefaultAsync(x => x.ModuleId == id && x.Default);
+
+            return view;
+        }
+
+
+        public async Task<int> ChangeDefaultView(int moduleId)
+        {
+            var view = await DbContext.Views
+            .FirstOrDefaultAsync(x => x.Default && x.ModuleId == moduleId);
+
+            if (view == null)
+                return 1;
+
+            view.Default = false;
+
+            return await DbContext.SaveChangesAsync();
         }
     }
 }

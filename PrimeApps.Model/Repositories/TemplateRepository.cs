@@ -45,13 +45,13 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.Shares)
                 .ThenInclude(x => x.TenantUser)
                 .Include(x => x.Permissions)
-                .Where(x => x.Deleted == false);
+                .Where(x => !x.Deleted && x.Active);
 
             if (language != LanguageType.NotSet)
                 templates = templates.Where(x => x.Language == language);
 
             if (hasNotCode)
-                templates = templates.Where(x => x.Code == null);
+                templates = templates.Where(x => string.IsNullOrEmpty(x.Code));
 
             if (templateType != TemplateType.NotSet)
                 templates = templates.Where(x => x.TemplateType == templateType);
@@ -139,7 +139,7 @@ namespace PrimeApps.Model.Repositories
         public IQueryable<Template> Find(TemplateType templateType)
         {
             var templates = DbContext.Templates
-            .Where(x => !x.Deleted && x.TemplateType == templateType) 
+            .Where(x => !x.Deleted && x.TemplateType == templateType)
             .OrderByDescending(x => x.Id);
 
             return templates;

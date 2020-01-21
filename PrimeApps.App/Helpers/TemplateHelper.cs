@@ -1,5 +1,6 @@
 ﻿using PrimeApps.App.Models;
 using PrimeApps.Model.Entities.Tenant;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,8 @@ namespace PrimeApps.App.Helpers
                 Content = templateModel.Content,
                 Language = templateModel.Language,
                 Active = templateModel.Active,
-                SharingType = templateModel.SharingType
+                SharingType = templateModel.SharingType,
+                SystemType = SystemType.Custom
             };
 
             if (templateModel.Permissions != null && templateModel.Permissions.Count > 0)
@@ -56,7 +58,8 @@ namespace PrimeApps.App.Helpers
                 Content = templateModel.Content,
                 Language = templateModel.Language,
                 Active = templateModel.Active,
-                SharingType = templateModel.SharingType
+                SharingType = templateModel.SharingType,
+                SystemType = SystemType.Custom
             };
 
             if (templateModel.Permissions != null && templateModel.Permissions.Count > 0)

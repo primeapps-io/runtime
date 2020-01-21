@@ -162,7 +162,7 @@
                                     <p class="pull-left" ng-if="!template" style="margin-top:6px">{{'Template.ChooseTemplate' | translate}}</p>
                                 </div>
                                 <div class="col-sm-7 text-right">
-                                    <button type="button" class="btn btn-custom" ng-show="template" ng-click="formType = 'template';setTemplate()" ng-disabled="saving">{{'Template.EditTemplate' | translate}}</button>
+                                    <button type="button" class="btn btn-custom" ng-show="template && editPermission" ng-click="formType = 'template';setTemplate()" ng-disabled="saving">{{'Template.EditTemplate' | translate}}</button>
                                     <button type="button" class="btn btn-custom" ng-show="!template" ng-click="formType = 'template';setTemplate()" ng-disabled="saving">{{'Template.NewTemplate' | translate}}</button>
                                     <button type="submit" class="btn btn-w-md btn-primary" ng-disabled="!emailField || !template" ladda="submittingModal"><i class="fa fa-check-circle pull-left pull-right"></i> {{'Common.Send' | translate}}</button>
                                 </div>

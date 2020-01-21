@@ -29,7 +29,7 @@ namespace PrimeApps.App.Controllers
         private IDashboardRepository _dashboardRepository;
         private IRecordHelper _recordHelper;
 
-        public ViewController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, 
+        public ViewController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory,
             IViewRepository viewRepository, IUserRepository userRepository, IDashboardRepository dashboardRepository, IRecordHelper recordHelper)
         {
             _configuration = configuration;
@@ -113,6 +113,9 @@ namespace PrimeApps.App.Controllers
             if (viewEntity == null)
                 return NotFound();
 
+            if (viewEntity.SystemType == SystemType.System)
+                return Forbid();
+
             var currentFieldIds = viewEntity.Fields.Select(x => x.Id).ToList();
             var currentFilterIds = new List<int>();
 
@@ -145,6 +148,10 @@ namespace PrimeApps.App.Controllers
 
             if (viewEntity == null)
                 return NotFound();
+
+            if (viewEntity.SystemType == SystemType.System)
+                return Forbid();
+
 
             await _viewRepository.DeleteSoft(viewEntity);
             await _dashboardRepository.DeleteSoftByViewId(id);

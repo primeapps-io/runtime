@@ -65,6 +65,9 @@ namespace PrimeApps.Studio.Controllers
             //Set Warehouse
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
+            if (NewProfile.SystemType == SystemType.NotSet)
+                NewProfile.SystemType = SystemType.System;
+
             var profile = await _profileRepository.CreateAsync(NewProfile, AppUser.TenantLanguage);
 
             return Ok(profile);
@@ -81,6 +84,9 @@ namespace PrimeApps.Studio.Controllers
                 return StatusCode(403);
             //Set Warehouse
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+
+            if (UpdatedProfile.SystemType == SystemType.NotSet)
+                UpdatedProfile.SystemType = SystemType.System;
 
             await _profileRepository.UpdateAsync(UpdatedProfile, AppUser.TenantLanguage);
             return Ok();

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Profile;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Controllers
 {
@@ -38,6 +39,9 @@ namespace PrimeApps.App.Controllers
             //Set Warehouse
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
+            if (NewProfile.SystemType == SystemType.NotSet)
+                NewProfile.SystemType = SystemType.Custom;
+
             await _profileRepository.CreateAsync(NewProfile, AppUser.TenantLanguage);
 
             return Ok();
@@ -53,6 +57,9 @@ namespace PrimeApps.App.Controllers
             //Set Warehouse
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
+            if (UpdatedProfile.SystemType == SystemType.NotSet)
+                UpdatedProfile.SystemType = SystemType.Custom;
+
             await _profileRepository.UpdateAsync(UpdatedProfile, AppUser.TenantLanguage);
             return Ok();
         }
@@ -64,8 +71,10 @@ namespace PrimeApps.App.Controllers
         [Route("Remove"), HttpPost]
         public async Task<IActionResult> Remove([FromBody]ProfileRemovalDTO RemovalRequest)
         {
-            await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.Id, RemovalRequest.TransferProfile.Id);
+            if (RemovalRequest.RemovedProfile.SystemType == SystemType.System)
+                return Forbid();
 
+            await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.Id, RemovalRequest.TransferProfile.Id);
 
             return Ok();
         }

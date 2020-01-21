@@ -2,7 +2,7 @@
 
 angular.module('primeapps')
 
-    .controller('WordTemplatesController', ['$rootScope', '$scope', '$state', '$filter', 'WordTemplatesService', '$http', 'config', '$modal', '$cookies', 'ModuleService', 'FileUploader', 'helper', '$localStorage','$window',
+    .controller('WordTemplatesController', ['$rootScope', '$scope', '$state', '$filter', 'WordTemplatesService', '$http', 'config', '$modal', '$cookies', 'ModuleService', 'FileUploader', 'helper', '$localStorage', '$window',
         function ($rootScope, $scope, $state, $filter, WordTemplatesService, $http, config, $modal, $cookies, ModuleService, FileUploader, helper, $localStorage, $window) {
 
             //$scope.$parent.menuTopTitle = "Templates";
@@ -14,9 +14,9 @@ angular.module('primeapps')
                 });*/
 
             $rootScope.breadcrumblist[2].title = 'Document';
-             
+
             $scope.loading = true;
-             
+
             $scope.showFormModal = function (template) {
                 $scope.requiredColor = "";
                 $scope.template = [];
@@ -188,6 +188,8 @@ angular.module('primeapps')
                 }
 
                 $scope.saving = true;
+                $scope.changeTemplateType($scope.template.editable);
+
                 var header = {
                     'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
                     'Accept': 'application/json',
@@ -218,6 +220,7 @@ angular.module('primeapps')
                         var template = angular.copy($scope.template);
                         template.module = $scope.template.templateModule.name;
                         template.name = $scope.template.templateName;
+                        template.system_type = $scope.template.system_type;
 
                         WordTemplatesService.update(template)
                             .then(function () {
@@ -274,6 +277,7 @@ angular.module('primeapps')
                 $scope.template.templateName = template.name;
                 $scope.template.active = template.active;
                 $scope.template.templateModule = module;
+                $scope.template.editable = template.system_type === 'custom' ? true : false;
                 $scope.currentContent = angular.copy(template.content);
             };
 
@@ -477,7 +481,8 @@ angular.module('primeapps')
                         content_type: tempInfo.content_type,
                         chunks: tempInfo.chunks,
                         subject: "Word",
-                        active: $scope.template.active
+                        active: $scope.template.active,
+                        system_type: $scope.template.system_type
                     };
                     if (!$scope.template.id) {
                         WordTemplatesService.create(template)
@@ -507,7 +512,14 @@ angular.module('primeapps')
             };
 
             $scope.wordDownload = function (wordTemp) {
-                $window.open('/attach/download_template?fileId=' + wordTemp.id + "&tempType=" + wordTemp.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId , "_blank");
+                $window.open('/attach/download_template?fileId=' + wordTemp.id + "&tempType=" + wordTemp.template_type + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId, "_blank");
+            };
+
+            $scope.changeTemplateType = function (value) {
+                if (value)
+                    $scope.template.system_type = 'custom';
+                else
+                    $scope.template.system_type = "system";
             };
 
             $scope.goUrl = function (emailTemp) {

@@ -195,6 +195,7 @@ angular.module('primeapps')
                     return;
                 }
 
+                $scope.changeTemplateType($scope.template.editable);
                 $scope.saving = true;
                 var header = {
                     'Authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
@@ -226,6 +227,7 @@ angular.module('primeapps')
                         var template = angular.copy($scope.template);
                         template.module = $scope.template.templateModule.name;
                         template.name = $scope.template.templateName;
+                        template.system_type = $scope.template.system_type;
 
                         ExcelTemplatesService.update(template)
                             .then(function () {
@@ -258,6 +260,7 @@ angular.module('primeapps')
                 $scope.template.templateName = template.name;
                 $scope.template.active = template.active;
                 $scope.template.templateModule = module;
+                $scope.template.editable = $scope.template.system_type === 'custom' ? true : false;
                 $scope.currentContent = angular.copy(template.content);
             };
 
@@ -268,7 +271,7 @@ angular.module('primeapps')
                 //$scope.changePage($scope.activePage);
                 toastr.success($filter('translate')('Setup.Templates.SaveSuccess'));
                 $scope.addNewWordTemplateFormModal.hide();
-                
+
             };
 
             $scope.closeModal = function () {
@@ -294,14 +297,14 @@ angular.module('primeapps')
                         dangerMode: true
                     }).then(function (value) {
                         if (value) {
-                         
+
                             ExcelTemplatesService.delete(id).then(function () {
-                             
+
                                 $scope.grid.dataSource.read();
                                 toastr.success($filter('translate')('Setup.Templates.DeleteSuccess' | translate));
 
                             }).catch(function () {
-                             
+
                                 $scope.templates = $scope.templatesState;
 
                                 if ($scope.addNewExcelTemplateFormModal) {
@@ -325,7 +328,8 @@ angular.module('primeapps')
                         chunks: tempInfo.chunks,
                         subject: "Excel",
                         active: $scope.template.active,
-                        permissions: $scope.template.permissions
+                        permissions: $scope.template.permissions,
+                        system_type: $scope.template.system_type
                     };
 
                     if (!$scope.template.id) {
@@ -354,6 +358,13 @@ angular.module('primeapps')
 
             $scope.excelDownload = function (excelTemp) {
                 $window.open("/attach/export_excel?module =" + excelTemp.name + "&appId=" + $scope.appId + "&appId=" + $scope.appId + "&organizationId=" + $rootScope.currentOrgId + '&locale=' + $scope.$parent.$parent.language, "_blank");
+            };
+
+            $scope.changeTemplateType = function (value) {
+                if (value)
+                    $scope.template.system_type = 'custom';
+                else
+                    $scope.template.system_type = "system";
             };
 
             $scope.goUrl = function (emailTemp) {

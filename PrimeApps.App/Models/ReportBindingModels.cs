@@ -45,6 +45,8 @@ namespace PrimeApps.App.Models
         public List<ReportAggregationBindingModel> Aggregations { get; set; }
 
         public List<int> Shares { get; set; }
+
+        public SystemType SystemType { get; set; }
     }
 
     public class ReportFieldBindingModel

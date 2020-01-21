@@ -55,7 +55,8 @@ namespace PrimeApps.Model.Repositories
                 Home = newProfileDTO.Home,
                 CollectiveAnnualLeave = newProfileDTO.CollectiveAnnualLeave,
                 StartPage = newProfileDTO.StartPage,
-                ParentId = newProfileDTO.ParentId
+                ParentId = newProfileDTO.ParentId,
+                SystemType = newProfileDTO.SystemType
             };
 
             DbContext.ProfilePermissions.Add(new ProfilePermission()
@@ -157,6 +158,7 @@ namespace PrimeApps.Model.Repositories
             profileToUpdate.CollectiveAnnualLeave = updatedProfileDTO.CollectiveAnnualLeave;
             profileToUpdate.StartPage = updatedProfileDTO.StartPage;
             profileToUpdate.ParentId = updatedProfileDTO.ParentId;
+            profileToUpdate.SystemType = updatedProfileDTO.SystemType;
 
             DbContext.ProfilePermissions.RemoveRange(profileToUpdate.Permissions);
 
@@ -332,6 +334,7 @@ namespace PrimeApps.Model.Repositories
                     StartPage = x.StartPage,
                     ParentId = x.ParentId,
                     UserIds = x.Users.Select(z => z.Id).ToList(),
+                    SystemType = x.SystemType,
                     Permissions = x.Permissions.Select(y => new ProfilePermissionDTO()
                     {
                         ID = y.Id,
@@ -354,7 +357,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<IEnumerable<Profile>> GetAll()
         {
             return await DbContext.Profiles
-                .Where(x => !x.Deleted) 
+                .Where(x => !x.Deleted)
                 .OrderBy(x => x.CreatedAt).ToListAsync();
         }
 

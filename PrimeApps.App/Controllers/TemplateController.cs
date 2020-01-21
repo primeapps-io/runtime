@@ -122,6 +122,9 @@ namespace PrimeApps.App.Controllers
             if (templateEntity == null)
                 return NotFound();
 
+            if (templateEntity.SystemType == SystemType.System && (templateEntity.TemplateType == TemplateType.Email || templateEntity.TemplateType == TemplateType.Module))
+                return Forbid();
+
             if (template.Language == LanguageType.NotSet)
                 template.Language = AppUser.Language.ToEnum<LanguageType>();
 
@@ -141,6 +144,9 @@ namespace PrimeApps.App.Controllers
 
             if (templateEntity == null)
                 return NotFound();
+
+            if (templateEntity.SystemType == SystemType.System && (templateEntity.TemplateType == TemplateType.Email || templateEntity.TemplateType == TemplateType.Module))
+                return Forbid();
 
             await _templateRepostory.DeleteSoft(templateEntity);
 

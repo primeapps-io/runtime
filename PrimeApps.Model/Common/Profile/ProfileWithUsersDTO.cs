@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using PrimeApps.Model.Enums;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace PrimeApps.Model.Common.Profile
@@ -29,7 +30,7 @@ namespace PrimeApps.Model.Common.Profile
         [DataMember]
         public bool ExportData { get; set; }
         [DataMember]
-        public bool WordPdfDownload { get; set; }  
+        public bool WordPdfDownload { get; set; }
         [DataMember]
         public bool LeadConvert { get; set; }
         [DataMember]
@@ -62,5 +63,7 @@ namespace PrimeApps.Model.Common.Profile
         public IList<ProfilePermissionDTO> Permissions { get; set; }
         [DataMember]
         public bool Deleted { get; set; }
+        [DataMember]
+        public SystemType SystemType { get; set; }
     }
 }

@@ -66,7 +66,8 @@ angular.module('primeapps')
             $scope.getItem = function (item) {
                 var subItem = {
                     "id": item.id,
-                    "title": item["label_"+$scope.language],
+                    "title": item["label_" + $scope.language],
+                    "system_type": item.system_type,
                     "nodes": []
                 };
                 return subItem;

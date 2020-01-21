@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using PrimeApps.Model.Enums;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace PrimeApps.Model.Entities.Tenant
 {
@@ -36,6 +37,9 @@ namespace PrimeApps.Model.Entities.Tenant
         public TemplateSharingType SharingType { get; set; }
 
         public List<TemplateShares> Shares { get; set; }
+
+        [Column("system_type"), DefaultValue(SystemType.Custom)]
+        public SystemType SystemType { get; set; }
 
         public virtual ICollection<TemplatePermission> Permissions { get; set; }
     }

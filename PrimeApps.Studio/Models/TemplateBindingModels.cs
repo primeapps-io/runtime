@@ -38,6 +38,8 @@ namespace PrimeApps.Studio.Models
         
         [StringLength(50)]
         public string Code { get; set; }
+
+        public SystemType SystemType { get; set; } 
     }
 
     public class TemplatePermissionsModel

@@ -13,6 +13,7 @@ using Hangfire;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Services;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Controllers
 {
@@ -73,7 +74,8 @@ namespace PrimeApps.App.Controllers
                 Master = role.Master,
                 OwnersList = role.Owners,
                 ReportsToId = role.ReportsTo,
-                ShareData = role.ShareData
+                ShareData = role.ShareData,
+                SystemType = SystemType.Custom
             }, AppUser.TenantLanguage);
         }
 
@@ -99,8 +101,9 @@ namespace PrimeApps.App.Controllers
                 return;
 
             Role roleToUpdate = await _roleRepository.GetByIdAsyncWithUsers(role.Id);
-            if (roleToUpdate == null) return;
+            if (roleToUpdate == null || roleToUpdate.SystemType == SystemType.System) return;
 
+            role.SystemType = SystemType.Custom;
             await _roleRepository.UpdateAsync(roleToUpdate, role, AppUser.TenantLanguage);
 
             //Set warehouse database name
@@ -113,6 +116,11 @@ namespace PrimeApps.App.Controllers
         [Route("delete"), HttpDelete]
         public async Task Delete([FromQuery(Name = "id")]int id, [FromQuery(Name = "transferRoleId")]int transferRoleId)
         {
+            var role = await _roleRepository.GetByIdAsync(id);
+
+            if (role == null || role.SystemType == SystemType.System)
+                return;
+
             var user = _userRepository.GetById(AppUser.Id);
             var customProfileSetting = await _settingRepository.GetByKeyAsync("custom_profile_permissions");
             var customRolePermission = false;

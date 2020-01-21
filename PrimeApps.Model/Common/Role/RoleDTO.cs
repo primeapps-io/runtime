@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using PrimeApps.Model.Enums;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 
@@ -51,5 +52,7 @@ namespace PrimeApps.Model.Common.Role
         public IEnumerable<int> Users { get; set; }
         [DataMember]
         public bool ShareData { get; set; }
+        [DataMember]
+        public SystemType SystemType { get; set; }
     }
 }

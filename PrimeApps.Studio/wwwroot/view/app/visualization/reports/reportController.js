@@ -729,6 +729,7 @@ angular.module('primeapps')
 
                 $scope.saving = true;
                 var report = {};
+                $scope.changeReportType($scope.reportModel.editable);
 
                 report.category_id = $scope.reportModel.category_id;
                 report.module_id = $scope.reportModel.module_id;
@@ -737,6 +738,7 @@ angular.module('primeapps')
                 report.name_tr = $scope.reportModel.name_en;
                 report.report_type = $scope.reportModel.report_type;
                 report.aggregations = $scope.reportModel.aggregations;
+                report.system_type = $scope.reportModel.system_type;
 
                 if (report.report_type === 'summary') {
                     report.chart = $scope.reportModel.chart;
@@ -744,13 +746,13 @@ angular.module('primeapps')
                     report.chart.caption_tr = report.name_tr;
                     report.chart.xaxis_name_tr = report.chart.xaxis_name_en;
                     report.chart.yaxis_name_tr = report.chart.xaxis_name_en;
-         
+
                     report.group_field = $scope.reportModel.group_field;
                     report.sort_field = $scope.reportModel.sort_field;
                     report.sort_direction = "asc";
 
                     if (report.aggregations.length < 1) {
-                        
+
                         report.aggregations = [
                             {
                                 field: "created_by",
@@ -805,21 +807,16 @@ angular.module('primeapps')
                         $scope.saving = false;
                         toastr.success("Report is saved successfully.");
                         $scope.reportModal.hide();
-                        $scope.changePage($scope.$parent.$parent.page);
+                        $scope.grid.dataSource.read();
                     });
                 } else {
                     ReportsService.createReport(report).then(function (result) {
                         $scope.saving = false;
                         toastr.success("Report is saved successfully.");
                         $scope.reportModal.hide();
-                        $scope.$parent.$parent.pageTotal++;
                         $scope.grid.dataSource.read();
-
-
                     });
                 }
-
-
             };
 
 
@@ -830,7 +827,6 @@ angular.module('primeapps')
                     return true;
                 }
 
-
                 return false;
             };
 
@@ -840,6 +836,7 @@ angular.module('primeapps')
                     $scope.wizardStep = 2;
                     return true;
                 }
+
                 return false;
             };
 
@@ -847,9 +844,7 @@ angular.module('primeapps')
                 $scope.reportForm.$submitted = true;
                 if ($scope.reportForm.$valid) {
                     $scope.wizardStep = 3;
-
                 }
-
             };
 
             $scope.stepBack = function (step) {
@@ -890,6 +885,7 @@ angular.module('primeapps')
                 $scope.reportModel.shares = $scope.currentReport.shares;
                 $scope.reportModel.name_en = $scope.currentReport.name_en;
                 $scope.reportModel.filters = $scope.currentReport.filters;
+                $scope.reportModel.editable = $scope.currentReport.system_type === 'custom' ? true : false;
                 $scope.selectModule();
 
                 if ($scope.currentReport.group_field) {
@@ -902,7 +898,6 @@ angular.module('primeapps')
                             yaxis_name_en: chart.yaxisname_en,
                             xaxis_name_en: chart.xaxisname_en
                         };
-
                     });
                 }
                 if ($scope.currentReport.report_type === "single") {
@@ -917,7 +912,7 @@ angular.module('primeapps')
                 $scope.reportModel.aggregations = $scope.currentReport.aggregations;
 
                 angular.forEach($scope.numberField, function (item) {
-                    var aggregation = $filter('filter')($scope.currentReport.aggregations, {field: item.name_en}, true)[0];
+                    var aggregation = $filter('filter')($scope.currentReport.aggregations, { field: item.name_en }, true)[0];
                     if (aggregation) {
                         item.Aggregation = aggregation.aggregation_type + "-" + aggregation.field;
                     }
@@ -931,5 +926,12 @@ angular.module('primeapps')
                 $scope.setEdit($scope.ReportId);
             }
 
+            //System or Custom type
+            $scope.changeReportType = function (value) {
+                if (value)
+                    $scope.reportModel.system_type = 'custom';
+                else
+                    $scope.reportModel.system_type = "system";
+            };
         }
     ]);
