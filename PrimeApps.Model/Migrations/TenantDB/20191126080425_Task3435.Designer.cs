@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PrimeApps.Model.Context;
@@ -9,9 +10,10 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.TenantDB
 {
     [DbContext(typeof(TenantDBContext))]
-    partial class TenantDBContextModelSnapshot : ModelSnapshot
+    [Migration("20191126080425_Task3435")]
+    partial class Task3435
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,14 +62,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<int>("ModuleId")
                         .HasColumnName("module_id");
 
-                    b.Property<string>("NameEn")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnName("name_en")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("NameTr")
-                        .IsRequired()
-                        .HasColumnName("name_tr")
+                        .HasColumnName("name")
                         .HasMaxLength(100);
 
                     b.Property<string>("Parameters")
@@ -640,12 +637,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .ValueGeneratedOnAdd()
                         .HasColumnName("id");
 
-                    b.Property<string>("CaptionEn")
-                        .HasColumnName("caption_en")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("CaptionTr")
-                        .HasColumnName("caption_tr")
+                    b.Property<string>("Caption")
+                        .IsRequired()
+                        .HasColumnName("caption")
                         .HasMaxLength(100);
 
                     b.Property<int>("ChartType")
@@ -663,12 +657,8 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<int?>("ReportId")
                         .HasColumnName("report_id");
 
-                    b.Property<string>("SubCaptionEn")
-                        .HasColumnName("sub_caption_en")
-                        .HasMaxLength(200);
-
-                    b.Property<string>("SubCaptionTr")
-                        .HasColumnName("sub_caption_tr")
+                    b.Property<string>("SubCaption")
+                        .HasColumnName("sub_caption")
                         .HasMaxLength(200);
 
                     b.Property<int>("Theme")
@@ -680,20 +670,14 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<int?>("UpdatedById")
                         .HasColumnName("updated_by");
 
-                    b.Property<string>("XaxisNameEn")
-                        .HasColumnName("x_axis_name_en")
+                    b.Property<string>("XaxisName")
+                        .IsRequired()
+                        .HasColumnName("x_axis_name")
                         .HasMaxLength(80);
 
-                    b.Property<string>("XaxisNameTr")
-                        .HasColumnName("x_axis_name_tr")
-                        .HasMaxLength(80);
-
-                    b.Property<string>("YaxisNameEn")
-                        .HasColumnName("y_axis_name_en")
-                        .HasMaxLength(80);
-
-                    b.Property<string>("YaxisNameTr")
-                        .HasColumnName("y_axis_name_tr")
+                    b.Property<string>("YaxisName")
+                        .IsRequired()
+                        .HasColumnName("y_axis_name")
                         .HasMaxLength(80);
 
                     b.HasKey("Id");
@@ -907,23 +891,16 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
 
-                    b.Property<string>("DescriptionEn")
-                        .HasColumnName("description_en")
-                        .HasMaxLength(250);
-
-                    b.Property<string>("DescriptionTr")
-                        .HasColumnName("description_tr")
+                    b.Property<string>("Description")
+                        .HasColumnName("description")
                         .HasMaxLength(250);
 
                     b.Property<bool>("IsActive")
                         .HasColumnName("is_active");
 
-                    b.Property<string>("NameEn")
-                        .HasColumnName("name_en")
-                        .HasMaxLength(50);
-
-                    b.Property<string>("NameTr")
-                        .HasColumnName("name_tr")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
                         .HasMaxLength(50);
 
                     b.Property<int?>("ProfileId")
@@ -989,12 +966,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
 
-                    b.Property<string>("NameEn")
-                        .HasColumnName("name_en")
-                        .HasMaxLength(50);
-
-                    b.Property<string>("NameTr")
-                        .HasColumnName("name_tr")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
                         .HasMaxLength(50);
 
                     b.Property<int>("Order")
@@ -1751,9 +1725,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("FirstScreen")
                         .HasColumnName("first_screen");
 
-                    b.Property<int>("Language")
-                        .HasColumnName("language");
-
                     b.Property<int>("ModalType")
                         .HasColumnName("modal_type");
 
@@ -2007,8 +1978,8 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .IsRequired()
                         .HasColumnName("name");
 
-                    b.Property<string>("Profiles")
-                        .HasColumnName("profiles");
+                    b.Property<int>("ProfileId")
+                        .HasColumnName("profile_id");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnName("updated_at");
@@ -2019,6 +1990,8 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
+
+                    b.HasIndex("ProfileId");
 
                     b.HasIndex("UpdatedById");
 
@@ -2912,11 +2885,8 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
 
-                    b.Property<string>("DescriptionEn")
-                        .HasColumnName("description_en");
-
-                    b.Property<string>("DescriptionTr")
-                        .HasColumnName("description_tr");
+                    b.Property<string>("Description")
+                        .HasColumnName("description");
 
                     b.Property<bool>("DocumentSearch")
                         .HasColumnName("document_search");
@@ -2942,11 +2912,8 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<string>("MigrationId")
                         .HasColumnName("migration_id");
 
-                    b.Property<string>("NameEn")
-                        .HasColumnName("name_en");
-
-                    b.Property<string>("NameTr")
-                        .HasColumnName("name_tr");
+                    b.Property<string>("Name")
+                        .HasColumnName("name");
 
                     b.Property<bool>("Newsfeed")
                         .HasColumnName("newsfeeed");
@@ -2966,19 +2933,14 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("SendSMS")
                         .HasColumnName("send_sms");
 
-                    b.Property<bool>("SmtpSettings")
-                        .HasColumnName("smtp_settings");
+                    b.Property<bool>("CloseSmtpSettings")
+                        .HasColumnName("close_smtp_settings");
 
                     b.Property<string>("StartPage")
                         .HasColumnName("startpage");
 
                     b.Property<string>("SystemCode")
                         .HasColumnName("system_code");
-
-                    b.Property<int>("SystemType")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("system_type")
-                        .HasDefaultValue(2);
 
                     b.Property<bool>("Tasks")
                         .HasColumnName("tasks");
@@ -3239,12 +3201,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<int>("ModuleId")
                         .HasColumnName("module_id");
 
-                    b.Property<string>("NameEn")
-                        .HasColumnName("name_en")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("NameTr")
-                        .HasColumnName("name_tr")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
                         .HasMaxLength(100);
 
                     b.Property<int>("ReportFeed")
@@ -3264,11 +3223,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.Property<string>("SqlFunction")
                         .HasColumnName("sql_function");
-
-                    b.Property<int>("SystemType")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("system_type")
-                        .HasDefaultValue(2);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnName("updated_at");
@@ -3360,12 +3314,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
 
-                    b.Property<string>("NameEn")
-                        .HasColumnName("name_en")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("NameTr")
-                        .HasColumnName("name_tr")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
                         .HasMaxLength(100);
 
                     b.Property<int>("Order")
@@ -3553,11 +3504,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.Property<string>("SystemCode")
                         .HasColumnName("system_code");
-
-                    b.Property<int>("SystemType")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("system_type")
-                        .HasDefaultValue(2);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnName("updated_at");
@@ -3839,11 +3785,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<string>("Subject")
                         .HasColumnName("subject")
                         .HasMaxLength(200);
-
-                    b.Property<int>("SystemType")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("system_type")
-                        .HasDefaultValue(2);
 
                     b.Property<int>("TemplateType")
                         .HasColumnName("template_type");
@@ -4141,9 +4082,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<int>("CreatedById")
                         .HasColumnName("created_by");
 
-                    b.Property<bool>("Default")
-                        .HasColumnName("default");
-
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
 
@@ -4397,12 +4335,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .HasColumnName("load_url")
                         .HasMaxLength(100);
 
-                    b.Property<string>("NameEn")
-                        .HasColumnName("name_en")
-                        .HasMaxLength(200);
-
-                    b.Property<string>("NameTr")
-                        .HasColumnName("name_tr")
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
                         .HasMaxLength(200);
 
                     b.Property<int?>("ReportId")
@@ -5239,6 +5174,11 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Profile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")

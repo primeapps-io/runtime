@@ -75,9 +75,7 @@
                                     <!--<label class="ui-checkbox newinput"><input type="checkbox" ng-model="profile.send_sms" ng-disabled="profile.has_admin_rights" />-->
                                     <!--<small style="font-size:100%;">{{'Setup.Profiles.PermissionSMS' | translate}}</small>-->
                                     <!--<span></span></label>-->
-                                     <
                                     <label class="ui-checkbox newinput">
-                                         <
                                         <input type="checkbox" ng-model="profile.export_data" ng-disabled="profile.has_admin_rights" />
                                         <small style="font-size:100%;">{{'Setup.Profiles.PermissionExportData' | translate}}</small>
                                         <span></span>
@@ -92,7 +90,6 @@
                                         <small style="font-size:100%;">Apply Templates</small>
                                         <span></span>
                                     </label>
-
                                     <!--<label class="ui-checkbox newinput"><input type="checkbox" ng-model="profile.document_search" ng-disabled="profile.has_admin_rights" />-->
                                     <!--<small style="font-size:100%;">{{'Setup.Profiles.DocumentSearch' | translate}}</small>-->
                                     <!--<span></span></label>-->
@@ -112,14 +109,17 @@
                                     <!--<span></span>-->
                                     <!--</label>-->
                                     <!--<label class="ui-checkbox"><input type="checkbox" ng-model="profile.newsfeed"
-                                          ng-disabled="profile.has_admin_rights" /><span>{{'Setup.Profiles.Newsfeed' | translate}}</span></label>-->
+                                      ng-disabled="profile.has_admin_rights" /><span>{{'Setup.Profiles.Newsfeed' | translate}}</span></label>-->
                                     <label class="ui-checkbox newinput">
                                         <input type="checkbox" ng-model="profile.dashboard" ng-disabled="profile.has_admin_rights" />
                                         <small style="font-size:100%;">Dashboard</small>
                                         <span></span>
-                                        </
                                     </label>
-                                    </
+                                    <label class="ui-checkbox newinput">
+                                        <input type="checkbox" ng-model="profile.close_smtp_settings" ng-disabled="profile.has_admin_rights" />
+                                        <small style="font-size:100%;">Disable SMTP Settings</small>
+                                        <span></span>
+                                    </label>
                                     <label class="ui-checkbox newinput" ng-if="moduleRehber">
                                         <input type="checkbox"
                                                ng-model="profile.home"

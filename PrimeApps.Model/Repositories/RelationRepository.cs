@@ -41,13 +41,13 @@ namespace PrimeApps.Model.Repositories
         public IQueryable<Relation> Find(int id)
         {
             var relations = DbContext.Relations
-                            .Where(relation => !relation.Deleted);
+                            .Where(x => !x.Deleted);
 
             if (id > 0)
                 relations = relations.Where(x => x.ModuleId == id);
 
-            relations = relations.Include(relation => relation.ParentModule)
-                                 .OrderByDescending(x => x.Id);
+            relations = relations.Include(x => x.ParentModule) 
+                        .OrderByDescending(x => x.Id);
 
             return relations;
         }

@@ -22,6 +22,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
 		Task<IList<Tenant>> GetExpiredTenants();
 		Task<IList<int>> GetExpiredTenantIdsToDelete();
 		Task<IList<Tenant>> GetTrialTenants();
-		Task<IList<int>> GetByAppId(int appId);
+		Task<IList<int>> GetIdsByAppId(int appId, bool activeLicense = true);
 	}
 }

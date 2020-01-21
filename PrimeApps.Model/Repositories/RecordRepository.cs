@@ -23,7 +23,9 @@ namespace PrimeApps.Model.Repositories
     {
         private Warehouse _warehouse;
 
-        public RecordRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public RecordRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        {
+        }
 
         public RecordRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext, configuration)
         {
@@ -90,7 +92,6 @@ namespace PrimeApps.Model.Repositories
                 }
                 else
                     throw;
-
             }
 
             if (records.Count > 0)
@@ -288,6 +289,7 @@ namespace PrimeApps.Model.Repositories
                         result = await AddRelations(records, relatedModuleName, moduleName, relationId, true);
                         return result;
                     }
+
                     throw;
                 }
 
@@ -385,14 +387,6 @@ namespace PrimeApps.Model.Repositories
 
             var result = await DbContext.Database.ExecuteSqlCommandAsync(sql);
 
-            if (tenantLanguage == "en")
-            {
-                var sqlDashlet = RecordHelper.GenerateSystemDashletUpdateSql(appId);
-
-                if (!string.IsNullOrEmpty(sqlDashlet))
-                    await DbContext.Database.ExecuteSqlCommandAsync(sqlDashlet);
-            }
-
             return result;
         }
 
@@ -449,9 +443,9 @@ namespace PrimeApps.Model.Repositories
                 {
                     cid++;
                 }
+
                 if (cid > retryList.Count) cid = 0;
             }
-
         }
 
         public JObject GetLookupIds(JArray lookupRequest)
@@ -531,7 +525,15 @@ namespace PrimeApps.Model.Repositories
         private void GetRoleBasedInfo(string moduleName, out string owners, out string userGroups)
         {
             var sqlRoleBased = RecordHelper.GenerateRoleBasedSql(moduleName, CurrentUser.UserId);
-            var roleBased = DbContext.Database.SqlQueryDynamic(sqlRoleBased).First();
+            var roleBasedResult = DbContext.Database.SqlQueryDynamic(sqlRoleBased);
+
+            if (roleBasedResult.IsNullOrEmpty())
+                roleBasedResult = DbContext.Database.SqlQueryDynamic(sqlRoleBased);
+
+            if (roleBasedResult.IsNullOrEmpty())
+                throw new Exception("Role based info cannot be null. TenantId: " + CurrentUser.TenantId + " UserId:" + CurrentUser.UserId + " Sql: " + sqlRoleBased);
+
+            var roleBased = roleBasedResult.First();
             var isAdmin = (bool)roleBased["has_admin_rights"];
             var sharing = (int)roleBased["sharing"];
             owners = null;

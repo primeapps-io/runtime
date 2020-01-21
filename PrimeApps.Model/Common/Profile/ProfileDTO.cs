@@ -48,6 +48,8 @@ namespace PrimeApps.Model.Common.Profile
         [DataMember]
         public bool Dashboard { get; set; }
         [DataMember]
+        public bool CloseSmtpSettings { get; set; }
+        [DataMember]
         public bool Home { get; set; }
 	    [DataMember]
 	    public bool CollectiveAnnualLeave { get; set; }

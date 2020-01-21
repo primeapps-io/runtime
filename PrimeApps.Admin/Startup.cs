@@ -43,13 +43,22 @@ namespace PrimeApps.Admin
 
             //Configure Authentication
             AuthConfiguration(services, Configuration);
-            var redisConnection = Configuration.GetConnectionString("RedisConnection");
-            var redisConnectionPersist = redisConnection.Remove(redisConnection.Length - 1, 1) + "3";
 
-            var hangfireStorage = new RedisStorage(redisConnectionPersist);
+            //Redis connection
+            var redisConnection = Configuration.GetConnectionString("RedisConnection");
+
+            //Hangfire configuration
+            var redisStorageOptions = new RedisStorageOptions
+            {
+                Prefix = "{admin}:",
+                Db = 1
+            };
+            var hangfireStorage = new RedisStorage(redisConnection, redisStorageOptions);
+
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
             services.AddHangfire(x => x.UseStorage(hangfireStorage));
 
+            //Other configurations
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 var supportedCultures = new[]

@@ -41,7 +41,7 @@ angular.module('primeapps')
                     $scope.currentRelation.detail_view_type = 'tab';
 
                 if ($scope.currentRelation.related_module) {
-
+                    $scope.currentRelation.related_module = $filter('filter')($rootScope.appModules, { name: $scope.currentRelation.related_module }, true)[0];
                     $scope.fields = {};
                     $scope.module = $scope.currentRelation.module;
                     $scope.relatedModuleChanged();

@@ -13,6 +13,10 @@ launchctl remove io.primeapps.postgres.pre
 launchctl remove io.primeapps.minio.pre
 launchctl remove io.primeapps.redis.pre
 
+rm ~/Library/LaunchAgents/postgres.plist
+rm ~/Library/LaunchAgents/minio.plist
+rm ~/Library/LaunchAgents/redis.plist
+
 echo -e "${GREEN}Deleting $basePath/data...${NC}"
 rm -rf "$basePath/data"
 

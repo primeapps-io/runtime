@@ -476,7 +476,10 @@ namespace PrimeApps.Model.Storage
         /// <returns></returns>
         public async Task DeleteBucket(string bucket)
         {
-            await AmazonS3Util.DeleteS3BucketWithObjectsAsync(_client, bucket);
+            var exists = await AmazonS3Util.DoesS3BucketExistAsync(_client, bucket);
+            
+            if (exists)
+                await AmazonS3Util.DeleteS3BucketWithObjectsAsync(_client, bucket);
         }
 
         /// <summary>

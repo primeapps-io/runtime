@@ -1,0 +1,82 @@
+﻿<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
+	<form name="packageForm" class="form-horizontal form-custom" ng-submit="create();" autocomplete="off" novalidate>
+
+		<div class="modal-header">
+			<div class="flex-between">
+				<h4 class="modal-title"></h4>
+				<div>
+					<ul class="list-unstyled list-inline">
+						<li>
+							<button type="button" ng-click="packagePopup.hide();" class="btn add-button btn-radius btn-gray"><i class="fas fa-times"></i>{{'Common.Cancel' | translate}}</button>
+						</li>
+						<li>
+							<button type="submit" style="margin-left: 5px" ladda="" class="btn add-button btn-radius btn-blue"><i class="fas fa-save"></i>Create</button>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal-dialog scroll-style-4">
+			<div class="modal-content padding-0">
+				<div class="modal-container">
+					<div class="modal-body">
+						<div id="field-form-body" class="modal-body">
+							<div class="section" id="section1">
+								<div style="font-weight: 700;
+										    color: #0d6faa;
+										    font-size: 15px;
+										    padding-top: 15px;
+										    text-align: left;
+										    padding-bottom: 15px;
+										    padding-left: 10px;
+										    border-bottom: 3px solid #80808017; ">Create New Package!</div>
+								<div style="padding-top: 15px;
+										    text-align: left;
+										    font-weight: 600;
+										    font-size: 13px;">
+									We'll create a release package for you. You can publish your app using this package. Packaging process and logs will be shown in the list.
+								</div>
+								<div style="font-weight: 700;
+											color: #0d6faa;
+											font-size: 15px;
+											padding-top: 15px;
+											text-align: left;
+											padding-bottom: 15px;
+											padding-left: 10px;">Protect Module's Records</div>
+								<div class="panel">
+									<div class="form-group">
+										<label class="radio-inline newinput" style="padding-bottom: 10px;">
+											<input ng-model="package.protectModules" name="protectModules" type="radio" value="allModules">Include All Modules<span></span>
+										</label>
+										<label class="radio-inline newinput">
+											<input ng-model="package.protectModules" name="protectModules" type="radio" value="selectedModules">Selected Modules<span></span>
+										</label>
+										<div ng-show="package.protectModules === 'selectedModules'" class="col-sm-12 multiselect-container">
+											<button type="button"
+													class="form-control ng-animate-disabled multiselect"
+													name="modules"
+													ng-model="package.selectedModules"
+													ng-change="checkModules(package.selectedModules)"
+													data-icon-checkmark="fa fa-check"
+													data-placeholder="{{'Common.Multiselect' | translate}}"
+													data-html="1"
+													data-multiple="1"
+													data-max-length="2"
+													data-max-length-html="{{'Common.Multiselected' | translate}}"
+													bs-options="o as o['label_'+language+'_plural'] for o in packageModules track by id"
+													bs-select></button>
+										</div>
+									</div>
+									<div ng-repeat="error in errorList" ng-if="package.protectModules !== 'allModules'" class="alert alert-danger">
+										<p>Looks like {{error.module["label_"+language+"_plural"]}} has a lookup field in {{ getErrorText(error.lookup_type) }}. This package will cause {{error.module["label_"+language+"_plural"]}}'s lookup field empty.</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>

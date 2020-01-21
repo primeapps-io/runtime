@@ -13,12 +13,15 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Hangfire;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using PrimeApps.Admin.ActionFilters;
 using PrimeApps.Admin.Services;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Storage;
 using Sentry;
 using Sentry.Protocol;
@@ -28,59 +31,61 @@ namespace PrimeApps.Admin.Helpers
 {
 	public interface IMigrationHelper
 	{
-		Task AppMigration(string schema, bool isLocal, string[] ids);		
-		Task ApplyMigrations(List<int> ids);
+        Task<bool> AppMigration(string schema, bool isLocal, string ids);
+        Task<bool> UpdateTenant(int id, string url, int lastTenantId);
+        Task ApplyMigrations(List<int> ids);
 	}
 
 	public class MigrationHelper : IMigrationHelper
 	{
 		private CurrentUser _currentUser;
 		private IConfiguration _configuration;
-		private IServiceScopeFactory _serviceScopeFactory;
-		private IHttpContextAccessor _context;
 		private IUnifiedStorage _storage;
-		private IHostingEnvironment _hostingEnvironment;
-		private IBackgroundTaskQueue _queue;
+        private ITemplateRepository _templateRepository;
+        private IHistoryDatabaseRepository _historyDatabaseRepository;
+        private IApplicationRepository _applicationRepository;
+        private IReleaseRepository _releaseRepository;
+        private IHistoryStorageRepository _historyStorageRepository;
+        private ITenantRepository _tenantRepository;
+        private IServiceScopeFactory _serviceScopeFactory;
 
 		public MigrationHelper(IConfiguration configuration,
-			IServiceScopeFactory serviceScopeFactory,
-			IHttpContextAccessor context,
 			IUnifiedStorage storage,
-			IHostingEnvironment hostingEnvironment,
-			IBackgroundTaskQueue queue)
+            ITemplateRepository templateRepository,
+            IHistoryDatabaseRepository historyDatabaseRepository,
+            IApplicationRepository applicationRepository,
+            IReleaseRepository releaseRepository,
+            IHistoryStorageRepository historyStorageRepository,
+            ITenantRepository tenantRepository,
+			IServiceScopeFactory serviceScopeFactory)
 		{
 			_storage = storage;
 			_configuration = configuration;
-			_serviceScopeFactory = serviceScopeFactory;
-			_context = context;
-			_hostingEnvironment = hostingEnvironment;
-			_queue = queue;
+            _templateRepository = templateRepository;
+            _historyDatabaseRepository = historyDatabaseRepository;
+            _applicationRepository = applicationRepository;
+            _releaseRepository = releaseRepository;
+            _historyStorageRepository = historyStorageRepository;
+            _tenantRepository = tenantRepository;
+            _serviceScopeFactory = serviceScopeFactory;
 		}
 
-		public async Task AppMigration(string schema, bool isLocal, string[] ids)
+        [QueueCustom]
+        public async Task<bool> AppMigration(string schema, bool isLocal, string ids)
 		{
 			var PREConnectionString = _configuration.GetConnectionString("PlatformDBConnection");
-			using (var _scope = _serviceScopeFactory.CreateScope())
-			{
-				var platformDbContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-				var tenantDbContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+            var idsArr = ids.Split(",");
 
-				using (var templateRepository = new TemplateRepository(tenantDbContext, _configuration))
-				using (var historyDatabaseRepository = new HistoryDatabaseRepository(tenantDbContext, _configuration))
-				using (var applicationRepository = new ApplicationRepository(platformDbContext, _configuration))
-				using (var releaseRepository = new ReleaseRepository(platformDbContext, _configuration))
-				using (var historyStorageRepository = new HistoryStorageRepository(tenantDbContext, _configuration))
-				{
-					foreach (var id in ids)
+            foreach (var id in idsArr)
 					{
-						var app = await applicationRepository.Get(int.Parse(id));
+                var app = await _applicationRepository.Get(int.Parse(id));
 
 						if (app == null)
-							return;
+                    return false;
 
 						_currentUser = new CurrentUser { PreviewMode = "app", TenantId = app.Id, UserId = 1 };
 
-						templateRepository.CurrentUser = historyStorageRepository.CurrentUser = historyDatabaseRepository.CurrentUser = _currentUser;
+                _templateRepository.CurrentUser = _historyStorageRepository.CurrentUser = _historyDatabaseRepository.CurrentUser = _currentUser;
 
 						PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{app.Id}", true);
 
@@ -156,7 +161,7 @@ namespace PrimeApps.Admin.Helpers
 												CreatedByEmail = "studio@primeapps.io" ?? ""
 											};
 
-											await historyStorageRepository.Create(history);
+                                    await _historyStorageRepository.Create(history);
 											authTheme["logo"] = $"app{app.Id}/app_logo/{match.Value}";
 										}
 									}
@@ -184,7 +189,7 @@ namespace PrimeApps.Admin.Helpers
 												CreatedByEmail = "studio@primeapps.io" ?? ""
 											};
 
-											await historyStorageRepository.Create(history);
+                                    await _historyStorageRepository.Create(history);
 											authTheme["favicon"] = $"app{app.Id}/app_logo/{match.Value}";
 										}
 									}
@@ -212,7 +217,7 @@ namespace PrimeApps.Admin.Helpers
 												CreatedByEmail = "studio@primeapps.io" ?? ""
 											};
 
-											await historyStorageRepository.Create(history);
+                                    await _historyStorageRepository.Create(history);
 											authTheme["banner"][0]["image"] = $"app{app.Id}/app_logo/{match.Value}";
 										}
 									}
@@ -265,7 +270,7 @@ namespace PrimeApps.Admin.Helpers
 												CreatedByEmail = "studio@primeapps.io" ?? ""
 											};
 
-											await historyStorageRepository.Create(history);
+                                    await _historyStorageRepository.Create(history);
 											appTheme["logo"] = $"app{app.Id}/app_logo/{match.Value}";
 										}
 									}
@@ -293,7 +298,7 @@ namespace PrimeApps.Admin.Helpers
 												CreatedByEmail = "studio@primeapps.io" ?? ""
 											};
 
-											await historyStorageRepository.Create(history);
+                                    await _historyStorageRepository.Create(history);
 											appTheme["favicon"] = $"app{app.Id}/app_logo/{match.Value}";
 										}
 									}
@@ -321,18 +326,18 @@ namespace PrimeApps.Admin.Helpers
 							//ErrorHandler.LogError(e, $"Migration eror for app {app.Id}.");
 						}
 
-						var storageHistoryLast = await historyStorageRepository.GetLast();
+                var storageHistoryLast = await _historyStorageRepository.GetLast();
 						if (storageHistoryLast != null)
 						{
 							storageHistoryLast.Tag = "1";
-							await historyStorageRepository.Update(storageHistoryLast);
+                    await _historyStorageRepository.Update(storageHistoryLast);
 						}
 
-						var databaseHistoryLast = await historyDatabaseRepository.GetLast();
+                var databaseHistoryLast = await _historyDatabaseRepository.GetLast();
 						if (databaseHistoryLast != null)
 						{
 							databaseHistoryLast.Tag = "1";
-							await historyDatabaseRepository.Update(databaseHistoryLast);
+                    await _historyDatabaseRepository.Update(databaseHistoryLast);
 						}
 
 						var release = new Release()
@@ -347,12 +352,12 @@ namespace PrimeApps.Admin.Helpers
 							EndTime = DateTime.Now
 						};
 
-						await releaseRepository.Create(release);
+                await _releaseRepository.Create(release);
 
 						await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}", $"{schema}://{app.Setting.AppDomain}", UnifiedStorage.PolicyType.TenantPolicy);
 						await _storage.AddHttpReferrerUrlToBucket($"app{app.Id}", $"{schema}://{app.Setting.AuthDomain}", UnifiedStorage.PolicyType.TenantPolicy);
 
-						await applicationRepository.Update(app);
+                await _applicationRepository.Update(app);
 
 						var seqTables = new List<string>
 						{
@@ -385,53 +390,68 @@ namespace PrimeApps.Admin.Helpers
 
 					SentrySdk.CaptureMessage("Tenants update started.", SentryLevel.Info);
 					//ErrorHandler.LogMessage("Migration finished successfully.");
+
+            return true;
 				}
-			}
-		}
 
 		public async Task<bool> UpdateTenants(int appId, string url)
 		{
-			using (var _scope = _serviceScopeFactory.CreateScope())
-			{
-				var platformDbContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+            _tenantRepository.CurrentUser = new CurrentUser { PreviewMode = "app", TenantId = appId, UserId = 1 };
+            var tenantIds = await _tenantRepository.GetIdsByAppId(appId);
+            var tenantIdList = tenantIds.ToList();
+            var lastTenantId = tenantIdList.Last();
 
-				using (var tenantRepository = new TenantRepository(platformDbContext, _configuration))
+            var parts = Math.Ceiling((double)tenantIdList.Count / 200);
+
+            for (var i = 0; i < tenantIdList.Count; i++)
 				{
-					tenantRepository.CurrentUser = new CurrentUser { PreviewMode = "app", TenantId = appId, UserId = 1 };
-					var tenantIds = await tenantRepository.GetByAppId(appId);
-					var lastTenantId = tenantIds.ToList().Last();
+                var tenantId = tenantIdList[i];
+                var exists = PostgresHelper.Read(_configuration.GetConnectionString("PlatformDBConnection"), $"platform", $"SELECT 1 AS result FROM pg_database WHERE datname='tenant{tenantId}'", "hasRows");
 
-					foreach (var id in tenantIds)
-					{
-						var exists = PostgresHelper.Read(_configuration.GetConnectionString("PlatformDBConnection"), $"platform", $"SELECT 1 AS result FROM pg_database WHERE datname='tenant{id}'", "hasRows");
+                if (!exists)
+                    continue;
 
-						if (!exists)
-							continue;
+                var time = TimeSpan.FromSeconds(10);
 
-						var result = await UpdateTenant(id, url, lastTenantId);
+                if (i > 200 && i <= 400)
+                    time = TimeSpan.FromMinutes(5);
+                else if (i > 400 && i <= 600)
+                    time = TimeSpan.FromMinutes(10);
+                else if (i > 600 && i <= 800)
+                    time = TimeSpan.FromMinutes(15);
+                else if (i > 800 && i <= 1000)
+                    time = TimeSpan.FromMinutes(20);
+                else if (i > 1000 && i <= 1200)
+                    time = TimeSpan.FromMinutes(25);
+                else if (i > 1200 && i <= 1400)
+                    time = TimeSpan.FromMinutes(30);
+                else if (i > 1400 && i <= 1600)
+                    time = TimeSpan.FromMinutes(35);
+                else if (i > 1600 && i <= 1800)
+                    time = TimeSpan.FromMinutes(40);
+                else if (i > 1800 && i <= 2000)
+                    time = TimeSpan.FromMinutes(45);
+                else if (i > 2000 && i <= 2200)
+                    time = TimeSpan.FromMinutes(50);
+                else if (i > 2200 && i <= 2400)
+                    time = TimeSpan.FromMinutes(55);
+                else if (i > 2400)
+                    time = TimeSpan.FromMinutes(60);
+
+                BackgroundJob.Schedule<IMigrationHelper>(x => x.UpdateTenant(tenantId, url, lastTenantId), time);
 					}
 
 					return true;
 				}
-			}
-		}
 
-		private async Task<bool> UpdateTenant(int id, string url, int lastTenantId)
-		{
-			using (var _scope = _serviceScopeFactory.CreateScope())
+        [QueueCustom]
+        public async Task<bool> UpdateTenant(int id, string url, int lastTenantId)
 			{
-				using (var platformDbContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>())
-				using (var tenantDbContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>())
-				{
-					using (var tenantRepository = new TenantRepository(platformDbContext, _configuration))
-					using (var historyDatabaseRepository = new HistoryDatabaseRepository(tenantDbContext, _configuration))
-					using (var historyStorageRepository = new HistoryStorageRepository(tenantDbContext, _configuration))
-					{
-						var tenant = await tenantRepository.GetAsync(id);
+            var tenant = await _tenantRepository.GetAsync(id);
 
 						_currentUser = new CurrentUser { PreviewMode = "tenant", TenantId = tenant.Id, UserId = 1 };
 
-						tenantRepository.CurrentUser = historyStorageRepository.CurrentUser = historyDatabaseRepository.CurrentUser = _currentUser;
+            _tenantRepository.CurrentUser = _historyStorageRepository.CurrentUser = _historyDatabaseRepository.CurrentUser = _currentUser;
 
 						if (!string.IsNullOrEmpty(tenant.Setting.Logo) && tenant.Setting.Logo.Contains("http"))
 						{
@@ -456,7 +476,7 @@ namespace PrimeApps.Admin.Helpers
 							}
 						}
 
-						await tenantRepository.UpdateAsync(tenant);
+            await _tenantRepository.UpdateAsync(tenant);
 
 						await _storage.AddHttpReferrerUrlToBucket($"tenant{tenant.Id}", url, UnifiedStorage.PolicyType.TenantPolicy);
 
@@ -485,12 +505,12 @@ namespace PrimeApps.Admin.Helpers
 							PostgresHelper.Run(_configuration.GetConnectionString("PlatformDBConnection"), $"tenant{tenant.Id}", $"SELECT setval('{seqTable}', 500000, true); ");
 						}
 
-						var lastHdRecord = await historyDatabaseRepository.GetLast();
+            var lastHdRecord = await _historyDatabaseRepository.GetLast();
 
 						if (lastHdRecord != null)
 						{
 							lastHdRecord.Tag = "1";
-							await historyDatabaseRepository.Update(lastHdRecord);
+                await _historyDatabaseRepository.Update(lastHdRecord);
 						}
 						else
 						{
@@ -506,7 +526,7 @@ namespace PrimeApps.Admin.Helpers
 
 							try
 							{
-								await historyDatabaseRepository.Create(version);
+                    await _historyDatabaseRepository.Create(version);
 							}
 							catch (Exception e)
 							{
@@ -514,12 +534,12 @@ namespace PrimeApps.Admin.Helpers
 							}
 						}
 
-						var lastHsRecord = await historyStorageRepository.GetLast();
+            var lastHsRecord = await _historyStorageRepository.GetLast();
 
 						if (lastHsRecord != null)
 						{
 							lastHsRecord.Tag = "1";
-							await historyStorageRepository.Update(lastHsRecord);
+                await _historyStorageRepository.Update(lastHsRecord);
 						}
 						else
 						{
@@ -533,19 +553,13 @@ namespace PrimeApps.Admin.Helpers
 
 							try
 							{
-								await historyStorageRepository.Create(version);
+                    await _historyStorageRepository.Create(version);
 							}
 							catch (Exception e)
 							{
 								SentrySdk.CaptureMessage("Tenant HistoryStorage error. TenantId: " + tenant.Id + " Exception Message: " + e.Message);
 							}
 						}
-					}
-
-					platformDbContext.Database.CloseConnection();
-					tenantDbContext.Database.CloseConnection();
-				}
-			}
 
 			SentrySdk.CaptureMessage($"Tenant{id} update successfully.", SentryLevel.Info);
 
@@ -668,7 +682,7 @@ namespace PrimeApps.Admin.Helpers
 						await UpdateSetting(settingRepository);
 						PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", false);
 
-						var tenantIds = await tenantRepository.GetByAppId(appId);
+						var tenantIds = await tenantRepository.GetIdsByAppId(appId);
 						var lastTenantId = tenantIds.Count > 0 ? tenantIds.ToList().Last() : 0;
 
 						foreach (var tenantId in tenantIds)

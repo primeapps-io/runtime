@@ -385,8 +385,10 @@ namespace PrimeApps.Auth.UI
             if (!registerPermission.IsNullOrEmpty() && (bool)registerPermission == false)
             {
                 if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
-                    return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vm);
-
+                {
+                    var vmLogin = await BuildLoginViewModelAsync(returnUrl);
+                    return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vmLogin);
+                }
                 return RedirectToAction(nameof(AccountController.Login), "Account", new { returnUrl = vm.ReturnUrl });
             }
 
@@ -1691,13 +1693,9 @@ namespace PrimeApps.Auth.UI
                         return response;
                     }
 
-                    platformUser = await _platformUserRepository.GetWithTenants(model.Email);
-                    /**Studio'ya kullanıcı kayıt olurken platform user oluşturuluyor, ama user_tenants'a bir kayıt eklenmiyordu.
-					 * Studio'ya kayıt olan kullanıcının oluşturmuş olduğu herhangi bir app'i preview edebilmesi için eklenmiştir. 
-					 * **/
-                    platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1, PlatformUser = platformUser });
-                    await _platformUserRepository.UpdateAsync(platformUser);
-                }
+					platformUser = await _platformUserRepository.GetWithTenants(model.Email);
+
+				}
 
                 if (applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Tenant)
                 {
@@ -1848,6 +1846,16 @@ namespace PrimeApps.Auth.UI
 
                 if (identityUser != null && applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Studio && !string.IsNullOrEmpty(studioUrl))
                 {
+                    #region #3793
+
+                    /* Add user to platform user_tenant table with tenant_id 1.
+                       This development made for default preview user. 
+                     */
+                    platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1, PlatformUser = platformUser });
+                    await _platformUserRepository.UpdateAsync(platformUser);
+
+                    #endregion
+                    
                     var cryptId = CryptoHelper.Encrypt(platformUser.Id.ToString());
                     var url = studioUrl + "/api/account/create";
 

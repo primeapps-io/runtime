@@ -130,6 +130,8 @@ namespace PrimeApps.Studio.Controllers
                     Options = new JObject
                     {
                         ["enable_registration"] = true,
+                        ["enable_api_registration"] = true,
+                        ["enable_ldap"] = false,
                         ["clear_all_records"] = true
                     }.ToJsonString()
                 }
@@ -155,9 +157,8 @@ namespace PrimeApps.Studio.Controllers
 
             await Postgres.CreateDatabaseWithTemplet(_configuration.GetConnectionString("TenantDBConnection"), app.Id, model.TempletId);
 
-            /**Studio kullanıcısının mevcut app'i preview edebilmesi için
-			 * App oluşturulduktan sonra, user tablosuna mevcut studio kullanıcısını eklemekteyiz.
-			 */
+            #region #3793
+            //Add app owner to users table for preview application.
             var tenantUser = new TenantUser
             {
                 Id = AppUser.Id,
@@ -175,14 +176,14 @@ namespace PrimeApps.Studio.Controllers
             _userRepository.CurrentUser = new CurrentUser { UserId = 1, TenantId = app.Id, PreviewMode = "app" };
             await _userRepository.CreateAsync(tenantUser);
             var platformUser = await _platformUserRepository.GetWithTenants(AppUser.Email);
-            /**Daha önceden studio'ya kayıt oluşmuş kullanıcıların,  user_tenants'ta bir kayıdı bulunmuyordu.
-			 * Eski studio kullanıcısının yeni oluşturacağı app'i preview edebilmesi user_tenant tablosuna ilgili kaydı eklemeliz. 		
-			 */
-            if (platformUser.TenantsAsUser.Count == 0)
+
+            //Platform user_tenant table include this user with tenant_id = 1 for preview application.
+            if (platformUser.TenantsAsUser.FirstOrDefault(x => x.TenantId == 1) == null)
             {
                 platformUser.TenantsAsUser.Add(new UserTenant { TenantId = 1, PlatformUser = platformUser });
                 await _platformUserRepository.UpdateAsync(platformUser);
             }
+            #endregion
 
             Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser));
 
@@ -361,7 +362,6 @@ namespace PrimeApps.Studio.Controllers
                 {
                     Console.WriteLine("MATCH VALUE: " + match.Value);
                 }
-
             }
 
             return app != null ? Ok(app.Setting.AppTheme) : Ok(app);

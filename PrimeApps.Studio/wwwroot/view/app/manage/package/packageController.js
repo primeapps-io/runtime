@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('PackageController', ['$rootScope', '$scope', '$state', 'PackageService', '$timeout', '$sce', '$location', '$filter', '$localStorage',
-        function ($rootScope, $scope, $state, PackageService, $timeout, $sce, $location, $filter, $localStorage) {
+    .controller('PackageController', ['$rootScope', '$scope', '$state', 'PackageService', '$timeout', '$sce', '$location', '$filter', '$localStorage', '$modal', 'ModuleService',
+        function ($rootScope, $scope, $state, PackageService, $timeout, $sce, $location, $filter, $localStorage, $modal, ModuleService) {
             $scope.loading = true;
             $scope.activePage = 1;
             $rootScope.runningPackages[$rootScope.currentApp.name] = { status: true };
@@ -11,8 +11,13 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'packages';
             $rootScope.breadcrumblist[2].title = 'Packages';
-   
+
             $scope.app = $rootScope.currentApp;
+            $scope.packageModules = angular.copy($rootScope.appModules);
+            $scope.packageModulesRelations = {};
+            $scope.errorList = [];
+            $scope.package = {};
+            $scope.package.allModulesRelations = {};
 
             PackageService.getActiveProcess()
                 .then(function (response) {
@@ -21,8 +26,7 @@ angular.module('primeapps')
                     if (activeProcess) {
                         $rootScope.runningPackages[$scope.app.name] = { status: true };
                         $scope.openWS(activeProcess.id);
-                    }
-                    else {
+                    } else {
                         $rootScope.runningPackages[$scope.app.name] = { status: false };
                     }
                 })
@@ -58,19 +62,19 @@ angular.module('primeapps')
                         }
 
                         $rootScope.runningPackages[$scope.app.name].status = false;
-                        $rootScope.runningPackages[$scope.app.name].logs = "";
+                        $rootScope.runningPackages[$scope.app.name].logs = ""; 
+                        $scope.grid.dataSource.read();
                         $timeout(function () {
                             $scope.$apply();
                         });
-                    }
-                    else {
+                    } else {
                         if (id) {
                             PackageService.get(id)
                                 .then(function (response) {
                                     if (response.data) {
                                         if (response.data.status !== 'running') {
                                             if (response.data.status === 'succeed') {
-                                                toastr.success("Your package is ready for app " + $scope.app.label + ".");
+                                                toastr.success("Your package is ready for app " + $scope.app.label + "."); 
                                             }
                                             else {
                                                 toastr.error("An unexpected error occurred while creating a package for app " + $scope.app.label + ".");
@@ -79,10 +83,11 @@ angular.module('primeapps')
                                             if (packagesPageActive) {
                                                 $rootScope.$broadcast('package-created');
                                             }
-                                            $rootScope.runningPackages[$scope.app.name].status = false;
+                                            $rootScope.runningPackages[$scope.app.name].status = false;   
+                                            $scope.grid.dataSource.read();
                                             $timeout(function () {
-                                                $scope.$apply();
-                                            });
+                                                $scope.$apply();   
+                                            }); 
                                         }
                                         else {
                                             $scope.openWS($scope.packageId);
@@ -110,72 +115,44 @@ angular.module('primeapps')
                 };
             };
 
+            //for (var i=0; i< $scope.packageModules.length;i++) {
+            angular.forEach($scope.packageModules, function (module) {
+                // var module =  $scope.packageModules[i];
+                if (!module.fields)
+                    ModuleService.getModuleFields(module.name).then(function (response) {
+                        module.fields = response.data;
+                        var lookupList = $filter('filter')(module.fields, function (field) {
+                            return field.data_type === 'lookup' && field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles';
+                        });
+
+                        $scope.packageModulesRelations[module.name] = [];
+                        $scope.package.allModulesRelations[module.name] = [];
+
+                        for (var k = 0; k < lookupList.length; k++) {
+                            $scope.packageModulesRelations[module.name].push(lookupList[k]);
+                            $scope.package.allModulesRelations[module.name].push({ name: lookupList[k].name, lookup_type: lookupList[k].lookup_type });
+                        }
+                    });
+            });
+            //}
+
             $scope.createPackage = function () {
-                Swal.fire({
-                    html:
-                        '<div style="\n' +
-                        '    font-weight: 700;\n' +
-                        '    color: #0d6faa;\n' +
-                        '    font-size: 15px;\n' +
-                        '    padding-top: 15px;\n' +
-                        '    text-align: left;\n' +
-                        '    padding-bottom: 15px;\n' +
-                        '    padding-left: 10px;\n' +
-                        '    border-bottom: 3px solid #80808017;\n' +
-                        '">Create New Package!</div>' +
-                        '<div style="    padding-top: 15px;\n' +
-                        '    text-align: left;\n' +
-                        '    font-weight: 600;\n' +
-                        '    font-size: 13px;">We\'ll create a release package for you. You can publish your app using this package. Packaging process and logs will be shown in the list.</br> </br>' +
-                        '<div class="form-group" ng-controller="PackageController">' +
-                        '<div class="row">' +
-                        //'<div class="col-sm-12" style="padding-left: 14px;">' +
-                        //'<label class="radio-inline newinput go-live-input" style="padding-bottom: 10px;"><input name="type" type="radio" checked="" value="package"> Publish the app to PrimeApps Cloud after the package is prepared <span></span></label>' +
-                        //'<label class="radio-inline newinput go-live-input">' +
-                        //'<input name="type" type="radio" value="publish"> Automatically publish to PrimeApps cloud <span></span>' +
-                        //'</label>' +
-                        //'</div>' +
-                        '</div>' +
-                        '</div>' +
-                        '</div>',
-                    showCloseButton: true,
-                    confirmButtonClass: 'go-live-confirm',
-                    focusConfirm: false,
-                    width: '60em',
-                    customClass: {
-                        container: 'go-live'
-                    },
-                    confirmButtonText: ' Create '
-                }).then(function (evt) {
-                    if (evt.value) {
 
-                        PackageService.create(null)
-                            .then(function (response) {
-                                toastr.success("Package creation started.");
-                                $scope.loading = false;
-                                $scope.packageId = response.data;
-                                $scope.openWS(response.data);
-                                //$state.go('studio.app.packages');
+                $scope.package.protectModules = 'allModules';
+                $scope.package.selectedModules = [];
+                $scope.errorList = [];
 
-                                if ($location.$$path.contains('/packages'))
-                                    $scope.grid.dataSource.read();
+                $scope.packagePopup = $scope.packagePopup || $modal({
+                    scope: $scope,
+                    templateUrl: 'view/app/manage/package/packagePopup.html',
+                    show: false
+                });
 
-                                $rootScope.runningPackages[$scope.app.name] = { status: true };
-                            })
-                            .catch(function (response) {
-                                $scope.loading = false;
-                                if (response.status === 409) {
-                                    toastr.error(response.data);
-                                }
-                                else {
-                                    toastr.error($filter('translate')('Common.Error'));
-                                    console.log(response);
-                                }
-                            });
-                    }
+                $scope.packagePopup.$promise.then(function () {
+                    $scope.packagePopup.show();
                 });
             };
-  
+
             $scope.getTime = function (time) {
                 return moment(time).format("DD-MM-YYYY HH:mm");
             };
@@ -194,7 +171,6 @@ angular.module('primeapps')
                         return $sce.trustAsHtml('<i style="color:rgba(16,124,16,1);" class="fas fa-check"></i>');
                 }
             };
-
 
             //For Kendo UI
             $scope.goUrl = function (item) {
@@ -262,7 +238,7 @@ angular.module('primeapps')
                     trTemp += '<td> <span>' + '<div style="padding:12px 0px;">' + e.version + '</div>' + '</span></td > ';
                     trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
                     trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
-                    trTemp += '<td style="text-align: center;" ng-bind-html="getIcon(dataItem.status)"></td></tr>';
+                    trTemp += '<td style="text-align: center;">' + $scope.getIcon(e.status) + '</td></tr>';
                     return trTemp;
                 },
                 altRowTemplate: function (e) {
@@ -270,7 +246,7 @@ angular.module('primeapps')
                     trTemp += '<td> <span>' + '<div style="padding:12px 0px;">' + e.version + '</div>' + '</span></td > ';
                     trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
                     trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
-                    trTemp += '<td style="text-align: center;" ng-bind-html="getIcon(dataItem.status)"></td></tr>';
+                    trTemp += '<td style="text-align: center;">' + $scope.getIcon(e.status) + '</td></tr>';
                     return trTemp;
                 },
                 pageable: {
@@ -280,7 +256,7 @@ angular.module('primeapps')
                     buttonCount: 5,
                     info: true,
                 },
-                columns: [ 
+                columns: [
                     {
                         field: 'Version',
                         title: 'Version'
@@ -318,6 +294,104 @@ angular.module('primeapps')
                     }]
             };
 
-            //For Kendo UI
+            $scope.create = function () {
+
+                var copyRelations = angular.copy($scope.package.allModulesRelations);
+
+                if ($scope.package.protectModules === "allModules") {
+                    $scope.errorList = [];
+                    $scope.package.selectedModules = [];
+                    $scope.package.modulesRelations = copyRelations;
+                } else {
+                    for (var i = 0; i < $scope.package.selectedModules.length; i++) {
+                        var selectedModule = $scope.package.selectedModules[i];
+                        $scope.package.selectedModules[i] = {};
+                        $scope.package.selectedModules[i][selectedModule.name] = copyRelations[selectedModule.name];
+                        delete copyRelations[selectedModule.name];
+                    }
+                    $scope.package.modulesRelations = copyRelations;
+                   // delete $scope.package.allModulesRelations;
+                }
+
+                PackageService.create($scope.package)
+                    .then(function (response) {
+                        toastr.success("Package creation started.");
+                        $scope.loading = false;
+                        $scope.packageId = response.data;
+                        $scope.openWS(response.data);
+
+                        if ($location.$$path.contains('/packages'))
+                            $scope.grid.dataSource.read();
+
+                        $rootScope.runningPackages[$scope.app.name] = { status: true };
+                    })
+                    .catch(function (response) {
+                        $scope.loading = false;
+
+                        if (response.status === 409) {
+                            toastr.error(response.data);
+                        } else {
+                            toastr.error($filter('translate')('Common.Error'));
+                            console.log(response);
+                        }
+                    }).finally(function () {
+                        $scope.packagePopup.hide();
+                        $scope.package.selectedModules = [];
+                        $scope.package.modulesRelations = {};
+                        $scope.errorList = [];
+                    });
+            };
+
+            $scope.checkModules = function (selectedModules) {
+
+                if (selectedModules.length === 0)
+                    $scope.errorList = [];
+                else {
+                    for (var i = 0; i < selectedModules.length; i++) {
+
+                        var module = selectedModules[i];
+                        var index = -1;
+                        var relatedModuleIndex = -1;
+                        var lookupList = $scope.packageModulesRelations[module.name];
+
+                        for (var o = 0; o < lookupList.length; o++) {
+
+                            var isExistModule = $filter('filter')(selectedModules, { name: lookupList[o].lookup_type }, true)[0];
+                            var relatedModule = $filter('filter')($scope.errorList, function (error) {
+                                return error.lookup_type === lookupList[o].lookup_type && error.module.name === lookupList[o].module.name;
+                            })[0];
+
+                            if (relatedModule)
+                                relatedModuleIndex = $scope.errorList.indexOf(relatedModule);
+
+                            index = lookupList.indexOf(lookupList[o]);
+                            //if we didn't add that, we will add that in this case
+                            if (!isExistModule && index === -1) {
+                                $scope.errorList.push(lookupList[o]);
+                            }
+                            //Seçilen moduller arasında olmayıp,lookup olanı ekliyoruz
+                            else if (!isExistModule && index > -1 && relatedModuleIndex === -1) {
+                                $scope.errorList.push(lookupList[o]);
+                            }
+                            //if we added that before we have to splice that from array 
+                            else if (isExistModule && index > -1 && relatedModuleIndex > -1) {
+                                $scope.errorList.splice(relatedModuleIndex, 1);
+                            }
+                        }
+
+                        for (var j = 0; j < $scope.errorList.length; j++) {
+                            var isExistInSelectedModules = $filter('filter')(selectedModules, { name: $scope.errorList[j].module.name }, true)[0];
+                            if (!isExistInSelectedModules) {
+                                $scope.errorList.splice(j, 1);
+                            }
+                        }
+                    }
+                }
+            };
+
+            $scope.getErrorText = function (moduleName) {
+                var module = $filter('filter')($scope.packageModules, { name: moduleName }, true)[0];
+                return module["label_" + $rootScope.language + "_plural"];
+            };
         }
     ]);
