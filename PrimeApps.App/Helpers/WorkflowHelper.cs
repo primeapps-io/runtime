@@ -172,7 +172,7 @@ namespace PrimeApps.App.Helpers
                             lookupModules = new List<Module>();
 
                         lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
-                        record = _recordRepository.GetById(module, (int)record["id"], false, lookupModules, true);
+                        record = await _recordRepository.GetById(module, (int)record["id"], false, lookupModules, true);
 
                         bool hasProcessFilter = true;
                         if (workflow.ProcessFilter != WorkflowProcessFilter.None)
@@ -532,7 +532,7 @@ namespace PrimeApps.App.Helpers
                                     return;
                                 }
 
-                                var currentRecordFieldUpdate = _recordRepository.GetById(fieldUpdateModule, fieldUpdateRecord.Value, false);
+                                var currentRecordFieldUpdate = await _recordRepository.GetById(fieldUpdateModule, fieldUpdateRecord.Value, false);
 
                                 if (currentRecordFieldUpdate == null)
                                 {
@@ -744,7 +744,7 @@ namespace PrimeApps.App.Helpers
                                         if (webhookRecordFormatSetting != null)
                                             webhookFormatNumeric = bool.Parse(webhookRecordFormatSetting.Value);
 
-                                        var recordData = _recordRepository.GetById(module, recordId, false, lookupModules, true);
+                                        var recordData = await _recordRepository.GetById(module, recordId, false, lookupModules, true);
                                         recordData = await Model.Helpers.RecordHelper.FormatRecordValues(module, recordData, _moduleRepository, _picklistRepository, _configuration, appUser.TenantGuid, appUser.Language, appUser.Culture, 180, lookupModules, false, webhookFormatNumeric);
 
                                         foreach (var dataString in data)
@@ -832,7 +832,7 @@ namespace PrimeApps.App.Helpers
                                     lookupModules = new List<Module>();
 
                                 lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
-                                record = _recordRepository.GetById(module, (int)record["id"], false, lookupModules, true);
+                                record = await _recordRepository.GetById(module, (int)record["id"], false, lookupModules, true);
                             }
 
                             var sendNotification = workflow.SendNotification;

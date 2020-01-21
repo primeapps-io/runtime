@@ -146,7 +146,7 @@ namespace PrimeApps.App.Jobs
 												var devredecekIzin = 0;
 
 
-												var izinKurali = _recordRepository.GetById(izinTurleriModule, (int)izinler["id"], false);
+												var izinKurali = await _recordRepository.GetById(izinTurleriModule, (int)izinler["id"], false);
 
 												if ((bool)izinKurali["yillik_izine_ek_izin_suresi_ekle"] &&
 													!izinKurali["yillik_izine_ek_izin_suresi_gun"].IsNullOrEmpty() && (int)izinKurali["yillik_izine_ek_izin_suresi_gun"] != 0 &&

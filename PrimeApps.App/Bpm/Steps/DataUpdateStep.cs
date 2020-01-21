@@ -195,7 +195,7 @@ namespace PrimeApps.App.Bpm.Steps
                                     throw new Exception("Module not found! ModuleName: " + fieldUpdateModule.Name);
                                 }
 
-                                var currentRecordFieldUpdate = recordRepository.GetById(fieldUpdateModule, fieldUpdateRecord.Value, false);
+                                var currentRecordFieldUpdate = await recordRepository.GetById(fieldUpdateModule, fieldUpdateRecord.Value, false);
 
                                 if (currentRecordFieldUpdate == null)
                                 {

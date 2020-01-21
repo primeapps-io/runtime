@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface IRecordRepository : IRepositoryBaseTenant
     {
-        JObject GetById(Module module, int recordId, bool roleBasedEnabled = true, ICollection<Module> lookupModules = null, bool deleted = false); JArray GetAllById(string moduleName, List<int> recordIds, bool roleBasedEnabled = true);
+        Task<JObject> GetById(Module module, int recordId, bool roleBasedEnabled = true, ICollection<Module> lookupModules = null, bool deleted = false, bool profileBasedEnabled = false, OperationType operation = OperationType.read);
+        JArray GetAllById(string moduleName, List<int> recordIds, bool roleBasedEnabled = true);
         JArray Find(string moduleName, FindRequest findRequest, bool roleBasedEnabled = true, int timezoneOffset = 180);
         Task<int> Create(JObject record, Module module);
         Task<int> Update(JObject record, Module module, bool delete = false, bool isUtc = true);

@@ -2451,6 +2451,6 @@ namespace PrimeApps.Model.Helpers
 			var resultData = string.Join("|", dataList);
 
 			return resultData;
-		}
-	}
+		} 
+    }
 }

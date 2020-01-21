@@ -299,7 +299,7 @@ namespace PrimeApps.App.Jobs.Email
 
                     var module = await moduleRepository.GetById(moduleId);
                     var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository, tenantLanguage: subscriber.Setting.Language);
-                    var record = recordRepository.GetById(module, recordId, false, lookupModules, true);
+                    var record = await recordRepository.GetById(module, recordId, false, lookupModules, true);
 
                     if (!record.IsNullOrEmpty())
                     {

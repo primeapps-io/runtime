@@ -148,7 +148,7 @@ namespace PrimeApps.App.Controllers
 		public async Task<IActionResult> DeleteRequest([FromBody]ProcessRequestDeleteModel request)
 		{
 			var moduleEntity = await _moduleRepository.GetById(request.ModuleId);
-			var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
+			var record = await _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
 			await _processHelper.Run(OperationType.delete, record, moduleEntity, AppUser, _warehouse, Model.Enums.ProcessTriggerTime.Instant, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate);
 
 			return Ok();
@@ -180,7 +180,7 @@ namespace PrimeApps.App.Controllers
 				return BadRequest(ModelState);
 
 			var moduleEntity = await _moduleRepository.GetById(request.ModuleId);
-			var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
+			var record = await _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
 			try
 			{
 				await _processHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, ProcessTriggerTime.Manuel, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate);

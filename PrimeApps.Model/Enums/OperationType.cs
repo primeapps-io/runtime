@@ -4,6 +4,7 @@
     {
         insert,
         update,
-        delete
+        delete,
+        read
     }
 }

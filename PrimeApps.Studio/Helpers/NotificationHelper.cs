@@ -233,7 +233,7 @@ namespace PrimeApps.Studio.Helpers
                     _recordRepository.TenantId = appUser.TenantId;
                     //_recordRepository.UserId = appUser.TenantId;
 
-                    moduleRecordPrimary = _recordRepository.GetById(module, Convert.ToInt32(recordId), false, null);
+                    moduleRecordPrimary = await _recordRepository.GetById(module, Convert.ToInt32(recordId), false, null);
 
                     var modulePkey = module.Fields.Where(x => x.Primary == true).Select(v => v.Name).FirstOrDefault();
 
@@ -291,7 +291,7 @@ namespace PrimeApps.Studio.Helpers
                         userModule
                     };
 
-                    fullRecord = _recordRepository.GetById(module, (int)record["id"], !appUser.HasAdminProfile, listLookupModule);
+                    fullRecord = await _recordRepository.GetById(module, (int)record["id"], !appUser.HasAdminProfile, listLookupModule);
 
                     _recordRepository.SetPicklists(module, fullRecord, appUser.TenantLanguage);
 

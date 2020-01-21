@@ -16,6 +16,7 @@ using PrimeApps.Model.Helpers.QueryTranslation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -32,7 +33,7 @@ namespace PrimeApps.Model.Repositories
             _warehouse = warehouse;
         }
 
-        public JObject GetById(Module module, int recordId, bool roleBasedEnabled = true, ICollection<Module> lookupModules = null, bool deleted = false)
+        public async Task<JObject> GetById(Module module, int recordId, bool roleBasedEnabled = true, ICollection<Module> lookupModules = null, bool deleted = false, bool profileBasedEnabled = true, OperationType operation = OperationType.read)
         {
             string owners = null;
             string userGroups = null;
@@ -62,6 +63,9 @@ namespace PrimeApps.Model.Repositories
                     var sqlSharedEdit = RecordHelper.GenerateSharedSql(userIdsEdit, userGroupIdsEdit);
                     record["shared_edit"] = DbContext.Database.SqlQueryDynamic(sqlSharedEdit);
                 }
+
+                if (profileBasedEnabled && module.Name != "users" && module.Name != "profiles" && module.Name != "roles")
+                    record = await FieldPermissionControl(module.Name, CurrentUser.UserId, record, operation);
             }
 
             return record;
@@ -616,5 +620,210 @@ namespace PrimeApps.Model.Repositories
                     userGroups = string.Join(",", userGroupList);
             }
         }
+
+        public async Task<JObject> FieldPermissionControl(string moduleName, int userId, JObject record, OperationType operation)
+        {
+            if (record.IsNullOrEmpty())
+                return null;
+
+            var user = await DbContext.Users
+            .Include(q => q.Profile)
+            .ThenInclude(q => q.Permissions.Where(x => x.Type == EntityType.Module))
+            .Include(q => q.Groups)
+            .FirstOrDefaultAsync(q => q.Id == userId);
+
+            var profile = user.Profile;
+            var module = await DbContext.Modules
+            .Include(mod => mod.Sections)
+            .ThenInclude(section => section.Permissions)
+            .Include(mod => mod.Fields)
+            .ThenInclude(field => field.Permissions)
+            .Include(mod => mod.Relations)
+            .FirstOrDefaultAsync(q => !q.Deleted && q.Name == moduleName);
+
+            var isCustomSharePermission = SharedPermissionCheck(record, user, operation);
+            //Module CRUD permisson control
+            var modulePermission = ProfilePermissionCheck(profile.Permissions.Where(q => q.ModuleId == module.Id).ToList(), operation);
+
+            switch (operation)
+            {
+                case OperationType.insert:
+                    if (modulePermission == null)
+                        return null;
+                    else
+                        return record;
+                case OperationType.update:
+                    if (isCustomSharePermission)
+                        return record;
+
+                    if (modulePermission == null)
+                        return null;
+                    else
+                    {
+                        record = SectionPermission(module, record, user, operation);
+                        record = await RelationModulePermission(module, record, user, operation);
+                        return record;
+                    }
+                case OperationType.read:
+
+                    return null;
+                case OperationType.delete:
+
+                    return null;
+                default:
+                    return null;
+            }
+        }
+
+        private ProfilePermission ProfilePermissionCheck(List<ProfilePermission> profilePermission, OperationType operation)
+        {
+            switch (operation)
+            {
+                case OperationType.insert:
+                    return profilePermission.FirstOrDefault(q => q.Write);
+                case OperationType.update:
+                    return profilePermission.FirstOrDefault(q => q.Modify);
+                case OperationType.read:
+                    return profilePermission.FirstOrDefault(q => q.Read);
+                case OperationType.delete:
+                    return profilePermission.FirstOrDefault(q => q.Remove);
+                default:
+                    return null;
+            }
+        }
+
+
+        private JObject SectionPermission(Module module, JObject record, TenantUser user, OperationType operation)
+        {
+            //Module Section permission control
+            foreach (var section in module.Sections)
+            {
+                if (section.Permissions != null && section.Permissions.Count > 0)
+                {
+                    var sectionPermissionList = section.Permissions.Where(q => q.ProfileId == user.Profile.Id && !q.Deleted).ToList();
+
+                    if (sectionPermissionList == null)
+                        continue;
+
+                    var sectionPermission = SectionPermissionCheck(sectionPermissionList, operation);
+
+                    if (sectionPermission == null)
+                    {
+                        var fields = module.Fields.Where(q => q.Section == section.Name).Select(q => q.Name).ToList();
+                        record = ClearRecord(record, fields: fields);
+                    }
+                }
+            }
+
+            return record;
+        }
+
+        private async Task<JObject> RelationModulePermission(Module module, JObject record, TenantUser user, OperationType operation)
+        {
+            //Module Relations CRUD permission control
+
+            foreach (var relation in module.Relations)
+            {
+                var permissionList = user.Profile.Permissions.Where(q => q.Module.Name == relation.RelatedModule).ToList();
+                var relationModulePermission = ProfilePermissionCheck(permissionList, operation);
+
+                if (relationModulePermission == null)
+                {
+                    var relationModule = await DbContext.Modules.FirstOrDefaultAsync(q => q.Name == relation.RelatedModule && !q.Deleted);
+
+                    if (relationModule != null)
+                        record = ClearRecord(record, $"{relationModule.LabelEnSingular.ToLower()}.");
+                }
+            }
+
+            return record;
+        }
+
+        private bool SharedPermissionCheck(JObject record, TenantUser user, OperationType operation)
+        {
+            if (operation == OperationType.read)
+            {
+                if (!record["shared_users"].IsNullOrEmpty() || !record["shared_user_groups"].IsNullOrEmpty())
+                {
+                    var userIdList = record["shared_users"].ToObject<List<string>>();
+                    var groupIdList = record["shared_user_groups"].ToObject<List<string>>();
+                    var result = false;
+
+                    foreach (var id in groupIdList)
+                    {
+                        if (user.Groups.Any(q => q.UserGroupId.ToString() == id))
+                        {
+                            result = true;
+                            break;
+                        }
+                    }
+
+                    return userIdList.Any(q => q == user.Id.ToString()) || result;
+                }
+            }
+
+            if (operation == OperationType.update)
+            {
+                if (!record["shared_users_edit"].IsNullOrEmpty() || !record["shared_user_groups_edit"].IsNullOrEmpty())
+                {
+                    var userIdList = record["shared_users_edit"].ToObject<List<string>>();
+                    var groupIdList = record["shared_user_groups_edit"].ToObject<List<string>>();
+                    var result = false;
+
+                    foreach (var id in groupIdList)
+                    {
+                        if (user.Groups.Any(q => q.UserGroupId.ToString() == id))
+                        {
+                            result = true;
+                            break;
+                        }
+                    }
+
+                    return userIdList.Any(q => q == user.Id.ToString()) || result;
+                }
+            }
+
+            return false;
+        }
+
+        private SectionPermission SectionPermissionCheck(List<SectionPermission> sectionPermissions, OperationType operation)
+        {
+            switch (operation)
+            {
+                case OperationType.insert:
+                case OperationType.update:
+                case OperationType.delete:
+                    return sectionPermissions.FirstOrDefault(q => q.Type == SectionPermissionType.Full);
+                case OperationType.read:
+                    return sectionPermissions.FirstOrDefault(q => q.Type == SectionPermissionType.ReadOnly || q.Type == SectionPermissionType.Full);
+                default:
+                    return null;
+            }
+        }
+
+        private JObject ClearRecord(JObject record, string key = null, List<string> fields = null)
+        {
+            var newRecord = (JObject)record.DeepClone();
+
+            if (!string.IsNullOrEmpty(key))
+            {
+                foreach (var prop in record)
+                {
+                    if (prop.Key.StartsWith(key))
+                        newRecord.Remove(prop.Key);
+                }
+            }
+
+            if (fields != null)
+            {
+                foreach (var field in fields)
+                {
+                    newRecord.Remove(field);
+                }
+            }
+
+            return newRecord;
+        }
+
     }
 }

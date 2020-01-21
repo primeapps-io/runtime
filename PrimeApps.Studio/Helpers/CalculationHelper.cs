@@ -83,7 +83,7 @@ namespace PrimeApps.Studio.Helpers
 
                                             moduleRepository.CurrentUser = recordRepository.CurrentUser = picklistRepository.CurrentUser = settingRepository.CurrentUser = _currentUser;
 
-                                            var record = recordRepository.GetById(module, recordId, true, null, true);
+                                            var record = await recordRepository.GetById(module, recordId, true, null, true);
                                             var isBranch = await settingRepository.GetByKeyAsync("branch");
 
                                             if (operationType == OperationType.insert || operationType == OperationType.update)
@@ -173,7 +173,7 @@ namespace PrimeApps.Studio.Helpers
                                                         {
                                                             if (!record["parent_branch"].IsNullOrEmpty())
                                                             {
-                                                                var parentBranch = recordRepository.GetById(module, (int)record["parent_branch"]);
+                                                                var parentBranch = await recordRepository.GetById(module, (int)record["parent_branch"]);
 
                                                                 if (operationType == OperationType.insert)
                                                                 {
@@ -262,8 +262,8 @@ namespace PrimeApps.Studio.Helpers
                                                     lookupModules.Add(calisanlarModule);
                                                     lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
 
-                                                    record = recordRepository.GetById(module, recordId, true, lookupModules, true);
-                                                    var calisan = recordRepository.GetById(calisanlarModule, (int)record["personel.id"], true, lookupModules, true);
+                                                    record = await recordRepository.GetById(module, recordId, true, lookupModules, true);
+                                                    var calisan = await recordRepository.GetById(calisanlarModule, (int)record["personel.id"], true, lookupModules, true);
 
                                                     var calisanUpdate = new JObject();
                                                     calisanUpdate["id"] = calisan["id"];
@@ -1438,7 +1438,7 @@ namespace PrimeApps.Studio.Helpers
                                                 case "petty_cash_requisition":
                                                 case "expenditure":
                                                     var pettyCashModule = await moduleRepository.GetByName("petty_cash");
-                                                    var pettyCashRecord = recordRepository.GetById(pettyCashModule, (int)record["related_petty_cash_2"], false, null, true);
+                                                    var pettyCashRecord = await recordRepository.GetById(pettyCashModule, (int)record["related_petty_cash_2"], false, null, true);
                                                     var pettyCashUpdateRecord = new JObject();
                                                     if (module.Name == "petty_cash_requisition")
                                                     {
@@ -1941,7 +1941,7 @@ namespace PrimeApps.Studio.Helpers
                                                     if (record["product"].IsNullOrEmpty())
                                                         break;
 
-                                                    var prodItem = recordRepository.GetById(prodMod, (int)record["product"], false);
+                                                    var prodItem = await recordRepository.GetById(prodMod, (int)record["product"], false);
 
                                                     if (prodItem.IsNullOrEmpty())
                                                         break;
@@ -1952,7 +1952,7 @@ namespace PrimeApps.Studio.Helpers
                                                     {
                                                         findRequestCurrentStockRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "sales_order", Operator = Operator.Equals, Value = (int)record["sales_order"], No = 1 }, new Filter { Field = "product", Operator = Operator.Equals, Value = (int)record["product"], No = 2 } }, Limit = 9999 };
                                                         var salesOrderModule = await moduleRepository.GetByName("sales_orders");
-                                                        var salesOrderItem = recordRepository.GetById(salesOrderModule, (int)record["sales_order"], false);
+                                                        var salesOrderItem = await recordRepository.GetById(salesOrderModule, (int)record["sales_order"], false);
                                                         var salesStagePicklist = salesOrderModule.Fields.Single(x => x.Name == "order_stage");
                                                         currentModulePicklist = await picklistRepository.FindItemByLabel(salesStagePicklist.PicklistId.Value, (string)salesOrderItem["order_stage"], appUser.TenantLanguage);
                                                     }
@@ -1960,7 +1960,7 @@ namespace PrimeApps.Studio.Helpers
                                                     {
                                                         findRequestCurrentStockRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "purchase_order", Operator = Operator.Equals, Value = (int)record["purchase_order"], No = 1 }, new Filter { Field = "product", Operator = Operator.Equals, Value = (int)record["product"], No = 2 } }, Limit = 9999 };
                                                         var purchaseOrderModule = await moduleRepository.GetByName("purchase_orders");
-                                                        var purchaseOrderItem = recordRepository.GetById(purchaseOrderModule, (int)record["purchase_order"], false);
+                                                        var purchaseOrderItem = await recordRepository.GetById(purchaseOrderModule, (int)record["purchase_order"], false);
                                                         var purchaseStagePicklist = purchaseOrderModule.Fields.Single(x => x.Name == "order_stage");
                                                         currentModulePicklist = await picklistRepository.FindItemByLabel(purchaseStagePicklist.PicklistId.Value, (string)purchaseOrderItem["order_stage"], appUser.TenantLanguage);
 
@@ -2031,7 +2031,7 @@ namespace PrimeApps.Studio.Helpers
 
                                                 case "stock_transactions":
                                                     var productModuleObj = await moduleRepository.GetByName("products");
-                                                    var product = recordRepository.GetById(productModuleObj, (int)record["product"], false);
+                                                    var product = await recordRepository.GetById(productModuleObj, (int)record["product"], false);
 
                                                     if (product["stock_quantity"].IsNullOrEmpty())
                                                         product["stock_quantity"] = 0;
@@ -2088,7 +2088,7 @@ namespace PrimeApps.Studio.Helpers
                                                 //    break;
                                                 case "project_indicators":
                                                     var projectScopeModule = await moduleRepository.GetByName("project_scope");
-                                                    var projectScopeRecord = recordRepository.GetById(projectScopeModule, (int)record["related_result"]);
+                                                    var projectScopeRecord = await recordRepository.GetById(projectScopeModule, (int)record["related_result"]);
                                                     var findRequestProjectIndicator = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_result", Operator = Operator.Equals, Value = (int)record["related_result"], No = 1 } }, Limit = 9999 };
                                                     var projectIndicatorRecords = recordRepository.Find(module.Name, findRequestProjectIndicator);
                                                     var modelState = new ModelStateDictionary();
@@ -2193,7 +2193,7 @@ namespace PrimeApps.Studio.Helpers
                                                     break;
                                                 case "project_scope":
                                                     var projectModule = await moduleRepository.GetByName("projects");
-                                                    var projectRecord = recordRepository.GetById(projectModule, (int)record["project"]);
+                                                    var projectRecord = await recordRepository.GetById(projectModule, (int)record["project"]);
                                                     var findRequestProjectScope = new FindRequest { Filters = new List<Filter> { new Filter { Field = "project", Operator = Operator.Equals, Value = (int)record["project"], No = 1 } }, Limit = 9999 };
                                                     var projectScopeRecords = recordRepository.Find(module.Name, findRequestProjectScope);
                                                     var modelStateScope = new ModelStateDictionary();
@@ -2237,7 +2237,7 @@ namespace PrimeApps.Studio.Helpers
                                                 case "expenses":
                                                     var expenseSheetModule = await moduleRepository.GetByName("expense_sheet");
                                                     var expensesModule = await moduleRepository.GetByName("expenses");
-                                                    var expenseSheetRecord = recordRepository.GetById(expenseSheetModule, (int)record["expense_sheet"]);
+                                                    var expenseSheetRecord = await recordRepository.GetById(expenseSheetModule, (int)record["expense_sheet"]);
                                                     var findRequestExpense = new FindRequest { Filters = new List<Filter> { new Filter { Field = "expense_sheet", Operator = Operator.Equals, Value = (int)record["expense_sheet"], No = 1 } }, Limit = 9999 };
                                                     var expenseRecords = recordRepository.Find(module.Name, findRequestExpense);
                                                     var currencyField = expensesModule.Fields.Single(x => x.Name == "currency");
@@ -2360,7 +2360,7 @@ namespace PrimeApps.Studio.Helpers
                                                     var statusPicklist = await picklistRepository.GetById(statusField.PicklistId.Value);
                                                     var approvedStatusPicklistItem = statusPicklist.Items.Single(x => x.Value == "approved_second");
                                                     var approvedStatusPicklistItemLabel = appUser.TenantLanguage == "tr" ? approvedStatusPicklistItem.LabelTr : approvedStatusPicklistItem.LabelEn;
-                                                    var timesheetRecord = recordRepository.GetById(timesheetModule, (int)record["related_timesheet"]);
+                                                    var timesheetRecord = await recordRepository.GetById(timesheetModule, (int)record["related_timesheet"]);
                                                     var approved = true;
 
                                                     if ((string)timesheetRecord["status"] == approvedStatusPicklistItemLabel)
@@ -2457,11 +2457,11 @@ namespace PrimeApps.Studio.Helpers
                                                         {
                                                             var branchModule = await moduleRepository.GetByName("branches");
                                                             var calisanlar = await moduleRepository.GetByName("calisanlar");
-                                                            var calisanRecord = recordRepository.GetById(calisanlar, recordId);
+                                                            var calisanRecord = await recordRepository.GetById(calisanlar, recordId);
                                                             if (!calisanRecord["profile"].IsNullOrEmpty() && !calisanRecord["branch"].IsNullOrEmpty())
                                                             {
                                                                 var profileId = int.Parse(calisanRecord["profile"].ToString());
-                                                                var branchRecord = recordRepository.GetById(branchModule, int.Parse(calisanRecord["branch"].ToString()));
+                                                                var branchRecord = await recordRepository.GetById(branchModule, int.Parse(calisanRecord["branch"].ToString()));
                                                                 var roleId = branchRecord != null && !branchRecord["branch"].IsNullOrEmpty() ? (int)branchRecord["branch"] : 0;
 
                                                                 List<Profile> profileSchema = new List<Profile>();
@@ -2808,7 +2808,7 @@ namespace PrimeApps.Studio.Helpers
                                                     };
 
                                                     var izinTuruModule = await moduleRepository.GetByName("izin_turleri");
-                                                    var izinTuru = recordRepository.GetById(izinTuruModule, (int)record["izin_turu"], false);
+                                                    var izinTuru = await recordRepository.GetById(izinTuruModule, (int)record["izin_turu"], false);
                                                     var izinler = recordRepository.Find("izin_turleri", findRequestIzinler, false).First;
 
                                                     //İzin türüne göre izinler de gün veya saat olduğunu belirtme.
@@ -2838,7 +2838,7 @@ namespace PrimeApps.Studio.Helpers
                                                         bool masrafKalemiCalculate = false;
                                                         if (odenecekTutarField != null)
                                                         {
-                                                            masrafRecord = recordRepository.GetById(moduleUpdate, (int)record["masraf"], true, null, true);
+                                                            masrafRecord = await recordRepository.GetById(moduleUpdate, (int)record["masraf"], true, null, true);
                                                         }
                                                         if (odenecekTutarField != null && (masrafRecord["process_status"].IsNullOrEmpty() || (int)masrafRecord["process_status"] == 3))
                                                         {
@@ -2966,7 +2966,7 @@ namespace PrimeApps.Studio.Helpers
 
                     var calisanId = userId;
 
-                    var calisan = _recordRepository.GetById(calisanlarModule, calisanId, false);
+                    var calisan = await _recordRepository.GetById(calisanlarModule, calisanId, false);
 
                     if (calisan == null)
                         return false;
@@ -2985,7 +2985,7 @@ namespace PrimeApps.Studio.Helpers
                     var dayDiffMonth = ((bugun.Year - calismayaBasladigiZaman.Year) * 12) + bugun.Month - calismayaBasladigiZaman.Month;
                     var dayDiffYear = dayDiff.Days / 365;
 
-                    var izinKurali = _recordRepository.GetById(izinTurleri, izinTuruId, false);
+                    var izinKurali = await _recordRepository.GetById(izinTurleri, izinTuruId, false);
 
                     var ekIzin = 0.0;
                     var toplamKalanIzin = 0.0;
@@ -3174,7 +3174,7 @@ namespace PrimeApps.Studio.Helpers
                     }
 
                     var calisanId = userId;
-                    var calisan = _recordRepository.GetById(calisanlarModule, calisanId, false);
+                    var calisan = await _recordRepository.GetById(calisanlarModule, calisanId, false);
 
                     if (calisan == null)
                         return false;

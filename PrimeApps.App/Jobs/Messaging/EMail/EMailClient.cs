@@ -341,7 +341,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 							{
 								var status = MessageStatusEnum.Successful;
 								var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository, tenantLanguage: tenant.Setting.Language);
-								var record = recordRepository.GetById(module, int.Parse(recordId), false, lookupModules);
+								var record = await recordRepository.GetById(module, int.Parse(recordId), false, lookupModules);
 
 								if (!record[emailField].IsNullOrEmpty())
 								{

@@ -107,7 +107,7 @@ namespace PrimeApps.App.Bpm.Steps
                             var module = await _moduleRepository.GetById(moduleId);
 
                             //var recordId = data["record"].ToObject<int>();
-                            var record = data["record"].ToObject<JObject>();//_recordRepository.GetById(module, recordId);
+                            var record = data["record"].ToObject<JObject>();//await _recordRepository.GetById(module, recordId);
 
                             var sendNotificationCC = new JArray();//sendNotification.CC;
                             var sendNotificationBCC = new JArray();//sendNotification.Bcc;

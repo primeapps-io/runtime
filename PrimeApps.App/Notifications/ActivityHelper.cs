@@ -83,7 +83,7 @@ namespace PrimeApps.App.Notifications
                             userModule
                         };
 
-                        var fullRecord = recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule);
+                        var fullRecord = await recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule);
 
                         recordRepository.SetPicklists(module, fullRecord, appUser.TenantLanguage);
 
@@ -315,7 +315,7 @@ namespace PrimeApps.App.Notifications
                                 var userModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
                                 var listLookupModule = new List<Module>();
                                 listLookupModule.Add(userModule);
-                                var databaseRecord = _recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule);
+                                var databaseRecord = await _recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule);
                                 _recordRepository.SetPicklists(module, databaseRecord, appUser.TenantLanguage);
 
                                 //create case activity system type needed
@@ -339,7 +339,7 @@ namespace PrimeApps.App.Notifications
                         var userModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
                         var listLookupModule = new List<Module>();
                         listLookupModule.Add(userModule);
-                        var fullRecord = _recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule);
+                        var fullRecord = await _recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule);
 
                         _recordRepository.SetPicklists(module, fullRecord, appUser.TenantLanguage);
 

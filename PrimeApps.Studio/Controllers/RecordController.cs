@@ -119,7 +119,7 @@ namespace PrimeApps.Studio.Controllers
 
             try
             {
-                record = _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile, lookupModules);
+                record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile, lookupModules);
 
                 if (record == null)
                     return NotFound();
@@ -377,7 +377,7 @@ namespace PrimeApps.Studio.Controllers
 
             if (numberAutoFields.Count > 0)
             {
-                var currentRecord = _recordRepository.GetById(moduleEntity, (int)record["id"], AppUser.HasAdminProfile);
+                var currentRecord = await _recordRepository.GetById(moduleEntity, (int)record["id"], AppUser.HasAdminProfile);
                 var hasUpdate = false;
 
                 foreach (var numberAutoField in numberAutoFields)
@@ -419,7 +419,7 @@ namespace PrimeApps.Studio.Controllers
             {
                 ICollection<Module> lookupModules = new List<Module> { ModuleHelper.GetFakeUserModule() };
                 var currentCulture = locale == "en" ? "en-US" : "tr-TR";
-                record = _recordRepository.GetById(moduleEntity, (int)record["id"], !AppUser.HasAdminProfile, lookupModules);
+                record = await _recordRepository.GetById(moduleEntity, (int)record["id"], !AppUser.HasAdminProfile, lookupModules);
                 record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
 
                 if (normalize.HasValue && normalize.Value)
@@ -449,7 +449,7 @@ namespace PrimeApps.Studio.Controllers
             if (!int.TryParse((string)record["id"], out recordId) || recordId < 1)
                 return BadRequest("Invalid record id!");
 
-            var currentRecord = _recordRepository.GetById(moduleEntity, (int)record["id"], AppUser.HasAdminProfile);
+            var currentRecord = await _recordRepository.GetById(moduleEntity, (int)record["id"], AppUser.HasAdminProfile);
 
             if (currentRecord == null)
                 return BadRequest("Record not found!");
@@ -500,7 +500,7 @@ namespace PrimeApps.Studio.Controllers
             {
                 ICollection<Module> lookupModules = new List<Module> { ModuleHelper.GetFakeUserModule() };
                 var currentCulture = locale == "en" ? "en-US" : "tr-TR";
-                record = _recordRepository.GetById(moduleEntity, (int)record["id"], !AppUser.HasAdminProfile, lookupModules);
+                record = await _recordRepository.GetById(moduleEntity, (int)record["id"], !AppUser.HasAdminProfile, lookupModules);
                 record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
 
                 if (normalize.HasValue && normalize.Value)
@@ -514,7 +514,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> Delete(string module, int id)
         {
             var moduleEntity = await _moduleRepository.GetByName(module);
-            var record = _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile);
+            var record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile);
 
             if (moduleEntity == null || record == null)
                 return BadRequest();
@@ -603,7 +603,7 @@ namespace PrimeApps.Studio.Controllers
 
             foreach (var id in ids)
             {
-                var record = _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile);
+                var record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile);
 
                 if (moduleEntity == null || record == null)
                     return BadRequest();
@@ -642,7 +642,7 @@ namespace PrimeApps.Studio.Controllers
                 if (!int.TryParse(id.ToString(), out recordId) || recordId < 1)
                     return BadRequest("Invalid record id!");
 
-                var currentRecord = _recordRepository.GetById(moduleEntity, (int)id, AppUser.HasAdminProfile);
+                var currentRecord = await _recordRepository.GetById(moduleEntity, (int)id, AppUser.HasAdminProfile);
                 var recordUpdate = (JObject)record.DeepClone();
 
                 if (currentRecord.IsNullOrEmpty())

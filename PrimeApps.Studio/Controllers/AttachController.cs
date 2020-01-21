@@ -137,7 +137,7 @@ namespace PrimeApps.Studio.Controllers
 
             try
             {
-                record = _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile, lookupModules);
+                record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile, lookupModules);
 
                 if (record == null)
                 {

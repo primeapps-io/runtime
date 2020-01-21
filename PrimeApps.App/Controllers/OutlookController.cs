@@ -646,7 +646,7 @@ namespace PrimeApps.App.Controllers
 
             if (numberAutoFields.Count > 0)
             {
-                var currentRecord = _recordRepository.GetById(moduleEntity, (int)mail["id"], AppUser.HasAdminProfile);
+                var currentRecord = await _recordRepository.GetById(moduleEntity, (int)mail["id"], AppUser.HasAdminProfile);
                 var hasUpdate = false;
 
                 foreach (var numberAutoField in numberAutoFields)
@@ -688,7 +688,7 @@ namespace PrimeApps.App.Controllers
             {
                 ICollection<Module> lookupModules = new List<Module> {ModuleHelper.GetFakeUserModule()};
                 var currentCulture = locale == "en" ? "en-US" : "tr-TR";
-                mail = _recordRepository.GetById(moduleEntity, (int)mail["id"], !AppUser.HasAdminProfile, lookupModules);
+                mail = await _recordRepository.GetById(moduleEntity, (int)mail["id"], !AppUser.HasAdminProfile, lookupModules);
                 mail = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, mail, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
 
                 if (normalize.HasValue && normalize.Value)

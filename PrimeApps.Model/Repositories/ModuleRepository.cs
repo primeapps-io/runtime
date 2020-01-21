@@ -423,6 +423,12 @@ namespace PrimeApps.Model.Repositories
             return module;
         }
 
+        public async Task<Module> GetByNameFullModule(string name)
+        {
+            return await GetModuleFullQuery()
+                .FirstOrDefaultAsync(x => x.Name == name && !x.Deleted);
+        }
+
         private IQueryable<Module> GetModuleFullQuery()
         {
             return DbContext.Modules
