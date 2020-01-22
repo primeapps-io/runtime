@@ -56,6 +56,10 @@ namespace PrimeApps.Auth.UI
                 redirectUri = HttpUtility.UrlDecode(redirectUri);
                 var domain = redirectUri.Replace("/signin-oidc", "").Replace("https://", "").Replace("http://", "");
                 app = await applicationRepository.GetAppWithDomain(domain);
+                
+                //Admin application don't have any record in app table. 
+                if (app == null)
+                    app = await applicationRepository.GetByNameAsync(clientId);
             }
             else
             {
