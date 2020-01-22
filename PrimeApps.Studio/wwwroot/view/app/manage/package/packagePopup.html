@@ -1,4 +1,5 @@
-﻿<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
+﻿
+<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
 	<form name="packageForm" class="form-horizontal form-custom" ng-submit="create();" autocomplete="off" novalidate>
 
 		<div class="modal-header">
@@ -37,22 +38,25 @@
 										    font-size: 13px;">
 									We'll create a release package for you. You can publish your app using this package. Packaging process and logs will be shown in the list.
 								</div>
-								<div style="font-weight: 700;
+								<div ng-if="grid.dataSource.data().length < 1" style="font-weight: 700;
 											color: #0d6faa;
 											font-size: 15px;
 											padding-top: 15px;
 											text-align: left;
 											padding-bottom: 15px;
-											padding-left: 10px;">Protect Module's Records</div>
-								<div class="panel">
+											padding-left: 10px;">Trasfer Modules' Records</div>
+								<div ng-if="grid.dataSource.data().length < 1" class="panel">
 									<div class="form-group">
+										<label class="radio-inline newinput">
+											<input ng-model="package.protectModules" name="protectModules" type="radio" value="DontTransfer">Don't Transfer<span></span>
+										</label>
 										<label class="radio-inline newinput" style="padding-bottom: 10px;">
-											<input ng-model="package.protectModules" name="protectModules" type="radio" value="allModules">Include All Modules<span></span>
+											<input ng-model="package.protectModules" name="protectModules" type="radio" value="AllModules">Include All Modules<span></span>
 										</label>
 										<label class="radio-inline newinput">
-											<input ng-model="package.protectModules" name="protectModules" type="radio" value="selectedModules">Selected Modules<span></span>
+											<input ng-model="package.protectModules" name="protectModules" type="radio" value="SelectedModules">Selected Modules<span></span>
 										</label>
-										<div ng-show="package.protectModules === 'selectedModules'" class="col-sm-12 multiselect-container">
+										<div ng-show="package.protectModules === 'SelectedModules'" class="col-sm-12 multiselect-container">
 											<button type="button"
 													class="form-control ng-animate-disabled multiselect"
 													name="modules"
@@ -68,8 +72,8 @@
 													bs-select></button>
 										</div>
 									</div>
-									<div ng-repeat="error in errorList" ng-if="package.protectModules !== 'allModules'" class="alert alert-danger">
-										<p>Looks like {{error.module["label_"+language+"_plural"]}} has a lookup field in {{ getErrorText(error.lookup_type) }}. This package will cause {{error.module["label_"+language+"_plural"]}}'s lookup field empty.</p>
+									<div ng-if="package.protectModules === 'SelectedModules' && errorList.length > 0" class="alert alert-danger">
+										<p>{{ getErrorText()}}</p>
 									</div>
 								</div>
 							</div>

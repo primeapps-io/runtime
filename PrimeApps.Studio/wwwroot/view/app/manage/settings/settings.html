@@ -1,162 +1,196 @@
 <div class="setup-title">
-    <h2>Settings</h2>
-    <button ladda="loading" type="button" ng-click="save();" class="btn add-button btn-radius btn-blue ng-binding ladda-button">
-        <i class="fas fa-save"></i>
-        <span>Save</span>
-    </button>
+	<h2>Settings</h2>
+	<button ladda="loading" type="button" ng-click="save();" class="btn add-button btn-radius btn-blue ng-binding ladda-button">
+		<i class="fas fa-save"></i>
+		<span>Save</span>
+	</button>
 </div>
 
 
 <div class="tab-content table-responsive">
-    <div class="setup-title col-sm-6">
-        <h2>App Settings</h2>
-    </div>
-    <div class="col-sm-12">
-        <div class="col-sm-6">
-            <div class="form-group"
-                 ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid}">
-                <label class="col-sm-4 required-field">
-                    Name <span class="required-label">(required)</span>
-                </label>
-                <input type="text"
-                       name="label"
-                       class="form-control ng-animate-disabled col-sm-8"
-                       focus="true"
-                       required
-                       maxlength="50"
-                       ng-model="app.label">
-            </div>
-            <div class="form-group" style="position: relative;"
-                 ng-disabled="app.id"
-                 ng-class="{'has-error': newAppForm.$submitted && newAppForm.name.$invalid}">
-                <label class="col-sm-4 required-field">Identifier </label>
-                <input type="text"
-                       name="name"
-                       ng-disabled="app.id"
-                       class="form-control ng-animate-disabled col-sm-6 text-lowercase"
-                       required
-                       maxlength="50"
-                       ng-trim="false"
-                       ng-blur="checkNameBlur();"
-                       ng-change="checkNameUnique(app.name)"
-                       ng-model="app.name"
-                       id="subdomain"/>
-                <span style="right: 10px;position: absolute;top: 66px;" id="subdomaintwo">
-                                        .primeapps.app
-                                    </span>
-            </div>
-            <div class="form-group"
-                 ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
-                <label class="col-sm-4 required-field">Description</label>
-                <input type="text"
-                       name="description"
-                       class="form-control ng-animate-disabled col-sm-8"
-                       maxlength="50"
-                       ng-model="app.description">
-            </div>
+	<div class="setup-title col-sm-6">
+		<h2>App Settings</h2>
+	</div>
+	<div class="col-sm-12">
+		<div class="col-sm-6">
+			<div class="form-group"
+				 ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid}">
+				<label class="col-sm-4 required-field">
+					Name <span class="required-label">(required)</span>
+				</label>
+				<input type="text"
+					   name="label"
+					   class="form-control ng-animate-disabled col-sm-8"
+					   focus="true"
+					   required
+					   maxlength="50"
+					   ng-model="app.label">
+			</div>
+			<div class="form-group" style="position: relative;"
+				 ng-disabled="app.id"
+				 ng-class="{'has-error': newAppForm.$submitted && newAppForm.name.$invalid}">
+				<label class="col-sm-4 required-field">Identifier </label>
+				<input type="text"
+					   name="name"
+					   ng-disabled="app.id"
+					   class="form-control ng-animate-disabled col-sm-6 text-lowercase"
+					   required
+					   maxlength="50"
+					   ng-trim="false"
+					   ng-blur="checkNameBlur();"
+					   ng-change="checkNameUnique(app.name)"
+					   ng-model="app.name"
+					   id="subdomain" />
+				<span style="right: 10px;position: absolute;top: 66px;" id="subdomaintwo">
+					.primeapps.app
+				</span>
+			</div>
+			<div class="form-group"
+				 ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
+				<label class="col-sm-4 required-field">Description</label>
+				<input type="text"
+					   name="description"
+					   class="form-control ng-animate-disabled col-sm-8"
+					   maxlength="50"
+					   ng-model="app.description">
+			</div>
 
-            <div class="form-group"
-                 ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
-                <label class="col-sm-4 required-field">App Domain</label>
-                <input type="text"
-                       name="app_domain"
-                       class="form-control ng-animate-disabled col-sm-8"
-                       maxlength="50"
-                       ng-model="app.setting.app_domain">
-            </div>
+			<div class="form-group"
+				 ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
+				<label class="col-sm-4 required-field">App Domain</label>
+				<input type="text"
+					   name="app_domain"
+					   class="form-control ng-animate-disabled col-sm-8"
+					   maxlength="50"
+					   ng-model="app.setting.app_domain">
+			</div>
 
-            <div class="form-group"
-                 ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
-                <label class="col-sm-4 required-field">Auth Domain</label>
-                <input type="text"
-                       name="auth_domain"
-                       class="form-control ng-animate-disabled col-sm-8"
-                       maxlength="50"
-                       ng-model="app.setting.auth_domain">
-            </div>
-        </div>
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label class="required-field">Change App Icon and Color</label>
-                <div class="iconandcolor">
-                    <div class="flex-evenly" style="padding: 16px;">
-                        <div>
-                            <div ng-style="{background:app.color}" class="appicon" title="">
-                                <i ng-class=" app.icon.value ?  app.icon.value :app.icon" class="fas fa-box-open"></i>
-                                <div class="icon-search-list">
-                                    <ui-select ng-model="settings.icon" ng-disabled="ctrl.disabled">
-                                        <ui-select-match placeholder="Select an icon">
-                                            <div>
-                                                <span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
-                                                <span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
-                                            </div>
-                                        </ui-select-match>
-                                        <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
-                                            <div ng-bind-html="icon.label"></div>
-                                        </ui-select-choices>
-                                    </ui-select>
+			<div class="form-group"
+				 ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
+				<label class="col-sm-4 required-field">Auth Domain</label>
+				<input type="text"
+					   name="auth_domain"
+					   class="form-control ng-animate-disabled col-sm-8"
+					   maxlength="50"
+					   ng-model="app.setting.auth_domain">
+			</div>
+		</div>
+		<div class="col-sm-6">
+			<div class="form-group">
+				<label class="required-field">Change App Icon and Color</label>
+				<div class="iconandcolor">
+					<div class="flex-evenly" style="padding: 16px;">
+						<div>
+							<div ng-style="{background:app.color}" class="appicon" title="">
+								<i ng-class=" app.icon.value ?  app.icon.value :app.icon" class="fas fa-box-open"></i>
+								<div class="icon-search-list">
+									<ui-select ng-model="settings.icon" ng-disabled="ctrl.disabled">
+										<ui-select-match placeholder="Select an icon">
+											<div>
+												<span ng-if="$select.selected.value" class="{{$select.selected.value}}"> {{ $select.selected.value }}</span>
+												<span ng-if="!$select.selected.value" class="{{$select.selected}}"> {{ $select.selected }}</span>
+											</div>
+										</ui-select-match>
+										<ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
+											<div ng-bind-html="icon.label"></div>
+										</ui-select-choices>
+									</ui-select>
 
-                                </div>
+								</div>
 
-                            </div>
-                        </div>
-                        <div>
-                            <div class="appcolor">
-                                <span ng-click="app.color='#D24D57'" ng-class="app.color =='#D24D57' ? 'active':''" style="background: #D24D57;"></span>
-                                <span ng-click="app.color='#BE90D4'" ng-class="app.color =='#BE90D4' ? 'active':'' " style="background: #BE90D4;"></span>
-                                <span ng-click="app.color='#5AABE3'" ng-class="app.color =='#5AABE3' ? 'active':'' " style="background: #5AABE3;"></span>
-                                <span ng-click="app.color='#87D37C'" ng-class="app.color =='#87D37C' ? 'active':'' " style="background: #87D37C;"></span>
-                                <span ng-click="app.color='#F4D03E'" ng-class="app.color =='#F4D03E' ? 'active':'' " style="background: #F4D03E;"></span>
-                                <span ng-click="app.color='#B8BEC2'" ng-class="app.color =='#B8BEC2' ? 'active':'' " style="background: #B8BEC2;"></span>
-                            </div>
-                            <div class="appcolor">
-                                <span ng-click="app.color='#DC3023'" ng-class="app.color =='#DC3023' ? 'active':''" style="background: #DC3023;"></span>
-                                <span ng-click="app.color='#8E44AD'" ng-class="app.color =='#8E44AD' ? 'active':''" style="background: #8E44AD;"></span>
-                                <span ng-click="app.color='#19B5FE'" ng-class="app.color =='#19B5FE' ? 'active':''" style="background: #19B5FE;"></span>
-                                <span ng-click="app.color='#25A65B'" ng-class="app.color =='#25A65B' ? 'active':''" style="background: #25A65B;"></span>
-                                <span ng-click="app.color='#FFB61E'" ng-class="app.color =='#FFB61E' ? 'active':''" style="background: #FFB61E;"></span>
-                                <span ng-click="app.color='#959EA4'" ng-class="app.color =='#959EA4' ? 'active':''" style="background: #959EA4;"></span>
-                            </div>
-                            <div class="appcolor">
-                                <span ng-click="app.color='#C3272B'" ng-class="app.color =='#C3272B' ? 'active':''" style="background: #C3272B;"></span>
-                                <span ng-click="app.color='#763668'" ng-class="app.color =='#763668' ? 'active':''" style="background: #763668;"></span>
-                                <span ng-click="app.color='#1F4688'" ng-class="app.color =='#1F4688' ? 'active':''" style="background: #1F4688;"></span>
-                                <span ng-click="app.color='#006442'" ng-class="app.color =='#006442' ? 'active':''" style="background: #006442;"></span>
-                                <span ng-click="app.color='#CA6924'" ng-class="app.color =='#CA6924' ? 'active':''" style="background: #CA6924;"></span>
-                                <span ng-click="app.color='#4D5C66'" ng-class="app.color =='#4D5C66' ? 'active':''" style="background: #4D5C66;"></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="text-align: center;"><label style="font-size: 14px; color: #000000;opacity: 0.5;"><span style="font-weight: bold;">Client Id</span> : {{currentApp.name}}</label></div>
-            <div style="text-align: center;"><label style="font-size: 14px; color: #000000;opacity: 0.5;"><span style="font-weight: bold;">Client Secret </span>: <i ng-show="!showSecret" ng-click="showSecret = true; apply();" class="fas fa-eye"></i><span ng-show="showSecret">{{currentApp.secret}}</span> </label></div>
+							</div>
+						</div>
+						<div>
+							<div class="appcolor">
+								<span ng-click="app.color='#D24D57'" ng-class="app.color =='#D24D57' ? 'active':''" style="background: #D24D57;"></span>
+								<span ng-click="app.color='#BE90D4'" ng-class="app.color =='#BE90D4' ? 'active':'' " style="background: #BE90D4;"></span>
+								<span ng-click="app.color='#5AABE3'" ng-class="app.color =='#5AABE3' ? 'active':'' " style="background: #5AABE3;"></span>
+								<span ng-click="app.color='#87D37C'" ng-class="app.color =='#87D37C' ? 'active':'' " style="background: #87D37C;"></span>
+								<span ng-click="app.color='#F4D03E'" ng-class="app.color =='#F4D03E' ? 'active':'' " style="background: #F4D03E;"></span>
+								<span ng-click="app.color='#B8BEC2'" ng-class="app.color =='#B8BEC2' ? 'active':'' " style="background: #B8BEC2;"></span>
+							</div>
+							<div class="appcolor">
+								<span ng-click="app.color='#DC3023'" ng-class="app.color =='#DC3023' ? 'active':''" style="background: #DC3023;"></span>
+								<span ng-click="app.color='#8E44AD'" ng-class="app.color =='#8E44AD' ? 'active':''" style="background: #8E44AD;"></span>
+								<span ng-click="app.color='#19B5FE'" ng-class="app.color =='#19B5FE' ? 'active':''" style="background: #19B5FE;"></span>
+								<span ng-click="app.color='#25A65B'" ng-class="app.color =='#25A65B' ? 'active':''" style="background: #25A65B;"></span>
+								<span ng-click="app.color='#FFB61E'" ng-class="app.color =='#FFB61E' ? 'active':''" style="background: #FFB61E;"></span>
+								<span ng-click="app.color='#959EA4'" ng-class="app.color =='#959EA4' ? 'active':''" style="background: #959EA4;"></span>
+							</div>
+							<div class="appcolor">
+								<span ng-click="app.color='#C3272B'" ng-class="app.color =='#C3272B' ? 'active':''" style="background: #C3272B;"></span>
+								<span ng-click="app.color='#763668'" ng-class="app.color =='#763668' ? 'active':''" style="background: #763668;"></span>
+								<span ng-click="app.color='#1F4688'" ng-class="app.color =='#1F4688' ? 'active':''" style="background: #1F4688;"></span>
+								<span ng-click="app.color='#006442'" ng-class="app.color =='#006442' ? 'active':''" style="background: #006442;"></span>
+								<span ng-click="app.color='#CA6924'" ng-class="app.color =='#CA6924' ? 'active':''" style="background: #CA6924;"></span>
+								<span ng-click="app.color='#4D5C66'" ng-class="app.color =='#4D5C66' ? 'active':''" style="background: #4D5C66;"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div style="text-align: center;"><label style="font-size: 14px; color: #000000;opacity: 0.5;"><span style="font-weight: bold;">Client Id</span> : {{currentApp.name}}</label></div>
+			<div style="text-align: center;"><label style="font-size: 14px; color: #000000;opacity: 0.5;"><span style="font-weight: bold;">Client Secret </span>: <i ng-show="!showSecret" ng-click="showSecret = true; apply();" class="fas fa-eye"></i><span ng-show="showSecret">{{currentApp.secret}}</span> </label></div>
 
-        </div>
-    </div>
-    <div class="setup-title col-sm-6">
-        <h2>Live Settings</h2>
-    </div>
-    <div class="col-sm-12">
-        <div style="padding-bottom: 20px;">
-            <label class="checkbox-inline newinput" style="padding-right: 5px !important;">
-                <input type="checkbox" ng-model="app.setting.options.clear_all_records" class="ng-pristine ng-untouched ng-valid ng-empty"><span></span>
-            </label>Clear all Records
-        </div>
-        <div style="padding-bottom: 20px;">
-            <label class="checkbox-inline newinput" style="padding-right: 5px !important;">
-                <input type="checkbox" ng-model="app.setting.options.enable_registration" class="ng-pristine ng-untouched ng-valid ng-empty"><span></span>
-            </label>Enable Registration
-        </div> 
-        <div style="padding-bottom: 20px;">
-            <label class="checkbox-inline newinput" style="padding-right: 5px !important;">
-                <input type="checkbox" ng-model="app.setting.options.enable_api_registration" class="ng-pristine ng-untouched ng-valid ng-empty"><span></span>
-            </label>Enable API Registration
-        </div>
-        <div style="padding-bottom: 20px;">
-            <label class="checkbox-inline newinput" style="padding-right: 5px !important;">
-                <input type="checkbox" ng-model="app.setting.options.enable_ldap" class="ng-pristine ng-untouched ng-valid ng-empty"><span></span>
-            </label>Enable LDAP
-        </div>
-    </div>
+		</div>
+	</div>
+	<div class="setup-title col-sm-6">
+		<h2>Live Settings</h2>
+	</div>
+	<div class="col-sm-12">
+		<div style="padding-bottom: 20px;">
+			<label class="checkbox-inline newinput" style="padding-right: 5px !important;">
+				<input type="checkbox" ng-model="app.setting.options.enable_registration" class="ng-pristine ng-untouched ng-valid ng-empty"><span></span>
+			</label>Enable Registration
+		</div>
+		<div style="padding-bottom: 20px;">
+			<label class="checkbox-inline newinput" style="padding-right: 5px !important;">
+				<input type="checkbox" ng-model="app.setting.options.enable_api_registration" class="ng-pristine ng-untouched ng-valid ng-empty"><span></span>
+			</label>Enable API Registration
+		</div>
+		<div style="padding-bottom: 20px;">
+			<label class="checkbox-inline newinput" style="padding-right: 5px !important;">
+				<input type="checkbox" ng-model="app.setting.options.enable_ldap" class="ng-pristine ng-untouched ng-valid ng-empty"><span></span>
+			</label>Enable LDAP
+		</div>
+		<div style="font-weight: 700;
+		 color: #0d6faa;
+		 font-size: 15px;
+		 padding-top: 15px;
+		 text-align: left;
+		 padding-bottom: 15px;
+		 padding-left: 10px;">Trasfer Modules' Records</div>
+		<div class="panel">
+			<div class="form-group">
+				<label class="radio-inline newinput">
+					<input ng-disabled="packageCount > 0" ng-model="app.setting.options.protect_modules" name="protectModules" type="radio" value="DontTransfer">Don't Transfer<span></span>
+				</label>
+				<label class="radio-inline newinput" style="padding-bottom: 10px;">
+					<input ng-disabled="packageCount > 0" ng-model="app.setting.options.protect_modules" name="protectModules" type="radio" value="AllModules">Include All Modules<span></span>
+				</label>
+				<label class="radio-inline newinput">
+					<input ng-disabled="packageCount > 0" ng-model="app.setting.options.protect_modules" name="protectModules" type="radio" value="SelectedModules">Selected Modules<span></span>
+				</label>
+				<div ng-show="app.setting.options.protect_modules === 'SelectedModules'" class="col-sm-12 multiselect-container">
+					<button type="button"
+							ng-disabled="packageCount > 0"
+							class="form-control ng-animate-disabled multiselect"
+							name="modules"
+							ng-model="app.setting.options.selected_modules"
+							ng-change="checkModules(app.setting.options.selected_modules)"
+							data-icon-checkmark="fa fa-check"
+							data-placeholder="{{'Common.Multiselect' | translate}}"
+							data-html="1"
+							data-multiple="1"
+							data-max-length="2"
+							data-max-length-html="{{'Common.Multiselected' | translate}}"
+							bs-options="o as o['label_'+language+'_plural'] for o in packageModules track by id"
+							bs-select></button>
+				</div>
+			</div>
+			<div ng-if="app.setting.options.protect_modules === 'SelectedModules' && errorList.length > 0" class="alert alert-danger">
+				<p>{{ getErrorText()}}</p>
+			</div>
+		</div>
+	</div>
 </div>

@@ -1083,6 +1083,7 @@ angular.module('primeapps')
                                 cdnUrl + 'view/app/manage/settings/settingsController.js',
                                 cdnUrl + 'view/app/manage/settings/settingsService.js',
                                 cdnUrl + 'view/organization/appform/appFormService.js',
+                                cdnUrl + 'view/app/manage/package/packageService.js'
                             ]);
                         }]
                     }

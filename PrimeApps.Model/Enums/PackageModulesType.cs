@@ -7,14 +7,17 @@ using System.Threading.Tasks;
 
 namespace PrimeApps.Model.Enums
 {
-    public enum PackageModulesType
-    {
+	public enum PackageModulesType
+	{
 
-        [EnumMember(Value = "all_modules")]
-        AllModules = 1,
+		[EnumMember(Value = "all_modules")]
+		AllModules = 1,
 
-        [EnumMember(Value = "selected_modules")]
-        SelectedModules = 2,
+		[EnumMember(Value = "selected_modules")]
+		SelectedModules = 2,
 
-    }
+		[EnumMember(Value = "dont_transfer")]
+		DontTransfer = 3,
+
+	}
 }
