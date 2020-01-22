@@ -139,7 +139,8 @@
     "ChooseBankOrCase": "Please select a bank or cash.",
     "Settings": "Settings",
     "SystemType": "System Type",
-    "Default": "Default"
+    "Default": "Default",
+    "TenantRightsInfo": "With this option, you authorize application users to edit and delete it."
   },
   "Auth": {
     "Email": "E-Mail",
@@ -1060,6 +1061,7 @@
       "DisplayList": "List",
       "InlineEdit": "Enable Inline Editing",
       "Editable": "Editable",
+      "EditableByUsers": "Editable by app users",
       "ShowLabel": "Show label",
       "UniqueValue": "Don't allow duplicate values",
       "ShowAsDropdown": "Show as dropdown",
