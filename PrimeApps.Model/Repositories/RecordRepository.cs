@@ -670,13 +670,19 @@ namespace PrimeApps.Model.Repositories
                         return record;
 
                     if (modulePermission == null)
+                        return null;
+                    else
                     {
-
+                        record = SectionPermission(module, record, user, operation);
+                        record = await RelationModulePermission(module, record, user, operation);
+                        ///Todo lookup alanlar için kontrol lazım.
+                        return record;
                     }
-                    return null;
                 case OperationType.delete:
+                    if (modulePermission == null)
+                        return null;
 
-                    return null;
+                    return record;
                 default:
                     return null;
             }
@@ -746,6 +752,11 @@ namespace PrimeApps.Model.Repositories
             return record;
         }
 
+        private JObject FieldPermissionControl(Module module, JObject record, OperationType operation)
+        {
+            return null;
+        }
+
         private bool SharedPermissionCheck(JObject record, TenantUser user, OperationType operation)
         {
             var extraControl = false;
@@ -769,7 +780,7 @@ namespace PrimeApps.Model.Repositories
                         }
                     }
 
-                    return userIdList.Any(q => q == user.Id.ToString()) || result;
+                    return (userIdList != null && userIdList.Any(q => q == user.Id.ToString())) || result;
                 }
             }
 
