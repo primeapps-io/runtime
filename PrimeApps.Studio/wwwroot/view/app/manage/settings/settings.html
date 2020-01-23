@@ -155,7 +155,7 @@
 				</label>
 			</div>
 			<div class="form-group multiselect2" ng-show="app.setting.options.protect_modules === 'SelectedModules'">
-				<div class="multiselect-container" >
+				<div class="multiselect-container">
 					<button type="button"
 							ng-disabled="packageCount > 0"
 							class="form-control ng-animate-disabled multiselect"
@@ -175,11 +175,11 @@
 			<div ng-if="app.setting.options.protect_modules === 'SelectedModules' && errorList.length > 0">
 				<strong>Information</strong>
 				<div class="alert alert-info" style="line-height:2; font-size: 12px;font-weight: bold; padding: 10px; border-left-width: 10px;">
-					<p>{{ getErrorText()}}</p>
+					<p ng-bind-html="getErrorText()" />
 					<p>This package will cause all lookup fields empty!</p>
 				</div>
 			</div>
 		</div>
-		
+
 	</div>
 </div>

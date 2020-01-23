@@ -55,7 +55,7 @@
 									<div ng-if="package.protectModules === 'SelectedModules' && errorList.length > 0">
 										<strong>Information</strong>
 										<div class="alert alert-info" style="line-height:2; font-size: 12px;font-weight: bold; padding: 10px; border-left-width: 10px;">
-											<p>{{ getErrorText()}}</p>
+											<p ng-bind-html="getErrorText()"/>
 											<p>This package will cause all lookup fields empty!</p>
 										</div>
 									</div>
