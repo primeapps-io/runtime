@@ -639,10 +639,10 @@ namespace PrimeApps.Model.Helpers
 					if (!string.IsNullOrEmpty(fieldName))
 						updateRequest[fieldName] = null;
 
-
-					if (relatedModule.Id > 0)
+					var relatedRecordId = record[fieldName + "." + relatedModuleName + ".id"].ToString();
+					if (relatedModule.Id > 0 && !string.IsNullOrEmpty(relatedRecordId))
 					{
-						var childRecord = recordRepository.GetById(relatedModule, (int)record[fieldName + "." + relatedModuleName + ".id"]);
+						var childRecord = recordRepository.GetById(relatedModule, int.Parse(relatedRecordId));
 
 						if (!(bool)childRecord["is_sample"])
 							await recordRepository.Update(updateRequest, mainModule);

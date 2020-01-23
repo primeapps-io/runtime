@@ -901,12 +901,12 @@
 			"PermissionModify": "Edit",
 			"PermissionRemove": "Delete",
 			"PermissionSystem": "System Administration",
-			"PermissionEmail": "E-mail",
-			"PermissionSMS": "SMS",
+			"PermissionEmail": "Send E-Mail",
+			"PermissionSMS": "Send SMS",
 			"PermissionBI": "Business Intelligence",
 			"PermissionExportData": "Export Data",
 			"PermissionImportData": "Import Data",
-			"WordPdfDownload": "Word/PDF Download",
+			"WordPdfDownload": "Apply Templates",
 			"DocumentSearch": "Doc Search",
 			"DuplicateName": "This profile name is in use.",
 			"SubmitSuccess": "Profile is successfully created.",
@@ -920,7 +920,8 @@
 			"Newsfeed": "Newsfeed",
 			"Reports": "Reports",
 			"StarPage": "Start Page",
-			"ParentProfile": "Related Profile"
+			"ParentProfile": "Related Profile",
+			"DisableSmtpSettings": "Disable SMTP Settings"
 		},
 		"Workgroups": {
 			"Title": "Workgroups",
