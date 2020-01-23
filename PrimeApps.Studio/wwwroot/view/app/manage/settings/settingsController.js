@@ -73,8 +73,6 @@ angular.module('primeapps')
 					for (var i = 0; i < $scope.app.setting.options.selected_modules.length; i++) {
 						var selectedModule = $scope.app.setting.options.selected_modules[i];
 						$scope.app.setting.options.selected_modules[i] = selectedModule.name;
-						//$scope.app.setting.options.selected_modules[i] = {};
-						//$scope.app.setting.options.selected_modules[i][selectedModule.name] = copyRelations[selectedModule.name];
 						delete copyRelations[selectedModule.name];
 					}
 					$scope.app.setting.options.modulesRelations = copyRelations;
