@@ -118,8 +118,8 @@ angular.module('primeapps')
 				$scope.errorList = [];
 				$scope.package.protectModules = $scope.appPackageInformation["protect_modules"] || 'DontTransfer';
 				$scope.package.selectedModules = $scope.appPackageInformation["selected_modules"] || [];
-				prepareModal($scope.package.selectedModules);
-
+				if ($scope.grid.dataSource.data().length < 1)
+					prepareModal($scope.package.selectedModules);
 
 				$scope.packagePopup = $scope.packagePopup || $modal({
 					scope: $scope,

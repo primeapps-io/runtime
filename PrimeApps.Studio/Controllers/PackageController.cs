@@ -175,6 +175,7 @@ namespace PrimeApps.Studio.Controllers
 
 			var currentBuildNumber = await _packageRepository.Count((int)AppId);
 			var version = currentBuildNumber + 1;
+			var isFirst = await _packageRepository.IsFirstPackage((int)AppId);
 
 			var app = await _appDraftRepository.Get((int)AppId);
 			var appOptions = new JObject
@@ -189,10 +190,13 @@ namespace PrimeApps.Studio.Controllers
 			if (app.Setting != null && !string.IsNullOrEmpty(app.Setting.Options))
 			{
 				appOptions = JObject.Parse(app.Setting.Options);
-				appOptions["protect_modules"] = model["protectModules"];
-				appOptions["selected_modules"] = model["selected_modules"];
-				app.Setting.Options = appOptions.ToString();
-				await _appDraftRepository.Update(app);
+				if (isFirst)
+				{
+					appOptions["protect_modules"] = model["protectModules"];
+					appOptions["selected_modules"] = model["selected_modules"];
+					app.Setting.Options = appOptions.ToString();
+					await _appDraftRepository.Update(app);
+				}
 			}
 
 			var packageModel = new Package()
@@ -231,7 +235,7 @@ namespace PrimeApps.Studio.Controllers
 				await _historyStorageRepository.Update(storageHistory);
 			}
 
-			if (await _packageRepository.IsFirstPackage((int)AppId))
+			if (isFirst)
 			{
 				var historyStorages = await _historyStorageRepository.GetAll();
 				_queue.QueueBackgroundWorkItem(token => _packageHelper.All((int)AppId, model, dbName, version.ToString(), packageModel.Id, historyStorages));
