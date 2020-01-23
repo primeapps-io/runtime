@@ -65,7 +65,7 @@ namespace PrimeApps.Model.Repositories
                 }
 
                 if (profileBasedEnabled && module.Name != "users" && module.Name != "profiles" && module.Name != "roles")
-                    record = await FieldPermissionControl(module.Name, CurrentUser.UserId, record, operation);
+                    record = await RecordPermissionControl(module.Name, CurrentUser.UserId, record, operation);
             }
 
             return record;
@@ -621,7 +621,7 @@ namespace PrimeApps.Model.Repositories
             }
         }
 
-        public async Task<JObject> FieldPermissionControl(string moduleName, int userId, JObject record, OperationType operation)
+        public async Task<JObject> RecordPermissionControl(string moduleName, int userId, JObject record, OperationType operation)
         {
             if (record.IsNullOrEmpty())
                 return null;
@@ -651,7 +651,12 @@ namespace PrimeApps.Model.Repositories
                     if (modulePermission == null)
                         return null;
                     else
+                    {
+                        //record = SectionPermission(module, record, user, operation);
+                        //record = await RelationModulePermission(module, record, user, operation);
+                        //record = FieldPermission(module, record, user, operation);
                         return record;
+                    }
                 case OperationType.update:
                     if (isCustomSharePermission)
                         return record;
@@ -662,7 +667,7 @@ namespace PrimeApps.Model.Repositories
                     {
                         record = SectionPermission(module, record, user, operation);
                         record = await RelationModulePermission(module, record, user, operation);
-                        record = FieldPermission(module, record, user, operation);
+                        record = await FieldPermission(module, record, user, operation);
                         ///Todo lookup alanlar için kontrol lazım.
                         return record;
                     }
@@ -676,6 +681,7 @@ namespace PrimeApps.Model.Repositories
                     {
                         record = SectionPermission(module, record, user, operation);
                         record = await RelationModulePermission(module, record, user, operation);
+                        record = await FieldPermission(module, record, user, operation);
                         ///Todo lookup alanlar için kontrol lazım.
                         return record;
                     }
@@ -712,8 +718,10 @@ namespace PrimeApps.Model.Repositories
             //Module Section permission control
             foreach (var section in module.Sections)
             {
+                //Herhangi bir yetki girilmis mi diye kontrol ediyoruz. Eger girilmemisse default olarak yetkisi var demektir.
                 if (section.Permissions != null && section.Permissions.Count > 0)
                 {
+                    //Aktif olan User'in profile bilgisine gore bir yetki eklenmis mi diye bakıyoruz.
                     var sectionPermissionList = section.Permissions.Where(q => q.ProfileId == user.Profile.Id && !q.Deleted).ToList();
 
                     if (sectionPermissionList == null)
@@ -721,6 +729,7 @@ namespace PrimeApps.Model.Repositories
 
                     var sectionPermission = SectionPermissionCheck(sectionPermissionList, operation);
 
+                    //Bir yetkilendirme yapilmis ve aktif olan operation icin yetkisi yoksa record uzerinden o section'ini ve section'a ait olan field'leri siliyoruz.
                     if (sectionPermission == null)
                     {
                         var fields = module.Fields.Where(q => q.Section == section.Name).Select(q => q.Name).ToList();
@@ -741,6 +750,7 @@ namespace PrimeApps.Model.Repositories
                 var permissionList = user.Profile.Permissions.Where(q => q.Module.Name == relation.RelatedModule).ToList();
                 var relationModulePermission = ProfilePermissionCheck(permissionList, operation);
 
+                //iliskili olan module icin profile ve operation bazli yetki kontrolu sonunda yetkisi yoksa ilgili module ile iliskili alanlari record'dan siliyoruz.
                 if (relationModulePermission == null)
                 {
                     var relationModule = await DbContext.Modules.FirstOrDefaultAsync(q => q.Name == relation.RelatedModule && !q.Deleted);
@@ -753,15 +763,43 @@ namespace PrimeApps.Model.Repositories
             return record;
         }
 
-        private JObject FieldPermission(Module module, JObject record, TenantUser user, OperationType operation)
+        private async Task<JObject> FieldPermission(Module module, JObject record, TenantUser user, OperationType operation)
         {
             var fieldRemoveList = new List<string>();
+
             foreach (var field in module.Fields)
             {
+                //Field icin herhangi bir yetkilendirme yapilmamissa ve lookup tipinde ise lookup module'ne gore yetki kontrolu yapiyoruz.
                 if (field.Permissions == null || field.Permissions.Count <= 0)
-                    continue;
+                {
+                    if (field.DataType == DataType.Lookup)
+                    {
+                        var lookupPermission = await LookupPermission(field, user, operation);
 
+                        //Lookup module icin yetkisi yoksa eger, record uzerinden silmek icin listeye ekliyoruz.
+                        if (!lookupPermission)
+                            fieldRemoveList.Add(field.Name);
+                    }
+
+                    continue;
+                }
+
+                //Field icin yetkilendirme eklenmisse gecerli user'in profile'ne gore yetki kontrolu yapiyoruz.
                 var permissionList = field.Permissions.Where(q => q.ProfileId == user.Profile.Id).ToList();
+
+                if (permissionList == null || permissionList.Count <= 0)
+                {
+                    if (field.DataType == DataType.Lookup)
+                    {
+                        var lookupPermission = await LookupPermission(field, user, operation);
+
+                        if (!lookupPermission)
+                            fieldRemoveList.Add(field.Name);
+                    }
+                    continue;
+                }
+
+
                 var permissionCheck = FieldPermissionCheck(permissionList, operation);
 
                 if (permissionCheck == null)
@@ -769,6 +807,21 @@ namespace PrimeApps.Model.Repositories
             }
 
             return ClearRecord(record, fields: fieldRemoveList);
+        }
+
+        private async Task<bool> LookupPermission(Field field, TenantUser user, OperationType operation)
+        {
+            var lookupModule = await DbContext.Modules.Where(q => q.Name == field.LookupType && !q.Deleted).FirstOrDefaultAsync();
+
+            if (lookupModule == null)
+                return false;
+
+            var result = ProfilePermissionCheck(user.Profile.Permissions.Where(q => q.ModuleId == lookupModule.Id && q.Type == EntityType.Module).ToList(), operation);
+
+            if (result == null)
+                return false;
+
+            return true;
         }
 
         private bool SharedPermissionCheck(JObject record, TenantUser user, OperationType operation)
