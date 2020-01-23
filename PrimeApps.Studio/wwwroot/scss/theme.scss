@@ -2387,6 +2387,18 @@ button, select {
   .scrollspy {
 
   }
+  .multiselect2{
+    .multiselect-container{
+      position: relative;
+      .caret{
+        top: 50%;
+        margin-top: -4px;
+        border-top: 5px solid;
+        border-right: 5px solid transparent;
+        border-left: 5px solid transparent;
+      }
+    }
+  }
 
   //titles
   .h4-title {

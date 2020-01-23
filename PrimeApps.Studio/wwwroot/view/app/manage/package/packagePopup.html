@@ -1,10 +1,9 @@
-﻿
-<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
+﻿<div class="modal setup-modal modal-600" tabindex="-1" role="dialog">
 	<form name="packageForm" class="form-horizontal form-custom" ng-submit="create();" autocomplete="off" novalidate>
 
 		<div class="modal-header">
 			<div class="flex-between">
-				<h4 class="modal-title"></h4>
+				<h4 class="modal-title">Create New Package!</h4>
 				<div>
 					<ul class="list-unstyled list-inline">
 						<li>
@@ -21,42 +20,23 @@
 		<div class="modal-dialog scroll-style-4">
 			<div class="modal-content padding-0">
 				<div class="modal-container">
-					<div class="modal-body">
-						<div id="field-form-body" class="modal-body">
-							<div class="section" id="section1">
-								<div style="font-weight: 700;
-										    color: #0d6faa;
-										    font-size: 15px;
-										    padding-top: 15px;
-										    text-align: left;
-										    padding-bottom: 15px;
-										    padding-left: 10px;
-										    border-bottom: 3px solid #80808017; ">Create New Package!</div>
-								<div style="padding-top: 15px;
-										    text-align: left;
-										    font-weight: 600;
-										    font-size: 13px;">
-									We'll create a release package for you. You can publish your app using this package. Packaging process and logs will be shown in the list.
-								</div>
-								<div ng-if="grid.dataSource.data().length < 1" style="font-weight: 700;
-											color: #0d6faa;
-											font-size: 15px;
-											padding-top: 15px;
-											text-align: left;
-											padding-bottom: 15px;
-											padding-left: 10px;">Trasfer Modules' Records</div>
-								<div ng-if="grid.dataSource.data().length < 1" class="panel">
+					<div class="modal-body" id="field-form-body">
+						<div class="section" id="section1">
+							<div class="panel">
+								<p>We'll create a release package for you. You can publish your app using this package. Packaging process and logs will be shown in the list.</p>
+								<div ng-if="grid.dataSource.data().length < 1">
+									<h4 style="margin: 20px 0px 0px 0px; font-size: 16px;">Trasfer Module's Records</h4>
 									<div class="form-group">
 										<label class="radio-inline newinput">
 											<input ng-model="package.protectModules" name="protectModules" type="radio" value="DontTransfer">Don't Transfer<span></span>
 										</label>
-										<label class="radio-inline newinput" style="padding-bottom: 10px;">
+										<label class="radio-inline newinput">
 											<input ng-model="package.protectModules" name="protectModules" type="radio" value="AllModules">Include All Modules<span></span>
 										</label>
 										<label class="radio-inline newinput">
 											<input ng-model="package.protectModules" name="protectModules" type="radio" value="SelectedModules">Selected Modules<span></span>
 										</label>
-										<div ng-show="package.protectModules === 'SelectedModules'" class="col-sm-12 multiselect-container">
+										<div style="padding-top: 10px;" ng-show="package.protectModules === 'SelectedModules'" class="col-sm-12 multiselect-container">
 											<button type="button"
 													class="form-control ng-animate-disabled multiselect"
 													name="modules"
@@ -72,9 +52,14 @@
 													bs-select></button>
 										</div>
 									</div>
-									<div ng-if="package.protectModules === 'SelectedModules' && errorList.length > 0" class="alert alert-danger">
-										<p>{{ getErrorText()}}</p>
+									<div ng-if="package.protectModules === 'SelectedModules' && errorList.length > 0">
+										<strong>Information</strong>
+										<div class="alert alert-info" style="line-height:2; font-size: 12px;font-weight: bold; padding: 10px; border-left-width: 10px;">
+											<p>{{ getErrorText()}}</p>
+											<p>This package will cause all lookup fields empty!</p>
+										</div>
 									</div>
+									
 								</div>
 							</div>
 						</div>

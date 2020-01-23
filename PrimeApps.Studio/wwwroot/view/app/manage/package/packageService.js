@@ -49,7 +49,7 @@ angular.module('primeapps')
 						i--;
 					}
 
-					message += "\n This package will cause lookup fields empty!";
+					//message += "\n This package will cause lookup fields empty!";
 
 					return message;
 				},
