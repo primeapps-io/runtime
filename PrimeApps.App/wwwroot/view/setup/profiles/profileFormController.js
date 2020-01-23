@@ -17,22 +17,23 @@ angular.module('primeapps')
                     "value": "Dashboard",
                     "valueLower": "dashboard",
                     "name": $filter('translate')('Layout.Menu.Dashboard')
-                },
-                {
-                    "value": "Newsfeed",
-                    "valueLower": "newsfeed",
-                    "name": $filter('translate')('Layout.Menu.Newsfeed')
-                },
-                {
-                    "value": "Tasks",
-                    "valueLower": "tasks",
-                    "name": $filter('translate')('Layout.Menu.Tasks')
-                },
-                {
-                    "value": "Calendar",
-                    "valueLower": "calendar",
-                    "name": $filter('translate')('Layout.Menu.Calendar')
                 }
+                // ,
+                // {
+                //     "value": "Newsfeed",
+                //     "valueLower": "newsfeed",
+                //     "name": $filter('translate')('Layout.Menu.Newsfeed')
+                // },
+                // {
+                //     "value": "Tasks",
+                //     "valueLower": "tasks",
+                //     "name": $filter('translate')('Layout.Menu.Tasks')
+                // },
+                // {
+                //     "value": "Calendar",
+                //     "valueLower": "calendar",
+                //     "name": $filter('translate')('Layout.Menu.Calendar')
+                // }
             ];
 
             if ($scope.moduleRehber) {
@@ -89,6 +90,7 @@ angular.module('primeapps')
                                 $scope.profile.export_data = false;
                                 $scope.profile.import_data = false;
                                 $scope.profile.word_pdf_download = false;
+                                $scope.profile.close_smtp_settings = false;
                                 $scope.profile.lead_convert = false;
                                 $scope.profile.document_search = false;
                                 $scope.profile.tasks = false;
