@@ -662,6 +662,7 @@ namespace PrimeApps.Model.Repositories
                     {
                         record = SectionPermission(module, record, user, operation);
                         record = await RelationModulePermission(module, record, user, operation);
+                        record = FieldPermission(module, record, user, operation);
                         ///Todo lookup alanlar için kontrol lazım.
                         return record;
                     }
@@ -752,9 +753,22 @@ namespace PrimeApps.Model.Repositories
             return record;
         }
 
-        private JObject FieldPermissionControl(Module module, JObject record, OperationType operation)
+        private JObject FieldPermission(Module module, JObject record, TenantUser user, OperationType operation)
         {
-            return null;
+            var fieldRemoveList = new List<string>();
+            foreach (var field in module.Fields)
+            {
+                if (field.Permissions == null || field.Permissions.Count <= 0)
+                    continue;
+
+                var permissionList = field.Permissions.Where(q => q.ProfileId == user.Profile.Id).ToList();
+                var permissionCheck = FieldPermissionCheck(permissionList, operation);
+
+                if (permissionCheck == null)
+                    fieldRemoveList.Add(field.Name);
+            }
+
+            return ClearRecord(record, fields: fieldRemoveList);
         }
 
         private bool SharedPermissionCheck(JObject record, TenantUser user, OperationType operation)
@@ -818,6 +832,21 @@ namespace PrimeApps.Model.Repositories
                     return sectionPermissions.FirstOrDefault(q => q.Type == SectionPermissionType.Full);
                 case OperationType.read:
                     return sectionPermissions.FirstOrDefault(q => q.Type == SectionPermissionType.ReadOnly || q.Type == SectionPermissionType.Full);
+                default:
+                    return null;
+            }
+        }
+
+        private FieldPermission FieldPermissionCheck(List<FieldPermission> fieldPermissions, OperationType operation)
+        {
+            switch (operation)
+            {
+                case OperationType.insert:
+                case OperationType.update:
+                case OperationType.delete:
+                    return fieldPermissions.FirstOrDefault(q => q.Type == FieldPermissionType.Full);
+                case OperationType.read:
+                    return fieldPermissions.FirstOrDefault(q => q.Type == FieldPermissionType.ReadOnly || q.Type == FieldPermissionType.Full);
                 default:
                     return null;
             }
