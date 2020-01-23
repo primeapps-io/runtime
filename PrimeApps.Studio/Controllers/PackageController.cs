@@ -177,10 +177,23 @@ namespace PrimeApps.Studio.Controllers
 			var version = currentBuildNumber + 1;
 
 			var app = await _appDraftRepository.Get((int)AppId);
-			var appOptions = new JObject { ["enable_registration"] = true };
+			var appOptions = new JObject
+			{
+				["enable_ldap"] = false,
+				["enable_registration"] = true,
+				["enable_api_registration"] = true,
+				["protect_modules"] = model["protectModules"],
+				["selected_modules"] = model["selected_modules"]
+			};
 
 			if (app.Setting != null && !string.IsNullOrEmpty(app.Setting.Options))
+			{
 				appOptions = JObject.Parse(app.Setting.Options);
+				appOptions["protect_modules"] = model["protectModules"];
+				appOptions["selected_modules"] = model["selected_modules"];
+				app.Setting.Options = appOptions.ToString();
+				await _appDraftRepository.Update(app);
+			}
 
 			var packageModel = new Package()
 			{
@@ -191,18 +204,19 @@ namespace PrimeApps.Studio.Controllers
 				Status = ReleaseStatus.Running,
 				Settings = new JObject
 				{
-					["protect_modules"] = model["protectModules"],
-					["selected_modules"] = model["selectedModules"],
-					["modules_relations"] = model["modulesRelations"],
-					["enable_registration"] = appOptions["enable_registration"]
+					["protect_modules"] = appOptions["protect_modules"],
+					["selected_modules"] = appOptions["selected_modules"],
+					["enable_ldap"] = appOptions["enable_ldap"],
+					["enable_registration"] = appOptions["enable_registration"],
+					["enable_api_registration"] = appOptions["enable_api_registration"]
 				}.ToString()
 			};
 
 			await _packageRepository.Create(packageModel);
 
 			/*
-             * Set version number to history_database and history_storage tables tag column.
-             */
+			 * Set version number to history_database and history_storage tables tag column.
+			 */
 
 			if (dbHistory != null && dbHistory.Tag == null)
 			{

@@ -847,8 +847,8 @@ namespace PrimeApps.Model.Helpers
                     (!string.IsNullOrEmpty(app["setting"]["tenant_operation_webhook"].ToString())
                         ? "'" + app["setting"]["tenant_operation_webhook"] + "'"
                         : "NULL") + ", 2, '" +
-                    (options["enable_registration"] != null ? options["enable_registration"].ToString().Substring(0, 1).ToLower() : "t") + "'," +
-                    (options["enable_api_registration"] != null ? options["enable_api_registration"].ToString().Substring(0, 1).ToLower() : "'t'") + ");"
+                    (options["enable_registration"] != null ? options["enable_registration"].ToString().Substring(0, 1).ToLower() : "t") + "','" +
+                    (options["enable_api_registration"] != null ? options["enable_api_registration"].ToString().Substring(0, 1).ToLower() : "t") + "');"
                 };
 
 

@@ -85,10 +85,20 @@ namespace PrimeApps.Model.Helpers
 
 				var arrayResult = PostgresHelper.Read(PDEConnectionString, dbName, GetAllDynamicTablesSql(), "array");
 
-				var isAllModules = string.Compare(packageModel["protectModules"].ToString(), PackageModulesType.AllModules.ToString(), true);
+				var protectModulesType = (PackageModulesType)Enum.Parse(typeof(PackageModulesType), packageModel["protectModules"].ToString(), true);
 
-				//if isAllModules = 0, user has chosen AllModules, if isAllModules = 1 user has chosen selectedModules  
-				if (isAllModules == 1)
+				if (protectModulesType == PackageModulesType.DontTransfer)
+				{
+					if (arrayResult != null)
+					{
+						foreach (var table in arrayResult)
+						{
+							var sql = $"TRUNCATE {table["table_name"]} CASCADE;";
+							AddScript(scriptPath, sql);
+						}
+					}
+				}
+				else if (protectModulesType == PackageModulesType.SelectedModules)
 				{
 					/**selectedModules JArray, it has modules and modules' related lookups
 					 * for exp: ["mName":[{name:"lookupName",lookup_type:"LookupModuleName"},{}]]
@@ -126,16 +136,6 @@ namespace PrimeApps.Model.Helpers
 					}
 
 				}
-
-				//if (arrayResult != null)
-				//{
-				//	foreach (var table in arrayResult)
-				//	{
-				//		//var sql = $"DELETE FROM {table["table_name"]};";
-				//		var sql = $"TRUNCATE {table["table_name"]} CASCADE;";
-				//		AddScript(scriptPath, sql);
-				//	}
-				//}
 
 				/*if (!result)
                     File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while clearing dynamic tables... \u001b[39m" + Environment.NewLine);

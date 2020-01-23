@@ -1,83 +1,82 @@
 <div class="modal setup-modal modal-1100" tabindex="-1" role="dialog">
-    <div class="modal-header">
-        <div class="flex-between">
-            <h4 class="modal-title">New Report</h4>
-            <div>
-                <ul class="list-unstyled list-inline">
-                    <li>
-                        <button type="button" ng-click="$hide();" class="btn add-button btn-radius btn-gray">
-                            <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
-                        </button>
-                    </li>
-
-                    <li ng-show="wizardStep !=3 && wizardStep !=3 && wizardStep !=0">
-                        <button type="button"
-                                class="btn btn-radius btn-blue "
-                                ng-click="wizardStep  ==1 ? validate('info') : validate('filter')">
-                            <i class="fas fa-angle-left"></i> {{'Common.Previous' | translate}}
-                        </button>
-                    </li>
-
-                    <li ng-show="wizardStep !=3">
-                        <button type="button" class="btn btn-radius btn-blue "
-                                ng-click="wizardStep  ==0 ? validate('filter') : (wizardStep ===1 ?   validate('area') : validate('summary'))">
-                            {{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>
-                        </button>
-                    </li>
-                    <li ng-show="wizardStep ===3">
-                        <button type="submit" ng-click="save();"
-                                class="btn add-button btn-radius btn-blue" ladda="saving">
-                            <i class="fas fa-save"></i>{{'Common.Save' | translate}}
-                        </button>
-                    </li>
-                </ul>
+    <form name="reportForm" class="form-horizontal form-custom" ng-submit="save()" autocomplete="off" novalidate>
+        <div class="modal-header">
+            <div class="flex-between">
+                <h4 class="modal-title">New Report</h4>
+                <div>
+                    <ul class="list-unstyled list-inline">
+                        <li>
+                            <button type="button" ng-click="$hide();" class="btn add-button btn-radius btn-gray">
+                                <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
+                            </button>
+                        </li>
+    
+                        <li ng-show="wizardStep !=3 && wizardStep !=3 && wizardStep !=0">
+                            <button type="button"
+                                    class="btn btn-radius btn-blue "
+                                    ng-click="wizardStep  ==1 ? validate('info') : validate('filter')">
+                                <i class="fas fa-angle-left"></i> {{'Common.Previous' | translate}}
+                            </button>
+                        </li>
+    
+                        <li ng-show="wizardStep !=3">
+                            <button type="button" class="btn btn-radius btn-blue "
+                                    ng-click="wizardStep  ==0 ? validate('filter') : (wizardStep ===1 ?   validate('area') : validate('summary'))">
+                                {{'Common.Next' | translate}}<i class="fas fa-angle-right"></i>
+                            </button>
+                        </li>
+                        <li ng-show="wizardStep ===3">
+                            <button type="submit" ng-click="save();"
+                                    class="btn add-button btn-radius btn-blue" ladda="saving">
+                                <i class="fas fa-save"></i>{{'Common.Save' | translate}}
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="modal-dialog">
-        <div class="modal-content view-form">
-            <div class="modal-body">
-                <div class="megalist">
-                    <div class="modal-menu">
-                        <ul class="list-unstyled">
-                            <li>
-                                <a ng-class="{'active':wizardStep==0}"
-                                   ng-click="validate('info') ? wizardStep = 0 : false">Report Info</a>
-                            </li>
-                            <li>
-                                <a ng-class="{'active':wizardStep==1}"
-                                   ng-click="validate('filter') ? wizardStep = 1 : false">
-                                    {{
-'Report.FilterOptions' |
-                                translate
-                                    }}
-                                </a>
-                            </li>
-                            <li>
-                                <a ng-class="{'active':wizardStep==2}"
-                                   ng-click="validate('area') ? wizardStep = 2 : false">
-                                    {{
-'Report.AreaSelection' |
-                                translate
-                                    }}
-                                </a>
-                            </li>
-                            <li>
-                                <a ng-class="{'active':wizardStep==3}"
-                                   ng-click="validate('summary') ? wizardStep = 3 : false">
-                                    {{
-'Report.ReportSummary' |
-                                translate
-                                    }}
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div>
-                        <form name="reportForm" class="form-horizontal form-custom" ng-submit="save()"
-                              autocomplete="off" novalidate>
-
-                            <div class="section" id="section1" ng-show="wizardStep === 0">
+        <div class="modal-dialog scroll-style-4">
+            <div class="modal-content">
+                <div class="modal-contanier">
+                    <div class="modal-body view-form">
+                        <div class="megalist">
+                            <div class="modal-menu">
+                                <ul class="list-unstyled">
+                                    <li>
+                                        <a ng-class="{'active':wizardStep==0}"
+                                           ng-click="validate('info') ? wizardStep = 0 : false">Report Info</a>
+                                    </li>
+                                    <li>
+                                        <a ng-class="{'active':wizardStep==1}"
+                                           ng-click="validate('filter') ? wizardStep = 1 : false">
+                                            {{
+        'Report.FilterOptions' |
+                                        translate
+                                            }}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a ng-class="{'active':wizardStep==2}"
+                                           ng-click="validate('area') ? wizardStep = 2 : false">
+                                            {{
+        'Report.AreaSelection' |
+                                        translate
+                                            }}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a ng-class="{'active':wizardStep==3}"
+                                           ng-click="validate('summary') ? wizardStep = 3 : false">
+                                            {{
+        'Report.ReportSummary' |
+                                        translate
+                                            }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div ng-if="loadingModal"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                            <div class="section" id="section1" ng-show="wizardStep === 0&& !loadingModal">
                                 <div class="panel">
                                     <div class="form-group"
                                          ng-class="{'has-error': reportForm.$submitted && reportForm.name.$invalid}">
@@ -87,7 +86,7 @@
                                         </label>
                                         <input name="name" class="form-control" maxlength="50" required
                                                ng-model="reportModel.name_en" />
-
+    
                                     </div>
                                     <div class="form-group"
                                          ng-class="{'has-error': reportForm.$submitted && reportForm.module_id.$invalid}">
@@ -125,7 +124,7 @@
                                             {{'Report.ReportType' | translate}}
                                             <span class="required-label">(required)</span>
                                         </label>
-
+    
                                         <label class="radio-inline newinput">
                                             <input name="report_type" required type="radio" style="margin-left: -16px;"
                                                    ng-model="reportModel.report_type"
@@ -152,11 +151,11 @@
                                             Single
                                             <span></span>
                                         </label>
-
+    
                                     </div>
                                     <div class=" form-group">
                                         <label class="control-label newinput">
-                                            {{'Setup.Modules.Editable' | translate}} <span data-toggle="tooltip" title="If you activate it, this record can be edited or deleted on your application from by users."><i class="fas fa-info-circle"></i></span>
+                                            {{'Setup.Modules.EditableByUsers' | translate}} <i data-placement="top" data-type="info" data-trigger="hover" bs-tooltip="{ 'title': ('Common.TenantRightsInfo' | translate)}" class="fas fa-info-circle"></i>
                                             <input type="checkbox" name="editable" ng-model="reportModel.editable" ng-change="changeReportType(reportModel.editable)" ng-checked="reportModel.system_type === 'custom'" />
                                             <span></span>
                                         </label>
@@ -216,11 +215,10 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="section" id="section2" ng-show="wizardStep === 1">
+                            <div class="section" id="section2" ng-show="wizardStep === 1&& !loadingModal">
                                 <h4>Filter Criteria</h4>
                                 <div class="panel">
-
+    
                                     <div ng-if="loadingFilter" clas="page-loading">
                                         <i class="fa fa-sm fa-spinner fa-pulse"></i>
                                     </div>
@@ -230,7 +228,7 @@
                                                 <tr>
                                                     <th style="padding-left: 5px; padding-right: 10px;">
                                                         {{
-'View.No' |
+    'View.No' |
                                                     translate
                                                         }}
                                                     </th>
@@ -279,7 +277,7 @@
                                                                ng-disabled="filter.disabled"
                                                                maxlength="100"
                                                                ng-if="!filter.field.lookupModulePrimaryField ? (filter.field.data_type === 'text_single' || filter.field.data_type === 'text_multi' || filter.field.data_type === 'email' || filter.field.data_type === undefined) : (filter.field.lookupModulePrimaryField.data_type === 'text_single' || filter.field.lookupModulePrimaryField.data_type === 'text_multi' || filter.field.lookupModulePrimaryField.data_type === 'email' || filter.field.lookupModulePrimaryField.data_type === undefined)&& filter.field.lookup_type !='users'" />
-
+    
                                                         <input type="text"
                                                                class="form-control ng-animate-disabled"
                                                                ng-model="filter.value"
@@ -287,7 +285,7 @@
                                                                maxlength="50"
                                                                numeric
                                                                ng-if="!filter.field.lookupModulePrimaryField ? (filter.field.data_type === 'number' || filter.field.data_type === 'number_auto') : (filter.field.lookupModulePrimaryField.data_type === 'number' || filter.field.lookupModulePrimaryField.data_type === 'number_auto')" />
-
+    
                                                         <input type="text"
                                                                class="form-control ng-animate-disabled"
                                                                ng-model="filter.value"
@@ -296,7 +294,7 @@
                                                                places="filter.field.decimal_places || 2"
                                                                number-decimal
                                                                ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'number_decimal' : filter.field.lookupModulePrimaryField.data_type === 'number_decimal'" />
-
+    
                                                         <input type="text"
                                                                class="form-control ng-animate-disabled"
                                                                ng-model="filter.value"
@@ -306,7 +304,7 @@
                                                                currency-symbol="filter.field.currency_symbol"
                                                                number-currency
                                                                ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'currency' : filter.field.lookupModulePrimaryField.data_type === 'currency'" />
-
+    
                                                         <select class="form-control ng-animate-disabled pull-left"
                                                                 style="margin-right: 8px;"
                                                                 ng-model="filter.costumeDate"
@@ -339,12 +337,12 @@
                                                               ng-if="(!filter.field.lookupModulePrimaryField || filter.field.data_type === 'date_time' || filter.field.lookupModulePrimaryField.data_type === 'date')&& (filter.costumeDate==='costumeN' || filter.costumeDate==='costumeW' || filter.costumeDate==='costumeM' || filter.costumeDate==='costumeY')">
                                                             {{filter.valueX >0 ? ('View.After' | translate) : 'View.Before' | translate   }}
                                                         </span>
-
+    
                                                         <input type="text"
                                                                class="form-control ng-animate-disabled hide"
                                                                ng-model="filter.value"
                                                                ng-if="(!filter.field.lookupModulePrimaryField || filter.field.data_type === 'date_time' || filter.field.lookupModulePrimaryField.data_type === 'date') && (filter.costumeDate==='costumeN' || filter.costumeDate==='costumeW' || filter.costumeDate==='costumeM' || filter.costumeDate==='costumeY')">
-
+    
                                                         <input type="text"
                                                                class="form-control ng-animate-disabled"
                                                                ng-model="filter.value"
@@ -358,7 +356,7 @@
                                                                data-placement="bottom-right"
                                                                bs-datepicker
                                                                ng-if="(!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'date' : filter.field.lookupModulePrimaryField.data_type === 'date' )&& filter.costumeDate==='costume'">
-
+    
                                                         <div class="clearfix datetime-pick"
                                                              ng-if="(!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'date_time' : filter.field.lookupModulePrimaryField.data_type === 'date_time') && filter.costumeDate==='costume'">
                                                             <input type="text"
@@ -390,7 +388,7 @@
                                                                    data-placement="bottom-right"
                                                                    bs-timepicker>
                                                         </div>
-
+    
                                                         <input type="text"
                                                                class="form-control ng-animate-disabled"
                                                                ng-model="filter.value"
@@ -406,7 +404,7 @@
                                                                data-placement="bottom-right"
                                                                bs-timepicker
                                                                ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'time' : filter.field.lookupModulePrimaryField.data_type === 'time'">
-
+    
                                                         <select class="form-control ng-animate-disabled"
                                                                 ng-model="filter.value"
                                                                 ng-disabled="filter.disabled"
@@ -414,8 +412,8 @@
                                                                 ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'picklist' : filter.field.lookupModulePrimaryField.data_type === 'picklist'">
                                                             <option value="">{{'Common.Select' | translate}}</option>
                                                         </select>
-
-
+    
+    
                                                         <tags-input class="ng-animate-disabled form-control"
                                                                     ng-model="filter.value"
                                                                     display-property="labelStr"
@@ -431,7 +429,7 @@
                                                                            load-on-empty="true"
                                                                            max-results-to-show="9999"></auto-complete>
                                                         </tags-input>
-
+    
                                                         <tags-input class="ng-animate-disabled form-control"
                                                                     ng-model="filter.value"
                                                                     display-property="full_name"
@@ -448,14 +446,14 @@
                                                                            load-on-empty="true"
                                                                            max-results-to-show="9999"></auto-complete>
                                                         </tags-input>
-
+    
                                                         <input type="text"
                                                                class="form-control ng-animate-disabled"
                                                                ng-model="filter.value"
                                                                ng-disabled="filter.disabled"
                                                                maxlength="100"
                                                                ng-if="!filter.field.lookupModulePrimaryField ? (filter.field.data_type === 'lookup' && filter.field.lookup_type != 'users') : (filter.field.lookupModulePrimaryField.data_type === 'lookup' && filter.lookupModulePrimaryField.field.lookup_type != 'users')" />
-
+    
                                                         <select class="form-control ng-animate-disabled"
                                                                 ng-model="filter.value"
                                                                 ng-options="o as o.label[language] for o in modulePicklists['yes_no'] track by o.id"
@@ -467,17 +465,16 @@
                                             </tbody>
                                         </table>
                                     </div>
-
+    
                                 </div>
                             </div>
-
-                            <div class="section" id="section3" ng-show="wizardStep === 2">
+                            <div class="section" id="section3" ng-show="wizardStep === 2 && !loadingModal">
                                 <div class="panel" ng-init="setFields()" ng-if="reportModel.report_type=='tabular'">
-
+    
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <h4>{{'Report.ViewedArea' | translate}}</h4>
-
+    
                                             <div class="fields-header">
                                                 <span class="title-left">{{'View.AvailableFields' | translate}}</span>
                                                 <span class="title-right">{{'View.SelectedFields' | translate}}</span>
@@ -497,18 +494,18 @@
                                                     <div ng-repeat="field in fields.selectedFields"
                                                          class="dragable">
                                                         {{
-field.label + ' ' +
+    field.label + ' ' +
                                                         field.labelExt
                                                         }} <i class="fa fa-arrows"></i>
                                                     </div>
                                                 </div>
                                             </div>
-
+    
                                         </div>
                                     </div>
-
+    
                                 </div>
-
+    
                                 <div class="panel" ng-if="reportModel.report_type=='summary'">
                                     <h4>{{'Report.GroupArea' | translate}}</h4>
                                     <div class="form-group"
@@ -544,10 +541,10 @@ field.label + ' ' +
                                         </select>
                                     </div>
                                 </div>
-
+    
                                 <div class="panel table-responsive">
                                     <h4> {{ 'Report.CalculationFields' | translate}} </h4>
-
+    
                                     <table class="table">
                                         <thead>
                                             <tr>
@@ -579,7 +576,7 @@ field.label + ' ' +
                                                                name="{{ reportModel.report_type === 'summary' || reportModel.report_type ===  'single' ? module.id : field.name }}">
                                                         <span></span>
                                                     </label>
-
+    
                                                 </td>
                                                 <td class="text-center">
                                                     <label class="radio-inline newinput">
@@ -619,7 +616,7 @@ field.label + ' ' +
                                                            ng-click="removeSelectAggregation(field)"
                                                            value="Clean" />
                                                 </td>
-
+    
                                             </tr>
                                             <tr ng-if="reportModel.report_type !=  'tabular'">
                                                 <td>
@@ -639,7 +636,7 @@ field.label + ' ' +
                                             </tr>
                                         </tbody>
                                     </table>
-
+    
                                     <!--<div class="row">-->
                                     <!--<div class="col-sm-12 ">-->
                                     <!--<label style="margin-bottom: 15px;" ng-show="">-->
@@ -651,9 +648,9 @@ field.label + ' ' +
                                     <!--<br>-->
                                     <!--</div>-->
                                     <!--</div>-->
-
+    
                                 </div>
-
+    
                                 <div class="panel" ng-if="reportModel.report_type=='summary'">
                                     <h4>Chart</h4>
                                     <div class="form-group"
@@ -695,19 +692,19 @@ field.label + ' ' +
                                                required
                                                ng-model="reportModel.chart.yaxis_name_en"
                                                name="yaxis_name" />
-
+    
                                     </div>
                                 </div>
-
+    
                                 <div class="panel" style="min-height: 400px;" ng-if="reportModel.report_type=='single'">
                                     <h4>{{'Report.Widget.Name' | translate}}</h4>
                                     <div class="form-group"
                                          ng-class="{'has-error': reportForm.$submitted && reportForm.yaxis_name.$invalid}">
-
-
+    
+    
                                         <div class="form-group icon-search-list">
                                             <label class="col-sm-4"> {{ 'Report.Widget.Icon' | translate }}</label>
-
+    
                                             <ui-select ng-model="reportModel.widget.icon" ng-disabled="ctrl.disabled">
                                                 <ui-select-match placeholder="Select an icon">
                                                     <div>
@@ -720,12 +717,12 @@ field.label + ' ' +
                                                 <ui-select-choices repeat="icon in icons | filter:{ label:$select.search }">
                                                     <div ng-bind-html="icon.label"></div>
                                                 </ui-select-choices>
-
+    
                                             </ui-select>
-
+    
                                         </div>
-
-
+    
+    
                                     </div>
                                     <div class="form-group"
                                          ng-class="{'has-error': reportForm.$submitted && reportForm.colorpicker.$invalid}">
@@ -733,7 +730,7 @@ field.label + ' ' +
                                             {{ 'Report.Widget.Color' | translate }}
                                             <span class="required-label">(required)</span>:
                                         </label>
-
+    
                                         <input name="colorpicker" type="color"
                                                class="form-control"
                                                required
@@ -741,8 +738,7 @@ field.label + ' ' +
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="section" id="section4" ng-show="wizardStep === 3">
+                            <div class="section" id="section4" ng-show="wizardStep === 3 && !loadingModal">
                                 <div class="panel">
                                     <h4>Summary</h4>
                                     <div class="row ">
@@ -761,7 +757,7 @@ field.label + ' ' +
                                             <span> {{ module['label_'+language+'_plural'] }} </span>
                                         </div>
                                     </div>
-
+    
                                     <div class="row ">
                                         <label class="col-sm-3 control-label">
                                             {{'Report.ReportType' | translate}}:
@@ -770,15 +766,14 @@ field.label + ' ' +
                                             <span> {{ reportModel.report_type  === 'summary' ? ('Report.SummaryReport' | translate) :  reportModel.report_type  === 'single' ? ('Report.Single' | translate) :('Report.ListviewReport' | translate) }} </span>
                                         </div>
                                     </div>
-
+    
                                 </div>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
+    </form>
 </div>
 

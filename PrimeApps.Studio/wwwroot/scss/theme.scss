@@ -1128,6 +1128,18 @@ button, select {
             border-top-color: #0f1015 !important;
           }
         }
+        &.bottom {
+          .tooltip-arrow {
+            border-color: transparent !important;
+            border-bottom-color: #0f1015 !important;
+          }
+        }
+        &.left {
+          .tooltip-arrow {
+            border-color: transparent !important;
+            border-left-color: #0f1015 !important;
+          }
+        }
       }
     }
 

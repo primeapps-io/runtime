@@ -106,9 +106,11 @@ namespace PrimeApps.Studio.Helpers
                             {
                                 app.Setting.Options = new JObject
                                 {
-                                    ["clear_all_records"] = true,
-                                    ["enable_registration"] = true
-                                }.ToString();
+                                    //["clear_all_records"] = true,
+                                    ["enable_registration"] = true,
+									["enable_ldap"] = false,
+									["enable_api_registration"] = true,
+								}.ToString();
                             }
 
                             if (!string.IsNullOrEmpty(app.Setting.AuthTheme))

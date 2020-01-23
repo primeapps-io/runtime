@@ -6,6 +6,7 @@ using Hangfire;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Admin.Helpers;
 using PrimeApps.Admin.Models;
 using PrimeApps.Admin.Services;
@@ -18,10 +19,12 @@ namespace PrimeApps.Admin.Controllers
 	public class HomeController : Controller
 	{
 		private IOrganizationHelper _organizationHelper;
+		private IConfiguration _configuration;
 
-        public HomeController(IOrganizationHelper organizationHelper)
+		public HomeController(IOrganizationHelper organizationHelper, IConfiguration configuration)
 		{
 			_organizationHelper = organizationHelper;
+			_configuration = configuration;
 		}
 
 		[Route("")]
@@ -64,9 +67,10 @@ namespace PrimeApps.Admin.Controllers
 		[Route("Logout")]
 		public async Task<IActionResult> Logout(int? id)
 		{
+			var authUrl = _configuration.GetValue("AppSettings:AuthenticationServerURL", string.Empty);
 			await HttpContext.SignOutAsync();
 
-			return Redirect("https:///Account/Logout?returnUrl=" + Request.Scheme + "://" + Request.Host.Value);
+			return Redirect(authUrl + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + Request.Host.Value);
 		}
 
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

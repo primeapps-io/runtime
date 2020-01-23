@@ -188,7 +188,7 @@
                                 </div>
                                 <div class=" form-group">
                                     <label class="control-label newinput">
-                                        {{'Setup.Modules.Editable' | translate}} <span data-toggle="tooltip" title="If you activate it, this record can be edited or deleted on your application from by users."><i class="fas fa-info-circle"></i></span>
+                                        {{'Setup.Modules.EditableByUsers' | translate}} <i data-placement="top" data-type="info" data-trigger="hover" bs-tooltip="{ 'title': ('Common.TenantRightsInfo' | translate)}" class="fas fa-info-circle"></i>
                                         <input type="checkbox" name="editable" ng-model="newtemplate.editable" ng-change="changeTempType(newtemplate.editable)" ng-checked="newtemplate.system_type === 'custom'" />
                                         <span></span>
                                     </label>
