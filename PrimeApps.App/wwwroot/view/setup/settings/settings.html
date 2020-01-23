@@ -235,7 +235,7 @@
         <div class="subpanel" ng-if="!user.profile.close_smtp_settings">
             <h5 class="subpanel-heading">{{'Setup.Messaging.EMail.PersonalTitle' | translate}}</h5>
             <div class="subpanel-body">
-                <form name="emailForm" ng-submit="editEMail(emailModel)" class="form-horizontal" novalidate>
+                <form name="$parent.emailForm" ng-submit="editEMail(emailModel)" class="form-horizontal" novalidate>
                     <div class="form-group">
                         <div class="col-sm-12">
                             <label
