@@ -1195,7 +1195,7 @@ angular.module('primeapps')
                     field7.label_tr = defaultLabels.SampleDataTr;
                     field7.order = 7;
                     field7.primary = false;
-                    field7.display_form = false;
+                    field7.display_form = true;
                     field7.display_detail = true;
                     field7.display_list = true;
                     field7.validation = {};

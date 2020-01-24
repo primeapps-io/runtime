@@ -30,7 +30,7 @@ angular.module('primeapps')
 
 					for (var i = 0; i < copyErrorList.length; i++) {
 						var item = copyErrorList[i];
-						message += "Looks like " + item.module["label_" + $rootScope.language + "_plural"] + " has a lookup field in ";
+						message += item.module["label_" + $rootScope.language + "_plural"] + " has a lookup field in ";
 
 						var modules = $filter('filter')(copyErrorList, function (error) {
 							return error.module.name === item.module.name;
@@ -38,7 +38,7 @@ angular.module('primeapps')
 
 						for (var j = 0; j < modules.length; j++) {
 							var relatedModule = $filter('filter')(packageModules, { name: modules[j].lookup_type }, true)[0];
-							message += relatedModule["label_" + $rootScope.language + "_plural"] + (j === modules.length - 1 ? ". \n" : ", ");
+							message += relatedModule["label_" + $rootScope.language + "_plural"] + (j === modules.length - 1 ? ". <br/>" : ", ");
 							var errorModule = $filter('filter')(copyErrorList, function (error) {
 								return error.module.name === modules[j].module.name;
 							})[0];
@@ -48,8 +48,6 @@ angular.module('primeapps')
 						}
 						i--;
 					}
-
-					message += "\n This package will cause lookup fields empty!";
 
 					return message;
 				},
@@ -106,6 +104,7 @@ angular.module('primeapps')
 							}
 						}
 					}
+					return errorList;
 				},
 				getModulesFields: function (packageModules, packageModulesRelations, allModulesRelations) {
 					angular.forEach(packageModules, function (module) {
@@ -132,11 +131,13 @@ angular.module('primeapps')
 				preparePackage: function (selectedModulesArray, packageModules) {
 					var selectedModules = [];
 					for (var index in selectedModulesArray) {
-						var moduleName = selectedModulesArray[index];
-						var packageModule = $filter('filter')(packageModules, { name: moduleName }, true)[0];
-						var moduleIndex = selectedModules.indexOf(packageModule);
-						if (moduleIndex < 0)
-							selectedModules.push(packageModule);
+						if (index !== 'getUnique') {
+							var moduleName = selectedModulesArray[index];
+							var packageModule = $filter('filter')(packageModules, { name: moduleName }, true)[0];
+							var moduleIndex = selectedModules.indexOf(packageModule);
+							if (moduleIndex < 0)
+								selectedModules.push(packageModule);
+						}
 					}
 					return selectedModules;
 				}

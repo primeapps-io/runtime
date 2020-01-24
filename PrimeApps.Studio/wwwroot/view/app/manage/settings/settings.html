@@ -1,5 +1,5 @@
 <div class="setup-title">
-	<h2>Settings</h2>
+	<h2>App Settings</h2>
 	<button ladda="loading" type="button" ng-click="save();" class="btn add-button btn-radius btn-blue ng-binding ladda-button">
 		<i class="fas fa-save"></i>
 		<span>Save</span>
@@ -7,77 +7,13 @@
 </div>
 
 
-<div class="tab-content table-responsive">
-	<div class="setup-title col-sm-6">
-		<h2>App Settings</h2>
-	</div>
-	<div class="col-sm-12">
-		<div class="col-sm-6">
-			<div class="form-group"
-				 ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid}">
-				<label class="col-sm-4 required-field">
-					Name <span class="required-label">(required)</span>
-				</label>
-				<input type="text"
-					   name="label"
-					   class="form-control ng-animate-disabled col-sm-8"
-					   focus="true"
-					   required
-					   maxlength="50"
-					   ng-model="app.label">
-			</div>
-			<div class="form-group" style="position: relative;"
-				 ng-disabled="app.id"
-				 ng-class="{'has-error': newAppForm.$submitted && newAppForm.name.$invalid}">
-				<label class="col-sm-4 required-field">Identifier </label>
-				<input type="text"
-					   name="name"
-					   ng-disabled="app.id"
-					   class="form-control ng-animate-disabled col-sm-6 text-lowercase"
-					   required
-					   maxlength="50"
-					   ng-trim="false"
-					   ng-blur="checkNameBlur();"
-					   ng-change="checkNameUnique(app.name)"
-					   ng-model="app.name"
-					   id="subdomain" />
-				<span style="right: 10px;position: absolute;top: 66px;" id="subdomaintwo">
-					.primeapps.app
-				</span>
-			</div>
-			<div class="form-group"
-				 ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
-				<label class="col-sm-4 required-field">Description</label>
-				<input type="text"
-					   name="description"
-					   class="form-control ng-animate-disabled col-sm-8"
-					   maxlength="50"
-					   ng-model="app.description">
-			</div>
-
-			<div class="form-group"
-				 ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
-				<label class="col-sm-4 required-field">App Domain</label>
-				<input type="text"
-					   name="app_domain"
-					   class="form-control ng-animate-disabled col-sm-8"
-					   maxlength="50"
-					   ng-model="app.setting.app_domain">
-			</div>
-
-			<div class="form-group"
-				 ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
-				<label class="col-sm-4 required-field">Auth Domain</label>
-				<input type="text"
-					   name="auth_domain"
-					   class="form-control ng-animate-disabled col-sm-8"
-					   maxlength="50"
-					   ng-model="app.setting.auth_domain">
-			</div>
-		</div>
-		<div class="col-sm-6">
+<div class="tab-content" style="padding: 20px; margin-bottom: 20px;">
+	<div class="row">
+		<div class="col-md-push-6 col-md-6">
 			<div class="form-group">
-				<label class="required-field">Change App Icon and Color</label>
+				<label class="required-field">
+					Change color and icon
+				</label>
 				<div class="iconandcolor">
 					<div class="flex-evenly" style="padding: 16px;">
 						<div>
@@ -131,47 +67,95 @@
 			</div>
 			<div style="text-align: center;"><label style="font-size: 14px; color: #000000;opacity: 0.5;"><span style="font-weight: bold;">Client Id</span> : {{currentApp.name}}</label></div>
 			<div style="text-align: center;"><label style="font-size: 14px; color: #000000;opacity: 0.5;"><span style="font-weight: bold;">Client Secret </span>: <i ng-show="!showSecret" ng-click="showSecret = true; apply();" class="fas fa-eye"></i><span ng-show="showSecret">{{currentApp.secret}}</span> </label></div>
-
 		</div>
-	</div>
-	<div class="setup-title col-sm-6">
-		<h2>Live Settings</h2>
-	</div>
-	<div class="col-sm-12">
-		<div style="padding-bottom: 20px;">
-			<label class="checkbox-inline newinput" style="padding-right: 5px !important;">
-				<input type="checkbox" ng-model="app.setting.options.enable_registration" class="ng-pristine ng-untouched ng-valid ng-empty"><span></span>
-			</label>Enable Registration
-		</div>
-		<div style="padding-bottom: 20px;">
-			<label class="checkbox-inline newinput" style="padding-right: 5px !important;">
-				<input type="checkbox" ng-model="app.setting.options.enable_api_registration" class="ng-pristine ng-untouched ng-valid ng-empty"><span></span>
-			</label>Enable API Registration
-		</div>
-		<div style="padding-bottom: 20px;">
-			<label class="checkbox-inline newinput" style="padding-right: 5px !important;">
-				<input type="checkbox" ng-model="app.setting.options.enable_ldap" class="ng-pristine ng-untouched ng-valid ng-empty"><span></span>
-			</label>Enable LDAP
-		</div>
-		<div style="font-weight: 700;
-		 color: #0d6faa;
-		 font-size: 15px;
-		 padding-top: 15px;
-		 text-align: left;
-		 padding-bottom: 15px;
-		 padding-left: 10px;">Trasfer Modules' Records</div>
-		<div class="panel">
+		<div class="col-md-pull-6 col-md-6">
+			<div class="form-group"
+				 ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid}">
+				<label class="required-field">
+					Name <span class="required-label">(required)</span>
+				</label>
+				<input type="text"
+					   name="label"
+					   class="form-control ng-animate-disabled"
+					   focus="true"
+					   required
+					   maxlength="50"
+					   ng-model="app.label">
+			</div>
+			<div class="form-group" ng-disabled="app.id" ng-class="{'has-error': newAppForm.$submitted && newAppForm.name.$invalid}">
+				<label class="required-field">Identifier </label>
+				<div style="position: relative;">
+					<input type="text"
+						   name="name"
+						   ng-disabled="app.id"
+						   class="form-control ng-animate-disabled text-lowercase"
+						   required
+						   maxlength="50"
+						   ng-trim="false"
+						   ng-blur="checkNameBlur();"
+						   ng-change="checkNameUnique(app.name)"
+						   ng-model="app.name"
+						   id="subdomain" />
+					<span style="right: 10px;position: absolute;top: 50%;margin-top: -10px;" id="subdomaintwo">
+						.primeapps.app
+					</span>
+				</div>
+			</div>
+			<div class="form-group"
+				 ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
+				<label class="required-field">Description</label>
+				<input type="text" name="description" class="form-control ng-animate-disabled " maxlength="50" ng-model="app.description" />
+			</div>
+			<hr />
+			<div class="setup-title" style="height: 30px;">
+				<h2>Live Settings</h2>
+			</div>
+			<div class="form-group"
+				 ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
+				<label class="required-field">App Domain</label>
+				<input type="text"
+					   name="app_domain"
+					   class="form-control ng-animate-disabled"
+					   maxlength="50"
+					   ng-model="app.setting.app_domain">
+			</div>
+			<div class="form-group"
+				 ng-class="{'has-error': newAppForm.$submitted && newAppForm.description.$invalid}">
+				<label class="required-field">Auth Domain</label>
+				<input type="text"
+					   name="auth_domain"
+					   class="form-control ng-animate-disabled"
+					   maxlength="50"
+					   ng-model="app.setting.auth_domain">
+			</div>
 			<div class="form-group">
-				<label class="radio-inline newinput">
+				<label style="margin-bottom: 10px;" class="checkbox-inline newinput">
+					<input type="checkbox" ng-model="app.setting.options.enable_registration" class="ng-pristine ng-untouched ng-valid ng-empty"> Enable Registration<span></span>
+				</label>
+				<label style="margin-bottom: 10px;" class="checkbox-inline newinput">
+					<input type="checkbox" ng-model="app.setting.options.enable_api_registration" class="ng-pristine ng-untouched ng-valid ng-empty"> Enable API Registration<span></span>
+				</label>
+				<label style="margin-bottom: 10px;" class="checkbox-inline newinput">
+					<input type="checkbox" ng-model="app.setting.options.enable_ldap" class="ng-pristine ng-untouched ng-valid ng-empty"> Enable LDAP<span></span>
+				</label>
+			</div>
+			<hr />
+			<div class="setup-title" style="height: 30px;">
+				<h2>Trasfer Module's Records</h2>
+			</div>
+			<div class="form-group">
+				<label style="margin-bottom: 10px;" class="radio-inline newinput">
 					<input ng-disabled="packageCount > 0" ng-model="app.setting.options.protect_modules" name="protectModules" type="radio" value="DontTransfer">Don't Transfer<span></span>
 				</label>
-				<label class="radio-inline newinput" style="padding-bottom: 10px;">
+				<label style="margin-bottom: 10px;" class="radio-inline newinput">
 					<input ng-disabled="packageCount > 0" ng-model="app.setting.options.protect_modules" name="protectModules" type="radio" value="AllModules">Include All Modules<span></span>
 				</label>
-				<label class="radio-inline newinput">
+				<label style="margin-bottom: 10px;" class="radio-inline newinput">
 					<input ng-disabled="packageCount > 0" ng-model="app.setting.options.protect_modules" name="protectModules" type="radio" value="SelectedModules">Selected Modules<span></span>
 				</label>
-				<div ng-show="app.setting.options.protect_modules === 'SelectedModules'" class="col-sm-12 multiselect-container">
+			</div>
+			<div class="form-group multiselect2" ng-show="app.setting.options.protect_modules === 'SelectedModules'">
+				<div class="multiselect-container">
 					<button type="button"
 							ng-disabled="packageCount > 0"
 							class="form-control ng-animate-disabled multiselect"
@@ -188,9 +172,14 @@
 							bs-select></button>
 				</div>
 			</div>
-			<div ng-if="app.setting.options.protect_modules === 'SelectedModules' && errorList.length > 0" class="alert alert-danger">
-				<p>{{ getErrorText()}}</p>
+			<div ng-if="app.setting.options.protect_modules === 'SelectedModules' && errorList.length > 0">
+				<strong>Information</strong>
+				<div class="alert alert-info" style="line-height:2; font-size: 12px;font-weight: bold; padding: 10px; border-left-width: 10px;">
+					<p ng-bind-html="getErrorText()" />
+					<p>This package will cause all lookup fields empty!</p>
+				</div>
 			</div>
 		</div>
+
 	</div>
 </div>

@@ -325,7 +325,7 @@ angular.module('primeapps')
 			};
 
 			$scope.checkModules = function (selectedModules) {
-				PackageService.checkModules(selectedModules, $scope.errorList, $scope.packageModulesRelations);
+				$scope.errorList = PackageService.checkModules(selectedModules, $scope.errorList, $scope.packageModulesRelations);
 				$scope.getErrorText();
 			};
 

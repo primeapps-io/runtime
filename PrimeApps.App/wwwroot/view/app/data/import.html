@@ -1,222 +1,223 @@
 ﻿<div class="page import">
-    <div class="panel panel-default">
-        <div class="panel-heading clearfix">
-            <h4 class="pull-left">{{'Import.Title' | translate}}</h4>
-        </div>
-        <div class="panel-body">
-            <div class="stepwizard" style="margin-bottom: 20px;">
-                <div class="stepwizard-row">
-                    <div class="stepwizard-step">
-                        <span class="btn btn-primary btn-circle">
-                            <i class="fa fa-check" ng-show="wizardStep > 0"></i>
-                            <span ng-show="wizardStep <= 0">1</span>
-                        </span>
-                        <p>{{'Data.Import.Step1' | translate}}</p>
-                    </div>
-                    <div class="stepwizard-step">
-                        <span class="btn btn-primary btn-circle">
-                            <i class="fa fa-check" ng-show="wizardStep > 1"></i>
-                            <span ng-show="wizardStep <= 1">2</span>
-                        </span>
-                        <p>{{'Data.Import.Step2' | translate}}</p>
-                    </div>
-                    <div class="stepwizard-step">
-                        <span class="btn btn-primary btn-circle">
-                            <i class="fa fa-check" ng-show="wizardStep > 2"></i>
-                            <span ng-show="wizardStep <= 2">3</span>
-                        </span>
-                        <p>{{'Data.Import.Step3' | translate}}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="step1" ng-show="wizardStep == 0">
-                <div class="subpanel">
-                    <h5 class="subpanel-heading">{{'Data.Import.Step1' | translate}}</h5>
-                    <div class="subpanel-body">
-                        <div class="sheets" style="width:30%;">
-                            <div ng-show="mappingArray.length > 0">
-                                <span class="select-sheet bold">{{'Data.Import.SelectMapping' | translate}}:</span>
-                                <select class="form-control ng-animate-disabled" ng-show="mappingArray.length"
-                                        name="selectedMapping"
-                                        ng-model="selectedMapping"
-                                        ng-options="o as o.name for o in mappingArray track by o.id"
-                                        ng-change="mappingSelectedChange()"
-                                        style="margin-left: 4px;">
-                                    <option value="">{{'Common.Select' | translate}}</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="sheets">
-                            <span class="select-sheet">{{'Import.File' | translate}}:</span>
-                            <form>
-                                <span class="file-input btn btn-custom btn-sm btn-file" ng-disabled="uploader.queue.length">
-                                    {{'Data.Import.ChooseFiles' | translate}} <input type="file" id="excelFile" name="excelFile" nv-file-select uploader="uploader">
-                                </span>
-                                <span ng-show="uploader.queue.length">{{uploader.queue[0].file.name}}</span>
-                                <button type="reset" class="btn btn-default clear-button" ng-show="uploader.queue.length" ng-click="clear()"><i class="fa fa-times-circle"></i></button>
-                            </form>
-                        </div>
-                        <div class="sheets" ng-show="sheets">
-                            <span class="select-sheet">{{'Data.Import.SelectSheet' | translate}}:</span>
-                            <label class="radio-inline" ng-repeat="sheet in sheets"><input type="radio" name="selectedSheet" ng-value="sheet" ng-model="$parent.selectedSheet" ng-click="selectSheet()">{{sheet}}</label>
-                        </div>
-                        <a href class="advanced-options-link" ng-click="showAdvancedOptions = !showAdvancedOptions" ng-show="sheets">
-                            {{'Data.Import.AdvancedOptions' | translate}}
-                            <i class="fa fa-caret-right" ng-if="!showAdvancedOptions"></i>
-                            <i class="fa fa-caret-down" ng-if="showAdvancedOptions"></i>
-                        </a>
-                        <div class="advanced-options form-horizontal" ng-show="showAdvancedOptions">
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">{{'Data.Import.DateOrder' | translate}}:</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" ng-model="dateOrder" ng-change="getSampleDate()">
-                                        <option value="DD/MM/YYYY">{{'Data.Import.DateOrders.DayMonthYear' | translate}}</option>
-                                        <option value="MM/DD/YYYY">{{'Data.Import.DateOrders.MonthDayYear' | translate}}</option>
-                                        <option value="YYYY/MM/DD">{{'Data.Import.DateOrders.YearMonthDay' | translate}}</option>
-                                        <option value="YYYY/DD/MM">{{'Data.Import.DateOrders.YearDayMonth' | translate}}</option>
-                                        <option value="DD/YYYY/MM">{{'Data.Import.DateOrders.DayYearMonth' | translate}}</option>
-                                        <option value="MM/YYYY/DD">{{'Data.Import.DateOrders.MonthYearDay' | translate}}</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">{{'Data.Import.DateDelimiter' | translate}}:</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" ng-model="dateDelimiter" ng-change="getSampleDate()">
-                                        <option value=".">.</option>
-                                        <option value="/">/</option>
-                                        <option value="-">-</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label">{{'Data.Import.TimeFormat' | translate}}:</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" ng-model="timeFormat" ng-change="getSampleDate()">
-                                        <option value="HH:mm">{{'Data.Import.TimeFormat1' | translate}}</option>
-                                        <option value="HH:mm:ss">{{'Data.Import.TimeFormat2' | translate}}</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-sm-3 control-label"></label>
-                                <div class="col-sm-9">
-                                    <span class="sample-date">{{sampleDate}}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="wizard-buttons text-right">
-                    <a href="#/app/modules/{{type}}" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
-                    <button type="button" class="btn btn-primary btn-w-sm" ng-click="checkWizard()" ng-disabled="!sheets || !rows || rows.length > 3000">{{'Common.Next' | translate}} <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i></button>
-                </div>
-                <div class="callout callout-info">
-                    <p><span class="bold">{{'Data.Import.Info.Title1' | translate}}</span></p>
-                    <p>
-                        <ul>
-                            <li>{{'Data.Import.Info.Info1' | translate}}</li>
-                            <li>{{'Data.Import.Info.Info2' | translate}}</li>
-                            <li>{{'Data.Import.Info.Info3' | translate}}</li>
-                        </ul>
-                    </p>
-                    <p><span class="bold">{{'Data.Import.Info.Title2' | translate}}</span></p>
-                    <p>
-                        <ul>
-                            <li>{{'Data.Import.Info.Info4' | translate}}</li>
-                            <li>{{'Data.Import.Info.Info5' | translate}}</li>
-                            <li>{{'Data.Import.Info.Info6' | translate}}</li>
-                            <li>{{'Data.Import.Info.Info7' | translate}}</li>
-                            <li>{{'Data.Import.Info.Info8' | translate}}</li>
-                        </ul>
-                    </p>
-                </div>
-            </div>
-            <div class="step2" ng-show="wizardStep == 1">
-                <form name="importForm" class="form-horizontal form-custom" ng-submit="submit()" autocomplete="off" novalidate>
-                    <div class="subpanel" ng-repeat="section in module.sections | filter:{deleted: false}:true | orderBy:'order'">
-                        <h5 class="subpanel-heading">{{section['label_' + language]}}</h5>
-                        <div class="subpanel-body">
-                            <div class="row">
-                                <div ng-class="{'col-sm-6': section.column_count === 2, 'col-sm-12': section.column_count === 1}" ng-repeat="column in section.columns track by $index">
-                                    <div class="form-group"
-                                         ng-class="{'has-error': importForm.$submitted && importForm[field.name].$invalid}"
-                                         ng-repeat="field in module.fields | filter:{section: section.name, section_column: column.no, deleted: false, data_type: '!number_auto'}: true | filter:combinationFilter | orderBy:'order'">
-                                        <label for="name={{field.name}}" class="control-label" ng-class="{'col-sm-6':section.column_count === 2, 'col-sm-3':section.column_count === 1, 'required-field':field.validation.required}" style="{{field.style_label}}"><span ng-if="field.validation.required">*</span> {{field['label_' + language]}}:</label>
-                                        <div ng-class="{'col-sm-6': section.column_count === 2, 'col-sm-9': section.column_count === 1, 'checkbox': field.data_type === 'checkbox'}" style="{{field.style_input}}">
-                                            <select class="form-control ng-animate-disabled"
-                                                    name="{{field.name}}"
-                                                    tabindex="{{field.order}}"
-                                                    ng-class="{'used-cell': fieldMap[field.name], 'fixed-cell': (fieldMap[field.name] === 'fixed')}"
-                                                    ng-model="fieldMap[field.name]"
-                                                    ng-change="cellChanged(field)"
-                                                    ng-required="{{field.validation.required}}">
-                                                <option value="" style="background-color: #fff;">{{'Common.Select' | translate}}</option>
-                                                <option value="{{cell.column}}" ng-repeat="cell in cells track by cell.column" class="free-cell" ng-class="{'used-cell': cell.used}" ng-if="field.name != 'related_module'">{{cell.name}}</option>
-                                                <option value="fixed" class="fixed-cell">{{ fixedValue[field.name] ? fixedValueFormatted[field.name] : (('Data.Import.FixedValue' | translate) + ' -->')}}</option>
-                                            </select>
-                                            <a href class="fixed-settings" ng-click="openFixedValueModal(field)" ng-if="fieldMap[field.name] === 'fixed'"><i class="flaticon-cogwheel22"></i></a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group" ng-show="importForm.$submitted && importForm.$invalid">
-                        <div class="col-sm-offset-2 col-sm-8">
-                            <div class="callout callout-danger">
-                                <p ng-if="importForm.$error.required">{{'Module.RequiredError' | translate}}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="wizard-buttons text-right col-6">
-                            <button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 0">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>
-                            <button type="submit" class="btn btn-primary btn-w-sm">{{'Common.Next' | translate}} <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i></button>
-                            <button type="submit" class="btn btn-primary btn-w-sm text-left" style="float:left;" ng-show="user.profile.has_admin_rights" ng-click="openMappingModal()">{{selectedMapping.id ? 'Data.Import.UpdateMapping':'Data.Import.SaveMapping' | translate}} <i class="fa fa-table pull-left" style="margin-top: 5px;margin-right:5px;"></i></button>
-                            <a href class="btn btn-danger btn-w-sm text-left" style="float:left;margin-left:5px;" ng-show="user.profile.has_admin_rights && selectedMapping.id>0"
-                               confirm-click action="deleteMapping()" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
-                                {{ 'Data.Import.DeleteMapping' | translate}} <i class="fa fa-minus-circle pull-left" style="margin-top: 5px;margin-right:5px;"></i>
-                            </a>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="step3" ng-show="wizardStep == 2">
-                <div class="subpanel">
-                    <h5 class="subpanel-heading">{{'Data.Import.Step3' | translate}}</h5>
-                    <div class="subpanel-body">
-                        <div ng-show="preparing" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-                        <div ng-show="!preparing">
-                            <div class="callout callout-success" ng-show="!error && !errorUnique && !trying">{{'Data.Import.ReadyToTransfer' | translate:{count:rows.length} }}</div>
-                            <div ng-show="error">
-                                <p>{{'Data.Import.FixErrorFirst' | translate}}</p>
-                                <div class="callout callout-danger">
-                                    <p><span class="bold">{{'Data.Import.ErrorMessage' | translate}}:</span> {{error.message}}</p>
-                                    <p><span class="bold">{{'Data.Import.Row' | translate}}:</span> {{error.rowNo}}</p>
-                                    <p><span class="bold">{{'Data.Import.Column' | translate}}:</span> {{error.cellName}} ({{error.fieldLabel}})</p>
-                                    <p><span class="bold">{{'Data.Import.Value' | translate}}:</span> {{error.cellValue}}</p>
-                                </div>
-                            </div>
-                            <div class="callout callout-danger" ng-show="errorUnique">
-                                <span ng-if="!errorUnique.field2">{{'Data.Import.Error.Unique1' | translate:{field1:errorUnique.field} }}</span>
-                                <span ng-if="errorUnique.field2">{{'Data.Import.Error.Unique2' | translate:{field1:errorUnique.field, field2:errorUnique.field2} }}</span>
-                            </div>
-                            <div ng-show="error || errorUnique">
-                                <p>{{'Data.Import.TryAgainMessage' | translate}}</p>
-                                <p>
-                                    <button type="button" class="btn btn-custom btn-w-lg" ladda="trying" ng-click="tryAgain()"><i class="fa fa-repeat pull-left"></i> {{'Data.Import.TryAgain' | translate}}</button>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <p class="long-message" ng-if="longProcessing">{{'Data.Import.LongMessage' | translate}}</p>
-                <div class="wizard-buttons text-right">
-                    <button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 1">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>
-                    <button type="button" class="btn btn-primary btn-w-lg" ladda="saving" ng-click="save()" ng-disabled="error"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="panel panel-default">
+		<div class="panel-heading clearfix">
+			<h4 class="pull-left">{{'Import.Title' | translate}}</h4>
+		</div>
+		<div class="panel-body">
+			<div class="stepwizard" style="margin-bottom: 20px;">
+				<div class="stepwizard-row">
+					<div class="stepwizard-step">
+						<span class="btn btn-primary btn-circle">
+							<i class="fa fa-check" ng-show="wizardStep > 0"></i>
+							<span ng-show="wizardStep <= 0">1</span>
+						</span>
+						<p>{{'Data.Import.Step1' | translate}}</p>
+					</div>
+					<div class="stepwizard-step">
+						<span class="btn btn-primary btn-circle">
+							<i class="fa fa-check" ng-show="wizardStep > 1"></i>
+							<span ng-show="wizardStep <= 1">2</span>
+						</span>
+						<p>{{'Data.Import.Step2' | translate}}</p>
+					</div>
+					<div class="stepwizard-step">
+						<span class="btn btn-primary btn-circle">
+							<i class="fa fa-check" ng-show="wizardStep > 2"></i>
+							<span ng-show="wizardStep <= 2">3</span>
+						</span>
+						<p>{{'Data.Import.Step3' | translate}}</p>
+					</div>
+				</div>
+			</div>
+			<div class="step1" ng-show="wizardStep == 0">
+				<div class="subpanel">
+					<h5 class="subpanel-heading">{{'Data.Import.Step1' | translate}}</h5>
+					<div class="subpanel-body">
+						<div class="sheets" style="width:30%;">
+							<div ng-show="mappingArray.length > 0">
+								<span class="select-sheet bold">{{'Data.Import.SelectMapping' | translate}}:</span>
+								<select class="form-control ng-animate-disabled" ng-show="mappingArray.length"
+										name="selectedMapping"
+										ng-model="selectedMapping"
+										ng-options="o as o.name for o in mappingArray track by o.id"
+										ng-change="mappingSelectedChange()"
+										style="margin-left: 4px;">
+									<option value="">{{'Common.Select' | translate}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="sheets">
+							<span class="select-sheet">{{'Import.File' | translate}}:</span>
+							<form>
+								<span class="file-input btn btn-custom btn-sm btn-file" ng-disabled="uploader.queue.length">
+									{{'Data.Import.ChooseFiles' | translate}} <input type="file" id="excelFile" name="excelFile" nv-file-select uploader="uploader">
+								</span>
+								<span ng-show="uploader.queue.length">{{uploader.queue[0].file.name}}</span>
+								<button type="reset" class="btn btn-default clear-button" ng-show="uploader.queue.length" ng-click="clear()"><i class="fa fa-times-circle"></i></button>
+							</form>
+						</div>
+						<div class="sheets" ng-show="sheets">
+							<span class="select-sheet">{{'Data.Import.SelectSheet' | translate}}:</span>
+							<label class="radio-inline" ng-repeat="sheet in sheets"><input type="radio" name="selectedSheet" ng-value="sheet" ng-model="$parent.selectedSheet" ng-click="selectSheet()">{{sheet}}</label>
+						</div>
+						<a href class="advanced-options-link" ng-click="showAdvancedOptions = !showAdvancedOptions" ng-show="sheets">
+							{{'Data.Import.AdvancedOptions' | translate}}
+							<i class="fa fa-caret-right" ng-if="!showAdvancedOptions"></i>
+							<i class="fa fa-caret-down" ng-if="showAdvancedOptions"></i>
+						</a>
+						<div class="advanced-options form-horizontal" ng-show="showAdvancedOptions">
+							<div class="form-group">
+								<label class="col-sm-3 control-label">{{'Data.Import.DateOrder' | translate}}:</label>
+								<div class="col-sm-9">
+									<select class="form-control" ng-model="dateOrder" ng-change="getSampleDate()">
+										<option value="DD/MM/YYYY">{{'Data.Import.DateOrders.DayMonthYear' | translate}}</option>
+										<option value="MM/DD/YYYY">{{'Data.Import.DateOrders.MonthDayYear' | translate}}</option>
+										<option value="YYYY/MM/DD">{{'Data.Import.DateOrders.YearMonthDay' | translate}}</option>
+										<option value="YYYY/DD/MM">{{'Data.Import.DateOrders.YearDayMonth' | translate}}</option>
+										<option value="DD/YYYY/MM">{{'Data.Import.DateOrders.DayYearMonth' | translate}}</option>
+										<option value="MM/YYYY/DD">{{'Data.Import.DateOrders.MonthYearDay' | translate}}</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">{{'Data.Import.DateDelimiter' | translate}}:</label>
+								<div class="col-sm-9">
+									<select class="form-control" ng-model="dateDelimiter" ng-change="getSampleDate()">
+										<option value=".">.</option>
+										<option value="/">/</option>
+										<option value="-">-</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">{{'Data.Import.TimeFormat' | translate}}:</label>
+								<div class="col-sm-9">
+									<select class="form-control" ng-model="timeFormat" ng-change="getSampleDate()">
+										<option value="HH:mm">{{'Data.Import.TimeFormat1' | translate}}</option>
+										<option value="HH:mm:ss">{{'Data.Import.TimeFormat2' | translate}}</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label"></label>
+								<div class="col-sm-9">
+									<span class="sample-date">{{sampleDate}}</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="wizard-buttons text-right">
+					<a href="#/app/modules/{{type}}" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
+					<button type="button" class="btn btn-primary btn-w-sm" ng-click="checkWizard()" ng-disabled="!sheets || !rows || rows.length > 3000">{{'Common.Next' | translate}} <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i></button>
+				</div>
+				<div class="callout callout-info">
+					<p><span class="bold">{{'Data.Import.Info.Title1' | translate}}</span></p>
+					<p>
+						<ul>
+							<li>{{'Data.Import.Info.Info1' | translate}}</li>
+							<li>{{'Data.Import.Info.Info2' | translate}}</li>
+							<li>{{'Data.Import.Info.Info3' | translate}}</li>
+						</ul>
+					</p>
+					<p><span class="bold">{{'Data.Import.Info.Title2' | translate}}</span></p>
+					<p>
+						<ul>
+							<li>{{'Data.Import.Info.Info4' | translate}}</li>
+							<li>{{'Data.Import.Info.Info5' | translate}}</li>
+							<li>{{'Data.Import.Info.Info6' | translate}}</li>
+							<li>{{'Data.Import.Info.Info7' | translate}}</li>
+							<li>{{'Data.Import.Info.Info8' | translate}}</li>
+						</ul>
+					</p>
+				</div>
+			</div>
+			<div class="step2" ng-show="wizardStep == 1">
+				<form name="importForm" class="form-horizontal form-custom" ng-submit="submit()" autocomplete="off" novalidate>
+					<div class="subpanel" ng-repeat="section in module.sections | filter:{deleted: false}:true | orderBy:'order'">
+						<h5 class="subpanel-heading">{{section['label_' + language]}}</h5>
+						<div class="subpanel-body">
+							<div class="row">
+								<div ng-class="{'col-sm-6': section.column_count === 2, 'col-sm-12': section.column_count === 1}" ng-repeat="column in section.columns track by $index">
+									<div class="form-group"
+										 ng-class="{'has-error': importForm.$submitted && importForm[field.name].$invalid}"
+										 ng-repeat="field in module.fields | filter:{section: section.name, section_column: column.no, deleted: false, data_type: '!number_auto'}: true | filter:combinationFilter | orderBy:'order'">
+										<label for="name={{field.name}}" class="control-label" ng-class="{'col-sm-6':section.column_count === 2, 'col-sm-3':section.column_count === 1, 'required-field':field.validation.required}" style="{{field.style_label}}"><span ng-if="field.validation.required">*</span> {{field['label_' + language]}}:</label>
+										<div ng-class="{'col-sm-6': section.column_count === 2, 'col-sm-9': section.column_count === 1, 'checkbox': field.data_type === 'checkbox'}" style="{{field.style_input}}">
+											<select class="form-control ng-animate-disabled"
+													name="{{field.name}}"
+													tabindex="{{field.order}}"
+													ng-class="{'used-cell': fieldMap[field.name], 'fixed-cell': (fieldMap[field.name] === 'fixed')}"
+													ng-model="fieldMap[field.name]"
+													ng-change="cellChanged(field)"
+													ng-required="{{field.validation.required}}">
+												<option value="" style="background-color: #fff;">{{'Common.Select' | translate}}</option>
+												<option value="currentUser" class="fixed-cell">{{user.full_name}}</option>
+												<option value="{{cell.column}}" ng-repeat="cell in cells track by cell.column" class="free-cell" ng-class="{'used-cell': cell.used}" ng-if="field.name != 'related_module'">{{cell.name}}</option>
+												<option value="fixed" class="fixed-cell">{{ fixedValue[field.name] ? fixedValueFormatted[field.name] : (('Data.Import.FixedValue' | translate) + ' -->')}}</option>
+											</select>
+											<a href class="fixed-settings" ng-click="openFixedValueModal(field)" ng-if="fieldMap[field.name] === 'fixed'"><i class="flaticon-cogwheel22"></i></a>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group" ng-show="importForm.$submitted && importForm.$invalid">
+						<div class="col-sm-offset-2 col-sm-8">
+							<div class="callout callout-danger">
+								<p ng-if="importForm.$error.required">{{'Module.RequiredError' | translate}}</p>
+							</div>
+						</div>
+					</div>
+					<div>
+						<div class="wizard-buttons text-right col-6">
+							<button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 0">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>
+							<button type="submit" class="btn btn-primary btn-w-sm">{{'Common.Next' | translate}} <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i></button>
+							<button type="submit" class="btn btn-primary btn-w-sm text-left" style="float:left;" ng-show="user.profile.has_admin_rights" ng-click="openMappingModal()">{{selectedMapping.id ? 'Data.Import.UpdateMapping':'Data.Import.SaveMapping' | translate}} <i class="fa fa-table pull-left" style="margin-top: 5px;margin-right:5px;"></i></button>
+							<a href class="btn btn-danger btn-w-sm text-left" style="float:left;margin-left:5px;" ng-show="user.profile.has_admin_rights && selectedMapping.id>0"
+							   confirm-click action="deleteMapping()" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+								{{ 'Data.Import.DeleteMapping' | translate}} <i class="fa fa-minus-circle pull-left" style="margin-top: 5px;margin-right:5px;"></i>
+							</a>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="step3" ng-show="wizardStep == 2">
+				<div class="subpanel">
+					<h5 class="subpanel-heading">{{'Data.Import.Step3' | translate}}</h5>
+					<div class="subpanel-body">
+						<div ng-show="preparing" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+						<div ng-show="!preparing">
+							<div class="callout callout-success" ng-show="!error && !errorUnique && !trying">{{'Data.Import.ReadyToTransfer' | translate:{count:rows.length} }}</div>
+							<div ng-show="error">
+								<p>{{'Data.Import.FixErrorFirst' | translate}}</p>
+								<div class="callout callout-danger">
+									<p><span class="bold">{{'Data.Import.ErrorMessage' | translate}}:</span> {{error.message}}</p>
+									<p><span class="bold">{{'Data.Import.Row' | translate}}:</span> {{error.rowNo}}</p>
+									<p><span class="bold">{{'Data.Import.Column' | translate}}:</span> {{error.cellName}} ({{error.fieldLabel}})</p>
+									<p><span class="bold">{{'Data.Import.Value' | translate}}:</span> {{error.cellValue}}</p>
+								</div>
+							</div>
+							<div class="callout callout-danger" ng-show="errorUnique">
+								<span ng-if="!errorUnique.field2">{{'Data.Import.Error.Unique1' | translate:{field1:errorUnique.field} }}</span>
+								<span ng-if="errorUnique.field2">{{'Data.Import.Error.Unique2' | translate:{field1:errorUnique.field, field2:errorUnique.field2} }}</span>
+							</div>
+							<div ng-show="error || errorUnique">
+								<p>{{'Data.Import.TryAgainMessage' | translate}}</p>
+								<p>
+									<button type="button" class="btn btn-custom btn-w-lg" ladda="trying" ng-click="tryAgain()"><i class="fa fa-repeat pull-left"></i> {{'Data.Import.TryAgain' | translate}}</button>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<p class="long-message" ng-if="longProcessing">{{'Data.Import.LongMessage' | translate}}</p>
+				<div class="wizard-buttons text-right">
+					<button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 1">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>
+					<button type="button" class="btn btn-primary btn-w-lg" ladda="saving" ng-click="save()" ng-disabled="error"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

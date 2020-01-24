@@ -114,6 +114,7 @@ namespace PrimeApps.Model.Helpers
 					var moduleName = "";
 					var childArray = new JArray();
 					var updatedList = new List<string>();
+					var truncateList = new List<string>();
 
 					foreach (JObject selectedModule in selectedModules)
 					{
@@ -124,7 +125,7 @@ namespace PrimeApps.Model.Helpers
 
 							moduleName = property.Key;
 							childArray = (JArray)property.Value;
-							await ControlChildArray(selectedModules, childArray, recordRepository, moduleRepository, moduleName, scriptPath, updatedList);
+							await ControlChildArray(selectedModules, childArray, recordRepository, moduleRepository, moduleName, scriptPath, updatedList, truncateList);
 						}
 					}
 
@@ -132,10 +133,14 @@ namespace PrimeApps.Model.Helpers
 					{
 						moduleName = property.Key;
 						childArray = (JArray)property.Value;
-						await ControlChildArray(selectedModules, childArray, recordRepository, moduleRepository, moduleName, scriptPath, updatedList, true);
+						await ControlChildArray(selectedModules, childArray, recordRepository, moduleRepository, moduleName, scriptPath, updatedList, truncateList, true);
 					}
 
 				}
+
+				//We have to update is_sample field at the fields table
+				var fieldQuery = "UPDATE fields set deleted='t' WHERE name LIKE 'is_sample';";
+				AddScript(scriptPath, fieldQuery);
 
 				/*if (!result)
                     File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while clearing dynamic tables... \u001b[39m" + Environment.NewLine);
@@ -570,12 +575,12 @@ namespace PrimeApps.Model.Helpers
 			return recordRepository.Find(moduleName, findRequest);
 		}
 
-		public static async Task ControlChildArray(JArray selectedModules, JArray childArray, RecordRepository recordRepository, ModuleRepository moduleRepository, string moduleName, string scriptPath, List<string> updatedList, bool checkIsSample = false)
+		public static async Task ControlChildArray(JArray selectedModules, JArray childArray, RecordRepository recordRepository, ModuleRepository moduleRepository, string moduleName, string scriptPath, List<string> updatedList, List<string> truncateList, bool checkIsSample = false)
 		{
 			/**if childArray in selectedModules, checkIsSample = false 
 			 * else checkIsSample = true**/
 			if (childArray.Count < 1 && checkIsSample)
-				await UpdateRecords(recordRepository, moduleRepository, selectedModules, moduleName, "", "", scriptPath, true);
+				await UpdateRecords(recordRepository, moduleRepository, selectedModules, moduleName, "", "", scriptPath, truncateList, true);
 
 			else
 				for (int j = 0; j < childArray.Count; j++)
@@ -584,11 +589,11 @@ namespace PrimeApps.Model.Helpers
 					var relatedFieldName = relatedModuleField["name"].ToString(); //It's lookup field name at the main module
 					var relatedModuleName = relatedModuleField["lookup_type"].ToString(); // It's lookup module name
 
-					await ControlLookupModules(selectedModules, recordRepository, moduleRepository, moduleName, relatedModuleName, relatedFieldName, scriptPath, updatedList, checkIsSample);
+					await ControlLookupModules(selectedModules, recordRepository, moduleRepository, moduleName, relatedModuleName, relatedFieldName, scriptPath, updatedList, truncateList, checkIsSample);
 				}
 		}
 
-		public static async Task ControlLookupModules(JArray selectedModules, RecordRepository recordRepository, ModuleRepository moduleRepository, string moduleName, string relatedModuleName, string relatedFieldName, string scriptPath, List<string> updatedList, bool checkSampleData = false)
+		public static async Task ControlLookupModules(JArray selectedModules, RecordRepository recordRepository, ModuleRepository moduleRepository, string moduleName, string relatedModuleName, string relatedFieldName, string scriptPath, List<string> updatedList, List<string> truncateList, bool checkSampleData = false)
 		{
 			/** I have to control relatedModuleName in selected Modules
 			 * if exist we have to control checkSampleData, if checkSampleData = true it comes from modulesRelations, we have to use update method.
@@ -600,22 +605,22 @@ namespace PrimeApps.Model.Helpers
 			{
 
 				if (checkSampleData)
-					await UpdateRecords(recordRepository, moduleRepository, selectedModules, moduleName, relatedModuleName, relatedFieldName, scriptPath, checkSampleData);
+					await UpdateRecords(recordRepository, moduleRepository, selectedModules, moduleName, relatedModuleName, relatedFieldName, scriptPath, truncateList, checkSampleData);
 
 				else if (updatedList.IndexOf(relatedModuleName) < 0)
 				{
 					updatedList.Add(relatedModuleName);
 					moduleName = relatedModuleName;
 					var childArray = (JArray)selectedModules.Where(q => q[relatedModuleName] != null)?.FirstOrDefault()?[relatedModuleName];
-					await ControlChildArray(selectedModules, childArray, recordRepository, moduleRepository, moduleName, scriptPath, updatedList, checkSampleData);
+					await ControlChildArray(selectedModules, childArray, recordRepository, moduleRepository, moduleName, scriptPath, updatedList, truncateList, checkSampleData);
 				}
 			}
 			else
-				await UpdateRecords(recordRepository, moduleRepository, selectedModules, moduleName, relatedModuleName, relatedFieldName, scriptPath, checkSampleData);
+				await UpdateRecords(recordRepository, moduleRepository, selectedModules, moduleName, relatedModuleName, relatedFieldName, scriptPath, truncateList, checkSampleData);
 
 		}
 
-		public static async Task UpdateRecords(RecordRepository recordRepository, ModuleRepository moduleRepository, JArray selectedModules, string moduleName, string relatedModuleName, string fieldName, string scriptPath, bool checkSampleData = false)
+		public static async Task UpdateRecords(RecordRepository recordRepository, ModuleRepository moduleRepository, JArray selectedModules, string moduleName, string relatedModuleName, string fieldName, string scriptPath, List<string> truncateList, bool checkSampleData = false)
 		{
 			var records = PackageHelper.GetRecords(selectedModules, recordRepository, moduleName);
 			var isSampleDatas = checkSampleData ? records.Children().Where(q => (bool)q["is_sample"] == true) : records;
@@ -639,13 +644,16 @@ namespace PrimeApps.Model.Helpers
 					if (!string.IsNullOrEmpty(fieldName))
 						updateRequest[fieldName] = null;
 
-					var relatedRecordId = record[fieldName + "." + relatedModuleName + ".id"].ToString();
-					if (relatedModule.Id > 0 && !string.IsNullOrEmpty(relatedRecordId))
+					if (relatedModule.Id > 0)
 					{
-						var childRecord =await recordRepository.GetById(relatedModule, int.Parse(relatedRecordId));
+						var relatedRecordId = record[fieldName + "." + relatedModuleName + ".id"].ToString();
+						if (!string.IsNullOrEmpty(relatedRecordId))
+						{
+							var childRecord = recordRepository.GetById(relatedModule, int.Parse(relatedRecordId));
 
-						if (!(bool)childRecord["is_sample"])
-							await recordRepository.Update(updateRequest, mainModule);
+							if (!(bool)childRecord["is_sample"])
+								await recordRepository.Update(updateRequest, mainModule);
+						}
 					}
 
 					if (checkSampleData)
@@ -662,8 +670,13 @@ namespace PrimeApps.Model.Helpers
 			}
 			else
 			{
-				sql = $"TRUNCATE {moduleName}_d CASCADE;";
-				AddScript(scriptPath, sql);
+				//we have to control duplicate scripts
+				if (truncateList.IndexOf(moduleName) < 0)
+				{
+					sql = $"TRUNCATE {moduleName}_d CASCADE;";
+					AddScript(scriptPath, sql);
+					truncateList.Add(moduleName);
+				}
 			}
 		}
 	}

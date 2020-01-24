@@ -68,7 +68,7 @@ angular.module('primeapps')
 				if ($scope.app.setting.options.protect_modules === "DontTransfer" || $scope.app.setting.options.protect_modules === "AllModules") {
 					$scope.errorList = [];
 					$scope.app.setting.options.selected_modules = [];
-					$scope.app.setting.options.modulesRelations = copyRelations;	
+					$scope.app.setting.options.modulesRelations = copyRelations;
 				} else {
 					for (var i = 0; i < $scope.app.setting.options.selected_modules.length; i++) {
 						var selectedModule = $scope.app.setting.options.selected_modules[i];
@@ -117,7 +117,7 @@ angular.module('primeapps')
 				});
 
 				$scope.checkModules = function (selectedModules) {
-					PackageService.checkModules(selectedModules, $scope.errorList, $scope.packageModulesRelations);
+					$scope.errorList = PackageService.checkModules(selectedModules, $scope.errorList, $scope.packageModulesRelations);
 					$scope.getErrorText();
 				};
 
