@@ -370,7 +370,7 @@ namespace PrimeApps.App.Helpers
                             lookupModules = new List<Module>();
 
                         lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
-                        record = await _recordRepository.GetById(module, (int)record["id"], false, lookupModules, true);
+                        record = await _recordRepository.GetById(module, (int)record["id"], false, lookupModules, true, false);
 
                         bool hasProcessFilter = true;
                         if (workflow.ProcessFilter != WorkflowProcessFilter.None)
@@ -420,7 +420,7 @@ namespace PrimeApps.App.Helpers
                                 var filterFieldStr = filter.Field;
 
                                 if (filterField.DataType == DataType.Lookup && !filter.Field.EndsWith(".id"))
-                                filterFieldStr = filter.Field + ".id";
+                                    filterFieldStr = filter.Field + ".id";
 
                                 if (filterField == null || record[filterFieldStr] == null)
                                 {
@@ -891,7 +891,7 @@ namespace PrimeApps.App.Helpers
             {
                 var request = new JObject();
                 request["Request"] = "\"" + fromNode["data"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
-                stepData["Inputs"] = request;  
+                stepData["Inputs"] = request;
             }
 
             if (toNode["item"].Value<string>() == "End")

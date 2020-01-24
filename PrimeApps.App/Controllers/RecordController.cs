@@ -124,7 +124,7 @@ namespace PrimeApps.App.Controllers
 
             try
             {
-                record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile, lookupModules, operation: OperationType.read);
+                record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile, lookupModules);
 
                 if (record == null)
                     return NotFound();
@@ -455,7 +455,7 @@ namespace PrimeApps.App.Controllers
             if (!int.TryParse((string)record["id"], out recordId) || recordId < 1)
                 return BadRequest("Invalid record id!");
 
-            var currentRecord = await _recordRepository.GetById(moduleEntity, (int)record["id"], AppUser.HasAdminProfile);
+            var currentRecord = await _recordRepository.GetById(moduleEntity, (int)record["id"], AppUser.HasAdminProfile, operation: OperationType.update);
 
             if (currentRecord == null)
                 return BadRequest("Record not found!");
@@ -520,7 +520,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> Delete(string module, int id)
         {
             var moduleEntity = await _moduleRepository.GetByNameWithDependencies(module);
-            var record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile);
+            var record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile, operation: OperationType.delete);
 
             if (moduleEntity == null || record == null)
                 return BadRequest();
@@ -608,7 +608,7 @@ namespace PrimeApps.App.Controllers
 
             foreach (var id in ids)
             {
-                var record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile);
+                var record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile, operation: OperationType.delete);
 
                 if (moduleEntity == null || record == null)
                     return BadRequest();
@@ -661,7 +661,7 @@ namespace PrimeApps.App.Controllers
                 if (!int.TryParse(id.ToString(), out recordId) || recordId < 1)
                     return BadRequest("Invalid record id!");
 
-                var currentRecord = await _recordRepository.GetById(moduleEntity, (int)id, AppUser.HasAdminProfile);
+                var currentRecord = await _recordRepository.GetById(moduleEntity, (int)id, AppUser.HasAdminProfile, operation: OperationType.update);
                 var recordUpdate = new JObject();
 
                 foreach (var record in records)

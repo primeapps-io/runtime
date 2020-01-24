@@ -239,7 +239,7 @@ namespace PrimeApps.App.Notifications
                     _recordRepository.TenantId = appUser.TenantId;
                     //_recordRepository.UserId = appUser.TenantId;
 
-                    moduleRecordPrimary = await _recordRepository.GetById(module, Convert.ToInt32(recordId), false, null);
+                    moduleRecordPrimary = await _recordRepository.GetById(module, Convert.ToInt32(recordId), false, null, profileBasedEnabled: false);
 
                     var modulePkey = module.Fields.Where(x => x.Primary == true).Select(v => v.Name).FirstOrDefault();
 

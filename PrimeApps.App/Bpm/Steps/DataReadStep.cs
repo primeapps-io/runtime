@@ -11,6 +11,7 @@ using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using WorkflowCore.Interface;
 using WorkflowCore.Models;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Bpm.Steps
 {
@@ -77,7 +78,7 @@ namespace PrimeApps.App.Bpm.Steps
 					moduleRepository.CurrentUser = recordRepository.CurrentUser = currentUser;
 					var module = await moduleRepository.GetById(moduleId);
 					var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository, tenantLanguage: appUser.TenantLanguage);
-					record = await recordRepository.GetById(module, recordId, true, lookupModules);
+					record = await recordRepository.GetById(module, recordId, true, lookupModules, operation: OperationType.read);
 				}
 			}
 

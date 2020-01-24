@@ -151,7 +151,7 @@ namespace PrimeApps.App.Bpm.Steps
 
                                 lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
 
-                                var recordData = await _recordRepository.GetById(module, recordId, false, lookupModules, true);
+                                var recordData = await _recordRepository.GetById(module, recordId, false, lookupModules, true, false);
                                 recordData = await Model.Helpers.RecordHelper.FormatRecordValues(module, recordData, _moduleRepository, _picklistRepository, _configuration, appUser.TenantGuid, appUser.Language, appUser.Culture, 180, lookupModules);
 
                                 foreach (var dataString in parameters)

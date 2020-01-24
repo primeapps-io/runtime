@@ -139,7 +139,7 @@ namespace PrimeApps.App.Helpers
                         if (process.ApproverType == ProcessApproverType.DynamicApprover)
                             await _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest);
 
-                        record = await _recordRepository.GetById(module, (int)record["id"], false, lookupModules);
+                        record = await _recordRepository.GetById(module, (int)record["id"], false, lookupModules, profileBasedEnabled: false);
 
                         if (process.Filters != null && process.Filters.Count > 0)
                         {
@@ -343,7 +343,7 @@ namespace PrimeApps.App.Helpers
                                 if (record[firstApprover.Split('.')[0] + "." + approverLookupName] == null)
                                     throw new ProcessFilterNotMatchException("ProcessApproverNotFoundException");
 
-                                var approverUserRecord = await _recordRepository.GetById(approverLookupModule, (int)record[firstApprover.Split('.')[0] + "." + approverLookupName], false);
+                                var approverUserRecord = await _recordRepository.GetById(approverLookupModule, (int)record[firstApprover.Split('.')[0] + "." + approverLookupName], false, profileBasedEnabled: false);
                                 var userMail = (string)approverUserRecord[approverLookupFieldName];
                                 record["custom_approver"] = userMail;
 
@@ -378,7 +378,7 @@ namespace PrimeApps.App.Helpers
                                         secondApproverLookupModule = secondApproverLookupField.LookupType == "profiles" ? Model.Helpers.ModuleHelper.GetFakeProfileModule(appUser.TenantLanguage) : secondApproverLookupField.LookupType == "roles" ? Model.Helpers.ModuleHelper.GetFakeRoleModule(appUser.TenantLanguage) : Model.Helpers.ModuleHelper.GetFakeUserModule();
                                     }
 
-                                    var secondApproverUserRecord = await _recordRepository.GetById(secondApproverLookupModule, (int)record[secondApproverFieldName + "." + secondApproverLookupName], false);
+                                    var secondApproverUserRecord = await _recordRepository.GetById(secondApproverLookupModule, (int)record[secondApproverFieldName + "." + secondApproverLookupName], false, profileBasedEnabled: false);
                                     var secondUserMail = (string)secondApproverUserRecord[secondApproverLookupFieldName];
                                     record["custom_approver_2"] = secondUserMail;
                                 }
@@ -535,7 +535,7 @@ namespace PrimeApps.App.Helpers
                             if (resultRequestLog < 1)
                                 ErrorHandler.LogError(new Exception("ProcessRequest cannot be created! Object: " + processRequest.ToJsonString()), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
 
-                            var newRecord = await _recordRepository.GetById(module, (int)record["id"], false);
+                            var newRecord = await _recordRepository.GetById(module, (int)record["id"], false, profileBasedEnabled: false);
                             await _workflowHelper.Run(operationType, newRecord, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate);
                             //TODO BPM RUN
                         }
@@ -994,7 +994,7 @@ namespace PrimeApps.App.Helpers
                     if (process.ApproverType == ProcessApproverType.DynamicApprover)
                         await _calculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest);
 
-                    record = await _recordRepository.GetById(process.Module, request.RecordId, false, lookupModules);
+                    record = await _recordRepository.GetById(process.Module, request.RecordId, false, lookupModules, profileBasedEnabled: false);
 
                     if ((process.Approvers.Count != request.ProcessStatusOrder && process.ApproverType == ProcessApproverType.StaticApprover) || (process.ApproverType == ProcessApproverType.DynamicApprover && request.ProcessStatusOrder == 1 && process.ApproverField.Split(',').Length > 1 && !record["custom_approver_2"].IsNullOrEmpty()))
                     {
@@ -1563,7 +1563,7 @@ namespace PrimeApps.App.Helpers
                         if (process.ApproverType == ProcessApproverType.DynamicApprover)
                             await _calculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest);
 
-                        record = await _recordRepository.GetById(process.Module, request.RecordId, false, lookupModules);
+                        record = await _recordRepository.GetById(process.Module, request.RecordId, false, lookupModules, profileBasedEnabled: false);
                         var approverMail = (string)record["custom_approver"];
                         user = await _userRepository.GetByEmail(approverMail);
                     }
@@ -1795,7 +1795,7 @@ namespace PrimeApps.App.Helpers
                     var process = await _processRepository.GetById(request.ProcessId);
                     process = _environmentHelper.DataFilter(process);
 
-                    var record = await _recordRepository.GetById(process.Module, request.RecordId, false);
+                    var record = await _recordRepository.GetById(process.Module, request.RecordId, false, profileBasedEnabled: false);
                     await _workflowHelper.Run(request.OperationType, record, process.Module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate);
                     //TODO BPM RUN
 

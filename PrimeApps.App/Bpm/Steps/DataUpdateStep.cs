@@ -64,7 +64,7 @@ namespace PrimeApps.App.Bpm.Steps
                 {
                     var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                     var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                   // var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+                    // var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
                     using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))
                     using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
@@ -195,7 +195,7 @@ namespace PrimeApps.App.Bpm.Steps
                                     throw new Exception("Module not found! ModuleName: " + fieldUpdateModule.Name);
                                 }
 
-                                var currentRecordFieldUpdate = await recordRepository.GetById(fieldUpdateModule, fieldUpdateRecord.Value, false);
+                                var currentRecordFieldUpdate = await recordRepository.GetById(fieldUpdateModule, fieldUpdateRecord.Value, false, profileBasedEnabled: false);
 
                                 if (currentRecordFieldUpdate == null)
                                 {
@@ -280,7 +280,7 @@ namespace PrimeApps.App.Bpm.Steps
             }
             catch (Exception ex)
             {
-                ErrorHandler.LogError(ex, $"Data Update Step Error"); 
+                ErrorHandler.LogError(ex, $"Data Update Step Error");
                 return ExecutionResult.Next();
             }
 
