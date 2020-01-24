@@ -1450,7 +1450,9 @@ angular.module('primeapps')
                             case 'date_time':
                                 if (field.default_value === '[now]') {
                                     record[fieldName] = new Date().toISOString();
-                                }
+                                }else
+                                    record[fieldName] =  new Date(field.default_value);
+                                
                                 break;
                             case 'picklist':
                                 var picklistRecord = $filter('filter')(picklists[field.picklist_id], { id: parseInt(field.default_value) }, true)[0];
