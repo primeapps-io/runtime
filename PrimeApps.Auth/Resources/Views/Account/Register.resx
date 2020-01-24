@@ -184,7 +184,7 @@
     <value>You have an account</value>
   </data>
   <data name="ForgotPasswordSuccess" xml:space="preserve">
-    <value>Please check your e-mail for a message from Ofisim.com then click on the link to change your password.</value>
+    <value>We've sent an email to your email address to reset the password. You can change your password by clicking the link in the email.</value>
   </data>
   <data name="Login" xml:space="preserve">
     <value>Login</value>
