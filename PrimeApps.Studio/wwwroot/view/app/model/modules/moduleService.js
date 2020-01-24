@@ -78,7 +78,7 @@ angular.module('primeapps')
 
                         field.permissions.push({
                             profile_id: profile.id,
-                            profile_name: profile.name,
+                            profile_name: profile['name_' + $rootScope.language],
                             type: 'full',
                             profile_is_admin: profile.has_admin_rights
                         });
@@ -714,7 +714,7 @@ angular.module('primeapps')
                             if (!sectionPermission) {
                                 section.permissions.push({
                                     profile_id: profile.id,
-                                    profile_name: profile.name,
+                                    profile_name: profile['name_' + $rootScope.language],
                                     profile_is_admin: profile.has_admin_rights,
                                     type: 'full'
                                 });
@@ -722,7 +722,7 @@ angular.module('primeapps')
                                 section.permissions.push({
                                     id: sectionPermission.id,
                                     profile_id: profile.id,
-                                    profile_name: profile.name,
+                                    profile_name: profile['name_' + $rootScope.language],
                                     profile_is_admin: profile.has_admin_rights,
                                     type: sectionPermission.type
                                 });
@@ -827,18 +827,18 @@ angular.module('primeapps')
                         for (var o = 0; o < $rootScope.appProfiles.length; o++) {
                             var profileItem = $rootScope.appProfiles[o];
 
-                            if (profileItem.is_persistent && profileItem.has_admin_rights)
-                                profileItem.name = $filter('translate')('Setup.Profiles.Administrator');
+                            //if (profileItem.is_persistent && profileItem.has_admin_rights)
+                            //    profileItem.name = $filter('translate')('Setup.Profiles.Administrator');
 
-                            if (profileItem.is_persistent && !profileItem.has_admin_rights)
-                                profileItem.name = $filter('translate')('Setup.Profiles.Standard');
+                            //if (profileItem.is_persistent && !profileItem.has_admin_rights)
+                            //    profileItem.name = $filter('translate')('Setup.Profiles.Standard');
 
                             var fieldPermission = $filter('filter')(fieldPermissions, { profile_id: profileItem.id }, true)[0];
 
                             if (!fieldPermission)
                                 field.permissions.push({
                                     profile_id: profileItem.id,
-                                    profile_name: profileItem.name,
+                                    profile_name: profileItem['name_' + $rootScope.language],
                                     profile_is_admin: profileItem.has_admin_rights,
                                     type: 'full'
                                 });
@@ -846,7 +846,7 @@ angular.module('primeapps')
                                 field.permissions.push({
                                     id: fieldPermission.id,
                                     profile_id: profileItem.id,
-                                    profile_name: profileItem.name,
+                                    profile_name: profileItem['name_' + $rootScope.language],
                                     profile_is_admin: profileItem.has_admin_rights,
                                     type: fieldPermission.type
                                 });
@@ -1207,9 +1207,9 @@ angular.module('primeapps')
                     field7.deleted = false;
                     field7.systemReadonly = true;
                     field7.systemRequired = true;
-                    
+
                     module.fields.push(field7);
-                    
+
                     return module;
                 },
 
@@ -1235,7 +1235,7 @@ angular.module('primeapps')
                             var column = {};
                             column.column = columItem;
                             column.cells = [];
-                            
+
                             angular.forEach(module.fields, function (field) {
                                 if (field.section !== section.name || field.section_column !== columItem.no || field.deleted)
                                     return;
@@ -2271,6 +2271,6 @@ angular.module('primeapps')
         DataTypeCombinationTr: 'Birleşim',
         DataTypeCalculatedEn: 'Calculated',
         DataTypeCalculatedTr: 'Hesaplama',
-        SampleDataTr:'Örnek Kayıt',
-        SampleDataEn:'Sample Data',
+        SampleDataTr: 'Örnek Kayıt',
+        SampleDataEn: 'Sample Data',
     });

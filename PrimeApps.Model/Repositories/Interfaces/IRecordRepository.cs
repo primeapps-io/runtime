@@ -11,7 +11,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface IRecordRepository : IRepositoryBaseTenant
     {
-        Task<JObject> GetById(Module module, int recordId, bool roleBasedEnabled = true, ICollection<Module> lookupModules = null, bool deleted = false, bool profileBasedEnabled = false, OperationType operation = OperationType.read);
+        Task<JObject> GetById(Module module, int recordId, bool roleBasedEnabled = true, ICollection<Module> lookupModules = null, bool deleted = false, bool profileBasedEnabled = true, OperationType operation = OperationType.read);
         JArray GetAllById(string moduleName, List<int> recordIds, bool roleBasedEnabled = true);
         JArray Find(string moduleName, FindRequest findRequest, bool roleBasedEnabled = true, int timezoneOffset = 180);
         Task<int> Create(JObject record, Module module);

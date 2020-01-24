@@ -43,8 +43,13 @@ namespace PrimeApps.Model.Repositories
 
             var sql = RecordHelper.GenerateGetSql(module, lookupModules, recordId, owners, CurrentUser.UserId, userGroups, deleted);
             var data = DbContext.Database.SqlQueryDynamic(sql).FirstOrDefault();
+            var record = new JObject();
 
-            var record = data == null ? new JObject() : (JObject)data;
+            if (data != null)
+            {
+                if (profileBasedEnabled && module.Name != "users" && module.Name != "profiles" && module.Name != "roles")
+                    record = await RecordPermissionControl(module.Name, CurrentUser.UserId, (JObject)data, operation);
+            }
 
             if (!record.IsNullOrEmpty())
             {
@@ -63,9 +68,6 @@ namespace PrimeApps.Model.Repositories
                     var sqlSharedEdit = RecordHelper.GenerateSharedSql(userIdsEdit, userGroupIdsEdit);
                     record["shared_edit"] = DbContext.Database.SqlQueryDynamic(sqlSharedEdit);
                 }
-
-                if (profileBasedEnabled && module.Name != "users" && module.Name != "profiles" && module.Name != "roles")
-                    record = await RecordPermissionControl(module.Name, CurrentUser.UserId, record, operation);
             }
 
             return record;
@@ -691,7 +693,7 @@ namespace PrimeApps.Model.Repositories
 
                     return record;
                 default:
-                    return null;
+                    return record;
             }
         }
 
@@ -747,7 +749,7 @@ namespace PrimeApps.Model.Repositories
 
             foreach (var relation in module.Relations)
             {
-                var permissionList = user.Profile.Permissions.Where(q => q.Module.Name == relation.RelatedModule).ToList();
+                var permissionList = user.Profile.Permissions.Where(q => q.ModuleId == relation.ModuleId && q.Type == EntityType.Module).ToList();
                 var relationModulePermission = ProfilePermissionCheck(permissionList, operation);
 
                 //iliskili olan module icin profile ve operation bazli yetki kontrolu sonunda yetkisi yoksa ilgili module ile iliskili alanlari record'dan siliyoruz.
@@ -774,11 +776,11 @@ namespace PrimeApps.Model.Repositories
                 {
                     if (field.DataType == DataType.Lookup)
                     {
-                        var lookupPermission = await LookupPermission(field, user, operation);
+                        var lookupPermission = await LookupModulePermission(field, user, operation);
 
                         //Lookup module icin yetkisi yoksa eger, record uzerinden silmek icin listeye ekliyoruz.
                         if (!lookupPermission)
-                            fieldRemoveList.Add(field.Name);
+                            record = ClearRecord(record, $"{field.Name}.");
                     }
 
                     continue;
@@ -791,10 +793,10 @@ namespace PrimeApps.Model.Repositories
                 {
                     if (field.DataType == DataType.Lookup)
                     {
-                        var lookupPermission = await LookupPermission(field, user, operation);
+                        var lookupPermission = await LookupModulePermission(field, user, operation);
 
                         if (!lookupPermission)
-                            fieldRemoveList.Add(field.Name);
+                            record = ClearRecord(record, $"{field.Name}.");
                     }
                     continue;
                 }
@@ -809,7 +811,7 @@ namespace PrimeApps.Model.Repositories
             return ClearRecord(record, fields: fieldRemoveList);
         }
 
-        private async Task<bool> LookupPermission(Field field, TenantUser user, OperationType operation)
+        private async Task<bool> LookupModulePermission(Field field, TenantUser user, OperationType operation)
         {
             var lookupModule = await DbContext.Modules.Where(q => q.Name == field.LookupType && !q.Deleted).FirstOrDefaultAsync();
 

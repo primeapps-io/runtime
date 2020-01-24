@@ -437,7 +437,7 @@ angular.module('primeapps')
 
                             var sectionsCopied = angular.copy($filter('filter')($scope.module.sections, { deleted: '!true' }, true));
                             var fieldsCopied = angular.copy($filter('filter')($scope.module.fields, { deleted: '!true' }, true));
-                            var defaultFields = ['owner', 'created_by', 'created_at', 'updated_by', 'updated_at','is_sample'];
+                            var defaultFields = ['owner', 'created_by', 'created_at', 'updated_by', 'updated_at', 'is_sample'];
                             var sectionNames = [];
 
                             for (var i = 0; i < sectionsCopied.length; i++) {
@@ -1066,15 +1066,15 @@ angular.module('primeapps')
                     $scope.showPermissionWarning = false;
                     section.permissions = [];
                     angular.forEach($rootScope.appProfiles, function (profile) {
-                        if (profile.is_persistent && profile.has_admin_rights)
-                            profile.name = $filter('translate')('Setup.Profiles.Administrator');
+                        //if (profile.is_persistent && profile.has_admin_rights)
+                        //    profile.name = $filter('translate')('Setup.Profiles.Administrator');
 
-                        if (profile.is_persistent && !profile.has_admin_rights)
-                            profile.name = $filter('translate')('Setup.Profiles.Standard');
+                        //if (profile.is_persistent && !profile.has_admin_rights)
+                        //    profile.name = $filter('translate')('Setup.Profiles.Standard');
 
                         section.permissions.push({
                             profile_id: profile.id,
-                            profile_name: profile.name,
+                            profile_name: profile['name_' + $scope.language],
                             type: 'full',
                             profile_is_admin: profile.has_admin_rights
                         });

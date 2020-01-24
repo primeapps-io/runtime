@@ -649,7 +649,7 @@ namespace PrimeApps.Model.Helpers
 						var relatedRecordId = record[fieldName + "." + relatedModuleName + ".id"].ToString();
 						if (!string.IsNullOrEmpty(relatedRecordId))
 						{
-							var childRecord = recordRepository.GetById(relatedModule, int.Parse(relatedRecordId));
+							var childRecord = await recordRepository.GetById(relatedModule, int.Parse(relatedRecordId));
 
 							if (!(bool)childRecord["is_sample"])
 								await recordRepository.Update(updateRequest, mainModule);

@@ -124,7 +124,7 @@ namespace PrimeApps.App.Controllers
 
             try
             {
-                record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile, lookupModules);
+                record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile, lookupModules, operation: OperationType.read);
 
                 if (record == null)
                     return NotFound();
