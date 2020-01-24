@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore;
+﻿using System;
+using System.Linq;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
@@ -15,11 +17,15 @@ namespace PrimeApps.Auth
 
         public static IWebHost BuildWebHost(string[] args)
         {
-            return WebHost.CreateDefaultBuilder(args)
+            var hostBuilder = WebHost.CreateDefaultBuilder(args)
                 .UseSetting("https_port", "443")
                 .UseStartup<Startup>()
-                .UseSentry()
-                .Build();
+                .UseSentry();
+
+            if (args.Contains("--run-as-service"))
+                hostBuilder.UseContentRoot(AppContext.BaseDirectory);
+            
+            return hostBuilder.Build();
         }
     }
 }
