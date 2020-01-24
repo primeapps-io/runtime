@@ -55,7 +55,7 @@ namespace PrimeApps.App.Services
         [DiagnosticName("Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted")]
         public void OnCommandExecuted(object result, bool async)
         {
-            if (result == null) return;
+            if (result == null || int.TryParse(result.ToString(), out int resultId)) return;
 
             DbCommand command;
             if (!(result is RelationalDataReader) && _command != null)
