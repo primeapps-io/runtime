@@ -6,10 +6,10 @@ RUN dotnet restore "PrimeApps.Auth/PrimeApps.Auth.csproj"
 COPY . .
 
 WORKDIR "/src/PrimeApps.Auth"
-RUN dotnet build "PrimeApps.Auth.csproj" --no-restore -c Debug -o /app
+RUN dotnet build "PrimeApps.Auth.csproj" --no-restore -c Release -o /app
 
 FROM build AS publish
-RUN dotnet publish "PrimeApps.Auth.csproj" --no-restore --self-contained false -c Debug -o /app
+RUN dotnet publish "PrimeApps.Auth.csproj" --no-restore --self-contained false -c Release -o /app
 
 FROM microsoft/dotnet:2.2-aspnetcore-runtime-stretch-slim AS base
 WORKDIR /app

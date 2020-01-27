@@ -6,106 +6,108 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width"/>
-    <title>PrimeApps Identity</title>
-    <link rel="icon" href="~/images/favicon.ico" type="image/x-icon"/>
+	<meta name="viewport" content="width=device-width" />
+	<title>PrimeApps Identity</title>
+	<link rel="icon" href="~/images/favicon.ico" type="image/x-icon" />
 
-    <environment include="Development">
-        <link rel="stylesheet" href="/styles/vendor/bootstrap.css"/>
-        <link rel="stylesheet" href="/styles/vendor/flaticon.css"/>
-        <link rel="stylesheet" href="/styles/vendor/ladda-themeless.css"/>
-        <link rel="stylesheet" href="/styles/vendor/font-awesome.css"/>
-    </environment>
-    <environment exclude="Development">
-        <link rel="stylesheet" href="/styles/bundles-css/auth.css"/>
-    </environment>
+	<environment include="Development">
+		<link rel="stylesheet" href="/styles/vendor/bootstrap.css" />
+		<link rel="stylesheet" href="/styles/vendor/flaticon.css" />
+		<link rel="stylesheet" href="/styles/vendor/ladda-themeless.css" />
+		<link rel="stylesheet" href="/styles/vendor/font-awesome.css" />
+	</environment>
+	<environment exclude="Development">
+		<link rel="stylesheet" href="/bundles/vendor.css" />
+	</environment>
 </head>
 <style>
-    body {
-        background-image: url(/images/background.jpg);
-        background-size: cover;
-        background-repeat: no-repeat;
-    }
+	body {
+		background-image: url(/images/background.jpg);
+		background-size: cover;
+		background-repeat: no-repeat;
+	}
 
-    #fof {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        text-align: center;
-        transform: translate(-50%, -70%);
-    }
+	#fof {
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		text-align: center;
+		transform: translate(-50%, -70%);
+	}
 
-    #fof .hgroup h1, #fof .hgroup h2 {
-        margin: 0;
-        padding: 0;
-        text-transform: uppercase;
-        font-family: sans-serif;
-    }
+		#fof .hgroup h1, #fof .hgroup h2 {
+			margin: 0;
+			padding: 0;
+			text-transform: uppercase;
+			font-family: sans-serif;
+		}
 
-    #fof h1 {
-        font-family: Montserrat, sans-serif, Arial;
-        font-weight: 700;
-        font-size: 55px;
-        color: white;
-        line-height: 1em;
-        letter-spacing: 7px;
-    }
+		#fof h1 {
+			font-family: Montserrat, sans-serif, Arial;
+			font-weight: 700;
+			font-size: 55px;
+			color: white;
+			line-height: 1em;
+			letter-spacing: 7px;
+		}
 
-    #fof h2 {
-        font-family: Montserrat, sans-serif, Arial;
-        font-weight: 700;
-        font-size: 45px;
-        color: white;
-        line-height: 0.8em;
-        letter-spacing: 7px;
-    }
+		#fof h2 {
+			font-family: Montserrat, sans-serif, Arial;
+			font-weight: 700;
+			font-size: 45px;
+			color: white;
+			line-height: 0.8em;
+			letter-spacing: 7px;
+		}
 
-    #fof h3 {
-        font-family: Montserrat, sans-serif, Arial;
-        font-weight: 700;
-        color: white;
-        line-height: 1em;
-        letter-spacing: 3px;
-    }
+		#fof h3 {
+			font-family: Montserrat, sans-serif, Arial;
+			font-weight: 700;
+			color: white;
+			line-height: 1em;
+			letter-spacing: 3px;
+		}
 
-    #fof p {
-        font-family: Montserrat, sans-serif, Arial;
-        font-weight: 700;
-        color: white;
-        line-height: 1em;
-    }
+		#fof p {
+			font-family: Montserrat, sans-serif, Arial;
+			font-weight: 700;
+			color: white;
+			line-height: 1em;
+		}
 
-    #fof p:first-child { margin-top: 0; }
+			#fof p:first-child {
+				margin-top: 0;
+			}
 </style>
 <body>
-<div class="wrapper row2">
-    <div id="container" class="clear">
+	<div class="wrapper row2">
+		<div id="container" class="clear">
 
-        <div id="fof" class="clear">
-            <h1>PrimeApps</h1>
-            <h2>Identity Server</h2>
-            @if (!string.IsNullOrEmpty(ViewBag.UserName))
-            {
-                <h3>Logged in User</h3>
-                <p style="text-transform: uppercase;">@ViewBag.UserName</p>
-                <p>@ViewBag.Email</p>
-            }
-            @RenderBody()
-        </div>
-    </div>
-</div>
+			<div id="fof" class="clear">
+				<h1>PrimeApps</h1>
+				<h2>Identity Server</h2>
+				@if (!string.IsNullOrEmpty(ViewBag.UserName))
+				{
+					<h3>Logged in User</h3>
+					<p style="text-transform: uppercase;">@ViewBag.UserName</p>
+					<p>@ViewBag.Email</p>
+				}
+				@RenderBody()
+			</div>
+		</div>
+	</div>
 
-<environment include="Development">
-    <script src="/scripts/vendor/jquery.js"></script>
-    <script src="/scripts/vendor/jquery-maskedinput.js"></script>
-    <script src="/scripts/vendor/sweetalert.js"></script>
-    <script src="/scripts/vendor/spin.js"></script>
-    <script src="/scripts/vendor/ladda.js"></script>
-</environment>
-<environment exclude="Development">
-    <script src="/scripts/bundles-js/auth.js"></script>
-</environment>
+	<environment include="Development">
+		<script src="/scripts/vendor/jquery.js"></script>
+		<script src="/scripts/vendor/jquery-maskedinput.js"></script>
+		<script src="/scripts/vendor/sweetalert.js"></script>
+		<script src="/scripts/vendor/spin.js"></script>
+		<script src="/scripts/vendor/ladda.js"></script>
+	</environment>
+	<environment exclude="Development">
+		<script src="/bundles/vendor.js"></script>
+	</environment>
 
-@RenderSection("scripts", required: false)
+	@RenderSection("scripts", required: false)
 </body>
 </html>

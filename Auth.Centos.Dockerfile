@@ -6,10 +6,10 @@ RUN dotnet restore "PrimeApps.Auth/PrimeApps.Auth.csproj"
 COPY . .
 
 WORKDIR "/src/PrimeApps.Auth"
-RUN dotnet build "PrimeApps.Auth.csproj" --no-restore -c Debug -o /app
+RUN dotnet build "PrimeApps.Auth.csproj" --no-restore -c Release -o /app
 
 FROM build AS publish
-RUN dotnet publish "PrimeApps.Auth.csproj" --no-restore -c Debug --self-contained false /p:MicrosoftNETPlatformLibrary=Microsoft.NETCore.App -o  /app
+RUN dotnet publish "PrimeApps.Auth.csproj" --no-restore -c Release --self-contained false /p:MicrosoftNETPlatformLibrary=Microsoft.NETCore.App -o  /app
 
 FROM registry.centos.org/dotnet/dotnet-22-runtime-centos7 AS base
 SHELL ["/bin/bash", "-c"]
