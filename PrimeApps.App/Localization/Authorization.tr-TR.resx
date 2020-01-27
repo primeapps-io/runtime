@@ -238,7 +238,7 @@
     <value>Cep Telefonu</value>
   </data>
   <data name="Policy" xml:space="preserve">
-    <value>Ofisim.com Gizlilik Politikasını</value>
+    <value>PrimeApps.io Gizlilik Politikasını</value>
   </data>
   <data name="ProcessCodeErrorMessage" xml:space="preserve">
     <value>Bu e-posta adresi sistemde kayıtlıdır.</value>
@@ -283,7 +283,7 @@
     <value>Soyad</value>
   </data>
   <data name="Terms" xml:space="preserve">
-    <value>Ofisim.com Kullanım Sözleşmesi</value>
+    <value>PrimeApps.io Kullanım Sözleşmesi</value>
   </data>
   <data name="TR" xml:space="preserve">
     <value>Türkçe</value>
@@ -298,7 +298,7 @@
     <value>E-Posta adresi zorunludur.</value>
   </data>
   <data name="VerifyMail" xml:space="preserve">
-    <value>Güvenliğiniz için e-posta adresinize bir doğrulama &lt;br&gt;e-postası gönderdik.&lt;br&gt; &lt;br&gt;Bazı durumlarda e-postalar spam kutusuna düştüğü için Spam/Gereksiz kutusunu da kontrol etmenizi rica ederiz&lt;br&gt; &lt;br&gt;&lt;span class=\"spot\"&gt;E-postada yer alan bağlantıya tıklayarak hemen Ofisim.com hesabınızı kullanmaya başlayabilirsiniz.&lt;/span&gt;</value>
+    <value>Güvenliğiniz için e-posta adresinize bir doğrulama &lt;br&gt;e-postası gönderdik.&lt;br&gt; &lt;br&gt;Bazı durumlarda e-postalar spam kutusuna düştüğü için Spam/Gereksiz kutusunu da kontrol etmenizi rica ederiz&lt;br&gt; &lt;br&gt;&lt;span class=\"spot\"&gt;E-postada yer alan bağlantıya tıklayarak hemen PrimeApps.io hesabınızı kullanmaya başlayabilirsiniz.&lt;/span&gt;</value>
   </data>
   <data name="VerifyUserNotFound" xml:space="preserve">
     <value>Aktif edilecek hesap bulunamamıştır.</value>

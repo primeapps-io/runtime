@@ -163,7 +163,7 @@
     <value>Forgot Password</value>
   </data>
   <data name="ForgotPasswordSuccess" xml:space="preserve">
-    <value>Please check your e-mail for a message from Ofisim.com then click on the link to change your password.</value>
+    <value>We've sent an email to your email address to reset the password. You can change your password by clicking the link in the email.</value>
   </data>
   <data name="ForgotPasswordSuccessTitle" xml:space="preserve">
     <value>Your password reset link has been sent</value>
@@ -265,7 +265,7 @@
     <value>Phone</value>
   </data>
   <data name="Policy" xml:space="preserve">
-    <value>Ofisim.com Privacy Policy</value>
+    <value>PrimeApps.io Privacy Policy</value>
   </data>
   <data name="ProcessCodeErrorMessage" xml:space="preserve">
     <value>This e-mail has already been registered.</value>
@@ -313,7 +313,7 @@
     <value>Last Name</value>
   </data>
   <data name="Terms" xml:space="preserve">
-    <value>Ofisim.com Terms &amp; Conditions</value>
+    <value>PrimeApps.io Terms &amp; Conditions</value>
   </data>
   <data name="TR" xml:space="preserve">
     <value>Türkçe</value>

@@ -51,7 +51,7 @@
                                     {{'Report.ReportName' | translate}}:
                                 </label>
                                 <div class="col-sm-5">
-                                    <input name="name" class="form-control" maxlength="50" required
+                                    <input name="name" class="form-control" maxlength="50" required ng-disabled="isSystem"
                                            ng-model="reportModel['name_'+user.language]" />
                                 </div>
                             </div>
@@ -64,7 +64,7 @@
                                             required
                                             ng-model="reportModel.module_id"
                                             ng-change="selectModule()"
-                                            ng-disabled="id"
+                                            ng-disabled="ReportId || isSystem"
                                             ng-options="o.id as o['label_' + language + '_singular'] for o in modules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
                                         <option value="">{{'Common.Select' | translate}}</option>
                                     </select>
@@ -82,6 +82,7 @@
                                             name="category_id"
                                             required
                                             ng-model="reportModel.category_id"
+                                            ng-disabled="isSystem"
                                             ng-options="o.id as o['name_'+user.language] for o in reportCategory | orderBy:'order'">
                                         <option value="">{{'Common.Select' | translate}}</option>
                                     </select>
@@ -98,7 +99,7 @@
                                         <input name="report_type" required type="radio" style="margin-left: -16px;"
                                                ng-model="reportModel.report_type"
                                                value="tabular"
-                                               ng-disabled="isEdit">
+                                               ng-disabled="isEdit || isSystem">
                                         {{'Report.ListviewReport' | translate}}
                                         <!--<span>Liste raporları verilerinizi daha basit şekilde listelemenizi sağlar.</span>-->
                                     </label>
@@ -107,7 +108,7 @@
                                                ng-model="reportModel.report_type"
                                                value="summary"
                                                style="margin-left: -16px;"
-                                               ng-disabled="isEdit">
+                                               ng-disabled="isEdit || isSystem">
                                         {{'Report.SummaryReport' | translate}}
                                         <!--<span>enizi sağlar.</span>-->
                                     </label>
@@ -116,7 +117,7 @@
                                                ng-model="reportModel.report_type"
                                                value="single"
                                                style="margin-left: -16px;"
-                                               ng-disabled="isEdit">
+                                               ng-disabled="isEdit || isSystem">
                                         {{'Report.Single' | translate}}
                                         <!--<span>Özet Raporlar, verilerinizi alt toplamlar, gruplandırmalar ve diğer özet bilgilerle birlikte görüntülemenizi sağlar.</span>-->
                                     </label>
@@ -128,15 +129,15 @@
                                 <div class="col-sm-9">
                                     <div class="sharing">
                                         <label>
-                                            <input type="radio" ng-model="reportModel.sharing_type" value="me">
+                                            <input type="radio" ng-model="reportModel.sharing_type" value="me" ng-disabled="isSystem">
                                             {{'View.ShareMe' | translate}}
                                         </label><br />
                                         <label ng-if="user.profile.has_admin_rights">
-                                            <input type="radio" ng-model="reportModel.sharing_type" value="everybody">
+                                            <input type="radio" ng-model="reportModel.sharing_type" value="everybody" ng-disabled="isSystem">
                                             {{'View.ShareEveryone' | translate}}
                                         </label><br ng-if="user.profile.has_admin_rights" />
                                         <label>
-                                            <input type="radio" ng-model="reportModel.sharing_type" value="custom">
+                                            <input type="radio" ng-model="reportModel.sharing_type" value="custom" ng-disabled="isSystem">
                                             {{'View.ShareCustom' | translate}}
                                         </label>
                                     </div>
@@ -145,6 +146,7 @@
                                         <tags-input name="shares"
                                                     class="shared-users-input"
                                                     ng-model="reportModel.shares"
+                                                    ng-disabled="isSystem"
                                                     display-property="full_name"
                                                     key-property="id"
                                                     placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
@@ -169,10 +171,7 @@
                                             {{'Module.RequiredError' | translate}}
                                         </p>
                                         <p ng-if="reportForm.$error.operations">
-                                            {{
-'Report.ReportTypeRequiredError' |
-                                            translate
-                                            }}
+                                            {{'Report.ReportTypeRequiredError' | translate}}
                                         </p>
                                     </div>
                                 </div>
@@ -215,7 +214,8 @@
                                                         class="form-control ng-animate-disabled"
                                                         ng-options="o as o['label_' + language] for o in module.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.name"
                                                         ng-change="filter.value = null; filter.operator = null;  filter.disabled = false; filter.costumeDate =null "
-                                                        ng-model="filter.field">
+                                                        ng-model="filter.field"
+                                                        ng-disabled="isSystem">
                                                     <option value="">{{'Common.Select' | translate}}</option>
                                                 </select>
                                             </td>
@@ -226,14 +226,16 @@
                                                         ng-options="o as o.label[language] for o in filter.field.operators | orderBy:'order' track by o.order"
                                                         ng-change="operatorChanged(filter.field, $index)"
                                                         ng-model="filter.operator"
-                                                        ng-if="!filter.field.lookupModulePrimaryField  || filter.field.lookup_type ==='users'">
+                                                        ng-if="!filter.field.lookupModulePrimaryField  || filter.field.lookup_type ==='users'"
+                                                        ng-disabled="isSystem">
                                                     <option value="">{{'Common.Select' | translate}}</option>
                                                 </select>
                                                 <select class="form-control ng-animate-disabled"
                                                         ng-options="o as o.label[language] for o in filter.field.lookupModulePrimaryField.operators | orderBy:'order' track by o.order"
                                                         ng-change="operatorChanged(filter.field, $index)"
                                                         ng-model="filter.operator"
-                                                        ng-if="filter.field.lookupModulePrimaryField && filter.field.lookup_type !='users'">
+                                                        ng-if="filter.field.lookupModulePrimaryField && filter.field.lookup_type !='users'"
+                                                        ng-disabled="isSystem">
                                                     <option value="">{{'Common.Select' | translate}}</option>
                                                 </select>
                                             </td>
@@ -241,14 +243,14 @@
                                                 <input type="text"
                                                        class="form-control ng-animate-disabled"
                                                        ng-model="filter.value"
-                                                       ng-disabled="filter.disabled"
+                                                       ng-disabled="filter.disabled || isSystem"
                                                        maxlength="100"
                                                        ng-if="!filter.field.lookupModulePrimaryField ? (filter.field.data_type === 'text_single' || filter.field.data_type === 'text_multi' || filter.field.data_type === 'email' || filter.field.data_type === undefined) : (filter.field.lookupModulePrimaryField.data_type === 'text_single' || filter.field.lookupModulePrimaryField.data_type === 'text_multi' || filter.field.lookupModulePrimaryField.data_type === 'email' || filter.field.lookupModulePrimaryField.data_type === undefined)&& filter.field.lookup_type !='users'" />
 
                                                 <input type="text"
                                                        class="form-control ng-animate-disabled"
                                                        ng-model="filter.value"
-                                                       ng-disabled="filter.disabled"
+                                                       ng-disabled="filter.disabled || isSystem"
                                                        maxlength="50"
                                                        numeric
                                                        ng-if="!filter.field.lookupModulePrimaryField ? (filter.field.data_type === 'number' || filter.field.data_type === 'number_auto') : (filter.field.lookupModulePrimaryField.data_type === 'number' || filter.field.lookupModulePrimaryField.data_type === 'number_auto')" />
@@ -256,7 +258,7 @@
                                                 <input type="text"
                                                        class="form-control ng-animate-disabled"
                                                        ng-model="filter.value"
-                                                       ng-disabled="filter.disabled"
+                                                       ng-disabled="filter.disabled || isSystem"
                                                        maxlength="19"
                                                        places="filter.field.decimal_places || 2"
                                                        number-decimal
@@ -265,7 +267,7 @@
                                                 <input type="text"
                                                        class="form-control ng-animate-disabled"
                                                        ng-model="filter.value"
-                                                       ng-disabled="filter.disabled"
+                                                       ng-disabled="filter.disabled || isSystem"
                                                        maxlength="50"
                                                        places="filter.field.decimal_places || 2"
                                                        currency-symbol="filter.field.currency_symbol"
@@ -277,7 +279,8 @@
                                                         ng-model="filter.costumeDate"
                                                         ng-change="dateChange(filter)"
                                                         ng-options="o.value as o.label for o in costumeDateFilter"
-                                                        ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'date_time' || filter.field.data_type === 'date'  : filter.field.lookupModulePrimaryField.data_type === 'date_time' || filter.field.data_type === 'date'">
+                                                        ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'date_time' || filter.field.data_type === 'date'  : filter.field.lookupModulePrimaryField.data_type === 'date_time' || filter.field.data_type === 'date'"
+                                                        ng-disabled="isSystem">
                                                     <option value="">{{'Common.Select' | translate}}</option>
                                                 </select>
                                                 <input type="number"
@@ -285,6 +288,7 @@
                                                        class="form-control ng-animate-disabled "
                                                        ng-model="filter.valueX"
                                                        ng-change="nextPrevDateChange(filter)"
+                                                       ng-disabled="isSystem"
                                                        ng-class="{'has-error': viewForm.$submitted && viewForm[filter.field.name+$index+'valueX'].$invalid}"
                                                        required
                                                        name="{{filter.field.name+$index+'valueX'}}"
@@ -295,6 +299,7 @@
                                                         required
                                                         name="{{filter.field.name+$index+'nextprevdatetype'}}"
                                                         ng-model="filter.nextprevdatetype"
+                                                        ng-disabled="isSystem"
                                                         ng-change="nextPrevDateTypeChange(filter)"
                                                         ng-options="o.value as o.label for o in dateFormat"
                                                         ng-if="(!filter.field.lookupModulePrimaryField || filter.field.data_type === 'date_time' || filter.field.lookupModulePrimaryField.data_type === 'date') && (filter.costumeDate==='costumeN' || filter.costumeDate==='costumeW' || filter.costumeDate==='costumeM' || filter.costumeDate==='costumeY')">
@@ -308,12 +313,13 @@
                                                 <input type="text"
                                                        class="form-control ng-animate-disabled hide"
                                                        ng-model="filter.value"
+                                                       ng-disabled="isSystem"
                                                        ng-if="(!filter.field.lookupModulePrimaryField || filter.field.data_type === 'date_time' || filter.field.lookupModulePrimaryField.data_type === 'date') && (filter.costumeDate==='costumeN' || filter.costumeDate==='costumeW' || filter.costumeDate==='costumeM' || filter.costumeDate==='costumeY')">
 
                                                 <input type="text"
                                                        class="form-control ng-animate-disabled"
                                                        ng-model="filter.value"
-                                                       ng-disabled="filter.disabled"
+                                                       ng-disabled="filter.disabled || isSystem"
                                                        data-autoclose="1"
                                                        data-date-type="iso"
                                                        data-min-date="{{(filter.field.validation.min ? (filter.field.validation.min === 'today' ? currentDayMin : filter.field.validation.min) : undefined)}}"
@@ -330,7 +336,7 @@
                                                            class="form-control ng-animate-disabled date-pick"
                                                            ng-model="filter.value"
                                                            ng-change="dateTimeChanged(filter.field)"
-                                                           ng-disabled="filter.disabled"
+                                                           ng-disabled="filter.disabled || isSystem"
                                                            placeholder="{{'Common.Date' | translate}}"
                                                            data-autoclose="1"
                                                            data-date-type="iso"
@@ -343,7 +349,7 @@
                                                     <input type="text"
                                                            class="form-control ng-animate-disabled time-pick"
                                                            ng-model="filter.value"
-                                                           ng-disabled="!filter.value"
+                                                           ng-disabled="!filter.value || isSystem"
                                                            placeholder="{{'Common.Time' | translate}}"
                                                            data-autoclose="1"
                                                            data-time-type="iso"
@@ -359,7 +365,7 @@
                                                 <input type="text"
                                                        class="form-control ng-animate-disabled"
                                                        ng-model="filter.value"
-                                                       ng-disabled="filter.disabled"
+                                                       ng-disabled="filter.disabled || isSystem"
                                                        placeholder="{{'Common.Time' | translate}}"
                                                        data-autoclose="1"
                                                        data-time-type="iso"
@@ -374,7 +380,7 @@
 
                                                 <select class="form-control ng-animate-disabled"
                                                         ng-model="filter.value"
-                                                        ng-disabled="filter.disabled"
+                                                        ng-disabled="filter.disabled || isSystem"
                                                         ng-options="o as o.label[language] for o in modulePicklists[!filter.field.lookupModulePrimaryField ? filter.field.picklist_id : filter.field.lookupModulePrimaryField.picklist_id] track by o.id"
                                                         ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'picklist' : filter.field.lookupModulePrimaryField.data_type === 'picklist'">
                                                     <option value="">{{'Common.Select' | translate}}</option>
@@ -388,7 +394,7 @@
                                                             placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
                                                             replace-spaces-with-dashes="false"
                                                             add-from-autocomplete-only="true"
-                                                            ng-disabled="filter.disabled"
+                                                            ng-disabled="filter.disabled || isSystem"
                                                             ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'multiselect' : filter.field.lookupModulePrimaryField.data_type === 'multiselect'">
                                                     <auto-complete source="multiselect($query, filter.field)"
                                                                    min-length="0"
@@ -405,7 +411,7 @@
                                                             placeholder="{{'Common.Search' | translate}}"
                                                             replace-spaces-with-dashes="false"
                                                             add-from-autocomplete-only="true"
-                                                            ng-disabled="filter.disabled"
+                                                            ng-disabled="filter.disabled || isSystem"
                                                             ng-if="!filter.field.lookupModulePrimaryField ? (filter.field.data_type === 'lookup' && filter.field.lookup_type === 'users') :  filter.field.lookup_type === 'users'">
                                                     <auto-complete source="lookupUser($query, 'logged_in_user')"
                                                                    min-length="0"
@@ -417,12 +423,13 @@
                                                 <input type="text"
                                                        class="form-control ng-animate-disabled"
                                                        ng-model="filter.value"
-                                                       ng-disabled="filter.disabled"
+                                                       ng-disabled="filter.disabled || isSystem"
                                                        maxlength="100"
                                                        ng-if="!filter.field.lookupModulePrimaryField ? (filter.field.data_type === 'lookup' && filter.field.lookup_type != 'users') : (filter.field.lookupModulePrimaryField.data_type === 'lookup' && filter.lookupModulePrimaryField.field.lookup_type != 'users')" />
 
                                                 <select class="form-control ng-animate-disabled"
                                                         ng-model="filter.value"
+                                                        ng-disabled="isSystem"
                                                         ng-options="o as o.label[language] for o in modulePicklists['yes_no'] track by o.id"
                                                         ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'checkbox' : filter.field.lookupModulePrimaryField.data_type === 'checkbox'">
                                                     <option value="">{{'Common.Select' | translate}}</option>
@@ -497,16 +504,14 @@
                                                         <div class="form-group"
                                                              ng-class="{'has-error': reportForm.$submitted && reportForm.group_field.$invalid}">
                                                             <label>
-                                                                <span class="required-field">*</span>{{
-'Report.GroupArea'
-                                                                | translate
-                                                                }}:
+                                                                <span class="required-field">*</span>{{'Report.GroupArea' | translate}}:
                                                             </label>
                                                             <select class="form-control"
                                                                     name="group_field"
                                                                     ng-model="reportModel.group_field"
                                                                     ng-change="changeGroupField()"
                                                                     required
+                                                                    ng-disabled="isSystem"
                                                                     ng-options="o.name as o.label for o in fields.availableFields">
                                                                 <option value="">
                                                                     {{'Common.Select' | translate}}
@@ -517,13 +522,11 @@
                                                     <div class="col-sm-6">
                                                         <div class="form-group">
                                                             <label for="sel2">
-                                                                {{
-'Report.OrderArea' |
-                                                                translate
-                                                                }}:
+                                                                {{'Report.OrderArea' | translate}}:
                                                             </label>
                                                             <select class="form-control"
                                                                     ng-model="reportModel.sort_field" id="sel2"
+                                                                    ng-disabled="isSystem"
                                                                     ng-options="o.name as o.label for o in fields.availableFields">
                                                                 <option value="">
                                                                     {{'Common.Select' | translate}}
@@ -546,10 +549,7 @@
                                     <div class="col-sm-12">
                                         <div class="subpanel">
                                             <h5 class="subpanel-heading">
-                                                {{
-'Report.CalculationFields' |
-                                                translate
-                                                }}
+                                                {{'Report.CalculationFields' | translate}}
                                             </h5>
                                             <div class="subpanel-body">
                                                 <div class="row row-custom">
@@ -591,6 +591,7 @@
                                                                                ng-click="aggregationChange({field:field.name,aggregation_type:'sum'},field)"
                                                                                value="sum-{{field.name}}"
                                                                                name="{{ reportModel.report_type === 'summary' || reportModel.report_type ===  'single' ? module.id : field.name }}"
+                                                                               ng-disabled="isSystem"
                                                                                style="">
                                                                     </td>
                                                                     <td class="text-center">
@@ -598,6 +599,7 @@
                                                                                value="avg-{{field.name}}"
                                                                                ng-click="aggregationChange({field:field.name,aggregation_type:'avg'},field)"
                                                                                name="{{ reportModel.report_type ===  'summary' || reportModel.report_type ===  'single' ? module.id : field.name }}"
+                                                                               ng-disabled="isSystem"
                                                                                style="">
                                                                     </td>
                                                                     <td class="text-center">
@@ -605,6 +607,7 @@
                                                                                value="min-{{field.name}}"
                                                                                ng-click="aggregationChange({field:field.name,aggregation_type:'min'},field)"
                                                                                name="{{ reportModel.report_type ===  'summary' || reportModel.report_type ===  'single' ? module.id : field.name }}"
+                                                                               ng-disabled="isSystem"
                                                                                style="">
                                                                     </td>
                                                                     <td class="text-center">
@@ -612,10 +615,11 @@
                                                                                value="max-{{field.name}}"
                                                                                ng-click="aggregationChange({field:field.name,aggregation_type:'max'},field)"
                                                                                name="{{ reportModel.report_type ===  'summary' || reportModel.report_type ===  'single' ? module.id : field.name }}"
+                                                                               ng-disabled="isSystem"
                                                                                style="">
                                                                     </td>
                                                                     <td class="text-center" ng-click="removeSelectAggregation(field)">
-                                                                        <input type="button" class="btn btn-custom" ng-click="removeSelectAggregation(field)" value="{{'Report.RemoveSelection' | translate }}" />
+                                                                        <input type="button" class="btn btn-custom" ng-click="removeSelectAggregation(field)" ng-disabled="isSystem" value="{{'Report.RemoveSelection' | translate }}" />
                                                                     </td>
 
                                                                 </tr>
@@ -629,6 +633,7 @@
                                                                                ng-click="aggregationChange({field:'created_by',aggregation_type:'count'})"
                                                                                value="count-created_by"
                                                                                name="{{ reportModel.report_type ===  'summary' || reportModel.report_type ===  'single' ? module.id : 'created_at' }}"
+                                                                               ng-disabled="isSystem"
                                                                                style="">
                                                                     </td>
                                                                 </tr>
@@ -663,6 +668,7 @@
                                                                     ng-model="reportModel.chart.type"
                                                                     name="chartTypes"
                                                                     required
+                                                                    ng-disabled="isSystem"
                                                                     ng-options="o.name as o.label for o in chartTypes">
                                                                 <option value="">
                                                                     {{'Common.Select' | translate}}
@@ -674,35 +680,31 @@
                                                         <div class="form-group"
                                                              ng-class="{'has-error': reportForm.$submitted && reportForm.xaxis_name.$invalid}">
                                                             <label for="xaxis_name">
-                                                                {{
-'Report.Chart.XaxisName' |
-                                                                translate
-                                                                }}:
+                                                                {{'Report.Chart.XaxisName' | translate}}:
                                                             </label>
                                                             <input class="form-control"
                                                                    id="xaxis_name"
                                                                    required
+                                                                   ng-disabled="isSystem"
                                                                    ng-model="reportModel.chart['xaxis_name_'+user.language]"
                                                                    name="xaxis_name" />
-                                                           
+
                                                         </div>
                                                     </div>
                                                     <div class="col-sm-4">
                                                         <div class="form-group"
                                                              ng-class="{'has-error': reportForm.$submitted && reportForm.yaxis_name.$invalid}">
                                                             <label for="yaxis_name">
-                                                                {{
-'Report.Chart.YaxisName' |
-                                                                translate
-                                                                }}:
+                                                                {{'Report.Chart.YaxisName' | translate}}:
                                                             </label>
                                                             <input class="form-control"
                                                                    id="yaxis_name"
                                                                    required
+                                                                   ng-disabled="isSystem"
                                                                    ng-model="reportModel.chart['yaxis_name_'+user.language]"
                                                                    name="yaxis_name" />
                                                         </div>
-                                                        
+
                                                     </div>
 
                                                 </div>
@@ -729,10 +731,7 @@
                                                         <div class="form-group"
                                                              ng-class="{'has-error': reportForm.$submitted && reportForm.yaxis_name.$invalid}">
                                                             <label>
-                                                                {{
-'Report.Widget.Icon' |
-                                                                translate
-                                                                }}:
+                                                                {{'Report.Widget.Icon' | translate}}:
                                                             </label>
 
                                                             <button type="button" data-container="form"
@@ -741,6 +740,7 @@
                                                                     ng-model="reportModel.widget.icon"
                                                                     data-html="1" data-toggle="true"
                                                                     bs-options="icon.value as icon.label for icon in icons"
+                                                                    ng-disabled="isSystem"
                                                                     bs-select>
                                                                 <span class="caret"></span>
                                                             </button>
@@ -750,13 +750,11 @@
                                                         <div class="form-group"
                                                              ng-class="{'has-error': reportForm.$submitted && reportForm.colorpicker.$invalid}">
                                                             <label>
-                                                                {{
-'Report.Widget.Color' |
-                                                                translate
-                                                                }}:
+                                                                {{'Report.Widget.Color' | translate}}:
                                                             </label>
                                                             <input name="colorpicker" type="color"
                                                                    class="form-control"
+                                                                   ng-disabled="isSystem"
                                                                    required
                                                                    ng-model="reportModel.widget.color">
                                                         </div>
@@ -775,10 +773,7 @@
                     </div>
                     <div class="wizard-buttons text-right">
                         <a href="#/app/reports" class="btn btn-custom">
-                            {{
-'Common.Cancel' |
-                            translate
-                            }}
+                            {{'Common.Cancel' | translate}}
                         </a>
                         <button type="button" class="btn btn-primary btn-w-sm" ng-click="stepBack(1)">
                             {{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left"
@@ -802,7 +797,7 @@
                                         {{'Report.ReportName' | translate}}:
                                     </label>
                                     <div class="col-sm-5">
-                                        <span> {{ reportModel.name }} </span>
+                                        <span> {{ reportModel['name_'+user.language] }} </span>
                                     </div>
                                 </div>
                                 <div class="row ">
@@ -829,12 +824,9 @@
                     <div class="wizard-buttons text-right">
                         <a href="#/app/reports" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
                         <button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 2">
-                            <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i>{{
-'Common.Previous'
-                            | translate
-                            }}
+                            <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i>{{'Common.Previous' | translate}}
                         </button>
-                        <button type="submit" class="btn btn-primary btn-w-lg" ladda="saving">
+                        <button type="submit" class="btn btn-primary btn-w-lg" ladda="saving" ng-disabled="isSystem">
                             <i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}
                         </button>
                     </div>

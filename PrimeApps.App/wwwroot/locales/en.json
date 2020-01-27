@@ -151,7 +151,7 @@
     "Send": "Send",
     "PasswordError": "No user is found with this e-mail address.",
     "PasswordActivationError": "Your account is not activated.",
-    "PasswordSuccess": "Please check your e-mail for a message from Ofisim.com then click on the link to change your password.",
+    "PasswordSuccess": "We've sent an email to your email address to reset the password. You can change your password by clicking the link in the email.",
     "Register": "Register for free now.",
     "BackToLogin": "Back to login form",
     "LoginForm": "Already have an account? Sign-in.",

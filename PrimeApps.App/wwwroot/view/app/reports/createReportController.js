@@ -165,12 +165,14 @@ angular.module('primeapps')
                     nextprevdatetype: "Y"
                 }
             ];
+
             $scope.setEdit = function (reportId) {
                 ReportsService.getReport(reportId).then(function (result) {
                     $scope.currentReport = result.data;
+                    $scope.isSystem = $scope.currentReport.system_type === 'system' ? true : false;
                     $scope.setStep1();
                 });
-            }
+            };
 
 
             $scope.dateChange = function (filter) {
@@ -221,7 +223,7 @@ angular.module('primeapps')
                 $scope.loadingFilter = true;
                 $scope.numberField = [];
                 $scope.reportModel.aggregations = [];
-                $scope.module = angular.copy($filter('filter')($rootScope.modules, {id: $scope.reportModel.module_id}, true)[0]);
+                $scope.module = angular.copy($filter('filter')($rootScope.modules, { id: $scope.reportModel.module_id }, true)[0]);
                 $scope.fields = {
                     "availableFields": [],
                     "selectedFields": []
@@ -271,7 +273,7 @@ angular.module('primeapps')
                                     $scope.reportModel.filters[j].field = name;
                                 }
 
-                                var field = $filter('filter')($scope.module.fields, {name: name}, true)[0];
+                                var field = $filter('filter')($scope.module.fields, { name: name }, true)[0];
                                 var fieldValue = null;
 
                                 if (!field)
@@ -279,14 +281,14 @@ angular.module('primeapps')
 
                                 switch (field.data_type) {
                                     case 'picklist':
-                                        fieldValue = $filter('filter')($scope.modulePicklists[field.picklist_id], {labelStr: value}, true)[0];
+                                        fieldValue = $filter('filter')($scope.modulePicklists[field.picklist_id], { labelStr: value }, true)[0];
                                         break;
                                     case 'multiselect':
                                         fieldValue = [];
                                         var multiselectValue = value.split('|');
 
                                         angular.forEach(multiselectValue, function (picklistLabel) {
-                                            var picklist = $filter('filter')($scope.modulePicklists[field.picklist_id], {labelStr: picklistLabel}, true)[0];
+                                            var picklist = $filter('filter')($scope.modulePicklists[field.picklist_id], { labelStr: picklistLabel }, true)[0];
 
                                             if (picklist)
                                                 fieldValue.push(picklist);
@@ -303,8 +305,8 @@ angular.module('primeapps')
                                             } else {
                                                 if (value != '-') {
                                                     var userItem =
-                                                        $filter('filter')($rootScope.users, {id: parseInt(value)}, true)[0
-                                                            ];
+                                                        $filter('filter')($rootScope.users, { id: parseInt(value) }, true)[0
+                                                        ];
                                                     user.id = userItem.id;
                                                     user.email = userItem.email;
                                                     user.full_name = userItem.full_name;
@@ -338,9 +340,9 @@ angular.module('primeapps')
 
                                         break;
                                     case 'checkbox':
-                                        fieldValue = $filter('filter')($scope.modulePicklists.yes_no, {system_code: value}, true)[0];
+                                        fieldValue = $filter('filter')($scope.modulePicklists.yes_no, { system_code: value }, true)[0];
                                         break;
-                                    default :
+                                    default:
                                         fieldValue = value;
                                         break;
                                 }
@@ -532,11 +534,11 @@ angular.module('primeapps')
                     return true;
                 }
 
-                $scope.reportModel.chart['yaxis_name_'+$rootScope.user.language] = field["label_" + $rootScope.language];
+                $scope.reportModel.chart['yaxis_name_' + $rootScope.user.language] = field["label_" + $rootScope.language];
                 if ($scope.reportModel.report_type === 'summary' || $scope.reportModel.report_type === 'single') {
                     $scope.reportModel.aggregations = [];
                 } else {
-                    var item = $filter('filter')($scope.reportModel.aggregations, {field: obj.field}, true)[0];
+                    var item = $filter('filter')($scope.reportModel.aggregations, { field: obj.field }, true)[0];
                     if (item) {
                         item.aggregation_type = obj.aggregation_type;
                         return true;
@@ -636,7 +638,7 @@ angular.module('primeapps')
 
                 if ($scope.reportModel.report_type === 'tabular') {
                     angular.forEach(aggregations, function (item) {
-                        var field = $filter('filter')($scope.fields.selectedFields, {name: item.field}, true)[0];
+                        var field = $filter('filter')($scope.fields.selectedFields, { name: item.field }, true)[0];
                         if (!field) {
                             fields.push(
                                 {
@@ -658,7 +660,7 @@ angular.module('primeapps')
 
                 $scope.saving = true;
                 var report = {};
-                if($scope.currentReport){
+                if ($scope.currentReport) {
                     $rootScope.user.language === 'en' ? report.name_tr = $scope.currentReport.name_tr : report.name_en = $scope.currentReport.name_en;
                 }
 
@@ -668,11 +670,11 @@ angular.module('primeapps')
                 report["name_" + $rootScope.user.language] = $scope.reportModel["name_" + $rootScope.user.language];
                 report.report_type = $scope.reportModel.report_type;
                 report.aggregations = $scope.reportModel.aggregations;
- 
-                if( $rootScope.user.language === 'en'){
-                    report['name_tr'] = $scope.currentReport ? $scope.currentReport['name_tr'] : report['name_en'] ;
-                }else{
-                    report['name_en'] = $scope.currentChart ? $scope.currentReport['name_en'] : report['name_tr'] ;
+
+                if ($rootScope.user.language === 'en') {
+                    report['name_tr'] = $scope.currentReport ? $scope.currentReport['name_tr'] : report['name_en'];
+                } else {
+                    report['name_en'] = $scope.currentChart ? $scope.currentReport['name_en'] : report['name_tr'];
                 }
 
 
@@ -682,16 +684,16 @@ angular.module('primeapps')
                     report.group_field = $scope.reportModel.group_field;
                     report.sort_field = $scope.reportModel.sort_field;
                     report.sort_direction = "asc";
-                    if( $rootScope.user.language === 'en'){
-                        report.chart['caption_tr'] = $scope.currentChart ? $scope.currentChart['caption_tr'] : report.chart['caption_en'] ;
+                    if ($rootScope.user.language === 'en') {
+                        report.chart['caption_tr'] = $scope.currentChart ? $scope.currentChart['caption_tr'] : report.chart['caption_en'];
                         report.chart['xaxis_name_tr'] = $scope.currentChart ? $scope.currentChart['xaxisname_tr'] : report.chart['xaxis_name_en'];
-                        report.chart['yaxis_name_tr'] = $scope.currentChart ? $scope.currentChart['yaxisname_tr'] : report.chart['yaxis_name_en'] ;                        
-                    }else{
-                        report.chart['caption_en'] = $scope.currentChart ? $scope.currentChart['caption_en'] : report.chart['caption_tr'] ;
+                        report.chart['yaxis_name_tr'] = $scope.currentChart ? $scope.currentChart['yaxisname_tr'] : report.chart['yaxis_name_en'];
+                    } else {
+                        report.chart['caption_en'] = $scope.currentChart ? $scope.currentChart['caption_en'] : report.chart['caption_tr'];
                         report.chart['xaxis_name_en'] = $scope.currentChart ? $scope.currentChart['xaxisname_en'] : report.chart['xaxis_name_tr'];
-                        report.chart['yaxis_name_en'] = $scope.currentChart ? $scope.currentChart['yaxisname_en'] : report.chart['yaxis_name_tr'] ;
+                        report.chart['yaxis_name_en'] = $scope.currentChart ? $scope.currentChart['yaxisname_en'] : report.chart['yaxis_name_tr'];
                     }
-                    
+
                     if (report.aggregations.length < 1) {
                         report.aggregations = [
                             {
@@ -720,12 +722,12 @@ angular.module('primeapps')
                     };
 
                     report.widget["name_" + $rootScope.user.language] = report["name_" + $rootScope.user.language];
-                    if( $rootScope.user.language === 'en'){
-                        report.widget['name_tr'] = $scope.currentwidget ? $scope.currentwidget['name_tr'] : report.widget['name_en'] ;
-                       
-                    }else{
-                        report.widget['name_en'] = $scope.currentwidget ? $scope.currentwidget['name_en'] : report.widget['name_tr'] ;
-                        
+                    if ($rootScope.user.language === 'en') {
+                        report.widget['name_tr'] = $scope.currentwidget ? $scope.currentwidget['name_tr'] : report.widget['name_en'];
+
+                    } else {
+                        report.widget['name_en'] = $scope.currentwidget ? $scope.currentwidget['name_en'] : report.widget['name_tr'];
+
                     }
                 }
                 if (report.report_type === 'tabular') {
@@ -758,8 +760,7 @@ angular.module('primeapps')
 
 
             };
-
-
+             
             $scope.step1 = function () {
                 $scope.reportForm.$submitted = true;
                 if ($scope.reportForm.$valid) {
@@ -788,21 +789,22 @@ angular.module('primeapps')
                 }
 
             };
+
             $scope.stepBack = function (step) {
                 $scope.wizardStep = step;
             };
 
             $scope.setValideStep3 = function () {
                 switch ($scope.reportModel.report_type) {
-                    case  "tabular":
+                    case "tabular":
                         break;
-                    case "summary" :
+                    case "summary":
                         $scope.setValide("group_field");
                         $scope.setValide("chartTypes");
                         $scope.setValide("yaxis_name");
                         $scope.setValide("xaxis_name");
                         break;
-                    case "single" :
+                    case "single":
                         break;
 
                 }
@@ -814,7 +816,7 @@ angular.module('primeapps')
             };
 
             $scope.changeGroupField = function () {
-                var field = $filter('filter')($scope.fields.availableFields, {name: $scope.reportModel.group_field}, true)[0];
+                var field = $filter('filter')($scope.fields.availableFields, { name: $scope.reportModel.group_field }, true)[0];
                 if (field)
                     $scope.reportModel.chart['xaxis_name_' + $rootScope.user.language] = field["label_" + $rootScope.language];
             };
@@ -826,6 +828,7 @@ angular.module('primeapps')
                 $scope.reportModel.shares = $scope.currentReport.shares;
                 $scope.reportModel["name_" + $rootScope.user.language] = $scope.currentReport["name_" + $rootScope.user.language];
                 $scope.reportModel.filters = $scope.currentReport.filters;
+                $scope.reportModel.system_type = $scope.currentReport.system_type;
                 $scope.selectModule();
                 if ($scope.currentReport.fields) {
                     $scope.fields.availableFields = [];
@@ -833,7 +836,7 @@ angular.module('primeapps')
                     angular.forEach($scope.module.fields, function (item) {
                         if (item.deleted || !ModuleService.hasFieldDisplayPermission(item) && item.multiline_type != 'large')
                             return;
-                        var field = $filter('filter')($scope.currentReport.fields, {field: item.name}, true)[0];
+                        var field = $filter('filter')($scope.currentReport.fields, { field: item.name }, true)[0];
                         if (field) {
                             $scope.fields.selectedFields.push(item);
                         } else {
@@ -849,7 +852,7 @@ angular.module('primeapps')
                     $scope.reportModel.sort_field = $scope.currentReport.sort_field;
                     ReportsService.getChart($scope.currentReport.id).then(function (result) {
                         $scope.currentChart = result.data.chart;
-                        $scope.reportModel.chart = {type: $scope.currentChart.chart_type};
+                        $scope.reportModel.chart = { type: $scope.currentChart.chart_type };
                         $scope.reportModel.chart['yaxis_name_' + $rootScope.user.language] = $scope.currentChart['yaxisname_' + $rootScope.user.language]
                         $scope.reportModel.chart['xaxis_name_' + $rootScope.user.language] = $scope.currentChart['xaxisname_' + $rootScope.user.language]
 
@@ -858,7 +861,7 @@ angular.module('primeapps')
                 if ($scope.currentReport.report_type === "single") {
                     ReportsService.getWidget($scope.currentReport.id).then(function (result) {
                         $scope.currentwidget = result.data[0];
-                        
+
                         $scope.reportModel.widget = {
                             color: $scope.currentwidget.color,
                             icon: $scope.currentwidget.icon
@@ -869,18 +872,18 @@ angular.module('primeapps')
 
 
                 angular.forEach($scope.numberField, function (item) {
-                    var aggregation = $filter('filter')($scope.currentReport.aggregations, {field: item.name}, true)[0];
+                    var aggregation = $filter('filter')($scope.currentReport.aggregations, { field: item.name }, true)[0];
                     if (aggregation) {
                         item.Aggregation = aggregation.aggregation_type + "-" + aggregation.field;
                     }
                 });
                 if ($scope.currentReport.report_type === "single" || $scope.currentReport.report_type === "summary")
-                    $scope.reportModel.aggregations[0].aggregation_type === 'count' ? $scope.countField = {Aggregation: 'count-created_by'} : '';
+                    $scope.reportModel.aggregations[0].aggregation_type === 'count' ? $scope.countField = { Aggregation: 'count-created_by' } : '';
 
             };
+
             if ($scope.ReportId || $scope.clone) {
                 $scope.setEdit($scope.ReportId);
-            }
-
+            } 
         }
     ]);
