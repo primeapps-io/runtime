@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Security;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
@@ -357,8 +358,39 @@ namespace PrimeApps.Model.Helpers
                     /*
                      * Download version folder from studio storage.
                      */
+                    
+                    var useProxy= configuration.GetValue("Proxy:UseProxy", string.Empty);
+                    var proxyHost = configuration.GetValue("Proxy:ProxyHost", string.Empty);
+                    var proxyPort = configuration.GetValue("Proxy:ProxyPort", string.Empty);
+                    var certificateCustomValidation = configuration.GetValue("Proxy:CertificateCustomValidation", string.Empty);
+                    var httpClientHandler = new HttpClientHandler();
+                    
+                    if (!string.IsNullOrEmpty(useProxy) && bool.Parse(useProxy))
+                    {
+                        var proxy = new WebProxy()
+                        {
+                            Address = new Uri("http://" + proxyHost + ":" + proxyPort),
+                            UseDefaultCredentials = true,
+                            BypassProxyOnLocal = false
+                        
+                        };
 
-                    using (var httpClient = new HttpClient())
+                        httpClientHandler = new HttpClientHandler()
+                        {
+                            Proxy = proxy,
+                            UseProxy = true,
+                            ServerCertificateCustomValidationCallback = (sender, certificate, chain, errors) =>
+                            {
+                                if (!string.IsNullOrEmpty(certificateCustomValidation) && bool.Parse(certificateCustomValidation)) 
+                                    return true;
+                                
+                                return errors == SslPolicyErrors.None;
+                            }
+
+                        };
+                    }
+                    
+                    using (var httpClient = new HttpClient(handler: httpClientHandler, disposeHandler: true))
                     {
                         var url = studioUrl + "/storage/download_file";
                         httpClient.BaseAddress = new Uri(url);
@@ -373,28 +405,41 @@ namespace PrimeApps.Model.Helpers
                             ["path"] = $"/packages/{version}",
                             ["key"] = $"{version}.zip"
                         };
+                        try
+                        {
+                            var response = await httpClient.PostAsync(url,
+                                new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
 
-                        var response = await httpClient.PostAsync(url,
-                            new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
+                            if (!response.IsSuccessStatusCode)
+                            {
+                                File.AppendAllText(logPath,
+                                    "\u001b[31m" + DateTime.Now +
+                                    " : Error - Unhandle exception. While downloading folder." + "\u001b[39m" +
+                                    Environment.NewLine);
+                                releaseList.Last().Status = ReleaseStatus.Failed;
+                                releaseList.Last().EndTime = DateTime.Now;
+                                ErrorHandler.LogError(new Exception(response.RequestMessage.ToString()),
+                                    "Unhandle exception. While downloading package folder. Request: " +
+                                    JsonConvert.SerializeObject(request));
+                                break;
+                            }
 
-                        if (!response.IsSuccessStatusCode)
+                            var fileByte = await response.Content.ReadAsByteArrayAsync();
+                            File.WriteAllBytes(Path.Combine(path, $"{version}.zip"), fileByte);
+                            await Task.Delay(1000);
+                            ZipFile.ExtractToDirectory(Path.Combine(path, $"{version}.zip"), path);
+                        }
+                        catch (Exception e)
                         {
                             File.AppendAllText(logPath,
-                                "\u001b[31m" + DateTime.Now +
-                                " : Error - Unhandle exception. While downloading folder." + "\u001b[39m" +
+                                "\u001b[90m" + DateTime.Now + "\u001b[39m" +
+                                $" : \u001b[93m Error - Unhandle exception while downloading packages... Exception: {e.Message} - {e.InnerException} \u001b[39m" +
                                 Environment.NewLine);
                             releaseList.Last().Status = ReleaseStatus.Failed;
                             releaseList.Last().EndTime = DateTime.Now;
-                            ErrorHandler.LogError(new Exception(response.RequestMessage.ToString()),
-                                "Unhandle exception. While downloading package folder. Request: " +
-                                JsonConvert.SerializeObject(request));
                             break;
                         }
-
-                        var fileByte = await response.Content.ReadAsByteArrayAsync();
-                        File.WriteAllBytes(Path.Combine(path, $"{version}.zip"), fileByte);
-                        await Task.Delay(1000);
-                        ZipFile.ExtractToDirectory(Path.Combine(path, $"{version}.zip"), path);
+                      
                     }
 
                     var scriptPath = Path.Combine(path, "scripts.txt");
