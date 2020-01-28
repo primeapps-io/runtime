@@ -61,38 +61,40 @@ angular.module('primeapps')
 							var module = selectedModules[i];
 							var lookupList = packageModulesRelations[module.name];
 
-							for (var o = 0; o < lookupList.length; o++) {
+							if (lookupList) {
+								for (var o = 0; o < lookupList.length; o++) {
 
-								var index = -1;
-								var relatedModuleIndex = -1;
-								var isExistModule = $filter('filter')(selectedModules, { name: lookupList[o].lookup_type }, true)[0];
-								var relatedModule = $filter('filter')(errorList, function (error) {
-									return error.lookup_type === lookupList[o].lookup_type && error.module.name === lookupList[o].module.name;
-								})[0];
+									var index = -1;
+									var relatedModuleIndex = -1;
+									var isExistModule = $filter('filter')(selectedModules, { name: lookupList[o].lookup_type }, true)[0];
+									var relatedModule = $filter('filter')(errorList, function (error) {
+										return error.lookup_type === lookupList[o].lookup_type && error.module.name === lookupList[o].module.name;
+									})[0];
 
-								if (relatedModule)
-									relatedModuleIndex = errorList.indexOf(relatedModule);
+									if (relatedModule)
+										relatedModuleIndex = errorList.indexOf(relatedModule);
 
-								index = lookupList.indexOf(lookupList[o]);
-								//if we didn't add that, we will add that in this case
-								if (!isExistModule && index === -1) {
-									errorList.push({
-										name: lookupList[o].name,
-										lookup_type: lookupList[o].lookup_type,
-										module: lookupList[o].module
-									});
-								}
-								//Seçilen moduller arasında olmayıp,lookup olanı ekliyoruz
-								else if (!isExistModule && index > -1 && relatedModuleIndex === -1) {
-									errorList.push({
-										name: lookupList[o].name,
-										lookup_type: lookupList[o].lookup_type,
-										module: lookupList[o].module
-									});
-								}
-								//if we added that before we have to splice that from array 
-								else if (isExistModule && index > -1 && relatedModuleIndex > -1) {
-									errorList.splice(relatedModuleIndex, 1);
+									index = lookupList.indexOf(lookupList[o]);
+									//if we didn't add that, we will add that in this case
+									if (!isExistModule && index === -1) {
+										errorList.push({
+											name: lookupList[o].name,
+											lookup_type: lookupList[o].lookup_type,
+											module: lookupList[o].module
+										});
+									}
+									//Seçilen moduller arasında olmayıp,lookup olanı ekliyoruz
+									else if (!isExistModule && index > -1 && relatedModuleIndex === -1) {
+										errorList.push({
+											name: lookupList[o].name,
+											lookup_type: lookupList[o].lookup_type,
+											module: lookupList[o].module
+										});
+									}
+									//if we added that before we have to splice that from array 
+									else if (isExistModule && index > -1 && relatedModuleIndex > -1) {
+										errorList.splice(relatedModuleIndex, 1);
+									}
 								}
 							}
 
@@ -100,6 +102,7 @@ angular.module('primeapps')
 								var isExistInSelectedModules = $filter('filter')(selectedModules, { name: errorList[j].module.name }, true)[0];
 								if (!isExistInSelectedModules) {
 									errorList.splice(j, 1);
+									j--;
 								}
 							}
 						}
