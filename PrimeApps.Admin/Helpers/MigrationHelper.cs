@@ -772,7 +772,10 @@ namespace PrimeApps.Admin.Helpers
 						if (result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"] == null)
 							result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"] = new JObject();
 						
-						result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"]["is_sample"] = module.Name + " " +  e.Message;
+						if (result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"]["is_sample"]  == null)
+							result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"]["is_sample"]  = new JObject();
+						
+						result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"]["is_sample"][module.Name] = e.Message;
 					}
 					
 				}
