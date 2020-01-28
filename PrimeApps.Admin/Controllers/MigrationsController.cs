@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Admin.Helpers;
 using PrimeApps.Admin.Services;
+using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.Admin.Controllers
 {
@@ -17,19 +18,22 @@ namespace PrimeApps.Admin.Controllers
 		private readonly IOrganizationHelper _organizationHelper;
 		private IBackgroundTaskQueue _queue;
 		private IMigrationHelper _migrationHelper;
+		private IPlatformRepository _platformRepository;
 
 
-		public MigrationsController(IConfiguration configuration, IOrganizationHelper organizationHelper, IBackgroundTaskQueue queue, IMigrationHelper migrationHelper)
+		public MigrationsController(IConfiguration configuration, IOrganizationHelper organizationHelper, IBackgroundTaskQueue queue, IMigrationHelper migrationHelper, IPlatformRepository platformRepository)
 		{
 			_configuration = configuration;
 			_organizationHelper = organizationHelper;
 			_queue = queue;
 			_migrationHelper = migrationHelper;
+			_platformRepository = platformRepository;
 		}
 
 		public override void OnActionExecuting(ActionExecutingContext context)
 		{
 			SetContextUser();
+			SetCurrentUser(_platformRepository);
 			base.OnActionExecuting(context);
 		}
 
@@ -68,21 +72,13 @@ namespace PrimeApps.Admin.Controllers
 		[Route("applymigrations")]
 		public async Task<IActionResult> ApplyMigrationsAsync(int orgId)
 		{
-			var token = await HttpContext.GetTokenAsync("access_token");
-			var organizations = await _organizationHelper.Get(token);
+			var apps = await _platformRepository.GetAllApp();
+			if (apps == null) 
+				return Ok();
+			
+			var ids = apps.Where(x => x.Name != "primeapps_app" && x.Name != "primeapps_studio" && x.Name != "primeapps_preview").Select(app => app.Id).ToList();
 
-			var selectedOrg = organizations.FirstOrDefault(x => x.Id == orgId);
-			if (selectedOrg != null)
-			{
-				List<int> ids = new List<int>();
-
-				foreach (var app in selectedOrg.Apps)
-				{
-					ids.Add(app.Id);
-				}
-
-				_queue.QueueBackgroundWorkItem(q => _migrationHelper.ApplyMigrations(ids));
-			}
+			_queue.QueueBackgroundWorkItem(q => _migrationHelper.ApplyMigrations(ids));
 
 			return Ok();
 		}

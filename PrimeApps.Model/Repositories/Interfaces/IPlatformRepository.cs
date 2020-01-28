@@ -10,7 +10,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 	public interface IPlatformRepository : IRepositoryBasePlatform
 	{
 		App AppGetById(int id, int userId);
-		List<App> AppGetAll(int userId);
+		Task<List<App>> GetAllApp();
 		int AppCreate(App app);
 		Tenant GetTenant(int tenantId);
 		Task<List<AppTemplate>> GetAppTemplate(int appId, AppTemplateType type, string language, string systemCode);
