@@ -33,7 +33,7 @@ namespace PrimeApps.Studio.Controllers
         private Warehouse _warehouse;
         private IConfiguration _configuration;
 
-	    private IRecordHelper _recordHelper;
+        private IRecordHelper _recordHelper;
 
         public ConvertController(IModuleRepository moduleRepository, IRecordRepository recordRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, IDocumentRepository documentRepository, INoteRepository noteRepository, IConversionMappingRepository conversionMappingRepository, IRecordHelper recordHelper, IConfiguration configuration, Warehouse warehouse)
         {
@@ -46,7 +46,7 @@ namespace PrimeApps.Studio.Controllers
             _conversionMappingRepository = conversionMappingRepository;
             _warehouse = warehouse;
 
-	        _recordHelper = recordHelper;
+            _recordHelper = recordHelper;
             _configuration = configuration;
         }
 
@@ -201,9 +201,9 @@ namespace PrimeApps.Studio.Controllers
                 if (resultCreate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-				//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-	            _recordHelper.AfterCreate(accountModule, account, AppUser, _warehouse);
+                _recordHelper.AfterCreate(accountModule, account, AppUser, _warehouse);
             }
 
             // contact
@@ -242,9 +242,9 @@ namespace PrimeApps.Studio.Controllers
 
                 if (resultCreate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-				//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-	            _recordHelper.AfterCreate(contactModule, contact, AppUser, _warehouse);
+                _recordHelper.AfterCreate(contactModule, contact, AppUser, _warehouse);
             }
 
             // opportunity
@@ -289,9 +289,9 @@ namespace PrimeApps.Studio.Controllers
 
                 if (resultCreate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-				//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-	            _recordHelper.AfterCreate(opportunityModule, opportunity, AppUser, _warehouse);
+                _recordHelper.AfterCreate(opportunityModule, opportunity, AppUser, _warehouse);
             }
 
             // Update lead as converted
@@ -332,9 +332,9 @@ namespace PrimeApps.Studio.Controllers
 
             if (resultUpdate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-	        _recordHelper.AfterDelete(leadModule, leadModel, AppUser, _warehouse);
+            _recordHelper.AfterDelete(leadModule, leadModel, AppUser, _warehouse);
 
             // Move documents
             var documents = await _documentRepository.GetAll(leadModule.Id, (int)lead["id"]);
@@ -356,7 +356,7 @@ namespace PrimeApps.Studio.Controllers
                 Offset = 0
             };
 
-            var activities = _recordRepository.Find("activities", findRequest, false);
+            var activities = await _recordRepository.Find("activities", findRequest, false);
 
             foreach (JObject activity in activities)
             {
@@ -475,9 +475,9 @@ namespace PrimeApps.Studio.Controllers
 
             if (resultCreate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-	        _recordHelper.AfterCreate(salesOrderModule, salesOrder, AppUser, _warehouse);
+            _recordHelper.AfterCreate(salesOrderModule, salesOrder, AppUser, _warehouse);
 
             // Get all quote products and insert order products
             var findRequest = new FindRequest
@@ -487,7 +487,7 @@ namespace PrimeApps.Studio.Controllers
                 Offset = 0
             };
 
-            var quoteProducts = _recordRepository.Find("quote_products", findRequest, false);
+            var quoteProducts = await _recordRepository.Find("quote_products", findRequest, false);
 
             foreach (var quoteProduct in quoteProducts)
             {
@@ -548,9 +548,9 @@ namespace PrimeApps.Studio.Controllers
 
                 if (resultCreateProduct < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-				//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-	            _recordHelper.AfterCreate(orderProductModule, orderProduct, AppUser, _warehouse);
+                _recordHelper.AfterCreate(orderProductModule, orderProduct, AppUser, _warehouse);
             }
 
             // Update quote as converted
@@ -586,9 +586,9 @@ namespace PrimeApps.Studio.Controllers
 
             if (resultUpdate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-	        _recordHelper.AfterUpdate(quoteModule, quoteModel, quote, AppUser, _warehouse);
+            _recordHelper.AfterUpdate(quoteModule, quoteModel, quote, AppUser, _warehouse);
 
             var result = new JObject();
             result["sales_order_id"] = salesOrder["id"];
@@ -662,9 +662,9 @@ namespace PrimeApps.Studio.Controllers
 
                 if (resultCreate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-				//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-	            _recordHelper.AfterCreate(employeeModule, employee, AppUser, _warehouse);
+                _recordHelper.AfterCreate(employeeModule, employee, AppUser, _warehouse);
             }
 
             // Update lead as converted
@@ -707,9 +707,9 @@ namespace PrimeApps.Studio.Controllers
 
             if (resultUpdate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-	        _recordHelper.AfterDelete(candidateModule, leadModel, AppUser, _warehouse);
+            _recordHelper.AfterDelete(candidateModule, leadModel, AppUser, _warehouse);
 
             // Move documents
             var documents = await _documentRepository.GetAll(candidateModule.Id, (int)candidate["id"]);
@@ -731,7 +731,7 @@ namespace PrimeApps.Studio.Controllers
                 Offset = 0
             };
 
-            var activities = _recordRepository.Find("activities", findRequestActivity, false);
+            var activities = await _recordRepository.Find("activities", findRequestActivity, false);
 
             foreach (JObject activity in activities)
             {
@@ -769,7 +769,7 @@ namespace PrimeApps.Studio.Controllers
                     Offset = 0
                 };
 
-                var subModuleRecords = _recordRepository.Find(conversion.MappingSubModule.Name, findRequest, false);
+                var subModuleRecords = await _recordRepository.Find(conversion.MappingSubModule.Name, findRequest, false);
 
                 foreach (JObject subRecord in subModuleRecords)
                 {
@@ -872,7 +872,7 @@ namespace PrimeApps.Studio.Controllers
                 if (resultCreate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-	            _recordHelper.AfterCreate(salesInvoiceModule, salesInvoice, AppUser, _warehouse);
+                _recordHelper.AfterCreate(salesInvoiceModule, salesInvoice, AppUser, _warehouse);
 
                 // Get all quote products and insert order products
                 var findRequest = new FindRequest
@@ -882,7 +882,7 @@ namespace PrimeApps.Studio.Controllers
                     Offset = 0
                 };
 
-                var orderProducts = _recordRepository.Find("order_products", findRequest, false);
+                var orderProducts = await _recordRepository.Find("order_products", findRequest, false);
 
                 foreach (var orderProduct in orderProducts)
                 {
@@ -931,7 +931,7 @@ namespace PrimeApps.Studio.Controllers
                     {
                         if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
                             return StatusCode(HttpStatusCode.Status409Conflict, new { message = ex.MessageText });
-                   
+
 
                         if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                             return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
@@ -995,7 +995,7 @@ namespace PrimeApps.Studio.Controllers
             if (resultUpdate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-	        _recordHelper.AfterDelete(salesOrderModule, leadModel, AppUser, _warehouse);
+            _recordHelper.AfterDelete(salesOrderModule, leadModel, AppUser, _warehouse);
 
             // Move documents
             var documents = await _documentRepository.GetAll(salesOrderModule.Id, (int)salesOrder["id"]);
@@ -1017,7 +1017,7 @@ namespace PrimeApps.Studio.Controllers
                 Offset = 0
             };
 
-            var activities = _recordRepository.Find("activities", findRequestActivity, false);
+            var activities = await _recordRepository.Find("activities", findRequestActivity, false);
 
             foreach (JObject activity in activities)
             {
@@ -1055,7 +1055,7 @@ namespace PrimeApps.Studio.Controllers
                     Offset = 0
                 };
 
-                var subModuleRecords = _recordRepository.Find(conversion.MappingSubModule.Name, findRequest, false);
+                var subModuleRecords = await _recordRepository.Find(conversion.MappingSubModule.Name, findRequest, false);
 
                 foreach (JObject subRecord in subModuleRecords)
                 {
@@ -1147,7 +1147,7 @@ namespace PrimeApps.Studio.Controllers
                 if (resultCreate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-	            _recordHelper.AfterCreate(purchaseInvoiceModule, purchaseInvoice, AppUser, _warehouse);
+                _recordHelper.AfterCreate(purchaseInvoiceModule, purchaseInvoice, AppUser, _warehouse);
 
                 // Get all quote products and insert order products
                 var findRequest = new FindRequest
@@ -1157,7 +1157,7 @@ namespace PrimeApps.Studio.Controllers
                     Offset = 0
                 };
 
-                var purchaseOrderProducts = _recordRepository.Find("purchase_order_products", findRequest, false);
+                var purchaseOrderProducts = await _recordRepository.Find("purchase_order_products", findRequest, false);
 
                 foreach (var purchaseOrderProduct in purchaseOrderProducts)
                 {
@@ -1270,7 +1270,7 @@ namespace PrimeApps.Studio.Controllers
             if (resultUpdate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-	        _recordHelper.AfterDelete(purchaseOrderModule, leadModel, AppUser, _warehouse);
+            _recordHelper.AfterDelete(purchaseOrderModule, leadModel, AppUser, _warehouse);
 
             // Move documents
             var documents = await _documentRepository.GetAll(purchaseOrderModule.Id, (int)purchaseOrder["id"]);
@@ -1292,7 +1292,7 @@ namespace PrimeApps.Studio.Controllers
                 Offset = 0
             };
 
-            var activities = _recordRepository.Find("activities", findRequestActivity, false);
+            var activities = await _recordRepository.Find("activities", findRequestActivity, false);
 
             foreach (JObject activity in activities)
             {
@@ -1330,7 +1330,7 @@ namespace PrimeApps.Studio.Controllers
                     Offset = 0
                 };
 
-                var subModuleRecords = _recordRepository.Find(conversion.MappingSubModule.Name, findRequest, false);
+                var subModuleRecords = await _recordRepository.Find(conversion.MappingSubModule.Name, findRequest, false);
 
                 foreach (JObject subRecord in subModuleRecords)
                 {

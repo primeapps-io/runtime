@@ -367,7 +367,7 @@ namespace PrimeApps.App.Controllers
                 Offset = 0
             };
 
-            var activities = _recordRepository.Find("activities", findRequest, false);
+            var activities = await _recordRepository.Find("activities", findRequest, false, false);
 
             foreach (JObject activity in activities)
             {
@@ -499,7 +499,7 @@ namespace PrimeApps.App.Controllers
                 Offset = 0
             };
 
-            var quoteProducts = _recordRepository.Find("quote_products", findRequest, false);
+            var quoteProducts = await _recordRepository.Find("quote_products", findRequest, false, false);
 
             foreach (var quoteProduct in quoteProducts)
             {
@@ -743,7 +743,7 @@ namespace PrimeApps.App.Controllers
                 Offset = 0
             };
 
-            var activities = _recordRepository.Find("activities", findRequestActivity, false);
+            var activities = await _recordRepository.Find("activities", findRequestActivity, false, false);
 
             foreach (JObject activity in activities)
             {
@@ -781,7 +781,7 @@ namespace PrimeApps.App.Controllers
                     Offset = 0
                 };
 
-                var subModuleRecords = _recordRepository.Find(conversion.MappingSubModule.Name, findRequest, false);
+                var subModuleRecords = await _recordRepository.Find(conversion.MappingSubModule.Name, findRequest, false, false);
 
                 foreach (JObject subRecord in subModuleRecords)
                 {
@@ -895,7 +895,7 @@ namespace PrimeApps.App.Controllers
                     Offset = 0
                 };
 
-                var orderProducts = _recordRepository.Find("order_products", findRequest, false);
+                var orderProducts = await _recordRepository.Find("order_products", findRequest, false, false);
 
                 foreach (var orderProduct in orderProducts)
                 {
@@ -1030,7 +1030,7 @@ namespace PrimeApps.App.Controllers
                 Offset = 0
             };
 
-            var activities = _recordRepository.Find("activities", findRequestActivity, false);
+            var activities = await _recordRepository.Find("activities", findRequestActivity, false, false);
 
             foreach (JObject activity in activities)
             {
@@ -1068,7 +1068,7 @@ namespace PrimeApps.App.Controllers
                     Offset = 0
                 };
 
-                var subModuleRecords = _recordRepository.Find(conversion.MappingSubModule.Name, findRequest, false);
+                var subModuleRecords = await _recordRepository.Find(conversion.MappingSubModule.Name, findRequest, false, false);
 
                 foreach (JObject subRecord in subModuleRecords)
                 {
@@ -1170,7 +1170,7 @@ namespace PrimeApps.App.Controllers
                     Offset = 0
                 };
 
-                var purchaseOrderProducts = _recordRepository.Find("purchase_order_products", findRequest, false);
+                var purchaseOrderProducts = await _recordRepository.Find("purchase_order_products", findRequest, false, false);
 
                 foreach (var purchaseOrderProduct in purchaseOrderProducts)
                 {
@@ -1305,7 +1305,7 @@ namespace PrimeApps.App.Controllers
                 Offset = 0
             };
 
-            var activities = _recordRepository.Find("activities", findRequestActivity, false);
+            var activities = await _recordRepository.Find("activities", findRequestActivity, false, false);
 
             foreach (JObject activity in activities)
             {
@@ -1343,7 +1343,7 @@ namespace PrimeApps.App.Controllers
                     Offset = 0
                 };
 
-                var subModuleRecords = _recordRepository.Find(conversion.MappingSubModule.Name, findRequest, false);
+                var subModuleRecords = await _recordRepository.Find(conversion.MappingSubModule.Name, findRequest, false, false);
 
                 foreach (JObject subRecord in subModuleRecords)
                 {

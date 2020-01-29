@@ -225,7 +225,7 @@ namespace PrimeApps.App.Controllers
                     });
                 }
 
-                records = _recordRepository.Find(module, request, timezoneOffset: timezoneOffset.Value);
+                records = await _recordRepository.Find(module, request, timezoneOffset: timezoneOffset.Value);
 
                 //Format records if has locale
                 if (!string.IsNullOrWhiteSpace(locale))
@@ -831,7 +831,7 @@ namespace PrimeApps.App.Controllers
 
             try
             {
-                records = _recordRepository.GetAllById(module, recordIds.ToList());
+                records = await _recordRepository.GetAllById(module, recordIds.ToList());
 
                 //Format records if has locale
                 if (!string.IsNullOrWhiteSpace(locale))

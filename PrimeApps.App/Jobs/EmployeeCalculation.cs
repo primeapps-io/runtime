@@ -92,7 +92,7 @@ namespace PrimeApps.App.Jobs
 									if (module.Fields.Any(x => x.Name == "ise_baslama_tarihi_2"))
 										findRequest.Fields.Add("ise_baslama_tarihi_2");
 
-									var calisanlar = recordRepository.Find("calisanlar", findRequest, false);
+									var calisanlar = await recordRepository.Find("calisanlar", findRequest, false, false);
 
 									foreach (JObject calisan in calisanlar)
 									{

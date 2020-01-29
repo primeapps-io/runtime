@@ -108,9 +108,9 @@ namespace PrimeApps.App.Jobs
 											Offset = 0
 										};
 
-										var calisanlar = _recordRepository.Find(module.Name, findRequestCalisan, false);
+										var calisanlar = await _recordRepository.Find(module.Name, findRequestCalisan, false, false);
 
-										var izinler = _recordRepository.Find("izin_turleri", findRequestIzinler, false).First;
+										var izinler = (await _recordRepository.Find("izin_turleri", findRequestIzinler, false, false)).First;
 
 										if (izinler.IsNullOrEmpty())
 											continue;

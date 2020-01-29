@@ -73,7 +73,7 @@ namespace PrimeApps.Model.Repositories
             return record;
         }
 
-        public JArray Find(string moduleName, FindRequest findRequest, bool roleBasedEnabled = true, int timezoneOffset = 180)
+        public async Task<JArray> Find(string moduleName, FindRequest findRequest, bool roleBasedEnabled = true, bool profileBasedEnabled = true, int timezoneOffset = 180)
         {
             string owners = null;
             string userGroups = null;
@@ -102,33 +102,42 @@ namespace PrimeApps.Model.Repositories
 
             if (records.Count > 0)
             {
+                var newRecords = new JArray();
+
                 foreach (var record in records)
                 {
+                    var newRecord = record.DeepClone();
+
                     if (!record.IsNullOrEmpty())
                     {
-                        if (!record["shared_users"].IsNullOrEmpty() || !record["shared_user_groups"].IsNullOrEmpty())
+                        if (profileBasedEnabled && moduleName != "users" && moduleName != "profiles" && moduleName != "roles")
+                            newRecord = await RecordPermissionControl(moduleName, CurrentUser.UserId, (JObject)record, OperationType.read);
+
+                        if (!newRecord["shared_users"].IsNullOrEmpty() || !newRecord["shared_user_groups"].IsNullOrEmpty())
                         {
-                            var userIds = record["shared_users"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)record["shared_users"]);
-                            var userGroupIds = record["shared_user_groups"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)record["shared_user_groups"]);
+                            var userIds = newRecord["shared_users"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)newRecord["shared_users"]);
+                            var userGroupIds = newRecord["shared_user_groups"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)newRecord["shared_user_groups"]);
                             var sqlSharedRead = RecordHelper.GenerateSharedSql(userIds, userGroupIds);
-                            record["shared_read"] = DbContext.Database.SqlQueryDynamic(sqlSharedRead);
+                            newRecord["shared_read"] = DbContext.Database.SqlQueryDynamic(sqlSharedRead);
                         }
 
-                        if (!record["shared_users_edit"].IsNullOrEmpty() || !record["shared_user_groups_edit"].IsNullOrEmpty())
+                        if (!newRecord["shared_users_edit"].IsNullOrEmpty() || !newRecord["shared_user_groups_edit"].IsNullOrEmpty())
                         {
-                            var userIdsEdit = record["shared_users_edit"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)record["shared_users_edit"]);
-                            var userGroupIdsEdit = record["shared_user_groups_edit"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)record["shared_user_groups_edit"]);
+                            var userIdsEdit = newRecord["shared_users_edit"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)newRecord["shared_users_edit"]);
+                            var userGroupIdsEdit = newRecord["shared_user_groups_edit"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)newRecord["shared_user_groups_edit"]);
                             var sqlSharedEdit = RecordHelper.GenerateSharedSql(userIdsEdit, userGroupIdsEdit);
-                            record["shared_edit"] = DbContext.Database.SqlQueryDynamic(sqlSharedEdit);
+                            newRecord["shared_edit"] = DbContext.Database.SqlQueryDynamic(sqlSharedEdit);
                         }
                     }
+
+                    newRecords.Add(newRecord);
                 }
             }
 
             return records;
         }
 
-        public JArray GetAllById(string moduleName, List<int> recordIds, bool roleBasedEnabled = true)
+        public async Task<JArray> GetAllById(string moduleName, List<int> recordIds, bool roleBasedEnabled = true)
         {
             string owners = null;
             string userGroups = null;
@@ -139,7 +148,15 @@ namespace PrimeApps.Model.Repositories
             var sql = RecordHelper.GenerateGetAllByIdSql(moduleName, recordIds, owners, CurrentUser.UserId, userGroups);
             var records = DbContext.Database.SqlQueryDynamic(sql);
 
-            return records;
+            var newRecords = new JArray();
+
+            foreach (var record in records)
+            {
+                var newRecord = await RecordPermissionControl(moduleName, CurrentUser.UserId, (JObject)record, OperationType.read);
+                newRecords.Add(newRecord);
+            }
+
+            return newRecords;
         }
 
         public async Task<int> Create(JObject record, Module module)
@@ -623,6 +640,7 @@ namespace PrimeApps.Model.Repositories
             }
         }
 
+        #region Profile based permission controls for records
         public async Task<JObject> RecordPermissionControl(string moduleName, int userId, JObject record, OperationType operation)
         {
             if (record.IsNullOrEmpty())
@@ -714,7 +732,6 @@ namespace PrimeApps.Model.Repositories
             }
         }
 
-
         private JObject SectionPermission(Module module, JObject record, TenantUser user, OperationType operation)
         {
             //Module Section permission control
@@ -776,11 +793,11 @@ namespace PrimeApps.Model.Repositories
                 {
                     if (field.DataType == DataType.Lookup)
                     {
-                        var lookupPermission = await LookupModulePermission(field, user, operation);
+                        var lookupFields = await LookupModulePermission(field, user, operation);
 
                         //Lookup module icin yetkisi yoksa eger, record uzerinden silmek icin listeye ekliyoruz.
-                        if (!lookupPermission)
-                            record = ClearRecord(record, $"{field.Name}.");
+                        if (lookupFields != null && lookupFields.Count > 0)
+                            record = ClearRecord(record, fields: lookupFields);
                     }
 
                     continue;
@@ -793,10 +810,10 @@ namespace PrimeApps.Model.Repositories
                 {
                     if (field.DataType == DataType.Lookup)
                     {
-                        var lookupPermission = await LookupModulePermission(field, user, operation);
+                        var lookupFields = await LookupModulePermission(field, user, operation);
 
-                        if (!lookupPermission)
-                            record = ClearRecord(record, $"{field.Name}.");
+                        if (lookupFields != null && lookupFields.Count > 0)
+                            record = ClearRecord(record, fields: lookupFields);
                     }
                     continue;
                 }
@@ -805,25 +822,64 @@ namespace PrimeApps.Model.Repositories
                 var permissionCheck = FieldPermissionCheck(permissionList, operation);
 
                 if (permissionCheck == null)
-                    fieldRemoveList.Add(field.Name);
+                {
+                    if (field.DataType == DataType.Lookup)
+                    {
+                        var lookupFields = await LookupModulePermission(field, user, operation);
+
+                        if (lookupFields != null && lookupFields.Count > 0)
+                            record = ClearRecord(record, fields: lookupFields);
+                    }
+                    else
+                        fieldRemoveList.Add(field.Name);
+                }  
             }
 
-            return ClearRecord(record, fields: fieldRemoveList);
+            return fieldRemoveList.Count > 0 ? ClearRecord(record, fields: fieldRemoveList) : record;
         }
 
-        private async Task<bool> LookupModulePermission(Field field, TenantUser user, OperationType operation)
+        private async Task<List<string>> LookupModulePermission(Field field, TenantUser user, OperationType operation)
         {
             var lookupModule = await DbContext.Modules.Where(q => q.Name == field.LookupType && !q.Deleted).FirstOrDefaultAsync();
 
             if (lookupModule == null)
-                return false;
+                return null;
 
             var result = ProfilePermissionCheck(user.Profile.Permissions.Where(q => q.ModuleId == lookupModule.Id && q.Type == EntityType.Module).ToList(), operation);
+            var fieldList = new List<string>();
 
-            if (result == null)
-                return false;
+            var primaryLookupField = lookupModule.Fields.FirstOrDefault(q => q.PrimaryLookup && !q.Deleted);
+            var primaryField = lookupModule.Fields.FirstOrDefault(q => q.Primary && !q.Deleted);
 
-            return true;
+            var prefix = primaryLookupField != null ? primaryLookupField.Name : primaryField.Name;
+
+            foreach (var item in lookupModule.Fields)
+            {
+                if (item.Name != "id" && !item.Primary)
+                {
+                    //Lookup module icin yetkisi yoksa. 
+                    if (result == null)
+                    {
+                        fieldList.Add($"{prefix}.{item.Name}");
+                        fieldList.Add($"{field.Name}.{item.Name}");
+                        fieldList.Add($"{prefix}.{lookupModule.Name}.{item.Name}"); //find methodu ile donen record'lar icin ekiyoruz.
+                    }
+                    else
+                    {
+                        //Lookup module icin yetkisi varsa field bazli kontrol yetki yapiyoruz.
+                        var fieldCheckResult = FieldPermissionCheck(item.Permissions.ToList(), operation);
+
+                        if (fieldCheckResult == null)
+                        {
+                            fieldList.Add($"{prefix}.{item.Name}");
+                            fieldList.Add($"{field.Name}.{item.Name}");
+                            fieldList.Add($"{prefix}.{lookupModule.Name}.{item.Name}"); //find methodu ile donen record'lar icin ekiyoruz.
+                        }
+                    }
+                }
+            }
+
+            return fieldList;
         }
 
         private bool SharedPermissionCheck(JObject record, TenantUser user, OperationType operation)
@@ -849,7 +905,11 @@ namespace PrimeApps.Model.Repositories
                         }
                     }
 
-                    return (userIdList != null && userIdList.Any(q => q == user.Id.ToString())) || result;
+                    var permissionResult = (userIdList != null && userIdList.Any(q => q == user.Id.ToString())) || result;
+
+                    //Eger yetki mevcut ise kontrol islemini bitiriyoruz. Yoksa ekstra kontrol icin devam edicek.
+                    if (permissionResult)
+                        return permissionResult;
                 }
             }
 
@@ -930,6 +990,6 @@ namespace PrimeApps.Model.Repositories
 
             return newRecord;
         }
-
+        #endregion Profile based permission controls for records
     }
 }

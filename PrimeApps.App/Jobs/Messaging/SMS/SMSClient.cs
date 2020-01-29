@@ -278,7 +278,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 						{
 							recordRepository.UserId = userId;
 
-							var records = recordRepository.Find(module.Name, findRequest, false);
+							var records = await recordRepository.Find(module.Name, findRequest, false, false);
 
 							if (records.Count > 0)
 							{

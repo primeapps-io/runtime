@@ -380,7 +380,7 @@ namespace PrimeApps.App.Jobs.Email
                                         break;
                                 }
 
-                                var userData = recordRepository.Find("users", findRequest, false);
+                                var userData = await recordRepository.Find("users", findRequest, false, false);
                                 userDataObj = (JObject)userData.First();
 
                                 if (subscriber.Setting.Culture.Contains("tr"))

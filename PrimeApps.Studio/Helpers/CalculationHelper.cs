@@ -120,7 +120,7 @@ namespace PrimeApps.Studio.Helpers
                                                                 Limit = 1
                                                             };
 
-                                                            var parentRecord = (JObject)recordRepository.Find(parentField.LookupType, parentRecordRequest, false).FirstOrDefault();
+                                                            var parentRecord = (JObject)(await recordRepository.Find(parentField.LookupType, parentRecordRequest, false, false)).FirstOrDefault();
                                                             parentRecordData = parentRecord[dependency.ParentField].ToString();
                                                         }
                                                         else
@@ -150,7 +150,7 @@ namespace PrimeApps.Studio.Helpers
                                                             Limit = 1
                                                         };
 
-                                                        var childRecord = (JObject)recordRepository.Find("calisanlar", childRecordRequest, false).FirstOrDefault();
+                                                        var childRecord = (JObject)(await recordRepository.Find("calisanlar", childRecordRequest, false)).FirstOrDefault();
                                                         if (childRecord != null)
                                                         {
                                                             var recordObj = new JObject
@@ -340,14 +340,14 @@ namespace PrimeApps.Studio.Helpers
                                                         ccList.Add((string)calisan["gmy.e_posta"]);
 
 
-													//TODO  var externalEmail = new Email(mailSubject, mailBody, _configuration);
-													//TODO	externalEmail.AddRecipient((string)calisan["e_posta"]);
-													//TODO	externalEmail.AddToQueue(appUser.TenantId, appUser: appUser, cc: string.Join(",", ccList), moduleId: module.Id, recordId: (int)record["id"], addRecordSummary: false);
-													break;
+                                                    //TODO  var externalEmail = new Email(mailSubject, mailBody, _configuration);
+                                                    //TODO	externalEmail.AddRecipient((string)calisan["e_posta"]);
+                                                    //TODO	externalEmail.AddToQueue(appUser.TenantId, appUser: appUser, cc: string.Join(",", ccList), moduleId: module.Id, recordId: (int)record["id"], addRecordSummary: false);
+                                                    break;
                                                 case "ise_alim_talepleri":
                                                     var iseAlimTalebiModule = await moduleRepository.GetByName("ise_alim_talepleri");
                                                     var userRequest = new FindRequest { Fields = new List<string> { "email" }, Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)record["owner"], No = 1 } }, Limit = 1 };
-                                                    var userData = recordRepository.Find("users", userRequest, false);
+                                                    var userData = await recordRepository.Find("users", userRequest, false);
                                                     var calisanRequest = new FindRequest();
                                                     var calisanData = new JArray();
                                                     var calisanObj = new JObject();
@@ -363,7 +363,7 @@ namespace PrimeApps.Studio.Helpers
                                                             Limit = 1
                                                         };
 
-                                                        calisanData = recordRepository.Find("calisanlar", calisanRequest, false);
+                                                        calisanData = await recordRepository.Find("calisanlar", calisanRequest, false);
                                                         calisanObj = (JObject)calisanData.First();
                                                         var moduleCalisan = await moduleRepository.GetByName("calisanlar");
                                                         var departmanPicklist = moduleCalisan.Fields.Single(x => x.Name == "departman");
@@ -389,7 +389,7 @@ namespace PrimeApps.Studio.Helpers
                                                                         Limit = 1
                                                                     };
 
-                                                                    calisanData = recordRepository.Find("calisanlar", calisanRequest, false);
+                                                                    calisanData = await recordRepository.Find("calisanlar", calisanRequest, false);
                                                                     calisanObj = (JObject)calisanData.First();
 
                                                                     if (!calisanObj["yoneticisi.calisanlar.e_posta"].IsNullOrEmpty())
@@ -411,7 +411,7 @@ namespace PrimeApps.Studio.Helpers
                                                     var salesInvoiceStagePicklistItem = await picklistRepository.FindItemByLabel(salesInvoiceStagePicklist.PicklistId.Value, (string)record["asama"], appUser.TenantLanguage);
                                                     var currentAccountModule = await moduleRepository.GetByName("current_accounts");
                                                     var findRequestCurrentAccountRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "satis_faturasi", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                    var currentAccountRecord = recordRepository.Find("current_accounts", findRequestCurrentAccountRecord, false);
+                                                    var currentAccountRecord = await recordRepository.Find("current_accounts", findRequestCurrentAccountRecord, false);
 
                                                     //Firma Obj
                                                     var recordAccount = new JObject();
@@ -528,7 +528,7 @@ namespace PrimeApps.Studio.Helpers
                                                     var purchaseInvoiceStagePicklistItem = await picklistRepository.FindItemByLabel(purchaseInvoiceStagePicklist.PicklistId.Value, (string)record["asama"], appUser.TenantLanguage);
                                                     var currentSupplierModule = await moduleRepository.GetByName("current_accounts");
                                                     var findRequestCurrentAccountRecordForPurchase = new FindRequest { Filters = new List<Filter> { new Filter { Field = "alis_faturasi", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                    var currentAccountRecordForPurchase = recordRepository.Find("current_accounts", findRequestCurrentAccountRecordForPurchase, false);
+                                                    var currentAccountRecordForPurchase = await recordRepository.Find("current_accounts", findRequestCurrentAccountRecordForPurchase, false);
 
                                                     //Firma Obj
                                                     var recordSupplier = new JObject();
@@ -716,7 +716,7 @@ namespace PrimeApps.Studio.Helpers
                                                                 var kasaHareketiModule = await moduleRepository.GetByName("kasa_hareketleri");
                                                                 var kasaModule = await moduleRepository.GetByName("kasalar");
                                                                 var findRequestKasaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                                var currentKasaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestKasaHareketi, false);
+                                                                var currentKasaHareketiRecord = await recordRepository.Find("kasa_hareketleri", findRequestKasaHareketi, false);
                                                                 var kasaHareketiRecord = new JObject();
                                                                 kasaHareketiRecord["owner"] = record["owner"];
                                                                 kasaHareketiRecord["islem_tarihi"] = record["date"];
@@ -775,7 +775,7 @@ namespace PrimeApps.Studio.Helpers
                                                                 var bankaHareketiModule = await moduleRepository.GetByName("banka_hareketleri");
                                                                 var bankaModule = await moduleRepository.GetByName("bankalar");
                                                                 var findRequestBankaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                                var currentBankaHareketiRecord = recordRepository.Find("banka_hareketleri", findRequestBankaHareketi, false);
+                                                                var currentBankaHareketiRecord = await recordRepository.Find("banka_hareketleri", findRequestBankaHareketi, false);
                                                                 var bankaHareketiRecord = new JObject();
                                                                 bankaHareketiRecord["owner"] = record["owner"];
                                                                 bankaHareketiRecord["islem_tarihi"] = record["date"];
@@ -834,7 +834,7 @@ namespace PrimeApps.Studio.Helpers
                                                                 var kasaHareketiModule = await moduleRepository.GetByName("kasa_hareketleri");
                                                                 var kasaModule = await moduleRepository.GetByName("kasalar");
                                                                 var findRequestKasaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                                var currentKasaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestKasaHareketi, false);
+                                                                var currentKasaHareketiRecord = await recordRepository.Find("kasa_hareketleri", findRequestKasaHareketi, false);
 
                                                                 if (!currentKasaHareketiRecord.IsNullOrEmpty())
                                                                 {
@@ -856,7 +856,7 @@ namespace PrimeApps.Studio.Helpers
                                                                 var bankaHareketiModule = await moduleRepository.GetByName("banka_hareketleri");
                                                                 var bankaModule = await moduleRepository.GetByName("bankalar");
                                                                 var findRequestBankaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                                var currentBankaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestBankaHareketi, false);
+                                                                var currentBankaHareketiRecord = await recordRepository.Find("kasa_hareketleri", findRequestBankaHareketi, false);
 
                                                                 if (!currentBankaHareketiRecord.IsNullOrEmpty())
                                                                 {
@@ -991,7 +991,7 @@ namespace PrimeApps.Studio.Helpers
                                                     if (!record["related_partner"].IsNullOrEmpty())
                                                     {
                                                         var relatedPartnerRequest = new FindRequest { Fields = new List<string> { "name" }, Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)record["related_partner"], No = 1 } }, Limit = 1 };
-                                                        var relatedPartner = recordRepository.Find("accounts", relatedPartnerRequest);
+                                                        var relatedPartner = await recordRepository.Find("accounts", relatedPartnerRequest);
                                                         refObj["related_partner_text"] = (string)relatedPartner.First()["name"];
                                                     }
                                                     await recordRepository.Update(refObj, referancePoolModule, isUtc: false);
@@ -1013,7 +1013,7 @@ namespace PrimeApps.Studio.Helpers
                                                             else
                                                                 sharedUsetFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = "burcin.erkan@pf.com.tr", No = 1 } }, Limit = 1 };
 
-                                                            var sharedUser = recordRepository.Find("users", sharedUsetFindRequest);
+                                                            var sharedUser = await recordRepository.Find("users", sharedUsetFindRequest);
 
                                                             if (!record["shared_users_edit"].IsNullOrEmpty())
                                                             {
@@ -1042,7 +1042,7 @@ namespace PrimeApps.Studio.Helpers
                                                         var approverPicklist = procurementRequisitionModule.Fields.Single(x => x.Name == "approver");
                                                         var approverPicklistItem = await picklistRepository.FindItemByLabel(approverPicklist.PicklistId.Value, (string)record["approver"], appUser.TenantLanguage);
                                                         var recordOwnerRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)record["owner"], No = 1 } }, Limit = 9999 };
-                                                        var recordOwner = recordRepository.Find("users", recordOwnerRequest);
+                                                        var recordOwner = await recordRepository.Find("users", recordOwnerRequest);
                                                         var recordOwnerObj = (JObject)recordOwner.First();
                                                         if (approverPicklistItem.Value == "levent_ergen")
                                                         {
@@ -1082,16 +1082,16 @@ namespace PrimeApps.Studio.Helpers
                                                                 {
                                                                     var approvalPicklistItem = approvalPicklist.Items.Single(x => x.SystemCode == "business");
                                                                     var findRequestApproval = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_project", Operator = Operator.Equals, Value = (int)record["project_code"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.TenantLanguage == "tr" ? approvalPicklistItem.LabelTr : approvalPicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
-                                                                    var approvalRecord = recordRepository.Find("approval_workflow", findRequestApproval);
+                                                                    var approvalRecord = await recordRepository.Find("approval_workflow", findRequestApproval);
                                                                     FindRequest approverRequest = null;
                                                                     JArray approverRecord = null;
 
                                                                     if (approverPicklistItem.Value == "project_officer")
                                                                     {
                                                                         approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalRecord.First()["project_officer_staff"], No = 1 } }, Limit = 9999 };
-                                                                        approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                                        approverRecord = await recordRepository.Find("human_resources", approverRequest);
                                                                         var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
-                                                                        var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+                                                                        var sharedUser = await recordRepository.Find("users", sharedUserFindRequest);
 
                                                                         if (!record["shared_users_edit"].IsNullOrEmpty())
                                                                         {
@@ -1117,15 +1117,15 @@ namespace PrimeApps.Studio.Helpers
                                                                     else if (approverPicklistItem.Value == "first_approver")
                                                                     {
                                                                         approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalRecord.First()["first_approver"], No = 1 } }, Limit = 9999 };
-                                                                        approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                                        approverRecord = await recordRepository.Find("human_resources", approverRequest);
                                                                         var approverRecordObj = (JObject)approverRecord.First();
 
                                                                         if ((string)recordOwnerObj["email"] == (string)approverRecordObj["e_mail1"])
                                                                         {
                                                                             approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalRecord.First()["second_approver"], No = 1 } }, Limit = 9999 };
-                                                                            approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                                            approverRecord = await recordRepository.Find("human_resources", approverRequest);
                                                                             var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
-                                                                            var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+                                                                            var sharedUser = await recordRepository.Find("users", sharedUserFindRequest);
 
                                                                             if (!record["shared_users_edit"].IsNullOrEmpty())
                                                                             {
@@ -1151,7 +1151,7 @@ namespace PrimeApps.Studio.Helpers
                                                                         else
                                                                         {
                                                                             var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
-                                                                            var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+                                                                            var sharedUser = await recordRepository.Find("users", sharedUserFindRequest);
 
                                                                             if (!record["shared_users_edit"].IsNullOrEmpty())
                                                                             {
@@ -1178,13 +1178,13 @@ namespace PrimeApps.Studio.Helpers
                                                                     else if (approverPicklistItem.Value == "second_approver")
                                                                     {
                                                                         approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalRecord.First()["second_approver"], No = 1 } }, Limit = 9999 };
-                                                                        approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                                        approverRecord = await recordRepository.Find("human_resources", approverRequest);
                                                                         var approverRecordObj = (JObject)approverRecord.First();
 
                                                                         if ((string)recordOwnerObj["email"] == (string)approverRecordObj["e_mail1"])
                                                                         {
                                                                             var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = "deniz.tekeli@weglobal.org", No = 1 } }, Limit = 1 };
-                                                                            var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+                                                                            var sharedUser = await recordRepository.Find("users", sharedUserFindRequest);
 
                                                                             if (!record["shared_users_edit"].IsNullOrEmpty())
                                                                             {
@@ -1210,7 +1210,7 @@ namespace PrimeApps.Studio.Helpers
                                                                         else
                                                                         {
                                                                             var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
-                                                                            var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+                                                                            var sharedUser = await recordRepository.Find("users", sharedUserFindRequest);
 
                                                                             if (!record["shared_users_edit"].IsNullOrEmpty())
                                                                             {
@@ -1239,17 +1239,17 @@ namespace PrimeApps.Studio.Helpers
                                                                 {
                                                                     var approvalPicklistItem = approvalPicklist.Items.Single(x => x.SystemCode == "nonbillable");
                                                                     var findRequestApproval = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_project", Operator = Operator.Equals, Value = (int)record["project_code"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.TenantLanguage == "tr" ? approvalPicklistItem.LabelTr : approvalPicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
-                                                                    var approvalRecord = recordRepository.Find("approval_workflow", findRequestApproval);
+                                                                    var approvalRecord = await recordRepository.Find("approval_workflow", findRequestApproval);
                                                                     FindRequest approverRequest = null;
                                                                     JArray approverRecord = null;
 
                                                                     if (approverPicklistItem.Value == "project_officer")
                                                                     {
                                                                         approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalRecord.First()["project_officer_staff"], No = 1 } }, Limit = 9999 };
-                                                                        approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                                        approverRecord = await recordRepository.Find("human_resources", approverRequest);
                                                                         var approverRecordObj = approverRecord.First();
                                                                         var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
-                                                                        var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+                                                                        var sharedUser = await recordRepository.Find("users", sharedUserFindRequest);
 
                                                                         if (!record["shared_users_edit"].IsNullOrEmpty())
                                                                         {
@@ -1275,15 +1275,15 @@ namespace PrimeApps.Studio.Helpers
                                                                     else if (approverPicklistItem.Value == "first_approver")
                                                                     {
                                                                         approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalRecord.First()["first_approver"], No = 1 } }, Limit = 9999 };
-                                                                        approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                                        approverRecord = await recordRepository.Find("human_resources", approverRequest);
                                                                         var approverRecordObj = approverRecord.First();
 
                                                                         if ((string)recordOwnerObj["email"] == (string)approverRecordObj["e_mail1"])
                                                                         {
                                                                             approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalRecord.First()["second_approver"], No = 1 } }, Limit = 9999 };
-                                                                            approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                                            approverRecord = await recordRepository.Find("human_resources", approverRequest);
                                                                             var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
-                                                                            var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+                                                                            var sharedUser = await recordRepository.Find("users", sharedUserFindRequest);
 
                                                                             if (!record["shared_users_edit"].IsNullOrEmpty())
                                                                             {
@@ -1309,7 +1309,7 @@ namespace PrimeApps.Studio.Helpers
                                                                         else
                                                                         {
                                                                             var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
-                                                                            var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+                                                                            var sharedUser = await recordRepository.Find("users", sharedUserFindRequest);
 
                                                                             if (!record["shared_users_edit"].IsNullOrEmpty())
                                                                             {
@@ -1336,13 +1336,13 @@ namespace PrimeApps.Studio.Helpers
                                                                     else if (approverPicklistItem.Value == "second_approver")
                                                                     {
                                                                         approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalRecord.First()["second_approver"], No = 1 } }, Limit = 9999 };
-                                                                        approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                                        approverRecord = await recordRepository.Find("human_resources", approverRequest);
                                                                         var approverRecordObj = approverRecord.First();
 
                                                                         if ((string)recordOwnerObj["email"] == (string)approverRecordObj["e_mail1"])
                                                                         {
                                                                             var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = "levent.ergen@weglobal.org", No = 1 } }, Limit = 1 };
-                                                                            var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+                                                                            var sharedUser = await recordRepository.Find("users", sharedUserFindRequest);
 
                                                                             if (!record["shared_users_edit"].IsNullOrEmpty())
                                                                             {
@@ -1368,7 +1368,7 @@ namespace PrimeApps.Studio.Helpers
                                                                         else
                                                                         {
                                                                             var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
-                                                                            var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+                                                                            var sharedUser = await recordRepository.Find("users", sharedUserFindRequest);
 
                                                                             if (!record["shared_users_edit"].IsNullOrEmpty())
                                                                             {
@@ -1397,17 +1397,17 @@ namespace PrimeApps.Studio.Helpers
                                                             else if (projectOverheadPicklistItem.Value == "overhead")
                                                             {
                                                                 var findRequestHumanResources = new FindRequest { Filters = new List<Filter> { new Filter { Field = "e_mail1", Operator = Operator.Equals, Value = appUser.Email, No = 1 } }, Limit = 9999 };
-                                                                var humanResourcesRecord = recordRepository.Find("human_resources", findRequestHumanResources);
+                                                                var humanResourcesRecord = await recordRepository.Find("human_resources", findRequestHumanResources);
                                                                 var approvalModule = await moduleRepository.GetByName("approval_workflow");
                                                                 var approvalPicklistId = approvalModule.Fields.Single(x => x.Name == "approval_type").PicklistId.Value;
                                                                 var approvalPicklist = await picklistRepository.GetById(approvalPicklistId);
                                                                 var approvalTypePicklistItem = approvalPicklist.Items.Single(x => x.SystemCode == "management");
                                                                 var findRequestApprovalWorkflow = new FindRequest { Filters = new List<Filter> { new Filter { Field = "staff", Operator = Operator.Equals, Value = (int)humanResourcesRecord.First()["id"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.TenantLanguage == "tr" ? approvalTypePicklistItem.LabelTr : approvalTypePicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
-                                                                var approvalWorkflowRecord = recordRepository.Find("approval_workflow", findRequestApprovalWorkflow);
+                                                                var approvalWorkflowRecord = await recordRepository.Find("approval_workflow", findRequestApprovalWorkflow);
                                                                 var findApproverRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["first_approver"], No = 1 } }, Limit = 9999 };
-                                                                var approverRecord = recordRepository.Find("human_resources", findApproverRecord);
+                                                                var approverRecord = await recordRepository.Find("human_resources", findApproverRecord);
                                                                 var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
-                                                                var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+                                                                var sharedUser = await recordRepository.Find("users", sharedUserFindRequest);
 
                                                                 if (!record["shared_users_edit"].IsNullOrEmpty())
                                                                 {
@@ -1447,11 +1447,11 @@ namespace PrimeApps.Studio.Helpers
                                                         var pettyCashRequisitionPicklistItem = await picklistRepository.FindItemByLabel(pettyCashRequisitionPicklist.PicklistId.Value, (string)record["status"], appUser.TenantLanguage);
 
                                                         var pettyCashFindRequest = new FindRequest { Fields = new List<string> { "project_code" }, Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = record["related_petty_cash_2"], No = 1 } }, Limit = 1 };
-                                                        var pettyCash = recordRepository.Find("petty_cash", pettyCashFindRequest);
+                                                        var pettyCash = await recordRepository.Find("petty_cash", pettyCashFindRequest);
                                                         var projectFindRequest = new FindRequest { Fields = new List<string> { "project_director.human_resources.e_mail1" }, Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)pettyCash.First()["project_code"], No = 1 } }, Limit = 1 };
-                                                        var project = recordRepository.Find("projects", projectFindRequest);
+                                                        var project = await recordRepository.Find("projects", projectFindRequest);
                                                         var directorFindRequest = new FindRequest { Fields = new List<string> { "id" }, Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Equals, Value = (string)project.First()["project_director.human_resources.e_mail1"], No = 1 } }, Limit = 1 };
-                                                        var director = recordRepository.Find("users", directorFindRequest);
+                                                        var director = await recordRepository.Find("users", directorFindRequest);
 
                                                         if (!record["shared_users_edit"].IsNullOrEmpty())
                                                         {
@@ -1478,7 +1478,7 @@ namespace PrimeApps.Studio.Helpers
                                                         if (pettyCashRequisitionPicklistItem.Value == "paid" && !record["paid_amount"].IsNullOrEmpty() && !record["paid_by"].IsNullOrEmpty())
                                                         {
                                                             var findRequestPettyCashRequisition = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_petty_cash_2", Operator = Operator.Equals, Value = (int)record["related_petty_cash_2"], No = 1 } }, Limit = 9999 };
-                                                            var pettyCashRequisitionRecords = recordRepository.Find(module.Name, findRequestPettyCashRequisition);
+                                                            var pettyCashRequisitionRecords = await recordRepository.Find(module.Name, findRequestPettyCashRequisition);
                                                             var currencyFieldRequisition = pettyCashRequisitionModule.Fields.Single(x => x.Name == "currency");
                                                             var currencyPicklistRequisition = await picklistRepository.GetById(currencyFieldRequisition.PicklistId.Value);
 
@@ -1528,7 +1528,7 @@ namespace PrimeApps.Studio.Helpers
                                                         if (!record["amount"].IsNullOrEmpty())
                                                         {
                                                             var findRequestExpenditure = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_petty_cash_2", Operator = Operator.Equals, Value = (int)record["related_petty_cash_2"], No = 1 } }, Limit = 9999 };
-                                                            var expenditureRecords = recordRepository.Find(module.Name, findRequestExpenditure);
+                                                            var expenditureRecords = await recordRepository.Find(module.Name, findRequestExpenditure);
                                                             var currencyFieldExpenditure = expenditureModule.Fields.Single(x => x.Name == "currency_c");
                                                             var currencyPicklistExpenditure = await picklistRepository.GetById(currencyFieldExpenditure.PicklistId.Value);
 
@@ -1596,16 +1596,16 @@ namespace PrimeApps.Studio.Helpers
                                                         if (expenseTypePicklistItem.SystemCode == "project_expense")
                                                         {
                                                             var findRequestApprovalWorkflow = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_project", Operator = Operator.Equals, Value = (int)record["project_code"], No = 1 } }, Limit = 9999 };
-                                                            var approvalWorkflowRecord = recordRepository.Find("approval_workflow", findRequestApprovalWorkflow);
+                                                            var approvalWorkflowRecord = await recordRepository.Find("approval_workflow", findRequestApprovalWorkflow);
                                                             var findRequestHumanResources = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["first_approver"], No = 1 } }, Limit = 9999 };
-                                                            var humanResourcesRecord = recordRepository.Find("human_resources", findRequestHumanResources);
+                                                            var humanResourcesRecord = await recordRepository.Find("human_resources", findRequestHumanResources);
                                                             var findApproverUser = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = humanResourcesRecord.First()["e_mail1"], No = 1 } }, Limit = 9999 };
                                                             var recordOwnerRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)record["owner"], No = 1 } }, Limit = 9999 };
-                                                            var recordOwner = recordRepository.Find("users", recordOwnerRequest);
+                                                            var recordOwner = await recordRepository.Find("users", recordOwnerRequest);
                                                             var recordOwnerObj = recordOwner.First();
                                                             var humanResourcesRecordObj = humanResourcesRecord.First();
                                                             var projectRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)record["project_code"], No = 1 } }, Limit = 9999 };
-                                                            var projectObj = recordRepository.Find("projects", projectRequest);
+                                                            var projectObj = await recordRepository.Find("projects", projectRequest);
                                                             var proModExpSheet = await moduleRepository.GetByName("projects");
 
                                                             var bdpmPicklist = proModExpSheet.Fields.Single(x => x.Name == "bdpm");
@@ -1617,13 +1617,13 @@ namespace PrimeApps.Studio.Helpers
                                                             }
                                                             else
                                                             {
-                                                                approverUserRecord = recordRepository.Find("users", findApproverUser);
+                                                                approverUserRecord = await recordRepository.Find("users", findApproverUser);
                                                                 if (!humanResourcesRecord.IsNullOrEmpty())
                                                                 {
                                                                     if ((string)recordOwnerObj["email"] == (string)humanResourcesRecordObj["e_mail1"])
                                                                     {
                                                                         var approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["second_approver"], No = 1 } }, Limit = 9999 };
-                                                                        var approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                                        var approverRecord = await recordRepository.Find("human_resources", approverRequest);
                                                                         record["custom_approver"] = approverRecord.First()["e_mail1"];
                                                                     }
                                                                     else
@@ -1656,14 +1656,14 @@ namespace PrimeApps.Studio.Helpers
                                                         else if (expenseTypePicklistItem.SystemCode == "overhead")
                                                         {
                                                             var findRequestHumanResources = new FindRequest { Filters = new List<Filter> { new Filter { Field = "e_mail1", Operator = Operator.Equals, Value = appUser.Email, No = 1 } }, Limit = 9999 };
-                                                            var humanResourcesRecord = recordRepository.Find("human_resources", findRequestHumanResources);
+                                                            var humanResourcesRecord = await recordRepository.Find("human_resources", findRequestHumanResources);
                                                             var approvalTypePicklistItem = approvalTypePicklist.Items.Single(x => x.SystemCode == "management");
                                                             var findRequestApprovalWorkflow = new FindRequest { Filters = new List<Filter> { new Filter { Field = "staff", Operator = Operator.Equals, Value = (int)humanResourcesRecord.First()["id"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.TenantLanguage == "tr" ? approvalTypePicklistItem.LabelTr : approvalTypePicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
-                                                            var approvalWorkflowRecord = recordRepository.Find("approval_workflow", findRequestApprovalWorkflow);
+                                                            var approvalWorkflowRecord = await recordRepository.Find("approval_workflow", findRequestApprovalWorkflow);
                                                             var findApproverRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["first_approver"], No = 1 } }, Limit = 9999 };
-                                                            var approverRecord = recordRepository.Find("human_resources", findApproverRecord);
+                                                            var approverRecord = await recordRepository.Find("human_resources", findApproverRecord);
                                                             var findApproverUser = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 9999 };
-                                                            approverUserRecord = recordRepository.Find("users", findApproverUser);
+                                                            approverUserRecord = await recordRepository.Find("users", findApproverUser);
                                                             if (!approverRecord.IsNullOrEmpty())
                                                             {
                                                                 record["custom_approver"] = approverRecord.First()["e_mail1"];
@@ -1686,7 +1686,7 @@ namespace PrimeApps.Studio.Helpers
                                                         if (!approverUserRecord.IsNullOrEmpty())
                                                         {
                                                             var expenseFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "expense_sheet", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                            var expenses = recordRepository.Find("expenses", expenseFindRequest);
+                                                            var expenses = await recordRepository.Find("expenses", expenseFindRequest);
                                                             if (expenses.Count > 0)
                                                             {
                                                                 var expModule = await moduleRepository.GetByName("expenses");
@@ -1727,7 +1727,7 @@ namespace PrimeApps.Studio.Helpers
                                                                 record["shared_user_groups_edit"] = sharedUserGroups;
 
                                                                 var expenseFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "expense_sheet", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                                var expenses = recordRepository.Find("expenses", expenseFindRequest);
+                                                                var expenses = await recordRepository.Find("expenses", expenseFindRequest);
                                                                 if (expenses.Count > 0)
                                                                 {
                                                                     var expModule = await moduleRepository.GetByName("expenses");
@@ -1765,20 +1765,20 @@ namespace PrimeApps.Studio.Helpers
                                                         var invoiceApproverPicklist = invoiceModule.Fields.Single(x => x.Name == "approver");
                                                         var invoiceApproverPicklistItem = await picklistRepository.FindItemByLabel(invoiceApproverPicklist.PicklistId.Value, (string)record["approver"], appUser.TenantLanguage);
                                                         var recordOwnerRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)record["owner"], No = 1 } }, Limit = 9999 };
-                                                        var recordOwner = recordRepository.Find("users", recordOwnerRequest);
+                                                        var recordOwner = await recordRepository.Find("users", recordOwnerRequest);
                                                         var recordOwnerObj = recordOwner.First();
                                                         if (invoiceTypePicklistItem.SystemCode == "project_expense")
                                                         {
                                                             var approvalTypePicklistItem = approvalTypePicklist.Items.Single(x => x.SystemCode == "nonbillable");
                                                             var findRequestApprovalWorkflow = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_project", Operator = Operator.Equals, Value = (int)record["project"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.TenantLanguage == "tr" ? approvalTypePicklistItem.LabelTr : approvalTypePicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
-                                                            var approvalWorkflowRecord = recordRepository.Find("approval_workflow", findRequestApprovalWorkflow);
+                                                            var approvalWorkflowRecord = await recordRepository.Find("approval_workflow", findRequestApprovalWorkflow);
 
                                                             if (invoiceApproverPicklistItem.SystemCode == "project_director")
                                                             {
                                                                 var findApproverRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["first_approver"], No = 1 } }, Limit = 9999 };
-                                                                var approverRecord = recordRepository.Find("human_resources", findApproverRecord);
+                                                                var approverRecord = await recordRepository.Find("human_resources", findApproverRecord);
                                                                 var findApproverUser = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 9999 };
-                                                                var approverUserRecord = recordRepository.Find("users", findApproverUser);
+                                                                var approverUserRecord = await recordRepository.Find("users", findApproverUser);
                                                                 var approverRecordObj = approverRecord.First();
 
                                                                 if (!approverRecord.IsNullOrEmpty())
@@ -1786,7 +1786,7 @@ namespace PrimeApps.Studio.Helpers
                                                                     if ((string)recordOwnerObj["email"] == (string)approverRecordObj["e_mail1"])
                                                                     {
                                                                         var approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["second_approver"], No = 1 } }, Limit = 9999 };
-                                                                        var approverHumanRecord = recordRepository.Find("human_resources", approverRequest);
+                                                                        var approverHumanRecord = await recordRepository.Find("human_resources", approverRequest);
                                                                         record["custom_approver"] = approverHumanRecord.First()["e_mail1"];
                                                                     }
                                                                     else
@@ -1810,9 +1810,9 @@ namespace PrimeApps.Studio.Helpers
                                                             else if (invoiceApproverPicklistItem.SystemCode == "project_officer")
                                                             {
                                                                 var findApproverRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["project_officer_staff"], No = 1 } }, Limit = 9999 };
-                                                                var approverRecord = recordRepository.Find("human_resources", findApproverRecord);
+                                                                var approverRecord = await recordRepository.Find("human_resources", findApproverRecord);
                                                                 var findApproverUser = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 9999 };
-                                                                var approverUserRecord = recordRepository.Find("users", findApproverUser);
+                                                                var approverUserRecord = await recordRepository.Find("users", findApproverUser);
                                                                 var approverRecordObj = approverRecord.First();
 
                                                                 if (!approverRecord.IsNullOrEmpty())
@@ -1838,9 +1838,9 @@ namespace PrimeApps.Studio.Helpers
                                                         {
                                                             var approvalTypePicklistItem = approvalTypePicklist.Items.Single(x => x.SystemCode == "management");
                                                             var findRequestHumanResources = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)record["related_staff"], No = 1 } }, Limit = 9999 };
-                                                            var humanResourcesRecord = recordRepository.Find("human_resources", findRequestHumanResources);
+                                                            var humanResourcesRecord = await recordRepository.Find("human_resources", findRequestHumanResources);
                                                             var findApproverUser = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = humanResourcesRecord.First()["e_mail1"], No = 1 } }, Limit = 9999 };
-                                                            var approverUserRecord = recordRepository.Find("users", findApproverUser);
+                                                            var approverUserRecord = await recordRepository.Find("users", findApproverUser);
 
                                                             if (!humanResourcesRecord.IsNullOrEmpty())
                                                             {
@@ -1892,7 +1892,7 @@ namespace PrimeApps.Studio.Helpers
                                                     var currentStockRecordArr = new JArray();
 
                                                     if (stockModObj != null)
-                                                        currentStockRecordArr = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj, false);
+                                                        currentStockRecordArr = await recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj, false);
 
                                                     if ((operationType == OperationType.delete && salesOrderModulePicklist.SystemCode != "converted_to_sales_invoice") || (salesOrderModulePicklist.SystemCode != "confirmed_purchase_order_stage" && salesOrderModulePicklist.SystemCode != "confirmed_order_stage" && salesOrderModulePicklist.SystemCode != "converted_to_sales_invoice"))
                                                     {
@@ -1917,7 +1917,7 @@ namespace PrimeApps.Studio.Helpers
                                                     var stockModObj2 = await moduleRepository.GetByName("stock_transactions");
                                                     var purchaseOrderModulePicklist = await picklistRepository.FindItemByLabel(purchaseOrderPicklist.PicklistId.Value, (string)record["order_stage"], appUser.TenantLanguage);
                                                     var findRequestCurrentStockRecordObj2 = new FindRequest { Filters = new List<Filter> { new Filter { Field = "purchase_order", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                    var currentStockRecordArr2 = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj2, false);
+                                                    var currentStockRecordArr2 = await recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj2, false);
                                                     if (operationType == OperationType.delete || (purchaseOrderModulePicklist.SystemCode != "confirmed_purchase_order_stage" && purchaseOrderModulePicklist.SystemCode != "confirmed_order_stage"))
                                                     {
                                                         if (currentStockRecordArr2.Count > 0)
@@ -1970,7 +1970,7 @@ namespace PrimeApps.Studio.Helpers
                                                     var stockModule = await moduleRepository.GetByName("stock_transactions");
 
                                                     if (stockModule != null)
-                                                        currentStockRecord = recordRepository.Find("stock_transactions", findRequestCurrentStockRecord, false);
+                                                        currentStockRecord = await recordRepository.Find("stock_transactions", findRequestCurrentStockRecord, false);
 
                                                     if ((currentModulePicklist.SystemCode == "confirmed_purchase_order_stage" || currentModulePicklist.SystemCode == "confirmed_order_stage") && operationType != OperationType.delete)
                                                     {
@@ -2090,7 +2090,7 @@ namespace PrimeApps.Studio.Helpers
                                                     var projectScopeModule = await moduleRepository.GetByName("project_scope");
                                                     var projectScopeRecord = await recordRepository.GetById(projectScopeModule, (int)record["related_result"]);
                                                     var findRequestProjectIndicator = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_result", Operator = Operator.Equals, Value = (int)record["related_result"], No = 1 } }, Limit = 9999 };
-                                                    var projectIndicatorRecords = recordRepository.Find(module.Name, findRequestProjectIndicator);
+                                                    var projectIndicatorRecords = await recordRepository.Find(module.Name, findRequestProjectIndicator);
                                                     var modelState = new ModelStateDictionary();
                                                     var weightScope = !projectScopeRecord["weight"].IsNullOrEmpty() ? (decimal)projectScopeRecord["weight"] : 0;
                                                     decimal percentage = 0;
@@ -2195,7 +2195,7 @@ namespace PrimeApps.Studio.Helpers
                                                     var projectModule = await moduleRepository.GetByName("projects");
                                                     var projectRecord = await recordRepository.GetById(projectModule, (int)record["project"]);
                                                     var findRequestProjectScope = new FindRequest { Filters = new List<Filter> { new Filter { Field = "project", Operator = Operator.Equals, Value = (int)record["project"], No = 1 } }, Limit = 9999 };
-                                                    var projectScopeRecords = recordRepository.Find(module.Name, findRequestProjectScope);
+                                                    var projectScopeRecords = await recordRepository.Find(module.Name, findRequestProjectScope);
                                                     var modelStateScope = new ModelStateDictionary();
                                                     decimal scope = 0;
 
@@ -2239,7 +2239,7 @@ namespace PrimeApps.Studio.Helpers
                                                     var expensesModule = await moduleRepository.GetByName("expenses");
                                                     var expenseSheetRecord = await recordRepository.GetById(expenseSheetModule, (int)record["expense_sheet"]);
                                                     var findRequestExpense = new FindRequest { Filters = new List<Filter> { new Filter { Field = "expense_sheet", Operator = Operator.Equals, Value = (int)record["expense_sheet"], No = 1 } }, Limit = 9999 };
-                                                    var expenseRecords = recordRepository.Find(module.Name, findRequestExpense);
+                                                    var expenseRecords = await recordRepository.Find(module.Name, findRequestExpense);
                                                     var currencyField = expensesModule.Fields.Single(x => x.Name == "currency");
                                                     var currencyPicklist = await picklistRepository.GetById(currencyField.PicklistId.Value);
                                                     var modelStateExpenseSheet = new ModelStateDictionary();
@@ -2310,9 +2310,9 @@ namespace PrimeApps.Studio.Helpers
                                                             var valueArray = new JArray();
                                                             valueArray.Add((string)record["sector"]);
                                                             var findRequestEoiCoordinator = new FindRequest { Filters = new List<Filter> { new Filter { Field = "eoi_coordinator_and_rationale_writer_sectors", Operator = Operator.Contains, Value = valueArray, No = 1 } }, Limit = 1 };
-                                                            var eoiCoordinatorRecords = recordRepository.Find("human_resources", findRequestEoiCoordinator);
+                                                            var eoiCoordinatorRecords = await recordRepository.Find("human_resources", findRequestEoiCoordinator);
                                                             var findRequestTpManager = new FindRequest { Filters = new List<Filter> { new Filter { Field = "tp_manager_and_strategy_writer_sector", Operator = Operator.Contains, Value = valueArray, No = 1 } }, Limit = 1 };
-                                                            var tpManagerRecords = recordRepository.Find("human_resources", findRequestTpManager);
+                                                            var tpManagerRecords = await recordRepository.Find("human_resources", findRequestTpManager);
                                                             var modelStateprojects = new ModelStateDictionary();
                                                             var projectsUpdateRecord = new JObject();
                                                             projectsUpdateRecord["id"] = (int)record["id"];
@@ -2355,7 +2355,7 @@ namespace PrimeApps.Studio.Helpers
                                                     var timesheetModule = await moduleRepository.GetByName("timesheet");
                                                     var findRequestFields = await GetAllFieldsForFindRequest("timesheet_item");
                                                     var findRequestTimesheetItems = new FindRequest { Fields = findRequestFields, Filters = new List<Filter> { new Filter { Field = "related_timesheet", Operator = Operator.Equals, Value = (int)record["related_timesheet"], No = 1 } }, Limit = 9999 };
-                                                    var timesheetItemsRecords = recordRepository.Find(module.Name, findRequestTimesheetItems, false);
+                                                    var timesheetItemsRecords = await recordRepository.Find(module.Name, findRequestTimesheetItems, false);
                                                     var statusField = timesheetModule.Fields.Single(x => x.Name == "status");
                                                     var statusPicklist = await picklistRepository.GetById(statusField.PicklistId.Value);
                                                     var approvedStatusPicklistItem = statusPicklist.Items.Single(x => x.Value == "approved_second");
@@ -2424,11 +2424,11 @@ namespace PrimeApps.Studio.Helpers
                                                         var timesheetInfo = timesheetRecord["year"] + "-" + timesheetRecord["term"];
                                                         var timesheetMonth = int.Parse(timesheetRecord["term"].ToString()) - 1;
                                                         var body = "<!DOCTYPE html> <html> <head> <meta name=\"viewport\" content=\"width=device-width\"> <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"> <title></title> <style type=\"text/css\"> @media only screen and (max-width: 620px) { table[class= body] h1 { font-size: 28px !important; margin-bottom: 10px !important; } table[class=body] p, table[class=body] ul, table[class=body] ol, table[class=body] td, table[class=body] span, table[class=body] a { font-size: 16px !important; } table[class=body] .wrapper, table[class=body] .article { padding: 10px !important; } table[class=body] .content { padding: 0 !important; } table[class=body] .container { padding: 0 !important; width: 100% !important; } table[class=body] .main { border-left-width: 0 !important; border-radius: 0 !important; border-right-width: 0 !important; } table[class=body] .btn table { width: 100% !important; } table[class=body] .btn a { width: 100% !important; } table[class=body] .img-responsive { height: auto !important; max-width: 100% !important; width: auto !important; }} @media all { .ExternalClass { width: 100%; } .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div { line-height: 100%; } .apple-link a { color: inherit !important; font-family: inherit !important; font-size: inherit !important; font-weight: inherit !important; line-height: inherit !important; text-decoration: none !important; } .btn-primary table td:hover { background-color: #34495e !important; } .btn-primary a:hover { background - color: #34495e !important; border-color: #34495e !important; } } </style> </head> <body class=\"\" style=\"background-color:#f6f6f6;font-family:sans-serif;-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.4;margin:0;padding:0;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"body\" style=\"border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;background-color:#f6f6f6;width:100%;\"> <tr> <td style=\"font-family:sans-serif;font-size:14px;vertical-align:top;\">&nbsp;</td> <td class=\"container\" style=\"font-family:sans-serif;font-size:14px;vertical-align:top;display:block;max-width:580px;padding:10px;width:580px;Margin:0 auto !important;\"> <div class=\"content\" style=\"box-sizing:border-box;display:block;Margin:0 auto;max-width:580px;padding:10px;\"> <!-- START CENTERED WHITE CONTAINER --> <table class=\"main\" style=\"border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;background:#fff;border-radius:3px;width:100%;\"> <!-- START MAIN CONTENT AREA --> <tr> <td class=\"wrapper\" style=\"font-family:sans-serif;font-size:14px;vertical-align:top;box-sizing:border-box;padding:20px;\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%;\"> <tr> <td style=\"font-family:sans-serif;font-size:14px;vertical-align:top;\"> Dear " + timesheetOwner.FullName + ", <br><br>Your timesheet (" + timesheetInfo + ") is approved. <br><br><br><br><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" class=\"btn btn-primary\" style=\"border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;box-sizing:border-box;width:100%;\"> <tbody> <tr> <td align=\"left\" style=\"font-family:sans-serif;font-size:14px;vertical-align:top;padding-bottom:15px;\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%;width:auto;\"> <tbody> <tr> <td style=\"font-family:sans-serif;font-size:14px;vertical-align:top;background-color:#ffffff;border-radius:5px;text-align:center;background-color:#3498db;\"> <a href=\"https://bee.weglobal.org/#/app/crm/timesheet?month=" + timesheetMonth + "\" target=\"_blank\" style=\"text-decoration:underline;background-color:#ffffff;border:solid 1px #3498db;border-radius:5px;box-sizing:border-box;color:#3498db;cursor:pointer;display:inline-block;font-size:14px;font-weight:bold;margin:0;padding:12px 25px;text-decoration:none;background-color:#3498db;border-color:#3498db;color:#ffffff;\">Go to Your Timesheet</a> </td> </tr> </tbody> </table> </td> </tr> </tbody> </table></td> </tr> </table> </td> </tr> <!-- END MAIN CONTENT AREA --> </table> <!-- START FOOTER --> <div class=\"footer\" style=\"clear:both;padding-top:10px;text-align:center;width:100%;\"> <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%;\"> <tr> <td class=\"content-block\" style=\"font-family:sans-serif;font-size:14px;vertical-align:top;color:#999999;font-size:12px;text-align:center;\"> <br><span class=\"apple-link\" style=\"color:#999999;font-size:12px;text-align:center;\">Ofisim.com</span> </td> </tr> </table> </div> <!-- END FOOTER --> <!-- END CENTERED WHITE CONTAINER --> </div> </td> <td style=\"font-family:sans-serif;font-size:14px;vertical-align:top;\">&nbsp;</td> </tr> </table> </body> </html>";
-														//TODO var externalEmailTimesheet = new Email("Timesheet (" + timesheetInfo + ") Approved", body, _configuration);
-														//TODO  externalEmailTimesheet.AddRecipient(timesheetOwner.Email);
-														//TODO	externalEmailTimesheet.AddToQueue(appUser: appUser);
+                                                        //TODO var externalEmailTimesheet = new Email("Timesheet (" + timesheetInfo + ") Approved", body, _configuration);
+                                                        //TODO  externalEmailTimesheet.AddRecipient(timesheetOwner.Email);
+                                                        //TODO	externalEmailTimesheet.AddToQueue(appUser: appUser);
 
-														await CalculateTimesheet(timesheetItemsRecords, appUser, module, timesheetModule, warehouse);
+                                                        await CalculateTimesheet(timesheetItemsRecords, appUser, module, timesheetModule, warehouse);
                                                     }
                                                     break;
                                                 case "human_resources":
@@ -2439,7 +2439,7 @@ namespace PrimeApps.Studio.Helpers
                                                         Offset = 0
                                                     };
 
-                                                    var izinlerCalisanPG = recordRepository.Find("izin_turleri", findRequestIzinlerCalisanPG, false).First;
+                                                    var izinlerCalisanPG = (await recordRepository.Find("izin_turleri", findRequestIzinlerCalisanPG, false)).First;
                                                     await YillikIzinHesaplama((int)record["id"], (int)izinlerCalisanPG["id"], warehouse);
                                                     break;
                                                 case "calisanlar":
@@ -2592,7 +2592,7 @@ namespace PrimeApps.Studio.Helpers
                                                         Offset = 0
                                                     };
 
-                                                    var izinlerCalisan = recordRepository.Find("izin_turleri", findRequestIzinlerCalisan, false).First;
+                                                    var izinlerCalisan = (await recordRepository.Find("izin_turleri", findRequestIzinlerCalisan, false)).First;
 
                                                     var rehberModule = await moduleRepository.GetByName("rehber");
                                                     var calisanModule = await moduleRepository.GetByName("calisanlar");
@@ -2601,7 +2601,7 @@ namespace PrimeApps.Studio.Helpers
                                                     if (operationType == OperationType.update || operationType == OperationType.delete)
                                                     {
                                                         var findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "calisan_id", Operator = Operator.Equals, Value = (int)record["id"] } } };
-                                                        var recordsRehber = recordRepository.Find("rehber", findRequest);
+                                                        var recordsRehber = await recordRepository.Find("rehber", findRequest);
 
                                                         if (recordsRehber.IsNullOrEmpty())
                                                         {
@@ -2645,7 +2645,7 @@ namespace PrimeApps.Studio.Helpers
                                                         if (!record["yoneticisi"].IsNullOrEmpty())
                                                         {
                                                             var findRequestYonetici = new FindRequest { Filters = new List<Filter> { new Filter { Field = "calisan_id", Operator = Operator.Equals, Value = (int)record["yoneticisi"] } } };
-                                                            var recordsYonetici = recordRepository.Find("rehber", findRequestYonetici);
+                                                            var recordsYonetici = await recordRepository.Find("rehber", findRequestYonetici);
 
                                                             if (!recordsYonetici.IsNullOrEmpty())
                                                                 recordRehber["yoneticisi"] = recordsYonetici[0]["id"];
@@ -2809,7 +2809,7 @@ namespace PrimeApps.Studio.Helpers
 
                                                     var izinTuruModule = await moduleRepository.GetByName("izin_turleri");
                                                     var izinTuru = await recordRepository.GetById(izinTuruModule, (int)record["izin_turu"], false);
-                                                    var izinler = recordRepository.Find("izin_turleri", findRequestIzinler, false).First;
+                                                    var izinler = (await recordRepository.Find("izin_turleri", findRequestIzinler, false)).First;
 
                                                     //İzin türüne göre izinler de gün veya saat olduğunu belirtme.
                                                     if (!izinTuru["saatlik_kullanim_yapilir"].IsNullOrEmpty())
@@ -2851,7 +2851,7 @@ namespace PrimeApps.Studio.Helpers
                                                                 if (yurtIcıDisiPicklistItem.SystemCode == "yurt_ici")
                                                                 {
                                                                     var findRequestMasrafCalisan = new FindRequest { Filters = new List<Filter> { new Filter { Field = "owner", Operator = Operator.Equals, Value = record["owner"], No = 1 } }, Limit = 1 };
-                                                                    var recordsMasrafCalisan = recordRepository.Find("calisanlar", findRequestMasrafCalisan);
+                                                                    var recordsMasrafCalisan = await recordRepository.Find("calisanlar", findRequestMasrafCalisan);
                                                                     var lokasyonPicklist = masrafCalisanModule.Fields.Single(x => x.Name == "lokasyon");
                                                                     var lokasyonPicklistItem = await picklistRepository.FindItemByLabel(lokasyonPicklist.PicklistId.Value, (string)recordsMasrafCalisan.First()["lokasyon"], appUser.TenantLanguage);
                                                                     var illerPicklist = masrafKalemiModule.Fields.Single(x => x.Name == "iller");
@@ -2889,7 +2889,7 @@ namespace PrimeApps.Studio.Helpers
                                                         decimal totalOdenecekTutar = 0;
 
                                                         var findRequestMasrafKalemi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "masraf", Operator = Operator.Equals, Value = masrafId, No = 1 } }, Limit = 9999 };
-                                                        var recordsMasrafKalemi = recordRepository.Find(module.Name, findRequestMasrafKalemi);
+                                                        var recordsMasrafKalemi = await recordRepository.Find(module.Name, findRequestMasrafKalemi);
 
                                                         foreach (JObject recordMasrafKalemi in recordsMasrafKalemi)
                                                         {
@@ -3035,7 +3035,7 @@ namespace PrimeApps.Studio.Helpers
                             SortDirection = SortDirection.Desc
                         };
 
-                        var kidemIzni = _recordRepository.Find("kideme_gore_yillik_izin_artislari", findRequestKidemeGoreIzinler, false).First;
+                        var kidemIzni = (await _recordRepository.Find("kideme_gore_yillik_izin_artislari", findRequestKidemeGoreIzinler, false)).First;
 
 
                         if (kidemIzni != null)
@@ -3093,7 +3093,7 @@ namespace PrimeApps.Studio.Helpers
                         Limit = 9999
                     };
 
-                    var izinlerRecords = _recordRepository.Find("izinler", findRequestIzinler, false);
+                    var izinlerRecords = await _recordRepository.Find("izinler", findRequestIzinler, false);
 
                     foreach (var izinlerRecord in izinlerRecords)
                     {
@@ -3310,7 +3310,7 @@ namespace PrimeApps.Studio.Helpers
 
                     //Update project teams billable timesheet total days
                     var findRequestExpert = new FindRequest { Filters = new List<Filter> { new Filter { Field = "e_mail1", Operator = Operator.Is, Value = timesheetOwnerEmail, No = 1 } } };
-                    var expertRecords = _recordRepository.Find("experts", findRequestExpert, false);
+                    var expertRecords = await _recordRepository.Find("experts", findRequestExpert, false);
 
                     if (expertRecords.IsNullOrEmpty() || expertRecords.Count < 1)
                     {
@@ -3332,7 +3332,7 @@ namespace PrimeApps.Studio.Helpers
                     }
                         };
 
-                        var projectTeamRecords = _recordRepository.Find("project_team", findRequestProjectTeam, false);
+                        var projectTeamRecords = await _recordRepository.Find("project_team", findRequestProjectTeam, false);
 
                         if (projectTeamRecords.IsNullOrEmpty() || projectTeamRecords.Count < 1)
                             continue;
@@ -3377,7 +3377,7 @@ namespace PrimeApps.Studio.Helpers
                     {
                         case "try":
                             var accountCurrentAccountsRequestTry = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "customer", Operator = Operator.Equals, Value = module.Name == "sales_invoices" ? (int)record["account"] : (int)record["customer"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "try").LabelTr : currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "try").LabelEn, No = 2 } }, Limit = 9999 };
-                            var accountCurrentAccountsTry = _recordRepository.Find("current_accounts", accountCurrentAccountsRequestTry);
+                            var accountCurrentAccountsTry = await _recordRepository.Find("current_accounts", accountCurrentAccountsRequestTry);
                             if (accountCurrentAccountsTry.Count > 0)
                             {
                                 foreach (JObject accountCurrentAccountTry in accountCurrentAccountsTry)
@@ -3396,7 +3396,7 @@ namespace PrimeApps.Studio.Helpers
 
                         case "eur":
                             var accountCurrentAccountsRequestEuro = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "customer", Operator = Operator.Equals, Value = module.Name == "sales_invoices" ? (int)record["account"] : (int)record["customer"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "eur").LabelTr : currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "eur").LabelEn, No = 2 } }, Limit = 9999 };
-                            var accountCurrentAccountsEuro = _recordRepository.Find("current_accounts", accountCurrentAccountsRequestEuro);
+                            var accountCurrentAccountsEuro = await _recordRepository.Find("current_accounts", accountCurrentAccountsRequestEuro);
                             if (accountCurrentAccountsEuro.Count > 0)
                             {
                                 foreach (JObject accountCurrentAccountEuro in accountCurrentAccountsEuro)
@@ -3414,7 +3414,7 @@ namespace PrimeApps.Studio.Helpers
 
                         case "usd":
                             var accountCurrentAccountsRequestUsd = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "customer", Operator = Operator.Equals, Value = module.Name == "sales_invoices" ? (int)record["account"] : (int)record["customer"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "usd").LabelTr : currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "usd").LabelEn, No = 2 } }, Limit = 9999 };
-                            var accountCurrentAccountsUsd = _recordRepository.Find("current_accounts", accountCurrentAccountsRequestUsd);
+                            var accountCurrentAccountsUsd = await _recordRepository.Find("current_accounts", accountCurrentAccountsRequestUsd);
                             if (accountCurrentAccountsUsd.Count > 0)
                             {
                                 foreach (JObject accountCurrentAccountUsd in accountCurrentAccountsUsd)
@@ -3451,7 +3451,7 @@ namespace PrimeApps.Studio.Helpers
                     {
                         case "try":
                             var accountCurrentAccountsRequestTry = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "supplier", Operator = Operator.Equals, Value = module.Name == "purchase_invoices" ? (int)record["tedarikci"] : (int)record["supplier"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "try").LabelTr : currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "try").LabelEn, No = 2 } }, Limit = 9999 };
-                            var accountCurrentAccountsTry = _recordRepository.Find("current_accounts", accountCurrentAccountsRequestTry);
+                            var accountCurrentAccountsTry = await _recordRepository.Find("current_accounts", accountCurrentAccountsRequestTry);
                             if (accountCurrentAccountsTry.Count > 0)
                             {
                                 foreach (JObject accountCurrentAccountTry in accountCurrentAccountsTry)
@@ -3470,7 +3470,7 @@ namespace PrimeApps.Studio.Helpers
 
                         case "eur":
                             var accountCurrentAccountsRequestEuro = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "supplier", Operator = Operator.Equals, Value = module.Name == "purchase_invoices" ? (int)record["tedarikci"] : (int)record["supplier"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "eur").LabelTr : currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "eur").LabelEn, No = 2 } }, Limit = 9999 };
-                            var accountCurrentAccountsEuro = _recordRepository.Find("current_accounts", accountCurrentAccountsRequestEuro);
+                            var accountCurrentAccountsEuro = await _recordRepository.Find("current_accounts", accountCurrentAccountsRequestEuro);
                             if (accountCurrentAccountsEuro.Count > 0)
                             {
                                 foreach (JObject accountCurrentAccountEuro in accountCurrentAccountsEuro)
@@ -3488,7 +3488,7 @@ namespace PrimeApps.Studio.Helpers
 
                         case "usd":
                             var accountCurrentAccountsRequestUsd = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "supplier", Operator = Operator.Equals, Value = module.Name == "purchase_invoices" ? (int)record["tedarikci"] : (int)record["supplier"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "usd").LabelTr : currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "usd").LabelEn, No = 2 } }, Limit = 9999 };
-                            var accountCurrentAccountsUsd = _recordRepository.Find("current_accounts", accountCurrentAccountsRequestUsd);
+                            var accountCurrentAccountsUsd = await _recordRepository.Find("current_accounts", accountCurrentAccountsRequestUsd);
                             if (accountCurrentAccountsUsd.Count > 0)
                             {
                                 foreach (JObject accountCurrentAccountUsd in accountCurrentAccountsUsd)
@@ -3522,7 +3522,7 @@ namespace PrimeApps.Studio.Helpers
 
                     decimal balance = 0;
                     var kasaHareketleriRequest = new FindRequest { SortField = "islem_tarihi,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "kasa", Operator = Operator.Equals, Value = (int)record["kasa"], No = 1 } }, Limit = 9999 };
-                    var kasaHareketleri = _recordRepository.Find("kasa_hareketleri", kasaHareketleriRequest);
+                    var kasaHareketleri = await _recordRepository.Find("kasa_hareketleri", kasaHareketleriRequest);
                     if (kasaHareketleri.Count > 0)
                     {
                         foreach (JObject kasaHareketi in kasaHareketleri)
@@ -3555,7 +3555,7 @@ namespace PrimeApps.Studio.Helpers
 
                     decimal balance = 0;
                     var bankaHareketleriRequest = new FindRequest { SortField = "islem_tarihi,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "banka", Operator = Operator.Equals, Value = (int)record["banka"], No = 1 } }, Limit = 9999 };
-                    var bankaHareketleri = _recordRepository.Find("banka_hareketleri", bankaHareketleriRequest);
+                    var bankaHareketleri = await _recordRepository.Find("banka_hareketleri", bankaHareketleriRequest);
                     if (bankaHareketleri.Count > 0)
                     {
                         foreach (JObject bankaHareketi in bankaHareketleri)
@@ -3589,7 +3589,7 @@ namespace PrimeApps.Studio.Helpers
 
                     decimal balance = 0;
                     var stockTransactionRequest = new FindRequest { SortField = "transaction_date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "product", Operator = Operator.Equals, Value = (int)record["product"], No = 1 } }, Limit = 9999 };
-                    var stockTransactions = _recordRepository.Find("stock_transactions", stockTransactionRequest);
+                    var stockTransactions = await _recordRepository.Find("stock_transactions", stockTransactionRequest);
                     if (stockTransactions.Count > 0)
                     {
                         var transactionTypePicklist = stockTransactionModule.Fields.Single(x => x.Name == "stock_transaction_type");
@@ -3746,7 +3746,7 @@ namespace PrimeApps.Studio.Helpers
                 Offset = 0
             };
 
-            var getUser = recordRepository.Find("users", getUserEmail, false).FirstOrDefault();
+            var getUser = (await recordRepository.Find("users", getUserEmail, false)).FirstOrDefault();
 
             if (getUser["email"].ToString() == calisanRecord["e_posta"].ToString())
             {

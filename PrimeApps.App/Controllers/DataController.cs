@@ -192,8 +192,8 @@ namespace PrimeApps.App.Controllers
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
             _recordRepository.TenantId = _moduleRepository.TenantId = tenantId;
 
-            var izinTuru = _recordRepository.Find("izin_turleri", new FindRequest { Filters = new List<Filter> { new Filter { Field = "yillik_izin", Operator = Operator.Equals, Value = true, No = 1 } }, Offset = 0, Limit = 9999 }, false).First;
-            var calisanlar = _recordRepository.Find("calisanlar", new FindRequest { Filters = new List<Filter> { new Filter { Field = "calisma_durumu", Operator = Operator.Equals, Value = "Aktif", No = 1 } }, Offset = 0, Limit = 9999 }, false);
+            var izinTuru = (await _recordRepository.Find("izin_turleri", new FindRequest { Filters = new List<Filter> { new Filter { Field = "yillik_izin", Operator = Operator.Equals, Value = true, No = 1 } }, Offset = 0, Limit = 9999 }, false, false)).First;
+            var calisanlar = await _recordRepository.Find("calisanlar", new FindRequest { Filters = new List<Filter> { new Filter { Field = "calisma_durumu", Operator = Operator.Equals, Value = "Aktif", No = 1 } }, Offset = 0, Limit = 9999 }, false, false);
 
             foreach (JObject calisan in calisanlar)
             {

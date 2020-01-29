@@ -78,7 +78,7 @@ namespace PrimeApps.App.Bpm.Steps
 					moduleRepository.CurrentUser = recordRepository.CurrentUser = currentUser;
 					var module = await moduleRepository.GetById(moduleId);
 					var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository, tenantLanguage: appUser.TenantLanguage);
-					record = await recordRepository.GetById(module, recordId, true, lookupModules, operation: OperationType.read);
+					record = await recordRepository.GetById(module, recordId, true, lookupModules);
 				}
 			}
 

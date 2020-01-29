@@ -386,7 +386,7 @@ namespace PrimeApps.App.Controllers
                         };
                     }
 
-                    var records = _recordRepository.Find(relation.RelatedModule, findRequest);
+                    var records = await _recordRepository.Find(relation.RelatedModule, findRequest);
                     Module relatedModuleEntity;
                     ICollection<Module> relatedLookupModules;
 
@@ -439,7 +439,7 @@ namespace PrimeApps.App.Controllers
                         fieldsManyToMany.Add(relation.RelatedModule + "_id." + relation.RelatedModule + "." + field);
                     }
 
-                    var records = _recordRepository.Find(relation.RelatedModule, new FindRequest
+                    var records = await _recordRepository.Find(relation.RelatedModule, new FindRequest
                     {
                         Fields = fieldsManyToMany,
                         Filters = new List<Filter>
@@ -518,7 +518,7 @@ namespace PrimeApps.App.Controllers
             {
                 var quoteFields = await _recordHelper.GetAllFieldsForFindRequest("quote_products");
 
-                var products = _recordRepository.Find("quote_products", new FindRequest()
+                var products = await _recordRepository.Find("quote_products", new FindRequest()
                 {
                     Fields = quoteFields,
                     Filters = new List<Filter>
@@ -576,7 +576,7 @@ namespace PrimeApps.App.Controllers
             {
                 var orderFields = await _recordHelper.GetAllFieldsForFindRequest("order_products");
 
-                var products = _recordRepository.Find("order_products", new FindRequest()
+                var products = await _recordRepository.Find("order_products", new FindRequest()
                 {
                     Fields = orderFields,
                     Filters = new List<Filter>
@@ -621,7 +621,7 @@ namespace PrimeApps.App.Controllers
             {
                 var orderFields = await _recordHelper.GetAllFieldsForFindRequest("purchase_order_products");
 
-                var products = _recordRepository.Find("purchase_order_products", new FindRequest()
+                var products = await _recordRepository.Find("purchase_order_products", new FindRequest()
                 {
                     Fields = orderFields,
                     Filters = new List<Filter>
@@ -666,7 +666,7 @@ namespace PrimeApps.App.Controllers
             {
                 var orderFields = await _recordHelper.GetAllFieldsForFindRequest("sales_invoices_products");
 
-                var products = _recordRepository.Find("sales_invoices_products", new FindRequest()
+                var products = await _recordRepository.Find("sales_invoices_products", new FindRequest()
                 {
                     Fields = orderFields,
                     Filters = new List<Filter>
@@ -711,7 +711,7 @@ namespace PrimeApps.App.Controllers
             {
                 var orderFields = await _recordHelper.GetAllFieldsForFindRequest("sales_invoices_products");
 
-                var products = _recordRepository.Find("purchase_invoices_products", new FindRequest()
+                var products = await _recordRepository.Find("purchase_invoices_products", new FindRequest()
                 {
                     Fields = orderFields,
                     Filters = new List<Filter>
@@ -784,7 +784,7 @@ namespace PrimeApps.App.Controllers
                     Offset = 0
                 };
 
-                records = _recordRepository.Find(secondLevelSubModuleEntity.Name, secondLevelFindRequest);
+                records = await _recordRepository.Find(secondLevelSubModuleEntity.Name, secondLevelFindRequest);
                 var recordsFormatted = new JArray();
 
                 foreach (JObject recordItem in records)
@@ -826,7 +826,7 @@ namespace PrimeApps.App.Controllers
                     Offset = 0
                 };
 
-                records = _recordRepository.Find(relation.RelatedModule, secondLevelFindRequestManyToMany);
+                records = await _recordRepository.Find(relation.RelatedModule, secondLevelFindRequestManyToMany);
                 var recordsFormatted = new JArray();
 
                 foreach (JObject recordItem in records)
@@ -1096,7 +1096,7 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-            var records = _recordRepository.Find(moduleEntity.Name, findRequest);
+            var records = await _recordRepository.Find(moduleEntity.Name, findRequest);
 
             for (int i = 0; i < fields.Count; i++)
             {
@@ -1412,7 +1412,7 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-            var records = _recordRepository.Find(moduleEntity.Name, findRequest);
+            var records = await _recordRepository.Find(moduleEntity.Name, findRequest);
 
 
             string labelLocale = "";
@@ -1689,7 +1689,7 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-            var records = _recordRepository.Find(moduleEntity.Name, findRequest);
+            var records = await _recordRepository.Find(moduleEntity.Name, findRequest);
 
             using (var temp = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), template.Content, null))
             {
@@ -1962,7 +1962,7 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-            var records = _recordRepository.Find(moduleEntity.Name, findRequest);
+            var records = await _recordRepository.Find(moduleEntity.Name, findRequest);
 
             using (var temp = await _storage.Client.GetObjectStreamAsync(UnifiedStorage.GetPath("template", PreviewMode, PreviewMode == "tenant" ? AppUser.TenantId : AppUser.AppId), template.Content, null))
             {

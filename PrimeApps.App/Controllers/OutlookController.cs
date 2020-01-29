@@ -579,7 +579,7 @@ namespace PrimeApps.App.Controllers
 
             findRequest.LogicType = LogicType.Or;
 
-            var records = _recordRepository.Find(outlookModuleSetting.Value, findRequest);
+            var records = await _recordRepository.Find(outlookModuleSetting.Value, findRequest);
 
             if (records.IsNullOrEmpty())
                 return StatusCode(HttpStatusCode.Status400BadRequest, new {code = "record_not_found", message = "Record not found!"});
