@@ -1,25 +1,25 @@
 ﻿module.exports = {
-    bundle: {
-        auth: {
-            scripts: [
-                './scripts/vendor/jquery.js',
-                './scripts/vendor/jquery-maskedinput.js',
-                './scripts/vendor/sweetalert.js',
-                './scripts/vendor/spin.js',
-                './scripts/vendor/ladda.js'
-            ],
-            styles: [
-                './styles/vendor/bootstrap.css',
-                './styles/vendor/flaticon.css',
-                './styles/vendor/ladda-themeless.css',
-                './styles/vendor/font-awesome.css'
-            ],
-            options: {
-                maps: false,
-                uglify: true,
-                minCSS: true,
-                rev: false
-            }
-        }
-    }
+	bundle: {
+		vendor: {
+			scripts: [
+				'./wwwroot/scripts/vendor/jquery.js',
+				'./wwwroot/scripts/vendor/jquery-maskedinput.js',
+				'./wwwroot/scripts/vendor/sweetalert.js',
+				'./wwwroot/scripts/vendor/spin.js',
+				'./wwwroot/scripts/vendor/ladda.js'
+			],
+			styles: [
+				'./wwwroot/styles/vendor/bootstrap.css',
+				'./wwwroot/styles/vendor/flaticon.css',
+				'./wwwroot/styles/vendor/ladda-themeless.css',
+				'./wwwroot/styles/vendor/font-awesome.css'
+			],
+			options: {
+				maps: false,
+				uglify: true,
+				minCSS: true,
+				rev: false
+			}
+		}
+	}
 };

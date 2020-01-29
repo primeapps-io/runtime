@@ -90,7 +90,7 @@ angular.module('primeapps')
                                 $scope.profile.export_data = false;
                                 $scope.profile.import_data = false;
                                 $scope.profile.word_pdf_download = false;
-                                $scope.profile.close_smtp_settings = false;
+                                $scope.profile.smtp_settings = false;
                                 $scope.profile.lead_convert = false;
                                 $scope.profile.document_search = false;
                                 $scope.profile.tasks = false;

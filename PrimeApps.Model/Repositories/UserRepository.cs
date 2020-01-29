@@ -128,7 +128,7 @@ namespace PrimeApps.Model.Repositories
 							Modify = pm.Modify,
 							Type = (int)pm.Type
 						}),
-						CloseSmtpSettings = user.Profile.CloseSmtpSettings
+						SmtpSettings = user.Profile.SmtpSettings
 					},
 					role = new RoleInfo()
 					{

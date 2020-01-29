@@ -642,7 +642,14 @@ namespace PrimeApps.Admin.Helpers
 		public async Task ApplyMigrations(List<int> ids)//List<AppDraft> apps)
 		{
 			var PREConnectionString = _configuration.GetConnectionString("PlatformDBConnection");
-
+			var result = new JObject
+			{
+				["success"] = new JObject
+				{
+					["is_sample"] = "",
+					["encrypt"] = ""
+				}
+			};
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				using (var platformDbContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>())
@@ -656,14 +663,16 @@ namespace PrimeApps.Admin.Helpers
 							if (app == null)
 								return;
 
-							await UpdateAppModuleFieldsAndSettings(id, PREConnectionString);
+							await UpdateAppModuleFieldsAndSettings(id, PREConnectionString, result);
 						}
+						
+						ErrorHandler.LogMessage(result.ToJsonString());
 					}
 				}
 			}
 		}
 
-		public async Task UpdateAppModuleFieldsAndSettings(int appId, string PREConnectionString)
+		public async Task UpdateAppModuleFieldsAndSettings(int appId, string PREConnectionString, JObject result)
 		{
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
@@ -676,14 +685,17 @@ namespace PrimeApps.Admin.Helpers
 					{
 						_currentUser = new CurrentUser { PreviewMode = "app", TenantId = appId, UserId = 1 };
 						moduleRepository.CurrentUser = settingRepository.CurrentUser = _currentUser;
+						
+						var appExists = PostgresHelper.Read(_configuration.GetConnectionString("PlatformDBConnection"), $"platform", $"SELECT 1 AS result FROM pg_database WHERE datname='app{appId}'", "hasRows");
 
-						PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", true);
-						await UpdateModules(moduleRepository);
-						await UpdateSetting(settingRepository);
-						PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", false);
-
+						if (appExists)
+						{
+							PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", true);
+							await UpdateModules(moduleRepository, result);
+							await UpdateSetting(settingRepository, result);
+							PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", false);
+						}
 						var tenantIds = await tenantRepository.GetIdsByAppId(appId);
-						var lastTenantId = tenantIds.Count > 0 ? tenantIds.ToList().Last() : 0;
 
 						foreach (var tenantId in tenantIds)
 						{
@@ -692,14 +704,14 @@ namespace PrimeApps.Admin.Helpers
 							if (!exists)
 								continue;
 
-							await UpdateTenantModuleFieldsAndFields(tenantId, lastTenantId);
+							await UpdateTenantModuleFieldsAndFields(tenantId, result);
 						}
 					}
 				}
 			}
 		}
 
-		public async Task UpdateTenantModuleFieldsAndFields(int tenantId, int lastTenantId)
+		public async Task UpdateTenantModuleFieldsAndFields(int tenantId, JObject result)
 		{
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
@@ -710,67 +722,97 @@ namespace PrimeApps.Admin.Helpers
 					{
 						_currentUser = new CurrentUser { PreviewMode = "tenant", TenantId = tenantId, UserId = 1 };
 						moduleRepository.CurrentUser = settingRepository.CurrentUser = _currentUser;
-						await UpdateSetting(settingRepository);
-						await UpdateModules(moduleRepository);
+						await UpdateSetting(settingRepository, result);
+						await UpdateModules(moduleRepository, result);
 					}
 					tenantDbContext.Database.CloseConnection();
 				}
 			}
-
-			SentrySdk.CaptureMessage($"Tenant{tenantId} update successfully.", SentryLevel.Info);
-
-			if (tenantId == lastTenantId)
-				SentrySdk.CaptureMessage("All tenants updated successfully.", SentryLevel.Info);
 		}
 
-		public async Task<ICollection<Module>> UpdateModules(ModuleRepository moduleRepository)
+		public async Task<ICollection<Module>> UpdateModules(ModuleRepository moduleRepository, JObject result)
 		{
 			var modules = await moduleRepository.GetAll();
 			foreach (var module in modules)
 			{
-				var fiedlIsExist = module.Fields.Where(q => q.Name == "is_sample").SingleOrDefault();
+				var fiedlIsExist = module.Fields.SingleOrDefault(q => q.Name == "is_sample");
 				if (fiedlIsExist == null)
 				{
-					module.Fields.Add(new Field
+					try
 					{
-						Name = "is_sample",
-						DataType = DataType.Checkbox,
-						Deleted = false,
-						DisplayDetail = true,
-						DisplayForm = true,
-						DisplayList = true,
-						Editable = true,
-						InlineEdit = true,
-						LabelEn = "Sample Data",
-						LabelTr = "Örnek Kayıt",
-						Order = (short)(module.Fields.Count + 1),
-						Primary = false,
-						Section = "system",
-						SectionColumn = 2,
-						ShowLabel = true,
-						ShowOnlyEdit = false,
-						SystemType = SystemType.Custom,
-						Validation = new FieldValidation
+						module.Fields.Add(new Field
 						{
-							Readonly = false,
-							Required = false
-						}
-					});
-					await moduleRepository.Update(module);
+							Name = "is_sample",
+							DataType = DataType.Checkbox,
+							Deleted = false,
+							DisplayDetail = true,
+							DisplayForm = true,
+							DisplayList = true,
+							Editable = true,
+							InlineEdit = true,
+							LabelEn = "Sample Data",
+							LabelTr = "Örnek Kayıt",
+							Order = (short)(module.Fields.Count + 1),
+							Primary = false,
+							Section = "system",
+							SectionColumn = 2,
+							ShowLabel = true,
+							ShowOnlyEdit = false,
+							SystemType = SystemType.Custom,
+							Validation = new FieldValidation
+							{
+								Readonly = false,
+								Required = false
+							}
+						});
+						await moduleRepository.Update(module);
+					}
+					catch (Exception e)
+					{
+						if (result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"] == null)
+							result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"] = new JObject();
+						
+						if (result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"]["is_sample"]  == null)
+							result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"]["is_sample"]  = new JObject();
+						
+						result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"]["is_sample"][module.Name] = e.Message;
+					}
+					
 				}
 			}
+			
+			if(result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"] == null || result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"]["is_sample"] == null)
+				result["success"]["is_sample"] += $"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}," ;
+
 			return modules;
 		}
 
-		public async Task UpdateSetting(SettingRepository settingRepository)
+		public async Task UpdateSetting(SettingRepository settingRepository, JObject result)
 		{
-			var settings = await settingRepository.GetAllSettings();
-			var settingsPasswordList = settings.Where(r => r.Key == "password");
-			foreach (var settingPassword in settingsPasswordList)
+			try
 			{
-				settingPassword.Value = CryptoHelper.Encrypt(settingPassword?.Value);
-				await settingRepository.Update(settingPassword);
+				var settings = await settingRepository.GetAllSettings();
+				var settingsPasswordList = settings.Where(r => r.Key == "password");
+				foreach (var settingPassword in settingsPasswordList)
+				{
+					if(string.IsNullOrEmpty(settingPassword.Value))
+						continue;
+				
+					settingPassword.Value = CryptoHelper.Encrypt(settingPassword.Value);
+					await settingRepository.Update(settingPassword);
+				}
 			}
+			catch (Exception e)
+			{
+				if (result[$"{settingRepository.CurrentUser.PreviewMode}{settingRepository.CurrentUser.TenantId}"] == null)
+					result[$"{settingRepository.CurrentUser.PreviewMode}{settingRepository.CurrentUser.TenantId}"] = new JObject();
+				
+				result[$"{settingRepository.CurrentUser.PreviewMode}{settingRepository.CurrentUser.TenantId}"]["encrypt"] = e.Message;
+			}
+			
+			if(result[$"{settingRepository.CurrentUser.PreviewMode}{settingRepository.CurrentUser.TenantId}"] == null || result[$"{settingRepository.CurrentUser.PreviewMode}{settingRepository.CurrentUser.TenantId}"]["encrypt"] == null)
+				result["success"]["encrypt"] += $"{settingRepository.CurrentUser.PreviewMode}{settingRepository.CurrentUser.TenantId}," ;
+			
 		}
 	}
 }

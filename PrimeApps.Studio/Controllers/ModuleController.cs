@@ -242,7 +242,6 @@ namespace PrimeApps.Studio.Controllers
 
             //Update module
             var moduleChanges = _moduleHelper.UpdateEntity(module, moduleEntity);
-            await _moduleRepository.Update(moduleEntity);
 
             //If there is no changes for dynamic tables then return ok
             if (moduleChanges == null)
@@ -272,6 +271,15 @@ namespace PrimeApps.Studio.Controllers
 
                 throw;
             }
+
+            //#3782
+            foreach (var deletedField in moduleChanges.FieldsDeleted.Where(deletedField => deletedField.Validation.Unique != null && (bool) deletedField.Validation.Unique))
+            {
+                deletedField.UniqueCombine = null;
+                deletedField.Validation.Unique = false;
+            }
+            
+            await _moduleRepository.Update(moduleEntity);
 
             //Delete View Fields
             var views = await _viewRepository.GetAll(id);

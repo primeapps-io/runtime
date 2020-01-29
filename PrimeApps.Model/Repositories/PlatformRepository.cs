@@ -52,14 +52,11 @@ namespace PrimeApps.Model.Repositories
             return app;
         }
 
-        public List<App> AppGetAll(int userId)
+        public async Task<List<App>> GetAllApp()
         {
-            //var note = await DbContext.Apps
-            //    .Where(x => !x.Deleted && x.UserId == userId)
-            //    .ToListAsync();
-
-            //return note;
-            return null;
+            return await DbContext.Apps
+                .Where(x => !x.Deleted)
+                .ToListAsync();;
         }
 
         public int AppCreate(App app)

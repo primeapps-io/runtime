@@ -5,10 +5,10 @@ COPY ["PrimeApps.Model/PrimeApps.Model.csproj", "PrimeApps.Model/"]
 RUN dotnet restore "PrimeApps.Studio/PrimeApps.Studio.csproj"
 COPY . .
 WORKDIR "/src/PrimeApps.Studio"
-RUN dotnet build "PrimeApps.Studio.csproj" --no-restore -c Debug -o /app
+RUN dotnet build "PrimeApps.Studio.csproj" --no-restore -c Release -o /app
 
 FROM build AS publish
-RUN dotnet publish "PrimeApps.Studio.csproj" --no-restore --self-contained false -c Debug -o /app
+RUN dotnet publish "PrimeApps.Studio.csproj" --no-restore --self-contained false -c Release -o /app
 
 FROM microsoft/dotnet:2.2-aspnetcore-runtime-stretch-slim AS base
 WORKDIR /app

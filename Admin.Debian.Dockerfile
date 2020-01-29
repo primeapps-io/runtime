@@ -6,10 +6,10 @@ RUN dotnet restore "PrimeApps.Admin/PrimeApps.Admin.csproj"
 COPY . .
 
 WORKDIR "/src/PrimeApps.Admin"
-RUN dotnet build "PrimeApps.Admin.csproj" --no-restore -c Debug -o /app
+RUN dotnet build "PrimeApps.Admin.csproj" --no-restore -c Release -o /app
 
 FROM build AS publish
-RUN dotnet publish "PrimeApps.Admin.csproj" --no-restore --self-contained false -c Debug -o /app
+RUN dotnet publish "PrimeApps.Admin.csproj" --no-restore --self-contained false -c Release -o /app
 
 FROM microsoft/dotnet:2.2-aspnetcore-runtime-stretch-slim AS base
 WORKDIR /app
