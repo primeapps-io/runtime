@@ -916,7 +916,7 @@
 			"Reports": "Reports",
 			"StarPage": "Start Page",
 			"ParentProfile": "Related Profile",
-			"DisableSmtpSettings": "Disable SMTP Settings"
+			"SmtpSettings": "SMTP Settings"
 		},
     "Workgroups": {
       "Title": "Workgroups",

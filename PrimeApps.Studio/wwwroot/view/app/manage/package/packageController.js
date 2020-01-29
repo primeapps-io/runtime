@@ -306,6 +306,9 @@ angular.module('primeapps')
 						//     $scope.grid.dataSource.read();
 
 						$rootScope.runningPackages[$scope.app.name] = { status: true };
+						$scope.appPackageInformation.protect_modules = $scope.package.protectModules;
+						$scope.appPackageInformation.selected_modules = $scope.package.selected_modules || [];
+						$rootScope.currentApp.setting.options = JSON.stringify($scope.appPackageInformation);
 					})
 					.catch(function (response) {
 						$scope.loading = false;
