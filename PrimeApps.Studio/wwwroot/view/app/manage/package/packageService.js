@@ -76,7 +76,7 @@ angular.module('primeapps')
 
 									index = lookupList.indexOf(lookupList[o]);
 									//if we didn't add that, we will add that in this case
-									if (!isExistModule && index === -1) {
+									if (!isExistModule && index === -1 && lookupList[o].lookup_type !== 'users') {
 										errorList.push({
 											name: lookupList[o].name,
 											lookup_type: lookupList[o].lookup_type,
@@ -84,7 +84,7 @@ angular.module('primeapps')
 										});
 									}
 									//Seçilen moduller arasında olmayıp,lookup olanı ekliyoruz
-									else if (!isExistModule && index > -1 && relatedModuleIndex === -1) {
+									else if (!isExistModule && index > -1 && relatedModuleIndex === -1 && lookupList[o].lookup_type !== 'users') {
 										errorList.push({
 											name: lookupList[o].name,
 											lookup_type: lookupList[o].lookup_type,
@@ -137,7 +137,7 @@ angular.module('primeapps')
 				controlFields: function (module, packageModulesRelations, allModulesRelations) {
 
 					var lookupList = $filter('filter')(module.fields, function (field) {
-						return field.data_type === 'lookup' && field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles';
+						return field.data_type === 'lookup' && field.name !== "owner" && field.name !== "created_by" && field.name !== "updated_by" && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles';
 					});
 
 					packageModulesRelations[module.name] = [];
