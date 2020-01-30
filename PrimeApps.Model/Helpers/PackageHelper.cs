@@ -589,7 +589,7 @@ namespace PrimeApps.Model.Helpers
 						await ControlChildArray(selectedModules, allModules, lookupArray, recordRepository, moduleRepository, moduleName, scriptPath, updatedList, truncateList, deleteList, protectModulesType, checkSampleData);
 					}
 					//we have to find not selected lookups and send all for related module records' update.
-					else
+					else if (updatedList.IndexOf(relatedModuleName) < 0)
 						notExistModules[relatedModuleName] = relatedFieldName;
 
 					// if we are on last child, we will update thats for at one time related module records' 

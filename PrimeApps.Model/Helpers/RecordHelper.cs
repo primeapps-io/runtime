@@ -702,7 +702,7 @@ namespace PrimeApps.Model.Helpers
 		{
 			foreach (var property in record)
 			{
-				if (ModuleHelper.SystemFieldsExtended.Contains(property.Key))
+				if (ModuleHelper.SystemFieldsExtended.Contains(property.Key) && property.Key != "is_sample")
 					continue;
 
 				if (ModuleHelper.ModuleSpecificFields(module).Contains(property.Key))
