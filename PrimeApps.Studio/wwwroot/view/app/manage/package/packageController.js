@@ -117,9 +117,9 @@ angular.module('primeapps')
 			$scope.createPackage = function () {
 				$scope.errorList = [];
 				$scope.package.protectModules = $scope.appPackageInformation["protect_modules"] || 'DontTransfer';
-				$scope.package.selectedModules = $scope.appPackageInformation["selected_modules"] || [];
+				$scope.package.modules = $scope.appPackageInformation["selected_modules"] || [];
 				if ($scope.grid.dataSource.data().length < 1)
-					prepareModal($scope.package.selectedModules);
+					prepareModal($scope.package.modules);
 
 				$scope.packagePopup = $scope.packagePopup || $modal({
 					scope: $scope,
@@ -278,14 +278,14 @@ angular.module('primeapps')
 			$scope.create = function () {
 
 				var copyRelations = angular.copy($scope.package.allModulesRelations);
+				$scope.package.selectedModules = [];
 				if ($scope.package.protectModules === "DontTransfer" || $scope.package.protectModules === "AllModules") {
-					$scope.errorList = [];
-					$scope.package.selectedModules = [];
+					$scope.errorList = [];				
 					$scope.package.modulesRelations = copyRelations;
 				} else {
 					$scope.package.selected_modules = [];
-					for (var i = 0; i < $scope.package.selectedModules.length; i++) {
-						var selectedModule = $scope.package.selectedModules[i];
+					for (var i = 0; i < $scope.package.modules.length; i++) {
+						var selectedModule = $scope.package.modules[i];
 						$scope.package.selectedModules[i] = {};
 						$scope.package.selected_modules.push(selectedModule.name);
 						$scope.package.selectedModules[i][selectedModule.name] = copyRelations[selectedModule.name];
@@ -340,7 +340,7 @@ angular.module('primeapps')
 				if (selectedModulesArray.length > 0) {
 					var selectedModules = PackageService.preparePackage(selectedModulesArray, $scope.packageModules);
 					$scope.checkModules(selectedModules);
-					$scope.package.selectedModules = selectedModules;
+					$scope.package.modules = selectedModules;
 				}
 			}
 		}

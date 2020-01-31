@@ -28,6 +28,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using PrimeApps.App.Models;
+using System.Web;
 
 namespace PrimeApps.App.Controllers
 {
@@ -2151,11 +2152,12 @@ namespace PrimeApps.App.Controllers
 
         private void SetAsposeLicence(bool isWord = false)
         {
-            var licenceData = _configuration.GetValue("AppSettings:AsposeLicence", string.Empty);
+            var licenceDataHtml = _configuration.GetValue("AppSettings:AsposeLicence", string.Empty);
 
-            if (string.IsNullOrEmpty(licenceData))
+            if (string.IsNullOrEmpty(licenceDataHtml))
                 return;
 
+            var licenceData = HttpUtility.HtmlDecode(licenceDataHtml);
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
             writer.Write(licenceData);

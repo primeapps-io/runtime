@@ -702,7 +702,7 @@ namespace PrimeApps.Model.Helpers
 		{
 			foreach (var property in record)
 			{
-				if (ModuleHelper.SystemFieldsExtended.Contains(property.Key))
+				if (ModuleHelper.SystemFieldsExtended.Contains(property.Key) && property.Key != "is_sample")
 					continue;
 
 				if (ModuleHelper.ModuleSpecificFields(module).Contains(property.Key))
@@ -1012,11 +1012,11 @@ namespace PrimeApps.Model.Helpers
 				sets.Add("\"deleted\" = @deleted");
 			}
 
-			if (!record["is_sample"].IsNullOrEmpty())
-			{
-				command.Parameters.Add(new NpgsqlParameter { ParameterName = "is_sample", NpgsqlValue = (bool)record["is_sample"], NpgsqlDbType = NpgsqlDbType.Boolean });
-				sets.Add("\"is_sample\" = @is_sample");
-			}
+			//			if (!record["is_sample"].IsNullOrEmpty())
+			//			{
+			//				command.Parameters.Add(new NpgsqlParameter { ParameterName = "is_sample", NpgsqlValue = (bool)record["is_sample"], NpgsqlDbType = NpgsqlDbType.Boolean });
+			//				sets.Add("\"is_sample\" = @is_sample");
+			//			}
 
 			if (!record["is_converted"].IsNullOrEmpty())
 			{
