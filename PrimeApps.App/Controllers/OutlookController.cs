@@ -605,7 +605,7 @@ namespace PrimeApps.App.Controllers
             if (moduleEntity == null || mail == null)
                 return BadRequest();
 
-            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, mail, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, appUser: AppUser);
+            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, mail, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, _recordRepository, appUser: AppUser);
 
             if (resultBefore < 0 && !ModelState.IsValid)
                 return BadRequest(ModelState);

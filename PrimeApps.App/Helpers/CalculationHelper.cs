@@ -2042,7 +2042,7 @@ namespace PrimeApps.App.Helpers
                                         stock["purchase_order"] = (int)record["purchase_order"];
                                     }
 
-                                    var transactionBeforeCreate = await BeforeCreateUpdate(stockModule, stock, modelStateTransaction, appUser.TenantLanguage, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository);
+                                    var transactionBeforeCreate = await BeforeCreateUpdate(stockModule, stock, modelStateTransaction, appUser.TenantLanguage, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository, recordRepository);
                                     if (transactionBeforeCreate != StatusCodes.Status200OK && !modelStateTransaction.IsValid)
                                     {
                                         ErrorHandler.LogError(new Exception("Stock transaction can not be created"), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
@@ -2157,7 +2157,7 @@ namespace PrimeApps.App.Helpers
                                 projectScopeUpdateRecord["actual_budget"] = actualBudget;
                                 projectScopeUpdateRecord["updated_by"] = (int)projectScopeRecord["updated_by"];
 
-                                var resultBeforeProjectScope = await BeforeCreateUpdate(projectScopeModule, projectScopeUpdateRecord, modelState, appUser.TenantLanguage, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository);
+                                var resultBeforeProjectScope = await BeforeCreateUpdate(projectScopeModule, projectScopeUpdateRecord, modelState, appUser.TenantLanguage, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository, recordRepository);
 
                                 if (resultBeforeProjectScope != StatusCodes.Status200OK && !modelState.IsValid)
                                 {
@@ -2208,7 +2208,7 @@ namespace PrimeApps.App.Helpers
                                     if (percentageIndicator <= 0)
                                         projectIndicatorUpdateRecord["status"] = notStartedStatusPicklistItem.Id;
 
-                                    var resultBeforeProjectIndicator = await BeforeCreateUpdate(module, projectIndicatorUpdateRecord, modelState, appUser.TenantLanguage, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository);
+                                    var resultBeforeProjectIndicator = await BeforeCreateUpdate(module, projectIndicatorUpdateRecord, modelState, appUser.TenantLanguage, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository, recordRepository);
 
                                     if (resultBeforeProjectIndicator != StatusCodes.Status200OK && !modelState.IsValid)
                                     {
@@ -2253,7 +2253,7 @@ namespace PrimeApps.App.Helpers
                                 projectUpdateRecord["scope"] = scope;
                                 projectUpdateRecord["updated_by"] = (int)projectRecord["updated_by"];
 
-                                var resultBeforeProject = await BeforeCreateUpdate(projectModule, projectUpdateRecord, modelStateScope, appUser.TenantLanguage, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository);
+                                var resultBeforeProject = await BeforeCreateUpdate(projectModule, projectUpdateRecord, modelStateScope, appUser.TenantLanguage, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository, recordRepository);
 
                                 if (resultBeforeProject != StatusCodes.Status200OK && !modelStateScope.IsValid)
                                 {
@@ -2320,7 +2320,7 @@ namespace PrimeApps.App.Helpers
                                 expenseSheetUpdateRecord["total_amount_gbp"] = totalAmountGbp;
                                 expenseSheetUpdateRecord["updated_by"] = (int)expenseSheetRecord["updated_by"];
 
-                                var resultBeforeExpenseSheet = await BeforeCreateUpdate(expenseSheetModule, expenseSheetUpdateRecord, modelStateExpenseSheet, appUser.TenantLanguage, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository);
+                                var resultBeforeExpenseSheet = await BeforeCreateUpdate(expenseSheetModule, expenseSheetUpdateRecord, modelStateExpenseSheet, appUser.TenantLanguage, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository, recordRepository);
 
                                 if (resultBeforeExpenseSheet != StatusCodes.Status200OK && !modelStateExpenseSheet.IsValid)
                                 {
@@ -2438,7 +2438,7 @@ namespace PrimeApps.App.Helpers
                                     timesheetRecordUpdate["updated_by"] = (int)record["updated_by"];
 
                                     var modelStateTimesheet = new ModelStateDictionary();
-                                    var resultBefore = await BeforeCreateUpdate(timesheetModule, timesheetRecordUpdate, modelStateTimesheet, appUser.TenantLanguage, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository);
+                                    var resultBefore = await BeforeCreateUpdate(timesheetModule, timesheetRecordUpdate, modelStateTimesheet, appUser.TenantLanguage, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository, recordRepository);
 
                                     if (resultBefore != StatusCodes.Status200OK && !modelStateTimesheet.IsValid)
                                     {
@@ -2565,7 +2565,7 @@ namespace PrimeApps.App.Helpers
                                     }
 
                                     var modelStateRehber = new ModelStateDictionary();
-                                    var resultBefore = await BeforeCreateUpdate(rehberModule, recordRehber, modelStateRehber, appUser.TenantLanguage, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository, convertPicklists: false);
+                                    var resultBefore = await BeforeCreateUpdate(rehberModule, recordRehber, modelStateRehber, appUser.TenantLanguage, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository, recordRepository, convertPicklists: false);
 
                                     if (resultBefore != StatusCodes.Status200OK && !modelStateRehber.IsValid)
                                     {

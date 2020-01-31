@@ -96,36 +96,36 @@ namespace PrimeApps.Model.Helpers
 				 * selectedModules = ["m2":{}...], modulesRelations={"m1":[]...}
 				 * modulesRelations = allModules - selectedModules;
 				 * **/
-				var modulesRelations = (JObject)packageModel["modulesRelations"];
-				var updatedList = new List<string>();
-				var truncateList = new List<string>();
-				var deleteList = new List<string>();
-				var deleteQueriesForModules = new List<string>();
-				JArray allModules = new JArray();
-				var allModulesRelations = (JObject)packageModel["allModulesRelations"];
-				foreach (var property in allModulesRelations)
-					allModules.Add(new JObject() { { property.Key, property.Value } });
+                var modulesRelations = (JObject)packageModel["modulesRelations"];
+                var updatedList = new List<string>();
+                var truncateList = new List<string>();
+                var deleteList = new List<string>();
+                var deleteQueriesForModules = new List<string>();
+                JArray allModules = new JArray();
+                var allModulesRelations = (JObject)packageModel["allModulesRelations"];
+                foreach (var property in allModulesRelations)
+                    allModules.Add(new JObject() { { property.Key, property.Value } });
 
 
-				if (protectModulesType == PackageModulesType.DontTransfer)
-					await ControlPropertyOfArray(selectedModules, allModules, modulesRelations, updatedList, recordRepository, moduleRepository, scriptPath, truncateList, deleteList, protectModulesType, deleteQueriesForModules);
+                if (protectModulesType == PackageModulesType.DontTransfer)
+                    await ControlPropertyOfArray(selectedModules, allModules, modulesRelations, updatedList, recordRepository, moduleRepository, scriptPath, truncateList, deleteList, protectModulesType, deleteQueriesForModules);
 
-				else if (protectModulesType == PackageModulesType.SelectedModules)
-				{
-					//selectedModules
-					foreach (JObject selectedModule in selectedModules)
-						await ControlPropertyOfArray(selectedModules, allModules, selectedModule, updatedList, recordRepository, moduleRepository, scriptPath, truncateList, deleteList, protectModulesType, deleteQueriesForModules);
+                else if (protectModulesType == PackageModulesType.SelectedModules)
+                {
+                    //selectedModules
+                    foreach (JObject selectedModule in selectedModules)
+                        await ControlPropertyOfArray(selectedModules, allModules, selectedModule, updatedList, recordRepository, moduleRepository, scriptPath, truncateList, deleteList, protectModulesType, deleteQueriesForModules);
 
-					//modulesRelations
-					await ControlPropertyOfArray(selectedModules, allModules, modulesRelations, updatedList, recordRepository, moduleRepository, scriptPath, truncateList, deleteList, PackageModulesType.DontTransfer, deleteQueriesForModules);
-				}
+                    //modulesRelations
+                    await ControlPropertyOfArray(selectedModules, allModules, modulesRelations, updatedList, recordRepository, moduleRepository, scriptPath, truncateList, deleteList, PackageModulesType.DontTransfer, deleteQueriesForModules);
+                }
 
-				foreach (var deleteQuery in deleteQueriesForModules)
-					AddScript(scriptPath, deleteQuery);
+                foreach (var deleteQuery in deleteQueriesForModules)
+                    AddScript(scriptPath, deleteQuery);
 
-				//We have to update is_sample field at the fields table
-				//var fieldQuery = "UPDATE fields set deleted='t' WHERE name LIKE 'is_sample';";
-				//AddScript(scriptPath, fieldQuery);
+                //We have to update is_sample field at the fields table
+                //var fieldQuery = "UPDATE fields set deleted='t' WHERE name LIKE 'is_sample';";
+                //AddScript(scriptPath, fieldQuery);
 
                 /*if (!result)
                     File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Unhandle exception while clearing dynamic tables... \u001b[39m" + Environment.NewLine);
@@ -456,10 +456,10 @@ namespace PrimeApps.Model.Helpers
                 if (columnName.ToString() == "user_id")
                     continue;
 
-				if (columnName.ToString() == "owner" || columnName.ToString() == "created_by" || columnName.ToString() == "updated_by" || columnName.ToString() == "shared_user_id")
-					sql.Append(columnName + " = 1,");
+                if (columnName.ToString() == "owner" || columnName.ToString() == "created_by" || columnName.ToString() == "updated_by" || columnName.ToString() == "shared_user_id")
+                    sql.Append(columnName + " = 1,");
 
-			}
+            }
 
             sql = sql.Remove(sql.Length - 1, 1);
             sql.Append(";");
@@ -550,67 +550,67 @@ namespace PrimeApps.Model.Helpers
             findRequest.Limit = 9999;
             findRequest.Fields.Add("is_sample");
 
-			var lookupModules = (JArray)modulesArray.Where(q => q[moduleName] != null)?.FirstOrDefault()?[moduleName];
-			if (lookupModules != null)
-				foreach (var lookupModule in lookupModules)
-				{
-					var relatedFieldName = lookupModule["name"].ToString();
-					var relatedModuleName = lookupModule["lookup_type"].ToString();
+            var lookupModules = (JArray)modulesArray.Where(q => q[moduleName] != null)?.FirstOrDefault()?[moduleName];
+            if (lookupModules != null)
+                foreach (var lookupModule in lookupModules)
+                {
+                    var relatedFieldName = lookupModule["name"].ToString();
+                    var relatedModuleName = lookupModule["lookup_type"].ToString();
 
-					if (relatedModuleName == "users")
-						findRequest.Fields.Add(relatedFieldName + "." + relatedModuleName + ".full_name.primary");
+                    if (relatedModuleName == "users")
+                        findRequest.Fields.Add(relatedFieldName + "." + relatedModuleName + ".full_name.primary");
 
-					else
-						findRequest.Fields.Add(relatedFieldName + "." + relatedModuleName + ".name.primary");
-				}
+                    else
+                        findRequest.Fields.Add(relatedFieldName + "." + relatedModuleName + ".name.primary");
+                }
 
             return await recordRepository.Find(moduleName, findRequest);
         }
 
-		public static async Task ControlChildArray(JArray selectedModules, JArray allModules, JArray childArray, RecordRepository recordRepository, ModuleRepository moduleRepository, string moduleName, string scriptPath, List<string> updatedList, List<string> truncateList, List<string> deleteList, PackageModulesType protectModulesType, List<string> deleteQueriesForModules, bool checkSampleData = false)
-		{
-			var notExistModules = new JObject();
+        public static async Task ControlChildArray(JArray selectedModules, JArray allModules, JArray childArray, RecordRepository recordRepository, ModuleRepository moduleRepository, string moduleName, string scriptPath, List<string> updatedList, List<string> truncateList, List<string> deleteList, PackageModulesType protectModulesType, List<string> deleteQueriesForModules, bool checkSampleData = false)
+        {
+            var notExistModules = new JObject();
 
-			/**if childArray in selectedModules, checkSampleData = false 
+            /**if childArray in selectedModules, checkSampleData = false 
 			 * else checkSampleData = true**/
-			if (childArray.Count < 1 && checkSampleData)
-				await UpdateRecords(recordRepository, moduleRepository, selectedModules, allModules, moduleName, scriptPath, truncateList, deleteList, protectModulesType, true, notExistModules, deleteQueriesForModules, true);
+            if (childArray.Count < 1 && checkSampleData)
+                await UpdateRecords(recordRepository, moduleRepository, selectedModules, allModules, moduleName, scriptPath, truncateList, deleteList, protectModulesType, true, notExistModules, deleteQueriesForModules, true);
 
-			else
-				for (int j = 0; j < childArray.Count; j++)
-				{
-					var relatedModuleField = childArray[j];
-					var relatedFieldName = relatedModuleField["name"].ToString(); //It's lookup field name at the main module
-					var relatedModuleName = relatedModuleField["lookup_type"].ToString(); // It's lookup module name
+            else
+                for (int j = 0; j < childArray.Count; j++)
+                {
+                    var relatedModuleField = childArray[j];
+                    var relatedFieldName = relatedModuleField["name"].ToString(); //It's lookup field name at the main module
+                    var relatedModuleName = relatedModuleField["lookup_type"].ToString(); // It's lookup module name
 
-					/** I have to control relatedModuleName in selected Modules
+                    /** I have to control relatedModuleName in selected Modules
 					 * if exist we have to control checkSampleData, if checkSampleData = true it comes from modulesRelations, we have to use update method.
 					 * When I updated any module, I'm adding that to updatedList because if i'm not add it will try to follow the same steps and this way may cause it to loop forever(infinite loop)
 					 * **/
-					var isExistModule = (JArray)selectedModules.Where(child => child[relatedModuleName] != null)?.FirstOrDefault()?[relatedModuleName];
+                    var isExistModule = (JArray)selectedModules.Where(child => child[relatedModuleName] != null)?.FirstOrDefault()?[relatedModuleName];
 
-					if (isExistModule != null && updatedList.IndexOf(relatedModuleName) < 0)
-					{
-						updatedList.Add(relatedModuleName);
-						moduleName = relatedModuleName;
-						var lookupArray = (JArray)selectedModules.Where(q => q[relatedModuleName] != null)?.FirstOrDefault()?[relatedModuleName];
-						await ControlChildArray(selectedModules, allModules, lookupArray, recordRepository, moduleRepository, moduleName, scriptPath, updatedList, truncateList, deleteList, protectModulesType, deleteQueriesForModules, checkSampleData);
-					}
-					//we have to find not selected lookups and send all for related module records' update.
-					else if (updatedList.IndexOf(relatedModuleName) < 0)
-						notExistModules[relatedModuleName] = relatedFieldName;
+                    if (isExistModule != null && updatedList.IndexOf(relatedModuleName) < 0)
+                    {
+                        updatedList.Add(relatedModuleName);
+                        moduleName = relatedModuleName;
+                        var lookupArray = (JArray)selectedModules.Where(q => q[relatedModuleName] != null)?.FirstOrDefault()?[relatedModuleName];
+                        await ControlChildArray(selectedModules, allModules, lookupArray, recordRepository, moduleRepository, moduleName, scriptPath, updatedList, truncateList, deleteList, protectModulesType, deleteQueriesForModules, checkSampleData);
+                    }
+                    //we have to find not selected lookups and send all for related module records' update.
+                    else if (updatedList.IndexOf(relatedModuleName) < 0)
+                        notExistModules[relatedModuleName] = relatedFieldName;
 
-					// if we are on last child, we will update thats for at one time related module records' 
-					if (childArray.Count - 1 == j)
-						await UpdateRecords(recordRepository, moduleRepository, selectedModules, allModules, moduleName, scriptPath, truncateList, deleteList, protectModulesType, true, notExistModules, deleteQueriesForModules, checkSampleData);
+                    // if we are on last child, we will update thats for at one time related module records' 
+                    if (childArray.Count - 1 == j)
+                        await UpdateRecords(recordRepository, moduleRepository, selectedModules, allModules, moduleName, scriptPath, truncateList, deleteList, protectModulesType, true, notExistModules, deleteQueriesForModules, checkSampleData);
 
-				}
-		}
+                }
+        }
 
-		public static async Task UpdateRecords(RecordRepository recordRepository, ModuleRepository moduleRepository, JArray selectedModules, JArray allModules, string moduleName, string scriptPath, List<string> truncateList, List<string> deleteList, PackageModulesType protectModulesType, bool isLastChildInSameModule, JObject notExistModules, List<string> deleteQueriesForModules, bool checkSampleData = false)
-		{
-			var records = PackageHelper.GetRecords(allModules, recordRepository, moduleName);
-			var isSampleDatas = checkSampleData ? records.Children().Where(q => (bool)q["is_sample"] == true) : records;
+        public static async Task UpdateRecords(RecordRepository recordRepository, ModuleRepository moduleRepository, JArray selectedModules, JArray allModules, string moduleName, string scriptPath, List<string> truncateList, List<string> deleteList, PackageModulesType protectModulesType, bool isLastChildInSameModule, JObject notExistModules, List<string> deleteQueriesForModules, bool checkSampleData = false)
+        {
+            var records = await PackageHelper.GetRecords(allModules, recordRepository, moduleName);
+            var isSampleDatas = checkSampleData ? records.Children().Where(q => (bool)q["is_sample"] == true) : records;
 
             var sql = "";
             //if  module has is_sample datas or  checkSampleData = false
@@ -619,82 +619,82 @@ namespace PrimeApps.Model.Helpers
             {
                 /**we have to check all records because someone has lookup and is_sample=false, we have to generate update script for this lookups record. 
 				*If we didn't generate an update script it can't delete this records on publish.**/
-				isSampleDatas = records;
-				var ids = new List<string>();
+                isSampleDatas = records;
+                var ids = new List<string>();
 
-				foreach (var record in isSampleDatas)
-				{
-					var updateQueryForLookups = new List<string>();
-					foreach (var property in notExistModules)
-					{
-						var relatedModuleName = property.Key;
-						var relatedfieldName = property.Value;
-						var relatedRecordId = record[relatedfieldName + "." + relatedModuleName + ".id"];
+                foreach (var record in isSampleDatas)
+                {
+                    var updateQueryForLookups = new List<string>();
+                    foreach (var property in notExistModules)
+                    {
+                        var relatedModuleName = property.Key;
+                        var relatedfieldName = property.Value;
+                        var relatedRecordId = record[relatedfieldName + "." + relatedModuleName + ".id"];
 
-						if (relatedModuleName == "users")
-						{
-							//We will clear users table where id != 1 (System User/Admin), we have to set null user lookups in the module where id != 1
-							if (relatedRecordId != null && !string.IsNullOrEmpty(relatedRecordId.ToString()) && relatedRecordId.ToString() != "1")
-								updateQueryForLookups.Add($"\"{relatedfieldName}\" = NULL");
-						}
-						else
-						{
-							var relatedModule = await moduleRepository.GetBasicByName(relatedModuleName);
+                        if (relatedModuleName == "users")
+                        {
+                            //We will clear users table where id != 1 (System User/Admin), we have to set null user lookups in the module where id != 1
+                            if (relatedRecordId != null && !string.IsNullOrEmpty(relatedRecordId.ToString()) && relatedRecordId.ToString() != "1")
+                                updateQueryForLookups.Add($"\"{relatedfieldName}\" = NULL");
+                        }
+                        else
+                        {
+                            var relatedModule = await moduleRepository.GetBasicByName(relatedModuleName);
 
-							if (relatedRecordId != null && !string.IsNullOrEmpty(relatedRecordId.ToString()))
-							{
-								var childRecord = recordRepository.GetById(relatedModule, int.Parse(relatedRecordId.ToString()));
+                            if (relatedRecordId != null && !string.IsNullOrEmpty(relatedRecordId.ToString()))
+                            {
+                                var childRecord = await recordRepository.GetById(relatedModule, int.Parse(relatedRecordId.ToString()));
 
-								if (!(bool)childRecord["is_sample"])
-									updateQueryForLookups.Add(relatedfieldName + " = NULL");
-							}
-						}
-					}
+                                if (!(bool)childRecord["is_sample"])
+                                    updateQueryForLookups.Add(relatedfieldName + " = NULL");
+                            }
+                        }
+                    }
 
-					if (updateQueryForLookups.Count() > 0)
-					{
-						var updateLookupList = String.Join(", ", updateQueryForLookups.ToArray());
-						sql = $"UPDATE {moduleName}_d SET {updateLookupList} WHERE id = {(string)record["id"]};";
-						AddScript(scriptPath, sql);
-					}
+                    if (updateQueryForLookups.Count() > 0)
+                    {
+                        var updateLookupList = String.Join(", ", updateQueryForLookups.ToArray());
+                        sql = $"UPDATE {moduleName}_d SET {updateLookupList} WHERE id = {(string)record["id"]};";
+                        AddScript(scriptPath, sql);
+                    }
 
                     if ((bool)record["is_sample"] && checkSampleData && isLastChildInSameModule)
                         ids.Add((string)record["id"]);
                 }
 
-				//we have to control duplicate scripts
-				if (ids.Count > 0 && deleteList.IndexOf(moduleName) < 0 && isLastChildInSameModule)
-				{
-					var idList = String.Join(", ", ids.ToArray());
-					sql = $"DELETE FROM {moduleName}_d WHERE id NOT IN ({idList});";
-					deleteQueriesForModules.Add(sql);
-					deleteList.Add(moduleName);
-				}
-			}
-			else
-			{
-				//we have to control duplicate scripts
-				if (truncateList.IndexOf(moduleName) < 0)
-				{
-					sql = $"TRUNCATE {moduleName}_d CASCADE;";
-					AddScript(scriptPath, sql);
-					truncateList.Add(moduleName);
-				}
-			}
-		}
+                //we have to control duplicate scripts
+                if (ids.Count > 0 && deleteList.IndexOf(moduleName) < 0 && isLastChildInSameModule)
+                {
+                    var idList = String.Join(", ", ids.ToArray());
+                    sql = $"DELETE FROM {moduleName}_d WHERE id NOT IN ({idList});";
+                    deleteQueriesForModules.Add(sql);
+                    deleteList.Add(moduleName);
+                }
+            }
+            else
+            {
+                //we have to control duplicate scripts
+                if (truncateList.IndexOf(moduleName) < 0)
+                {
+                    sql = $"TRUNCATE {moduleName}_d CASCADE;";
+                    AddScript(scriptPath, sql);
+                    truncateList.Add(moduleName);
+                }
+            }
+        }
 
-		public static async Task ControlPropertyOfArray(JArray selectedModules, JArray allModules, JObject jObject, List<string> updatedList, RecordRepository recordRepository, ModuleRepository moduleRepository, string scriptPath, List<string> truncateList, List<string> deleteList, PackageModulesType protectModulesType, List<string> deleteQueriesForModules)
-		{
-			foreach (var property in jObject)
-			{
-				if (protectModulesType == PackageModulesType.SelectedModules && updatedList.IndexOf(property.Key) < 0)
-					updatedList.Add(property.Key);
+        public static async Task ControlPropertyOfArray(JArray selectedModules, JArray allModules, JObject jObject, List<string> updatedList, RecordRepository recordRepository, ModuleRepository moduleRepository, string scriptPath, List<string> truncateList, List<string> deleteList, PackageModulesType protectModulesType, List<string> deleteQueriesForModules)
+        {
+            foreach (var property in jObject)
+            {
+                if (protectModulesType == PackageModulesType.SelectedModules && updatedList.IndexOf(property.Key) < 0)
+                    updatedList.Add(property.Key);
 
                 var moduleName = property.Key;
                 var childArray = (JArray)property.Value;
 
-				await ControlChildArray(selectedModules, allModules, childArray, recordRepository, moduleRepository, moduleName, scriptPath, updatedList, truncateList, deleteList, protectModulesType, deleteQueriesForModules, protectModulesType == PackageModulesType.SelectedModules ? false : true);
-			}
-		}
-	}
+                await ControlChildArray(selectedModules, allModules, childArray, recordRepository, moduleRepository, moduleName, scriptPath, updatedList, truncateList, deleteList, protectModulesType, deleteQueriesForModules, protectModulesType == PackageModulesType.SelectedModules ? false : true);
+            }
+        }
+    }
 }

@@ -580,7 +580,7 @@ namespace PrimeApps.App.Helpers
 
 
                                 var modelState = new ModelStateDictionary();
-                                var resultBefore = await BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, false, currentRecordFieldUpdate, appUser: appUser);
+                                var resultBefore = await BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, _recordRepository, false, currentRecordFieldUpdate, appUser: appUser);
 
                                 if (resultBefore < 0 && !modelState.IsValid)
                                 {
@@ -664,7 +664,7 @@ namespace PrimeApps.App.Helpers
                             task["created_by"] = workflow.CreatedById;
 
                             var modelState = new ModelStateDictionary();
-                            var resultBefore = await BeforeCreateUpdate(moduleActivity, task, modelState, appUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, appUser: appUser);
+                            var resultBefore = await BeforeCreateUpdate(moduleActivity, task, modelState, appUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, _recordRepository, appUser: appUser);
 
                             if (resultBefore < 0 && !modelState.IsValid)
                             {

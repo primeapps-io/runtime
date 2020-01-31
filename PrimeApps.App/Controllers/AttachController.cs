@@ -2155,9 +2155,9 @@ namespace PrimeApps.App.Controllers
             var licenceDataHtml = _configuration.GetValue("AppSettings:AsposeLicence", string.Empty);
 
             if (string.IsNullOrEmpty(licenceDataHtml))
-                return;
+                return; 
 
-            var licenceData = HttpUtility.HtmlDecode(licenceDataHtml);
+        var licenceData = HttpUtility.HtmlDecode(licenceDataHtml);
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
             writer.Write(licenceData);

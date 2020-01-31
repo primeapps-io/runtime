@@ -241,7 +241,7 @@ namespace PrimeApps.App.Bpm.Steps
 
 
                                 var modelState = new ModelStateDictionary();
-                                var resultBefore = await recordHelper.BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.Language, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository, false, currentRecordFieldUpdate, appUser: appUser);
+                                var resultBefore = await recordHelper.BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.Language, moduleRepository, picklistRepository, profileRepository, tagRepository, settingRepository, recordRepository, false, currentRecordFieldUpdate, appUser: appUser);
 
                                 if (resultBefore < 0 && !modelState.IsValid)
                                 {

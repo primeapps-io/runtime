@@ -342,7 +342,7 @@ namespace PrimeApps.App.Controllers
             if (record["owner"].IsNullOrEmpty())
                 record["owner"] = AppUser.Id;
 
-            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, (bool)convertPicklists, appUser: AppUser);
+            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, _recordRepository, (bool)convertPicklists, appUser: AppUser);
 
             if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
                 return StatusCode(resultBefore, ModelState);
@@ -460,7 +460,7 @@ namespace PrimeApps.App.Controllers
             if (currentRecord == null)
                 return BadRequest("Record not found!");
 
-            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, (bool)convertPicklists, currentRecord, AppUser);
+            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, _recordRepository, (bool)convertPicklists, currentRecord, AppUser);
 
             //if ((bool)record["freeze"])
             //    return StatusCode(HttpStatusCode.Status403Forbidden);
@@ -556,7 +556,7 @@ namespace PrimeApps.App.Controllers
                 if (moduleEntity == null || record == null)
                     return BadRequest();
 
-                var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, (bool)convertPicklists, appUser: AppUser);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, _recordRepository, (bool)convertPicklists, appUser: AppUser);
 
                 if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
                     return StatusCode(resultBefore, ModelState);
@@ -672,8 +672,8 @@ namespace PrimeApps.App.Controllers
                     if (currentRecord.IsNullOrEmpty())
                         return BadRequest("Record not found!");
 
-                    var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, recordUpdate, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, true, currentRecord, AppUser, customBulkUpdatePermission);
-
+                    var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, recordUpdate, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, _recordRepository, true, currentRecord, AppUser, customBulkUpdatePermission);
+                   
                     if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
                         return StatusCode(resultBefore, ModelState);
 

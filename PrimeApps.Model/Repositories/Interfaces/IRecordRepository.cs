@@ -28,5 +28,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         JObject GetLookupIds(JArray lookupRequest);
         Task<int> CreateBulk(JArray records, Module module);
         JArray LookupUser(LookupUserRequest request);
+        Task<JObject> RecordPermissionControl(string moduleName, int userId, JObject record, OperationType operation, List<string> removedFields = null);
     }
 }

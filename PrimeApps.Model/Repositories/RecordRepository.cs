@@ -640,11 +640,13 @@ namespace PrimeApps.Model.Repositories
             }
         }
 
-        #region Profile based permission controls for records
-        public async Task<JObject> RecordPermissionControl(string moduleName, int userId, JObject record, OperationType operation)
+        #region Profile based permission controls for records 
+        List<string> removedFields;
+        public async Task<JObject> RecordPermissionControl(string moduleName, int userId, JObject record, OperationType operation, List<string> removedFields = null)
         {
             if (record.IsNullOrEmpty())
                 return null;
+
 
             var user = await DbContext.Users
             .Include(q => q.Profile)
@@ -672,9 +674,11 @@ namespace PrimeApps.Model.Repositories
                         return null;
                     else
                     {
-                        //record = SectionPermission(module, record, user, operation);
+                        record = SectionPermission(module, record, user, operation);
                         //record = await RelationModulePermission(module, record, user, operation);
-                        //record = FieldPermission(module, record, user, operation);
+                        record = await FieldPermission(module, record, user, operation);
+                        removedFields = this.removedFields;
+
                         return record;
                     }
                 case OperationType.update:
@@ -980,7 +984,10 @@ namespace PrimeApps.Model.Repositories
                 foreach (var prop in record)
                 {
                     if (prop.Key.StartsWith(key))
+                    {
+                        removedFields.Add(prop.Key);
                         newRecord.Remove(prop.Key);
+                    }
                 }
             }
 
@@ -988,7 +995,13 @@ namespace PrimeApps.Model.Repositories
             {
                 foreach (var field in fields)
                 {
-                    newRecord.Remove(field);
+                    var result = record.Properties().Where(q => q.Name == field).FirstOrDefault();
+
+                    if (result != null)
+                    {
+                        removedFields.Add(field);
+                        newRecord.Remove(field);
+                    }
                 }
             }
 

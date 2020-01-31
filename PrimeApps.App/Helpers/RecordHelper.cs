@@ -27,7 +27,7 @@ namespace PrimeApps.App.Helpers
 {
     public interface IRecordHelper
     {
-        Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, ITagRepository tagRepository, ISettingRepository settingRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null, bool customBulkUpdatePermission = false);
+        Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, ITagRepository tagRepository, ISettingRepository settingRepository, IRecordRepository recordRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null, bool customBulkUpdatePermission = false);
         Task<int> BeforeDelete(Module module, JObject record, UserItem appUser, IProcessRepository processRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, ModelStateDictionary modelState, Warehouse warehouse);
         void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true);
         void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180);
@@ -46,7 +46,7 @@ namespace PrimeApps.App.Helpers
         void SetCurrentUser(UserItem appUser);
     }
 
-    public delegate Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, ITagRepository tagRepository, ISettingRepository settingRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null, bool customBulkUpdatePermission = false);
+    public delegate Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, ITagRepository tagRepository, ISettingRepository settingRepository, IRecordRepository recordRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null, bool customBulkUpdatePermission = false);
 
     public delegate Task UpdateStageHistory(JObject record, JObject currentRecord);
 
@@ -116,7 +116,7 @@ namespace PrimeApps.App.Helpers
             Queue = new BackgroundTaskQueue();
         }
 
-        public async Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, ITagRepository tagRepository, ISettingRepository settingRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null, bool customBulkUpdatePermission = false)
+        public async Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, ITagRepository tagRepository, ISettingRepository settingRepository, IRecordRepository recordRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null, bool customBulkUpdatePermission = false)
         {
             //TODO: Validate metadata
             //TODO: Profile permission check
