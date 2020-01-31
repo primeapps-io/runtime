@@ -641,7 +641,8 @@ namespace PrimeApps.Model.Repositories
         }
 
         #region Profile based permission controls for records 
-        List<string> removedFields;
+        List<string> removedFields = new List<string>();
+
         public async Task<JObject> RecordPermissionControl(string moduleName, int userId, JObject record, OperationType operation, List<string> removedFields = null)
         {
             if (record.IsNullOrEmpty())
@@ -706,7 +707,7 @@ namespace PrimeApps.Model.Repositories
                     {
                         record = SectionPermission(module, record, user, operation);
                         record = await RelationModulePermission(module, record, user, operation);
-                        record = await FieldPermission(module, record, user, operation); 
+                        record = await FieldPermission(module, record, user, operation);
                         return record;
                     }
                 case OperationType.delete:
@@ -721,6 +722,9 @@ namespace PrimeApps.Model.Repositories
 
         private ProfilePermission ProfilePermissionCheck(List<ProfilePermission> profilePermission, OperationType operation)
         {
+            if (profilePermission == null)
+                return null;
+
             switch (operation)
             {
                 case OperationType.insert:
@@ -747,7 +751,7 @@ namespace PrimeApps.Model.Repositories
                     //Aktif olan User'in profile bilgisine gore bir yetki eklenmis mi diye bakıyoruz.
                     var sectionPermissionList = section.Permissions.Where(q => q.ProfileId == user.Profile.Id && !q.Deleted).ToList();
 
-                    if (sectionPermissionList == null)
+                    if (sectionPermissionList == null || sectionPermissionList.Count < 1)
                         continue;
 
                     var sectionPermission = SectionPermissionCheck(sectionPermissionList, operation);
