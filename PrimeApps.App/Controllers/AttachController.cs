@@ -2152,12 +2152,12 @@ namespace PrimeApps.App.Controllers
 
         private void SetAsposeLicence(bool isWord = false)
         {
-            var licenceDataHtml = _configuration.GetValue("AppSettings:AsposeLicence", string.Empty);
+            var licenceDataEncrypt = _configuration.GetValue("AppSettings:AsposeLicence", string.Empty);
 
-            if (string.IsNullOrEmpty(licenceDataHtml))
+            if (string.IsNullOrEmpty(licenceDataEncrypt))
                 return;
 
-            var licenceData = HttpUtility.HtmlDecode(licenceDataHtml);
+            var licenceData = CryptoHelper.Decrypt(licenceDataEncrypt);
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
             writer.Write(licenceData);
