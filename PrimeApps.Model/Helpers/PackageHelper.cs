@@ -607,81 +607,68 @@ namespace PrimeApps.Model.Helpers
                 }
         }
 
-        public static async Task UpdateRecords(RecordRepository recordRepository, ModuleRepository moduleRepository, JArray selectedModules, JArray allModules, string moduleName, string scriptPath, List<string> truncateList, List<string> deleteList, PackageModulesType protectModulesType, bool isLastChildInSameModule, JObject notExistModules, List<string> deleteQueriesForModules, bool checkSampleData = false)
-        {
-            var records = await PackageHelper.GetRecords(allModules, recordRepository, moduleName);
-            var isSampleDatas = checkSampleData ? records.Children().Where(q => (bool)q["is_sample"] == true) : records;
+		public static async Task UpdateRecords(RecordRepository recordRepository, ModuleRepository moduleRepository, JArray selectedModules, JArray allModules, string moduleName, string scriptPath, List<string> truncateList, List<string> deleteList, PackageModulesType protectModulesType, bool isLastChildInSameModule, JObject notExistModules, List<string> deleteQueriesForModules, bool checkSampleData = false)
+		{
+			var records = PackageHelper.GetRecords(allModules, recordRepository, moduleName);
+			var sql = "";
+			var ids = new List<string>();
 
-            var sql = "";
-            //if  module has is_sample datas or  checkSampleData = false
-            //else we have to generate TRUNCATE sql query
-            if ((isSampleDatas != null && isSampleDatas?.Count() > 0) || !checkSampleData)
-            {
-                /**we have to check all records because someone has lookup and is_sample=false, we have to generate update script for this lookups record. 
-				*If we didn't generate an update script it can't delete this records on publish.**/
-                isSampleDatas = records;
-                var ids = new List<string>();
+			foreach (var record in records)
+			{
+				var updateQueryForLookups = new List<string>();
+				foreach (var property in notExistModules)
+				{
+					var relatedModuleName = property.Key;
+					var relatedfieldName = property.Value;
+					var relatedRecordId = record[relatedfieldName + "." + relatedModuleName + ".id"];
 
-                foreach (var record in isSampleDatas)
-                {
-                    var updateQueryForLookups = new List<string>();
-                    foreach (var property in notExistModules)
-                    {
-                        var relatedModuleName = property.Key;
-                        var relatedfieldName = property.Value;
-                        var relatedRecordId = record[relatedfieldName + "." + relatedModuleName + ".id"];
+					if (relatedModuleName == "users")
+					{
+						//We will clear users table where id != 1 (System User/Admin), we have to set null user lookups in the module where id != 1
+						if (relatedRecordId != null && !string.IsNullOrEmpty(relatedRecordId.ToString()) && relatedRecordId.ToString() != "1")
+							updateQueryForLookups.Add($"\"{relatedfieldName}\" = NULL");
+					}
+					else
+					{
+						var relatedModule = await moduleRepository.GetBasicByName(relatedModuleName);
 
-                        if (relatedModuleName == "users")
-                        {
-                            //We will clear users table where id != 1 (System User/Admin), we have to set null user lookups in the module where id != 1
-                            if (relatedRecordId != null && !string.IsNullOrEmpty(relatedRecordId.ToString()) && relatedRecordId.ToString() != "1")
-                                updateQueryForLookups.Add($"\"{relatedfieldName}\" = NULL");
-                        }
-                        else
-                        {
-                            var relatedModule = await moduleRepository.GetBasicByName(relatedModuleName);
+						if (relatedRecordId != null && !string.IsNullOrEmpty(relatedRecordId.ToString()))
+						{
+							var childRecord = recordRepository.GetById(relatedModule, int.Parse(relatedRecordId.ToString()));
 
-                            if (relatedRecordId != null && !string.IsNullOrEmpty(relatedRecordId.ToString()))
-                            {
-                                var childRecord = await recordRepository.GetById(relatedModule, int.Parse(relatedRecordId.ToString()));
+							if (!(bool)childRecord["is_sample"])
+								updateQueryForLookups.Add(relatedfieldName + " = NULL");
+						}
+					}
+				}
 
-                                if (!(bool)childRecord["is_sample"])
-                                    updateQueryForLookups.Add(relatedfieldName + " = NULL");
-                            }
-                        }
-                    }
+				if (updateQueryForLookups.Count() > 0)
+				{
+					var updateLookupList = String.Join(", ", updateQueryForLookups.ToArray());
+					sql = $"UPDATE {moduleName}_d SET {updateLookupList} WHERE id = {(string)record["id"]};";
+					AddScript(scriptPath, sql);
+				}
 
-                    if (updateQueryForLookups.Count() > 0)
-                    {
-                        var updateLookupList = String.Join(", ", updateQueryForLookups.ToArray());
-                        sql = $"UPDATE {moduleName}_d SET {updateLookupList} WHERE id = {(string)record["id"]};";
-                        AddScript(scriptPath, sql);
-                    }
+				if ((bool)record["is_sample"] && checkSampleData && isLastChildInSameModule)
+					ids.Add((string)record["id"]);
+			}
 
-                    if ((bool)record["is_sample"] && checkSampleData && isLastChildInSameModule)
-                        ids.Add((string)record["id"]);
-                }
-
-                //we have to control duplicate scripts
-                if (ids.Count > 0 && deleteList.IndexOf(moduleName) < 0 && isLastChildInSameModule)
-                {
-                    var idList = String.Join(", ", ids.ToArray());
-                    sql = $"DELETE FROM {moduleName}_d WHERE id NOT IN ({idList});";
-                    deleteQueriesForModules.Add(sql);
-                    deleteList.Add(moduleName);
-                }
-            }
-            else
-            {
-                //we have to control duplicate scripts
-                if (truncateList.IndexOf(moduleName) < 0)
-                {
-                    sql = $"TRUNCATE {moduleName}_d CASCADE;";
-                    AddScript(scriptPath, sql);
-                    truncateList.Add(moduleName);
-                }
-            }
-        }
+			//we have to control duplicate scripts
+			if (ids.Count > 0 && deleteList.IndexOf(moduleName) < 0 && isLastChildInSameModule)
+			{
+				var idList = String.Join(", ", ids.ToArray());
+				sql = $"DELETE FROM {moduleName}_d WHERE id NOT IN ({idList});";
+				deleteQueriesForModules.Add(sql);
+				deleteList.Add(moduleName);
+			}
+			//we won't use trancate script
+			else if (checkSampleData)
+			{
+				sql = $"DELETE FROM {moduleName}_d;";
+				deleteQueriesForModules.Add(sql);
+				deleteList.Add(moduleName);
+			}
+		}
 
         public static async Task ControlPropertyOfArray(JArray selectedModules, JArray allModules, JObject jObject, List<string> updatedList, RecordRepository recordRepository, ModuleRepository moduleRepository, string scriptPath, List<string> truncateList, List<string> deleteList, PackageModulesType protectModulesType, List<string> deleteQueriesForModules)
         {
