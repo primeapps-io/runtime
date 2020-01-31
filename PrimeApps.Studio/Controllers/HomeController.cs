@@ -1,8 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,14 +31,7 @@ namespace PrimeApps.Studio.Controllers
 
             var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
             await SetValues(userId);
-
-            var b = WebUtility.HtmlEncode("<License><Data><LicensedTo>PrimeApps Bilgi Teknolojileri</LicensedTo><EmailTo>serdar.turan@primeapps.io</EmailTo><LicenseType>Developer OEM</LicenseType> <LicenseNote>Limited to 1 developer, unlimited physical locations</LicenseNote><OrderID>191206081533</OrderID>    <UserID>135031388</UserID><OEM>This is a redistributable license</OEM><Products><Product>Aspose.Total for .NET</Product></Products><EditionType>Enterprise</EditionType>  <SerialNumber>5c201cac-7a73-46cc-991b-dafd33fca928</SerialNumber><SubscriptionExpiry>20201206</SubscriptionExpiry><LicenseVersion>3.0</LicenseVersion><LicenseInstructions>https://purchase.aspose.com/policies/use-license</LicenseInstructions></Data> <Signature>NJscWkrrUWMD6zB5dlG/3mT2TgsziDpg2X6bHIa4TLvyum0xc0FY9XmL0TTuDRWTnme8P12HVxdBWB1jVURkAaUrxW8aSJVJvETxfznX6uJJRFBy/GQR6g/JH5klOG68kFj6XN2xiZ01rcIMXrO3oXwQ8vgg0Y5q7pQucehT+rY=</Signature></License>");
-            var a = WebUtility.HtmlDecode(b);
-
-              var bb = HttpUtility.HtmlEncode("<License><Data><LicensedTo>PrimeApps Bilgi Teknolojileri</LicensedTo><EmailTo>serdar.turan@primeapps.io</EmailTo><LicenseType>Developer OEM</LicenseType> <LicenseNote>Limited to 1 developer, unlimited physical locations</LicenseNote><OrderID>191206081533</OrderID>    <UserID>135031388</UserID><OEM>This is a redistributable license</OEM><Products><Product>Aspose.Total for .NET</Product></Products><EditionType>Enterprise</EditionType>  <SerialNumber>5c201cac-7a73-46cc-991b-dafd33fca928</SerialNumber><SubscriptionExpiry>20201206</SubscriptionExpiry><LicenseVersion>3.0</LicenseVersion><LicenseInstructions>https://purchase.aspose.com/policies/use-license</LicenseInstructions></Data> <Signature>NJscWkrrUWMD6zB5dlG/3mT2TgsziDpg2X6bHIa4TLvyum0xc0FY9XmL0TTuDRWTnme8P12HVxdBWB1jVURkAaUrxW8aSJVJvETxfznX6uJJRFBy/GQR6g/JH5klOG68kFj6XN2xiZ01rcIMXrO3oXwQ8vgg0Y5q7pQucehT+rY=</Signature></License>");
-            var aa= HttpUtility.HtmlDecode("&lt;License&gt;&lt;Data&gt;&lt;LicensedTo&gt;PrimeApps Bilgi Teknolojileri&lt;/LicensedTo&gt;&lt;EmailTo&gt;serdar.turan@primeapps.io&lt;/EmailTo&gt;&lt;LicenseType&gt;Developer OEM&lt;/LicenseType&gt; &lt;LicenseNote&gt;Limited to 1 developer, unlimited physical locations&lt;/LicenseNote&gt;&lt;OrderID&gt;191206081533&lt;/OrderID&gt;    &lt;UserID&gt;135031388&lt;/UserID&gt;&lt;OEM&gt;This is a redistributable license&lt;/OEM&gt;&lt;Products&gt;&lt;Product&gt;Aspose.Total for .NET&lt;/Product&gt;&lt;/Products&gt;&lt;EditionType&gt;Enterprise&lt;/EditionType&gt;  &lt;SerialNumber&gt;5c201cac-7a73-46cc-991b-dafd33fca928&lt;/SerialNumber&gt;&lt;SubscriptionExpiry&gt;20201206&lt;/SubscriptionExpiry&gt;&lt;LicenseVersion&gt;3.0&lt;/LicenseVersion&gt;&lt;LicenseInstructions&gt;https://purchase.aspose.com/policies/use-license&lt;/LicenseInstructions&gt;&lt;/Data&gt; &lt;Signature&gt;NJscWkrrUWMD6zB5dlG/3mT2TgsziDpg2X6bHIa4TLvyum0xc0FY9XmL0TTuDRWTnme8P12HVxdBWB1jVURkAaUrxW8aSJVJvETxfznX6uJJRFBy/GQR6g/JH5klOG68kFj6XN2xiZ01rcIMXrO3oXwQ8vgg0Y5q7pQucehT+rY=&lt;/Signature&gt;&lt;/License&gt;");
-
-
+             
             return View();
         }
 
