@@ -609,7 +609,7 @@ namespace PrimeApps.Model.Helpers
 
 		public static async Task UpdateRecords(RecordRepository recordRepository, ModuleRepository moduleRepository, JArray selectedModules, JArray allModules, string moduleName, string scriptPath, List<string> truncateList, List<string> deleteList, PackageModulesType protectModulesType, bool isLastChildInSameModule, JObject notExistModules, List<string> deleteQueriesForModules, bool checkSampleData = false)
 		{
-			var records = PackageHelper.GetRecords(allModules, recordRepository, moduleName);
+			var records = await PackageHelper.GetRecords(allModules, recordRepository, moduleName);
 			var sql = "";
 			var ids = new List<string>();
 
@@ -634,7 +634,7 @@ namespace PrimeApps.Model.Helpers
 
 						if (relatedRecordId != null && !string.IsNullOrEmpty(relatedRecordId.ToString()))
 						{
-							var childRecord = recordRepository.GetById(relatedModule, int.Parse(relatedRecordId.ToString()));
+							var childRecord = await recordRepository.GetById(relatedModule, int.Parse(relatedRecordId.ToString()));
 
 							if (!(bool)childRecord["is_sample"])
 								updateQueryForLookups.Add(relatedfieldName + " = NULL");
