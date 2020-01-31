@@ -76,7 +76,7 @@ angular.module('primeapps')
 
 									index = lookupList.indexOf(lookupList[o]);
 									//if we didn't add that, we will add that in this case
-									if (!isExistModule && index === -1) {
+									if (!isExistModule && index === -1 && lookupList[o].lookup_type !== 'users') {
 										errorList.push({
 											name: lookupList[o].name,
 											lookup_type: lookupList[o].lookup_type,
@@ -84,7 +84,7 @@ angular.module('primeapps')
 										});
 									}
 									//Seçilen moduller arasında olmayıp,lookup olanı ekliyoruz
-									else if (!isExistModule && index > -1 && relatedModuleIndex === -1) {
+									else if (!isExistModule && index > -1 && relatedModuleIndex === -1 && lookupList[o].lookup_type !== 'users') {
 										errorList.push({
 											name: lookupList[o].name,
 											lookup_type: lookupList[o].lookup_type,
@@ -110,25 +110,15 @@ angular.module('primeapps')
 					return errorList;
 				},
 				getModulesFields: function (packageModules, packageModulesRelations, allModulesRelations) {
+					var that = this;
 					angular.forEach(packageModules, function (module) {
-						if (!module.fields)
+						if (!module.fields) {
 							ModuleService.getModuleFields(module.name).then(function (response) {
 								module.fields = response.data;
-								var lookupList = $filter('filter')(module.fields, function (field) {
-									return field.data_type === 'lookup' && field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles';
-								});
-
-								packageModulesRelations[module.name] = [];
-								allModulesRelations[module.name] = [];
-
-								for (var k = 0; k < lookupList.length; k++) {
-									packageModulesRelations[module.name].push(lookupList[k]);
-									allModulesRelations[module.name].push({
-										name: lookupList[k].name,
-										lookup_type: lookupList[k].lookup_type
-									});
-								}
+								that.controlFields(module, packageModulesRelations, allModulesRelations);
 							});
+						} else
+							that.controlFields(module, packageModulesRelations, allModulesRelations);
 					});
 				},
 				preparePackage: function (selectedModulesArray, packageModules) {
@@ -143,6 +133,23 @@ angular.module('primeapps')
 						}
 					}
 					return selectedModules;
+				},
+				controlFields: function (module, packageModulesRelations, allModulesRelations) {
+
+					var lookupList = $filter('filter')(module.fields, function (field) {
+						return field.data_type === 'lookup' && field.name !== "owner" && field.name !== "created_by" && field.name !== "updated_by" && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles';
+					});
+
+					packageModulesRelations[module.name] = [];
+					allModulesRelations[module.name] = [];
+
+					for (var k = 0; k < lookupList.length; k++) {
+						packageModulesRelations[module.name].push(lookupList[k]);
+						allModulesRelations[module.name].push({
+							name: lookupList[k].name,
+							lookup_type: lookupList[k].lookup_type
+						});
+					}
 				}
 			};
 		}]);
