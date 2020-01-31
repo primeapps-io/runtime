@@ -357,7 +357,7 @@ namespace PrimeApps.Studio.Helpers
                             lookupModules = new List<Module>();
 
                         lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
-                        record = await _recordRepository.GetById(module, (int)record["id"], false, lookupModules, true);
+                        record = await _recordRepository.GetById(module, (int)record["id"], false, lookupModules, true, false);
 
                         bool hasProcessFilter = true;
                         if (workflow.ProcessFilter != WorkflowProcessFilter.None)
@@ -407,7 +407,7 @@ namespace PrimeApps.Studio.Helpers
                                 var filterFieldStr = filter.Field;
 
                                 if (filterField.DataType == DataType.Lookup && !filter.Field.EndsWith(".id"))
-                                filterFieldStr = filter.Field + ".id";
+                                    filterFieldStr = filter.Field + ".id";
 
                                 if (filterField == null || record[filterFieldStr] == null)
                                 {

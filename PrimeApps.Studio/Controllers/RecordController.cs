@@ -119,7 +119,7 @@ namespace PrimeApps.Studio.Controllers
 
             try
             {
-                record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile, lookupModules);
+                record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile, lookupModules, profileBasedEnabled: !AppUser.HasAdminProfile);
 
                 if (record == null)
                     return NotFound();
@@ -219,7 +219,7 @@ namespace PrimeApps.Studio.Controllers
                     });
                 }
 
-                records =await _recordRepository.Find(module, request, timezoneOffset: timezoneOffset.Value);
+                records = await _recordRepository.Find(module, request, timezoneOffset: timezoneOffset.Value);
 
                 //Format records if has locale
                 if (!string.IsNullOrWhiteSpace(locale))
@@ -264,8 +264,8 @@ namespace PrimeApps.Studio.Controllers
                         if (ids.Count > 0)
                         {
                             var searchIndexName = AppUser.TenantGuid + "-" + module;
-                          //  var documentSearch = new DocumentSearch();
-                          //  var documentRecords = documentSearch.SearchDocuments(ids, searchIndexName, customQueryFilters, _configuration);
+                            //  var documentSearch = new DocumentSearch();
+                            //  var documentRecords = documentSearch.SearchDocuments(ids, searchIndexName, customQueryFilters, _configuration);
 
                             foreach (var record in records)
                             {
@@ -377,7 +377,7 @@ namespace PrimeApps.Studio.Controllers
 
             if (numberAutoFields.Count > 0)
             {
-                var currentRecord = await _recordRepository.GetById(moduleEntity, (int)record["id"], AppUser.HasAdminProfile);
+                var currentRecord = await _recordRepository.GetById(moduleEntity, (int)record["id"], AppUser.HasAdminProfile, profileBasedEnabled: !AppUser.HasAdminProfile);
                 var hasUpdate = false;
 
                 foreach (var numberAutoField in numberAutoFields)
@@ -419,7 +419,7 @@ namespace PrimeApps.Studio.Controllers
             {
                 ICollection<Module> lookupModules = new List<Module> { ModuleHelper.GetFakeUserModule() };
                 var currentCulture = locale == "en" ? "en-US" : "tr-TR";
-                record = await _recordRepository.GetById(moduleEntity, (int)record["id"], !AppUser.HasAdminProfile, lookupModules);
+                record = await _recordRepository.GetById(moduleEntity, (int)record["id"], !AppUser.HasAdminProfile, lookupModules, profileBasedEnabled: !AppUser.HasAdminProfile);
                 record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
 
                 if (normalize.HasValue && normalize.Value)
@@ -449,7 +449,7 @@ namespace PrimeApps.Studio.Controllers
             if (!int.TryParse((string)record["id"], out recordId) || recordId < 1)
                 return BadRequest("Invalid record id!");
 
-            var currentRecord = await _recordRepository.GetById(moduleEntity, (int)record["id"], AppUser.HasAdminProfile);
+            var currentRecord = await _recordRepository.GetById(moduleEntity, (int)record["id"], AppUser.HasAdminProfile, profileBasedEnabled: !AppUser.HasAdminProfile);
 
             if (currentRecord == null)
                 return BadRequest("Record not found!");
@@ -500,7 +500,7 @@ namespace PrimeApps.Studio.Controllers
             {
                 ICollection<Module> lookupModules = new List<Module> { ModuleHelper.GetFakeUserModule() };
                 var currentCulture = locale == "en" ? "en-US" : "tr-TR";
-                record = await _recordRepository.GetById(moduleEntity, (int)record["id"], !AppUser.HasAdminProfile, lookupModules);
+                record = await _recordRepository.GetById(moduleEntity, (int)record["id"], !AppUser.HasAdminProfile, lookupModules, profileBasedEnabled: !AppUser.HasAdminProfile);
                 record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
 
                 if (normalize.HasValue && normalize.Value)
@@ -514,7 +514,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> Delete(string module, int id)
         {
             var moduleEntity = await _moduleRepository.GetByName(module);
-            var record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile);
+            var record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile, profileBasedEnabled: !AppUser.HasAdminProfile);
 
             if (moduleEntity == null || record == null)
                 return BadRequest();
@@ -603,7 +603,7 @@ namespace PrimeApps.Studio.Controllers
 
             foreach (var id in ids)
             {
-                var record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile);
+                var record = await _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile, profileBasedEnabled: !AppUser.HasAdminProfile);
 
                 if (moduleEntity == null || record == null)
                     return BadRequest();
@@ -642,7 +642,7 @@ namespace PrimeApps.Studio.Controllers
                 if (!int.TryParse(id.ToString(), out recordId) || recordId < 1)
                     return BadRequest("Invalid record id!");
 
-                var currentRecord = await _recordRepository.GetById(moduleEntity, (int)id, AppUser.HasAdminProfile);
+                var currentRecord = await _recordRepository.GetById(moduleEntity, (int)id, AppUser.HasAdminProfile, profileBasedEnabled: AppUser.HasAdminProfile);
                 var recordUpdate = (JObject)record.DeepClone();
 
                 if (currentRecord.IsNullOrEmpty())
@@ -807,7 +807,7 @@ namespace PrimeApps.Studio.Controllers
 
             try
             {
-                records =await _recordRepository.GetAllById(module, recordIds.ToList());
+                records = await _recordRepository.GetAllById(module, recordIds.ToList());
 
                 //Format records if has locale
                 if (!string.IsNullOrWhiteSpace(locale))

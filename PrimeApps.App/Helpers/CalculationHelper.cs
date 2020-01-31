@@ -2072,7 +2072,7 @@ namespace PrimeApps.App.Helpers
 
                             case "stock_transactions":
                                 var productModuleObj = await moduleRepository.GetByName("products");
-                                var product = await recordRepository.GetById(productModuleObj, (int)record["product"], false);
+                                var product = await recordRepository.GetById(productModuleObj, (int)record["product"], false, profileBasedEnabled: false);
 
                                 if (product["stock_quantity"].IsNullOrEmpty())
                                     product["stock_quantity"] = 0;
@@ -2721,7 +2721,7 @@ namespace PrimeApps.App.Helpers
                                 };
 
                                 var izinTuruModule = await moduleRepository.GetByName("izin_turleri");
-                                var izinTuru = await recordRepository.GetById(izinTuruModule, (int)record["izin_turu"], false);
+                                var izinTuru = await recordRepository.GetById(izinTuruModule, (int)record["izin_turu"], false, profileBasedEnabled: false);
                                 var izinler = (await recordRepository.Find("izin_turleri", findRequestIzinler, false)).First;
 
                                 //İzin türüne göre izinler de gün veya saat olduğunu belirtme.

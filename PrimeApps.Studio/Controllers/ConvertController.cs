@@ -120,7 +120,7 @@ namespace PrimeApps.Studio.Controllers
             var contactModule = await _moduleRepository.GetByName("contacts");
             var opportunityModule = await _moduleRepository.GetByName("opportunities");
             var activityModule = await _moduleRepository.GetByName("activities");
-            var lead = await _recordRepository.GetById(leadModule, (int)request["lead_id"], false);
+            var lead = await _recordRepository.GetById(leadModule, (int)request["lead_id"], false, profileBasedEnabled: false);
             var conversionMappings = await _conversionMappingRepository.GetAll(leadModule.Id);
             var account = new JObject();
             var contact = new JObject();
@@ -400,7 +400,7 @@ namespace PrimeApps.Studio.Controllers
             var quoteModule = await _moduleRepository.GetByName("quotes");
             var salesOrderModule = await _moduleRepository.GetByName("sales_orders");
             var orderProductModule = await _moduleRepository.GetByName("order_products");
-            var quote = await _recordRepository.GetById(quoteModule, (int)request["quote_id"], false);
+            var quote = await _recordRepository.GetById(quoteModule, (int)request["quote_id"], false, profileBasedEnabled: false);
             var conversionMappings = await _conversionMappingRepository.GetAll(quoteModule.Id);
 
             // Prepare order
@@ -604,7 +604,7 @@ namespace PrimeApps.Studio.Controllers
             var candidateModule = await _moduleRepository.GetByName("adaylar");
             var employeeModule = await _moduleRepository.GetByName("calisanlar");
             var activityModule = await _moduleRepository.GetByName("activities");
-            var candidate = await _recordRepository.GetById(candidateModule, (int)request["lead_id"], false);
+            var candidate = await _recordRepository.GetById(candidateModule, (int)request["lead_id"], false, profileBasedEnabled: false);
             var conversionMappings = await _conversionMappingRepository.GetAll(candidateModule.Id);
             var employee = new JObject();
 
@@ -791,7 +791,7 @@ namespace PrimeApps.Studio.Controllers
             var salesOrderModule = await _moduleRepository.GetByName("sales_orders");
             var salesInvoiceModule = await _moduleRepository.GetByName("sales_invoices");
             var activityModule = await _moduleRepository.GetByName("activities");
-            var salesOrder = await _recordRepository.GetById(salesOrderModule, (int)request["sales_order_id"], false);
+            var salesOrder = await _recordRepository.GetById(salesOrderModule, (int)request["sales_order_id"], false, profileBasedEnabled: false);
             var conversionMappings = await _conversionMappingRepository.GetAll(salesOrderModule.Id);
             var salesInvoicesProductModule = await _moduleRepository.GetByName("sales_invoices_products");
             var salesInvoice = new JObject();
@@ -1079,7 +1079,7 @@ namespace PrimeApps.Studio.Controllers
             var purchaseOrderModule = await _moduleRepository.GetByName("purchase_orders");
             var purchaseInvoiceModule = await _moduleRepository.GetByName("purchase_invoices");
             var activityModule = await _moduleRepository.GetByName("activities");
-            var purchaseOrder = await _recordRepository.GetById(purchaseOrderModule, (int)request["purchase_order_id"], false);
+            var purchaseOrder = await _recordRepository.GetById(purchaseOrderModule, (int)request["purchase_order_id"], false, profileBasedEnabled: false);
             var purchaseInvoiceProductModule = await _moduleRepository.GetByName("purchase_invoices_products");
             var conversionMappings = await _conversionMappingRepository.GetAll(purchaseOrderModule.Id);
             var purchaseInvoice = new JObject();

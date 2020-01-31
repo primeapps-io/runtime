@@ -1123,7 +1123,7 @@ namespace PrimeApps.App.Helpers
                     {
                         if (request.OperationType == OperationType.delete)
                         {
-                            record = await _recordRepository.GetById(process.Module, request.RecordId, !appUser.HasAdminProfile);
+                            record = await _recordRepository.GetById(process.Module, request.RecordId, !appUser.HasAdminProfile, profileBasedEnabled: !appUser.HasAdminProfile);
                             await _recordRepository.Delete(record, process.Module);
                         }
 

@@ -1438,7 +1438,7 @@ namespace PrimeApps.Studio.Helpers
                                                 case "petty_cash_requisition":
                                                 case "expenditure":
                                                     var pettyCashModule = await moduleRepository.GetByName("petty_cash");
-                                                    var pettyCashRecord = await recordRepository.GetById(pettyCashModule, (int)record["related_petty_cash_2"], false, null, true);
+                                                    var pettyCashRecord = await recordRepository.GetById(pettyCashModule, (int)record["related_petty_cash_2"], false, null, true, false);
                                                     var pettyCashUpdateRecord = new JObject();
                                                     if (module.Name == "petty_cash_requisition")
                                                     {
@@ -1941,7 +1941,7 @@ namespace PrimeApps.Studio.Helpers
                                                     if (record["product"].IsNullOrEmpty())
                                                         break;
 
-                                                    var prodItem = await recordRepository.GetById(prodMod, (int)record["product"], false);
+                                                    var prodItem = await recordRepository.GetById(prodMod, (int)record["product"], false, profileBasedEnabled: false);
 
                                                     if (prodItem.IsNullOrEmpty())
                                                         break;
@@ -1952,7 +1952,7 @@ namespace PrimeApps.Studio.Helpers
                                                     {
                                                         findRequestCurrentStockRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "sales_order", Operator = Operator.Equals, Value = (int)record["sales_order"], No = 1 }, new Filter { Field = "product", Operator = Operator.Equals, Value = (int)record["product"], No = 2 } }, Limit = 9999 };
                                                         var salesOrderModule = await moduleRepository.GetByName("sales_orders");
-                                                        var salesOrderItem = await recordRepository.GetById(salesOrderModule, (int)record["sales_order"], false);
+                                                        var salesOrderItem = await recordRepository.GetById(salesOrderModule, (int)record["sales_order"], false, profileBasedEnabled: false);
                                                         var salesStagePicklist = salesOrderModule.Fields.Single(x => x.Name == "order_stage");
                                                         currentModulePicklist = await picklistRepository.FindItemByLabel(salesStagePicklist.PicklistId.Value, (string)salesOrderItem["order_stage"], appUser.TenantLanguage);
                                                     }
@@ -1960,7 +1960,7 @@ namespace PrimeApps.Studio.Helpers
                                                     {
                                                         findRequestCurrentStockRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "purchase_order", Operator = Operator.Equals, Value = (int)record["purchase_order"], No = 1 }, new Filter { Field = "product", Operator = Operator.Equals, Value = (int)record["product"], No = 2 } }, Limit = 9999 };
                                                         var purchaseOrderModule = await moduleRepository.GetByName("purchase_orders");
-                                                        var purchaseOrderItem = await recordRepository.GetById(purchaseOrderModule, (int)record["purchase_order"], false);
+                                                        var purchaseOrderItem = await recordRepository.GetById(purchaseOrderModule, (int)record["purchase_order"], false, profileBasedEnabled: false);
                                                         var purchaseStagePicklist = purchaseOrderModule.Fields.Single(x => x.Name == "order_stage");
                                                         currentModulePicklist = await picklistRepository.FindItemByLabel(purchaseStagePicklist.PicklistId.Value, (string)purchaseOrderItem["order_stage"], appUser.TenantLanguage);
 
@@ -2031,7 +2031,7 @@ namespace PrimeApps.Studio.Helpers
 
                                                 case "stock_transactions":
                                                     var productModuleObj = await moduleRepository.GetByName("products");
-                                                    var product = await recordRepository.GetById(productModuleObj, (int)record["product"], false);
+                                                    var product = await recordRepository.GetById(productModuleObj, (int)record["product"], false, profileBasedEnabled: false);
 
                                                     if (product["stock_quantity"].IsNullOrEmpty())
                                                         product["stock_quantity"] = 0;
@@ -2808,7 +2808,7 @@ namespace PrimeApps.Studio.Helpers
                                                     };
 
                                                     var izinTuruModule = await moduleRepository.GetByName("izin_turleri");
-                                                    var izinTuru = await recordRepository.GetById(izinTuruModule, (int)record["izin_turu"], false);
+                                                    var izinTuru = await recordRepository.GetById(izinTuruModule, (int)record["izin_turu"], false, profileBasedEnabled: false);
                                                     var izinler = (await recordRepository.Find("izin_turleri", findRequestIzinler, false)).First;
 
                                                     //İzin türüne göre izinler de gün veya saat olduğunu belirtme.
@@ -2966,7 +2966,7 @@ namespace PrimeApps.Studio.Helpers
 
                     var calisanId = userId;
 
-                    var calisan = await _recordRepository.GetById(calisanlarModule, calisanId, false);
+                    var calisan = await _recordRepository.GetById(calisanlarModule, calisanId, false, profileBasedEnabled: false);
 
                     if (calisan == null)
                         return false;
@@ -2985,7 +2985,7 @@ namespace PrimeApps.Studio.Helpers
                     var dayDiffMonth = ((bugun.Year - calismayaBasladigiZaman.Year) * 12) + bugun.Month - calismayaBasladigiZaman.Month;
                     var dayDiffYear = dayDiff.Days / 365;
 
-                    var izinKurali = await _recordRepository.GetById(izinTurleri, izinTuruId, false);
+                    var izinKurali = await _recordRepository.GetById(izinTurleri, izinTuruId, false, profileBasedEnabled: false);
 
                     var ekIzin = 0.0;
                     var toplamKalanIzin = 0.0;
@@ -3174,7 +3174,7 @@ namespace PrimeApps.Studio.Helpers
                     }
 
                     var calisanId = userId;
-                    var calisan = await _recordRepository.GetById(calisanlarModule, calisanId, false);
+                    var calisan = await _recordRepository.GetById(calisanlarModule, calisanId, false, profileBasedEnabled: false);
 
                     if (calisan == null)
                         return false;

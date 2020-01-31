@@ -154,7 +154,7 @@ namespace PrimeApps.App.Controllers
                     LabelTrPlural = "E-Postalar",
                     LabelTrSingular = "E-Posta",
                     Order = (short)(module.Relations.Count + 1),
-                    DisplayFieldsArray = new[] {"subject", "sender", "recipients", "sending_date", "body", "created_at", "state"}
+                    DisplayFieldsArray = new[] { "subject", "sender", "recipients", "sending_date", "body", "created_at", "state" }
                 };
 
                 var resultCreate = await _moduleRepository.CreateRelation(relation);
@@ -170,9 +170,9 @@ namespace PrimeApps.App.Controllers
         [Route("create_mail_module"), HttpPost]
         public async Task<IActionResult> CreateMailModule()
         {
-            var picklist = new PicklistBindingModel {LabelTr = "Mail Yönü", LabelEn = "Mail Direction", Items = new List<PicklistItemBindingModel>()};
-            picklist.Items.Add(new PicklistItemBindingModel {LabelTr = "Giden E-posta", LabelEn = "Out", Value = "out", Order = 1});
-            picklist.Items.Add(new PicklistItemBindingModel {LabelTr = "Gelen E-posta", LabelEn = "In", Value = "in", Order = 2});
+            var picklist = new PicklistBindingModel { LabelTr = "Mail Yönü", LabelEn = "Mail Direction", Items = new List<PicklistItemBindingModel>() };
+            picklist.Items.Add(new PicklistItemBindingModel { LabelTr = "Giden E-posta", LabelEn = "Out", Value = "out", Order = 1 });
+            picklist.Items.Add(new PicklistItemBindingModel { LabelTr = "Gelen E-posta", LabelEn = "In", Value = "in", Order = 2 });
 
             var picklistEntity = PicklistHelper.CreateEntity(picklist);
             var result = await _picklistRepository.Create(picklistEntity);
@@ -554,7 +554,7 @@ namespace PrimeApps.App.Controllers
             var outlookEmailFieldSetting = await _settingRepository.GetByKeyAsync("outlook_email_field");
 
             if (outlookModuleSetting == null || outlookEmailFieldSetting == null)
-                return StatusCode(HttpStatusCode.Status400BadRequest, new {code = "settings_not_found", message = "Outlook settings not found!"});
+                return StatusCode(HttpStatusCode.Status400BadRequest, new { code = "settings_not_found", message = "Outlook settings not found!" });
 
             var findRequest = new FindRequest
             {
@@ -582,10 +582,10 @@ namespace PrimeApps.App.Controllers
             var records = await _recordRepository.Find(outlookModuleSetting.Value, findRequest);
 
             if (records.IsNullOrEmpty())
-                return StatusCode(HttpStatusCode.Status400BadRequest, new {code = "record_not_found", message = "Record not found!"});
+                return StatusCode(HttpStatusCode.Status400BadRequest, new { code = "record_not_found", message = "Record not found!" });
 
             if (records.Count > 1)
-                return StatusCode(HttpStatusCode.Status400BadRequest, new {code = "too_many_records", message = "Too many records!"});
+                return StatusCode(HttpStatusCode.Status400BadRequest, new { code = "too_many_records", message = "Too many records!" });
 
             var module = await _moduleRepository.GetByName(outlookModuleSetting.Value);
             mail["owner"] = AppUser.Id;
@@ -629,10 +629,10 @@ namespace PrimeApps.App.Controllers
                     return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.Detail});
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new {message = ex.MessageText});
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
@@ -646,7 +646,7 @@ namespace PrimeApps.App.Controllers
 
             if (numberAutoFields.Count > 0)
             {
-                var currentRecord = await _recordRepository.GetById(moduleEntity, (int)mail["id"], AppUser.HasAdminProfile);
+                var currentRecord = await _recordRepository.GetById(moduleEntity, (int)mail["id"], AppUser.HasAdminProfile, profileBasedEnabled: AppUser.HasAdminProfile);
                 var hasUpdate = false;
 
                 foreach (var numberAutoField in numberAutoFields)
@@ -686,9 +686,9 @@ namespace PrimeApps.App.Controllers
             //Format records if has locale
             if (!string.IsNullOrWhiteSpace(locale))
             {
-                ICollection<Module> lookupModules = new List<Module> {ModuleHelper.GetFakeUserModule()};
+                ICollection<Module> lookupModules = new List<Module> { ModuleHelper.GetFakeUserModule() };
                 var currentCulture = locale == "en" ? "en-US" : "tr-TR";
-                mail = await _recordRepository.GetById(moduleEntity, (int)mail["id"], !AppUser.HasAdminProfile, lookupModules);
+                mail = await _recordRepository.GetById(moduleEntity, (int)mail["id"], !AppUser.HasAdminProfile, lookupModules, profileBasedEnabled: !AppUser.HasAdminProfile);
                 mail = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, mail, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantGuid, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
 
                 if (normalize.HasValue && normalize.Value)

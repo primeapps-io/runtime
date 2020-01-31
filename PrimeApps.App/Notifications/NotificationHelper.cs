@@ -295,7 +295,7 @@ namespace PrimeApps.App.Notifications
                         userModule
                     };
 
-                    fullRecord = await _recordRepository.GetById(module, (int)record["id"], !appUser.HasAdminProfile, listLookupModule);
+                    fullRecord = await _recordRepository.GetById(module, (int)record["id"], !appUser.HasAdminProfile, listLookupModule, profileBasedEnabled: !appUser.HasAdminProfile);
 
                     _recordRepository.SetPicklists(module, fullRecord, appUser.TenantLanguage);
 

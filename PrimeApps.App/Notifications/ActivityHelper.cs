@@ -83,7 +83,7 @@ namespace PrimeApps.App.Notifications
                             userModule
                         };
 
-                        var fullRecord = await recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule);
+                        var fullRecord = await recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule, profileBasedEnabled: !appUser.HasAdminProfile);
 
                         recordRepository.SetPicklists(module, fullRecord, appUser.TenantLanguage);
 
@@ -315,7 +315,7 @@ namespace PrimeApps.App.Notifications
                                 var userModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
                                 var listLookupModule = new List<Module>();
                                 listLookupModule.Add(userModule);
-                                var databaseRecord = await _recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule);
+                                var databaseRecord = await _recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule, profileBasedEnabled: !appUser.HasAdminProfile);
                                 _recordRepository.SetPicklists(module, databaseRecord, appUser.TenantLanguage);
 
                                 //create case activity system type needed
@@ -323,9 +323,9 @@ namespace PrimeApps.App.Notifications
 
                                 await (Create(appUser, databaseRecord, module, warehouse, true, timezoneOffset: timezoneOffset));
                                 break;
-                            //case "opportunities"://check here if any need on that
+                                //case "opportunities"://check here if any need on that
 
-                            //    break;
+                                //    break;
                         }
 
                         return;
@@ -339,7 +339,7 @@ namespace PrimeApps.App.Notifications
                         var userModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
                         var listLookupModule = new List<Module>();
                         listLookupModule.Add(userModule);
-                        var fullRecord = await _recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule);
+                        var fullRecord = await _recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule, profileBasedEnabled: !appUser.HasAdminProfile);
 
                         _recordRepository.SetPicklists(module, fullRecord, appUser.TenantLanguage);
 

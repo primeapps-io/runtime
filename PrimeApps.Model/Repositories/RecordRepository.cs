@@ -43,13 +43,10 @@ namespace PrimeApps.Model.Repositories
 
             var sql = RecordHelper.GenerateGetSql(module, lookupModules, recordId, owners, CurrentUser.UserId, userGroups, deleted);
             var data = DbContext.Database.SqlQueryDynamic(sql).FirstOrDefault();
-            var record = new JObject();
+            var record = data.IsNullOrEmpty() ? new JObject() : (JObject)data;
 
-            if (data != null)
-            {
-                if (profileBasedEnabled && module.Name != "users" && module.Name != "profiles" && module.Name != "roles")
-                    record = await RecordPermissionControl(module.Name, CurrentUser.UserId, (JObject)data, operation);
-            }
+            if (profileBasedEnabled && module.Name != "users" && module.Name != "profiles" && module.Name != "roles")
+                record = await RecordPermissionControl(module.Name, CurrentUser.UserId, record, operation);
 
             if (!record.IsNullOrEmpty())
             {
@@ -83,6 +80,7 @@ namespace PrimeApps.Model.Repositories
 
             var sql = RecordHelper.GenerateFindSql(moduleName, findRequest, owners, CurrentUser.UserId, userGroups, timezoneOffset: timezoneOffset);
             JArray records;
+
             try
             {
                 records = DbContext.Database.SqlQueryDynamic(sql);
@@ -132,6 +130,8 @@ namespace PrimeApps.Model.Repositories
 
                     newRecords.Add(newRecord);
                 }
+
+                return newRecords;
             }
 
             return records;
@@ -832,7 +832,7 @@ namespace PrimeApps.Model.Repositories
                     }
                     else
                         fieldRemoveList.Add(field.Name);
-                }  
+                }
             }
 
             return fieldRemoveList.Count > 0 ? ClearRecord(record, fields: fieldRemoveList) : record;
@@ -840,7 +840,11 @@ namespace PrimeApps.Model.Repositories
 
         private async Task<List<string>> LookupModulePermission(Field field, TenantUser user, OperationType operation)
         {
-            var lookupModule = await DbContext.Modules.Where(q => q.Name == field.LookupType && !q.Deleted).FirstOrDefaultAsync();
+            var lookupModule = await DbContext.Modules
+            .Where(q => q.Name == field.LookupType && !q.Deleted)
+            .Include(q => q.Fields)
+            .ThenInclude(q => q.Permissions)
+            .FirstOrDefaultAsync();
 
             if (lookupModule == null)
                 return null;
@@ -862,7 +866,7 @@ namespace PrimeApps.Model.Repositories
                     {
                         fieldList.Add($"{prefix}.{item.Name}");
                         fieldList.Add($"{field.Name}.{item.Name}");
-                        fieldList.Add($"{prefix}.{lookupModule.Name}.{item.Name}"); //find methodu ile donen record'lar icin ekiyoruz.
+                        fieldList.Add($"{field.Name}.{lookupModule.Name}.{item.Name}"); //find methodu ile donen record'lar icin ekiyoruz.
                     }
                     else
                     {
@@ -873,7 +877,7 @@ namespace PrimeApps.Model.Repositories
                         {
                             fieldList.Add($"{prefix}.{item.Name}");
                             fieldList.Add($"{field.Name}.{item.Name}");
-                            fieldList.Add($"{prefix}.{lookupModule.Name}.{item.Name}"); //find methodu ile donen record'lar icin ekiyoruz.
+                            fieldList.Add($"{field.Name}.{lookupModule.Name}.{item.Name}"); //find methodu ile donen record'lar icin ekiyoruz.
                         }
                     }
                 }
