@@ -404,7 +404,7 @@ namespace PrimeApps.App.Helpers
             {
                 modelState.AddModelError(module.Name, $"You dont have profile permission for create '{module.Name}' module.");
                 return StatusCodes.Status403Forbidden;
-            }
+            } 
 
             /*
              * Birleşim data tipi başka bir birleşim data tipiyle kullanılması durumu.

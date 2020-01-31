@@ -669,32 +669,33 @@ namespace PrimeApps.Model.Repositories
 
             switch (operation)
             {
-                case OperationType.insert:
-                    if (modulePermission == null)
-                        return null;
-                    else
-                    {
-                        record = SectionPermission(module, record, user, operation);
-                        //record = await RelationModulePermission(module, record, user, operation);
-                        record = await FieldPermission(module, record, user, operation);
-                        removedFields = this.removedFields;
+                ////case OperationType.insert:
+                ////    if (modulePermission == null)
+                ////        return null;
+                ////    else
+                ////    {
+                ////        record = SectionPermission(module, record, user, operation);
+                ////        //record = await RelationModulePermission(module, record, user, operation);
+                ////        record = await FieldPermission(module, record, user, operation);
+                ////        removedFields = this.removedFields;
 
-                        return record;
-                    }
-                case OperationType.update:
-                    if (isCustomSharePermission)
-                        return record;
+                ////        return record;
+                ////    }
+                ////case OperationType.update:
+                ////    if (isCustomSharePermission)
+                ////        return record;
 
-                    if (modulePermission == null)
-                        return null;
-                    else
-                    {
-                        record = SectionPermission(module, record, user, operation);
-                        record = await RelationModulePermission(module, record, user, operation);
-                        record = await FieldPermission(module, record, user, operation);
-                        ///Todo lookup alanlar için kontrol lazım.
-                        return record;
-                    }
+                ////    if (modulePermission == null)
+                ////        return null;
+                ////    else
+                ////    {
+                ////        record = SectionPermission(module, record, user, operation);
+                ////        record = await RelationModulePermission(module, record, user, operation);
+                ////        record = await FieldPermission(module, record, user, operation); 
+                ////        removedFields = this.removedFields;
+
+                ////        return record;
+                ////    }
                 case OperationType.read:
                     if (isCustomSharePermission)
                         return record;
@@ -705,8 +706,7 @@ namespace PrimeApps.Model.Repositories
                     {
                         record = SectionPermission(module, record, user, operation);
                         record = await RelationModulePermission(module, record, user, operation);
-                        record = await FieldPermission(module, record, user, operation);
-                        ///Todo lookup alanlar için kontrol lazım.
+                        record = await FieldPermission(module, record, user, operation); 
                         return record;
                     }
                 case OperationType.delete:
