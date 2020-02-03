@@ -404,7 +404,27 @@ namespace PrimeApps.App.Helpers
             {
                 modelState.AddModelError(module.Name, $"You dont have profile permission for create '{module.Name}' module.");
                 return StatusCodes.Status403Forbidden;
-            } 
+            }
+
+            var removedFieldsList = new List<string>();
+            var operation = record["id"].IsNullOrEmpty() ? OperationType.insert : OperationType.update;
+            record = await recordRepository.RecordPermissionControl(module.Name, appUser.Id, record, operation, removedFieldsList, customBulkUpdatePermission);
+
+            if (record.IsNullOrEmpty() && (removedFieldsList == null || removedFieldsList.Count < 1))
+            {
+                modelState.AddModelError(module.Name, $"You dont have profile permission for '{module.Name}' module.");
+                return StatusCodes.Status403Forbidden;
+            }
+
+            if (removedFieldsList.Count > 0)
+            {
+                foreach (var field in removedFieldsList)
+                {
+                    modelState.AddModelError(field, $"You dont have profile permission for '{field}' field.");
+                }
+
+                return StatusCodes.Status403Forbidden;
+            }
 
             /*
              * Birleşim data tipi başka bir birleşim data tipiyle kullanılması durumu.
