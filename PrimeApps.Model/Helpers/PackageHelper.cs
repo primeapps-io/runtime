@@ -103,22 +103,24 @@ namespace PrimeApps.Model.Helpers
                 var deleteQueriesForModules = new List<string>();
                 JArray allModules = new JArray();
                 var allModulesRelations = (JObject)packageModel["allModulesRelations"];
-                foreach (var property in allModulesRelations)
-                    allModules.Add(new JObject() { { property.Key, property.Value } });
+                
+                foreach (var (key, value) in allModulesRelations)
+                    allModules.Add(new JObject() { { key, value } });
 
-
-                if (protectModulesType == PackageModulesType.DontTransfer)
-                    await ControlPropertyOfArray(selectedModules, allModules, modulesRelations, updatedList, recordRepository, moduleRepository, scriptPath, truncateList, deleteList, protectModulesType, deleteQueriesForModules);
-
-                else if (protectModulesType == PackageModulesType.SelectedModules)
+                if (protectModulesType == PackageModulesType.SelectedModules)
                 {
                     //selectedModules
-                    foreach (JObject selectedModule in selectedModules)
+                    foreach (var jToken in selectedModules)
+                    {
+                        var selectedModule = (JObject) jToken;
                         await ControlPropertyOfArray(selectedModules, allModules, selectedModule, updatedList, recordRepository, moduleRepository, scriptPath, truncateList, deleteList, protectModulesType, deleteQueriesForModules);
+                    }
 
-                    //modulesRelations
-                    await ControlPropertyOfArray(selectedModules, allModules, modulesRelations, updatedList, recordRepository, moduleRepository, scriptPath, truncateList, deleteList, PackageModulesType.DontTransfer, deleteQueriesForModules);
                 }
+                
+                if (protectModulesType == PackageModulesType.DontTransfer || protectModulesType == PackageModulesType.SelectedModules)
+                    await ControlPropertyOfArray(selectedModules, allModules, modulesRelations, updatedList, recordRepository, moduleRepository, scriptPath, truncateList, deleteList,  PackageModulesType.DontTransfer, deleteQueriesForModules);
+                
 
                 foreach (var deleteQuery in deleteQueriesForModules)
                     AddScript(scriptPath, deleteQuery);
