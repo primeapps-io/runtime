@@ -2,20 +2,33 @@
 Description=PrimeApps Admin
 
 [Service]
-WorkingDirectory={{DIRECTORYPATH}}/Admin
-ExecStart=/usr/bin/dotnet {{DIRECTORYPATH}}/Admin/PrimeApps.Admin.dll --urls="http://localhost:{{ADMINPORT}}"
+WorkingDirectory={{PRE_ROOT}}/Admin
+ExecStart=/usr/bin/dotnet {{PRE_ROOT}}/Admin/PrimeApps.Admin.dll --urls="http://localhost:{{PORT_ADMIN}}"
 Restart=always
 # Restart service after 10 seconds if the dotnet service crashes:
 RestartSec=10
 KillSignal=SIGINT
 SyslogIdentifier=primeapps-admin
 User={{USER}}
-Environment=ASPNETCORE_ENVIRONMENT=Production
 Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
-Environment=AppSettings__ClientId={{CLIENTID}}
-Environment=AppSettings__ClientSecret={{CLIENTSECRET}}
-Environment=AppSettings__AuthenticationServerURL="http://localhost:${{AUTHPORT}}"
-
+Environment=ASPNETCORE_ENVIRONMENT="Development"
+Environment=ConnectionStrings__TenantDBConnection="server=localhost;port=5436;username=postgres;password={{PASSWORD_DATABASE}};database=dev;command timeout=0;keepalive=30;maximum pool size=1000;"
+Environment=ConnectionStrings__PlatformDBConnection="server=localhost;port=5436;username=postgres;password={{PASSWORD_DATABASE}};database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
+Environment=ConnectionStrings__RedisConnection="localhost:6384,password={{PASSWORD_CACHE}},defaultDatabase=1,syncTimeout=30000"
+Environment=AppSettings__StorageUrl="{{DOMAIN_STORAGE}}"
+Environment=AppSettings__StorageAccessKey="{{STORAGE_ACCESSKEY}}"
+Environment=AppSettings__StorageSecretKey="{{STORAGE_SECRETKEY}}"
+Environment=AppSettings__EnableJobs="{{ENABLE_JOBS_ADMIN}}"
+Environment=AppSettings__AuthenticationServerURL="https://auth.primeapps.io"
+Environment=AppSettings__AuthenticationServerURLLocal="{{DOMAIN_AUTH}}"
+Environment=AppSettings__ClientId="{{CLIENT_ID_ADMIN}}"
+Environment=AppSettings__ClientSecret="{{CLIENT_SECRET_ADMIN}}"
+Environment=AppSettings__ForwardHeaders="true"
+Environment=AppSettings__HttpsRedirection="{{HTTPS_REDIRECTION}}"
+Environment=AppSettings__StudioUrl="https://studio.primeapps.io"
+Environment=AppSettings__PostgresPath="{{PRE_ROOT}}/programs/pgsql/bin/"
+Environment=AppSettings__DataDirectory="{{PRE_ROOT}}/data"
+Environment=AppSettings__SentryDsn="{{SENTRY_DSN_ADMIN}}"
     
 [Install]
 WantedBy=multi-user.target

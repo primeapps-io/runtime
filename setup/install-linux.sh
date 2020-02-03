@@ -1,11 +1,12 @@
 #!/bin/bash
-#Usage: ./install-linux.sh username
+#Usage: sudo ./install-linux.sh
 
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+user=$(logname)
 # Variables
 basePath=$(pwd [-LP])
 filePostgres="https://get.enterprisedb.com/postgresql/postgresql-10.11-2-linux-x64-binaries.tar.gz"
@@ -34,32 +35,36 @@ cd programs
 
 # Install PostgreSQL
 echo -e "${GREEN}Downloading PostgreSQL...${NC}"
+
+if [ ! -f "postgresql.tar.gz" ]; then 
 curl $filePostgres -L --output postgresql.tar.gz
-# cp $filePostgres postgresql.tar.gz
+fi
 tar -zxvf postgresql.tar.gz
-rm postgresql.tar.gz
 
 # Install Minio
 cd "$basePath/programs"
 mkdir minio
 cd minio
-echo -e "${GREEN}Downloading Minio...${NC}"
-curl $fileMinio -L --output minio
-# cp $fileMinio minio
+cp ./minio
+# echo -e "${GREEN}Downloading Minio...${NC}"
+# if [ ! -f "minio" ]; then 
+# curl $fileMinio -L --output minio
+# fi
+
 chown $user minio
 chmod +x minio
 
 # Install Redis
 cd "$basePath/programs"
 echo -e "${GREEN}Downloading Redis...${NC}"
+if [ ! -f "redis.tar.gz" ]; then 
 curl $fileRedis -L --output redis.tar.gz
-# cp $fileRedis redis.tar.gz
+fi
 tar -zxvf redis.tar.gz
-rm redis.tar.gz
+
 mv redis-linux-redis-linux redis
-cd redis
-chown $user redis-server
-chmod +x redis-server
+chown $user redis
+chmod 770 redis
 
 # Init database instances
 cd $postgresPath
@@ -78,6 +83,7 @@ sed -i "s/{{PROGRAMS}}/${programsPathEscape}/g" postgres-pre.service
 sed -i "s/{{USER}}/${user}/g" postgres-pre.service
 cp postgres-pre.service /etc/systemd/system/postgres-pre.service
 
+systemctl daemon-reload
 systemctl start postgres-pre
 systemctl enable postgres-pre
 
@@ -103,15 +109,17 @@ sudo -u $user bash -c "./pg_restore -h localhost -U postgres -p 5436 --no-owner 
 echo -e "${GREEN}Initializing storage instances...${NC}"
 cd "$basePath/programs/minio"
 
+mkdir -p $basePath/data/minio_pre/
+chown $user $basePath/data/minio_pre
+chmod u+rxw $basePath/data/minio_pre
+
 cp "$basePath/service/minio-pre.service" minio-pre.service
 sed -i "s/{{DATA}}/$dataPathEscape/g" minio-pre.service
 sed -i "s/{{PROGRAMS}}/$programsPathEscape/g" minio-pre.service
 sed -i "s/{{USER}}/$user/g" minio-pre.service
-
 cp minio-pre.service /etc/systemd/system/minio-pre.service
-mkdir -p $basePath/data/minio_pre/
-chown $user $basePath/data/minio_pre
-chmod u+rxw $basePath/data/minio_pre
+
+systemctl daemon-reload
 systemctl start minio-pre
 systemctl enable minio-pre
 
@@ -121,13 +129,16 @@ cd "$basePath/programs/redis"
 
 mkdir -p "$basePath/data/redis_pre"
 cp redis.conf "$basePath/data/redis_pre/redis.conf"
+chown $user $basePath/data/redis_pre
+chmod u+rxw $basePath/data/redis_pre
 
 cp "$basePath/service/redis-pre.service" redis-pre.service
 sed -i "s/{{DATA}}/$dataPathEscape/g" redis-pre.service
 sed -i "s/{{PROGRAMS}}/$programsPathEscape/g" redis-pre.service
 sed -i "s/{{USER}}/$user/g" redis-pre.service
-
 cp redis-pre.service /etc/systemd/system/redis-pre.service
+
+systemctl daemon-reload
 systemctl start redis-pre
 systemctl enable redis-pre
 
@@ -142,5 +153,6 @@ cd "$basePath/data"
 tar -czf pgsql_pre.tar.gz pgsql_pre
 tar -czf minio_pre.tar.gz minio_pre
 tar -czf redis_pre.tar.gz redis_pre
+
 
 echo -e "${BLUE}Completed${NC}"
