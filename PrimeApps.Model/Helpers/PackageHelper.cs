@@ -90,7 +90,7 @@ namespace PrimeApps.Model.Helpers
 				 * for exp: ["mName":[{name:"lookupName",lookup_type:"LookupModuleName"},{}]]
 				 * **/
                 var selectedModules = (JArray)packageModel["selectedModules"];
-                /** it likes  selectedModules, but it has difrent modules and modules' related lookups
+                /** it likes  selectedModules, but it has different modules and modules' related lookups
 				 * That modules weren't chose
 				 * All modules and related lookups = {"m1":[{}..],"m2":[{}]}
 				 * selectedModules = ["m2":{}...], modulesRelations={"m1":[]...}
