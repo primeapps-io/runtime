@@ -34,6 +34,7 @@ namespace PrimeApps.Admin.Helpers
 		Task<bool> AppMigration(string schema, bool isLocal, string ids);
 		Task<bool> UpdateTenant(int id, string url, int lastTenantId);
 		Task ApplyMigrations(List<int> ids);
+		Task UpdateTenantModuleFields(int id);
 	}
 
 	public class MigrationHelper : IMigrationHelper
@@ -435,8 +436,12 @@ namespace PrimeApps.Admin.Helpers
 					time = TimeSpan.FromMinutes(50);
 				else if (i > 2200 && i <= 2400)
 					time = TimeSpan.FromMinutes(55);
-				else if (i > 2400)
+				else if (i > 2400 && i <= 2600)
 					time = TimeSpan.FromMinutes(60);
+				else if (i > 2600 && i <= 2800)
+					time = TimeSpan.FromMinutes(65);
+				else if (i > 2800 && i <= 3000)
+					time = TimeSpan.FromMinutes(70);
 
 				BackgroundJob.Schedule<IMigrationHelper>(x => x.UpdateTenant(tenantId, url, lastTenantId), time);
 			}
@@ -561,10 +566,10 @@ namespace PrimeApps.Admin.Helpers
 				}
 			}
 
-			SentrySdk.CaptureMessage($"Tenant{id} update successfully.", SentryLevel.Info);
+			SentrySdk.CaptureMessage($"Tenant{id} has been updated successfully.", SentryLevel.Info);
 
 			if (id == lastTenantId)
-				SentrySdk.CaptureMessage("All tenants updated successfully.", SentryLevel.Info);
+				SentrySdk.CaptureMessage("All tenants have been updated successfully.", SentryLevel.Info);
 
 			return true;
 		}
@@ -639,17 +644,10 @@ namespace PrimeApps.Admin.Helpers
 			}
 		}
 
-		public async Task ApplyMigrations(List<int> ids)//List<AppDraft> apps)
+		public async Task ApplyMigrations(List<int> ids)
 		{
 			var PREConnectionString = _configuration.GetConnectionString("PlatformDBConnection");
-			var result = new JObject
-			{
-				["success"] = new JObject
-				{
-					["is_sample"] = "",
-					["encrypt"] = ""
-				}
-			};
+
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				using (var platformDbContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>())
@@ -663,16 +661,15 @@ namespace PrimeApps.Admin.Helpers
 							if (app == null)
 								return;
 
-							await UpdateAppModuleFieldsAndSettings(id, PREConnectionString, result);
+							await UpdateAppModuleFieldsAndSettings(id, PREConnectionString);
 						}
-						
-						ErrorHandler.LogMessage(result.ToJsonString());
+
 					}
 				}
 			}
 		}
 
-		public async Task UpdateAppModuleFieldsAndSettings(int appId, string PREConnectionString, JObject result)
+		public async Task UpdateAppModuleFieldsAndSettings(int appId, string PREConnectionString)
 		{
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
@@ -685,33 +682,70 @@ namespace PrimeApps.Admin.Helpers
 					{
 						_currentUser = new CurrentUser { PreviewMode = "app", TenantId = appId, UserId = 1 };
 						moduleRepository.CurrentUser = settingRepository.CurrentUser = _currentUser;
-						
+
 						var appExists = PostgresHelper.Read(_configuration.GetConnectionString("PlatformDBConnection"), $"platform", $"SELECT 1 AS result FROM pg_database WHERE datname='app{appId}'", "hasRows");
 
 						if (appExists)
 						{
 							PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", true);
-							await UpdateModules(moduleRepository, result);
-							await UpdateSetting(settingRepository, result);
+							await UpdateModules(moduleRepository);
+							await UpdateSetting(settingRepository);
 							PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", false);
 						}
 						var tenantIds = await tenantRepository.GetIdsByAppId(appId);
 
-						foreach (var tenantId in tenantIds)
+						for (int i = 0; i < tenantIds.Count; i++)
 						{
+							var tenantId = tenantIds[i];
 							var exists = PostgresHelper.Read(_configuration.GetConnectionString("PlatformDBConnection"), $"platform", $"SELECT 1 AS result FROM pg_database WHERE datname='tenant{tenantId}'", "hasRows");
 
 							if (!exists)
 								continue;
 
-							await UpdateTenantModuleFieldsAndFields(tenantId, result);
+							var time = TimeSpan.FromSeconds(10);
+
+							if (i > 200 && i <= 400)
+								time = TimeSpan.FromMinutes(5);
+							else if (i > 400 && i <= 600)
+								time = TimeSpan.FromMinutes(10);
+							else if (i > 600 && i <= 800)
+								time = TimeSpan.FromMinutes(15);
+							else if (i > 800 && i <= 1000)
+								time = TimeSpan.FromMinutes(20);
+							else if (i > 1000 && i <= 1200)
+								time = TimeSpan.FromMinutes(25);
+							else if (i > 1200 && i <= 1400)
+								time = TimeSpan.FromMinutes(30);
+							else if (i > 1400 && i <= 1600)
+								time = TimeSpan.FromMinutes(35);
+							else if (i > 1600 && i <= 1800)
+								time = TimeSpan.FromMinutes(40);
+							else if (i > 1800 && i <= 2000)
+								time = TimeSpan.FromMinutes(45);
+							else if (i > 2000 && i <= 2200)
+								time = TimeSpan.FromMinutes(50);
+							else if (i > 2200 && i <= 2400)
+								time = TimeSpan.FromMinutes(55);
+							else if (i > 2400 && i <= 2600)
+								time = TimeSpan.FromMinutes(60);
+							else if (i > 2600 && i <= 2800)
+								time = TimeSpan.FromMinutes(65);
+							else if (i > 2800 && i <= 3000)
+								time = TimeSpan.FromMinutes(70);
+
+							BackgroundJob.Schedule<IMigrationHelper>(x => x.UpdateTenantModuleFields(tenantId), time);
+
+							//Last index
+							if (i == tenantIds.Count - 1)
+								SentrySdk.CaptureMessage("All tenants have been updated successfully.", SentryLevel.Info);
 						}
 					}
 				}
 			}
 		}
 
-		public async Task UpdateTenantModuleFieldsAndFields(int tenantId, JObject result)
+		[QueueCustom]
+		public async Task UpdateTenantModuleFields(int tenantId)
 		{
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
@@ -722,15 +756,15 @@ namespace PrimeApps.Admin.Helpers
 					{
 						_currentUser = new CurrentUser { PreviewMode = "tenant", TenantId = tenantId, UserId = 1 };
 						moduleRepository.CurrentUser = settingRepository.CurrentUser = _currentUser;
-						await UpdateSetting(settingRepository, result);
-						await UpdateModules(moduleRepository, result);
+						await UpdateSetting(settingRepository);
+						await UpdateModules(moduleRepository);
 					}
 					tenantDbContext.Database.CloseConnection();
 				}
 			}
 		}
 
-		public async Task<ICollection<Module>> UpdateModules(ModuleRepository moduleRepository, JObject result)
+		public async Task<ICollection<Module>> UpdateModules(ModuleRepository moduleRepository)
 		{
 			var modules = await moduleRepository.GetAll();
 			foreach (var module in modules)
@@ -738,81 +772,51 @@ namespace PrimeApps.Admin.Helpers
 				var fiedlIsExist = module.Fields.SingleOrDefault(q => q.Name == "is_sample");
 				if (fiedlIsExist == null)
 				{
-					try
+
+					module.Fields.Add(new Field
 					{
-						module.Fields.Add(new Field
+						Name = "is_sample",
+						DataType = DataType.Checkbox,
+						Deleted = false,
+						DisplayDetail = true,
+						DisplayForm = true,
+						DisplayList = true,
+						Editable = true,
+						InlineEdit = true,
+						LabelEn = "Sample Data",
+						LabelTr = "Örnek Kayıt",
+						Order = (short)(module.Fields.Count + 1),
+						Primary = false,
+						Section = "system",
+						SectionColumn = 2,
+						ShowLabel = true,
+						ShowOnlyEdit = false,
+						SystemType = SystemType.Custom,
+						Validation = new FieldValidation
 						{
-							Name = "is_sample",
-							DataType = DataType.Checkbox,
-							Deleted = false,
-							DisplayDetail = true,
-							DisplayForm = true,
-							DisplayList = true,
-							Editable = true,
-							InlineEdit = true,
-							LabelEn = "Sample Data",
-							LabelTr = "Örnek Kayıt",
-							Order = (short)(module.Fields.Count + 1),
-							Primary = false,
-							Section = "system",
-							SectionColumn = 2,
-							ShowLabel = true,
-							ShowOnlyEdit = false,
-							SystemType = SystemType.Custom,
-							Validation = new FieldValidation
-							{
-								Readonly = false,
-								Required = false
-							}
-						});
-						await moduleRepository.Update(module);
-					}
-					catch (Exception e)
-					{
-						if (result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"] == null)
-							result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"] = new JObject();
-						
-						if (result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"]["is_sample"]  == null)
-							result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"]["is_sample"]  = new JObject();
-						
-						result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"]["is_sample"][module.Name] = e.Message;
-					}
-					
+							Readonly = false,
+							Required = false
+						}
+					});
+					await moduleRepository.Update(module);
 				}
 			}
-			
-			if(result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"] == null || result[$"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}"]["is_sample"] == null)
-				result["success"]["is_sample"] += $"{moduleRepository.CurrentUser.PreviewMode}{moduleRepository.CurrentUser.TenantId}," ;
 
 			return modules;
 		}
 
-		public async Task UpdateSetting(SettingRepository settingRepository, JObject result)
+		public async Task UpdateSetting(SettingRepository settingRepository)
 		{
-			try
+			var settings = await settingRepository.GetAllSettings();
+			var settingsPasswordList = settings.Where(r => r.Key == "password");
+			foreach (var settingPassword in settingsPasswordList)
 			{
-				var settings = await settingRepository.GetAllSettings();
-				var settingsPasswordList = settings.Where(r => r.Key == "password");
-				foreach (var settingPassword in settingsPasswordList)
-				{
-					if(string.IsNullOrEmpty(settingPassword.Value))
-						continue;
-				
-					settingPassword.Value = CryptoHelper.Encrypt(settingPassword.Value);
-					await settingRepository.Update(settingPassword);
-				}
+				if (string.IsNullOrEmpty(settingPassword.Value))
+					continue;
+
+				settingPassword.Value = CryptoHelper.Encrypt(settingPassword.Value);
+				await settingRepository.Update(settingPassword);
 			}
-			catch (Exception e)
-			{
-				if (result[$"{settingRepository.CurrentUser.PreviewMode}{settingRepository.CurrentUser.TenantId}"] == null)
-					result[$"{settingRepository.CurrentUser.PreviewMode}{settingRepository.CurrentUser.TenantId}"] = new JObject();
-				
-				result[$"{settingRepository.CurrentUser.PreviewMode}{settingRepository.CurrentUser.TenantId}"]["encrypt"] = e.Message;
-			}
-			
-			if(result[$"{settingRepository.CurrentUser.PreviewMode}{settingRepository.CurrentUser.TenantId}"] == null || result[$"{settingRepository.CurrentUser.PreviewMode}{settingRepository.CurrentUser.TenantId}"]["encrypt"] == null)
-				result["success"]["encrypt"] += $"{settingRepository.CurrentUser.PreviewMode}{settingRepository.CurrentUser.TenantId}," ;
-			
 		}
 	}
 }
