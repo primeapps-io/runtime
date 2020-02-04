@@ -90,7 +90,7 @@ namespace PrimeApps.Model.Helpers
 				 * for exp: ["mName":[{name:"lookupName",lookup_type:"LookupModuleName"},{}]]
 				 * **/
                 var selectedModules = (JArray)packageModel["selectedModules"];
-                /** it likes  selectedModules, but it has difrent modules and modules' related lookups
+                /** it likes  selectedModules, but it has different modules and modules' related lookups
 				 * That modules weren't chose
 				 * All modules and related lookups = {"m1":[{}..],"m2":[{}]}
 				 * selectedModules = ["m2":{}...], modulesRelations={"m1":[]...}
@@ -103,22 +103,24 @@ namespace PrimeApps.Model.Helpers
                 var deleteQueriesForModules = new List<string>();
                 JArray allModules = new JArray();
                 var allModulesRelations = (JObject)packageModel["allModulesRelations"];
-                foreach (var property in allModulesRelations)
-                    allModules.Add(new JObject() { { property.Key, property.Value } });
+                
+                foreach (var (key, value) in allModulesRelations)
+                    allModules.Add(new JObject() { { key, value } });
 
-
-                if (protectModulesType == PackageModulesType.DontTransfer)
-                    await ControlPropertyOfArray(selectedModules, allModules, modulesRelations, updatedList, recordRepository, moduleRepository, scriptPath, truncateList, deleteList, protectModulesType, deleteQueriesForModules);
-
-                else if (protectModulesType == PackageModulesType.SelectedModules)
+                if (protectModulesType == PackageModulesType.SelectedModules)
                 {
                     //selectedModules
-                    foreach (JObject selectedModule in selectedModules)
+                    foreach (var jToken in selectedModules)
+                    {
+                        var selectedModule = (JObject) jToken;
                         await ControlPropertyOfArray(selectedModules, allModules, selectedModule, updatedList, recordRepository, moduleRepository, scriptPath, truncateList, deleteList, protectModulesType, deleteQueriesForModules);
+                    }
 
-                    //modulesRelations
-                    await ControlPropertyOfArray(selectedModules, allModules, modulesRelations, updatedList, recordRepository, moduleRepository, scriptPath, truncateList, deleteList, PackageModulesType.DontTransfer, deleteQueriesForModules);
                 }
+                
+                if (protectModulesType == PackageModulesType.DontTransfer || protectModulesType == PackageModulesType.SelectedModules)
+                    await ControlPropertyOfArray(selectedModules, allModules, modulesRelations, updatedList, recordRepository, moduleRepository, scriptPath, truncateList, deleteList,  PackageModulesType.DontTransfer, deleteQueriesForModules);
+                
 
                 foreach (var deleteQuery in deleteQueriesForModules)
                     AddScript(scriptPath, deleteQuery);
