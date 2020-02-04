@@ -406,6 +406,7 @@ namespace PrimeApps.App.Helpers
                 return StatusCodes.Status403Forbidden;
             }
 
+            //Check field of record permission 
             var removedFieldsList = new List<string>();
             var operation = record["id"].IsNullOrEmpty() ? OperationType.insert : OperationType.update;
             record = await recordRepository.RecordPermissionControl(module.Name, appUser.Id, record, operation, removedFieldsList, customBulkUpdatePermission);
