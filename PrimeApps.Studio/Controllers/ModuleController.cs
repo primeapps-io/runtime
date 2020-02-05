@@ -245,7 +245,10 @@ namespace PrimeApps.Studio.Controllers
 
             //If there is no changes for dynamic tables then return ok
             if (moduleChanges == null)
+            {
+                var result = await _moduleRepository.Update(moduleEntity);
                 return Ok();
+            }
 
             //Set warehouse database name
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
@@ -273,12 +276,12 @@ namespace PrimeApps.Studio.Controllers
             }
 
             //#3782
-            foreach (var deletedField in moduleChanges.FieldsDeleted.Where(deletedField => deletedField.Validation.Unique != null && (bool) deletedField.Validation.Unique))
+            foreach (var deletedField in moduleChanges.FieldsDeleted.Where(deletedField => deletedField.Validation.Unique != null && (bool)deletedField.Validation.Unique))
             {
                 deletedField.UniqueCombine = null;
                 deletedField.Validation.Unique = false;
             }
-            
+
             await _moduleRepository.Update(moduleEntity);
 
             //Delete View Fields
