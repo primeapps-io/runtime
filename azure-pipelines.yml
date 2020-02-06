@@ -1,0 +1,38 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: Docker@2
+  displayName: 'Docker Hub - Logout'
+  inputs:
+    containerRegistry: 'PrimeApps - Docker Hub'
+    command: logout
+
+- task: Docker@2
+  displayName: 'Build and Push Image'
+  inputs:
+    containerRegistry: 'PrimeApps - Docker Hub'
+    repository: 'primeapps/primeapps-app'
+    Dockerfile: Dockerfile
+    tags: |
+     $(Build.BuildNumber)
+     latest
+
+- bash: |
+   docker rmi -f $(docker images | grep $(Build.BuildNumber)-centos | awk '{print $3}')
+   
+   docker image prune -f
+  displayName: 'Docker Image Cleanup'
+
+
