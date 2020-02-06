@@ -118,9 +118,9 @@ namespace PrimeApps.App.Helpers
 
         public async Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, ITagRepository tagRepository, ISettingRepository settingRepository, IRecordRepository recordRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null, bool customBulkUpdatePermission = false)
         {
-            //TODO: Validate metadata
-            //TODO: Profile permission check
-            var operationUpdate = !record["id"].IsNullOrEmpty();
+			//TODO: Validate metadata
+			//TODO: Profile permission check
+			var operationUpdate = !record["id"].IsNullOrEmpty();
             var picklistItemIds = new List<int>();
             var recordNew = new JObject();
 
@@ -472,9 +472,9 @@ namespace PrimeApps.App.Helpers
                     }
                 }
             }
-
-            return StatusCodes.Status200OK;
-        }
+			
+			return StatusCodes.Status200OK;
+		}
 
         public async Task<int> BeforeDelete(Module module, JObject record, UserItem appUser, IProcessRepository processRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, ModelStateDictionary modelState, Warehouse warehouse)
         {
