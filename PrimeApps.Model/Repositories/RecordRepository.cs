@@ -46,7 +46,7 @@ namespace PrimeApps.Model.Repositories
             var record = data.IsNullOrEmpty() ? new JObject() : (JObject)data;
 
             if (profileBasedEnabled && module.Name != "users" && module.Name != "profiles" && module.Name != "roles")
-                record = await RecordPermissionControl(module.Name, CurrentUser.UserId, record, operation);
+                await RecordPermissionControl(module.Name, CurrentUser.UserId, record, operation);
 
             if (!record.IsNullOrEmpty())
             {
@@ -641,13 +641,15 @@ namespace PrimeApps.Model.Repositories
         }
 
         #region Profile based permission controls for records 
-        List<string> removedFields = new List<string>();
+        List<string> removedFieldList = new List<string>();
 
-        public async Task<JObject> RecordPermissionControl(string moduleName, int userId, JObject record, OperationType operation, List<string> removedFields = null)
+        public async Task<JObject> RecordPermissionControl(string moduleName, int userId, JObject record, OperationType operation, List<string> removedFields = null, bool customBulkUpdatePermission = false)
         {
             if (record.IsNullOrEmpty())
                 return null;
 
+            removedFieldList = new List<string>();
+            removedFields = removedFields == null ? new List<string>() : removedFields;
 
             var user = await DbContext.Users
             .Include(q => q.Profile)
@@ -670,33 +672,33 @@ namespace PrimeApps.Model.Repositories
 
             switch (operation)
             {
-                ////case OperationType.insert:
-                ////    if (modulePermission == null)
-                ////        return null;
-                ////    else
-                ////    {
-                ////        record = SectionPermission(module, record, user, operation);
-                ////        //record = await RelationModulePermission(module, record, user, operation);
-                ////        record = await FieldPermission(module, record, user, operation);
-                ////        removedFields = this.removedFields;
+                case OperationType.insert:
+                    if (modulePermission == null)
+                        return null;
+                    else
+                    {
+                        record = SectionPermission(module, record, user, operation);
+                        //record = await RelationModulePermission(module, record, user, operation);
+                        record = await FieldPermission(module, record, user, operation);
+                        removedFields.AddRange(removedFieldList);
 
-                ////        return record;
-                ////    }
-                ////case OperationType.update:
-                ////    if (isCustomSharePermission)
-                ////        return record;
+                        return record;
+                    }
+                case OperationType.update:
+                    if (isCustomSharePermission || customBulkUpdatePermission)
+                        return record;
 
-                ////    if (modulePermission == null)
-                ////        return null;
-                ////    else
-                ////    {
-                ////        record = SectionPermission(module, record, user, operation);
-                ////        record = await RelationModulePermission(module, record, user, operation);
-                ////        record = await FieldPermission(module, record, user, operation); 
-                ////        removedFields = this.removedFields;
+                    if (modulePermission == null)
+                        return null;
+                    else
+                    {
+                        record = SectionPermission(module, record, user, operation);
+                        record = await RelationModulePermission(module, record, user, operation);
+                        record = await FieldPermission(module, record, user, operation);
+                        removedFields.AddRange(removedFieldList);
 
-                ////        return record;
-                ////    }
+                        return record;
+                    }
                 case OperationType.read:
                     if (isCustomSharePermission)
                         return record;
@@ -989,7 +991,7 @@ namespace PrimeApps.Model.Repositories
                 {
                     if (prop.Key.StartsWith(key))
                     {
-                        removedFields.Add(prop.Key);
+                        removedFieldList.Add(prop.Key);
                         newRecord.Remove(prop.Key);
                     }
                 }
@@ -1003,7 +1005,7 @@ namespace PrimeApps.Model.Repositories
 
                     if (result != null)
                     {
-                        removedFields.Add(field);
+                        removedFieldList.Add(field);
                         newRecord.Remove(field);
                     }
                 }
