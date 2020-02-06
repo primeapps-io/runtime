@@ -46,7 +46,7 @@ namespace PrimeApps.Model.Repositories
             var record = data.IsNullOrEmpty() ? new JObject() : (JObject)data;
 
             if (profileBasedEnabled && module.Name != "users" && module.Name != "profiles" && module.Name != "roles")
-                record = await RecordPermissionControl(module.Name, CurrentUser.UserId, record, operation);
+                await RecordPermissionControl(module.Name, CurrentUser.UserId, record, operation);
 
             if (!record.IsNullOrEmpty())
             {
