@@ -21,7 +21,7 @@ angular.module('primeapps')
 
 					$http.post(config.apiUrl + 'User/MyAccount', {})
 						.then(function (responseAccount) {
-							if (responseAccount.status != 200 || !responseAccount.data) {
+							if (responseAccount.status !== 200 || !responseAccount.data) {
 								clearAuthCache();
 								if (responseAccount.data === null) {
 									deferred.resolve(401);
@@ -49,35 +49,35 @@ angular.module('primeapps')
 							var validApp = true;
 
 							if (host.indexOf('localhost') < 0) {
-								if (host.indexOf('crm.ofisim.com') > -1 && userAppId != 1) {
+								if (host.indexOf('crm.ofisim.com') > -1 && userAppId !== 1) {
 									validApp = false;
-								} else if (host === 'test.ofisim.com' && userAppId != 1) {
+								} else if (host === 'test.ofisim.com' && userAppId !== 1) {
 									validApp = false;
-								} else if (host === 'dev.ofisim.com' && userAppId != 1) {
+								} else if (host === 'dev.ofisim.com' && userAppId !== 1) {
 									validApp = false;
-								} else if (host.indexOf('kobi.ofisim.com') > -1 && userAppId != 2) {
+								} else if (host.indexOf('kobi.ofisim.com') > -1 && userAppId !== 2) {
 									validApp = false;
-								} else if (host.indexOf('kobi-test.ofisim.com') > -1 && userAppId != 2) {
+								} else if (host.indexOf('kobi-test.ofisim.com') > -1 && userAppId !== 2) {
 									validApp = false;
-								} else if (host.indexOf('asistan.ofisim.com') > -1 && userAppId != 3) {
+								} else if (host.indexOf('asistan.ofisim.com') > -1 && userAppId !== 3) {
 									validApp = false;
-								} else if (host.indexOf('asistan-test.ofisim.com') > -1 && userAppId != 3) {
+								} else if (host.indexOf('asistan-test.ofisim.com') > -1 && userAppId !== 3) {
 									validApp = false;
-								} else if (host.indexOf('ik.ofisim.com') > -1 && userAppId != 4) {
+								} else if (host.indexOf('ik.ofisim.com') > -1 && userAppId !== 4) {
 									validApp = false;
-								} else if (host.indexOf('ik-test.ofisim.com') > -1 && userAppId != 4) {
+								} else if (host.indexOf('ik-test.ofisim.com') > -1 && userAppId !== 4) {
 									validApp = false;
-								} else if (host.indexOf('ik-dev.ofisim.com') > -1 && userAppId != 4) {
+								} else if (host.indexOf('ik-dev.ofisim.com') > -1 && userAppId !== 4) {
 									validApp = false;
-								} else if (host.indexOf('hr.ofisim.com') > -1 && userAppId != 8) {
+								} else if (host.indexOf('hr.ofisim.com') > -1 && userAppId !== 8) {
 									validApp = false;
-								} else if (host.indexOf('hr-test.ofisim.com') > -1 && userAppId != 8) {
+								} else if (host.indexOf('hr-test.ofisim.com') > -1 && userAppId !== 8) {
 									validApp = false;
-								} else if (host.indexOf('hr-dev.ofisim.com') > -1 && userAppId != 8) {
+								} else if (host.indexOf('hr-dev.ofisim.com') > -1 && userAppId !== 8) {
 									validApp = false;
-								} else if (host.indexOf('cagri.ofisim.com') > -1 && userAppId != 5) {
+								} else if (host.indexOf('cagri.ofisim.com') > -1 && userAppId !== 5) {
 									validApp = false;
-								} else if (host.indexOf('cagri-test.ofisim.com') > -1 && userAppId != 5) {
+								} else if (host.indexOf('cagri-test.ofisim.com') > -1 && userAppId !== 5) {
 									validApp = false;
 								}
 							}
@@ -88,7 +88,7 @@ angular.module('primeapps')
 							}
 
 							var promises = [];
-							promises.push($http.get(config.apiUrl + 'module/get_all'));
+							//promises.push($http.get(config.apiUrl + 'module/get_all'));
 							promises.push($http.get(config.apiUrl + 'messaging/get_config'));
 							promises.push($http.get(config.apiUrl + 'User/get_all'));
 							promises.push($http.get(config.apiUrl + 'Profile/GetAllBasic'));
@@ -106,35 +106,35 @@ angular.module('primeapps')
 							$q.all(promises)
 								.then(function (response) {
 									if (response.length < 6
-										|| response[0].status != 200 || response[1].status != 200 || response[2].status != 200 || response[3].status != 200 || response[4].status != 200 || response[5].status != 200
-										|| !response[0].data || !response[1].data || !response[2].data || !response[3].data || !response[4].data) {
+										|| response[0].status !== 200 || response[1].status !== 200 || response[2].status !== 200 || response[3].status !== 200 || response[4].status !== 200
+										|| !response[0].data || !response[1].data || !response[2].data || !response[3].data) {
 										clearAuthCache();
 										deferred.resolve(false);
 										return deferred.promise;
 									}
 
 									var isDemo = responseAccount.data.user.isDemo || false;
-									var account = responseAccount.data;
+									var myAccount = responseAccount.data;
 
-									var modules = !isDemo ? response[0].data : $filter('filter')(response[0].data, function (value) {
-										return value.created_by_id == account.user.id || value.system_type == 'system';
+									var modules = !isDemo ? account.modules : $filter('filter')(account.modules, function (value) {
+										return value.created_by_id === myAccount.user.id || value.system_type === 'system';
 									}, true);
 
-									var messaging = response[1].data;
+									var messaging = response[0].data;
 
-									var users = !isDemo ? response[2].data : $filter('filter')(response[2].data, function (value) {
-										return value.id == account.user.id;
+									var users = !isDemo ? response[1].data : $filter('filter')(response[1].data, function (value) {
+										return value.id === myAccount.user.id;
 									}, true);
 
-									var profiles = !isDemo ? response[3].data : $filter('filter')(response[3].data, function (value) {
-										return value.created_by_id == account.user.id || value.is_persistent === true;
+									var profiles = !isDemo ? response[2].data : $filter('filter')(response[2].data, function (value) {
+										return value.created_by_id === myAccount.user.id || value.is_persistent === true;
 									}, true);
 
-									var moduleSettings = response[4].data;
-									var phoneSettings = response[5].data;
-									var userSettings = response[11].data;
+									var moduleSettings = response[3].data;
+									var phoneSettings = response[4].data;
+									var userSettings = response[10].data;
 
-									if (account.instances.length < 1) {
+									if (myAccount.instances.length < 1) {
 										$state.go('join');
 										return;
 									}
@@ -146,30 +146,30 @@ angular.module('primeapps')
 
 									for (var moduleKey = modules.length - 1; moduleKey >= 0; moduleKey--) {
 										for (var fieldKey = modules[moduleKey].fields.length - 1; fieldKey >= 0; fieldKey--) {
-											if (modules[moduleKey].fields[fieldKey].data_type == "lookup"
-												&& modules[moduleKey].fields[fieldKey].lookup_type != "users"
-												&& modules[moduleKey].fields[fieldKey].lookup_type != "profiles"
-												&& modules[moduleKey].fields[fieldKey].lookup_type != "roles"
-												&& modules[moduleKey].fields[fieldKey].lookup_type != "relation"
+											if (modules[moduleKey].fields[fieldKey].data_type === "lookup"
+												&& modules[moduleKey].fields[fieldKey].lookup_type !== "users"
+												&& modules[moduleKey].fields[fieldKey].lookup_type !== "profiles"
+												&& modules[moduleKey].fields[fieldKey].lookup_type !== "roles"
+												&& modules[moduleKey].fields[fieldKey].lookup_type !== "relation"
 												&& activeModuleNames.indexOf(modules[moduleKey].fields[fieldKey].lookup_type) === -1)
 												modules[moduleKey].fields.splice(fieldKey, 1);
 										}
 									}
 									//697 End
 
-									$rootScope.user = account.user;
-									$rootScope.workgroups = account.instances;
-									$rootScope.multiTenant = account.apps;
+									$rootScope.user = myAccount.user;
+									$rootScope.workgroups = myAccount.instances;
+									$rootScope.multiTenant = myAccount.apps;
 									var workgroupId = $localStorage.read('Workgroup');
-									$rootScope.workgroup = account.instances[0];
+									$rootScope.workgroup = myAccount.instances[0];
 
 									if (workgroupId) {
-										var workgroup = $filter('filter')(account.instances, { instanceID: workgroupId }, true)[0];
+										var workgroup = $filter('filter')(myAccount.instances, { instanceID: workgroupId }, true)[0];
 
 										if (workgroup)
 											$rootScope.workgroup = workgroup;
 									}
-									//config['imageUrl'] = account.imageUrl;
+									//config['imageUrl'] = myAccount.imageUrl;
 									config['imageUrl'] = blobUrl + '/';
 									config['storage_host'] = blobUrl + '/';
 
@@ -186,9 +186,9 @@ angular.module('primeapps')
 									$rootScope.profiles = profiles;
 									$rootScope.moduleSettings = moduleSettings;
 									$rootScope.system = {};
-									$rootScope.approvalProcesses = response[6].data;
-									$rootScope.helpPageFirstScreen = response[9].data;
-									var customSettings = response[12].data;
+									$rootScope.approvalProcesses = response[5].data;
+									$rootScope.helpPageFirstScreen = response[8].data;
+									var customSettings = response[11].data;
 
 									$rootScope.user.settings = [];
 									for (var i = 0; i < userSettings.length; i++) {
@@ -254,20 +254,20 @@ angular.module('primeapps')
 									//custom menü
 									$rootScope.customMenu = false;
 									// var menu = response[10].data;
-									var menu = $filter('filter')(response[10].data, { deleted: false }, true);
+									var menu = $filter('filter')(response[9].data, { deleted: false }, true);
 									if (menu.length > 0) {
 										$rootScope.customMenu = true;
 										$rootScope.menu = $filter('orderBy')(menu, 'order', false);
 									}
 
 									//custom profile permissions
-									var profilePermissions = response[13].data;
+									var profilePermissions = response[12].data;
 									if (profilePermissions) {
 										$rootScope.customProfilePermissions = JSON.parse(profilePermissions.value).profilePermissions;
 									}
 
 									//module profile settings
-									var profileSettings = response[7].data;
+									var profileSettings = response[6].data;
 									if (profileSettings.length > 0) {
 										for (var j = 0; j < profileSettings.length; j++) {
 											var profileSetting = profileSettings[j];
@@ -289,7 +289,7 @@ angular.module('primeapps')
 															}
 
 															if (!customMenuItem)
-																var customMenuItem = {};
+																customMenuItem = {};
 
 															customMenuItem.label_tr = profileSetting.label_tr_plural;
 															customMenuItem.label_en = profileSetting.label_en_plural;
@@ -410,7 +410,7 @@ angular.module('primeapps')
 										//getUserSpecific sipAccount Info
 										if (phoneSettings.sipUsers) {
 											var sipData = $filter('filter')(phoneSettings.sipUsers, {
-												userId: account.user.id.toString(),
+												userId: myAccount.user.id.toString(),
 												isActive: 'true'
 											}, true)[0];
 											if (sipData) {
@@ -527,13 +527,13 @@ angular.module('primeapps')
                                         /*
 										* Check branch mode is available.
 										* */
-										var branchSettings = $filter('filter')(response[12].data, { key: 'branch' }, true)[0];
+										var branchSettings = $filter('filter')(response[11].data, { key: 'branch' }, true)[0];
 										$rootScope.branchAvailable = branchSettings ? branchSettings.value === 't' : undefined;
 
 										if ($rootScope.branchAvailable && $rootScope.isEmployee) {
 											var calisanRequest = {
 												filters: [
-													{ field: $rootScope.newEpostaFieldName ? $rootScope.newEpostaFieldName : 'e_posta', operator: 'is', value: account.user.email, no: 1 },
+													{ field: $rootScope.newEpostaFieldName ? $rootScope.newEpostaFieldName : 'e_posta', operator: 'is', value: myAccount.user.email, no: 1 },
 													{ field: 'deleted', operator: 'equals', value: false, no: 2 }
 												],
 												limit: 1
@@ -545,7 +545,7 @@ angular.module('primeapps')
 													if (calisan.length > 0) {
 														$rootScope.user.calisanId = calisan[0]['id'];
 														$rootScope.user.branchId = calisan[0]['branch'];
-													} else if (account.user.profile.has_admin_rights) {
+													} else if (myAccount.user.profile.has_admin_rights) {
 														$rootScope.user.branchId = 1;
 													}
 												});
@@ -640,7 +640,7 @@ angular.module('primeapps')
 					fieldLabelEn.order = 2;
 					fieldLabelEn.section = 1;
 					fieldLabelEn.section_column = 1;
-					fieldLabelEn.primary = $rootScope.user.tenant_language == "en";
+					fieldLabelEn.primary = $rootScope.user.tenant_language === "tr";
 					fieldLabelEn.inline_edit = false;
 					fieldLabelEn.label_en = 'Name English';
 					fieldLabelEn.label_tr = 'İsim İngilizce';
@@ -656,7 +656,7 @@ angular.module('primeapps')
 					fieldLabelTr.order = 2;
 					fieldLabelTr.section = 1;
 					fieldLabelTr.section_column = 1;
-					fieldLabelTr.primary = $rootScope.user.tenant_language == "tr";
+					fieldLabelTr.primary = $rootScope.user.tenant_language === "tr";
 					fieldLabelTr.inline_edit = false;
 					fieldLabelTr.label_en = 'Name Turkish';
 					fieldLabelTr.label_tr = 'İsim Türkçe';
@@ -875,7 +875,7 @@ angular.module('primeapps')
 						field.sectionObj = $filter('filter')(module.sections, { name: field.section }, true)[0];
 
 						if (field.data_type === 'lookup') {
-							if (field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && field.lookup_type != 'relation') {
+							if (field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles' && field.lookup_type !== 'relation') {
 								var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
 
 								if (!lookupModule)
@@ -900,13 +900,13 @@ angular.module('primeapps')
 								field.operators.push(operators.not_empty);
 
 								if (field.lookup_type === 'users') {
-									var lookupModule = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
+									lookupModule = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
 									field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
 								} else if (field.lookup_type === 'profiles') {
-									var lookupModule = $filter('filter')($rootScope.modules, { name: 'profiles' }, true)[0];
+									lookupModule = $filter('filter')($rootScope.modules, { name: 'profiles' }, true)[0];
 									field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
 								} else if (field.lookup_type === 'roles') {
-									var lookupModule = $filter('filter')($rootScope.modules, { name: 'roles' }, true)[0];
+									lookupModule = $filter('filter')($rootScope.modules, { name: 'roles' }, true)[0];
 									field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
 								}
 							}
@@ -1049,10 +1049,8 @@ angular.module('primeapps')
 					switch (currency) {
 						case 'TRY':
 							return '\u20ba';
-							break;
 						case 'USD':
 							return '$';
-							break
 					}
 				},
 
