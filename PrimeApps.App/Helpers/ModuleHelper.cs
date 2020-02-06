@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -40,6 +38,8 @@ namespace PrimeApps.App.Helpers
         Task<JObject> GetGlobalConfig(IComponentRepository componentRepository);
         string ReplaceDynamicValues(string value, JObject appConfigs);
         bool IsTrustedUrl(string url, JObject globalConfig);
+        void PermissionCheck(Module module, int userId, IUserRepository userRepository, IModuleRepository moduleRepository);
+        void PermissionCheck(List<Module> modules, int userId, IUserRepository userRepository, IModuleRepository moduleRepository);
     }
 
     public class ModuleHelper : IModuleHelper
@@ -965,6 +965,97 @@ namespace PrimeApps.App.Helpers
             }
 
             return false;
+        }
+
+        public async void PermissionCheck(Module module, int userId, IUserRepository userRepository, IModuleRepository moduleRepository)
+        {
+            var user = await userRepository.GetByIdWithPermission(userId);
+            var moduleFull = await moduleRepository.GetByNameWithPermissions(module.Name);
+
+            var modulePermission = user.Profile.Permissions.Any(x => x.ModuleId == module.Id && x.Read);
+
+            foreach (var section in moduleFull.Sections)
+            {
+                var sectionPermission = section.Permissions.Any(x => x.Type == SectionPermissionType.ReadOnly || x.Type == SectionPermissionType.Full);
+
+                if (!sectionPermission)
+                {
+                    module.Fields.ToList().RemoveAll(x => x.Section == section.Name);
+                    module.Sections.Remove(section);
+                }
+            }
+
+            foreach (var field in moduleFull.Fields)
+            {
+                var fieldPermission = field.Permissions.Any(x => x.Type == FieldPermissionType.ReadOnly || x.Type == FieldPermissionType.Full);
+
+                if (!fieldPermission)
+                    module.Fields.Remove(field);
+            }
+
+            foreach (var rel in moduleFull.Relations)
+            {
+                var relModulePermission = user.Profile.Permissions.Any(x => x.ModuleId == rel.ModuleId && x.Read);
+
+                if (!relModulePermission)
+                    module.Relations.Remove(rel);
+            }
+
+            foreach (var dep in moduleFull.Dependencies)
+            {
+                var relModulePermission = user.Profile.Permissions.Any(x => x.ModuleId == dep.ModuleId && x.Read);
+
+                if (!relModulePermission)
+                    module.Dependencies.Remove(dep);
+            }
+
+        }
+
+        public async void PermissionCheck(List<Module> modules, int userId, IUserRepository userRepository, IModuleRepository moduleRepository)
+        {
+            var user = await userRepository.GetByIdWithPermission(userId);
+
+            foreach (var module in modules)
+            {
+                var moduleFull = await moduleRepository.GetByNameWithPermissions(module.Name);
+
+                var modulePermission = user.Profile.Permissions.Any(x => x.ModuleId == module.Id && x.Read);
+
+                foreach (var section in moduleFull.Sections)
+                {
+                    var sectionPermission = section.Permissions.Any(x => x.Type == SectionPermissionType.ReadOnly || x.Type == SectionPermissionType.Full);
+
+                    if (!sectionPermission)
+                    {
+                        module.Fields.ToList().RemoveAll(x => x.Section == section.Name);
+                        module.Sections.Remove(section);
+                    }
+                }
+
+                foreach (var field in moduleFull.Fields)
+                {
+                    var fieldPermission = field.Permissions.Any(x => x.Type == FieldPermissionType.ReadOnly || x.Type == FieldPermissionType.Full);
+
+                    if (!fieldPermission)
+                        module.Fields.Remove(field);
+                }
+
+                foreach (var rel in moduleFull.Relations)
+                {
+                    var relModulePermission = user.Profile.Permissions.Any(x => x.ModuleId == rel.ModuleId && x.Read);
+
+                    if (!relModulePermission)
+                        module.Relations.Remove(rel);
+                }
+
+                foreach (var dep in moduleFull.Dependencies)
+                {
+                    var relModulePermission = user.Profile.Permissions.Any(x => x.ModuleId == dep.ModuleId && x.Read);
+
+                    if (!relModulePermission)
+                        module.Dependencies.Remove(dep);
+                }
+            }
         }
     }
 }

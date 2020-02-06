@@ -16,6 +16,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> UpdateAsync(TenantUser user);
         TenantUser GetById(int userId);
         TenantUser GetByIdSync(int userId);
+        Task<TenantUser> GetByIdWithPermission(int userId);
         Task<TenantUser> GetByEmail(string email);
         Task<ICollection<TenantUser>> GetByIds(List<int> userIds);
         Task<ICollection<TenantUser>> GetByProfileIds(List<int> profileIds);
@@ -23,7 +24,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<ICollection<TenantUser>> GetNonSubscribers();
         Task<int> GetTenantUserCount();
         Task<int> Count();
-        IQueryable<TenantUser> Find(); 
+        IQueryable<TenantUser> Find();
         TenantUser GetSubscriber();
     }
 }

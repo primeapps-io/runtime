@@ -27,6 +27,7 @@ namespace PrimeApps.App.Controllers
         private ISettingRepository _settingRepository;
         private IMenuRepository _menuRepository;
         private IComponentRepository _componentRepository;
+        private IUserRepository _userRepository;
         private IConfiguration _configuration;
         private Warehouse _warehouse;
         private IModuleHelper _moduleHelper;
@@ -34,16 +35,19 @@ namespace PrimeApps.App.Controllers
 
         public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository,
             ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository, IComponentRepository componentRepository,
-            IModuleHelper moduleHelper, IConfiguration configuration, IEnvironmentHelper environmentHelper)
+            IUserRepository userRepository, IModuleHelper moduleHelper, IConfiguration configuration, IEnvironmentHelper environmentHelper)
         {
             _moduleRepository = moduleRepository;
             _viewRepository = viewRepository;
             _profileRepository = profileRepository;
             _settingRepository = settingRepository;
-            _warehouse = warehouse;
-            _configuration = configuration;
+            _userRepository = userRepository;
             _menuRepository = menuRepository;
             _componentRepository = componentRepository;
+
+            _warehouse = warehouse;
+            _configuration = configuration;
+
             _moduleHelper = moduleHelper;
             _environmentHelper = environmentHelper;
         }
@@ -69,6 +73,8 @@ namespace PrimeApps.App.Controllers
             if (module == null)
                 return NotFound();
 
+            _moduleHelper.PermissionCheck(module, AppUser.Id, _userRepository, _moduleRepository);
+
             return Ok(module);
         }
 
@@ -79,6 +85,8 @@ namespace PrimeApps.App.Controllers
 
             if (module == null)
                 return NotFound();
+
+            _moduleHelper.PermissionCheck(module, AppUser.Id, _userRepository, _moduleRepository);
 
             return Ok(module);
         }
@@ -98,6 +106,8 @@ namespace PrimeApps.App.Controllers
 
             if (previewMode == "tenant")
                 await _moduleHelper.ProcessScriptFiles(modules, _componentRepository);
+
+            _moduleHelper.PermissionCheck(modules.ToList(), AppUser.Id, _userRepository, _moduleRepository);
 
             return modules;
         }

@@ -429,6 +429,18 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync(x => x.Name == name && !x.Deleted);
         }
 
+        public async Task<Module> GetByNameWithPermissions(string name)
+        {
+            return await DbContext.Modules
+            .Include(x => x.Sections)
+            .ThenInclude(x => x.Permissions)
+            .Include(x => x.Fields)
+            .ThenInclude(x => x.Permissions)
+            .Include(x => x.Relations)
+            .Include(x => x.Dependencies).FirstOrDefaultAsync(x => x.Name == name && !x.Deleted);
+
+        }
+
         private IQueryable<Module> GetModuleFullQuery()
         {
             return DbContext.Modules
