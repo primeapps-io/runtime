@@ -215,8 +215,9 @@ namespace PrimeApps.App.Controllers
             var componentRepository = (IComponentRepository)HttpContext.RequestServices.GetService(typeof(IComponentRepository));
             var scriptRepository = (IScriptRepository)HttpContext.RequestServices.GetService(typeof(IScriptRepository));
             var moduleRepository = (IModuleRepository)HttpContext.RequestServices.GetService(typeof(IModuleRepository));
+            var userRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
 
-            scriptRepository.CurrentUser = componentRepository.CurrentUser = moduleRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
+            scriptRepository.CurrentUser = componentRepository.CurrentUser = moduleRepository.CurrentUser = userRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
 
             var components = await componentRepository.GetByType(ComponentType.Component);
             components = _environmentHelper.DataFilter(components.ToList());
@@ -229,7 +230,7 @@ namespace PrimeApps.App.Controllers
 
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
             var modules = await moduleRepository.GetAll();
-            await _moduleHelper.PermissionCheck(modules, userId, _userRepository, moduleRepository);
+            await _moduleHelper.PermissionCheck(modules, userId, userRepository, moduleRepository);
 
             var modulesJson = JsonConvert.SerializeObject(modules, serializerSettings);
 
@@ -241,19 +242,16 @@ namespace PrimeApps.App.Controllers
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-                using (var userRepository = new UserRepository(databaseContext, _configuration))
+                 
+                var userInfo = await userRepository.GetUserInfoAsync(userId);
+
+                if (userInfo != null)
                 {
-                    userRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
-
-                    var userInfo = await userRepository.GetUserInfoAsync(userId);
-
-                    if (userInfo != null)
-                    {
-                        hasAdminRight = userInfo.profile.HasAdminRights;
-                    }
-                }
+                    hasAdminRight = userInfo.profile.HasAdminRights;
+                } 
 
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+
                 using (var platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))
                 {
                     platformUserRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
