@@ -31,15 +31,17 @@ namespace PrimeApps.App.Controllers
         private IApplicationRepository _applicationRepository;
         private IUserRepository _userRepository;
         private IEnvironmentHelper _environmentHelper;
+        private IModuleHelper _moduleHelper;
 
         public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IApplicationRepository applicationRepository,
-            IUserRepository userRepository, IEnvironmentHelper environmentHelper)
+            IUserRepository userRepository, IEnvironmentHelper environmentHelper, IModuleHelper moduleHelper)
         {
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
             _applicationRepository = applicationRepository;
             _userRepository = userRepository;
             _environmentHelper = environmentHelper;
+            _moduleHelper = moduleHelper;
         }
 
         [Authorize]
@@ -224,9 +226,11 @@ namespace PrimeApps.App.Controllers
 
             var globalSettings = await scriptRepository.GetGlobalSettings();
             globalSettings = _environmentHelper.DataFilter(globalSettings);
-            
+
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
             var modules = await moduleRepository.GetAll();
+            await _moduleHelper.PermissionCheck(modules, userId, _userRepository, moduleRepository);
+
             var modulesJson = JsonConvert.SerializeObject(modules, serializerSettings);
 
             //TODO: add all necessary objects here which are in appService.js getMyAccount method for increase performance
@@ -245,10 +249,10 @@ namespace PrimeApps.App.Controllers
 
                     if (userInfo != null)
                     {
-                         hasAdminRight = userInfo.profile.HasAdminRights; 
-                    }   
+                        hasAdminRight = userInfo.profile.HasAdminRights;
+                    }
                 }
-                
+
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
                 using (var platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))
                 {

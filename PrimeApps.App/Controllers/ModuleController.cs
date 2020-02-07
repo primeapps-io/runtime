@@ -60,6 +60,7 @@ namespace PrimeApps.App.Controllers
             SetCurrentUser(_menuRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_profileRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_settingRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_userRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_componentRepository, PreviewMode, TenantId, AppId);
 
             base.OnActionExecuting(context);
@@ -73,7 +74,7 @@ namespace PrimeApps.App.Controllers
             if (module == null)
                 return NotFound();
 
-            _moduleHelper.PermissionCheck(module, AppUser.Id, _userRepository, _moduleRepository);
+            await _moduleHelper.PermissionCheck(module, AppUser.Id, _userRepository, _moduleRepository);
 
             return Ok(module);
         }
@@ -86,7 +87,7 @@ namespace PrimeApps.App.Controllers
             if (module == null)
                 return NotFound();
 
-            _moduleHelper.PermissionCheck(module, AppUser.Id, _userRepository, _moduleRepository);
+            await _moduleHelper.PermissionCheck(module, AppUser.Id, _userRepository, _moduleRepository);
 
             return Ok(module);
         }
@@ -107,7 +108,7 @@ namespace PrimeApps.App.Controllers
             if (previewMode == "tenant")
                 await _moduleHelper.ProcessScriptFiles(modules, _componentRepository);
 
-            _moduleHelper.PermissionCheck(modules.ToList(), AppUser.Id, _userRepository, _moduleRepository);
+            await _moduleHelper.PermissionCheck(modules, AppUser.Id, _userRepository, _moduleRepository);
 
             return modules;
         }

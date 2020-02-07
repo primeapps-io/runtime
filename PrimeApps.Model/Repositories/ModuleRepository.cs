@@ -437,7 +437,8 @@ namespace PrimeApps.Model.Repositories
             .Include(x => x.Fields)
             .ThenInclude(x => x.Permissions)
             .Include(x => x.Relations)
-            .Include(x => x.Dependencies).FirstOrDefaultAsync(x => x.Name == name && !x.Deleted);
+            .Include(x => x.Dependencies)
+            .FirstOrDefaultAsync(x => x.Name == name && !x.Deleted);
 
         }
 
