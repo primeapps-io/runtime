@@ -1,34 +1,23 @@
 #!/bin/bash
-#Usage: sudo ./install-linux.sh
-
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 cd ..
-user=$(logname)
+
 # Variables
 basePath=$(pwd [-LP])
-filePostgres="https://get.enterprisedb.com/postgresql/postgresql-10.11-2-linux-x64-binaries.tar.gz"
-fileMinio="https://dl.min.io/server/minio/release/linux-amd64/minio"
-fileRedis="https://github.com/iboware/redis-linux/archive/redis-linux.tar.gz"
-
-#For Local Testing
-# filePostgres="/home/iboware/Downloads/postgresql-10.11-2-linux-x64-binaries.tar.gz"
-# fileMinio="/home/iboware/Downloads/minio"
-# fileRedis="/home/iboware/Downloads/redis-linux-redis-linux.tar.gz"
-
-
+filePostgres=${PRIMEAPPS_FILE_POSTGRES:-"http://file.primeapps.io/binaries/linux/postgresql-10.11-2-linux-x64-binaries.tar.gz"}
+fileMinio=${PRIMEAPPS_FILE_MINIO:-"http://file.primeapps.io/binaries/linux/minio"}
+fileRedis=${PRIMEAPPS_FILE_REDIS:-"http://file.primeapps.io/binaries/linux/redis-linux-redis-linux.tar.gz"}
 postgresLocale="en_US.UTF8"
 postgresPath="$basePath/programs/pgsql/bin"
 programsPath="$basePath/programs"
 programsPathEscape="${programsPath//\//\\/}"
 dataPath="$basePath/data"
 dataPathEscape="${dataPath//\//\\/}"
-su_user=$(id -un)
 user=$(logname)
-
 
 # Create programs directory
 mkdir programs
@@ -65,7 +54,6 @@ tar -zxvf redis.tar.gz
 mv redis-linux-redis-linux redis
 chown $user redis
 chmod 770 redis
-
 
 # Init database instances
 cd $postgresPath

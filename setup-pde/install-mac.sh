@@ -8,10 +8,10 @@ cd ..
 
 # Variables
 basePath=$(pwd [-LP])
-filePostgres="http://get.enterprisedb.com/postgresql/postgresql-12.1-1-osx-binaries.zip"
-fileMinio="https://dl.min.io/server/minio/release/darwin-amd64/minio"
-fileRedis="https://github.com/fatihsever/redis-mac/archive/5.0.7.zip"
-fileGitea="https://dl.gitea.io/gitea/1.10.1/gitea-1.10.1-darwin-10.6-amd64"
+filePostgres=${PRIMEAPPS_FILE_POSTGRES:-"http://file.primeapps.io/binaries/mac/postgresql-12.1-1-osx-binaries.zip"}
+fileMinio=${PRIMEAPPS_FILE_MINIO:-"http://file.primeapps.io/binaries/mac/minio"}
+fileRedis=${PRIMEAPPS_FILE_REDIS:-"http://file.primeapps.io/binaries/mac/redis-mac-5.0.7.zip"}
+fileGitea=${PRIMEAPPS_FILE_GITEA:-"http://file.primeapps.io/binaries/mac/gitea-1.10.1-darwin-10.6-amd64"}
 postgresLocale="en_US"
 postgresPath="$basePath/programs/pgsql/bin"
 programsPath="$basePath/programs"
