@@ -6,6 +6,7 @@ YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+cd ..
 user=$(logname)
 # Variables
 basePath=$(pwd [-LP])
@@ -45,11 +46,10 @@ tar -zxvf postgresql.tar.gz
 cd "$basePath/programs"
 mkdir minio
 cd minio
-cp ./minio
-# echo -e "${GREEN}Downloading Minio...${NC}"
-# if [ ! -f "minio" ]; then 
-# curl $fileMinio -L --output minio
-# fi
+echo -e "${GREEN}Downloading Minio...${NC}"
+if [ ! -f "minio" ]; then 
+curl $fileMinio -L --output minio
+fi
 
 chown $user minio
 chmod +x minio
@@ -66,6 +66,7 @@ mv redis-linux-redis-linux redis
 chown $user redis
 chmod 770 redis
 
+
 # Init database instances
 cd $postgresPath
 echo -e "${GREEN}Initializing database instances...${NC}"
@@ -77,7 +78,7 @@ sudo -u $user bash -c "./initdb -D ${basePath}/data/pgsql_pre --no-locale --enco
 # Register database instances
 echo -e "${GREEN}Registering database instances...${NC}"
 
-cp "$basePath/service/postgres-pre.service" postgres-pre.service
+cp "$basePath/setup/service/postgres-pre.service" postgres-pre.service
 sed -i "s/{{DATA}}/${dataPathEscape}/g" postgres-pre.service
 sed -i "s/{{PROGRAMS}}/${programsPathEscape}/g" postgres-pre.service
 sed -i "s/{{USER}}/${user}/g" postgres-pre.service
@@ -113,7 +114,7 @@ mkdir -p $basePath/data/minio_pre/
 chown $user $basePath/data/minio_pre
 chmod u+rxw $basePath/data/minio_pre
 
-cp "$basePath/service/minio-pre.service" minio-pre.service
+cp "$basePath/setup/service/minio-pre.service" minio-pre.service
 sed -i "s/{{DATA}}/$dataPathEscape/g" minio-pre.service
 sed -i "s/{{PROGRAMS}}/$programsPathEscape/g" minio-pre.service
 sed -i "s/{{USER}}/$user/g" minio-pre.service
@@ -125,14 +126,14 @@ systemctl enable minio-pre
 
 # Init cache instance
 echo -e "${GREEN}Initializing cache instances...${NC}"
-cd "$basePath/programs/redis"
+cd "$basePath/programs/redis" 
 
 mkdir -p "$basePath/data/redis_pre"
 cp redis.conf "$basePath/data/redis_pre/redis.conf"
 chown $user $basePath/data/redis_pre
-chmod u+rxw $basePath/data/redis_pre
+chmod 755 $basePath/data/redis_pre
 
-cp "$basePath/service/redis-pre.service" redis-pre.service
+cp "$basePath/setup/service/redis-pre.service" redis-pre.service
 sed -i "s/{{DATA}}/$dataPathEscape/g" redis-pre.service
 sed -i "s/{{PROGRAMS}}/$programsPathEscape/g" redis-pre.service
 sed -i "s/{{USER}}/$user/g" redis-pre.service
@@ -153,6 +154,5 @@ cd "$basePath/data"
 tar -czf pgsql_pre.tar.gz pgsql_pre
 tar -czf minio_pre.tar.gz minio_pre
 tar -czf redis_pre.tar.gz redis_pre
-
 
 echo -e "${BLUE}Completed${NC}"
