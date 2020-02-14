@@ -38,10 +38,13 @@ rm migrator.zip
 # Download Migrator
 echo -e "${GREEN}Downloading Migrator...${NC}"
 curl $fileMigrator -L --output migrator.zip
-unzip migrator.zip
-mv $os-x64/ migrator/
+
+# Extract Migrator
+echo -e "${GREEN}Extracting Migrator...${NC}"
+unzip -q migrator.zip -d migrator
 rm migrator.zip
 
 # Run PRE migrate command
 cd migrator
-./migrator update-pre $connectionString
+echo -e "${GREEN}Running migrate command...${NC}"
+./migrator update-pre "$connectionString"
