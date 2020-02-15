@@ -8,6 +8,7 @@ using PrimeApps.Migrator.Helpers;
 using PrimeApps.Model.Context;
 using System;
 using System.IO;
+using PrimeApps.Model.Helpers;
 using HistoryRepository = PrimeApps.Model.Context.HistoryRepository;
 
 namespace PrimeApps.Migrator
@@ -129,7 +130,25 @@ namespace PrimeApps.Migrator
             }
             finally
             {
-                Console.WriteLine("Results:" + result);
+                if (!result["platform"].IsNullOrEmpty() && !result["platform"]["failed"].IsNullOrEmpty())
+                    result["has_error"] = "true";
+                
+                if (!result["templates"].IsNullOrEmpty() && !result["templates"]["failed"].IsNullOrEmpty())
+                    result["has_error"] = "true";
+                
+                if (!result["tenants"].IsNullOrEmpty() && !result["tenants"]["failed"].IsNullOrEmpty())
+                    result["has_error"] = "true";
+                
+                if (!result["studio"].IsNullOrEmpty() && !result["studio"]["failed"].IsNullOrEmpty())
+                    result["has_error"] = "true";
+                
+                if (!result["templets"].IsNullOrEmpty() && !result["templets"]["failed"].IsNullOrEmpty())
+                    result["has_error"] = "true";
+
+                if (!result["failed"].IsNullOrEmpty())
+                    result["has_error"] = "true";
+                
+                Console.WriteLine(result);
             }
 
             if (exception != null)
