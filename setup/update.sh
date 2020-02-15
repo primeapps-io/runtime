@@ -48,3 +48,5 @@ rm migrator.zip
 cd migrator
 echo -e "${GREEN}Running migrate command...${NC}"
 ./migrator update-pre "$connectionString"
+
+echo -e "${BLUE}Completed${NC}"
