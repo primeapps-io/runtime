@@ -127,6 +127,7 @@ namespace PrimeApps.Migrator
             catch (Exception ex)
             {
                 exception = ex;
+                result["has_error"] = "true";
             }
             finally
             {
