@@ -18,7 +18,6 @@ systemctl disable redis-pre
 rm /etc/systemd/system/postgres-pre.service
 rm /etc/systemd/system/minio-pre.service
 rm /etc/systemd/system/redis-pre.service
-
 systemctl daemon-reload
 systemctl reset-failed
 

@@ -8,10 +8,10 @@ cd ..
 
 # Variables
 basePath=$(pwd -W)
-filePostgres="http://get.enterprisedb.com/postgresql/postgresql-12.1-1-windows-x64-binaries.zip"
-fileMinio="https://dl.min.io/server/minio/release/windows-amd64/minio.exe"
-fileRedis="https://github.com/microsoftarchive/redis/releases/download/win-3.0.504/Redis-x64-3.0.504.zip"
-fileWinSW="https://github.com/kohsuke/winsw/releases/download/winsw-v2.2.0/WinSW.NET4.exe"
+filePostgres=${PRIMEAPPS_FILE_POSTGRES:-"http://file.primeapps.io/binaries/win/postgresql-12.1-1-windows-x64-binaries.zip"}
+fileMinio=${PRIMEAPPS_FILE_MINIO:-"http://file.primeapps.io/binaries/win/minio.exe"}
+fileRedis=${PRIMEAPPS_FILE_REDIS:-"http://file.primeapps.io/binaries/win/Redis-x64-3.0.504.zip"}
+fileWinSW=${PRIMEAPPS_FILE_WINSW:-"http://file.primeapps.io/binaries/win/WinSW.NET4.exe"}
 postgresLocale="en-US"
 postgresPath="$basePath/programs/pgsql/bin"
 hostname=$(hostname)

@@ -8,6 +8,7 @@ using PrimeApps.Migrator.Helpers;
 using PrimeApps.Model.Context;
 using System;
 using System.IO;
+using PrimeApps.Model.Helpers;
 using HistoryRepository = PrimeApps.Model.Context.HistoryRepository;
 
 namespace PrimeApps.Migrator
@@ -83,9 +84,9 @@ namespace PrimeApps.Migrator
                 switch (command)
                 {
                     case "update-tenants":
-                            result = databaseMigration.UpdateTenantOrAppDatabases("tenant", connectionString);
-                            break;
-                        case "update-apps":
+                        result = databaseMigration.UpdateTenantOrAppDatabases("tenant", connectionString);
+                        break;
+                    case "update-apps":
                         result = databaseMigration.UpdateTenantOrAppDatabases("app", connectionString);
                         break;
                     case "update-templates":
@@ -93,9 +94,6 @@ namespace PrimeApps.Migrator
                         break;
                     case "update-templets":
                         result = databaseMigration.UpdateTempletDatabases(connectionString);
-                        break;
-                    case "update-pde-templet":
-                        result = databaseMigration.UpdatePdeTemplet(connectionString);
                         break;
                     case "update-platform":
                         result = databaseMigration.UpdatePlatformDatabase(connectionString);
@@ -129,10 +127,29 @@ namespace PrimeApps.Migrator
             catch (Exception ex)
             {
                 exception = ex;
+                result["has_error"] = "true";
             }
             finally
             {
-                Console.WriteLine("Results:" + result);
+                if (!result["platform"].IsNullOrEmpty() && !result["platform"]["failed"].IsNullOrEmpty())
+                    result["has_error"] = "true";
+                
+                if (!result["templates"].IsNullOrEmpty() && !result["templates"]["failed"].IsNullOrEmpty())
+                    result["has_error"] = "true";
+                
+                if (!result["tenants"].IsNullOrEmpty() && !result["tenants"]["failed"].IsNullOrEmpty())
+                    result["has_error"] = "true";
+                
+                if (!result["studio"].IsNullOrEmpty() && !result["studio"]["failed"].IsNullOrEmpty())
+                    result["has_error"] = "true";
+                
+                if (!result["templets"].IsNullOrEmpty() && !result["templets"]["failed"].IsNullOrEmpty())
+                    result["has_error"] = "true";
+
+                if (!result["failed"].IsNullOrEmpty())
+                    result["has_error"] = "true";
+                
+                Console.WriteLine(result);
             }
 
             if (exception != null)

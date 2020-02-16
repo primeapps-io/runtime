@@ -18,7 +18,6 @@ namespace PrimeApps.Migrator.Helpers
         JObject UpdateTenantOrAppDatabases(string prefix, string connectionString = null);
         JObject UpdateTemplateDatabases(string connectionString = null);
         JObject UpdateTempletDatabases(string connectionString = null);
-        JObject UpdatePdeTemplet(string connectionString = null);
         JObject UpdatePlatformDatabase(string connectionString = null);
         JObject UpdateStudioDatabase(string connectionString = null);
         JObject UpdatePre(string connectionString = null);
@@ -95,7 +94,7 @@ namespace PrimeApps.Migrator.Helpers
                         try
                         {
                             tenantDatabaseContext.Database.Migrate();
-                            
+
                             Postgres.FinalizeTemplateDatabaseUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
 
                             ((JArray)result["successful"]).Add(new JObject { ["name"] = databaseName, ["result"] = "success" });
@@ -147,43 +146,7 @@ namespace PrimeApps.Migrator.Helpers
 
             return result;
         }
-        
-        public JObject UpdatePdeTemplet(string connectionString = null)
-        {
-            var result = new JObject { ["successful"] = new JArray(), ["failed"] = new JArray() };
-            var dbs = Postgres.GetTempletDatabases(_configuration.GetConnectionString("StudioDBConnection"), connectionString);
 
-            foreach (var databaseName in dbs)
-            {
-                Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("StudioDBConnection"), databaseName, connectionString);
-                var optionsBuilder = new DbContextOptionsBuilder<TenantDBContext>();
-                var connString = Postgres.GetConnectionString(_configuration.GetConnectionString("StudioDBConnection"), $"{databaseName}_new", connectionString);
-                optionsBuilder.UseNpgsql(connString, x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, HistoryRepository>();
-
-                using (var tenantDatabaseContext = new TenantDBContext(optionsBuilder.Options, _configuration))
-                {
-                    var pendingMigrations = tenantDatabaseContext.Database.GetPendingMigrations().ToList();
-
-                    if (pendingMigrations.Any())
-                    {
-                        try
-                        {
-                            tenantDatabaseContext.Database.Migrate();
-
-                            Postgres.FinalizeTemplateDatabaseUpgrade(_configuration.GetConnectionString("StudioDBConnection"), databaseName, connectionString);
-
-                            ((JArray)result["successful"]).Add(new JObject { ["name"] = databaseName, ["result"] = "success" });
-                        }
-                        catch (Exception ex)
-                        {
-                            ((JArray)result["failed"]).Add(new JObject { ["name"] = databaseName, ["result"] = ex.Message });
-                        }
-                    }
-                }
-            }
-
-            return result;
-        }
         public JObject UpdatePlatformDatabase(string connectionString = null)
         {
             var result = new JObject { ["successful"] = new JObject(), ["failed"] = new JObject() };

@@ -1,33 +1,23 @@
 #!/bin/bash
-#Usage: sudo ./install-linux.sh
-
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-user=$(logname)
+cd ..
+
 # Variables
 basePath=$(pwd [-LP])
-filePostgres="https://get.enterprisedb.com/postgresql/postgresql-10.11-2-linux-x64-binaries.tar.gz"
-fileMinio="https://dl.min.io/server/minio/release/linux-amd64/minio"
-fileRedis="https://github.com/iboware/redis-linux/archive/redis-linux.tar.gz"
-
-#For Local Testing
-# filePostgres="/home/iboware/Downloads/postgresql-10.11-2-linux-x64-binaries.tar.gz"
-# fileMinio="/home/iboware/Downloads/minio"
-# fileRedis="/home/iboware/Downloads/redis-linux-redis-linux.tar.gz"
-
-
+filePostgres=${PRIMEAPPS_FILE_POSTGRES:-"http://file.primeapps.io/binaries/linux/postgresql-10.11-2-linux-x64-binaries.tar.gz"}
+fileMinio=${PRIMEAPPS_FILE_MINIO:-"http://file.primeapps.io/binaries/linux/minio"}
+fileRedis=${PRIMEAPPS_FILE_REDIS:-"http://file.primeapps.io/binaries/linux/redis-linux-redis-linux.tar.gz"}
 postgresLocale="en_US.UTF8"
 postgresPath="$basePath/programs/pgsql/bin"
 programsPath="$basePath/programs"
 programsPathEscape="${programsPath//\//\\/}"
 dataPath="$basePath/data"
 dataPathEscape="${dataPath//\//\\/}"
-su_user=$(id -un)
 user=$(logname)
-
 
 # Create programs directory
 mkdir programs
@@ -45,11 +35,10 @@ tar -zxvf postgresql.tar.gz
 cd "$basePath/programs"
 mkdir minio
 cd minio
-cp ./minio
-# echo -e "${GREEN}Downloading Minio...${NC}"
-# if [ ! -f "minio" ]; then 
-# curl $fileMinio -L --output minio
-# fi
+echo -e "${GREEN}Downloading Minio...${NC}"
+if [ ! -f "minio" ]; then 
+curl $fileMinio -L --output minio
+fi
 
 chown $user minio
 chmod +x minio
@@ -77,7 +66,7 @@ sudo -u $user bash -c "./initdb -D ${basePath}/data/pgsql_pre --no-locale --enco
 # Register database instances
 echo -e "${GREEN}Registering database instances...${NC}"
 
-cp "$basePath/service/postgres-pre.service" postgres-pre.service
+cp "$basePath/setup/service/postgres-pre.service" postgres-pre.service
 sed -i "s/{{DATA}}/${dataPathEscape}/g" postgres-pre.service
 sed -i "s/{{PROGRAMS}}/${programsPathEscape}/g" postgres-pre.service
 sed -i "s/{{USER}}/${user}/g" postgres-pre.service
@@ -113,7 +102,7 @@ mkdir -p $basePath/data/minio_pre/
 chown $user $basePath/data/minio_pre
 chmod u+rxw $basePath/data/minio_pre
 
-cp "$basePath/service/minio-pre.service" minio-pre.service
+cp "$basePath/setup/service/minio-pre.service" minio-pre.service
 sed -i "s/{{DATA}}/$dataPathEscape/g" minio-pre.service
 sed -i "s/{{PROGRAMS}}/$programsPathEscape/g" minio-pre.service
 sed -i "s/{{USER}}/$user/g" minio-pre.service
@@ -125,14 +114,14 @@ systemctl enable minio-pre
 
 # Init cache instance
 echo -e "${GREEN}Initializing cache instances...${NC}"
-cd "$basePath/programs/redis"
+cd "$basePath/programs/redis" 
 
 mkdir -p "$basePath/data/redis_pre"
 cp redis.conf "$basePath/data/redis_pre/redis.conf"
 chown $user $basePath/data/redis_pre
-chmod u+rxw $basePath/data/redis_pre
+chmod 755 $basePath/data/redis_pre
 
-cp "$basePath/service/redis-pre.service" redis-pre.service
+cp "$basePath/setup/service/redis-pre.service" redis-pre.service
 sed -i "s/{{DATA}}/$dataPathEscape/g" redis-pre.service
 sed -i "s/{{PROGRAMS}}/$programsPathEscape/g" redis-pre.service
 sed -i "s/{{USER}}/$user/g" redis-pre.service
@@ -153,6 +142,5 @@ cd "$basePath/data"
 tar -czf pgsql_pre.tar.gz pgsql_pre
 tar -czf minio_pre.tar.gz minio_pre
 tar -czf redis_pre.tar.gz redis_pre
-
 
 echo -e "${BLUE}Completed${NC}"

@@ -1,0 +1,14 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: primeapps-updater
+  namespace: primeapps
+spec:
+  selector:
+    matchLabels:
+      k8s-app: primeapps-updater
+  template:
+    spec:
+      containers:
+        - name: primeapps-updater
+          image: primeappsadmin/primeapps-updater:IMAGE_TAG
