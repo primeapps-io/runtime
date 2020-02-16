@@ -14,9 +14,9 @@ fileRedis=${PRIMEAPPS_FILE_REDIS:-"http://file.primeapps.io/binaries/mac/redis-m
 postgresLocale="en_US"
 postgresPath="$basePath/programs/pgsql/bin"
 programsPath="$basePath/programs"
-programsPathEscape=${programsPath//\//\\/}
+programsPathEscape="${programsPath//\//\\/}"
 dataPath="$basePath/data"
-dataPathEscape=${dataPath//\//\\/}
+dataPathEscape="${dataPath//\//\\/}"
 user=$(id -un)
 
 # Create programs directory
