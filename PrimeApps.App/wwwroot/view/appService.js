@@ -101,7 +101,7 @@ angular.module('primeapps')
 							promises.push($http.get(config.apiUrl + 'menu/get/' + responseAccount.data.user.profile.id));
 							promises.push($http.get(config.apiUrl + 'settings/get_all/custom?userId=' + responseAccount.data.user.id));
 							promises.push($http.get(config.apiUrl + 'settings/get_all/1'));
-							promises.push($http.get(config.apiUrl + 'settings/get_by_key/1/custom_profile_permissions?userId=' + responseAccount.data.user.id));
+							promises.push($http.get(config.apiUrl + 'settings/get_by_key/1/custom_profile_permissions'));
 
 							$q.all(promises)
 								.then(function (response) {

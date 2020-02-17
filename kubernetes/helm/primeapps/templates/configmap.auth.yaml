@@ -6,6 +6,7 @@ data:
   AuthDBConnection: "server={{.Values.postgresoperator.serverName}}.primeapps.svc.cluster.local;port=5432;username=postgres;password={{.Values.postgresoperator.password}};database=auth;command timeout=0;keepalive=30;maximum pool size=1000;"
   TenantDBConnection: "server={{.Values.postgresoperator.serverName}}.primeapps.svc.cluster.local;port=5432;username=postgres;password={{.Values.postgresoperator.password}};database=prod;command timeout=0;keepalive=30;maximum pool size=1000;"
   PlatformDBConnection: "server={{.Values.postgresoperator.serverName}}.primeapps.svc.cluster.local;port=5432;username=postgres;password={{.Values.postgresoperator.password}};database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
+  RedisConnection: "{{.Release.Name}}-redis-master.primeapps:6379,password={{.Values.redis.password}},defaultDatabase=1,syncTimeout=30000"
   StorageUrl: "https://{{.Values.minio.domain}}"
   StorageAccessKey: "{{.Values.minio.accessKey}}"
   StorageSecretKey: "{{.Values.minio.secretKey}}"  

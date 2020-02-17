@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace PrimeApps.Admin
 {
@@ -19,11 +14,15 @@ namespace PrimeApps.Admin
 
         public static IWebHost BuildWebHost(string[] args)
         {
-            return WebHost.CreateDefaultBuilder(args)
-                .UseSetting("https_port", "444")
+            var hostBuilder = WebHost.CreateDefaultBuilder(args)
+                .UseSetting("https_port", "443")
                 .UseStartup<Startup>()
-                .UseSentry()
-                .Build();
+                .UseSentry();
+
+            if (args.Contains("--run-as-service"))
+                hostBuilder.UseContentRoot(AppContext.BaseDirectory);
+
+            return hostBuilder.Build();
         }
     }
 }

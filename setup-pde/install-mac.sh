@@ -61,7 +61,6 @@ cd $postgresPath
 echo -e "${GREEN}Initializing database instances...${NC}"
 ./initdb -D "$basePath/data/pgsql_pre" --no-locale --encoding=UTF8
 ./initdb -D "$basePath/data/pgsql_pde" --no-locale --encoding=UTF8
-./initdb -D "$basePath/data/pgsql_pre_test" --no-locale --encoding=UTF8
 
 # Register database instances
 echo -e "${GREEN}Registering database instances...${NC}"
@@ -78,20 +77,14 @@ sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pde.plist
 launchctl load postgres-pde.plist
 cp postgres-pde.plist ~/Library/LaunchAgents/
 
-cp "$basePath/setup-pde/plist/postgres-pre-test.plist" postgres-pre-test.plist
-sed -i -e "s/{{DATA}}/$dataPathEscape/" postgres-pre-test.plist
-sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-pre-test.plist
-launchctl load postgres-pre-test.plist
-launchctl start io.primeapps.postgres.pre-test
-cp postgres-pre-test.plist ~/Library/LaunchAgents/
-
-sleep 3 # Sleep 3 seconds for postgres services wakeup
+# Wait Postgres wakeup
+timeout 15 bash -c 'until echo > /dev/tcp/localhost/5433; do sleep 1; done'
+timeout 15 bash -c 'until echo > /dev/tcp/localhost/5434; do sleep 1; done'
 
 # Create postgres role
 echo -e "${GREEN}Creating postgres role for database instances...${NC}"
 ./psql -d postgres -p 5433 -c "CREATE ROLE postgres SUPERUSER CREATEDB CREATEROLE LOGIN REPLICATION BYPASSRLS;"
 ./psql -d postgres -p 5434 -c "CREATE ROLE postgres SUPERUSER CREATEDB CREATEROLE LOGIN REPLICATION BYPASSRLS;"
-./psql -d postgres -p 5435 -c "CREATE ROLE postgres SUPERUSER CREATEDB CREATEROLE LOGIN REPLICATION BYPASSRLS;"
 
 # Create databases
 echo -e "${GREEN}Creating databases...${NC}"
@@ -99,8 +92,6 @@ echo -e "${GREEN}Creating databases...${NC}"
 ./createdb -h localhost -U postgres -p 5433 --template=template0 --encoding=UTF8 --lc-ctype=$postgresLocale --lc-collate=$postgresLocale platform
 ./createdb -h localhost -U postgres -p 5434 --template=template0 --encoding=UTF8 --lc-ctype=$postgresLocale --lc-collate=$postgresLocale studio
 ./createdb -h localhost -U postgres -p 5434 --template=template0 --encoding=UTF8 --lc-ctype=$postgresLocale --lc-collate=$postgresLocale templet0
-./createdb -h localhost -U postgres -p 5435 --template=template0 --encoding=UTF8 --lc-ctype=$postgresLocale --lc-collate=$postgresLocale auth
-./createdb -h localhost -U postgres -p 5435 --template=template0 --encoding=UTF8 --lc-ctype=$postgresLocale --lc-collate=$postgresLocale platform
 
 # Restore databases
 echo -e "${GREEN}Restoring databases...${NC}"
@@ -108,15 +99,10 @@ echo -e "${GREEN}Restoring databases...${NC}"
 ./pg_restore -h localhost -U postgres -p 5433 --no-owner --role=postgres -Fc -d platform "$basePath/database/platform.bak"
 ./pg_restore -h localhost -U postgres -p 5434 --no-owner --role=postgres -Fc -d studio "$basePath/database/studio.bak"
 ./pg_restore -h localhost -U postgres -p 5434 --no-owner --role=postgres -Fc -d templet0 "$basePath/database/templet0.bak"
-./pg_restore -h localhost -U postgres -p 5435 --no-owner --role=postgres -Fc -d auth "$basePath/database/auth.bak"
-./pg_restore -h localhost -U postgres -p 5435 --no-owner --role=postgres -Fc -d platform "$basePath/database/platform.bak"
 
 # Set templet0 db as template
 echo -e "${GREEN}Setting templet0 db as template database...${NC}"
 ./psql -d postgres -h localhost -p 5434 -c "UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'templet0'; UPDATE pg_database SET datallowconn = FALSE WHERE datname = 'templet0';"
-
-# Stop Postgres-PRE-Test, not required for now
-launchctl stop io.primeapps.postgres.pre-test
 
 # Init storage instances
 echo -e "${GREEN}Initializing storage instances...${NC}"
@@ -134,17 +120,6 @@ sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" minio-pde.plist
 launchctl load minio-pde.plist
 cp minio-pde.plist ~/Library/LaunchAgents/
 
-cp "$basePath/setup-pde/plist/minio-pre-test.plist" minio-pre-test.plist
-sed -i -e "s/{{DATA}}/$dataPathEscape/" minio-pre-test.plist
-sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" minio-pre-test.plist
-launchctl load minio-pre-test.plist
-launchctl start io.primeapps.minio.pre-test
-cp minio-pre-test.plist ~/Library/LaunchAgents/
-
-# Stop Minio-PRE-Test, not required for now
-sleep 3 # Sleep 3 seconds for minio wakeup
-launchctl stop io.primeapps.minio.pre-test
-
 # Init cache instance
 echo -e "${GREEN}Initializing cache instances...${NC}"
 cd "$basePath/programs/redis"
@@ -153,10 +128,8 @@ sed -i -e "s/stop-writes-on-bgsave-error yes/stop-writes-on-bgsave-error no/" re
 
 mkdir "$basePath/data/redis_pre"
 mkdir "$basePath/data/redis_pde"
-mkdir "$basePath/data/redis_pre_test"
 cp redis.conf "$basePath/data/redis_pre/redis.conf"
 cp redis.conf "$basePath/data/redis_pde/redis.conf"
-cp redis.conf "$basePath/data/redis_pre_test/redis.conf"
 
 cp "$basePath/setup-pde/plist/redis-pre.plist" redis-pre.plist
 sed -i -e "s/{{DATA}}/$dataPathEscape/" redis-pre.plist
@@ -169,17 +142,6 @@ sed -i -e "s/{{DATA}}/$dataPathEscape/" redis-pde.plist
 sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" redis-pde.plist
 launchctl load redis-pde.plist
 cp redis-pde.plist ~/Library/LaunchAgents/
-
-cp "$basePath/setup-pde/plist/redis-pre-test.plist" redis-pre-test.plist
-sed -i -e "s/{{DATA}}/$dataPathEscape/" redis-pre-test.plist
-sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" redis-pre-test.plist
-launchctl load redis-pre-test.plist
-launchctl start io.primeapps.redis.pre-test
-cp redis-pre-test.plist ~/Library/LaunchAgents/
-
-# Stop Redis-PRE-Test, not required for now
-sleep 3 # Sleep 3 seconds for redis wakeup
-launchctl stop io.primeapps.redis.pre-test
 
 # Init git instance
 echo -e "${GREEN}Creating Gitea database...${NC}"
@@ -260,13 +222,10 @@ echo -e "${GREEN}Compressing data folders...${NC}"
 cd "$basePath/data"
 tar -czf pgsql_pre.tar.gz pgsql_pre
 tar -czf pgsql_pde.tar.gz pgsql_pde
-tar -czf pgsql_pre_test.tar.gz pgsql_pre_test
 tar -czf minio_pre.tar.gz minio_pre
 tar -czf minio_pde.tar.gz minio_pde
-tar -czf minio_pre_test.tar.gz minio_pre_test
 tar -czf redis_pre.tar.gz redis_pre
 tar -czf redis_pde.tar.gz redis_pde
-tar -czf redis_pre_test.tar.gz redis_pre_test
 tar -czf gitea.tar.gz gitea
 
 echo -e "${BLUE}Completed${NC}"
