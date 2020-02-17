@@ -51,6 +51,11 @@ spec:
                 configMapKeyRef:
                   name: {{.Release.Name}}-auth-config
                   key: PlatformDBConnection
+            - name: ConnectionStrings__RedisConnection
+              valueFrom:
+                configMapKeyRef:
+                  name: {{.Release.Name}}-auth-config
+                  key: RedisConnection                  
             - name: AppSettings__StorageUrl
               valueFrom:
                 configMapKeyRef:
