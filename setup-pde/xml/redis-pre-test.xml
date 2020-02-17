@@ -1,9 +1,0 @@
-<service>
-  <id>Redis-PRE-Test</id>
-  <name>Redis-PRE-Test</name>
-  <description>Redis-PRE-Test</description>
-  <executable>redis-server.exe</executable>
-  <arguments>"..\..\data\redis_pre_test\redis.windows.conf" --port 6383</arguments>
-  <logmode>rotate</logmode>
-  <startmode>Manual</startmode>
-</service>

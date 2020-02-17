@@ -61,7 +61,8 @@ sed -i -e "s/{{PROGRAMS}}/$programsPathEscape/" postgres-primeapps.plist
 launchctl load postgres-primeapps.plist
 cp postgres-primeapps.plist ~/Library/LaunchAgents/
 
-sleep 3 # Sleep 3 seconds for postgres services wakeup
+# Wait Postgres wakeup
+timeout 15 bash -c 'until echo > /dev/tcp/localhost/5436; do sleep 1; done'
 
 # Create postgres role
 echo -e "${GREEN}Creating postgres role for database instances...${NC}"

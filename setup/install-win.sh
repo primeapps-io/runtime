@@ -62,6 +62,9 @@ echo -e "${GREEN}Registering database instances...${NC}"
 echo -e "${GREEN}Starting database instances...${NC}"
 net start "Postgres-PrimeApps"
 
+# Wait Postgres wakeup
+timeout 15 bash -c 'until echo > /dev/tcp/localhost/5436; do sleep 1; done'
+
 # Create postgres role
 echo -e "${GREEN}Creating postgres role for database instances...${NC}"
 ./psql -d postgres -p 5436 -c "CREATE ROLE postgres SUPERUSER CREATEDB CREATEROLE LOGIN REPLICATION BYPASSRLS;"

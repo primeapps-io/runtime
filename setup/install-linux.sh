@@ -76,7 +76,8 @@ systemctl daemon-reload
 systemctl start postgres-pre
 systemctl enable postgres-pre
 
-while ! echo exit | nc localhost 5436; do sleep 1; done
+# Wait Postgres wakeup
+timeout 15 bash -c 'until echo > /dev/tcp/localhost/5436; do sleep 1; done'
 
 echo -e "${GREEN}Creating Postgres Role ${NC}"
 # Create postgres role
