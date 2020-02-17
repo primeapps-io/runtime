@@ -15,4 +15,5 @@ SHELL ["/bin/bash", "-c"]
 WORKDIR /root
 COPY --from=publish /migrator migrator/
 COPY ["artifacts/update.sh", "/root"]
+USER root
 RUN chmod +x update.sh
