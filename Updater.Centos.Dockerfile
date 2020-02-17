@@ -14,6 +14,5 @@ FROM registry.centos.org/dotnet/dotnet-22-runtime-centos7 AS base
 SHELL ["/bin/bash", "-c"]
 WORKDIR /root
 COPY --from=publish /migrator migrator/
-
-RUN echo $'#!/bin/bash \ncd migrator \n./migrator update-'${PRIMEAPPS_ENVIRONMENT:-"pre"} > update.sh
+COPY ["artifacts/update.sh", "/root"]
 RUN chmod +x update.sh
