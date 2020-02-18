@@ -19,14 +19,12 @@ rm startup.zip
 
 git clone https://github.com/primeapps-io/pre.git
 
-LATEST_RELEASE=$(curl -L -s -H 'Accept: application/json' https://github.com/primeapps-io/pre/releases/latest)
-LATEST_VERSION=$(echo $LATEST_RELEASE | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/')
-AUTH_URL="https://github.com/primeapps-io/pre/releases/download/$LATEST_VERSION/PrimeApps.Auth.zip"
-APP_URL="https://github.com/primeapps-io/pre/releases/download/$LATEST_VERSION/PrimeApps.App.zip"
-ADMIN_URL="https://github.com/primeapps-io/pre/releases/download/$LATEST_VERSION/PrimeApps.Admin.zip"
-DATABASE_URL="https://github.com/primeapps-io/pre/releases/download/$LATEST_VERSION/database.zip"
-SETUP_URL="https://github.com/primeapps-io/pre/releases/download/$LATEST_VERSION/setup.zip"
-STARTUP_URL="https://github.com/primeapps-io/pre/releases/download/$LATEST_VERSION/startup.zip"
+AUTH_URL="http://file.primeapps.io/pre/PrimeApps.Auth.zip"
+APP_URL="http://file.primeapps.io/pre/PrimeApps.App.zip"
+ADMIN_URL="http://file.primeapps.io/pre/PrimeApps.Admin.zip"
+DATABASE_URL="http://file.primeapps.io/pre/database.zip"
+SETUP_URL="http://file.primeapps.io/pre/setup.zip"
+STARTUP_URL="http://file.primeapps.io/pre/startup.zip"
 
 echo "Downloading $AUTH_URL"
 wget $AUTH_URL
