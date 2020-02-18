@@ -160,7 +160,7 @@ namespace PrimeApps.Model.Helpers
 
                             foreach (var file in files)
                             {
-                                var bucketName = (string) file["path"];
+                                var bucketName = (string)file["path"];
 
                                 if (bucketName.Contains("templates") && bucketName.Contains($"app{appId}"))
                                     bucketName = bucketName.Replace($"app{appId}", dbName);
@@ -199,7 +199,7 @@ namespace PrimeApps.Model.Helpers
             {
                 ErrorHandler.LogError(e, "PublishHelper UpdateTenant method error. AppId:" + appId + ", OrgId:" + orgId + ",dbName:" + dbName + ",version:" + version);
                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + " : \u001b[93m Error - Unhandle exception - Message: " + e.Message + " \u001b[39m" + Environment.NewLine);
-                File.AppendAllText(logPath,"\u001b[31m ********** Update Tenant Failed********** \u001b[39m" + Environment.NewLine);
+                File.AppendAllText(logPath, "\u001b[31m ********** Update Tenant Failed********** \u001b[39m" + Environment.NewLine);
 
                 return false;
             }
@@ -232,7 +232,7 @@ namespace PrimeApps.Model.Helpers
 
             var logFileName = "";
 
-            foreach (var obj in versions.OfType<object>().Select((version, index) => new {version, index}))
+            foreach (var obj in versions.OfType<object>().Select((version, index) => new { version, index }))
             {
                 var version = obj.version;
 
@@ -379,7 +379,7 @@ namespace PrimeApps.Model.Helpers
                         };
                         try
                         {
-                            var response = await httpClient.PostAsync(url,new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
+                            var response = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
 
                             if (!response.IsSuccessStatusCode)
                             {
@@ -545,7 +545,7 @@ namespace PrimeApps.Model.Helpers
 
                                 foreach (var file in files)
                                 {
-                                    var bucketName = (string) file["path"];
+                                    var bucketName = (string)file["path"];
 
                                     if (!await storage.ObjectExists(bucketName, file["unique_name"].ToString()))
                                     {
@@ -581,7 +581,7 @@ namespace PrimeApps.Model.Helpers
                     ErrorHandler.LogError(e, "PublishHelper ApplyVersions method error. AppId: " + app["id"] + " - Version: " + version);
                     releaseList.Last().Status = ReleaseStatus.Failed;
                     releaseList.Last().EndTime = DateTime.Now;
-                    
+
                     if (File.Exists(Path.Combine(rootPath, "packages", databaseName, version.ToString())))
                         Directory.Delete(Path.Combine(rootPath, "packages", databaseName, version.ToString()), true);
 
@@ -680,15 +680,15 @@ namespace PrimeApps.Model.Helpers
             {
                 var dict = new Dictionary<string, string>
                 {
-                    {"grant_type", "password"},
-                    {"username", integrationEmail},
-                    {"password", studioSecret},
-                    {"client_id", clientId},
-                    {"client_secret", clientSecret}
+                    { "grant_type", "password" },
+                    { "username", integrationEmail },
+                    { "password", studioSecret },
+                    { "client_id", clientId },
+                    { "client_secret", clientSecret }
                 };
 
                 var req = new HttpRequestMessage(HttpMethod.Post, authUrl + "/connect/token")
-                    {Content = new FormUrlEncodedContent(dict)};
+                    { Content = new FormUrlEncodedContent(dict) };
                 var res = await httpClient.SendAsync(req);
 
                 if (res.IsSuccessStatusCode)
@@ -730,7 +730,7 @@ namespace PrimeApps.Model.Helpers
                               "', deleted = '" + (bool.Parse(template["deleted"].ToString()) ? "t" : "f") +
                               "', name = '" + template["name"] + "', subject = '" + template["subject"] +
                               "', content = '" + template["content"] + "', language = '" + template["language"] +
-                              "', type = " + (int) template["type"] + ", system_code = '" + template["system_code"] +
+                              "', type = " + (int)template["type"] + ", system_code = '" + template["system_code"] +
                               "', active = '" + (bool.Parse(template["active"].ToString()) ? "t" : "f") +
                               "', settings = '" + template["settings"] + "' WHERE settings->>'id' = '" +
                               settings["id"] + "';";
@@ -741,7 +741,7 @@ namespace PrimeApps.Model.Helpers
                             DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) +
                             "', NULL,'" + (bool.Parse(template["deleted"].ToString()) ? "t" : "f") + "', " + app["id"] +
                             ",'" + template["name"] + "', '" + template["subject"] + "', '" + template["content"] +
-                            "', '" + template["language"] + "', " + (int) template["type"] + ", '" +
+                            "', '" + template["language"] + "', " + (int)template["type"] + ", '" +
                             template["system_code"] + "', '" + (bool.Parse(template["active"].ToString()) ? "t" : "f") +
                             "', '" + template["settings"] + "');";
 
@@ -906,18 +906,16 @@ namespace PrimeApps.Model.Helpers
             var optionsBuilder = new DbContextOptionsBuilder<TenantDBContext>();
             var connString = Postgres.GetConnectionString(configuration.GetConnectionString("TenantDBConnection"), databaseName);
             optionsBuilder.UseNpgsql(connString, x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, HistoryRepository>();
+
             using (var tenantDatabaseContext = new TenantDBContext(optionsBuilder.Options, configuration))
             {
-                var migrator = tenantDatabaseContext.Database.GetService<IMigrator>();
                 var pendingMigrations = tenantDatabaseContext.Database.GetPendingMigrations().ToList();
+
                 if (pendingMigrations.Any())
                 {
                     try
                     {
-                        foreach (var targetMigration in pendingMigrations)
-                        {
-                            migrator.Migrate(targetMigration);
-                        }
+                        tenantDatabaseContext.Database.Migrate();
                     }
                     catch (Exception ex)
                     {
