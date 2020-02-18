@@ -9,9 +9,9 @@ cd ..
 basePath=$(pwd [-LP])
 
 echo -e "${GREEN}Stoping services...${NC}"
-launchctl stop io.primeapps.postgres.pre
-launchctl stop io.primeapps.minio.pre
-launchctl stop io.primeapps.redis.pre
+launchctl stop io.primeapps.postgres
+launchctl stop io.primeapps.minio
+launchctl stop io.primeapps.redis
 
 sleep 3 # Sleep 3 seconds for stop all services
 
@@ -28,8 +28,8 @@ tar -xzf minio_pre.tar.gz minio_pre
 tar -xzf redis_pre.tar.gz redis_pre
 
 echo -e "${GREEN}Starting services...${NC}"
-launchctl start io.primeapps.postgres.pre
-launchctl start io.primeapps.minio.pre
-launchctl start io.primeapps.redis.pre
+launchctl start io.primeapps.postgres
+launchctl start io.primeapps.minio
+launchctl start io.primeapps.redis
 
 echo -e "${BLUE}Completed${NC}"
