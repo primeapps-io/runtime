@@ -174,7 +174,7 @@
         </select>
 
         <tags-input ng-model="params.filters[field.fieldName].value"
-                    display-property="labelStr"
+                    display-property="{{'label_'+ language }}"
                     key-property="id"
                     placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
                     replace-spaces-with-dashes="false"
