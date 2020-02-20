@@ -29,7 +29,8 @@ namespace PrimeApps.Migrator
             // Adding JSON file into IConfiguration.
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddEnvironmentVariables();
 
             Configuration = builder.Build();
 
@@ -87,7 +88,7 @@ namespace PrimeApps.Migrator
                         result = databaseMigration.UpdateTenantOrAppDatabases("tenant", connectionString);
                         break;
                     case "update-apps":
-                        result = databaseMigration.UpdateTenantOrAppDatabases("app", connectionString);
+                        result = databaseMigration.UpdateTenantOrAppDatabases("app", connectionString ?? Configuration.GetConnectionString("StudioDBConnection"));
                         break;
                     case "update-templates":
                         result = databaseMigration.UpdateTemplateDatabases(connectionString);

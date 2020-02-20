@@ -732,6 +732,12 @@ namespace PrimeApps.Admin.Helpers
 								time = TimeSpan.FromMinutes(65);
 							else if (i > 2800 && i <= 3000)
 								time = TimeSpan.FromMinutes(70);
+							else if (i > 3000 && i <= 3200)
+								time = TimeSpan.FromMinutes(75);
+							else if (i > 3200 && i <= 3400)
+								time = TimeSpan.FromMinutes(80);
+							else if (i > 3400)
+								time = TimeSpan.FromMinutes(85);
 
 							BackgroundJob.Schedule<IMigrationHelper>(x => x.UpdateTenantModuleFields(tenantId), time);
 

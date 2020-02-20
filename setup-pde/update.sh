@@ -29,9 +29,14 @@ esac
 done
 
 # Publish Migrator
+cd ../PrimeApps.Migrator
 echo -e "${GREEN}Publishing Migrator...${NC}"
 dotnet publish "PrimeApps.Migrator.csproj" --self-contained false --runtime "$os-x64" -c Debug
 
 # Run PRE migrate command
 cd bin/Debug/netcoreapp2.2/"$os-x64"/publish
+echo -e "${GREEN}Running Migrator (PDE)...${NC}"
 ./migrator update-pde $connectionString
+echo -e "${GREEN}Running Migrator (PRE)...${NC}"
+./migrator update-pre $connectionString
+
