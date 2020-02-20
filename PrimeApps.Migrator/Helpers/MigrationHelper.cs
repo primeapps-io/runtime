@@ -113,13 +113,13 @@ namespace PrimeApps.Migrator.Helpers
         public JObject UpdateTempletDatabases(string connectionString = null)
         {
             var result = new JObject { ["successful"] = new JArray(), ["failed"] = new JArray() };
-            var dbs = Postgres.GetTempletDatabases(_configuration.GetConnectionString("TenantDBConnection"), connectionString);
+            var dbs = Postgres.GetTempletDatabases(_configuration.GetConnectionString("StudioDBConnection"), connectionString);
 
             foreach (var databaseName in dbs)
             {
-                Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
+                Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("StudioDBConnection"), databaseName, connectionString);
                 var optionsBuilder = new DbContextOptionsBuilder<TenantDBContext>();
-                var connString = Postgres.GetConnectionString(_configuration.GetConnectionString("TenantDBConnection"), $"{databaseName}_new", connectionString);
+                var connString = Postgres.GetConnectionString(_configuration.GetConnectionString("StudioDBConnection"), $"{databaseName}_new", connectionString);
                 optionsBuilder.UseNpgsql(connString, x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, HistoryRepository>();
 
                 using (var tenantDatabaseContext = new TenantDBContext(optionsBuilder.Options, _configuration))
@@ -132,7 +132,7 @@ namespace PrimeApps.Migrator.Helpers
                         {
                             tenantDatabaseContext.Database.Migrate();
 
-                            Postgres.FinalizeTemplateDatabaseUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
+                            Postgres.FinalizeTemplateDatabaseUpgrade(_configuration.GetConnectionString("StudioDBConnection"), databaseName, connectionString);
 
                             ((JArray)result["successful"]).Add(new JObject { ["name"] = databaseName, ["result"] = "success" });
                         }
@@ -224,7 +224,7 @@ namespace PrimeApps.Migrator.Helpers
             var resultStudio = UpdateStudioDatabase(connectionString);
             var resultTemplets = UpdateTempletDatabases(connectionString);
             var resultTenants = UpdateTenantOrAppDatabases("app", connectionString);
-            var result = new JObject { ["studio"] = resultStudio, ["templets"] = resultTemplets, ["tenants"] = resultTenants };
+            var result = new JObject { ["studio"] = resultStudio, ["templets"] = resultTemplets, ["apps"] = resultTenants };
 
             return result;
         }

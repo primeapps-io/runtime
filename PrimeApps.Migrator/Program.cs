@@ -87,7 +87,7 @@ namespace PrimeApps.Migrator
                         result = databaseMigration.UpdateTenantOrAppDatabases("tenant", connectionString);
                         break;
                     case "update-apps":
-                        result = databaseMigration.UpdateTenantOrAppDatabases("app", connectionString);
+                        result = databaseMigration.UpdateTenantOrAppDatabases("app", connectionString ?? Configuration.GetConnectionString("StudioDBConnection"));
                         break;
                     case "update-templates":
                         result = databaseMigration.UpdateTemplateDatabases(connectionString);
