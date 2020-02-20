@@ -108,7 +108,9 @@ namespace PrimeApps.App.Controllers
             if (previewMode == "tenant")
                 await _moduleHelper.ProcessScriptFiles(modules, _componentRepository);
 
-            await _moduleHelper.PermissionCheck(modules, AppUser.Id, _userRepository, _moduleRepository);
+			
+			var user = await _userRepository.GetByIdWithPermission(AppUser.Id);
+			await _moduleHelper.PermissionCheck(modules, user, _moduleRepository);
 
             return modules;
         }

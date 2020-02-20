@@ -215,9 +215,9 @@ namespace PrimeApps.App.Controllers
             var componentRepository = (IComponentRepository)HttpContext.RequestServices.GetService(typeof(IComponentRepository));
             var scriptRepository = (IScriptRepository)HttpContext.RequestServices.GetService(typeof(IScriptRepository));
             var moduleRepository = (IModuleRepository)HttpContext.RequestServices.GetService(typeof(IModuleRepository));
-            var userRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
+			//var userRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
 
-            scriptRepository.CurrentUser = componentRepository.CurrentUser = moduleRepository.CurrentUser = userRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
+			scriptRepository.CurrentUser = componentRepository.CurrentUser = moduleRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
 
             var components = await componentRepository.GetByType(ComponentType.Component);
             components = _environmentHelper.DataFilter(components.ToList());
@@ -230,51 +230,58 @@ namespace PrimeApps.App.Controllers
 
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
             var modules = await moduleRepository.GetAll();
-            await _moduleHelper.PermissionCheck(modules, userId, userRepository, moduleRepository);
+			TenantUser user = null;
 
-            var modulesJson = JsonConvert.SerializeObject(modules, serializerSettings);
+			//TODO: add all necessary objects here which are in appService.js getMyAccount method for increase performance
+			var account = new JObject();
+			
+			using (var _scope = _serviceScopeFactory.CreateScope())
+			{
+				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 
-            //TODO: add all necessary objects here which are in appService.js getMyAccount method for increase performance
-            var account = new JObject();
-            account["modules"] = JArray.Parse(modulesJson);
+				using (var userRepository = new UserRepository(databaseContext, _configuration))
+				{
+					userRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = previewMode == "app" ? (int) appId : (int) tenantId, PreviewMode = previewMode};
+					user = await userRepository.GetByIdWithPermission(userId);
 
-            //TODO Account Suspended control !
-            using (var _scope = _serviceScopeFactory.CreateScope())
-            {
-                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-                 
-                var userInfo = await userRepository.GetUserInfoAsync(userId);
+					await _moduleHelper.PermissionCheck(modules, user, moduleRepository);
+					
+					var userInfo = await userRepository.GetUserInfoAsync(userId);
 
-                if (userInfo != null)
-                {
-                    hasAdminRight = userInfo.profile.HasAdminRights;
-                } 
+					if (userInfo != null)
+					{
+						hasAdminRight = userInfo.profile.HasAdminRights;
+					}
 
-                var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+					var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 
-                using (var platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))
-                {
-                    platformUserRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
-                    var platformUser = await platformUserRepository.GetSettings(userId);
+					using (var platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))
+					{
+						platformUserRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = previewMode == "app" ? (int) appId : (int) tenantId, PreviewMode = previewMode};
+						var platformUser = await platformUserRepository.GetSettings(userId);
 
-                    if (platformUser != null)
-                    {
-                        account["user"] = JObject.Parse(JsonConvert.SerializeObject(platformUser, serializerSettings));
-                        tenantLanguage = platformUser.Setting?.Language ?? "en";
-                    }
-                }
-            }
+						if (platformUser != null)
+						{
+							account["user"] = JObject.Parse(JsonConvert.SerializeObject(platformUser, serializerSettings));
+							tenantLanguage = platformUser.Setting?.Language ?? "en";
+						}
+					}
+				}
+			}
 
-            ViewBag.Preview = previewMode == "app";
-            ViewBag.Components = jsonString;
-            ViewBag.HasAdminRight = hasAdminRight;
-            ViewBag.TenantId = tenantId;
-            ViewBag.TenantLanguage = tenantLanguage;
-            ViewBag.AppId = appId;
-            ViewBag.EncryptedUserId = CryptoHelper.Encrypt(userId.ToString(), ".btA99KnTp+%','L");
-            ViewBag.GlobalSettings = globalSettings != null ? globalSettings.Content : null;
-            ViewBag.GoogleMapsApiKey = _configuration.GetValue("AppSettings:GoogleMapsApiKey", string.Empty);
-            ViewBag.Account = account;
-        }
-    }
+			var modulesJson = JsonConvert.SerializeObject(modules, serializerSettings);
+			account["modules"] = JArray.Parse(modulesJson);
+
+			ViewBag.Preview = previewMode == "app";
+			ViewBag.Components = jsonString;
+			ViewBag.HasAdminRight = hasAdminRight;
+			ViewBag.TenantId = tenantId;
+			ViewBag.TenantLanguage = tenantLanguage;
+			ViewBag.AppId = appId;
+			ViewBag.EncryptedUserId = CryptoHelper.Encrypt(userId.ToString(), ".btA99KnTp+%','L");
+			ViewBag.GlobalSettings = globalSettings != null ? globalSettings.Content : null;
+			ViewBag.GoogleMapsApiKey = _configuration.GetValue("AppSettings:GoogleMapsApiKey", string.Empty);
+			ViewBag.Account = account;
+		}
+	}
 }
