@@ -47,5 +47,5 @@ spec:
                 configMapKeyRef:
                   name: primeapps-updater-config
                   key: StudioDBConnection
-            - name: ConnectionStrings__StudioDBConnection
-              value: "pde"               
+            - name: PRIMEAPPS_ENVIRONMENT
+              value: "pde"
