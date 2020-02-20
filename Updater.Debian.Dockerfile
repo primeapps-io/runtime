@@ -15,3 +15,5 @@ WORKDIR /root
 COPY --from=publish /migrator migrator/
 COPY ["artifacts/update.sh", "/root"]
 RUN chmod +x update.sh
+
+CMD ["sh", "-c", "echo 'You can run ./update.sh to update PrimeApps.' && tail -f /dev/null"]
