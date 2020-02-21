@@ -12,13 +12,10 @@ namespace PrimeApps.Admin.ActionFilters
             return true;
 
 #else
-            var claimsPrincipal = Thread.CurrentPrincipal as ClaimsPrincipal;
-            var claimsIdentity = (ClaimsIdentity)claimsPrincipal?.Identity;
+            var httpContext = context.GetHttpContext();
 
-            if (claimsIdentity == null)
-                return false;
+            return httpContext != null && httpContext.User.Identity.IsAuthenticated;
 
-            return claimsIdentity.IsAuthenticated;
 #endif
         }
     }
