@@ -18,7 +18,7 @@ namespace PrimeApps.Admin.ActionFilters
             if (claimsIdentity == null)
                 return false;
 
-            return claimsIdentity.IsAuthenticated && claimsIdentity.Name.EndsWith("@ofisim.com");
+            return claimsIdentity.IsAuthenticated;
 #endif
         }
     }
