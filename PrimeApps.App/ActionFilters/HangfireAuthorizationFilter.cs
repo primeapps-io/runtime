@@ -24,7 +24,7 @@ namespace PrimeApps.App.ActionFilters
             if (claimsIdentity == null)
                 return false;
 
-            return claimsIdentity.IsAuthenticated && claimsIdentity.Name.EndsWith("@primeapps.io");
+            return claimsIdentity.IsAuthenticated;
 #endif
         }
     }
