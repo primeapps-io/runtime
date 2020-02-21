@@ -13,18 +13,9 @@ namespace PrimeApps.App.ActionFilters
             return true;
 
 #else
-            var localAddresses = new[] { "127.0.0.1", "::1", context.Request.LocalIpAddress.ToString() };
-            
-            if (localAddresses.Contains(context.Request.RemoteIpAddress))
-                return true;
+            var httpContext = context.GetHttpContext();
 
-            var claimsPrincipal = Thread.CurrentPrincipal as ClaimsPrincipal;
-            var claimsIdentity = (ClaimsIdentity)claimsPrincipal?.Identity;
-
-            if (claimsIdentity == null)
-                return false;
-
-            return claimsIdentity.IsAuthenticated;
+            return httpContext != null && httpContext.User.Identity.IsAuthenticated;
 #endif
         }
     }
