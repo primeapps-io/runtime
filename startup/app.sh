@@ -29,7 +29,7 @@ echo -e "${GREEN}app${NC}"
 cd ..
 cd PrimeApps.App
 
-export ASPNETCORE_ENVIRONMENT=Development
+export ASPNETCORE_ENVIRONMENT=Production
 export AppSettings__ClientId=$CLIENTID
 export AppSettings__ClientSecret=secret
 export AppSettings__AuthenticationServerURL="http://localhost:$PORTAUTH"

@@ -21,7 +21,7 @@ echo -e "${GREEN}auth${NC}"
 cd ..
 cd PrimeApps.Auth
 
-export ASPNETCORE_ENVIRONMENT=Development
+export ASPNETCORE_ENVIRONMENT=Production
 export AppSettings__Authority="http://localhost:$PORTAUTH"
 
 dotnet PrimeApps.Auth.dll --urls="http://localhost:$PORTAUTH"
