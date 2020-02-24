@@ -109,7 +109,7 @@
                                                                    ng-class="{'col-sm-6':section.column_count === 2, 'col-sm-3':section.column_count === 1, 'required-field':field.validation.required}"
                                                                    style="{{field.style_label}}">
                                                                 <span ng-if="field.validation.required && field.show_label">*</span>
-                                                                <span ng-show="!field.custom_label && field.show_label && (preview ? true : field.name === 'is_sample'? false : true )">{{field['label_' + language]}}:</span>
+                                                                <span ng-show="!field.custom_label && field.show_label && !(!preview && field.name === 'is_sample')">{{field['label_' + language]}}:</span>
                                                                 <input type="checkbox" ng-model="record[field.name]" class="cell-handle"
                                                                        ng-show="field.data_type=='checkbox' && field.custom_label">
                                                             </label>
@@ -385,7 +385,7 @@
                                                                        ng-disabled="field.validation.readonly || (id && !field.editable)"
                                                                        ng-model="record[field.name]"
                                                                        ng-change="fieldValueChange(field);"
-                                                                       ng-if="field.data_type === 'checkbox' && !field.custom_label && (preview && field.name === 'is_sample' ? true : false)">
+                                                                       ng-if="field.data_type === 'checkbox' && !field.custom_label && !(!preview && field.name === 'is_sample')">
 
                                                                 <span class="ng-animate-disabled"
                                                                       tabindex="{{cell.field.order}}"
