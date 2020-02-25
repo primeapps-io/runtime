@@ -6,7 +6,7 @@ echo -e "${GREEN}admin${NC}"
 
 cd ..
 cd PrimeApps.Admin
-export ASPNETCORE_ENVIRONMENT=Development
+export ASPNETCORE_ENVIRONMENT=Production
 export AppSettings__ClientSecret=secret
 
 dotnet PrimeApps.Admin.dll --urls='http://localhost:5005'
