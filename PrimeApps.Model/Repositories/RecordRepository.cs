@@ -665,8 +665,8 @@ namespace PrimeApps.Model.Repositories
             .ThenInclude(field => field.Permissions)
             .Include(mod => mod.Relations)
             .FirstOrDefaultAsync(q => !q.Deleted && q.Name == moduleName);
-
-            var isCustomSharePermission = SharedPermissionCheck(record, user, operation);
+            bool isCustomSharePermission;
+            
             //Module CRUD permisson control
             var modulePermission = ProfilePermissionCheck(profile.Permissions.Where(q => q.ModuleId == module.Id && q.Type == EntityType.Module).ToList(), operation);
 
@@ -685,6 +685,7 @@ namespace PrimeApps.Model.Repositories
                         return record;
                     }
                 case OperationType.update:
+                    isCustomSharePermission = SharedPermissionCheck(record, user, operation);
                     if (isCustomSharePermission || customBulkUpdatePermission)
                         return record;
 
@@ -700,6 +701,7 @@ namespace PrimeApps.Model.Repositories
                         return record;
                     }
                 case OperationType.read:
+                    isCustomSharePermission = SharedPermissionCheck(record, user, operation);
                     if (isCustomSharePermission)
                         return record;
 
@@ -814,9 +816,9 @@ namespace PrimeApps.Model.Repositories
                 }
 
                 //Field icin yetkilendirme eklenmisse gecerli user'in profile'ne gore yetki kontrolu yapiyoruz.
-                var permissionList = field.Permissions.Where(q => q.ProfileId == user.Profile.Id).ToList();
+                var permissionList = field.Permissions.Where(q => q.ProfileId == user.Profile.Id && !q.Deleted).ToList();
 
-                if (permissionList == null || permissionList.Count <= 0)
+                if (permissionList.Count <= 0)
                 {
                     if (field.DataType == DataType.Lookup)
                     {
@@ -829,19 +831,22 @@ namespace PrimeApps.Model.Repositories
                 }
 
 
-                var permissionCheck = FieldPermissionCheck(permissionList, operation);
-
-                if (permissionCheck == null)
+                if (permissionList.Count > 0)
                 {
-                    if (field.DataType == DataType.Lookup)
-                    {
-                        var lookupFields = await LookupModulePermission(field, user, operation);
+                    var permissionCheck = FieldPermissionCheck(permissionList, operation);
 
-                        if (lookupFields != null && lookupFields.Count > 0)
-                            record = ClearRecord(record, fields: lookupFields);
+                    if (permissionCheck == null)
+                    {
+                        if (field.DataType == DataType.Lookup)
+                        {
+                            var lookupFields = await LookupModulePermission(field, user, operation);
+
+                            if (lookupFields != null && lookupFields.Count > 0)
+                                record = ClearRecord(record, fields: lookupFields);
+                        }
+                        else
+                            fieldRemoveList.Add(field.Name);
                     }
-                    else
-                        fieldRemoveList.Add(field.Name);
                 }
             }
 
@@ -880,14 +885,22 @@ namespace PrimeApps.Model.Repositories
                     }
                     else
                     {
-                        //Lookup module icin yetkisi varsa field bazli kontrol yetki yapiyoruz.
-                        var fieldCheckResult = FieldPermissionCheck(item.Permissions.ToList(), operation);
-
-                        if (fieldCheckResult == null)
+                        if (item.Permissions.ToList().Count > 0)
                         {
-                            fieldList.Add($"{prefix}.{item.Name}");
-                            fieldList.Add($"{field.Name}.{item.Name}");
-                            fieldList.Add($"{field.Name}.{lookupModule.Name}.{item.Name}"); //find methodu ile donen record'lar icin ekiyoruz.
+                            var itemProfile = item.Permissions.ToList().FirstOrDefault(x => x.ProfileId == user.ProfileId && !x.Deleted);
+
+                            if (itemProfile != null)
+                            {
+                                //Lookup module icin yetkisi varsa field bazli kontrol yetki yapiyoruz.
+                                var fieldCheckResult = FieldPermissionCheck(item.Permissions.ToList(), operation);
+
+                                if (fieldCheckResult == null)
+                                {
+                                    fieldList.Add($"{prefix}.{item.Name}");
+                                    fieldList.Add($"{field.Name}.{item.Name}");
+                                    fieldList.Add($"{field.Name}.{lookupModule.Name}.{item.Name}"); //find methodu ile donen record'lar icin ekiyoruz.
+                                }
+                            }
                         }
                     }
                 }
