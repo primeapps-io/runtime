@@ -268,7 +268,7 @@
                                                         <table class="table table-detail-custom" ng-style="{ 'min-height': !tabconfig ? '0px' : '0px'}">
                                                             <tr ng-repeat="field in $parent.$parent.module.fields | filter:{section: section.name, section_column: column.no, display_detail:true, deleted: false}:true | orderBy:'order'" ng-if="!field.hidden && hasFieldDisplayPermission(field)">
                                                                 <th class="control-label" ng-class="{'col-sm-6': (section.column_count === 2 && !field.custom_label), 'col-sm-3': (section.column_count === 1 && !field.custom_label), 'col-sm-1': field.custom_label }">
-                                                                    <span ng-if="!field.custom_label && (preview ? true : field.name === 'is_sample'? false : true )" ng-show="field.show_label">{{field['label_' + language]}}</span>
+                                                                    <span ng-if="!field.custom_label && !(!preview && field.name === 'is_sample')" ng-show="field.show_label">{{field['label_' + language]}}</span>
                                                                     <a href
                                                                        style="max-width: 50px;float:right;"
                                                                        editable-checkbox="record[field.name]"
@@ -567,7 +567,7 @@
                                                                        oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field); calculate(field);"
                                                                        onbeforesave="validate($data, field.data_type, field.validation)"
                                                                        onaftersave="update()"
-                                                                       ng-if="field.data_type === 'checkbox' && !field.custom_label && (preview && field.name === 'is_sample' ? true : false)">
+                                                                       ng-if="field.data_type === 'checkbox' && !field.custom_label && !(!preview && field.name === 'is_sample')">
                                                                         {{record[field.name] != undefined ? (record[field.name] === true ? yesNo.yes : yesNo.no) : 'Common.Empty' | translate}} <span><i class="fa fa-pencil"></i></span>
                                                                     </a>
                                                                     <span ng-if="field.data_type === 'checkbox' && field.custom_label">
