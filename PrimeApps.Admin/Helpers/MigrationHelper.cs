@@ -48,6 +48,8 @@ namespace PrimeApps.Admin.Helpers
 		private IReleaseRepository _releaseRepository;
 		private IHistoryStorageRepository _historyStorageRepository;
 		private ITenantRepository _tenantRepository;
+		private IModuleRepository _moduleRepository;
+		private ISettingRepository _settingRepository;
 		private IServiceScopeFactory _serviceScopeFactory;
 
 		public MigrationHelper(IConfiguration configuration,
@@ -58,6 +60,8 @@ namespace PrimeApps.Admin.Helpers
 			IReleaseRepository releaseRepository,
 			IHistoryStorageRepository historyStorageRepository,
 			ITenantRepository tenantRepository,
+			IModuleRepository moduleRepository,
+			ISettingRepository settingRepository,
 			IServiceScopeFactory serviceScopeFactory)
 		{
 			_storage = storage;
@@ -68,6 +72,8 @@ namespace PrimeApps.Admin.Helpers
 			_releaseRepository = releaseRepository;
 			_historyStorageRepository = historyStorageRepository;
 			_tenantRepository = tenantRepository;
+			_moduleRepository = moduleRepository;
+			_settingRepository = settingRepository;
 			_serviceScopeFactory = serviceScopeFactory;
 		}
 
@@ -688,8 +694,8 @@ namespace PrimeApps.Admin.Helpers
 						if (appExists)
 						{
 							PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", true);
-							await UpdateModules(moduleRepository);
-							await UpdateSetting(settingRepository);
+							await UpdateModules();
+							await UpdateSetting();
 							PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", false);
 						}
 						var tenantIds = await tenantRepository.GetIdsByAppId(appId);
@@ -762,17 +768,17 @@ namespace PrimeApps.Admin.Helpers
 					{
 						_currentUser = new CurrentUser { PreviewMode = "tenant", TenantId = tenantId, UserId = 1 };
 						moduleRepository.CurrentUser = settingRepository.CurrentUser = _currentUser;
-						await UpdateSetting(settingRepository);
-						await UpdateModules(moduleRepository);
+						await UpdateSetting();
+						await UpdateModules();
 					}
 					tenantDbContext.Database.CloseConnection();
 				}
 			}
 		}
 
-		public async Task<ICollection<Module>> UpdateModules(ModuleRepository moduleRepository)
+		public async Task<ICollection<Module>> UpdateModules()
 		{
-			var modules = await moduleRepository.GetAll();
+			var modules = await _moduleRepository.GetAll();
 			foreach (var module in modules)
 			{
 				var fiedlIsExist = module.Fields.SingleOrDefault(q => q.Name == "is_sample");
@@ -804,16 +810,16 @@ namespace PrimeApps.Admin.Helpers
 							Required = false
 						}
 					});
-					await moduleRepository.Update(module);
+					await _moduleRepository.Update(module);
 				}
 			}
 
 			return modules;
 		}
 
-		public async Task UpdateSetting(SettingRepository settingRepository)
+		public async Task UpdateSetting()
 		{
-			var settings = await settingRepository.GetAllSettings();
+			var settings = await _settingRepository.GetAllSettings();
 			var settingsPasswordList = settings.Where(r => r.Key == "password");
 			foreach (var settingPassword in settingsPasswordList)
 			{
@@ -821,7 +827,7 @@ namespace PrimeApps.Admin.Helpers
 					continue;
 
 				settingPassword.Value = CryptoHelper.Encrypt(settingPassword.Value);
-				await settingRepository.Update(settingPassword);
+				await _settingRepository.Update(settingPassword);
 			}
 		}
 	}
