@@ -35,6 +35,8 @@ namespace PrimeApps.Admin
             services.AddTransient<ITemplateRepository, TemplateRepository>();
             services.AddTransient<IHistoryDatabaseRepository, HistoryDatabaseRepository>();
             services.AddTransient<IHistoryStorageRepository, HistoryStorageRepository>();
+            services.AddTransient<IModuleRepository, ModuleRepository>();
+            services.AddTransient<ISettingRepository, SettingRepository>();
 
             services.AddHostedService<QueuedHostedService>();
             services.AddScoped<IRedisHelper, RedisHelper>();
