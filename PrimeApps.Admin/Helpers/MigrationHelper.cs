@@ -759,21 +759,10 @@ namespace PrimeApps.Admin.Helpers
 		[QueueCustom]
 		public async Task UpdateTenantModuleFields(int tenantId)
 		{
-			using (var _scope = _serviceScopeFactory.CreateScope())
-			{
-				using (var tenantDbContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>())
-				{
-					using (var settingRepository = new SettingRepository(tenantDbContext, _configuration))
-					using (var moduleRepository = new ModuleRepository(tenantDbContext, _configuration))
-					{
-						_currentUser = new CurrentUser { PreviewMode = "tenant", TenantId = tenantId, UserId = 1 };
-						moduleRepository.CurrentUser = settingRepository.CurrentUser = _currentUser;
-						await UpdateSetting();
-						await UpdateModules();
-					}
-					tenantDbContext.Database.CloseConnection();
-				}
-			}
+			_currentUser = new CurrentUser { PreviewMode = "tenant", TenantId = tenantId, UserId = 1 };
+			_moduleRepository.CurrentUser = _settingRepository.CurrentUser = _currentUser;
+			await UpdateSetting();
+			await UpdateModules();
 		}
 
 		public async Task<ICollection<Module>> UpdateModules()
