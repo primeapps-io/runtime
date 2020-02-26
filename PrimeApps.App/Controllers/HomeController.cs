@@ -232,6 +232,15 @@ namespace PrimeApps.App.Controllers
             var modules = await moduleRepository.GetAll();
 			TenantUser user = null;
 
+			foreach (var module in modules)
+			{
+				if (module.Components != null && module.Components.Count > 0)
+					module.Components = _environmentHelper.DataFilter(module.Components.ToList());
+			}
+			
+			if (previewMode == "tenant")
+				await _moduleHelper.ProcessScriptFiles(modules, scriptRepository.CurrentUser);
+			
 			//TODO: add all necessary objects here which are in appService.js getMyAccount method for increase performance
 			var account = new JObject();
 			

@@ -16,16 +16,14 @@ namespace PrimeApps.App.Controllers
         private IActionButtonRepository _actionButtonRepository;
         private IActionButtonHelper _actionButtonHelper;
         private IEnvironmentHelper _environmentHelper;
-        private IComponentRepository _componentRepository;
         private IConfiguration _configuration;
 
         public ActionButtonController(IActionButtonRepository actionButtonRepository, IActionButtonHelper actionButtonHelper, IEnvironmentHelper environmentHelper,
-            IComponentRepository componentRepository, IConfiguration configuration)
+             IConfiguration configuration)
         {
             _actionButtonRepository = actionButtonRepository;
             _actionButtonHelper = actionButtonHelper;
             _environmentHelper = environmentHelper;
-            _componentRepository = componentRepository;
             _configuration = configuration;
         }
 
@@ -33,7 +31,6 @@ namespace PrimeApps.App.Controllers
         {
             SetContext(context);
             SetCurrentUser(_actionButtonRepository, PreviewMode, TenantId, AppId);
-            SetCurrentUser(_componentRepository, PreviewMode, TenantId, AppId);
 
             base.OnActionExecuting(context);
         }
@@ -44,7 +41,7 @@ namespace PrimeApps.App.Controllers
             var actionButtons = await _actionButtonRepository.GetByModuleId(id, AppUser.Language);
             actionButtons = _environmentHelper.DataFilter(actionButtons.ToList());
 
-            await _actionButtonHelper.ProcessScriptFiles(actionButtons, _componentRepository);
+            await _actionButtonHelper.ProcessScriptFiles(actionButtons, _actionButtonRepository.CurrentUser);
 
             return Ok(actionButtons);
         }
