@@ -106,7 +106,7 @@ namespace PrimeApps.App.Controllers
             }
 
             if (previewMode == "tenant")
-                await _moduleHelper.ProcessScriptFiles(modules, _componentRepository);
+                await _moduleHelper.ProcessScriptFiles(modules, _moduleRepository.CurrentUser);
 
 			
 			var user = await _userRepository.GetByIdWithPermission(AppUser.Id);
