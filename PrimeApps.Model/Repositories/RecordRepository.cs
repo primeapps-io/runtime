@@ -43,7 +43,7 @@ namespace PrimeApps.Model.Repositories
 
             var sql = RecordHelper.GenerateGetSql(module, lookupModules, recordId, owners, CurrentUser.UserId, userGroups, deleted);
             var data = DbContext.Database.SqlQueryDynamic(sql).FirstOrDefault();
-            var record = data.IsNullOrEmpty() ? new JObject() : (JObject)data;
+            var record = data.IsNullOrEmpty() ? new JObject() : (JObject) data;
 
             if (profileBasedEnabled && module.Name != "users" && module.Name != "profiles" && module.Name != "roles")
                 record = await RecordPermissionControl(module.Name, CurrentUser.UserId, record, operation);
@@ -52,16 +52,16 @@ namespace PrimeApps.Model.Repositories
             {
                 if (!record["shared_users"].IsNullOrEmpty() || !record["shared_user_groups"].IsNullOrEmpty())
                 {
-                    var userIds = record["shared_users"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)record["shared_users"]);
-                    var userGroupIds = record["shared_user_groups"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)record["shared_user_groups"]);
+                    var userIds = record["shared_users"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray) record["shared_users"]);
+                    var userGroupIds = record["shared_user_groups"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray) record["shared_user_groups"]);
                     var sqlSharedRead = RecordHelper.GenerateSharedSql(userIds, userGroupIds);
                     record["shared_read"] = DbContext.Database.SqlQueryDynamic(sqlSharedRead);
                 }
 
                 if (!record["shared_users_edit"].IsNullOrEmpty() || !record["shared_user_groups_edit"].IsNullOrEmpty())
                 {
-                    var userIdsEdit = record["shared_users_edit"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)record["shared_users_edit"]);
-                    var userGroupIdsEdit = record["shared_user_groups_edit"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)record["shared_user_groups_edit"]);
+                    var userIdsEdit = record["shared_users_edit"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray) record["shared_users_edit"]);
+                    var userGroupIdsEdit = record["shared_user_groups_edit"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray) record["shared_user_groups_edit"]);
                     var sqlSharedEdit = RecordHelper.GenerateSharedSql(userIdsEdit, userGroupIdsEdit);
                     record["shared_edit"] = DbContext.Database.SqlQueryDynamic(sqlSharedEdit);
                 }
@@ -109,20 +109,20 @@ namespace PrimeApps.Model.Repositories
                     if (!record.IsNullOrEmpty())
                     {
                         if (profileBasedEnabled && moduleName != "users" && moduleName != "profiles" && moduleName != "roles")
-                            newRecord = await RecordPermissionControl(moduleName, CurrentUser.UserId, (JObject)record, OperationType.read);
+                            newRecord = await RecordPermissionControl(moduleName, CurrentUser.UserId, (JObject) record, OperationType.read);
 
                         if (!newRecord["shared_users"].IsNullOrEmpty() || !newRecord["shared_user_groups"].IsNullOrEmpty())
                         {
-                            var userIds = newRecord["shared_users"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)newRecord["shared_users"]);
-                            var userGroupIds = newRecord["shared_user_groups"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)newRecord["shared_user_groups"]);
+                            var userIds = newRecord["shared_users"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray) newRecord["shared_users"]);
+                            var userGroupIds = newRecord["shared_user_groups"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray) newRecord["shared_user_groups"]);
                             var sqlSharedRead = RecordHelper.GenerateSharedSql(userIds, userGroupIds);
                             newRecord["shared_read"] = DbContext.Database.SqlQueryDynamic(sqlSharedRead);
                         }
 
                         if (!newRecord["shared_users_edit"].IsNullOrEmpty() || !newRecord["shared_user_groups_edit"].IsNullOrEmpty())
                         {
-                            var userIdsEdit = newRecord["shared_users_edit"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)newRecord["shared_users_edit"]);
-                            var userGroupIdsEdit = newRecord["shared_user_groups_edit"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)newRecord["shared_user_groups_edit"]);
+                            var userIdsEdit = newRecord["shared_users_edit"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray) newRecord["shared_users_edit"]);
+                            var userGroupIdsEdit = newRecord["shared_user_groups_edit"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray) newRecord["shared_user_groups_edit"]);
                             var sqlSharedEdit = RecordHelper.GenerateSharedSql(userIdsEdit, userGroupIdsEdit);
                             newRecord["shared_edit"] = DbContext.Database.SqlQueryDynamic(sqlSharedEdit);
                         }
@@ -152,7 +152,7 @@ namespace PrimeApps.Model.Repositories
 
             foreach (var record in records)
             {
-                var newRecord = await RecordPermissionControl(moduleName, CurrentUser.UserId, (JObject)record, OperationType.read);
+                var newRecord = await RecordPermissionControl(moduleName, CurrentUser.UserId, (JObject) record, OperationType.read);
                 newRecords.Add(newRecord);
             }
 
@@ -163,7 +163,7 @@ namespace PrimeApps.Model.Repositories
         {
             int result;
 
-            using (var command = (NpgsqlCommand)DbContext.Database.GetDbConnection().CreateCommand())
+            using (var command = (NpgsqlCommand) DbContext.Database.GetDbConnection().CreateCommand())
             {
                 var columns = new List<string>();
                 var values = new List<string>();
@@ -180,7 +180,7 @@ namespace PrimeApps.Model.Repositories
 
                 RecordHelper.AddCommandStandardParametersCreate(command, record, module, columns, values, currentUserId, now);
 
-                var returnValue = new NpgsqlParameter { ParameterName = "return_value", NpgsqlDbType = NpgsqlDbType.Integer, Direction = ParameterDirection.Output };
+                var returnValue = new NpgsqlParameter {ParameterName = "return_value", NpgsqlDbType = NpgsqlDbType.Integer, Direction = ParameterDirection.Output};
                 command.Parameters.Add(returnValue);
 
                 var sql = $"INSERT INTO \"{module.Name}_d\" (\n\t{string.Join(",\n\t", columns)}\n) \nVALUES (\n\t{string.Join(",\n\t", values)}\n) \nRETURNING \"id\"";
@@ -216,12 +216,12 @@ namespace PrimeApps.Model.Repositories
         {
             int result;
 
-            using (var command = (NpgsqlCommand)DbContext.Database.GetDbConnection().CreateCommand())
+            using (var command = (NpgsqlCommand) DbContext.Database.GetDbConnection().CreateCommand())
             {
                 var sets = new List<string>();
                 var currentUserId = DbContext.GetCurrentUserId();
                 var now = DateTime.UtcNow;
-                var recordId = record["id"].IsNullOrEmpty() ? 0 : (int)record["id"];
+                var recordId = record["id"].IsNullOrEmpty() ? 0 : (int) record["id"];
 
                 RecordHelper.AddCommandParameters(command, record, module, isUtc);
 
@@ -270,7 +270,7 @@ namespace PrimeApps.Model.Repositories
         {
             int result = 0;
 
-            using (var command = (NpgsqlCommand)DbContext.Database.GetDbConnection().CreateCommand())
+            using (var command = (NpgsqlCommand) DbContext.Database.GetDbConnection().CreateCommand())
             {
                 var columns = new List<string>();
                 var values = new List<string>();
@@ -283,8 +283,8 @@ namespace PrimeApps.Model.Repositories
                 for (int i = 0; i < records.Count; i++)
                 {
                     var record = records[i];
-                    command.Parameters.Add(new NpgsqlParameter { ParameterName = columnName1 + i, NpgsqlValue = Convert.ToInt32(record[columnName1]), NpgsqlDbType = NpgsqlDbType.Integer });
-                    command.Parameters.Add(new NpgsqlParameter { ParameterName = columnName2 + i, NpgsqlValue = Convert.ToInt32(record[columnName2]), NpgsqlDbType = NpgsqlDbType.Integer });
+                    command.Parameters.Add(new NpgsqlParameter {ParameterName = columnName1 + i, NpgsqlValue = Convert.ToInt32(record[columnName1]), NpgsqlDbType = NpgsqlDbType.Integer});
+                    command.Parameters.Add(new NpgsqlParameter {ParameterName = columnName2 + i, NpgsqlValue = Convert.ToInt32(record[columnName2]), NpgsqlDbType = NpgsqlDbType.Integer});
 
                     values.Add($"(@{columnName1 + i}, @{columnName2 + i})");
                 }
@@ -334,13 +334,13 @@ namespace PrimeApps.Model.Repositories
         {
             int result = 0;
 
-            using (var command = (NpgsqlCommand)DbContext.Database.GetDbConnection().CreateCommand())
+            using (var command = (NpgsqlCommand) DbContext.Database.GetDbConnection().CreateCommand())
             {
                 var columnName1 = moduleName + "_id";
                 var columnName2 = relatedModuleName + "_id";
 
-                command.Parameters.Add(new NpgsqlParameter { ParameterName = columnName1, NpgsqlValue = Convert.ToInt32(record[columnName1]), NpgsqlDbType = NpgsqlDbType.Integer });
-                command.Parameters.Add(new NpgsqlParameter { ParameterName = columnName2, NpgsqlValue = Convert.ToInt32(record[columnName2]), NpgsqlDbType = NpgsqlDbType.Integer });
+                command.Parameters.Add(new NpgsqlParameter {ParameterName = columnName1, NpgsqlValue = Convert.ToInt32(record[columnName1]), NpgsqlDbType = NpgsqlDbType.Integer});
+                command.Parameters.Add(new NpgsqlParameter {ParameterName = columnName2, NpgsqlValue = Convert.ToInt32(record[columnName2]), NpgsqlDbType = NpgsqlDbType.Integer});
                 var tableName = moduleName + "_" + relatedModuleName;
 
                 if (relationId > 0)
@@ -477,8 +477,8 @@ namespace PrimeApps.Model.Repositories
 
             foreach (var lookupItem in lookupRequest)
             {
-                var sql = RecordHelper.GenerateGetLookupIdsSql((string)lookupItem["type"], (string)lookupItem["field"], (JArray)lookupItem["values"]);
-                lookups[(string)lookupItem["type"]] = DbContext.Database.SqlQueryDynamic(sql);
+                var sql = RecordHelper.GenerateGetLookupIdsSql((string) lookupItem["type"], (string) lookupItem["field"], (JArray) lookupItem["values"]);
+                lookups[(string) lookupItem["type"]] = DbContext.Database.SqlQueryDynamic(sql);
             }
 
             return lookups;
@@ -536,11 +536,11 @@ namespace PrimeApps.Model.Repositories
             }
 
             var sql = RecordHelper.GenerateBalanceSql(type, id, transactionType1, transactionType2);
-            var record = (JObject)DbContext.Database.SqlQueryDynamic(sql).FirstOrDefault();
+            var record = (JObject) DbContext.Database.SqlQueryDynamic(sql).FirstOrDefault();
             decimal balance = 0;
 
             if (record != null && !record.IsNullOrEmpty() && !record["balance"].IsNullOrEmpty())
-                balance = (decimal)record["balance"];
+                balance = (decimal) record["balance"];
 
             return balance;
         }
@@ -557,15 +557,15 @@ namespace PrimeApps.Model.Repositories
                 throw new Exception("Role based info cannot be null. TenantId: " + CurrentUser.TenantId + " UserId:" + CurrentUser.UserId + " Sql: " + sqlRoleBased);
 
             var roleBased = roleBasedResult.First();
-            var isAdmin = (bool)roleBased["has_admin_rights"];
-            var sharing = (int)roleBased["sharing"];
+            var isAdmin = (bool) roleBased["has_admin_rights"];
+            var sharing = (int) roleBased["sharing"];
             owners = null;
             userGroups = null;
 
             if (!isAdmin && sharing == 1)
             {
                 var modulePermission = false;
-                owners = (string)roleBased["owners"];
+                owners = (string) roleBased["owners"];
                 var ownersArray = owners.Split(',');
 
                 if (!ownersArray.Contains(CurrentUser.UserId.ToString()))
@@ -576,7 +576,7 @@ namespace PrimeApps.Model.Repositories
                         owners = CurrentUser.UserId.ToString();
                 }
 
-                var modules = (string)roleBased["modules"];
+                var modules = (string) roleBased["modules"];
                 if (string.IsNullOrEmpty(modules))
                     modulePermission = true;
                 else
@@ -591,8 +591,8 @@ namespace PrimeApps.Model.Repositories
 
                 if (modulePermission)
                 {
-                    var customOwners = (string)roleBased["custom_owners"];
-                    var sharedUserId = (string)roleBased["shared_user_id"];
+                    var customOwners = (string) roleBased["custom_owners"];
+                    var sharedUserId = (string) roleBased["shared_user_id"];
                     var ownersArr = owners.Split(',');
 
                     if (!string.IsNullOrEmpty(customOwners))
@@ -613,7 +613,7 @@ namespace PrimeApps.Model.Repositories
                         }
                     }
 
-                    var customUserGroups = (string)roleBased["user_group_owners"];
+                    var customUserGroups = (string) roleBased["user_group_owners"];
 
                     if (!string.IsNullOrEmpty(customUserGroups))
                     {
@@ -641,6 +641,7 @@ namespace PrimeApps.Model.Repositories
         }
 
         #region Profile based permission controls for records 
+
         List<string> removedFieldList = new List<string>();
 
         public async Task<JObject> RecordPermissionControl(string moduleName, int userId, JObject record, OperationType operation, List<string> removedFields = null, bool customBulkUpdatePermission = false)
@@ -652,21 +653,21 @@ namespace PrimeApps.Model.Repositories
             removedFields = removedFields == null ? new List<string>() : removedFields;
 
             var user = await DbContext.Users
-            .Include(q => q.Profile)
-            .ThenInclude(q => q.Permissions)
-            .Include(q => q.Groups)
-            .FirstOrDefaultAsync(q => q.Id == userId);
+                .Include(q => q.Profile)
+                .ThenInclude(q => q.Permissions)
+                .Include(q => q.Groups)
+                .FirstOrDefaultAsync(q => q.Id == userId);
 
             var profile = user.Profile;
             var module = await DbContext.Modules
-            .Include(mod => mod.Sections)
-            .ThenInclude(section => section.Permissions)
-            .Include(mod => mod.Fields)
-            .ThenInclude(field => field.Permissions)
-            .Include(mod => mod.Relations)
-            .FirstOrDefaultAsync(q => !q.Deleted && q.Name == moduleName);
+                .Include(mod => mod.Sections)
+                .ThenInclude(section => section.Permissions)
+                .Include(mod => mod.Fields)
+                .ThenInclude(field => field.Permissions)
+                .Include(mod => mod.Relations)
+                .FirstOrDefaultAsync(q => !q.Deleted && q.Name == moduleName);
             bool isCustomSharePermission;
-            
+
             //Module CRUD permisson control
             var modulePermission = ProfilePermissionCheck(profile.Permissions.Where(q => q.ModuleId == module.Id && q.Type == EntityType.Module).ToList(), operation);
 
@@ -753,12 +754,12 @@ namespace PrimeApps.Model.Repositories
                 if (section.Permissions != null && section.Permissions.Count > 0)
                 {
                     //Aktif olan User'in profile bilgisine gore bir yetki eklenmis mi diye bakıyoruz.
-                    var sectionPermissionList = section.Permissions.Where(q => q.ProfileId == user.Profile.Id && !q.Deleted).ToList();
+                    var sectionPermissionList = section.Permissions.Where(q => !q.Deleted).ToList();
 
-                    if (sectionPermissionList == null || sectionPermissionList.Count < 1)
+                    if (sectionPermissionList.Count < 1)
                         continue;
 
-                    var sectionPermission = SectionPermissionCheck(sectionPermissionList, operation);
+                    var sectionPermission = SectionPermissionCheck(sectionPermissionList, user, operation);
 
                     //Bir yetkilendirme yapilmis ve aktif olan operation icin yetkisi yoksa record uzerinden o section'ini ve section'a ait olan field'leri siliyoruz.
                     if (sectionPermission == null)
@@ -800,8 +801,11 @@ namespace PrimeApps.Model.Repositories
 
             foreach (var field in module.Fields)
             {
+                //Field icin yetkilendirme eklenmisse gecerli user'in profile'ne gore yetki kontrolu yapiyoruz.
+                var permissionList = field.Permissions.Where(q => !q.Deleted).ToList();
+
                 //Field icin herhangi bir yetkilendirme yapilmamissa ve lookup tipinde ise lookup module'ne gore yetki kontrolu yapiyoruz.
-                if (field.Permissions == null || field.Permissions.Count <= 0)
+                if (permissionList.Count <= 0)
                 {
                     if (field.DataType == DataType.Lookup)
                     {
@@ -815,25 +819,9 @@ namespace PrimeApps.Model.Repositories
                     continue;
                 }
 
-                //Field icin yetkilendirme eklenmisse gecerli user'in profile'ne gore yetki kontrolu yapiyoruz.
-                var permissionList = field.Permissions.Where(q => q.ProfileId == user.Profile.Id && !q.Deleted).ToList();
-
-                if (permissionList.Count <= 0)
-                {
-                    if (field.DataType == DataType.Lookup)
-                    {
-                        var lookupFields = await LookupModulePermission(field, user, operation);
-
-                        if (lookupFields != null && lookupFields.Count > 0)
-                            record = ClearRecord(record, fields: lookupFields);
-                    }
-                    continue;
-                }
-
-
                 if (permissionList.Count > 0)
                 {
-                    var permissionCheck = FieldPermissionCheck(permissionList, operation);
+                    var permissionCheck = FieldPermissionCheck(permissionList, user, operation);
 
                     if (permissionCheck == null)
                     {
@@ -856,10 +844,10 @@ namespace PrimeApps.Model.Repositories
         private async Task<List<string>> LookupModulePermission(Field field, TenantUser user, OperationType operation)
         {
             var lookupModule = await DbContext.Modules
-            .Where(q => q.Name == field.LookupType && !q.Deleted)
-            .Include(q => q.Fields)
-            .ThenInclude(q => q.Permissions)
-            .FirstOrDefaultAsync();
+                .Where(q => q.Name == field.LookupType && !q.Deleted)
+                .Include(q => q.Fields)
+                .ThenInclude(q => q.Permissions)
+                .FirstOrDefaultAsync();
 
             if (lookupModule == null)
                 return null;
@@ -887,12 +875,12 @@ namespace PrimeApps.Model.Repositories
                     {
                         if (item.Permissions.ToList().Count > 0)
                         {
-                            var itemProfile = item.Permissions.ToList().FirstOrDefault(x => x.ProfileId == user.ProfileId && !x.Deleted);
+                            var itemProfile = item.Permissions.ToList().FirstOrDefault(x => !x.Deleted);
 
                             if (itemProfile != null)
                             {
                                 //Lookup module icin yetkisi varsa field bazli kontrol yetki yapiyoruz.
-                                var fieldCheckResult = FieldPermissionCheck(item.Permissions.ToList(), operation);
+                                var fieldCheckResult = FieldPermissionCheck(item.Permissions.ToList(), user, operation);
 
                                 if (fieldCheckResult == null)
                                 {
@@ -964,31 +952,31 @@ namespace PrimeApps.Model.Repositories
             return false;
         }
 
-        private SectionPermission SectionPermissionCheck(List<SectionPermission> sectionPermissions, OperationType operation)
+        private SectionPermission SectionPermissionCheck(List<SectionPermission> sectionPermissions, TenantUser user, OperationType operation)
         {
             switch (operation)
             {
                 case OperationType.insert:
                 case OperationType.update:
                 case OperationType.delete:
-                    return sectionPermissions.FirstOrDefault(q => q.Type == SectionPermissionType.Full);
+                    return sectionPermissions.FirstOrDefault(q => q.ProfileId == user.ProfileId && q.Type == SectionPermissionType.Full);
                 case OperationType.read:
-                    return sectionPermissions.FirstOrDefault(q => q.Type == SectionPermissionType.ReadOnly || q.Type == SectionPermissionType.Full);
+                    return sectionPermissions.FirstOrDefault(q => q.ProfileId == user.ProfileId && (q.Type == SectionPermissionType.ReadOnly || q.Type == SectionPermissionType.Full));
                 default:
                     return null;
             }
         }
 
-        private FieldPermission FieldPermissionCheck(List<FieldPermission> fieldPermissions, OperationType operation)
+        private FieldPermission FieldPermissionCheck(List<FieldPermission> fieldPermissions, TenantUser user, OperationType operation)
         {
             switch (operation)
             {
                 case OperationType.insert:
                 case OperationType.update:
                 case OperationType.delete:
-                    return fieldPermissions.FirstOrDefault(q => q.Type == FieldPermissionType.Full);
+                    return fieldPermissions.FirstOrDefault(q => q.ProfileId == user.ProfileId && q.Type == FieldPermissionType.Full);
                 case OperationType.read:
-                    return fieldPermissions.FirstOrDefault(q => q.Type == FieldPermissionType.ReadOnly || q.Type == FieldPermissionType.Full);
+                    return fieldPermissions.FirstOrDefault(q => q.ProfileId == user.ProfileId && (q.Type == FieldPermissionType.ReadOnly || q.Type == FieldPermissionType.Full));
                 default:
                     return null;
             }
@@ -996,7 +984,7 @@ namespace PrimeApps.Model.Repositories
 
         private JObject ClearRecord(JObject record, string key = null, List<string> fields = null)
         {
-            var newRecord = (JObject)record.DeepClone();
+            var newRecord = (JObject) record.DeepClone();
 
             if (!string.IsNullOrEmpty(key))
             {
@@ -1026,6 +1014,7 @@ namespace PrimeApps.Model.Repositories
 
             return newRecord;
         }
+
         #endregion Profile based permission controls for records
     }
 }
