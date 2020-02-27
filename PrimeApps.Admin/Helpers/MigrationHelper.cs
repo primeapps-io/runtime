@@ -72,8 +72,6 @@ namespace PrimeApps.Admin.Helpers
 			_releaseRepository = releaseRepository;
 			_historyStorageRepository = historyStorageRepository;
 			_tenantRepository = tenantRepository;
-			_moduleRepository = moduleRepository;
-			_settingRepository = settingRepository;
 			_serviceScopeFactory = serviceScopeFactory;
 		}
 
@@ -694,8 +692,8 @@ namespace PrimeApps.Admin.Helpers
 						if (appExists)
 						{
 							PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", true);
-							await UpdateModules();
-							await UpdateSetting();
+							await UpdateModules(_currentUser);
+							await UpdateSetting(_currentUser);
 							PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", false);
 						}
 						var tenantIds = await tenantRepository.GetIdsByAppId(appId);
@@ -760,63 +758,95 @@ namespace PrimeApps.Admin.Helpers
 		public async Task UpdateTenantModuleFields(int tenantId)
 		{
 			_currentUser = new CurrentUser { PreviewMode = "tenant", TenantId = tenantId, UserId = 1 };
-			_moduleRepository.CurrentUser = _settingRepository.CurrentUser = _currentUser;
-			await UpdateSetting();
-			await UpdateModules();
+			await UpdateSetting(_currentUser);
+			await UpdateModules(_currentUser);
 		}
 
-		public async Task<ICollection<Module>> UpdateModules()
+		public async Task UpdateModules(CurrentUser currentUser)
 		{
-			var modules = await _moduleRepository.GetAll();
-			foreach (var module in modules)
+			try
 			{
-				var fiedlIsExist = module.Fields.SingleOrDefault(q => q.Name == "is_sample");
-				if (fiedlIsExist == null)
+				using (var _scope = _serviceScopeFactory.CreateScope())
 				{
-
-					module.Fields.Add(new Field
+					using (var tenantDbContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>())
 					{
-						Name = "is_sample",
-						DataType = DataType.Checkbox,
-						Deleted = false,
-						DisplayDetail = true,
-						DisplayForm = true,
-						DisplayList = true,
-						Editable = true,
-						InlineEdit = true,
-						LabelEn = "Sample Data",
-						LabelTr = "Örnek Kayıt",
-						Order = (short)(module.Fields.Count + 1),
-						Primary = false,
-						Section = "system",
-						SectionColumn = 2,
-						ShowLabel = true,
-						ShowOnlyEdit = false,
-						SystemType = SystemType.Custom,
-						Validation = new FieldValidation
+						using (var moduleRepository = new ModuleRepository(tenantDbContext, _configuration))
 						{
-							Readonly = false,
-							Required = false
+							moduleRepository.CurrentUser = currentUser;
+							var modules = await moduleRepository.GetAll();
+							foreach (var module in modules)
+							{
+								var fiedlIsExist = module.Fields.SingleOrDefault(q => q.Name == "is_sample");
+								if (fiedlIsExist == null)
+								{
+
+									module.Fields.Add(new Field
+									{
+										Name = "is_sample",
+										DataType = DataType.Checkbox,
+										Deleted = false,
+										DisplayDetail = true,
+										DisplayForm = true,
+										DisplayList = true,
+										Editable = true,
+										InlineEdit = true,
+										LabelEn = "Sample Data",
+										LabelTr = "Örnek Kayıt",
+										Order = (short)(module.Fields.Count + 1),
+										Primary = false,
+										Section = "system",
+										SectionColumn = 2,
+										ShowLabel = true,
+										ShowOnlyEdit = false,
+										SystemType = SystemType.Custom,
+										Validation = new FieldValidation
+										{
+											Readonly = false,
+											Required = false
+										}
+									});
+									await moduleRepository.Update(module);
+								}
+							}
 						}
-					});
-					await _moduleRepository.Update(module);
+					}
 				}
 			}
-
-			return modules;
+			catch (Exception e)
+			{
+				SentrySdk.CaptureException(e);
+			}
 		}
 
-		public async Task UpdateSetting()
+		public async Task UpdateSetting(CurrentUser currentUser)
 		{
-			var settings = await _settingRepository.GetAllSettings();
-			var settingsPasswordList = settings.Where(r => r.Key == "password");
-			foreach (var settingPassword in settingsPasswordList)
+			try
 			{
-				if (string.IsNullOrEmpty(settingPassword.Value))
-					continue;
+				using (var _scope = _serviceScopeFactory.CreateScope())
+				{
+					using (var tenantDbContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>())
+					{
+						using (var settingRepository = new SettingRepository(tenantDbContext, _configuration))
+						{
+							settingRepository.CurrentUser = currentUser;
+							
+							var settings = await settingRepository.GetAllSettings();
+							var settingsPasswordList = settings.Where(r => r.Key == "password");
+							foreach (var settingPassword in settingsPasswordList)
+							{
+								if (string.IsNullOrEmpty(settingPassword.Value))
+									continue;
 
-				settingPassword.Value = CryptoHelper.Encrypt(settingPassword.Value);
-				await _settingRepository.Update(settingPassword);
+								settingPassword.Value = CryptoHelper.Encrypt(settingPassword.Value);
+								await settingRepository.Update(settingPassword);
+							}
+						}
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				SentrySdk.CaptureException(e);
 			}
 		}
 	}
