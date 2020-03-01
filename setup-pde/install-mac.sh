@@ -157,7 +157,7 @@ mkdir lfs
 mkdir log
 
 cd "$basePath/programs/gitea"
-cp "$basePath/setup/app.ini" app.ini
+cp "$basePath/setup-pde/app.ini" app.ini
 
 pathRepository="$basePath/data/gitea/repositories"
 pathRepository=${pathRepository//\//\\/} # escape slash

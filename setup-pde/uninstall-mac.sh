@@ -11,25 +11,19 @@ basePath=$(pwd [-LP])
 echo -e "${GREEN}Deleting services...${NC}"
 launchctl remove io.primeapps.postgres.pre
 launchctl remove io.primeapps.postgres.pde
-launchctl remove io.primeapps.postgres.pre-test
 launchctl remove io.primeapps.minio.pre
 launchctl remove io.primeapps.minio.pde
-launchctl remove io.primeapps.minio.pre-test
 launchctl remove io.primeapps.redis.pre
 launchctl remove io.primeapps.redis.pde
-launchctl remove io.primeapps.redis.pre-test
 launchctl remove io.primeapps.gitea.pde
 
 rm ~/Library/LaunchAgents/gitea-pde.plist
 rm ~/Library/LaunchAgents/minio-pre.plist
 rm ~/Library/LaunchAgents/minio-pde.plist
-rm ~/Library/LaunchAgents/minio-pre-test.plist
 rm ~/Library/LaunchAgents/postgres-pre.plist
 rm ~/Library/LaunchAgents/postgres-pde.plist
-rm ~/Library/LaunchAgents/postgres-pre-test.plist
 rm ~/Library/LaunchAgents/redis-pre.plist
 rm ~/Library/LaunchAgents/redis-pde.plist
-rm ~/Library/LaunchAgents/redis-pre-test.plist
 
 echo -e "${GREEN}Deleting $basePath/data...${NC}"
 rm -rf "$basePath/data"
