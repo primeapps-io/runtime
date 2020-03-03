@@ -88,7 +88,7 @@ namespace PrimeApps.App.Helpers
         {
             var isAllowed = false;
 
-            var permission = userProfile?.Permissions.SingleOrDefault(x => x.ModuleId == moduleId && x.Type == type);
+            var permission = userProfile?.Permissions.FirstOrDefault(x => x.ModuleId == moduleId && x.Type == type);
             if (permission == null) return false;
 
             switch (operation)

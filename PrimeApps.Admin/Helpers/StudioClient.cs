@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Security;
 using System.Threading.Tasks;
 
 namespace PrimeApps.Admin.Helpers
@@ -19,8 +20,33 @@ namespace PrimeApps.Admin.Helpers
         public StudioClient(IConfiguration configuration, string token, int appId = 0, int orgId = 0)
         {
             var apiBaseUrl = configuration.GetValue("AppSettings:StudioUrl", string.Empty) + "/api/";
+            var useProxy = configuration.GetValue("Proxy:UseProxy", string.Empty);
+            var proxyUrl = configuration.GetValue("Proxy:ProxyUrl", string.Empty);
+            var certificateValidation = configuration.GetValue("Proxy:CertificateValidation", string.Empty);
+            var httpClientHandler = new HttpClientHandler();
 
-            var client = new HttpClient();
+            if (!string.IsNullOrEmpty(useProxy) && bool.Parse(useProxy))
+            {
+                var proxy = new WebProxy()
+                {
+                    Address = new Uri(proxyUrl),
+                    UseDefaultCredentials = true,
+                };
+
+                httpClientHandler = new HttpClientHandler()
+                {
+                    Proxy = proxy,
+                    ServerCertificateCustomValidationCallback = (sender, certificate, chain, errors) =>
+                    {
+                        if (!string.IsNullOrEmpty(certificateValidation) && !bool.Parse(certificateValidation))
+                            return true;
+
+                        return errors == SslPolicyErrors.None;
+                    }
+                };
+            }
+            
+            var client = new HttpClient(httpClientHandler, disposeHandler: true);
             client.DefaultRequestHeaders.Accept.Clear();
             client.BaseAddress = new Uri(apiBaseUrl);
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
