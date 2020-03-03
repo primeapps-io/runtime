@@ -1255,12 +1255,12 @@ namespace PrimeApps.App.Controllers
             var label = "";
             var fields = new List<Field>();
 
-            foreach (var field in moduleFields)
+            foreach (var moduleField in moduleFields)
             {
-                var fieldPermission = HasFieldPermission(profileId, field, moduleEntity);
+                var fieldPermission = HasFieldPermission(profileId, moduleField, moduleEntity);
 
                 if (fieldPermission)
-                    fields.Add(field);
+                    fields.Add(moduleField);
             }
 
             var view = await _viewRepository.GetById(viewId);
@@ -1337,10 +1337,10 @@ namespace PrimeApps.App.Controllers
              * Modüldeki tüm alanları aktar Check değil ise -> isViewFields = true
              * isViewFields = true durumunda View'de görüntülenen alanları export etmekteyiz.
              */
+            var field = new Field();
             if (isViewFields)
             {
                 var viewFields = new List<Field>();
-                var field = new Field();
                 var viewFieldsList = view.Fields.Where(x => !x.Deleted);
 
                 foreach (var viewField in viewFieldsList)
@@ -1393,7 +1393,7 @@ namespace PrimeApps.App.Controllers
 
             for (int i = 0; i < fields.Count; i++)
             {
-                var field = fields[i];
+                field = fields[i];
 
                 if (field.DataType != Model.Enums.DataType.Lookup)
                 {
@@ -1420,7 +1420,7 @@ namespace PrimeApps.App.Controllers
 
             for (int i = 0; i < fields.Count; i++)
             {
-                var field = fields[i];
+                field = fields[i];
 
                 label = locale.Contains("tr") ? field.LabelTr : field.LabelEn;
 
@@ -1494,7 +1494,7 @@ namespace PrimeApps.App.Controllers
 
                 for (int i = 0; i < fields.Count; i++)
                 {
-                    var field = fields[i];
+                    field = fields[i];
 
                     //Lookuplarda field name boş geliyor.
                     if (field.DataType != DataType.Lookup && record[!isViewFields ? field.Name : field.StyleInput].IsNullOrEmpty())
@@ -1546,11 +1546,7 @@ namespace PrimeApps.App.Controllers
                         else
                             continue;
 
-                        if (!field.Name.Contains(".") && isViewFields)
-                            dr[i] = record[field.Name];
-
-                        else
-                            dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
+                        dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
 
                     }
                 }
