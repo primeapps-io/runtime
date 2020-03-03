@@ -555,9 +555,10 @@ namespace PrimeApps.Model.Helpers
                                             {
                                                 await storage.Upload(file["file_name"].ToString(), bucketName, file["unique_name"].ToString(), fileStream);
                                             }
-                                            catch (Exception)
+                                            catch (Exception ex)
                                             {
                                                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + $" : File {file["file_name"]} not uploaded. Unique name is {file["unique_name"]}..." + Environment.NewLine);
+                                                ErrorHandler.LogError(ex, "PublishHelper UpdateTenant method error. AppId: " + app["id"] + " - Version: " + version);
                                             }
                                         }
                                     }
@@ -566,6 +567,7 @@ namespace PrimeApps.Model.Helpers
                             catch (Exception e)
                             {
                                 File.AppendAllText(logPath, "\u001b[90m" + DateTime.Now + "\u001b[39m" + $" : \u001b[93m Unhandle exception while applying storage file... Error : {e.Message} \u001b[39m" + Environment.NewLine);
+                                ErrorHandler.LogError(e, "PublishHelper UpdateTenant method error. AppId: " + app["id"] + " - Version: " + version);
                             }
                         }
                     }
