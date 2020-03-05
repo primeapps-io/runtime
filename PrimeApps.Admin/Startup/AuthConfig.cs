@@ -83,7 +83,7 @@ namespace PrimeApps.Admin
                         if (context.Failure.Message.Contains("Correlation failed"))
                             context.Response.Redirect("/");
                         else
-                            context.Response.Redirect("/Error");
+                            throw new Exception(context.Failure.Message);
 
                         context.HandleResponse();
 
