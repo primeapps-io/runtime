@@ -237,8 +237,9 @@ namespace PrimeApps.Studio.Controllers
             if (moduleEntity == null)
                 return NotFound();
 
+            var profiles = await _profileRepository.GetAll();
             //Update module
-            var moduleChanges = _moduleHelper.UpdateEntity(module, moduleEntity);
+            var moduleChanges = _moduleHelper.UpdateEntity(module, moduleEntity, profiles.ToList());
 
             //If there is no changes for dynamic tables then return ok
             if (moduleChanges == null)
