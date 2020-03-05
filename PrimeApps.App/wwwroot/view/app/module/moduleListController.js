@@ -509,27 +509,17 @@ angular.module('primeapps')
 			$scope.selectRow = function ($event, record) {
 				/*selects or unselects records*/
 				if ($event.target.checked) {
-					record.fields.forEach(function (field) {
-						/*find primary field and get its value*/
-						if (field.primary == true) {
-							/*add selected record*/
-							$scope.selectedRows.push(record.id);
-
-							$scope.selectedRecords.push({
-								id: record.id,
-								displayName: field.valueFormatted
-							});
-
-							return;
-						}
+					$scope.selectedRows.push(record.id);
+					$scope.selectedRecords.push({
+						id: record.id
 					});
 				} else {
 					$scope.selectedRows = $scope.selectedRows.filter(function (selectedItem) {
-						return selectedItem != record.id;
+						return selectedItem !== record.id;
 					});
 
 					$scope.selectedRecords = $scope.selectedRecords.filter(function (selectedItem) {
-						return selectedItem.id != record.id;
+						return selectedItem.id !== record.id;
 					});
 				}
 				$scope.isAllSelected = false;
@@ -537,7 +527,7 @@ angular.module('primeapps')
 
 			$scope.isRowSelected = function (id) {
 				return $scope.selectedRows.filter(function (selectedItem) {
-					return selectedItem == id;
+					return selectedItem === id;
 				}).length > 0;
 			};
 
@@ -609,7 +599,7 @@ angular.module('primeapps')
 					return;
 				}
 
-				if ($scope.selectedRows.length == 0 && !$scope.isAllSelected) {
+				if ($scope.selectedRows.length === 0 && !$scope.isAllSelected) {
 					ngToast.create({ content: $filter('translate')('Module.NoRecordSelected'), className: 'warning' });
 					return;
 				}
@@ -634,7 +624,7 @@ angular.module('primeapps')
 					return;
 				}
 
-				if ($scope.selectedRows.length == 0 && !$scope.isAllSelected) {
+				if ($scope.selectedRows.length === 0 && !$scope.isAllSelected) {
 					ngToast.create({ content: $filter('translate')('Module.NoRecordSelected'), className: 'warning' });
 					return;
 				}
@@ -796,7 +786,7 @@ angular.module('primeapps')
 
 				ModuleService.getTemplates($scope.module.name, 'excel')
 					.then(function (templateResponse) {
-						if (templateResponse.data.length == 0) {
+						if (templateResponse.data.length === 0) {
 							if (!$rootScope.preview)
 								ngToast.create({
 									content: $filter('translate')('Setup.Templates.TemplateNotFound'),
