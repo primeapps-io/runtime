@@ -707,7 +707,7 @@
       "InvalidPassword": "Hatalı şifre girdiniz. Lütfen şifrenizi girerek tekrar deneyiniz.",
       "ImageError": "Seçmiş olduğunuz resim uygun formatta değil. Geçerli formatlar: jpg, jpeg, png, bmp",
       "DocumentTypeError": "Seçmiş olduğunuz dosya uygun formatta değil. Geçerli formatlar:  doc, docx, pdf, txt",
-      "SizeError": "Maksimum 800 kilobyte boyutunda dosya yükleyebilirsiniz.",
+      "SizeError": "Maksimum 5 megabyte boyutunda dosya yükleyebilirsiniz.",
       "RelatedListView": "İlişkili Liste Görünümü",
       "AsTab": "Sekme şeklinde",
       "AsList": "Liste şeklinde",
