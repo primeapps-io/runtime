@@ -38,6 +38,7 @@ namespace PrimeApps.Admin
                             var userInfo = proxyUri.UserInfo.Split(':');
                             var userName = Uri.UnescapeDataString(userInfo[0]);
                             var password = Uri.UnescapeDataString(userInfo[1]);
+                            proxyUrl = proxyUrl.Remove(proxyUri.ToString().IndexOf(proxyUri.UserInfo), proxyUri.UserInfo.Length + 3);
 
                             credentials = new NetworkCredential(userName, password);
                         }
