@@ -18,7 +18,7 @@ namespace PrimeApps.App
             var hostBuilder = WebHost.CreateDefaultBuilder(args)
                 .UseSetting("https_port", "443")
                 .UseStartup<Startup>();
-            
+
             var useProxy = Environment.GetEnvironmentVariable("Proxy__UseProxy");
 
             if (!string.IsNullOrWhiteSpace(useProxy) && bool.Parse(useProxy))
@@ -27,7 +27,23 @@ namespace PrimeApps.App
 
                 if (!string.IsNullOrWhiteSpace(proxyUrl))
                 {
-                    var webProxy = new WebProxy(proxyUrl);
+                    ICredentials credentials = null;
+
+                    if (proxyUrl.Contains('@'))
+                    {
+                        var proxyUri = new Uri(proxyUrl);
+
+                        if (proxyUri.UserInfo != null)
+                        {
+                            var userInfo = proxyUri.UserInfo.Split(':');
+                            var userName = Uri.UnescapeDataString(userInfo[0]);
+                            var password = Uri.UnescapeDataString(userInfo[1]);
+
+                            credentials = new NetworkCredential(userName, password);
+                        }
+                    }
+
+                    var webProxy = new WebProxy(proxyUrl, false, null, credentials);
                     hostBuilder.UseSentry(o => o.HttpProxy = webProxy);
                 }
             }

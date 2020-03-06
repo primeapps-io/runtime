@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using PrimeApps.Model.Common.Organization; 
+using PrimeApps.Model.Common.Organization;
 using PrimeApps.Model.Entities.Studio;
 using System;
 using System.Collections.Generic;
@@ -27,11 +27,23 @@ namespace PrimeApps.Admin.Helpers
 
             if (!string.IsNullOrEmpty(useProxy) && bool.Parse(useProxy))
             {
-                var proxy = new WebProxy()
+                ICredentials credentials = null;
+
+                if (proxyUrl.Contains('@'))
                 {
-                    Address = new Uri(proxyUrl),
-                    UseDefaultCredentials = true,
-                };
+                    var proxyUri = new Uri(proxyUrl);
+
+                    if (proxyUri.UserInfo != null)
+                    {
+                        var userInfo = proxyUri.UserInfo.Split(':');
+                        var userName = Uri.UnescapeDataString(userInfo[0]);
+                        var password = Uri.UnescapeDataString(userInfo[1]);
+
+                        credentials = new NetworkCredential(userName, password);
+                    }
+                }
+
+                var proxy = new WebProxy(proxyUrl, false, null, credentials);
 
                 httpClientHandler = new HttpClientHandler()
                 {
@@ -45,7 +57,7 @@ namespace PrimeApps.Admin.Helpers
                     }
                 };
             }
-            
+
             var client = new HttpClient(httpClientHandler, disposeHandler: true);
             client.DefaultRequestHeaders.Accept.Clear();
             client.BaseAddress = new Uri(apiBaseUrl);
