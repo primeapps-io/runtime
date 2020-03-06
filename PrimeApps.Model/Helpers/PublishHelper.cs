@@ -69,11 +69,24 @@ namespace PrimeApps.Model.Helpers
 
                     if (!string.IsNullOrEmpty(useProxy) && bool.Parse(useProxy))
                     {
-                        var proxy = new WebProxy()
+                        ICredentials credentials = null;
+
+                        if (proxyUrl.Contains('@'))
                         {
-                            Address = new Uri(proxyUrl),
-                            UseDefaultCredentials = true,
-                        };
+                            var proxyUri = new Uri(proxyUrl);
+
+                            if (proxyUri.UserInfo != null)
+                            {
+                                var userInfo = proxyUri.UserInfo.Split(':');
+                                var userName = Uri.UnescapeDataString(userInfo[0]);
+                                var password = Uri.UnescapeDataString(userInfo[1]);
+                                proxyUrl = proxyUrl.Remove(proxyUri.ToString().IndexOf(proxyUri.UserInfo), proxyUri.UserInfo.Length + 3);
+
+                                credentials = new NetworkCredential(userName, password);
+                            }
+                        }
+
+                        var proxy = new WebProxy(proxyUrl, false, null, credentials);
 
                         httpClientHandler = new HttpClientHandler()
                         {
@@ -343,11 +356,24 @@ namespace PrimeApps.Model.Helpers
 
                     if (!string.IsNullOrEmpty(useProxy) && bool.Parse(useProxy))
                     {
-                        var proxy = new WebProxy()
+                        ICredentials credentials = null;
+
+                        if (proxyUrl.Contains('@'))
                         {
-                            Address = new Uri(proxyUrl),
-                            UseDefaultCredentials = true,
-                        };
+                            var proxyUri = new Uri(proxyUrl);
+
+                            if (proxyUri.UserInfo != null)
+                            {
+                                var userInfo = proxyUri.UserInfo.Split(':');
+                                var userName = Uri.UnescapeDataString(userInfo[0]);
+                                var password = Uri.UnescapeDataString(userInfo[1]);
+                                proxyUrl = proxyUrl.Remove(proxyUri.ToString().IndexOf(proxyUri.UserInfo), proxyUri.UserInfo.Length + 3);
+
+                                credentials = new NetworkCredential(userName, password);
+                            }
+                        }
+
+                        var proxy = new WebProxy(proxyUrl, false, null, credentials);
 
                         httpClientHandler = new HttpClientHandler()
                         {
