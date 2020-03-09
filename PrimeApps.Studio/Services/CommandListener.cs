@@ -199,7 +199,7 @@ namespace PrimeApps.Studio.Services
                     }
                     else if (parameter.DbType == DbType.String)
                     {
-                        value = "'" + value.ToString() + "'";
+                        value = "'" + value.Replace("'", "''").ToString() + "'";
                     }
                     else if (parameter.DbType == DbType.Boolean)
                     {
