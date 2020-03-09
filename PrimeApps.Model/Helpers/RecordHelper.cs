@@ -468,10 +468,12 @@ namespace PrimeApps.Model.Helpers
 
 			if (!isAggregate)
 			{
-				sql += $"ORDER BY {sortSql} NULLS LAST\n" +
-					   $"LIMIT {limit}\n" +
-					   $"OFFSET {findRequest.Offset};\n" +
-					   "EXECUTE SelectQuery";
+				var tableIdColumn = $"\"{tableName}\".\"{idColumn}\"";
+				
+				sql += $"ORDER BY {sortSql},{tableIdColumn} NULLS LAST\n" +
+				       $"LIMIT {limit}\n" +
+				       $"OFFSET {findRequest.Offset};\n" +
+				       "EXECUTE SelectQuery";
 			}
 			else
 			{
