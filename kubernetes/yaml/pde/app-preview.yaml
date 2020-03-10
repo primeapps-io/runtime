@@ -8,25 +8,24 @@ data:
   TenantDBConnection: "server=pde.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;maximum pool size=1000;"
   PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
   RedisConnection: "cache-redis-master.cache:6379,password=pr!m€Appsi0r,defaultDatabase=1,syncTimeout=30000"
+  AuthenticationServerURL: "https://auth-preview.primeapps.io"
   StorageUrl: "https://storage-pde.primeapps.io"
   StorageAccessKey: "47059d03d1224a4505c517aaca18ef55"
   StorageSecretKey: "998321ed439a32dfc364b4e9884e9879"
   EnableJobs: "true"
-  EnableBpm: "false"
   EnableRequestLogging: "false"
   EmailSMTPEnableSsl: "true"
   EmailSMTPHost: "smtp.sendgrid.net"
   EmailSMTPPort: "587"
   EmailSMTPUser: "apikey"
   EmailSMTPPassword: "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"
-  UseCdn: "false"
-  AuthenticationServerURL: "https://auth-preview.primeapps.io"
   ClientId: "primeapps_preview"
   ClientSecret: "secret"
   ForwardHeaders: "true"
   HttpsRedirection: "true"
-  PreviewMode: "app"
   GoogleMapsApiKey: "AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o"
+  AsposeLicence: ""
+  PreviewMode: "app"
   PreviewClient: "primeapps_preview"
   StudioUrl: "https://studio.primeapps.io"
   SentryDsn: "https://9f004ecf59ff428a8a980b8684ca8aa4:b2332eb76fca4866b48d421dad70ea5c@log.primeapps.io/5"
@@ -102,11 +101,6 @@ spec:
                 configMapKeyRef:
                   name: primeapps-app-preview-config
                   key: EnableJobs
-            - name: AppSettings__EnableBpm
-              valueFrom:
-                configMapKeyRef:
-                  name: primeapps-app-preview-config
-                  key: EnableBpm
             - name: AppSettings__EnableRequestLogging
               valueFrom:
                 configMapKeyRef:
@@ -137,11 +131,6 @@ spec:
                 configMapKeyRef:
                   name: primeapps-app-preview-config
                   key: EmailSMTPPassword
-            - name: AppSettings__UseCdn
-              valueFrom:
-                configMapKeyRef:
-                  name: primeapps-app-preview-config
-                  key: UseCdn
             - name: AppSettings__AuthenticationServerURL
               valueFrom:
                 configMapKeyRef:
@@ -166,22 +155,32 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-app-preview-config
-                  key: HttpsRedirection           
-            - name: AppSettings__PreviewMode
-              valueFrom:
-                configMapKeyRef:
-                  name: primeapps-app-preview-config
-                  key: PreviewMode
+                  key: HttpsRedirection
             - name: AppSettings__GoogleMapsApiKey
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-app-preview-config
                   key: GoogleMapsApiKey
+            - name: AppSettings__AsposeLicence
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-preview-config
+                  key: AsposeLicence                  
+            - name: AppSettings__PreviewMode
+                valueFrom:
+                  configMapKeyRef:
+                    name: primeapps-app-preview-config
+                    key: PreviewMode
             - name: AppSettings__PreviewClient
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-app-preview-config
                   key: PreviewClient
+            - name: AppSettings__StudioUrl
+                valueFrom:
+                  configMapKeyRef:
+                    name: primeapps-app-preview-config
+                    key: StudioUrl
             - name: Sentry__Dsn
               valueFrom:
                 configMapKeyRef:

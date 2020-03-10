@@ -5,7 +5,7 @@ metadata:
   namespace: serverless
 type: Opaque
 data:
-  RedisConnection: Y2FjaGUtdGVzdC1yZWRpcy1tYXN0ZXIuY2FjaGU6NjM3OSxwYXNzd29yZD1wciFt4oKsQXBwc2kwcixkZWZhdWx0RGF0YWJhc2U9MQo=
+  RedisConnection: dU6NjM3OSxwYXNzd29yZD1wciFt4oKsQXBwc2kwcixkZWZhdWx0RGF0YWJhc2U9MQo=
 ---
 apiVersion: v1
 data:

@@ -6,9 +6,4 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: fn
----
-apiVersion: v1
-kind: Namespace
-metadata:
   name: serverless
