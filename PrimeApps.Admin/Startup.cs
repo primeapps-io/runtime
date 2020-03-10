@@ -184,7 +184,7 @@ namespace PrimeApps.Admin
                     .AllowAnyOrigin()
             );
 
-            JobConfiguration(app, Configuration);
+            JobConfiguration(app, Configuration, env);
 
             var webSocketOptions = new WebSocketOptions()
             {
