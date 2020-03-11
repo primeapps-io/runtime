@@ -12,7 +12,7 @@ angular.module('primeapps')
 			$scope.selectedLanguage = angular.copy($rootScope.language);
 			$scope.selectedLocale = angular.copy($rootScope.locale);
 			$scope.multiLanguage = multiLanguage;
-			$scope.showPasswordControl = false;
+			$scope.showPasswordControl = false; 
 
 			officeHelper.officeTenantInfo()
 				.then(function (adInfo) {
@@ -321,7 +321,8 @@ angular.module('primeapps')
 					SettingService.editUser(userModel)
 						.then(function () {
 							uploader.clearQueue();
-							AppService.getMyAccount(true);
+                            AppService.getMyAccount(true);
+                            $rootScope.userPicture = userModel.picture ? blobUrl + '/' + userModel.picture : null;
 						});
 
 				}
