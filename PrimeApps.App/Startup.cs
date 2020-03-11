@@ -205,7 +205,7 @@ namespace PrimeApps.App
                     .AllowAnyOrigin()
             );
 
-            JobConfiguration(app, Configuration);
+            JobConfiguration(app, Configuration, env);
             //BpmConfiguration(app, Configuration);
 
             app.UseMvc(routes =>
