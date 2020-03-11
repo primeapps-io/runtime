@@ -90,6 +90,18 @@ namespace PrimeApps.Model.Repositories
                 DbContext.ViewFilters.Remove(currentFilter);
             }
 
+            var currentViewState = await GetViewState(view.ModuleId, CurrentUser.UserId);
+            var viewStateField = view.Fields.SingleOrDefault(q => q.Field == currentViewState.SortField);
+
+            /* We have to control view.fields when view update because we have at view_states table sort_field column.
+             * if that fields dont't contains current fields old sort_field we have to update it to created_at
+             */
+            if (viewStateField == null)
+            {
+                currentViewState.SortField = "created_at";
+                DbContext.ViewStates.Update(currentViewState);
+            }
+
             return await DbContext.SaveChangesAsync();
         }
 
