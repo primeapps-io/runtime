@@ -1,0 +1,31 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: primeapps-updater-config
+  namespace: primeapps
+data:
+  TenantDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=prod;command timeout=0;keepalive=30;maximum pool size=1000;"
+  PlatformDBConnection: "server=pre.database.svc.cluster.local;port=5432;username=postgres;password=pr!m€Appsi0d;database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: primeapps-updater
+spec:
+  containers:
+    - name: primeapps-updater
+      image: primeapps/primeapps-updater:1.19.132.2-debian
+      env:
+        - name: ConnectionStrings__TenantDBConnection
+          valueFrom:
+            configMapKeyRef:
+              name: primeapps-updater-config
+              key: TenantDBConnection
+        - name: ConnectionStrings__PlatformDBConnection
+          valueFrom:
+            configMapKeyRef:
+              name: primeapps-updater-config
+              key: PlatformDBConnection
+        - name: PRIMEAPPS_ENVIRONMENT
+          value: "pre"
