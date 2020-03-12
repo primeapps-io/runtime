@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.2",
-    "signature": "93937afb9bf48cbbb44fcd72e10b7f24fb6e6002"
+    "signature": "1e4b7a8ec109d6a82fb192dc047379caacd76b42"
   },
   "compilationOptions": {
     "defines": [
@@ -28,8 +28,9 @@
           "AWSSDK.S3": "3.3.104.36",
           "Aspose.Cells": "19.11.0",
           "Aspose.Words": "19.12.0",
-          "Hangfire": "1.7.0-beta4",
-          "Hangfire.AspNetCore": "1.7.0-beta4",
+          "Hangfire": "1.7.9",
+          "Hangfire.AspNetCore": "1.7.9",
+          "Hangfire.Dashboard.BasicAuthorization": "1.0.2",
           "Hangfire.PostgreSql": "1.5.0",
           "Hangfire.Redis.StackExchange": "1.8.0",
           "Humanizer.Core": "2.5.16",
@@ -162,16 +163,16 @@
           "lib/netstandard2.0/Dapper.dll": {}
         }
       },
-      "Hangfire/1.7.0-beta4": {
+      "Hangfire/1.7.9": {
         "dependencies": {
-          "Hangfire.AspNetCore": "1.7.0-beta4",
-          "Hangfire.Core": "1.7.0-beta4",
-          "Hangfire.SqlServer": "1.7.0-beta4"
+          "Hangfire.AspNetCore": "1.7.9",
+          "Hangfire.Core": "1.7.9",
+          "Hangfire.SqlServer": "1.7.9"
         }
       },
-      "Hangfire.AspNetCore/1.7.0-beta4": {
+      "Hangfire.AspNetCore/1.7.9": {
         "dependencies": {
-          "Hangfire.Core": "1.7.0-beta4",
+          "Hangfire.Core": "1.7.9",
           "Microsoft.AspNetCore.Antiforgery": "2.2.0",
           "Microsoft.AspNetCore.Hosting.Abstractions": "2.2.0",
           "Microsoft.AspNetCore.Http.Abstractions": "2.2.0",
@@ -180,7 +181,7 @@
         },
         "runtime": {
           "lib/netstandard2.0/Hangfire.AspNetCore.dll": {
-            "assemblyVersion": "1.7.0.0",
+            "assemblyVersion": "1.7.9.0",
             "fileVersion": "0.0.0.0"
           }
         },
@@ -188,19 +189,25 @@
           "lib/netstandard2.0/Hangfire.AspNetCore.dll": {}
         }
       },
-      "Hangfire.Core/1.7.0-beta4": {
+      "Hangfire.Core/1.7.9": {
         "dependencies": {
           "Newtonsoft.Json": "12.0.1"
         },
         "runtime": {
           "lib/netstandard2.0/Hangfire.Core.dll": {
-            "assemblyVersion": "1.7.0.0",
+            "assemblyVersion": "1.7.9.0",
             "fileVersion": "0.0.0.0"
           }
         },
         "resources": {
           "lib/netstandard2.0/es/Hangfire.Core.resources.dll": {
             "locale": "es"
+          },
+          "lib/netstandard2.0/nl/Hangfire.Core.resources.dll": {
+            "locale": "nl"
+          },
+          "lib/netstandard2.0/pt-BR/Hangfire.Core.resources.dll": {
+            "locale": "pt-BR"
           },
           "lib/netstandard2.0/zh-TW/Hangfire.Core.resources.dll": {
             "locale": "zh-TW"
@@ -213,10 +220,25 @@
           "lib/netstandard2.0/Hangfire.Core.dll": {}
         }
       },
+      "Hangfire.Dashboard.BasicAuthorization/1.0.2": {
+        "dependencies": {
+          "Hangfire.AspNetCore": "1.7.9",
+          "Microsoft.AspNetCore.Http.Abstractions": "2.2.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Hangfire.Dashboard.BasicAuthorization.dll": {
+            "assemblyVersion": "1.0.2.0",
+            "fileVersion": "1.0.2.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/Hangfire.Dashboard.BasicAuthorization.dll": {}
+        }
+      },
       "Hangfire.PostgreSql/1.5.0": {
         "dependencies": {
           "Dapper": "1.50.5",
-          "Hangfire.Core": "1.7.0-beta4",
+          "Hangfire.Core": "1.7.9",
           "Microsoft.CSharp": "4.5.0",
           "Newtonsoft.Json": "12.0.1",
           "Npgsql": "4.0.4"
@@ -233,7 +255,7 @@
       },
       "Hangfire.Redis.StackExchange/1.8.0": {
         "dependencies": {
-          "Hangfire.Core": "1.7.0-beta4",
+          "Hangfire.Core": "1.7.9",
           "Newtonsoft.Json": "12.0.1",
           "StackExchange.Redis": "2.0.519"
         },
@@ -247,13 +269,14 @@
           "lib/netstandard2.0/Hangfire.Redis.StackExchange.dll": {}
         }
       },
-      "Hangfire.SqlServer/1.7.0-beta4": {
+      "Hangfire.SqlServer/1.7.9": {
         "dependencies": {
-          "Hangfire.Core": "1.7.0-beta4"
+          "Hangfire.Core": "1.7.9",
+          "System.Data.SqlClient": "4.6.0"
         },
         "runtime": {
           "lib/netstandard2.0/Hangfire.SqlServer.dll": {
-            "assemblyVersion": "1.7.0.0",
+            "assemblyVersion": "1.7.9.0",
             "fileVersion": "0.0.0.0"
           }
         },
@@ -1642,7 +1665,7 @@
         "dependencies": {
           "AWSSDK.Extensions.NETCore.Setup": "3.3.100.1",
           "AWSSDK.S3": "3.3.104.36",
-          "Hangfire": "1.7.0-beta4",
+          "Hangfire": "1.7.9",
           "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "2.2.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "2.2.0",
           "Microsoft.EntityFrameworkCore": "2.2.0",
@@ -4885,26 +4908,33 @@
       "path": "dapper/1.50.5",
       "hashPath": "dapper.1.50.5.nupkg.sha512"
     },
-    "Hangfire/1.7.0-beta4": {
+    "Hangfire/1.7.9": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-SUhnIDQxiJgDqk4JYCmEdGeT4ShAGuB/IqGmynPKUO2zy+vplOCy1OEBIjUAo9ubSWihE8rdhaVq//w0yxCP3A==",
-      "path": "hangfire/1.7.0-beta4",
-      "hashPath": "hangfire.1.7.0-beta4.nupkg.sha512"
+      "sha512": "sha512-tkYsIxyLyihrelb+62C6ubz8yCTIUlpTiCtq0MH8ItyMCUgFYYAT/ASXtfMYnNU4xr/egQqRcH5exFSaYJxLbA==",
+      "path": "hangfire/1.7.9",
+      "hashPath": "hangfire.1.7.9.nupkg.sha512"
     },
-    "Hangfire.AspNetCore/1.7.0-beta4": {
+    "Hangfire.AspNetCore/1.7.9": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-BmXrACjC9ooNJTGzscL6g/n6GTnqXbh8YHzqeS8/QEJPyxO8LyxXpd21lj6cLi1+R48Ckml4bYxHH0Hysi8Nhw==",
-      "path": "hangfire.aspnetcore/1.7.0-beta4",
-      "hashPath": "hangfire.aspnetcore.1.7.0-beta4.nupkg.sha512"
+      "sha512": "sha512-KY2JlteawK3oozv59WKzuBRy90lcRailvVSeYK8yJzYoae7YrluyP8LPUzGefajWDQSfFqskG3vyKJTOJINnjg==",
+      "path": "hangfire.aspnetcore/1.7.9",
+      "hashPath": "hangfire.aspnetcore.1.7.9.nupkg.sha512"
     },
-    "Hangfire.Core/1.7.0-beta4": {
+    "Hangfire.Core/1.7.9": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-sfhe2na9Cc49qxZm7RUmrrCSz7QM6Qv3o5ENFMJtGQ897d909Q+DItJ4WO8O+H7aD9ijc2s/XiCGhB2wRnaRGQ==",
-      "path": "hangfire.core/1.7.0-beta4",
-      "hashPath": "hangfire.core.1.7.0-beta4.nupkg.sha512"
+      "sha512": "sha512-CmJ5MRUn7pxUUtuqcLubzzXktcPRQiV3S98jtin0x0a+Lvflm5evBJpTD3/6Do9u88y4gfij6aCR7WRGCVL5Hg==",
+      "path": "hangfire.core/1.7.9",
+      "hashPath": "hangfire.core.1.7.9.nupkg.sha512"
+    },
+    "Hangfire.Dashboard.BasicAuthorization/1.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-tlDkF4pGOA7VthYtzpmekqC9Uh5DRhemEFyK1WJhzlkn46LLVmHGtlPjADJn99EFMJH6RHBkZhJBAO9Y3MiWYA==",
+      "path": "hangfire.dashboard.basicauthorization/1.0.2",
+      "hashPath": "hangfire.dashboard.basicauthorization.1.0.2.nupkg.sha512"
     },
     "Hangfire.PostgreSql/1.5.0": {
       "type": "package",
@@ -4920,12 +4950,12 @@
       "path": "hangfire.redis.stackexchange/1.8.0",
       "hashPath": "hangfire.redis.stackexchange.1.8.0.nupkg.sha512"
     },
-    "Hangfire.SqlServer/1.7.0-beta4": {
+    "Hangfire.SqlServer/1.7.9": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-DFAju0Oa7oIMk995ejrFGUCsvfhYcUbXX8wy+pAglGynNgRglGOlUrs01ic6J4bP0qb9FC2KxkKK+I0lSkgYjA==",
-      "path": "hangfire.sqlserver/1.7.0-beta4",
-      "hashPath": "hangfire.sqlserver.1.7.0-beta4.nupkg.sha512"
+      "sha512": "sha512-wqpAe5WhzDjXGM4cOUbENazkiBogn8mc5Dpk9Qp1tnngqW5XW2iETP1tE5pUpa2Q870TxOCrnurvQNRCAvMuvA==",
+      "path": "hangfire.sqlserver/1.7.9",
+      "hashPath": "hangfire.sqlserver.1.7.9.nupkg.sha512"
     },
     "Humanizer.Core/2.5.16": {
       "type": "package",
