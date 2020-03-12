@@ -91,7 +91,8 @@ namespace PrimeApps.Model.Repositories
                 .Where(x => x.OrganizationId == organizationId && x.UserId == userId && !x.Organization.Deleted)
                 .FirstOrDefaultAsync();
 
-            return organization.Organization;
+                
+            return organization?.Organization;
         }
 
         public async Task<int> Create(Organization organization)
