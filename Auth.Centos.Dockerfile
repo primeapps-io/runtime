@@ -31,7 +31,7 @@ ENV ASPNETCORE_Kestrel__Certificates__Default__Path="aspnetapp.pfx"
 # Trust Kubernetes CA certificate
 USER root
 RUN yum -y update && yum -y install ca-certificates && update-ca-trust force-enable
-RUN cp ca.crt /etc/pki/ca-trust/source/anchors/kubernetes_ca.crt
+RUN cp ca.crt /etc/pki/ca-trust/source/anchors/ca.crt
 RUN update-ca-trust extract
 
 # Install System.Drawing native dependencies

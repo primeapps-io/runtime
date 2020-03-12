@@ -27,13 +27,13 @@ ENV ASPNETCORE_Kestrel__Certificates__Default__Password="1q2w3e4r5t"
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path="aspnetapp.pfx"
 
 # Trust Kubernetes CA certificate
-RUN mkdir -p /usr/local/share/ca-certificates/ && cp ca.crt /usr/local/share/ca-certificates/kubernetes_ca.crt
-RUN chmod 777 /usr/local/share/ca-certificates/kubernetes_ca.crt
+RUN mkdir -p /usr/local/share/ca-certificates/ && cp ca.crt /usr/local/share/ca-certificates/ca.crt
+RUN chmod 777 /usr/local/share/ca-certificates/ca.crt
 RUN update-ca-certificates --fresh
 
 # Install PostgreSQL Client
 RUN mkdir -p /usr/share/man/man1 && mkdir -p /usr/share/man/man7
-RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client-9.6
+RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client-11
 RUN psql --version
 
 FROM base AS final
