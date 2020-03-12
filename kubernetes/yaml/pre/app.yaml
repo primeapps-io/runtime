@@ -173,6 +173,12 @@ spec:
                 configMapKeyRef:
                   name: primeapps-app-config
                   key: SentryDsn
+      hostAliases:
+        - ip: 172.16.34.205
+          hostnames:
+            - auth.eu4.primeapps.io
+            - admin.eu4.primeapps.io
+            - storage.eu4.primeapps.io
 ---
 kind: Service
 apiVersion: v1
