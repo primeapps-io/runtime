@@ -23,7 +23,11 @@ ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 
 # Install PostgreSQL Client
 RUN mkdir -p /usr/share/man/man1 && mkdir -p /usr/share/man/man7
-RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client-11
+RUN apt update && apt -y upgrade && apt -y install wget gnupg2
+RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ stretch-pgdg main" | tee /etc/apt/sources.list.d/pgdg.list
+RUN apt update
+RUN apt install -y --no-install-recommends postgresql-client-12
 RUN psql --version
 
 # Install System.Drawing native dependencies

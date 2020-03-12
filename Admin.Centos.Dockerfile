@@ -28,11 +28,15 @@ ENV ASPNETCORE_HTTPS_PORT=443
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password="1q2w3e4r5t"
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path="aspnetapp.pfx"
 
-# Trust Kubernetes CA certificate
+# Trust CA certificate
 USER root
 RUN yum -y update && yum -y install ca-certificates && update-ca-trust force-enable
 RUN cp ca.crt /etc/pki/ca-trust/source/anchors/ca.crt
 RUN update-ca-trust extract
+
+# Install PostgreSQL Client
+RUN yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+RUN yum -y install postgresql12 
 
 # Install System.Drawing native dependencies
 RUN ln -s /lib64/libdl.so.2 /lib64/libdl.so
