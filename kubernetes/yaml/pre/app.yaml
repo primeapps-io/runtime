@@ -61,7 +61,7 @@ spec:
             secretName: primeapps-app-selfsigned-ssl
       containers:
         - name: primeapps-app
-          image: primeapps/primeapps-auth:1.19.132.2-debian
+          image: primeapps/primeapps-app:1.19.132.2-debian
           volumeMounts:
             - mountPath: "/etc/self-signed-ssl"
               name: self-signed-ssl
@@ -157,12 +157,7 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-app-config
-                  key: HttpsRedirection          
-            - name: AppSettings__PreviewMode
-              valueFrom:
-                configMapKeyRef:
-                  name: primeapps-app-config
-                  key: PreviewMode
+                  key: HttpsRedirection
             - name: AppSettings__GoogleMapsApiKey
               valueFrom:
                 configMapKeyRef:
@@ -222,7 +217,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   annotations:
-    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: letsencrypt-prod
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/proxy-buffer-size: 16k
     nginx.ingress.kubernetes.io/server-snippet: |-
