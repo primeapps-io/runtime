@@ -125,6 +125,11 @@ spec:
                 configMapKeyRef:
                   name: primeapps-admin-config
                   key: AuthenticationServerURL
+            - name: AppSettings__AuthenticationServerURLLocal
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-admin-config
+                  key: AuthenticationServerURLLocal
             - name: AppSettings__ClientId
               valueFrom:
                 configMapKeyRef:
