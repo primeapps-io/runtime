@@ -3557,10 +3557,10 @@ angular.module('primeapps')
                                                             var findRecords = function (findRequest, cacheItem) {
                                                                 scope.listFindRequest = findRequest;
 
-                                                                $scope.executeCode = false;
-                                                                components.run('BeforeListRequest', 'Script', $scope);
+                                                                scope.executeCode = false;
+                                                                components.run('BeforeListRequest', 'Script', scope);
 
-                                                                if ($scope.executeCode)
+                                                                if (scope.executeCode)
                                                                     return;
 
                                                                 that.findRecords(scope.module.name, scope.listFindRequest)
