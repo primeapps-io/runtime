@@ -18,6 +18,9 @@ namespace PrimeApps.Model.Entities.Tenant
 
         [Column("name"), Required]
         public string Name { get; set; }
+         
+        [Column("profile_id"), ForeignKey("Profile"), /*Index*/]
+        public int ProfileId { get; set; }
 
         [Column("profiles")]
         public string Profiles
@@ -38,6 +41,8 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("description"), MaxLength(500)]
         public string Description { get; set; }
          
+        public virtual Profile Profile { get; set; }
+
         [NotMapped]
         private List<string> _profileList { get; set; }
 
