@@ -6,18 +6,43 @@ namespace PrimeApps.Model.Migrations.TenantDB
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
+            migrationBuilder.DropForeignKey(
+                name: "FK_menu_profiles_profile_id",
+                schema: "public",
+                table: "menu");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "profile_id",
+                schema: "public",
+                table: "menu",
+                nullable: true,
+                oldClrType: typeof(int));
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_menu_profiles_profile_id",
+                schema: "public",
+                table: "menu",
+                column: "profile_id",
+                principalSchema: "public",
+                principalTable: "profiles",
+                principalColumn: "id",
+                onDelete: ReferentialAction.Restrict);
+        }
+
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropForeignKey(
+                name: "FK_menu_profiles_profile_id",
+                schema: "public",
+                table: "menu");
+
+            migrationBuilder.AlterColumn<int>(
                 name: "profile_id",
                 schema: "public",
                 table: "menu",
                 nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_menu_profile_id",
-                schema: "public",
-                table: "menu",
-                column: "profile_id");
+                oldClrType: typeof(int),
+                oldNullable: true);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_menu_profiles_profile_id",
@@ -28,24 +53,6 @@ namespace PrimeApps.Model.Migrations.TenantDB
                 principalTable: "profiles",
                 principalColumn: "id",
                 onDelete: ReferentialAction.Cascade);
-        }
-
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropForeignKey(
-                name: "FK_menu_profiles_profile_id",
-                schema: "public",
-                table: "menu");
-
-            migrationBuilder.DropIndex(
-                name: "IX_menu_profile_id",
-                schema: "public",
-                table: "menu");
-
-            migrationBuilder.DropColumn(
-                name: "profile_id",
-                schema: "public",
-                table: "menu");
         }
     }
 }

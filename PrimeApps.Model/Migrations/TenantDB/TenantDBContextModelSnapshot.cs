@@ -2007,7 +2007,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .IsRequired()
                         .HasColumnName("name");
 
-                    b.Property<int>("ProfileId")
+                    b.Property<int?>("ProfileId")
                         .HasColumnName("profile_id");
 
                     b.Property<string>("Profiles")
@@ -5250,8 +5250,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.HasOne("PrimeApps.Model.Entities.Tenant.Profile", "Profile")
                         .WithMany()
-                        .HasForeignKey("ProfileId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ProfileId");
 
                     b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()

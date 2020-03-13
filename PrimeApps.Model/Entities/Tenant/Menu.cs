@@ -20,7 +20,7 @@ namespace PrimeApps.Model.Entities.Tenant
         public string Name { get; set; }
          
         [Column("profile_id"), ForeignKey("Profile"), /*Index*/]
-        public int ProfileId { get; set; }
+        public int? ProfileId { get; set; }
 
         [Column("profiles")]
         public string Profiles
