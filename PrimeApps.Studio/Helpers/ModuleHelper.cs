@@ -11,7 +11,7 @@ namespace PrimeApps.Studio.Helpers
 {
     public interface IModuleHelper
     {
-        Module CreateEntity(ModuleBindingModel moduleModel);
+        Module CreateEntity(ModuleBindingModel moduleModel, List<Profile> profiles);
         ModuleChanges UpdateEntity(ModuleBindingModel moduleModel, Module moduleEntity, List<Profile> profiles);
         List<ViewField> DeleteViewField(ICollection<View> views, int id, List<FieldBindingModel> fields);
         Module RevertEntity(ModuleChanges moduleChanges, Module moduleEntity);
@@ -40,7 +40,7 @@ namespace PrimeApps.Studio.Helpers
             _auditLogHelper = auditLogHelper;
             Queue = queue;
         }
-        public Module CreateEntity(ModuleBindingModel moduleModel)
+        public Module CreateEntity(ModuleBindingModel moduleModel, List<Profile> profiles)
         {
             var moduleEntity = new Module
             {
@@ -69,15 +69,23 @@ namespace PrimeApps.Studio.Helpers
 
                 if (sectionModel.Permissions != null && sectionModel.Permissions.Count > 0)
                 {
-                    sectionEntity.Permissions = new List<SectionPermission>();
+                    if (sectionEntity.Permissions == null)
+                        sectionEntity.Permissions = new List<SectionPermission>();
 
-                    foreach (var permissionModel in sectionModel.Permissions)
+                    foreach (var profile in profiles)
                     {
+                        var permissionModel = sectionModel.Permissions.FirstOrDefault(q => q.ProfileId == profile.Id);
+
                         var permissionEntity = new SectionPermission
                         {
-                            ProfileId = permissionModel.ProfileId,
-                            Type = permissionModel.Type
+                            ProfileId = profile.Id,
                         };
+
+                        //if any permissions has been added, we add full permission for the remaining profiles.
+                        if (permissionModel == null)
+                            permissionEntity.Type = SectionPermissionType.Full;
+                        else
+                            permissionEntity.Type = permissionModel.Type;
 
                         sectionEntity.Permissions.Add(permissionEntity);
                     }
@@ -104,15 +112,23 @@ namespace PrimeApps.Studio.Helpers
 
                 if (fieldModel.Permissions != null && fieldModel.Permissions.Count > 0)
                 {
-                    fieldEntity.Permissions = new List<FieldPermission>();
+                    if (fieldEntity.Permissions == null)
+                        fieldEntity.Permissions = new List<FieldPermission>();
 
-                    foreach (var permissionModel in fieldModel.Permissions)
+                    foreach (var profile in profiles)
                     {
+                        var permissionModel = fieldModel.Permissions.FirstOrDefault(q => q.ProfileId == profile.Id);
+
                         var permissionEntity = new FieldPermission
                         {
-                            ProfileId = permissionModel.ProfileId,
-                            Type = permissionModel.Type
+                            ProfileId = profile.Id,
                         };
+
+                        //if any permissions has been added, we add full permission for the remaining profiles.
+                        if (permissionModel == null)
+                            permissionEntity.Type = FieldPermissionType.Full;
+                        else
+                            permissionEntity.Type = permissionModel.Type;
 
                         fieldEntity.Permissions.Add(permissionEntity);
                     }
