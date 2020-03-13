@@ -22,13 +22,13 @@
 							<div class="panel">
 								<p>We'll create a release package for you. You can publish your app using this package. Packaging process and logs will be shown in the list.</p>
 								<div ng-if="grid.dataSource.data().length < 1">
-									<h4 style="margin: 20px 0px 0px 0px; font-size: 16px;">Trasfer Module's Records</h4>
+									<h4 style="margin: 20px 0px 0px 0px; font-size: 16px;">Include records added in preview</h4>
 									<div class="form-group">
 										<label class="radio-inline newinput">
-											<input ng-model="package.protectModules" name="protectModules" type="radio" value="DontTransfer">Don't Transfer<span></span>
+											<input ng-model="package.protectModules" name="protectModules" type="radio" value="DontTransfer">None<span></span>
 										</label>
 										<label class="radio-inline newinput">
-											<input ng-model="package.protectModules" name="protectModules" type="radio" value="AllModules">Include All Modules<span></span>
+											<input ng-model="package.protectModules" name="protectModules" type="radio" value="AllModules">All Modules<span></span>
 										</label>
 										<label class="radio-inline newinput">
 											<input ng-model="package.protectModules" name="protectModules" type="radio" value="SelectedModules">Selected Modules<span></span>
@@ -57,7 +57,7 @@
 										</div>
 									</div>
 								</div>
-								<button type="submit" ladda="" class="btn btn-radius btn-blue">Create Package</button>
+								<button type="submit" ladda="" class="btn btn-radius btn-blue"><i class="fas fa-rocket"></i> Create Package</button>
 							</div>
 						</div>
 					</div>

@@ -188,9 +188,8 @@ namespace PrimeApps.Studio.Controllers
                 if (templateEntity == null)
                     return NotFound();
                 
-                /**Buraya başka sytem_code'lara gelecek*/
-                if (templateEntity.SystemCode == "password_reset")
-                    return BadRequest("You couldn't delete this system_code(password_reset)!");
+                if (templateEntity.SystemCode == "email_confirm" || templateEntity.SystemCode == "password_reset")
+                    return Forbid();
                 
                 await _appDraftTemplateRepository.DeleteSoft(templateEntity);
                 
