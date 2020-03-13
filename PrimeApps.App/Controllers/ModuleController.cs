@@ -74,7 +74,8 @@ namespace PrimeApps.App.Controllers
             if (module == null)
                 return NotFound();
 
-            await _moduleHelper.PermissionCheck(module, AppUser.Id, _userRepository, _moduleRepository);
+            if (!AppUser.HasAdminProfile)
+                await _moduleHelper.PermissionCheck(module, AppUser.Id, _userRepository, _moduleRepository);
 
             return Ok(module);
         }
@@ -87,7 +88,8 @@ namespace PrimeApps.App.Controllers
             if (module == null)
                 return NotFound();
 
-            await _moduleHelper.PermissionCheck(module, AppUser.Id, _userRepository, _moduleRepository);
+            if (!AppUser.HasAdminProfile)
+                await _moduleHelper.PermissionCheck(module, AppUser.Id, _userRepository, _moduleRepository);
 
             return Ok(module);
         }
@@ -108,9 +110,11 @@ namespace PrimeApps.App.Controllers
             if (previewMode == "tenant")
                 await _moduleHelper.ProcessScriptFiles(modules, _moduleRepository.CurrentUser);
 
-			
-			var user = await _userRepository.GetByIdWithPermission(AppUser.Id);
-			await _moduleHelper.PermissionCheck(modules, user, _moduleRepository);
+            if (!AppUser.HasAdminProfile)
+            {
+                var user = await _userRepository.GetByIdWithPermission(AppUser.Id);
+                await _moduleHelper.PermissionCheck(modules, user, _moduleRepository);
+            }
 
             return modules;
         }
