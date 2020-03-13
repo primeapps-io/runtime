@@ -10,7 +10,7 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.TenantDB
 {
     [DbContext(typeof(TenantDBContext))]
-    [Migration("20200313120021_Task4202")]
+    [Migration("20200313164829_Task4202")]
     partial class Task4202
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2009,7 +2009,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .IsRequired()
                         .HasColumnName("name");
 
-                    b.Property<int>("ProfileId")
+                    b.Property<int?>("ProfileId")
                         .HasColumnName("profile_id");
 
                     b.Property<string>("Profiles")
@@ -5252,8 +5252,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.HasOne("PrimeApps.Model.Entities.Tenant.Profile", "Profile")
                         .WithMany()
-                        .HasForeignKey("ProfileId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ProfileId");
 
                     b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
