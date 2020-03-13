@@ -389,6 +389,7 @@ namespace PrimeApps.Auth.UI
                     var vmLogin = await BuildLoginViewModelAsync(returnUrl);
                     return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vmLogin);
                 }
+
                 return RedirectToAction(nameof(AccountController.Login), "Account", new { returnUrl = vm.ReturnUrl });
             }
 
@@ -643,8 +644,9 @@ namespace PrimeApps.Auth.UI
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-            var url = Request.Scheme + "://" + vm.ApplicationInfo.Domain + "/api/account/send_password_reset";
+            var appDomain = _configuration.GetValue("AppSettings:AppDomain", string.Empty);
+            var domain = !string.IsNullOrEmpty(appDomain) ? appDomain : vm.ApplicationInfo.Domain;
+            var url = Request.Scheme + "://" + domain + "/api/account/send_password_reset";
 
             var requestModel = new JObject
             {
@@ -828,8 +830,8 @@ namespace PrimeApps.Auth.UI
                     RedirectUri = Url.Action("ExternalLoginCallback"),
                     Items =
                     {
-                        {"returnUrl", returnUrl},
-                        {"scheme", provider},
+                        { "returnUrl", returnUrl },
+                        { "scheme", provider },
                     }
                 };
                 return Challenge(props, provider);
@@ -1264,7 +1266,7 @@ namespace PrimeApps.Auth.UI
                     ReturnUrl = returnUrl,
                     Username = context?.LoginHint,
                     ExternalProviders = new ExternalProvider[]
-                        {new ExternalProvider {AuthenticationScheme = context.IdP}},
+                        { new ExternalProvider { AuthenticationScheme = context.IdP } },
                     ApplicationInfo = applicationInfo,
                     Language = applicationInfo.Language,
                     Success = success,
@@ -1326,7 +1328,7 @@ namespace PrimeApps.Auth.UI
         private async Task<LogoutViewModel> BuildLogoutViewModelAsync(string logoutId, string returnUrl, string error = null)
         {
             var vm = new LogoutViewModel
-            { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt, Error = error };
+                { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt, Error = error };
 
             vm.ReturnUrl = returnUrl;
 
@@ -1402,8 +1404,8 @@ namespace PrimeApps.Auth.UI
                     RedirectUri = Url.Action("ExternalLoginCallback"),
                     Items =
                     {
-                        {"returnUrl", returnUrl},
-                        {"scheme", AccountOptions.WindowsAuthenticationSchemeName},
+                        { "returnUrl", returnUrl },
+                        { "scheme", AccountOptions.WindowsAuthenticationSchemeName },
                     }
                 };
 
@@ -1674,7 +1676,8 @@ namespace PrimeApps.Auth.UI
                         settings.Culture = culture;
                         settings.Language = culture.Substring(0, 2);
                         settings.TimeZone = "America/New_York";
-                        settings.Currency = culture.Substring(0, 2) == "tr" ? "TRY" : "USD"; ;
+                        settings.Currency = culture.Substring(0, 2) == "tr" ? "TRY" : "USD";
+                        ;
                     }
                     else
                     {
@@ -1693,9 +1696,8 @@ namespace PrimeApps.Auth.UI
                         return response;
                     }
 
-					platformUser = await _platformUserRepository.GetWithTenants(model.Email);
-
-				}
+                    platformUser = await _platformUserRepository.GetWithTenants(model.Email);
+                }
 
                 if (applicationInfo.ApplicationSetting.RegistrationType == RegistrationType.Tenant)
                 {
@@ -1742,13 +1744,13 @@ namespace PrimeApps.Auth.UI
                             throw new Exception("Database cannot be created!");
 
                         _userRepository.CurrentUser = new CurrentUser
-                        { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                            { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
                         _profileRepository.CurrentUser = new CurrentUser
-                        { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                            { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
                         _roleRepository.CurrentUser = new CurrentUser
-                        { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                            { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
                         _recordRepository.CurrentUser = new CurrentUser
-                        { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                            { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
 
                         _profileRepository.TenantId = _roleRepository.TenantId =
                             _userRepository.TenantId = _recordRepository.TenantId = tenantId;
@@ -1786,8 +1788,10 @@ namespace PrimeApps.Auth.UI
                         //await _recordRepository.UpdateSampleData(platformUser);
                         //await Cache.ApplicationUser.Add(user.Email, user.Id);
                         //await Cache.User.Get(user.Id);
-                        string baseUrl = Request.Scheme + "://" + applicationInfo.Domain;
-                        string url = baseUrl + "/api/account/user_created";
+
+                        var appDomain = _configuration.GetValue("AppSettings:AppDomain", string.Empty);
+                        var domain = !string.IsNullOrEmpty(appDomain) ? appDomain : applicationInfo.Domain;
+                        var url = Request.Scheme + "://" + domain + "/api/account/user_created";
 
                         var requestModel = new JObject
                         {
@@ -1824,7 +1828,7 @@ namespace PrimeApps.Auth.UI
                         }
 
                         // Add storage policy to make all uploaded objects reachable within app domain.
-                        await _storage.CreateBucketPolicy($"tenant{tenant.Id}", baseUrl, UnifiedStorage.PolicyType.TenantPolicy);
+                        await _storage.CreateBucketPolicy($"tenant{tenant.Id}", Request.Scheme + "://" + applicationInfo.Domain, UnifiedStorage.PolicyType.TenantPolicy);
                         await _storage.CopyBucket($"app{applicationInfo.Id}", "templates", $"tenant{tenant.Id}", "templates");
 
                         Queue.QueueBackgroundWorkItem(x => AuthHelper.TenantOperationWebhook(applicationInfo, tenant, tenantUser));
@@ -1855,7 +1859,7 @@ namespace PrimeApps.Auth.UI
                     await _platformUserRepository.UpdateAsync(platformUser);
 
                     #endregion
-                    
+
                     var cryptId = CryptoHelper.Encrypt(platformUser.Id.ToString());
                     var url = studioUrl + "/api/account/create";
 
