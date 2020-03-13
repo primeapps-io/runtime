@@ -184,7 +184,7 @@
     <value>You have an account</value>
   </data>
   <data name="ForgotPasswordSuccess" xml:space="preserve">
-    <value>We've sent an email to your email address to reset the password. You can change your password by clicking the link in the email.</value>
+    <value>We have sent an email to your email address to reset the password. You can change your password by clicking the link in the email.</value>
   </data>
   <data name="Login" xml:space="preserve">
     <value>Login</value>
