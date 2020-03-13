@@ -137,7 +137,7 @@ namespace PrimeApps.Model.Repositories
             return records;
         }
 
-        public async Task<JArray> GetAllById(string moduleName, List<int> recordIds, bool roleBasedEnabled = true)
+        public async Task<JArray> GetAllById(string moduleName, List<int> recordIds, bool roleBasedEnabled = true, bool isAdmin = false)
         {
             string owners = null;
             string userGroups = null;
@@ -147,6 +147,9 @@ namespace PrimeApps.Model.Repositories
 
             var sql = RecordHelper.GenerateGetAllByIdSql(moduleName, recordIds, owners, CurrentUser.UserId, userGroups);
             var records = DbContext.Database.SqlQueryDynamic(sql);
+
+            if (isAdmin)
+                return records;
 
             var newRecords = new JArray();
 
@@ -652,6 +655,9 @@ namespace PrimeApps.Model.Repositories
             removedFieldList = new List<string>();
             removedFields = removedFields == null ? new List<string>() : removedFields;
 
+            ///TODO array record gelicek sekilde tekrar duzenleme yapilmasi gerekiyor. 
+            ///Bazi yerlerde loop ile bu method cagiriliyor ve surekli olarak db request ile perfonmasi etkileyebilir.
+
             var user = await DbContext.Users
                 .Include(q => q.Profile)
                 .ThenInclude(q => q.Permissions)
@@ -659,6 +665,11 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync(q => q.Id == userId);
 
             var profile = user.Profile;
+
+            //If user is a admin, we do nothing
+            if (profile.HasAdminRights)
+                return record;
+
             var module = await DbContext.Modules
                 .Include(mod => mod.Sections)
                 .ThenInclude(section => section.Permissions)

@@ -661,7 +661,7 @@ namespace PrimeApps.App.Controllers
                 if (!int.TryParse(id.ToString(), out recordId) || recordId < 1)
                     return BadRequest("Invalid record id!");
 
-                var currentRecord = await _recordRepository.GetById(moduleEntity, (int)id, AppUser.HasAdminProfile, profileBasedEnabled: AppUser.HasAdminProfile,operation: OperationType.update);
+                var currentRecord = await _recordRepository.GetById(moduleEntity, (int)id, AppUser.HasAdminProfile, profileBasedEnabled: AppUser.HasAdminProfile, operation: OperationType.update);
                 var recordUpdate = new JObject();
 
                 foreach (var record in records)
@@ -673,7 +673,7 @@ namespace PrimeApps.App.Controllers
                         return BadRequest("Record not found!");
 
                     var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, recordUpdate, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, _tagRepository, _settingRepository, _recordRepository, true, currentRecord, AppUser, customBulkUpdatePermission);
-                   
+
                     if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
                         return StatusCode(resultBefore, ModelState);
 
@@ -831,7 +831,8 @@ namespace PrimeApps.App.Controllers
 
             try
             {
-                records = await _recordRepository.GetAllById(module, recordIds.ToList());
+
+                records = await _recordRepository.GetAllById(module, recordIds.ToList(), AppUser.HasAdminProfile);
 
                 //Format records if has locale
                 if (!string.IsNullOrWhiteSpace(locale))
