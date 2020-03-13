@@ -132,8 +132,9 @@ namespace PrimeApps.Studio.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var profiles = await _profileRepository.GetAll();
             //Create module
-            var moduleEntity = _moduleHelper.CreateEntity(module);
+            var moduleEntity = _moduleHelper.CreateEntity(module, profiles.ToList());
             var resultCreate = await _moduleRepository.Create(moduleEntity);
 
             if (resultCreate < 1)
