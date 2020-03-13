@@ -79,7 +79,8 @@ namespace PrimeApps.Studio
             services.AddScoped<IReportHelper, ReportHelper>();
             services.AddScoped<IPackageHelper, Helpers.PackageHelper>();
             services.AddScoped<IMigrationHelper, MigrationHelper>();
-
+            services.AddScoped<IAppDraftTemplateHelper, AppDraftTemplateHelper>();
+            
             services.TryAddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.TryAddSingleton<IHistoryHelper, HistoryHelper>();
             services.TryAddSingleton<IWebSocketHelper, WebSocketHelper>();

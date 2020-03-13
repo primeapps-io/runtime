@@ -187,12 +187,12 @@ namespace PrimeApps.Studio.Controllers
 
                 if (templateEntity == null)
                     return NotFound();
-                
+
                 if (templateEntity.SystemCode == "email_confirm" || templateEntity.SystemCode == "password_reset")
                     return Forbid();
-                
+
                 await _appDraftTemplateRepository.DeleteSoft(templateEntity);
-                
+
                 return Ok();
             }
             else
@@ -206,7 +206,7 @@ namespace PrimeApps.Studio.Controllers
 
                 return Ok();
             }
-          
+
         }
 
         [Route("count"), HttpGet]
@@ -265,15 +265,15 @@ namespace PrimeApps.Studio.Controllers
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-   
-                var templateEntity = await _appDraftTemplateRepository.Get(id);
 
-                if (templateEntity == null)
-                    return NotFound();
+            var templateEntity = await _appDraftTemplateRepository.Get(id);
 
-                TemplateHelper.UpdateEntity(null, null, null, template, templateEntity, true);
-                await _appDraftTemplateRepository.Update(templateEntity);
-                return Ok(templateEntity);          
+            if (templateEntity == null)
+                return NotFound();
+
+            TemplateHelper.UpdateEntity(null, null, null, template, templateEntity, true);
+            await _appDraftTemplateRepository.Update(templateEntity);
+            return Ok(templateEntity);
         }
 
         [Route("count_app_email_template"), HttpGet]
@@ -289,17 +289,15 @@ namespace PrimeApps.Studio.Controllers
         }
 
         [Route("find_app_email_template")]
-        public IActionResult FindAppEmailTemplate(ODataQueryOptions<AppDraftTemplate> queryOptions)
+        public IActionResult FindAppEmailTemplate(ODataQueryOptions<AppDraftTemplate> queryOptions, [FromUri]int appId)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var views = _appDraftTemplateRepository.Find();
+            var views = _appDraftTemplateRepository.Find(appId);
             var queryResults = (IQueryable<AppDraftTemplate>)queryOptions.ApplyTo(views, new ODataQuerySettings() { EnsureStableOrdering = false });
-            return Ok(new PageResult<AppDraftTemplate>(queryResults, Request.ODataFeature().NextLink,
-                Request.ODataFeature().TotalCount));
+            return Ok(new PageResult<AppDraftTemplate>(queryResults, Request.ODataFeature().NextLink, Request.ODataFeature().TotalCount));
         }
-
 
         [Route("get_all_by_app_id"), HttpGet]
         public async Task<IActionResult> GetAllByAppId()

@@ -24,7 +24,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<List<AppDraftTemplate>> GetAll(int appId)
         {
-            return await DbContext.AppTemplates.Where(x => x.AppId == appId).ToListAsync();
+            return await DbContext.AppTemplates.Where(x => x.AppId == appId && !x.Deleted && x.Active).ToListAsync();
         }
 
         public async Task<int> Create(AppDraftTemplate template)
@@ -39,10 +39,10 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public IQueryable<AppDraftTemplate> Find()
+        public IQueryable<AppDraftTemplate> Find(int appId)
         {
             var templates = DbContext.AppTemplates
-            .Where(x => !x.Deleted)
+            .Where(x => !x.Deleted && x.Type == AppTemplateType.Email && x.AppId == appId)
             .OrderByDescending(x => x.Id);
 
             return templates;
@@ -57,7 +57,7 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.AppTemplates.FirstOrDefaultAsync(x => x.Id == id);
         }
-        
+
         public async Task<int> DeleteSoft(AppDraftTemplate template)
         {
             template.Deleted = true;

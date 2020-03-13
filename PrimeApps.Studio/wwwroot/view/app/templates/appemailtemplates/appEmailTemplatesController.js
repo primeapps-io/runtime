@@ -248,7 +248,7 @@ angular.module('primeapps')
                     $scope.template.isNew = false;
                 }
             };
-             
+
             $scope.templateSave = function (uploadForm) {
 
                 if (uploadForm.$invalid) {
@@ -355,7 +355,7 @@ angular.module('primeapps')
                     serverSorting: true,
                     transport: {
                         read: {
-                            url: "/api/template/find_app_email_template",
+                            url: "/api/template/find_app_email_template?appId=" + $scope.currentApp.id,
                             type: 'GET',
                             dataType: "json",
                             beforeSend: function (req) {
@@ -396,7 +396,7 @@ angular.module('primeapps')
                     trTemp += '<td class="text-left">' + emailTemp.subject + '</td>';
                     trTemp += emailTemp.language === 'tr' ? '<td>Turkish</td>' : '<td>English</td>';
                     trTemp += '<td>' + emailTemp.system_code + '</td>';
-                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" ng-disabled="dataItem.system_code === \'email_confirm\' || dataItem.system_code === \'password_reset\'" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
                 altRowTemplate: function (emailTemp) {
@@ -405,7 +405,7 @@ angular.module('primeapps')
                     trTemp += '<td class="text-left">' + emailTemp.subject + '</td>';
                     trTemp += emailTemp.language === 'tr' ? '<td>Turkish</td>' : '<td>English</td>';
                     trTemp += '<td>' + emailTemp.system_code + '</td>';
-                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" ng-disabled="dataItem.system_code === \'email_confirm\' || dataItem.system_code === \'password_reset\'" class="action-button2-delete"><i class="fas fa-trash"></i></button></td></tr>';
                     return trTemp;
                 },
                 pageable: {
@@ -449,7 +449,7 @@ angular.module('primeapps')
                         width: "90px"
                     }]
             };
-            
+
             $scope.delete = function (template, event) {
                 var willDelete =
                     swal({

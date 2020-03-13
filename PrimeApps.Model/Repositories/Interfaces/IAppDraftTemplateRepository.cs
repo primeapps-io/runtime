@@ -15,7 +15,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<List<AppDraftTemplate>> GetAll(int appId);
         Task<int> Create(AppDraftTemplate template);
         Task<int> Update(AppDraftTemplate template);
-        IQueryable<AppDraftTemplate> Find();
+        IQueryable<AppDraftTemplate> Find(int appId);
         int Count(int appId);
         Task<AppDraftTemplate> Get(int id);
         Task<int> DeleteSoft(AppDraftTemplate template);
