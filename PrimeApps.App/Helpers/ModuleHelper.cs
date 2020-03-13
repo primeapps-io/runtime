@@ -39,7 +39,7 @@ namespace PrimeApps.App.Helpers
         string ReplaceDynamicValues(string value, JObject appConfigs);
         bool IsTrustedUrl(string url, JObject globalConfig);
         Task<bool> PermissionCheck(Module module, int userId, IUserRepository userRepository, IModuleRepository moduleRepository);
-		Task<bool> PermissionCheck(ICollection<Module> modules, TenantUser user, IModuleRepository moduleRepository);
+        Task<bool> PermissionCheck(ICollection<Module> modules, TenantUser user, IModuleRepository moduleRepository);
     }
 
     public class ModuleHelper : IModuleHelper
@@ -51,7 +51,7 @@ namespace PrimeApps.App.Helpers
         public IBackgroundTaskQueue Queue { get; }
 
 
-        public ModuleHelper(IAuditLogHelper auditLogHelper, IEnvironmentHelper environmentHelper, IBackgroundTaskQueue queue,IComponentRepository componentRepository,
+        public ModuleHelper(IAuditLogHelper auditLogHelper, IEnvironmentHelper environmentHelper, IBackgroundTaskQueue queue, IComponentRepository componentRepository,
             IConfiguration configuration)
         {
             _auditLogHelper = auditLogHelper;
@@ -973,13 +973,17 @@ namespace PrimeApps.App.Helpers
         public async Task<bool> PermissionCheck(Module module, int userId, IUserRepository userRepository, IModuleRepository moduleRepository)
         {
             var user = await userRepository.GetByIdWithPermission(userId);
-            var moduleFull = await moduleRepository.GetByNameWithPermissions(module.Name);
 
-			//var modulePermission = user.Profile.Permissions.Any(x => x.ModuleId == module.Id && x.Read);
+            if (user.Profile.HasAdminRights)
+                return true;
+
+            var moduleFull = await moduleRepository.GetByNameWithPermissions(module.Name);
+            
+            //var modulePermission = user.Profile.Permissions.Any(x => x.ModuleId == module.Id && x.Read);
 
             foreach (var section in moduleFull.Sections)
             {
-				var sectionPermission = section.Permissions.FirstOrDefault(x => x.ProfileId == user.ProfileId);
+                var sectionPermission = section.Permissions.FirstOrDefault(x => x.ProfileId == user.ProfileId);
 
                 if (sectionPermission == null)
                     continue;
@@ -993,7 +997,7 @@ namespace PrimeApps.App.Helpers
 
             foreach (var field in moduleFull.Fields)
             {
-				var fieldPermission = field.Permissions.FirstOrDefault(x => x.ProfileId == user.ProfileId);
+                var fieldPermission = field.Permissions.FirstOrDefault(x => x.ProfileId == user.ProfileId);
 
                 if (fieldPermission == null)
                     continue;
@@ -1021,8 +1025,11 @@ namespace PrimeApps.App.Helpers
             return true;
         }
 
-		public async Task<bool> PermissionCheck(ICollection<Module> modules, TenantUser user, IModuleRepository moduleRepository)
-		{
+        public async Task<bool> PermissionCheck(ICollection<Module> modules, TenantUser user, IModuleRepository moduleRepository)
+        {
+            if (user.Profile.HasAdminRights)
+                return true;
+
             Module[] tempModules = new Module[modules.Count];
 
             modules.CopyTo(tempModules, 0);

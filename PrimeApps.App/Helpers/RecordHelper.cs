@@ -118,9 +118,9 @@ namespace PrimeApps.App.Helpers
 
         public async Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, ITagRepository tagRepository, ISettingRepository settingRepository, IRecordRepository recordRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null, bool customBulkUpdatePermission = false)
         {
-			//TODO: Validate metadata
-			//TODO: Profile permission check
-			var operationUpdate = !record["id"].IsNullOrEmpty();
+            //TODO: Validate metadata
+            //TODO: Profile permission check
+            var operationUpdate = !record["id"].IsNullOrEmpty();
             var picklistItemIds = new List<int>();
             var recordNew = new JObject();
 
@@ -386,46 +386,51 @@ namespace PrimeApps.App.Helpers
             //Check profile permissions
 
             var userProfile = await profileRepository.GetProfileById(appUser.ProfileId);
-            var modulePermission = userProfile.Permissions.Where(x => x.ModuleId == module.Id).FirstOrDefault();
 
-            if (modulePermission == null)
+            if (!userProfile.HasAdminRights)
             {
-                modelState.AddModelError(module.Name, $"You dont have profile permission for '{module.Name}' module.");
-                return StatusCodes.Status403Forbidden;
-            }
+                var modulePermission = userProfile.Permissions.Where(x => x.ModuleId == module.Id).FirstOrDefault();
 
-            if (!record["id"].IsNullOrEmpty() && !modulePermission.Modify && !customBulkUpdatePermission)
-            {
-                modelState.AddModelError(module.Name, $"You dont have profile permission for update '{module.Name}' module.");
-                return StatusCodes.Status403Forbidden;
-            }
-
-            if (record["id"].IsNullOrEmpty() && !modulePermission.Write)
-            {
-                modelState.AddModelError(module.Name, $"You dont have profile permission for create '{module.Name}' module.");
-                return StatusCodes.Status403Forbidden;
-            }
-
-            //Check field of record permission 
-            var removedFieldsList = new List<string>();
-            var operation = record["id"].IsNullOrEmpty() ? OperationType.insert : OperationType.update;
-            await recordRepository.RecordPermissionControl(module.Name, appUser.Id, record, operation, removedFieldsList, customBulkUpdatePermission);
-
-            if (record.IsNullOrEmpty() && (removedFieldsList == null || removedFieldsList.Count < 1))
-            {
-                modelState.AddModelError(module.Name, $"You dont have profile permission for '{module.Name}' module.");
-                return StatusCodes.Status403Forbidden;
-            }
-
-            if (removedFieldsList.Count > 0)
-            {
-                foreach (var field in removedFieldsList)
+                if (modulePermission == null)
                 {
-                    modelState.AddModelError(field, $"You dont have profile permission for '{field}' field.");
+                    modelState.AddModelError(module.Name, $"You dont have profile permission for '{module.Name}' module.");
+                    return StatusCodes.Status403Forbidden;
                 }
 
-                return StatusCodes.Status403Forbidden;
+                if (!record["id"].IsNullOrEmpty() && !modulePermission.Modify && !customBulkUpdatePermission)
+                {
+                    modelState.AddModelError(module.Name, $"You dont have profile permission for update '{module.Name}' module.");
+                    return StatusCodes.Status403Forbidden;
+                }
+
+                if (record["id"].IsNullOrEmpty() && !modulePermission.Write)
+                {
+                    modelState.AddModelError(module.Name, $"You dont have profile permission for create '{module.Name}' module.");
+                    return StatusCodes.Status403Forbidden;
+                }
+
+                //Check field of record permission 
+                var removedFieldsList = new List<string>();
+                var operation = record["id"].IsNullOrEmpty() ? OperationType.insert : OperationType.update;
+                await recordRepository.RecordPermissionControl(module.Name, appUser.Id, record, operation, removedFieldsList, customBulkUpdatePermission);
+
+                if (record.IsNullOrEmpty() && (removedFieldsList == null || removedFieldsList.Count < 1))
+                {
+                    modelState.AddModelError(module.Name, $"You dont have profile permission for '{module.Name}' module.");
+                    return StatusCodes.Status403Forbidden;
+                }
+
+                if (removedFieldsList.Count > 0)
+                {
+                    foreach (var field in removedFieldsList)
+                    {
+                        modelState.AddModelError(field, $"You dont have profile permission for '{field}' field.");
+                    }
+
+                    return StatusCodes.Status403Forbidden;
+                }
             }
+
 
             /*
              * Birleşim data tipi başka bir birleşim data tipiyle kullanılması durumu.
@@ -472,9 +477,9 @@ namespace PrimeApps.App.Helpers
                     }
                 }
             }
-			
-			return StatusCodes.Status200OK;
-		}
+
+            return StatusCodes.Status200OK;
+        }
 
         public async Task<int> BeforeDelete(Module module, JObject record, UserItem appUser, IProcessRepository processRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, ModelStateDictionary modelState, Warehouse warehouse)
         {

@@ -807,7 +807,7 @@ namespace PrimeApps.Studio.Controllers
 
             try
             {
-                records = await _recordRepository.GetAllById(module, recordIds.ToList());
+                records = await _recordRepository.GetAllById(module, recordIds.ToList(), AppUser.HasAdminProfile);
 
                 //Format records if has locale
                 if (!string.IsNullOrWhiteSpace(locale))

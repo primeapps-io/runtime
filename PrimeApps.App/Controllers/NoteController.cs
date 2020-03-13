@@ -97,7 +97,7 @@ namespace PrimeApps.App.Controllers
 
             foreach (var moduleRecordId in moduleRecordIds)
             {
-                var records = await _recordRepository.GetAllById(moduleRecordId.Key, moduleRecordId.Value);
+                var records = await _recordRepository.GetAllById(moduleRecordId.Key, moduleRecordId.Value, AppUser.HasAdminProfile);
                 moduleRecords.Add(moduleRecordId.Key, records);
             }
 
