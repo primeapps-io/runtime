@@ -777,116 +777,116 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.modules', {
-                    url: '/modules',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/modules/modulesSetup.html',
-                            controller: 'ModuleSetupController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/modules/moduleSetupController.js',
-                                cdnUrl + 'view/setup/modules/moduleSetupService.js',
-                                cdnUrl + 'view/setup/license/licenseService.js'
-                            ]);
-                        }]
-                    }
-                })
+                //.state('app.setup.modules', {
+                //    url: '/modules',
+                //    views: {
+                //        'app': {
+                //            templateUrl: cdnUrl + 'view/setup/modules/modulesSetup.html',
+                //            controller: 'ModuleSetupController'
+                //        }
+                //    },
+                //    resolve: {
+                //        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                //            return $ocLazyLoad.load([
+                //                cdnUrl + 'view/setup/modules/moduleSetupController.js',
+                //                cdnUrl + 'view/setup/modules/moduleSetupService.js',
+                //                cdnUrl + 'view/setup/license/licenseService.js'
+                //            ]);
+                //        }]
+                //    }
+                //})
 
-                .state('app.setup.module', {
-                    url: '/module?id&clone&redirect',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/modules/moduleSetupForm.html',
-                            controller: 'ModuleFormSetupController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/modules/moduleSetupFormController.js',
-                                cdnUrl + 'view/setup/modules/moduleSetupLayoutController.js',
-                                cdnUrl + 'view/setup/modules/moduleSetupService.js',
-                                cdnUrl + 'view/app/location/locationFormModalController.js'
-                            ]);
-                        }]
-                    }
-                })
+                //.state('app.setup.module', {
+                //    url: '/module?id&clone&redirect',
+                //    views: {
+                //        'app': {
+                //            templateUrl: cdnUrl + 'view/setup/modules/moduleSetupForm.html',
+                //            controller: 'ModuleFormSetupController'
+                //        }
+                //    },
+                //    resolve: {
+                //        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                //            return $ocLazyLoad.load([
+                //                cdnUrl + 'view/setup/modules/moduleSetupFormController.js',
+                //                cdnUrl + 'view/setup/modules/moduleSetupLayoutController.js',
+                //                cdnUrl + 'view/setup/modules/moduleSetupService.js',
+                //                cdnUrl + 'view/app/location/locationFormModalController.js'
+                //            ]);
+                //        }]
+                //    }
+                //})
 
-                .state('app.setup.modulerelations', {
-                    url: '/module/relations/:module',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/modules/moduleRelations.html',
-                            controller: 'ModuleRelationController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/modules/moduleRelationController.js',
-                                cdnUrl + 'view/setup/modules/moduleSetupService.js'
-                            ]);
-                        }]
-                    }
-                })
+                //.state('app.setup.modulerelations', {
+                //    url: '/module/relations/:module',
+                //    views: {
+                //        'app': {
+                //            templateUrl: cdnUrl + 'view/setup/modules/moduleRelations.html',
+                //            controller: 'ModuleRelationController'
+                //        }
+                //    },
+                //    resolve: {
+                //        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                //            return $ocLazyLoad.load([
+                //                cdnUrl + 'view/setup/modules/moduleRelationController.js',
+                //                cdnUrl + 'view/setup/modules/moduleSetupService.js'
+                //            ]);
+                //        }]
+                //    }
+                //})
 
-                .state('app.setup.moduledependencies', {
-                    url: '/module/dependencies/:module',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/modules/moduleDependencies.html',
-                            controller: 'ModuleDependencyController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/modules/moduleDependencyController.js',
-                                cdnUrl + 'view/setup/modules/moduleSetupService.js'
-                            ]);
-                        }]
-                    }
-                })
+                //.state('app.setup.moduledependencies', {
+                //    url: '/module/dependencies/:module',
+                //    views: {
+                //        'app': {
+                //            templateUrl: cdnUrl + 'view/setup/modules/moduleDependencies.html',
+                //            controller: 'ModuleDependencyController'
+                //        }
+                //    },
+                //    resolve: {
+                //        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                //            return $ocLazyLoad.load([
+                //                cdnUrl + 'view/setup/modules/moduleDependencyController.js',
+                //                cdnUrl + 'view/setup/modules/moduleSetupService.js'
+                //            ]);
+                //        }]
+                //    }
+                //})
 
-                .state('app.setup.actionButtons', {
-                    url: '/module/actionButtons/:module',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/modules/actionButtons.html',
-                            controller: 'ActionButtonsController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/modules/actionButtonsController.js',
-                                cdnUrl + 'view/setup/modules/moduleSetupService.js'
-                            ]);
-                        }]
-                    }
-                })
+                //.state('app.setup.actionButtons', {
+                //    url: '/module/actionButtons/:module',
+                //    views: {
+                //        'app': {
+                //            templateUrl: cdnUrl + 'view/setup/modules/actionButtons.html',
+                //            controller: 'ActionButtonsController'
+                //        }
+                //    },
+                //    resolve: {
+                //        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                //            return $ocLazyLoad.load([
+                //                cdnUrl + 'view/setup/modules/actionButtonsController.js',
+                //                cdnUrl + 'view/setup/modules/moduleSetupService.js'
+                //            ]);
+                //        }]
+                //    }
+                //})
 
-                .state('app.setup.moduleProfileSettings', {
-                    url: '/module/moduleProfileSettings/:module',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/modules/moduleProfileSettings.html',
-                            controller: 'ModuleProfileSettingController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/modules/moduleProfileSettingsController.js',
-                                cdnUrl + 'view/setup/modules/moduleSetupService.js'
-                            ]);
-                        }]
-                    }
-                })
+                //.state('app.setup.moduleProfileSettings', {
+                //    url: '/module/moduleProfileSettings/:module',
+                //    views: {
+                //        'app': {
+                //            templateUrl: cdnUrl + 'view/setup/modules/moduleProfileSettings.html',
+                //            controller: 'ModuleProfileSettingController'
+                //        }
+                //    },
+                //    resolve: {
+                //        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                //            return $ocLazyLoad.load([
+                //                cdnUrl + 'view/setup/modules/moduleProfileSettingsController.js',
+                //                cdnUrl + 'view/setup/modules/moduleSetupService.js'
+                //            ]);
+                //        }]
+                //    }
+                //})
 
                 .state('app.setup.leadconvertmap', {
                     url: '/leadconvertmap',
@@ -995,23 +995,23 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.phone', {
-                    url: '/phone',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/phone/phone.html',
-                            controller: 'PhoneSettingsController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/phone/phoneSettingsController.js',
-                                cdnUrl + 'view/setup/phone/phoneSettingsService.js'
-                            ]);
-                        }]
-                    }
-                })
+                //.state('app.setup.phone', {
+                //    url: '/phone',
+                //    views: {
+                //        'app': {
+                //            templateUrl: cdnUrl + 'view/setup/phone/phone.html',
+                //            controller: 'PhoneSettingsController'
+                //        }
+                //    },
+                //    resolve: {
+                //        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                //            return $ocLazyLoad.load([
+                //                cdnUrl + 'view/setup/phone/phoneSettingsController.js',
+                //                cdnUrl + 'view/setup/phone/phoneSettingsService.js'
+                //            ]);
+                //        }]
+                //    }
+                //})
 
                 .state('app.setup.auditlog', {
                     url: '/auditlog',
@@ -1067,94 +1067,94 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.templateguide', {
-                    url: '/templateguide',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/templates/templateGuide.html',
-                            controller: 'TemplateGuideController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/templates/templateGuideController.js'
-                            ]);
-                        }]
-                    }
-                })
+                //.state('app.setup.templateguide', {
+                //    url: '/templateguide',
+                //    views: {
+                //        'app': {
+                //            templateUrl: cdnUrl + 'view/setup/templates/templateGuide.html',
+                //            controller: 'TemplateGuideController'
+                //        }
+                //    },
+                //    resolve: {
+                //        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                //            return $ocLazyLoad.load([
+                //                cdnUrl + 'view/setup/templates/templateGuideController.js'
+                //            ]);
+                //        }]
+                //    }
+                //})
 
-                .state('app.setup.menu', {
-                    url: '/menu',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/menu/menu.html',
-                            controller: 'MenuController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/menu/menuController.js',
-                                cdnUrl + 'view/setup/menu/menuService.js'
-                            ]);
-                        }]
-                    }
-                })
+                //.state('app.setup.menu', {
+                //    url: '/menu',
+                //    views: {
+                //        'app': {
+                //            templateUrl: cdnUrl + 'view/setup/menu/menu.html',
+                //            controller: 'MenuController'
+                //        }
+                //    },
+                //    resolve: {
+                //        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                //            return $ocLazyLoad.load([
+                //                cdnUrl + 'view/setup/menu/menuController.js',
+                //                cdnUrl + 'view/setup/menu/menuService.js'
+                //            ]);
+                //        }]
+                //    }
+                //})
 
-                .state('app.setup.menu_list', {
-                    url: '/menu_list',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/menu/menuList.html',
-                            controller: 'MenuListController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/menu/menuListController.js',
-                                cdnUrl + 'view/setup/menu/menuService.js'
-                            ]);
-                        }]
-                    }
-                })
+                //.state('app.setup.menu_list', {
+                //    url: '/menu_list',
+                //    views: {
+                //        'app': {
+                //            templateUrl: cdnUrl + 'view/setup/menu/menuList.html',
+                //            controller: 'MenuListController'
+                //        }
+                //    },
+                //    resolve: {
+                //        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                //            return $ocLazyLoad.load([
+                //                cdnUrl + 'view/setup/menu/menuListController.js',
+                //                cdnUrl + 'view/setup/menu/menuService.js'
+                //            ]);
+                //        }]
+                //    }
+                //})
 
-                .state('app.setup.workflows', {
-                    url: '/workflows',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/workflow/workflows.html',
-                            controller: 'WorkflowController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/workflow/workflowController.js',
-                                cdnUrl + 'view/setup/workflow/workflowService.js'
-                            ]);
-                        }]
-                    }
-                })
+                //.state('app.setup.workflows', {
+                //    url: '/workflows',
+                //    views: {
+                //        'app': {
+                //            templateUrl: cdnUrl + 'view/setup/workflow/workflows.html',
+                //            controller: 'WorkflowController'
+                //        }
+                //    },
+                //    resolve: {
+                //        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                //            return $ocLazyLoad.load([
+                //                cdnUrl + 'view/setup/workflow/workflowController.js',
+                //                cdnUrl + 'view/setup/workflow/workflowService.js'
+                //            ]);
+                //        }]
+                //    }
+                //})
 
-                .state('app.setup.workflow', {
-                    url: '/workflow?id',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/workflow/workflowForm.html',
-                            controller: 'WorkflowFormController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/workflow/workflowFormController.js',
-                                cdnUrl + 'view/setup/workflow/workflowService.js'
-                            ]);
-                        }]
-                    }
-                })
+                //.state('app.setup.workflow', {
+                //    url: '/workflow?id',
+                //    views: {
+                //        'app': {
+                //            templateUrl: cdnUrl + 'view/setup/workflow/workflowForm.html',
+                //            controller: 'WorkflowFormController'
+                //        }
+                //    },
+                //    resolve: {
+                //        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                //            return $ocLazyLoad.load([
+                //                cdnUrl + 'view/setup/workflow/workflowFormController.js',
+                //                cdnUrl + 'view/setup/workflow/workflowService.js'
+                //            ]);
+                //        }]
+                //    }
+                //})
 
                 .state('app.setup.approvel_process', {
                     url: '/approvel_process',
@@ -1174,59 +1174,59 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.help', {
-                    url: '/help',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/help/helpPage.html',
-                            controller: 'HelpController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/help/helpController.js',
+                //.state('app.setup.help', {
+                //    url: '/help',
+                //    views: {
+                //        'app': {
+                //            templateUrl: cdnUrl + 'view/setup/help/helpPage.html',
+                //            controller: 'HelpController'
+                //        }
+                //    },
+                //    resolve: {
+                //        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                //            return $ocLazyLoad.load([
+                //                cdnUrl + 'view/setup/help/helpController.js',
 
-                            ]);
-                        }]
-                    }
-                })
+                //            ]);
+                //        }]
+                //    }
+                //})
 
-                .state('app.setup.helpside', {
-                    url: '/helpside',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/help/helpPageSide.html',
-                            controller: 'HelpController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/help/helpController.js',
+                //.state('app.setup.helpside', {
+                //    url: '/helpside',
+                //    views: {
+                //        'app': {
+                //            templateUrl: cdnUrl + 'view/setup/help/helpPageSide.html',
+                //            controller: 'HelpController'
+                //        }
+                //    },
+                //    resolve: {
+                //        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                //            return $ocLazyLoad.load([
+                //                cdnUrl + 'view/setup/help/helpController.js',
 
-                            ]);
-                        }]
-                    }
-                })
+                //            ]);
+                //        }]
+                //    }
+                //})
 
-                .state('app.setup.helpsides', {
-                    url: '/helpsides',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/help/helpPageSides.html',
-                            controller: 'HelpController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/help/helpController.js',
+                //.state('app.setup.helpsides', {
+                //    url: '/helpsides',
+                //    views: {
+                //        'app': {
+                //            templateUrl: cdnUrl + 'view/setup/help/helpPageSides.html',
+                //            controller: 'HelpController'
+                //        }
+                //    },
+                //    resolve: {
+                //        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                //            return $ocLazyLoad.load([
+                //                cdnUrl + 'view/setup/help/helpController.js',
 
-                            ]);
-                        }]
-                    }
-                })
+                //            ]);
+                //        }]
+                //    }
+                //})
 
                 .state('app.setup.approvel', {
                     url: '/approvel?id',
@@ -1246,23 +1246,23 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.warehouse', {
-                    url: '/warehouse',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/warehouse/warehouse.html',
-                            controller: 'WarehouseController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/analytics/analyticsService.js',
-                                cdnUrl + 'view/setup/warehouse/warehouseController.js'
-                            ]);
-                        }]
-                    }
-                })
+                //.state('app.setup.warehouse', {
+                //    url: '/warehouse',
+                //    views: {
+                //        'app': {
+                //            templateUrl: cdnUrl + 'view/setup/warehouse/warehouse.html',
+                //            controller: 'WarehouseController'
+                //        }
+                //    },
+                //    resolve: {
+                //        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                //            return $ocLazyLoad.load([
+                //                cdnUrl + 'view/app/analytics/analyticsService.js',
+                //                cdnUrl + 'view/setup/warehouse/warehouseController.js'
+                //            ]);
+                //        }]
+                //    }
+                //})
 
                 .state('app.setup.usergroups', {
                     url: '/usergroups',
