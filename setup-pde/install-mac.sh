@@ -78,6 +78,7 @@ launchctl load postgres-pde.plist
 cp postgres-pde.plist ~/Library/LaunchAgents/
 
 # Wait Postgres wakeup
+function timeout() { perl -e 'alarm shift; exec @ARGV' "$@"; }
 timeout 15 bash -c 'until echo > /dev/tcp/localhost/5433; do sleep 1; done'
 timeout 15 bash -c 'until echo > /dev/tcp/localhost/5434; do sleep 1; done'
 

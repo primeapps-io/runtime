@@ -62,6 +62,7 @@ launchctl load postgres-primeapps.plist
 cp postgres-primeapps.plist ~/Library/LaunchAgents/
 
 # Wait Postgres wakeup
+function timeout() { perl -e 'alarm shift; exec @ARGV' "$@"; }
 timeout 15 bash -c 'until echo > /dev/tcp/localhost/5436; do sleep 1; done'
 
 # Create postgres role
