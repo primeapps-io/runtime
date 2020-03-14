@@ -22,7 +22,7 @@ namespace PrimeApps.Model.Repositories
         {
         }
 
-        public async Task<List<AppDraftTemplate>> GetAll(int appId)
+        public async Task<List<AppDraftTemplate>> GetAllById(int appId)
         {
             return await DbContext.AppTemplates.Where(x => x.AppId == appId && !x.Deleted && x.Active).ToListAsync();
         }

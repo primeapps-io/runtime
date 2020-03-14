@@ -202,6 +202,9 @@ namespace PrimeApps.Studio.Controllers
                 if (templateEntity == null)
                     return NotFound();
 
+                if (templateEntity.SystemType == SystemType.System)
+                    return Forbid();
+
                 await _templateRepostory.DeleteSoft(templateEntity);
 
                 return Ok();
@@ -305,7 +308,7 @@ namespace PrimeApps.Studio.Controllers
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
                 return StatusCode(403);
 
-            var templates = await _appDraftTemplateRepository.GetAll((int)AppId);
+            var templates = await _appDraftTemplateRepository.GetAllById((int)AppId);
 
             return Ok(templates);
         }

@@ -189,8 +189,8 @@ namespace PrimeApps.Studio.Controllers
                 await _platformUserRepository.UpdateAsync(platformUser);
             }
             #endregion
-
-            var appDraftTemplates = await _appDraftTemplateRepository.GetAll(1);
+            //Default templates
+            var appDraftTemplates = await _appDraftTemplateRepository.GetAllById(1);
 
             Queue.QueueBackgroundWorkItem(token => _draftTemplateHelper.CreateAppDraftTemplates(appDraftTemplates, app));
             Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser));

@@ -12,7 +12,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface IAppDraftTemplateRepository : IRepositoryBaseStudio
     {
-        Task<List<AppDraftTemplate>> GetAll(int appId);
+        Task<List<AppDraftTemplate>> GetAllById(int appId);
         Task<int> Create(AppDraftTemplate template);
         Task<int> Update(AppDraftTemplate template);
         IQueryable<AppDraftTemplate> Find(int appId);
