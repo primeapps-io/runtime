@@ -344,7 +344,7 @@ angular.module('primeapps')
             };
 
             var accessToken = $localStorage.read('access_token');
-
+            $scope.information = $filter('translate')('Common.Information');
             $scope.mainGridOptions = {
                 dataSource: {
                     type: "odata-v4",
@@ -396,7 +396,7 @@ angular.module('primeapps')
                     trTemp += '<td class="text-left">' + emailTemp.subject + '</td>';
                     trTemp += emailTemp.language === 'tr' ? '<td>Turkish</td>' : '<td>English</td>';
                     trTemp += '<td>' + emailTemp.system_code + '</td>';
-                    trTemp += '<td ng-click="$event.stopPropagation();"> <div data-placement="left" data-type="info" data-trigger="hover" data-container="body" bs-tooltip="{ \'title\': (\'Common.Disabled\' | translate)}"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" ng-disabled="dataItem.system_code === \'email_confirm\' || dataItem.system_code === \'password_reset\'" class="action-button2-delete"><i class="fas fa-trash"></i></button></div></td></tr>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <div data-placement="left" data-type="info" data-trigger="hover" data-container="body" bs-tooltip="{ \'title\': dataItem.system_code === \'email_confirm\' || dataItem.system_code === \'password_reset\' ? \'{{\'Common.Information\' | translate}}\' : \'\'}"> <button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" ng-disabled="dataItem.system_code === \'email_confirm\' || dataItem.system_code === \'password_reset\'" class="action-button2-delete"><i class="fas fa-trash"></i></button></div></td></tr>';
                     return trTemp;
                 },
                 altRowTemplate: function (emailTemp) {
@@ -405,7 +405,7 @@ angular.module('primeapps')
                     trTemp += '<td class="text-left">' + emailTemp.subject + '</td>';
                     trTemp += emailTemp.language === 'tr' ? '<td>Turkish</td>' : '<td>English</td>';
                     trTemp += '<td>' + emailTemp.system_code + '</td>';
-                    trTemp += '<td ng-click="$event.stopPropagation();"> <div data-placement="left" data-type="info" data-trigger="hover" data-container="body" bs-tooltip="{ \'title\': (\'Common.Disabled\' | translate)}"><button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" ng-disabled="dataItem.system_code === \'email_confirm\' || dataItem.system_code === \'password_reset\'" class="action-button2-delete"><i class="fas fa-trash"></i></button></div></td></tr>';
+                    trTemp += '<td ng-click="$event.stopPropagation();"> <div data-placement="left" data-type="info" data-trigger="hover" data-container="body" bs-tooltip="{ \'title\': dataItem.system_code === \'email_confirm\' || dataItem.system_code === \'password_reset\' ? \'{{\'Common.Information\' | translate}}\' : \'\'}"><button ng-click="$event.stopPropagation(); delete(dataItem, $event);" type="button" ng-disabled="dataItem.system_code === \'email_confirm\' || dataItem.system_code === \'password_reset\'" class="action-button2-delete"><i class="fas fa-trash"></i></button></div></td></tr>';
                     return trTemp;
                 },
                 pageable: {
