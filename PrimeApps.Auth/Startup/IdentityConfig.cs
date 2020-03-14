@@ -31,6 +31,7 @@ namespace PrimeApps.Auth
 
             var redis = ConnectionMultiplexer.Connect(redisConnectionPersist);
             services.AddDataProtection()
+                .SetApplicationName("PrimeApps.Auth")
                 .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
 
             #endregion
