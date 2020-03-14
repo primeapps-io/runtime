@@ -51,7 +51,7 @@ namespace PrimeApps.Model.Repositories
                 NameEn = newProfileDTO.NameEn,
                 NameTr = string.IsNullOrEmpty(newProfileDTO.NameTr) ? newProfileDTO.NameEn : newProfileDTO.NameTr,
                 Dashboard = newProfileDTO.Dashboard,
-				SmtpSettings = newProfileDTO.SmtpSettings,
+                SmtpSettings = newProfileDTO.SmtpSettings,
                 Home = newProfileDTO.Home,
                 CollectiveAnnualLeave = newProfileDTO.CollectiveAnnualLeave,
                 StartPage = newProfileDTO.StartPage,
@@ -106,8 +106,55 @@ namespace PrimeApps.Model.Repositories
 
             DbContext.Profiles.Add(newProfile);
             var result = await DbContext.SaveChangesAsync();
+
             if (result > 0)
             {
+                //If permission has been added for any section, we add for new profile.
+                var allSectionPermission = await DbContext.SectionPermissions.GroupBy(q => q.SectionId).ToListAsync();
+
+                if (allSectionPermission == null || allSectionPermission.Count < 1)
+                    return newProfile;
+
+                var sectionEntityList = new List<SectionPermission>();
+
+                foreach (var section in allSectionPermission)
+                {
+                    var sectionPermission = new SectionPermission()
+                    {
+                        ProfileId = newProfile.Id,
+                        Type = SectionPermissionType.Full,
+                        SectionId = section.Key
+                    };
+
+                    sectionEntityList.Add(sectionPermission);
+                }
+
+                DbContext.SectionPermissions.AddRange(sectionEntityList);
+                result = await DbContext.SaveChangesAsync();
+
+                //If permission has been added for any field, we add for new profile.
+                var allFieldPermission = await DbContext.FieldPermissions.GroupBy(q => q.FieldId).ToListAsync();
+
+                if (allFieldPermission == null || allFieldPermission.Count < 1)
+                    return newProfile;
+
+                var fieldEntityList = new List<FieldPermission>();
+
+                foreach (var field in allFieldPermission)
+                {
+                    var fieldPermission = new FieldPermission()
+                    {
+                        FieldId = field.Key,
+                        ProfileId = newProfile.Id,
+                        Type = FieldPermissionType.Full
+                    };
+
+                    fieldEntityList.Add(fieldPermission);
+                }
+
+                DbContext.FieldPermissions.AddRange(fieldEntityList); 
+                result = await DbContext.SaveChangesAsync();
+
                 return newProfile;
             }
             else
