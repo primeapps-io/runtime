@@ -18,12 +18,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
             //profile_id kolonu artik kullanilmayacagindan foreign key ve index silinebilir
             migrationBuilder.DropForeignKey(
-                name: "FK_public.menu_public.profiles_profile_id",
+                name: "FK_menu_profiles_profile_id",
                 schema: "public",
                 table: "menu");
 
             migrationBuilder.DropIndex(
-                name: "menu_IX_profile_id",
+                name: "IX_menu_profile_id",
                 schema: "public",
                 table: "menu");
             
