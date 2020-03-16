@@ -2233,6 +2233,231 @@ angular.module('primeapps')
 
                     return deferred.promise;
                 },
+
+                getFakeProfileModule: function () {
+                    var profileModule = {};
+                    profileModule.id = 998;
+                    profileModule.name = 'profiles';
+                    profileModule.system_type = 'system';
+                    profileModule.order = 998;
+                    profileModule.display = false;
+                    profileModule.label_en_singular = 'Profile';
+                    profileModule.label_en_plural = 'Profiles';
+                    profileModule.label_tr_singular = 'Profil';
+                    profileModule.label_tr_plural = 'Profiller';
+                    profileModule.menu_icon = 'fa fa-profile';
+                    profileModule.sections = [];
+                    profileModule.fields = [];
+
+                    var fieldName = {};
+                    fieldName.name = 'name';
+                    fieldName.system_type = 'system';
+                    fieldName.data_type = 'text_single';
+                    fieldName.order = 1;
+                    fieldName.section = 1;
+                    fieldName.section_column = 1;
+                    fieldName.primary = true;
+                    fieldName.inline_edit = true;
+                    fieldName.editable = true;
+                    fieldName.show_label = true;
+                    fieldName.label_en = 'Name';
+                    fieldName.label_tr = 'Ad';
+                    fieldName.display_list = true;
+                    fieldName.display_form = true;
+                    fieldName.display_detail = true;
+                    profileModule.fields.push(fieldName);
+
+                    return profileModule;
+                },
+
+                getFakeRoleModule: function () {
+                    var roleModule = {};
+                    roleModule.id = 997;
+                    roleModule.name = 'roles';
+                    roleModule.system_type = 'system';
+                    roleModule.order = 997;
+                    roleModule.display = false;
+                    roleModule.label_en_singular = 'Role';
+                    roleModule.label_en_plural = 'Roles';
+                    roleModule.label_tr_singular = 'Rol';
+                    roleModule.label_tr_plural = 'Roller';
+                    roleModule.menu_icon = 'fa fa-role';
+                    roleModule.sections = [];
+                    roleModule.fields = [];
+
+                    var label_en = {};
+                    label_en.name = 'label_en';
+                    label_en.system_type = 'system';
+                    label_en.data_type = 'text_single';
+                    label_en.order = 1;
+                    label_en.section = 1;
+                    label_en.section_column = 1;
+                    label_en.primary = true;
+                    label_en.inline_edit = true;
+                    label_en.editable = true;
+                    label_en.show_label = true;
+                    label_en.label_en = 'Label';
+                    label_en.label_tr = 'Etiket';
+                    label_en.display_list = true;
+                    label_en.display_form = true;
+                    label_en.display_detail = true;
+                    roleModule.fields.push(label_en);
+
+                    return roleModule;
+                },
+
+                getFakeUserModule: function () {
+                    var userModule = {};
+                    userModule.id = 999;
+                    userModule.name = 'users';
+                    userModule.system_type = 'system';
+                    userModule.order = 999;
+                    userModule.display = false;
+                    userModule.label_en_singular = 'User';
+                    userModule.label_en_plural = 'Users';
+                    userModule.label_tr_singular = 'Kullan�c�';
+                    userModule.label_tr_plural = 'Kullan�c�lar';
+                    userModule.menu_icon = 'fa fa-users';
+                    userModule.sections = [];
+                    userModule.fields = [];
+
+                    var section = {};
+                    section.name = 'user_information';
+                    section.system_type = 'system';
+                    section.order = 1;
+                    section.column_count = 1;
+                    section.label_en = 'User Information';
+                    section.label_tr = 'Kullan�c� Bilgisi';
+                    section.display_form = true;
+                    section.display_detail = true;
+
+                    var fieldEmail = {};
+                    fieldEmail.name = 'email';
+                    fieldEmail.system_type = 'system';
+                    fieldEmail.data_type = 'email';
+                    fieldEmail.order = 2;
+                    fieldEmail.section = 1;
+                    fieldEmail.section_column = 1;
+                    fieldEmail.primary = false;
+                    fieldEmail.inline_edit = true;
+                    fieldEmail.label_en = 'Email';
+                    fieldEmail.label_tr = 'Eposta';
+                    fieldEmail.display_list = true;
+                    fieldEmail.display_form = true;
+                    fieldEmail.display_detail = true;
+                    userModule.fields.push(fieldEmail);
+
+                    var fieldFirstName = {};
+                    fieldFirstName.name = 'first_name';
+                    fieldFirstName.system_type = 'system';
+                    fieldFirstName.data_type = 'text_single';
+                    fieldFirstName.order = 3;
+                    fieldFirstName.section = 1;
+                    fieldFirstName.section_column = 1;
+                    fieldFirstName.primary = false;
+                    fieldFirstName.inline_edit = true;
+                    fieldFirstName.editable = true;
+                    fieldFirstName.show_label = true;
+                    fieldFirstName.label_en = 'First Name';
+                    fieldFirstName.label_tr = 'Ad�';
+                    fieldFirstName.display_list = true;
+                    fieldFirstName.display_form = true;
+                    fieldFirstName.display_detail = true;
+                    userModule.fields.push(fieldFirstName);
+
+                    var fieldLastName = {};
+                    fieldLastName.name = 'last_name';
+                    fieldLastName.system_type = 'system';
+                    fieldLastName.data_type = 'text_single';
+                    fieldLastName.order = 4;
+                    fieldLastName.section = 1;
+                    fieldLastName.section_column = 1;
+                    fieldLastName.primary = false;
+                    fieldLastName.inline_edit = true;
+                    fieldLastName.editable = true;
+                    fieldLastName.show_label = true;
+                    fieldLastName.label_en = 'Last Name';
+                    fieldLastName.label_tr = 'Soyad�';
+                    fieldLastName.display_list = true;
+                    fieldLastName.display_form = true;
+                    fieldLastName.display_detail = true;
+                    userModule.fields.push(fieldLastName);
+
+                    var fieldFullName = {};
+                    fieldFullName.name = 'full_name';
+                    fieldFullName.system_type = 'system';
+                    fieldFullName.data_type = 'text_single';
+                    fieldFullName.order = 5;
+                    fieldFullName.section = 1;
+                    fieldFullName.section_column = 1;
+                    fieldFullName.primary = true;
+                    fieldFullName.inline_edit = true;
+                    fieldFullName.editable = true;
+                    fieldFullName.show_label = true;
+                    fieldFullName.label_en = 'Name';
+                    fieldFullName.label_tr = 'Ad� Soyad�';
+                    fieldFullName.display_list = true;
+                    fieldFullName.display_form = true;
+                    fieldFullName.display_detail = true;
+                    fieldFullName.combination = {};
+                    fieldFullName.combination.field_1 = 'first_name';
+                    fieldFullName.combination.field_2 = 'last_name';
+                    userModule.fields.push(fieldFullName);
+
+                    var fieldPhone = {};
+                    fieldPhone.name = 'phone';
+                    fieldPhone.system_type = 'system';
+                    fieldPhone.data_type = 'text_single';
+                    fieldPhone.order = 6;
+                    fieldPhone.section = 1;
+                    fieldPhone.section_column = 1;
+                    fieldPhone.primary = false;
+                    fieldPhone.inline_edit = true;
+                    fieldPhone.label_en = 'Phone';
+                    fieldPhone.label_tr = 'Telefon';
+                    fieldPhone.display_list = true;
+                    fieldPhone.display_form = true;
+                    fieldPhone.display_detail = true;
+                    userModule.fields.push(fieldPhone);
+
+                    var fieldProfileId = {};
+                    fieldProfileId.name = 'profile_id';
+                    fieldProfileId.system_type = 'system';
+                    fieldProfileId.data_type = 'number';
+                    fieldProfileId.order = 6;
+                    fieldProfileId.section = 1;
+                    fieldProfileId.section_column = 1;
+                    fieldProfileId.primary = false;
+                    fieldProfileId.inline_edit = true;
+                    fieldProfileId.editable = true;
+                    fieldProfileId.show_label = true;
+                    fieldProfileId.label_en = 'Profile Id';
+                    fieldProfileId.label_tr = 'Profile Id';
+                    fieldProfileId.display_list = true;
+                    fieldProfileId.display_form = true;
+                    fieldProfileId.display_detail = true;
+                    userModule.fields.push(fieldProfileId);
+
+                    var fieldRoleId = {};
+                    fieldRoleId.name = 'role_id';
+                    fieldRoleId.system_type = 'system';
+                    fieldRoleId.data_type = 'number';
+                    fieldRoleId.order = 7;
+                    fieldRoleId.section = 1;
+                    fieldRoleId.section_column = 1;
+                    fieldRoleId.primary = false;
+                    fieldRoleId.inline_edit = true;
+                    fieldRoleId.editable = true;
+                    fieldRoleId.show_label = true;
+                    fieldRoleId.label_en = 'Role Id';
+                    fieldRoleId.label_tr = 'Role Id';
+                    fieldRoleId.display_list = true;
+                    fieldRoleId.display_form = true;
+                    fieldRoleId.display_detail = true;
+                    userModule.fields.push(fieldRoleId);
+
+                    return userModule;
+                },
             };
 
 

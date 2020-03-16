@@ -11,8 +11,12 @@ angular.module('primeapps')
 
             $scope.$parent.activeMenuItem = 'views';
             $rootScope.breadcrumblist[2].title = 'Views';
+            $scope.temporaryModules = angular.copy($rootScope.appModules);
+            $scope.temporaryModules.push(ModuleService.getFakeProfileModule());
+            $scope.temporaryModules.push(ModuleService.getFakeUserModule());
+            $scope.temporaryModules.push(ModuleService.getFakeRoleModule());
             var language = $rootScope.language;
-
+            
             $scope.deleteView = function (id, event) {
                 var willDelete =
                     swal({
@@ -60,7 +64,7 @@ angular.module('primeapps')
                     ViewsService.getView(view.id)
                         .then(function (view) {
                             $scope.view = angular.copy(view);
-                            $scope.module = $filter('filter')($rootScope.appModules, { id: view.module_id }, true)[0];
+                            $scope.module = $filter('filter')($scope.temporaryModules, { id: view.module_id }, true)[0];
                             $scope.view.label = $scope.view['label_' + $scope.language];
                             $scope.view.edit = true;
                             $scope.view.editable = $scope.view.system_type === 'custom' ? true : false;
@@ -98,7 +102,7 @@ angular.module('primeapps')
                 });
 
                 if ($scope.id) {
-                    var module = $filter('filter')($rootScope.appModules, { id: parseInt($scope.id) }, true)[0];
+                    var module = $filter('filter')($scope.temporaryModules, { id: parseInt($scope.id) }, true)[0];
                     $scope.module = module;
                 }
             };
@@ -186,7 +190,7 @@ angular.module('primeapps')
 
                     $scope.module.fields = response.data;
                     $scope.module = ModuleService.getFieldsOperator(module);
-                    $scope.fields = ViewsService.getFields($scope.module, angular.copy($scope.view), $rootScope.appModules);
+                    $scope.fields = ViewsService.getFields($scope.module, angular.copy($scope.view), $scope.temporaryModules);
 
                     ModuleService.getPickItemsLists($scope.module)
                         .then(function (picklists) {
@@ -308,7 +312,7 @@ angular.module('primeapps')
                     view.fields.push(field);
 
                     if (selectedField.lookup_type && selectedField.lookup_type !== 'relation') {
-                        var lookupModule = $filter('filter')($rootScope.appModules, { name: selectedField.lookup_type }, true)[0];
+                        var lookupModule = $filter('filter')($scope.temporaryModules, { name: selectedField.lookup_type }, true)[0];
                         //TODO dont forget
                         if (lookupModule) {
                             var primaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
@@ -334,7 +338,7 @@ angular.module('primeapps')
                     var fieldName = field.name;
 
                     if (field.data_type === 'lookup' && field.lookup_type !== 'users') {
-                        var lookupModule = $filter('filter')($rootScope.appModules, { name: field.lookup_type }, true)[0];
+                        var lookupModule = $filter('filter')($scope.temporaryModules, { name: field.lookup_type }, true)[0];
                         var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                         fieldName = field.name + '.' + field.lookup_type + '.' + lookupModulePrimaryField.name;
                     }
