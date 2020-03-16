@@ -15,7 +15,7 @@ namespace PrimeApps.Studio.Helpers
 {
     public interface IAppDraftTemplateHelper
     {
-        Task CreateAppDraftTemplates(List<AppDraftTemplate> appDraftTemplates, AppDraft appDraft);
+        Task CreateAppDraftTemplates(AppDraft appDraft);
     }
 
     public class AppDraftTemplateHelper : IAppDraftTemplateHelper
@@ -23,8 +23,8 @@ namespace PrimeApps.Studio.Helpers
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IHttpContextAccessor _context;
         private IConfiguration _configuration;
-        private CurrentUser _currentUser;
-
+        //private CurrentUser _currentUser;
+        
         public AppDraftTemplateHelper(IHttpContextAccessor context, IConfiguration configuration,
             IServiceScopeFactory serviceScopeFactory)
         {
@@ -33,13 +33,17 @@ namespace PrimeApps.Studio.Helpers
             _configuration = configuration;
         }
 
-        public async Task CreateAppDraftTemplates(List<AppDraftTemplate> appDraftTemplates, AppDraft appDraft)
+        public async Task CreateAppDraftTemplates(AppDraft appDraft)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<StudioDBContext>();
                 using (var _appDraftTemplateRepository = new AppDraftTemplateRepository(databaseContext, _configuration))
                 {
+                    //Default templates
+                    _appDraftTemplateRepository.CurrentUser = new CurrentUser{PreviewMode = "app", TenantId = appDraft.Id, UserId = 1};
+
+                    var appDraftTemplates = await _appDraftTemplateRepository.GetAllById(1);
                     foreach (var appDraftTemplate in appDraftTemplates)
                     {
                         var newAppDraftTemplate = new AppDraftTemplate

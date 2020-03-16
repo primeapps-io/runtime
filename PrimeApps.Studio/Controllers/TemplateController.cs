@@ -70,7 +70,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> Get(int id)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
-                return StatusCode(403);
+                return Forbid();
 
             var template = await _templateRepostory.GetById(id);
 
@@ -85,7 +85,7 @@ namespace PrimeApps.Studio.Controllers
             GetAll([FromUri] TemplateType templateType) //JObject obj)// = TemplateType.NotSet, [FromQuery(Name = "moduleName")]string moduleName = "")	
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
-                return StatusCode(403);
+                return Forbid();
 
             var templates = await _templateRepostory.GetAll(templateType, LanguageType.NotSet, false); //, moduleName);
 
@@ -97,7 +97,7 @@ namespace PrimeApps.Studio.Controllers
             TemplateType excelType = TemplateType.NotSet, string moduleName = "")
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
-                return StatusCode(403);
+                return Forbid();
 
             var templates = await _templateRepostory.GetAllList(LanguageType.NotSet, type, excelType, moduleName);
 
@@ -108,7 +108,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> Create([FromBody] TemplateBindingModel template)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.Create))
-                return StatusCode(403);
+                return Forbid();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -132,7 +132,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> CreateExcel([FromBody] TemplateBindingModel template)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.Create))
-                return StatusCode(403);
+                return Forbid();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -155,7 +155,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> Update(int id, [FromBody] TemplateBindingModel template)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.Update))
-                return StatusCode(403);
+                return Forbid();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -179,7 +179,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> Delete(int id, [FromQuery]bool isAppTemplate = false)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.Delete))
-                return StatusCode(403);
+                return Forbid();
 
             if (isAppTemplate)
             {
@@ -216,7 +216,7 @@ namespace PrimeApps.Studio.Controllers
         public IActionResult Count([FromUri] TemplateType templateType)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
-                return StatusCode(403);
+                return Forbid();
 
             var count = _templateRepostory.Count(templateType);
             return Ok(count);
@@ -226,7 +226,7 @@ namespace PrimeApps.Studio.Controllers
         public IActionResult Find(ODataQueryOptions<Template> queryOptions, [FromUri]TemplateType templateType = 0)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
-                return StatusCode(403);
+                return Forbid();
 
             var temps = _templateRepostory.Find(templateType);
 
@@ -238,7 +238,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> CreateAppEmailTemplate([FromBody] AppTemplateBindingModel template)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.Create))
-                return StatusCode(403);
+                return Forbid();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -264,7 +264,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> UpdateAppEmailTemplate(int id, [FromBody] AppTemplateBindingModel template)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.Update))
-                return StatusCode(403);
+                return Forbid();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -283,7 +283,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> CountAppTemplate([FromUri] string currentAppName)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
-                return StatusCode(403);
+                return Forbid();
 
             var app = await _appDraftRepository.GetByName(currentAppName.ToLower());
             var count = app != null ? _appDraftTemplateRepository.Count(app.Id) : 0;
@@ -295,7 +295,7 @@ namespace PrimeApps.Studio.Controllers
         public IActionResult FindAppEmailTemplate(ODataQueryOptions<AppDraftTemplate> queryOptions, [FromUri]int appId)
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
-                return StatusCode(403);
+                return Forbid();
 
             var views = _appDraftTemplateRepository.Find(appId);
             var queryResults = (IQueryable<AppDraftTemplate>)queryOptions.ApplyTo(views, new ODataQuerySettings() { EnsureStableOrdering = false });
@@ -306,7 +306,7 @@ namespace PrimeApps.Studio.Controllers
         public async Task<IActionResult> GetAllByAppId()
         {
             if (!_permissionHelper.CheckUserProfile(UserProfile, "template", RequestTypeEnum.View))
-                return StatusCode(403);
+                return Forbid();
 
             var templates = await _appDraftTemplateRepository.GetAllById((int)AppId);
 

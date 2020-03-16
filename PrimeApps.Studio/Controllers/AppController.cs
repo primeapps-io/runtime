@@ -35,7 +35,6 @@ namespace PrimeApps.Studio.Controllers
         private IUnifiedStorage _storage;
         private IUserRepository _userRepository;
         private IAppDraftTemplateHelper _draftTemplateHelper;
-        private IAppDraftTemplateRepository _appDraftTemplateRepository;
 
         public AppController(IConfiguration configuration,
             IBackgroundTaskQueue queue,
@@ -47,8 +46,7 @@ namespace PrimeApps.Studio.Controllers
             IGiteaHelper giteaHelper,
             IUnifiedStorage storage,
             IUserRepository userRepository,
-            IAppDraftTemplateHelper draftTemplateHelper,
-            IAppDraftTemplateRepository appDraftTemplateRepository)
+            IAppDraftTemplateHelper draftTemplateHelper)
         {
             Queue = queue;
             _configuration = configuration;
@@ -61,7 +59,6 @@ namespace PrimeApps.Studio.Controllers
             _storage = storage;
             _userRepository = userRepository;
             _draftTemplateHelper = draftTemplateHelper;
-            _appDraftTemplateRepository = appDraftTemplateRepository;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -71,7 +68,6 @@ namespace PrimeApps.Studio.Controllers
             SetCurrentUser(_appDraftRepository);
             SetCurrentUser(_organizationRepository);
             SetCurrentUser(_collaboratorRepository);
-            SetCurrentUser(_appDraftTemplateRepository);
             base.OnActionExecuting(context);
         }
 
@@ -189,10 +185,7 @@ namespace PrimeApps.Studio.Controllers
                 await _platformUserRepository.UpdateAsync(platformUser);
             }
             #endregion
-            //Default templates
-            var appDraftTemplates = await _appDraftTemplateRepository.GetAllById(1);
-
-            Queue.QueueBackgroundWorkItem(token => _draftTemplateHelper.CreateAppDraftTemplates(appDraftTemplates, app));
+            Queue.QueueBackgroundWorkItem(token => _draftTemplateHelper.CreateAppDraftTemplates(app));
             Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser));
 
             if (Request.Host.Value.Contains("localhost"))

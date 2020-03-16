@@ -344,7 +344,7 @@ angular.module('primeapps')
             };
 
             var accessToken = $localStorage.read('access_token');
-            $scope.information = $filter('translate')('Common.Information');
+
             $scope.mainGridOptions = {
                 dataSource: {
                     type: "odata-v4",
