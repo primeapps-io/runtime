@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -16,17 +17,13 @@ namespace PrimeApps.Admin.Controllers
 	{
 		private readonly IConfiguration _configuration;
 		private readonly IOrganizationHelper _organizationHelper;
-		private IBackgroundTaskQueue _queue;
-		private IMigrationHelper _migrationHelper;
 		private IPlatformRepository _platformRepository;
 
 
-		public MigrationsController(IConfiguration configuration, IOrganizationHelper organizationHelper, IBackgroundTaskQueue queue, IMigrationHelper migrationHelper, IPlatformRepository platformRepository)
+		public MigrationsController(IConfiguration configuration, IOrganizationHelper organizationHelper, IPlatformRepository platformRepository)
 		{
 			_configuration = configuration;
 			_organizationHelper = organizationHelper;
-			_queue = queue;
-			_migrationHelper = migrationHelper;
 			_platformRepository = platformRepository;
 		}
 
@@ -76,10 +73,9 @@ namespace PrimeApps.Admin.Controllers
 			if (apps == null) 
 				return Ok();
 			
-			var ids = apps.Where(x => x.Name != "primeapps_app" && x.Name != "primeapps_studio" && x.Name != "primeapps_preview").Select(app => app.Id).ToList();
+			var ids = apps.Where(x => x.Name != "primeapps_admin" && x.Name != "primeapps_app" && x.Name != "primeapps_studio" && x.Name != "primeapps_preview").Select(app => app.Id).ToList();
 
-			_queue.QueueBackgroundWorkItem(q => _migrationHelper.ApplyMigrations(ids));
-
+			BackgroundJob.Enqueue<IMigrationHelper>(x => x.ApplyMigrations(ids));
 			return Ok();
 		}
 	}
