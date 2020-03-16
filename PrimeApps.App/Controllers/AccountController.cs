@@ -122,18 +122,19 @@ namespace PrimeApps.App.Controllers
 
             var templates = await _platformRepository.GetAppTemplate(int.Parse(request["app_id"].ToString()),
                 AppTemplateType.Email, request["culture"].ToString().Substring(0, 2), "password_reset");
-
-            var appId = int.Parse(request["app_id"].ToString());
-
-            var appSettings = await _platformRepository.GetAppSettings(appId);
-
             foreach (var template in templates)
             {
                 var content = template.Content;
-
-                content = content.Replace("{:AppUrl}", appSettings.AppDomain);
-                content = content.Replace("{:PasswordResetUrl}",
-                    string.Format(url, HttpUtility.UrlEncode(request["code"].ToString()),
+                var isLocal = applicationInfo.Setting.AppDomain.Contains("localhost");
+                content = content.Replace("{:AppUrl}", applicationInfo.Setting.AppDomain);
+                content = content.Replace("{:AppName}", applicationInfo.Label);
+                var authTheme = JObject.Parse(applicationInfo.Setting.AuthTheme);
+                var storageUrl = _configuration.GetValue("AppSettings:StorageUrl", string.Empty);
+                if (authTheme != null && authTheme["logo"] != null && !string.IsNullOrEmpty(storageUrl))
+                {
+                    content = content.Replace("{:URL}", (isLocal ? storageUrl.Replace("127.0.0.1", "localhost") : storageUrl) + "/" + authTheme["logo"].ToString());
+                }
+                content = content.Replace("{:PasswordResetUrl}", string.Format(url, HttpUtility.UrlEncode(request["code"].ToString()),
                         new Guid(request["guid_id"].ToString()),
                         HttpUtility.UrlEncode(request["return_url"].ToString())));
                 content = content.Replace("{:FullName}", user.FirstName + " " + user.LastName);

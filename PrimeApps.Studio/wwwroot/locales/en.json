@@ -140,7 +140,8 @@
     "Settings": "Settings",
     "SystemType": "System Type",
     "Default": "Default",
-    "TenantRightsInfo": "With this option, you authorize application users to edit and delete it."
+    "TenantRightsInfo": "With this option, you authorize application users to edit and delete it.",
+    "Information": "You are not authorized to perform this operation"
   },
   "Auth": {
     "Email": "E-Mail",

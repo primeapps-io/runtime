@@ -168,6 +168,14 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Package>().HasIndex(x => x.StartTime);
             modelBuilder.Entity<Package>().HasIndex(x => x.EndTime);
             modelBuilder.Entity<Package>().HasIndex(x => x.Status);
+
+            //AppDraftTemplate
+            modelBuilder.Entity<AppDraftTemplate>().HasIndex(x => x.Name);
+            modelBuilder.Entity<AppDraftTemplate>().HasIndex(x => x.Type);
+            modelBuilder.Entity<AppDraftTemplate>().HasIndex(x => x.Language);
+            modelBuilder.Entity<AppDraftTemplate>().HasIndex(x => x.SystemCode);
+            modelBuilder.Entity<AppDraftTemplate>().HasIndex(x => x.Active);
+            modelBuilder.Entity<AppDraftTemplate>().HasIndex(x => new {x.AppId, x.SystemCode, x.Language }).IsUnique();
         }
 
         public DbSet<StudioUser> Users { get; set; }

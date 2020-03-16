@@ -12,8 +12,8 @@ angular.module('primeapps')
                 count: function (currentAppName) {
                     return $http.get(config.apiUrl + 'template/count_app_email_template?currentAppName=' + currentAppName);
                 },
-                find: function (data, currentAppName) {
-                    return $http.post(config.apiUrl + 'template/find_app_email_template?currentAppName=' + currentAppName, data);
+                find: function (data, appId) {
+                    return $http.post(config.apiUrl + 'template/find_app_email_template?appId=' + appId, data);
                 },
                 delete: function (id) {
                     return $http.delete(config.apiUrl + 'template/delete/' + id + '?isAppTemplate=true');

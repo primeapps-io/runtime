@@ -173,6 +173,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<AppTemplate>().HasIndex(x => x.Language);
             modelBuilder.Entity<AppTemplate>().HasIndex(x => x.SystemCode);
             modelBuilder.Entity<AppTemplate>().HasIndex(x => x.Active);
+            modelBuilder.Entity<AppTemplate>().HasIndex(x => new { x.AppId, x.SystemCode, x.Language }).IsUnique();
 
             //PlatformWarehouse
             modelBuilder.Entity<PlatformWarehouse>().HasIndex(x => x.DatabaseName);
