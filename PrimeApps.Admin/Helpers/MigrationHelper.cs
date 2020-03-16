@@ -72,7 +72,9 @@ namespace PrimeApps.Admin.Helpers
 			_releaseRepository = releaseRepository;
 			_historyStorageRepository = historyStorageRepository;
 			_tenantRepository = tenantRepository;
+			_settingRepository = settingRepository;
 			_serviceScopeFactory = serviceScopeFactory;
+			_moduleRepository = moduleRepository;
 		}
 
 		[QueueCustom]
@@ -651,115 +653,94 @@ namespace PrimeApps.Admin.Helpers
 		public async Task ApplyMigrations(List<int> ids)
 		{
 			var PREConnectionString = _configuration.GetConnectionString("PlatformDBConnection");
-
-			using (var _scope = _serviceScopeFactory.CreateScope())
+			
+			foreach (var id in ids)
 			{
-				using (var platformDbContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>())
-				{
-					using (var applicationRepository = new ApplicationRepository(platformDbContext, _configuration))
-					{
-						foreach (var id in ids)
-						{
-							var app = await applicationRepository.Get(id);
+				var app = await _applicationRepository.Get(id);
 
-							if (app == null)
-								return;
+				if (app == null)
+					return;
 
-							await UpdateAppModuleFieldsAndSettings(id, PREConnectionString);
-						}
-
-					}
-				}
+				await UpdateAppModuleFieldsAndSettings(id, PREConnectionString);
 			}
 		}
 
 		public async Task UpdateAppModuleFieldsAndSettings(int appId, string PREConnectionString)
 		{
-			using (var _scope = _serviceScopeFactory.CreateScope())
+			_currentUser = new CurrentUser { PreviewMode = "app", TenantId = appId, UserId = 1 };
+			_moduleRepository.CurrentUser = _settingRepository.CurrentUser = _currentUser;
+
+			var appExists = PostgresHelper.Read(_configuration.GetConnectionString("PlatformDBConnection"), $"platform", $"SELECT 1 AS result FROM pg_database WHERE datname='app{appId}'", "hasRows");
+
+			if (appExists)
 			{
-				using (var platformDbContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>())
-				using (var tenantDbContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>())
-				{
-					using (var tenantRepository = new TenantRepository(platformDbContext, _configuration))
-					using (var moduleRepository = new ModuleRepository(tenantDbContext, _configuration))
-					using (var settingRepository = new SettingRepository(tenantDbContext, _configuration))
-					{
-						_currentUser = new CurrentUser { PreviewMode = "app", TenantId = appId, UserId = 1 };
-						moduleRepository.CurrentUser = settingRepository.CurrentUser = _currentUser;
-
-						var appExists = PostgresHelper.Read(_configuration.GetConnectionString("PlatformDBConnection"), $"platform", $"SELECT 1 AS result FROM pg_database WHERE datname='app{appId}'", "hasRows");
-
-						if (appExists)
-						{
-							PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", true);
-							await UpdateModules(_currentUser);
-							await UpdateSetting(_currentUser);
-							PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", false);
-						}
-						var tenantIds = await tenantRepository.GetIdsByAppId(appId);
-
-						for (int i = 0; i < tenantIds.Count; i++)
-						{
-							var tenantId = tenantIds[i];
-							var exists = PostgresHelper.Read(_configuration.GetConnectionString("PlatformDBConnection"), $"platform", $"SELECT 1 AS result FROM pg_database WHERE datname='tenant{tenantId}'", "hasRows");
-
-							if (!exists)
-								continue;
-
-							var time = TimeSpan.FromSeconds(10);
-
-							if (i > 200 && i <= 400)
-								time = TimeSpan.FromMinutes(5);
-							else if (i > 400 && i <= 600)
-								time = TimeSpan.FromMinutes(10);
-							else if (i > 600 && i <= 800)
-								time = TimeSpan.FromMinutes(15);
-							else if (i > 800 && i <= 1000)
-								time = TimeSpan.FromMinutes(20);
-							else if (i > 1000 && i <= 1200)
-								time = TimeSpan.FromMinutes(25);
-							else if (i > 1200 && i <= 1400)
-								time = TimeSpan.FromMinutes(30);
-							else if (i > 1400 && i <= 1600)
-								time = TimeSpan.FromMinutes(35);
-							else if (i > 1600 && i <= 1800)
-								time = TimeSpan.FromMinutes(40);
-							else if (i > 1800 && i <= 2000)
-								time = TimeSpan.FromMinutes(45);
-							else if (i > 2000 && i <= 2200)
-								time = TimeSpan.FromMinutes(50);
-							else if (i > 2200 && i <= 2400)
-								time = TimeSpan.FromMinutes(55);
-							else if (i > 2400 && i <= 2600)
-								time = TimeSpan.FromMinutes(60);
-							else if (i > 2600 && i <= 2800)
-								time = TimeSpan.FromMinutes(65);
-							else if (i > 2800 && i <= 3000)
-								time = TimeSpan.FromMinutes(70);
-							else if (i > 3000 && i <= 3200)
-								time = TimeSpan.FromMinutes(75);
-							else if (i > 3200 && i <= 3400)
-								time = TimeSpan.FromMinutes(80);
-							else if (i > 3400)
-								time = TimeSpan.FromMinutes(85);
-
-							BackgroundJob.Schedule<IMigrationHelper>(x => x.UpdateTenantModuleFields(tenantId), time);
-
-							//Last index
-							if (i == tenantIds.Count - 1)
-								SentrySdk.CaptureMessage("All tenants have been updated successfully.", SentryLevel.Info);
-						}
-					}
-				}
+				PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", true);
+				//await UpdateModules(_currentUser);
+				await UpdateSetting();
+				PostgresHelper.ChangeTemplateDatabaseStatus(PREConnectionString, $"app{appId}", false);
 			}
+			var tenantIds = await _tenantRepository.GetIdsByAppId(appId);
+
+			for (int i = 0; i < tenantIds.Count; i++)
+			{
+				var tenantId = tenantIds[i];
+				var exists = PostgresHelper.Read(_configuration.GetConnectionString("PlatformDBConnection"), $"platform", $"SELECT 1 AS result FROM pg_database WHERE datname='tenant{tenantId}'", "hasRows");
+
+				if (!exists)
+					continue;
+
+				var time = TimeSpan.FromSeconds(10);
+
+				if (i > 200 && i <= 400)
+					time = TimeSpan.FromMinutes(5);
+				else if (i > 400 && i <= 600)
+					time = TimeSpan.FromMinutes(10);
+				else if (i > 600 && i <= 800)
+					time = TimeSpan.FromMinutes(15);
+				else if (i > 800 && i <= 1000)
+					time = TimeSpan.FromMinutes(20);
+				else if (i > 1000 && i <= 1200)
+					time = TimeSpan.FromMinutes(25);
+				else if (i > 1200 && i <= 1400)
+					time = TimeSpan.FromMinutes(30);
+				else if (i > 1400 && i <= 1600)
+					time = TimeSpan.FromMinutes(35);
+				else if (i > 1600 && i <= 1800)
+					time = TimeSpan.FromMinutes(40);
+				else if (i > 1800 && i <= 2000)
+					time = TimeSpan.FromMinutes(45);
+				else if (i > 2000 && i <= 2200)
+					time = TimeSpan.FromMinutes(50);
+				else if (i > 2200 && i <= 2400)
+					time = TimeSpan.FromMinutes(55);
+				else if (i > 2400 && i <= 2600)
+					time = TimeSpan.FromMinutes(60);
+				else if (i > 2600 && i <= 2800)
+					time = TimeSpan.FromMinutes(65);
+				else if (i > 2800 && i <= 3000)
+					time = TimeSpan.FromMinutes(70);
+				else if (i > 3000 && i <= 3200)
+					time = TimeSpan.FromMinutes(75);
+				else if (i > 3200 && i <= 3400)
+					time = TimeSpan.FromMinutes(80);
+				else if (i > 3400)
+					time = TimeSpan.FromMinutes(85);
+
+				BackgroundJob.Schedule<IMigrationHelper>(x => x.UpdateTenantModuleFields(tenantId), time);
+
+				//Last index
+				if (i == tenantIds.Count - 1)
+					SentrySdk.CaptureMessage("All tenants have been updated successfully.", SentryLevel.Info);
+			}
+					
 		}
 
 		[QueueCustom]
 		public async Task UpdateTenantModuleFields(int tenantId)
 		{
-			_currentUser = new CurrentUser { PreviewMode = "tenant", TenantId = tenantId, UserId = 1 };
-			await UpdateSetting(_currentUser);
-			await UpdateModules(_currentUser);
+			_settingRepository.CurrentUser = new CurrentUser { PreviewMode = "tenant", TenantId = tenantId, UserId = 1 };
+			await UpdateSetting();
+			//await UpdateModules(_currentUser);
 		}
 
 		public async Task UpdateModules(CurrentUser currentUser)
@@ -818,31 +799,21 @@ namespace PrimeApps.Admin.Helpers
 			}
 		}
 
-		public async Task UpdateSetting(CurrentUser currentUser)
+		public async Task UpdateSetting()
 		{
 			try
 			{
-				using (var _scope = _serviceScopeFactory.CreateScope())
+				var settings = await _settingRepository.GetAllSettings();
+				var settingsPasswordList = settings.Where(r => r.Key == "password");
+				foreach (var settingPassword in settingsPasswordList)
 				{
-					using (var tenantDbContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>())
-					{
-						using (var settingRepository = new SettingRepository(tenantDbContext, _configuration))
-						{
-							settingRepository.CurrentUser = currentUser;
-							
-							var settings = await settingRepository.GetAllSettings();
-							var settingsPasswordList = settings.Where(r => r.Key == "password");
-							foreach (var settingPassword in settingsPasswordList)
-							{
-								if (string.IsNullOrEmpty(settingPassword.Value))
-									continue;
+					if (string.IsNullOrEmpty(settingPassword.Value))
+						continue;
 
-								settingPassword.Value = CryptoHelper.Encrypt(settingPassword.Value);
-								await settingRepository.Update(settingPassword);
-							}
-						}
-					}
+					settingPassword.Value = CryptoHelper.Encrypt(settingPassword.Value);
+					await _settingRepository.Update(settingPassword);
 				}
+						
 			}
 			catch (Exception e)
 			{
