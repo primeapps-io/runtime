@@ -17,7 +17,7 @@ namespace PrimeApps.App.Helpers
 {
     public interface IActionButtonHelper
     {
-        Task<bool> ProcessScriptFiles(ICollection<ActionButtonViewModel> actionButtons, CurrentUser currentUser);
+        Task<bool> ProcessScriptFiles(ICollection<ActionButtonViewModel> actionButtons, IComponentRepository componentRepository);
     }
 
     public class ActionButtonHelper : IActionButtonHelper
@@ -31,10 +31,10 @@ namespace PrimeApps.App.Helpers
             _configuration = configuration;
         }
 
-        public async Task<bool> ProcessScriptFiles(ICollection<ActionButtonViewModel> actionButtons, CurrentUser currentUser)
+        public async Task<bool> ProcessScriptFiles(ICollection<ActionButtonViewModel> actionButtons, IComponentRepository componentRepository)
         {
             var environment = !string.IsNullOrEmpty(_configuration.GetValue("AppSettings:Environment", string.Empty)) ? _configuration.GetValue("AppSettings:Environment", string.Empty) : "development";
-            var globalConfig = await _moduleHelper.GetGlobalConfig(currentUser);
+            var globalConfig = await _moduleHelper.GetGlobalConfig(componentRepository);
             var appConfigs = globalConfig?[environment] != null && !globalConfig[environment].IsNullOrEmpty() ? (JObject)globalConfig[environment] : null;
 
             foreach (var actionButton in actionButtons)

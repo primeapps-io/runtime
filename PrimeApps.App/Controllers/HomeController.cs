@@ -239,7 +239,7 @@ namespace PrimeApps.App.Controllers
 			}
 			
 			if (previewMode == "tenant")
-				await _moduleHelper.ProcessScriptFiles(modules, scriptRepository.CurrentUser);
+				await _moduleHelper.ProcessScriptFiles(modules, componentRepository);
 			
 			//TODO: add all necessary objects here which are in appService.js getMyAccount method for increase performance
 			var account = new JObject();

@@ -108,7 +108,7 @@ namespace PrimeApps.App.Controllers
             }
 
             if (previewMode == "tenant")
-                await _moduleHelper.ProcessScriptFiles(modules, _moduleRepository.CurrentUser);
+                await _moduleHelper.ProcessScriptFiles(modules, _componentRepository);
 
             if (!AppUser.HasAdminProfile)
             {
