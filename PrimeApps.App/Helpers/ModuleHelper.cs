@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -34,8 +35,8 @@ namespace PrimeApps.App.Helpers
         Relation NewRelationEntity(RelationBindingModel relationModel);
         Dependency NewDependencyEntity(DependencyBindingModel dependencyModel);
         Calculation NewCalculationEntity(CalculationBindingModel calculationModel);
-        Task<bool> ProcessScriptFiles(ICollection<Module> modules, CurrentUser currentUser);
-        Task<JObject> GetGlobalConfig(CurrentUser currentUser);
+        Task<bool> ProcessScriptFiles(ICollection<Module> modules, IComponentRepository componentRepository);
+        Task<JObject> GetGlobalConfig(IComponentRepository componentRepository);
         string ReplaceDynamicValues(string value, JObject appConfigs);
         bool IsTrustedUrl(string url, JObject globalConfig);
         Task<bool> PermissionCheck(Module module, int userId, IUserRepository userRepository, IModuleRepository moduleRepository);
@@ -47,17 +48,15 @@ namespace PrimeApps.App.Helpers
         private IConfiguration _configuration;
         private IAuditLogHelper _auditLogHelper;
         private IEnvironmentHelper _environmentHelper;
-        private IComponentRepository _componentRepository;
         public IBackgroundTaskQueue Queue { get; }
 
 
-        public ModuleHelper(IAuditLogHelper auditLogHelper, IEnvironmentHelper environmentHelper, IBackgroundTaskQueue queue, IComponentRepository componentRepository,
+        public ModuleHelper(IAuditLogHelper auditLogHelper, IEnvironmentHelper environmentHelper, IBackgroundTaskQueue queue,
             IConfiguration configuration)
         {
             _auditLogHelper = auditLogHelper;
             _environmentHelper = environmentHelper;
             _configuration = configuration;
-            _componentRepository = componentRepository;
             Queue = queue;
         }
 
@@ -852,9 +851,9 @@ namespace PrimeApps.App.Helpers
             return calculationEntity;
         }
 
-        public async Task<bool> ProcessScriptFiles(ICollection<Module> modules, CurrentUser currentUser)
+        public async Task<bool> ProcessScriptFiles(ICollection<Module> modules, IComponentRepository componentRepository)
         {
-            var globalConfig = await GetGlobalConfig(currentUser);
+            var globalConfig = await GetGlobalConfig(componentRepository);
             var environment = !string.IsNullOrEmpty(_configuration.GetValue("AppSettings:Environment", string.Empty)) ? _configuration.GetValue("AppSettings:Environment", string.Empty) : "development";
             var appConfigs = globalConfig?[environment] != null && !globalConfig[environment].IsNullOrEmpty() ? (JObject)globalConfig[environment] : null;
 
@@ -921,10 +920,9 @@ namespace PrimeApps.App.Helpers
             return true;
         }
 
-        public async Task<JObject> GetGlobalConfig(CurrentUser currentUser)
+        public async Task<JObject> GetGlobalConfig(IComponentRepository componentRepository)
         {
-            _componentRepository.CurrentUser = currentUser;
-            var globalConfigEntity = await _componentRepository.GetGlobalConfig();
+            var globalConfigEntity = await componentRepository.GetGlobalConfig();
             globalConfigEntity = _environmentHelper.DataFilter(globalConfigEntity);
 
             if (globalConfigEntity == null || string.IsNullOrWhiteSpace(globalConfigEntity.Content))

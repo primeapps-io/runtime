@@ -81,8 +81,9 @@ namespace PrimeApps.App.Helpers
                 using (var _picklistRepository = new PicklistRepository(databaseContext, _configuration))
                 using (var _tagRepository = new TagRepository(databaseContext, _configuration))
                 using (var _settingRepository = new SettingRepository(databaseContext, _configuration))
+                using (var _componentRepository = new ComponentRepository(databaseContext, _configuration))
                 {
-                    _profileRepository.CurrentUser = _userRepository.CurrentUser = _picklistRepository.CurrentUser = _workflowRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _settingRepository.CurrentUser = _tagRepository.CurrentUser = _currentUser;
+                    _componentRepository.CurrentUser = _profileRepository.CurrentUser = _userRepository.CurrentUser = _picklistRepository.CurrentUser = _workflowRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _settingRepository.CurrentUser = _tagRepository.CurrentUser = _currentUser;
                     var workflows = await _workflowRepository.GetAll(module.Id, true);
                     workflows = _environmentHelper.DataFilter(workflows.ToList());
                     workflows = workflows.Where(x => x.OperationsArray.Contains(operationType.ToString())).ToList();
@@ -705,7 +706,7 @@ namespace PrimeApps.App.Helpers
                                     if (webHook.CallbackUrl.StartsWith("{appConfigs."))
                                     {
                                         var environment = !string.IsNullOrEmpty(_configuration.GetValue("AppSettings:Environment", string.Empty)) ? _configuration.GetValue("AppSettings:Environment", string.Empty) : "development";
-                                        var globalConfig = await _moduleHelper.GetGlobalConfig(_currentUser);
+                                        var globalConfig = await _moduleHelper.GetGlobalConfig(_componentRepository);
                                         var appConfigs = globalConfig?[environment] != null && !globalConfig[environment].IsNullOrEmpty() ? (JObject)globalConfig[environment] : null;
                                         webHook.CallbackUrl = _moduleHelper.ReplaceDynamicValues(webHook.CallbackUrl, appConfigs);
                                     }
