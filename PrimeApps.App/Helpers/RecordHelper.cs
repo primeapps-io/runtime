@@ -71,7 +71,6 @@ namespace PrimeApps.App.Helpers
         //private IBpmHelper _bpmHelper;
         private IHttpContextAccessor _context;
         //private IWorkflowHost _workflowHost;
-        private IModuleRepository _moduleRepository;
         private IModuleHelper _moduleHelper;
         private IEnvironmentHelper _environmentHelper;
 
@@ -79,8 +78,7 @@ namespace PrimeApps.App.Helpers
 
         public RecordHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IAuditLogHelper auditLogHelper,
             INotificationHelper notificationHelper, IWorkflowHelper workflowHelper, IProcessHelper processHelper, ICalculationHelper calculationHelper,
-             IBackgroundTaskQueue queue, IHttpContextAccessor context, IModuleRepository moduleRepository,
-            IModuleHelper moduleHelper, IEnvironmentHelper environmentHelper)
+             IBackgroundTaskQueue queue, IHttpContextAccessor context, IModuleHelper moduleHelper, IEnvironmentHelper environmentHelper)
         {
             _context = context;
             _serviceScopeFactory = serviceScopeFactory;
@@ -93,7 +91,6 @@ namespace PrimeApps.App.Helpers
             _calculationHelper = calculationHelper;
             //_bpmHelper = bpmHelper;
             //_workflowHost = workflowHost;
-            _moduleRepository = moduleRepository;
             _moduleHelper = moduleHelper;
             _environmentHelper = environmentHelper;
 
@@ -282,15 +279,23 @@ namespace PrimeApps.App.Helpers
                         }
                         else
                         {
-                            var relatedModule = await _moduleRepository.GetByIdBasic((int)pair.Value - 900000);
-
-                            if (relatedModule == null)
+                            using (var _scope = _serviceScopeFactory.CreateScope())
                             {
-                                modelState.AddModelError(pair.Key, $"Picklist item '{pair.Value}' not found.");
-                                return -1;
-                            }
+                                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                                using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
+                                {
+                                    _moduleRepository.CurrentUser = _currentUser;
+                                    var relatedModule = await _moduleRepository.GetByIdBasic((int)pair.Value - 900000);
 
-                            record[pair.Key] = tenantLanguage == "tr" ? relatedModule.LabelTrSingular : relatedModule.LabelEnSingular;
+                                    if (relatedModule == null)
+                                    {
+                                        modelState.AddModelError(pair.Key, $"Picklist item '{pair.Value}' not found.");
+                                        return -1;
+                                    }
+
+                                    record[pair.Key] = tenantLanguage == "tr" ? relatedModule.LabelTrSingular : relatedModule.LabelEnSingular;
+                                }
+                            }
                         }
                     }
 
