@@ -63,8 +63,8 @@
                             </td>
                             @if (ViewBag.AppSettings != null)
                             {
-                                <td class="align-middle text-center"><h3 class="pl-2 d-inline-block">@ViewBag.AppSettings.AuthDomain</h3></td>
-                                <td class="align-middle text-center"><h3 class="pl-2 d-inline-block">@ViewBag.AppSettings.AppDomain</h3></td>
+                                <td class="align-middle text-center"><h3 class="pl-2 d-inline-block"><a href="@("http://" + ViewBag.AppSettings.AuthDomain)" target="_blank">@ViewBag.AppSettings.AuthDomain</a></h3></td>
+                                <td class="align-middle text-center"><h3 class="pl-2 d-inline-block"><a href="@("http://" + ViewBag.AppSettings.AppDomain)" target="_blank">@ViewBag.AppSettings.AppDomain</a></h3></td>
                             }
                             <td class="align-middle">
                                 <button disabled="@(ViewBag.LastRelease != null && ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version && ViewBag.LastRelease?.Status == ReleaseStatus.Succeed)" class="btn btn-icon btn-3 btn-primary btn-md" type="button" title="@(ViewBag.LastPackage == null ? "" : ViewBag.LastRelease?.Version == ViewBag.LastPackage?.Version ? "Already up to date" : ViewBag.ProcessActive ? "There is an another process. Please wait for it..." : "Click for publish!")" onclick="apply()">

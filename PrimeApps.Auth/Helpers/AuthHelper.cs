@@ -72,7 +72,7 @@ namespace PrimeApps.Auth.UI
             var defaultTheme = new JObject
             {
                 ["logo"] = "/images/logo.png",
-                ["favicon"] = "/images/primeapps.ico",
+                ["favicon"] = "/images/favicon.ico",
                 ["color"] = "#555198",
                 ["title"] = "PrimeApps",
                 ["banner"] = new JArray()
