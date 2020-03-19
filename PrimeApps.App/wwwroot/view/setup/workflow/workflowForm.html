@@ -1264,7 +1264,7 @@
                                 <div class="row form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.callbackUrl.$invalid}">
                                     <label class="col-sm-3 control-label"><span class="required-field">*</span> {{'Setup.Workflow.WebHookUrl' | translate}}:</label>
                                     <div class="col-sm-9">
-                                        <input type="url" required name="callbackUrl" tabindex="2" class="form-control" maxlength="300" ng-model="workflowModel.webHook.callbackUrl" ng-change="setFormValid()" placeholder="http://" />
+                                        <input type="text" required name="callbackUrl" tabindex="2" class="form-control" maxlength="300" ng-model="workflowModel.webHook.callbackUrl" ng-change="setFormValid()" placeholder="http://" />
                                     </div>
                                 </div>
                                 <div class="row form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.methodType.$invalid}">
