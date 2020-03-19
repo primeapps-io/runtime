@@ -57,7 +57,7 @@ angular.module('primeapps')
 									return;
 
 								fieldLookup.label = $rootScope.language === 'tr' ? fieldLookup.label_tr : fieldLookup.label_en;
-								fieldLookup.labelExt = '(' + field.label + ')';
+								fieldLookup.labelExt = '(' + field['label_' + $rootScope.language] + ')';
 								fieldLookup.name = field.name + '.' + lookupModule.name + '.' + fieldLookup.name;
 								fieldLookup.order = parseInt(fieldLookup.order) + seperatorLookupOrder;
 								moduleFields.push(fieldLookup);
