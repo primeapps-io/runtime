@@ -1387,7 +1387,7 @@
                                         <h4 style="font-size:15px;">{{'Setup.Workflow.WebHook' | translate}}</h4>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.callbackUrl.$invalid}">
                                             <label class="col-sm-12">{{'Setup.Workflow.WebHookUrl' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
-                                            <input type="url" required name="callbackUrl" tabindex="2" class="form-control" maxlength="300" ng-model="workflowModel.webHook.callbackUrl" ng-change="setFormValid(workflowForm)" placeholder="http://" />
+                                            <input type="text" required name="callbackUrl" tabindex="2" class="form-control" maxlength="300" ng-model="workflowModel.webHook.callbackUrl" ng-change="setFormValid(workflowForm)" placeholder="http://" />
                                         </div>
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.methodType.$invalid}">
                                             <label class="col-sm-12">{{'Setup.Workflow.WebHookMethod' | translate}} <span class="required-label">({{'Common.Required' | translate }})</span></label>
