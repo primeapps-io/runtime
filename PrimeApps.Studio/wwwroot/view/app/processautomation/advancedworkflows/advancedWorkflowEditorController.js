@@ -1207,7 +1207,7 @@ angular.module('primeapps')
             };
 
             $scope.workflowHeaderAdd = function (addItem, workflowForm) {
-                
+
                 var header = {};
                 header.type = addItem.type;
                 header.key = addItem.key;
@@ -1717,12 +1717,18 @@ angular.module('primeapps')
                     default:
                         if (currentNode.isDefault === false) {
                             data['condition'] = $scope.workflowModel.condition;
-                            diagram.linkDataArray.find(q => q.from === currentNode.from && q.to === currentNode.to).data = angular.copy(data);
+                            $filter('filter')(diagram.linkDataArray, function (linkData) {
+                                return linkData.from === currentNode.from && linkData.to === currentNode.to
+                            }).data = angular.copy(data);
+                            //diagram.linkDataArray.find(q => q.from === currentNode.from && q.to === currentNode.to).data = angular.copy(data);
                         }
                         break;
                 }
 
-                var node = diagram.nodeDataArray.find(q => q.key === currentNode.key);
+                var node = $filter('filter')(diagram.nodeDataArray, function (node) {
+                    return node.key === currentNode.key;
+                });
+                //var node = diagram.nodeDataArray.find(q => q.key === currentNode.key);
                 node.data = angular.copy(data);
 
                 //We are setting new label for active node
@@ -1871,8 +1877,8 @@ angular.module('primeapps')
                                     success();
                                 }
                             }).catch(function onError() {
-                                $scope.saving = false;
-                            });
+                            $scope.saving = false;
+                        });
                     }
                     else {
                         AdvancedWorkflowsService.getByCode(data.code)
@@ -1888,8 +1894,8 @@ angular.module('primeapps')
                                                 toastr.success($filter('translate')('Setup.BpmWorkflow.SubmitSuccess'));
                                                 success();
                                             }).catch(function onError() {
-                                                $scope.saving = false;
-                                            });
+                                            $scope.saving = false;
+                                        });
                                     }
                                 }
                             });
