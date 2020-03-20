@@ -2,6 +2,8 @@
     bundle: {
         vendor: {
             scripts: [
+                './wwwroot/scripts/vendor/bpm/jquery.min.js',
+                './wwwroot/scripts/vendor/bpm/jquery-ui.min.js',
                 './wwwroot/scripts/vendor/angular.js',
                 './wwwroot/scripts/vendor/angular-ui-router.js',
                 './wwwroot/scripts/vendor/ocLazyLoad.js',
@@ -56,8 +58,8 @@
                 './wwwroot/scripts/vendor/ngclipboard.js',
                 './wwwroot/scripts/vendor/moment-business-days.js',
                 './wwwroot/scripts/vendor/moment-weekdaysin.js',
-                './wwwroot/scripts/vendor /paging.min.js',
-                './wwwroot/scripts/vendor /sweetalert.js',
+                './wwwroot/scripts/vendor/paging.min.js',
+                './wwwroot/scripts/vendor/sweetalert.js',
                 './wwwroot/scripts/vendor/angular-drag-and-drop-lists.min.js',
                 './wwwroot/scripts/vendor/bpm/bootstrap.min.js',
                 './wwwroot/scripts/vendor/bpm/go.js',
@@ -85,7 +87,12 @@
                 './wwwroot/styles/vendor/select.css',
                 './wwwroot/styles/vendor/xeditable.css',
                 './wwwroot/styles/vendor/editor-fonts.css',
-                './wwwroot/styles/vendor/toastr.css'
+                './wwwroot/styles/vendor/toastr.css',
+                './wwwroot/styles/vendor/kendo.css',
+                './wwwroot/styles/bpm/bootstrap.min.css',
+                './wwwroot/styles/bpm/BPMN.css',
+                './wwwroot/styles/bpm/jquery-ui.min.css',
+                './wwwroot/styles/bpm/spectrum.css'
             ],
             options: {
                 maps: false,
@@ -111,13 +118,9 @@
                 './wwwroot/view/organization/organizationController.js'
             ],
             styles: [
-                './wwwroot/styles/bpm/bootstrap.min.css',
-                './wwwroot/styles/bpm/BPMN.css',
-                './wwwroot/styles/bpm/spectrum.css',
                 './wwwroot/styles/app.css',
                 './wwwroot/styles/ui.css',
-                './wwwroot/styles/theme.css',
-                './wwwroot/styles/kendo.css'
+                './wwwroot/styles/theme.css'
             ],
             options: {
                 maps: false,
