@@ -103,7 +103,7 @@ angular.module('primeapps')
                     ],
                     "limit": 1,
                     "offset": 0,
-                    "filters": ReportsService.getFilters(report.filters),
+                    "filters": ReportsService.getFilters(report.filters,$rootScope.user),
                 };
 
                 $scope.currentTable.module = $scope.getReportData.module;
@@ -121,7 +121,7 @@ angular.module('primeapps')
 
 
                     $scope.currentTable.request.fields = [];
-                    $scope.currentTable.request.filters = ReportsService.getFilters(report.filters);
+                    $scope.currentTable.request.filters = ReportsService.getFilters(report.filters,$rootScope.user);
 
                     $scope.defaultFilter = angular.copy($scope.currentTable.request.filters);
 

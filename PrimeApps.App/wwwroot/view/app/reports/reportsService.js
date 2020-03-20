@@ -112,14 +112,14 @@ angular.module('primeapps')
                 getWidget: function (reportId) {
                     return $http.get(config.apiUrl + 'report/get_widget/' + reportId);
                 },
-                getFilters: function (filter) {
+                getFilters: function (filter,user) {
                     var data = [];
                     filter.forEach(function (item) {
                         data.push({
                             field: item.field,
                             id: item.id,
                             operator: item.operator,
-                            value: item.value
+                            value: item.value === '[me]' ? user.id : item.value
                         });
                     });
                     return data;

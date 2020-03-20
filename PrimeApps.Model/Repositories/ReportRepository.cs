@@ -181,7 +181,7 @@ namespace PrimeApps.Model.Repositories
 
                         foreach (var reportFilter in report.Filters)
                         {
-                            findRequest.Filters.Add(new Filter { Field = reportFilter.Field, Operator = reportFilter.Operator, Value = reportFilter.Value, No = reportFilter.No });
+                            findRequest.Filters.Add(new Filter { Field = reportFilter.Field, Operator = reportFilter.Operator, Value = reportFilter.Value == "[me]" ? appUser.Id.ToString() : reportFilter.Value, No = reportFilter.No });
 
                             if (reportFilter.Field == "currency")
                                 currencyFilterValue = reportFilter.Value;
@@ -247,7 +247,7 @@ namespace PrimeApps.Model.Repositories
 
                         foreach (var reportFilter in report.Filters)
                         {
-                            findRequest.Filters.Add(new Filter { Field = reportFilter.Field, Operator = reportFilter.Operator, Value = reportFilter.Value, No = reportFilter.No });
+                            findRequest.Filters.Add(new Filter { Field = reportFilter.Field, Operator = reportFilter.Operator, Value  = reportFilter.Value == "[me]" ? appUser.Id.ToString() : reportFilter.Value, No = reportFilter.No });
 
                             if (reportFilter.Field == "currency")
                                 currencyFilterValue = reportFilter.Value;
@@ -319,7 +319,7 @@ namespace PrimeApps.Model.Repositories
                         findRequest.Fields.Add(viewFilter.Field);
                     }
 
-                    viewFilter.Value = viewFilter.Value.Replace("[me]", appUser.TenantId.ToString());
+                    viewFilter.Value = viewFilter.Value.Replace("[me]", appUser.Id.ToString());
                     viewFilter.Value = viewFilter.Value.Replace("[me.email]", appUser.Email);
 
                     findRequest.Filters.Add(new Filter { Field = viewFilter.Field, Operator = viewFilter.Operator, Value = viewFilter.Value, No = viewFilter.No });
