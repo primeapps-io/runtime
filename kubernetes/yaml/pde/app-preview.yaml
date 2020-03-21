@@ -167,25 +167,25 @@ spec:
                   name: primeapps-app-preview-config
                   key: AsposeLicence                  
             - name: AppSettings__PreviewMode
-                valueFrom:
-                  configMapKeyRef:
-                    name: primeapps-app-preview-config
-                    key: PreviewMode
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-preview-config
+                  key: PreviewMode
             - name: AppSettings__PreviewClient
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-app-preview-config
                   key: PreviewClient
             - name: AppSettings__StudioUrl
-                valueFrom:
-                  configMapKeyRef:
-                    name: primeapps-app-preview-config
-                    key: StudioUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: primeapps-app-preview-config
+                  key: StudioUrl
             - name: Sentry__Dsn
               valueFrom:
                 configMapKeyRef:
                   name: primeapps-app-preview-config
-                  key: SentryDsn              
+                  key: SentryDsn
 ---
 kind: Service
 apiVersion: v1
@@ -209,7 +209,6 @@ metadata:
   namespace: primeapps
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
     nginx.ingress.kubernetes.io/server-snippet: |-
       add_header X-Robots-Tag "noindex, nofollow";
 spec:
