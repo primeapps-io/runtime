@@ -111,6 +111,9 @@ namespace PrimeApps.Model.Repositories
                         if (profileBasedEnabled && moduleName != "users" && moduleName != "profiles" && moduleName != "roles")
                             newRecord = await RecordPermissionControl(moduleName, CurrentUser.UserId, (JObject)record, OperationType.read);
 
+                        if (newRecord.IsNullOrEmpty())
+                            continue;
+
                         if (!newRecord["shared_users"].IsNullOrEmpty() || !newRecord["shared_user_groups"].IsNullOrEmpty())
                         {
                             var userIds = newRecord["shared_users"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)newRecord["shared_users"]);
