@@ -101,6 +101,8 @@ namespace PrimeApps.Model.Repositories
             if (records.Count > 0)
             {
                 var newRecords = new JArray();
+                var user = await GetUser(CurrentUser.UserId);
+                var module = await GetModule(moduleName);
 
                 foreach (var record in records)
                 {
@@ -109,7 +111,7 @@ namespace PrimeApps.Model.Repositories
                     if (!record.IsNullOrEmpty())
                     {
                         if (profileBasedEnabled && moduleName != "users" && moduleName != "profiles" && moduleName != "roles")
-                            newRecord = await RecordPermissionControl(moduleName, CurrentUser.UserId, (JObject)record, OperationType.read);
+                            newRecord = await RecordPermissionControl(moduleName, CurrentUser.UserId, (JObject)record, OperationType.read, user: user, module: module);
 
                         if (newRecord.IsNullOrEmpty())
                             continue;
@@ -155,10 +157,12 @@ namespace PrimeApps.Model.Repositories
                 return records;
 
             var newRecords = new JArray();
-
+            var user = await GetUser(CurrentUser.UserId);
+            var module = await GetModule(moduleName);
+             
             foreach (var record in records)
             {
-                var newRecord = await RecordPermissionControl(moduleName, CurrentUser.UserId, (JObject)record, OperationType.read);
+                var newRecord = await RecordPermissionControl(moduleName, CurrentUser.UserId, (JObject)record, OperationType.read, user: user, module: module);
                 newRecords.Add(newRecord);
             }
 
@@ -650,7 +654,27 @@ namespace PrimeApps.Model.Repositories
 
         List<string> removedFieldList = new List<string>();
 
-        public async Task<JObject> RecordPermissionControl(string moduleName, int userId, JObject record, OperationType operation, List<string> removedFields = null, bool customBulkUpdatePermission = false)
+        private async Task<TenantUser> GetUser(int id)
+        {
+            return await DbContext.Users
+                    .Include(q => q.Profile)
+                    .ThenInclude(q => q.Permissions)
+                    .Include(q => q.Groups)
+                    .FirstOrDefaultAsync(q => q.Id == id);
+        }
+
+        private async Task<Module> GetModule(string name)
+        {
+            return await DbContext.Modules
+               .Include(mod => mod.Sections)
+               .ThenInclude(section => section.Permissions)
+               .Include(mod => mod.Fields)
+               .ThenInclude(field => field.Permissions)
+               .Include(mod => mod.Relations)
+               .FirstOrDefaultAsync(q => !q.Deleted && q.Name == name);
+        }
+
+        public async Task<JObject> RecordPermissionControl(string moduleName, int userId, JObject record, OperationType operation, List<string> removedFields = null, bool customBulkUpdatePermission = false, TenantUser user = null, Module module = null)
         {
             if (record.IsNullOrEmpty())
                 return null;
@@ -658,14 +682,8 @@ namespace PrimeApps.Model.Repositories
             removedFieldList = new List<string>();
             removedFields = removedFields == null ? new List<string>() : removedFields;
 
-            ///TODO array record gelicek sekilde tekrar duzenleme yapilmasi gerekiyor. 
-            ///Bazi yerlerde loop ile bu method cagiriliyor ve surekli olarak db request ile perfonmasi etkileyebilir.
-
-            var user = await DbContext.Users
-                .Include(q => q.Profile)
-                .ThenInclude(q => q.Permissions)
-                .Include(q => q.Groups)
-                .FirstOrDefaultAsync(q => q.Id == userId);
+            if (user == null)
+                user = await GetUser(userId);
 
             var profile = user.Profile;
 
@@ -673,13 +691,9 @@ namespace PrimeApps.Model.Repositories
             if (profile.HasAdminRights)
                 return record;
 
-            var module = await DbContext.Modules
-                .Include(mod => mod.Sections)
-                .ThenInclude(section => section.Permissions)
-                .Include(mod => mod.Fields)
-                .ThenInclude(field => field.Permissions)
-                .Include(mod => mod.Relations)
-                .FirstOrDefaultAsync(q => !q.Deleted && q.Name == moduleName);
+            if (module == null)
+                module = await GetModule(moduleName);
+
             bool isCustomSharePermission;
 
             //Module CRUD permisson control
