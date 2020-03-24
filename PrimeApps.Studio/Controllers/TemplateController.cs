@@ -248,13 +248,7 @@ namespace PrimeApps.Studio.Controllers
 
             if (result < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-
-            var settings = JsonConvert.DeserializeObject<JObject>(templateEntity.Settings);
-            settings["id"] = templateEntity.Id;
-
-            templateEntity.Settings = JsonConvert.SerializeObject(settings);
-            await _appDraftTemplateRepository.Update(templateEntity);
-
+            
             var uri = new Uri(Request.GetDisplayUrl());
             return Created(uri.Scheme + "://" + uri.Authority + "/api/template/get/" + templateEntity.Id,
                 templateEntity);
