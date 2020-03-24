@@ -745,13 +745,14 @@ namespace PrimeApps.Model.Helpers
 
                 foreach (var template in templates)
                 {
-                    var settings = JObject.Parse(template["settings"].ToString());
-                    var selectSql = $"SELECT id from app_templates WHERE settings->>'id' = '" + settings["id"] + "';";
+                    //var settings = JObject.Parse(template["settings"].ToString());
+                    var selectSql = $"SELECT id FROM app_templates WHERE system_code = '{template["system_code"]}' AND language = '{template["language"]}' AND active = '{template["active"].ToString().Substring(0, 1).ToLower()}' AND app_id = {app["id"]};";
+                    //var selectSql = $"SELECT id from app_templates WHERE settings->>'id' = '" + settings["id"] + "';";
 
-                    var exists = PostgresHelper.Read(connectionString, "platform", selectSql, "hasRows");
+                    var data = PostgresHelper.Read(connectionString, "platform", selectSql, "array");
                     var sql = "";
 
-                    if (exists)
+                    if (data.HasValues)
                         sql = $"UPDATE public.app_templates SET created_by = 1, updated_by = 1, created_at = '" +
                               template["created_at"] + "', updated_at = '" +
                               DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) +
@@ -760,8 +761,8 @@ namespace PrimeApps.Model.Helpers
                               "', content = '" + template["content"] + "', language = '" + template["language"] +
                               "', type = " + (int)template["type"] + ", system_code = '" + template["system_code"] +
                               "', active = '" + (bool.Parse(template["active"].ToString()) ? "t" : "f") +
-                              "', settings = '" + template["settings"] + "' WHERE settings->>'id' = '" +
-                              settings["id"] + "';";
+                              "', settings = '" + template["settings"] + "' WHERE id = " +
+                              ((JArray)data).First["id"] + ";";
 
                     else
                         sql =

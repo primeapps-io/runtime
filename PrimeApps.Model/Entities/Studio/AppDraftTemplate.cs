@@ -9,7 +9,7 @@ namespace PrimeApps.Model.Entities.Studio
 	public class AppDraftTemplate : BaseEntity
 	{
 		[JsonIgnore]
-		[Column("app_id"), ForeignKey("App")]
+		[Column("app_id"), ForeignKey("App"), JsonProperty("app_id")]
 		public int AppId { get; set; }
 
 		[Column("name"), MaxLength(200)]
@@ -27,7 +27,7 @@ namespace PrimeApps.Model.Entities.Studio
 		[Column("type")]
 		public AppTemplateType Type { get; set; }
 
-		[Column("system_code")]
+		[Column("system_code"), JsonProperty("system_code")]
 		public string SystemCode { get; set; }
 
 		[Column("active")]
