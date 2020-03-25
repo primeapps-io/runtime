@@ -12,7 +12,8 @@
 				'./wwwroot/styles/vendor/bootstrap.css',
 				'./wwwroot/styles/vendor/flaticon.css',
 				'./wwwroot/styles/vendor/ladda-themeless.css',
-				'./wwwroot/styles/vendor/font-awesome.css'
+				'./wwwroot/styles/vendor/font-awesome.css',
+				'./wwwroot/styles/themes.css',
 			],
 			options: {
 				maps: false,
