@@ -226,7 +226,7 @@ namespace PrimeApps.Model.Helpers
             return dbs.Select(x => x["datname"].ToString()).ToList();
         }
 
-        public static void PrepareTemplateDatabaseForUpgrade(string connectionString, string dbName, string externalConnectionString = null)
+        public static void PrepareTemplateDatabase(string connectionString, string dbName, string externalConnectionString = null)
         {
             using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
             {
@@ -246,7 +246,7 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static void FinalizeTemplateDatabaseUpgrade(string connectionString, string dbName, string externalConnectionString)
+        public static void FinalizeTemplateDatabase(string connectionString, string dbName, string externalConnectionString)
         {
             using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
             {
@@ -300,6 +300,33 @@ namespace PrimeApps.Model.Helpers
 
                     if (intResult > -1)
                         throw new Exception($"Template DB cannot be switched (DROP):{dbName}");
+                }
+
+                connection.Close();
+            }
+        }
+
+        public static void DropNewTemplateDatabase(string connectionString, string dbName, string externalConnectionString)
+        {
+            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = $"SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = '{dbName}_new' and pid <> pg_backend_pid();";
+
+                    var intResult = command.ExecuteNonQuery();
+
+                    if (intResult > -1)
+                        throw new Exception($"Template DB connections cannot be terminated: {dbName}");
+
+                    command.CommandText = $"DROP DATABASE \"{dbName}_new\";";
+
+                    intResult = command.ExecuteNonQuery();
+
+                    if (intResult > -1)
+                        throw new Exception($"Template DB cannot be deleted: {dbName}");
                 }
 
                 connection.Close();

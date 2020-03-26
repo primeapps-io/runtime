@@ -80,7 +80,7 @@ namespace PrimeApps.Migrator.Helpers
 
             foreach (var databaseName in dbs)
             {
-                Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
+                Postgres.PrepareTemplateDatabase(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
                 var optionsBuilder = new DbContextOptionsBuilder<TenantDBContext>();
                 var connString = Postgres.GetConnectionString(_configuration.GetConnectionString("TenantDBConnection"), $"{databaseName}_new", connectionString);
                 optionsBuilder.UseNpgsql(connString, x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, HistoryRepository>();
@@ -95,7 +95,7 @@ namespace PrimeApps.Migrator.Helpers
                         {
                             tenantDatabaseContext.Database.Migrate();
 
-                            Postgres.FinalizeTemplateDatabaseUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
+                            Postgres.FinalizeTemplateDatabase(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
 
                             ((JArray)result["successful"]).Add(new JObject { ["name"] = databaseName, ["result"] = "success" });
                         }
@@ -103,6 +103,10 @@ namespace PrimeApps.Migrator.Helpers
                         {
                             ((JArray)result["failed"]).Add(new JObject { ["name"] = databaseName, ["result"] = ex.Message });
                         }
+                    }
+                    else
+                    {
+                        Postgres.DropNewTemplateDatabase(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
                     }
                 }
             }
@@ -117,7 +121,7 @@ namespace PrimeApps.Migrator.Helpers
 
             foreach (var databaseName in dbs)
             {
-                Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("StudioDBConnection"), databaseName, connectionString);
+                Postgres.PrepareTemplateDatabase(_configuration.GetConnectionString("StudioDBConnection"), databaseName, connectionString);
                 var optionsBuilder = new DbContextOptionsBuilder<TenantDBContext>();
                 var connString = Postgres.GetConnectionString(_configuration.GetConnectionString("StudioDBConnection"), $"{databaseName}_new", connectionString);
                 optionsBuilder.UseNpgsql(connString, x => x.MigrationsHistoryTable("_migration_history", "public")).ReplaceService<IHistoryRepository, HistoryRepository>();
@@ -132,7 +136,7 @@ namespace PrimeApps.Migrator.Helpers
                         {
                             tenantDatabaseContext.Database.Migrate();
 
-                            Postgres.FinalizeTemplateDatabaseUpgrade(_configuration.GetConnectionString("StudioDBConnection"), databaseName, connectionString);
+                            Postgres.FinalizeTemplateDatabase(_configuration.GetConnectionString("StudioDBConnection"), databaseName, connectionString);
 
                             ((JArray)result["successful"]).Add(new JObject { ["name"] = databaseName, ["result"] = "success" });
                         }
@@ -140,6 +144,10 @@ namespace PrimeApps.Migrator.Helpers
                         {
                             ((JArray)result["failed"]).Add(new JObject { ["name"] = databaseName, ["result"] = ex.Message });
                         }
+                    }
+                    else
+                    {
+                        Postgres.DropNewTemplateDatabase(_configuration.GetConnectionString("StudioDBConnection"), databaseName, connectionString);
                     }
                 }
             }
@@ -323,11 +331,11 @@ namespace PrimeApps.Migrator.Helpers
             {
                 try
                 {
-                    Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
+                    Postgres.PrepareTemplateDatabase(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
 
                     var rslt = Postgres.ExecuteNonQuery(_configuration.GetConnectionString("TenantDBConnection"), databaseName + "_new", sql, connectionString);
 
-                    Postgres.FinalizeTemplateDatabaseUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
+                    Postgres.FinalizeTemplateDatabase(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
 
                     var dbStatus = new JObject();
                     dbStatus["name"] = databaseName;
@@ -362,11 +370,11 @@ namespace PrimeApps.Migrator.Helpers
             {
                 try
                 {
-                    Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
+                    Postgres.PrepareTemplateDatabase(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
 
                     var rslt = Postgres.ExecuteNonQuery(_configuration.GetConnectionString("TenantDBConnection"), databaseName + "_new", sql, connectionString);
 
-                    Postgres.FinalizeTemplateDatabaseUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
+                    Postgres.FinalizeTemplateDatabase(_configuration.GetConnectionString("TenantDBConnection"), databaseName, connectionString);
 
                     var dbStatus = new JObject();
                     dbStatus["name"] = databaseName;
