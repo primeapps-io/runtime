@@ -542,18 +542,6 @@ angular.module('primeapps')
                     else
                         picklists['activity_type'] = activityTypes;
 
-                    var transactionTypePicklistCache = $cache.get('picklist_transaction_type');
-
-                    if (transactionTypePicklistCache)
-                        picklists['transaction_type'] = transactionTypePicklistCache;
-                    else {
-                        if (module.name === 'accounts') {
-                            picklists['transaction_type'] = $filter('filter')(transactionTypes, { type: 1 }, true);
-                        } else if (module.name === 'suppliers') {
-                            picklists['transaction_type'] = $filter('filter')(transactionTypes, { type: 2 }, true);
-                        }
-                    }
-
                     var yesNoPicklistCache = $cache.get('picklist_yes_no');
 
                     if (yesNoPicklistCache)

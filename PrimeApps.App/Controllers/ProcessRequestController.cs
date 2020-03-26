@@ -81,7 +81,7 @@ namespace PrimeApps.App.Controllers
                 await _processHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
                 await _processRequestRepository.Update(requestEntity);
 
-                await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
+                await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
 
                 if (request["module_name"].ToString() == "izinler")
                 {
@@ -108,7 +108,7 @@ namespace PrimeApps.App.Controllers
             await _processHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
             await _processRequestRepository.Update(requestEntity);
 
-            await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
+            await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
 
             if (request.ModuleName == "izinler")
             {
@@ -132,7 +132,7 @@ namespace PrimeApps.App.Controllers
             await _processHelper.RejectRequest(requestEntity, request.Message, AppUser, _warehouse);
             await _processRequestRepository.Update(requestEntity);
 
-            await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
+            await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
 
             if (request.ModuleName == "izinler")
             {
@@ -149,7 +149,7 @@ namespace PrimeApps.App.Controllers
         {
             var moduleEntity = await _moduleRepository.GetById(request.ModuleId);
             var record = await _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile, profileBasedEnabled: !AppUser.HasAdminProfile);
-            await _processHelper.Run(OperationType.delete, record, moduleEntity, AppUser, _warehouse, Model.Enums.ProcessTriggerTime.Instant, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate);
+            await _processHelper.Run(OperationType.delete, record, moduleEntity, AppUser, _warehouse, Model.Enums.ProcessTriggerTime.Instant, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest, _recordHelper.AfterUpdate, _recordHelper.AfterCreate);
 
             return Ok();
         }
@@ -168,7 +168,7 @@ namespace PrimeApps.App.Controllers
             await _processHelper.SendToApprovalAgain(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
             await _processRequestRepository.Update(requestEntity);
 
-            await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
+            await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
 
             return Ok(requestEntity);
         }
@@ -183,7 +183,7 @@ namespace PrimeApps.App.Controllers
             var record = await _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile, profileBasedEnabled: !AppUser.HasAdminProfile);
             try
             {
-                await _processHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, ProcessTriggerTime.Manuel, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate);
+                await _processHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, ProcessTriggerTime.Manuel, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest, _recordHelper.AfterUpdate, _recordHelper.AfterCreate);
 
                 //süreç bitiminde kalan izin hakkı tekrar kontrol ettiriliyor. 
                 if (moduleEntity.Name == "izinler")

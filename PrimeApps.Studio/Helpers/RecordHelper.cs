@@ -32,13 +32,8 @@ namespace PrimeApps.Studio.Helpers
 		void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180);
 		JObject PrepareConflictError(PostgresException ex);
 		bool ValidateFilterLogic(string filterLogic, List<Filter> filters);
-		Task CreateStageHistory(JObject record, JObject currentRecord = null);
-		Task UpdateStageHistory(JObject record, JObject currentRecord);
 		Task SetCombinations(JObject record, IModuleRepository _moduleRepository, string culture, JObject currentRecord, Field fieldCombination, int timeZoneOffset = 180);
-		Task SetActivityType(JObject record);
-		Task SetTransactionType(JObject record);
 		Task SetForecastFields(JObject record);
-		JObject CreateStageHistoryRecord(JObject record, JObject currentRecord);
 		string GetRecordPrimaryValue(JObject record, Module module);
 		Task<List<string>> GetAllFieldsForFindRequest(string moduleName, bool withLookups = true);
 		void SetCurrentUser(UserItem appUser);
@@ -242,9 +237,6 @@ namespace PrimeApps.Studio.Helpers
 							break;
 						case "opportunities":
 							await SetForecastFields(record);
-							break;
-						case "current_accounts":
-							await SetTransactionType(record);
 							break;
 					}
 
@@ -514,8 +506,8 @@ namespace PrimeApps.Studio.Helpers
 
 			if (runWorkflows)
 			{
-				Queue.QueueBackgroundWorkItem(async token => await _workflowHelper.Run(OperationType.insert, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
-				Queue.QueueBackgroundWorkItem(async token => await _processHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
+				Queue.QueueBackgroundWorkItem(async token => await _workflowHelper.Run(OperationType.insert, record, module, appUser, warehouse, BeforeCreateUpdate, AfterUpdate, AfterCreate));
+				Queue.QueueBackgroundWorkItem(async token => await _processHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, AfterUpdate, AfterCreate));
 				//Queue.QueueBackgroundWorkItem(async token => await _bpmHelper.Run(OperationType.insert, record, module, appUser, warehouse));
 			}
 
@@ -534,8 +526,8 @@ namespace PrimeApps.Studio.Helpers
 
 			if (runWorkflows)
 			{
-				Queue.QueueBackgroundWorkItem(async token => await _workflowHelper.Run(OperationType.update, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate, currentRecord));
-				Queue.QueueBackgroundWorkItem(async token => await _processHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
+				Queue.QueueBackgroundWorkItem(async token => await _workflowHelper.Run(OperationType.update, record, module, appUser, warehouse, BeforeCreateUpdate, AfterUpdate, AfterCreate, currentRecord));
+				Queue.QueueBackgroundWorkItem(async token => await _processHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, AfterUpdate, AfterCreate));
 				//Queue.QueueBackgroundWorkItem(async token => await _bpmHelper.Run(OperationType.update, record, module, appUser, warehouse));
 
 				//_workflowHost.PublishEvent("record_update", record["id"].ToString(), record["id"].ToString()).GetAwaiter();
@@ -555,8 +547,8 @@ namespace PrimeApps.Studio.Helpers
 
 			if (runWorkflows)
 			{
-				Queue.QueueBackgroundWorkItem(async token => await _workflowHelper.Run(OperationType.delete, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
-				Queue.QueueBackgroundWorkItem(async token => await _processHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
+				Queue.QueueBackgroundWorkItem(async token => await _workflowHelper.Run(OperationType.delete, record, module, appUser, warehouse, BeforeCreateUpdate, AfterUpdate, AfterCreate));
+				Queue.QueueBackgroundWorkItem(async token => await _processHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, AfterUpdate, AfterCreate));
 				//Queue.QueueBackgroundWorkItem(async token => await _bpmHelper.Run(OperationType.delete, record, module, appUser, warehouse));
 			}
 
@@ -619,37 +611,7 @@ namespace PrimeApps.Studio.Helpers
 
 			return true;
 		}
-
-		public async Task CreateStageHistory(JObject record, JObject currentRecord = null)
-		{
-			using (var _scope = _serviceScopeFactory.CreateScope())
-			{
-				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-				using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
-				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
-				{
-					_moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
-					if (record["stage"] != null)
-					{
-						var stageHistoryModule = await _moduleRepository.GetByNameBasic("stage_history");
-						var stageHistory = CreateStageHistoryRecord(record, currentRecord);
-
-						await _recordRepository.Create(stageHistory, stageHistoryModule);
-					}
-				}
-			}
-
-		}
-
-		public async Task UpdateStageHistory(JObject record, JObject currentRecord)
-		{
-			if (record["stage"] != null)
-			{
-				if ((string)record["stage"] != (string)currentRecord["stage"])
-					await CreateStageHistory(record, currentRecord);
-			}
-		}
-
+		
 		public async Task SetCombinations(JObject record, IModuleRepository _moduleRepository, string currentCulture, JObject currentRecord, Field fieldCombination, int timeZoneOffset = 180)
 		{
 			var field1 = await _moduleRepository.GetFieldByName(fieldCombination.Combination.Field1);
@@ -779,78 +741,8 @@ namespace PrimeApps.Studio.Helpers
 				return true;
 
 			return false;
-
-			/*
-             * Dependencies kontrolleri düzgün yazılıp açılabilir. 
-             * Şimdilik field üzerinden dependency veya combination varsa backend de validasyonları kontrol etmiyoruz.
-             */
-			/*foreach (var dependency in dependencies)
-            {
-                var parentDependency = dependencies.Where(x => x.ChildField == dependency.ParentField).ToList();
-
-                if (parentDependency.Count > 0)
-                {
-
-                }
-                else
-                {
-                    var parentField = module.Fields.Where(x => !x.Deleted && x.Name == dependency.ParentField).FirstOrDefault();
-                    if (parentField.DataType == DataType.Picklist)
-                    {
-                        var picklistValues = new System.Collections.Generic.List<string>();
-                        var picklist = await picklistRepository.GetById((int)parentField.PicklistId);
-
-                        foreach (var value in dependency.ValuesArray)
-                        {
-                            var selectedOption = picklist.Items.Where(x => x.Id == int.Parse(value)).FirstOrDefault();
-                            picklistValues.Add(tenantLanguage == "en" ? selectedOption.LabelEn : selectedOption.LabelTr);
-                        }
-
-                        if (record[parentField.Name] != null && picklistValues.Contains(record[parentField.Name].ToString()))
-                            return !dependency.Otherwise;
-
-                        return dependency.Otherwise;
-                    }
-                    else if (parentField.DataType == DataType.Checkbox)
-                    {
-                        if (!record[parentField.Name].IsNullOrEmpty())
-                        {
-                            return dependency.Otherwise ? !(bool)record[parentField.Name] : (bool)record[parentField.Name];
-                        }
-
-                        return dependency.Otherwise;
-
-                    }
-                }
-            }
-            return true;
-            */
 		}
-
-		public async Task SetTransactionType(JObject record)
-		{
-			if (!record["id"].IsNullOrEmpty() && record["transaction_type"].IsNullOrEmpty())
-				return;
-
-			if (record["id"].IsNullOrEmpty() && record["transaction_type"].IsNullOrEmpty())
-				throw new Exception("TransactionType not found!");
-
-			using (var _scope = _serviceScopeFactory.CreateScope())
-			{
-				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-				using (var _picklistRepository = new PicklistRepository(databaseContext, _configuration))
-				{
-					_picklistRepository.CurrentUser = _currentUser;
-					var transactionType = await _picklistRepository.GetItemById((int)record["transaction_type"]);
-
-					if (transactionType == null)
-						throw new Exception("TransactionType picklist item not found!");
-
-					record["transaction_type_system"] = transactionType.Value;
-				}
-			}
-		}
-
+		
 		public async Task SetForecastFields(JObject record)
 		{
 			if (!record["stage"].IsNullOrEmpty())
@@ -880,30 +772,6 @@ namespace PrimeApps.Studio.Helpers
 				record["forecast_month"] = closingDate.Month;
 				//TODOrecord["forecast_quarter"] = closingDate.ToQuarter();
 			}
-		}
-
-		public JObject CreateStageHistoryRecord(JObject record, JObject currentRecord)
-		{
-			var stageHistory = new JObject();
-			stageHistory["opportunity"] = record["id"];
-			stageHistory["stage"] = record["stage"];
-
-			if (currentRecord != null)
-			{
-				stageHistory["amount"] = !record["amount"].IsNullOrEmpty() ? record["amount"] : currentRecord["amount"];
-				stageHistory["closing_date"] = !record["closing_date"].IsNullOrEmpty() ? record["closing_date"] : currentRecord["closing_date"];
-				stageHistory["probability"] = !record["probability"].IsNullOrEmpty() ? record["probability"] : currentRecord["probability"];
-				stageHistory["expected_revenue"] = !record["expected_revenue"].IsNullOrEmpty() ? record["expected_revenue"] : currentRecord["expected_revenue"];
-			}
-			else
-			{
-				stageHistory["amount"] = !record["amount"].IsNullOrEmpty() ? record["amount"] : null;
-				stageHistory["closing_date"] = !record["closing_date"].IsNullOrEmpty() ? record["closing_date"] : null;
-				stageHistory["probability"] = !record["probability"].IsNullOrEmpty() ? record["probability"] : null;
-				stageHistory["expected_revenue"] = !record["expected_revenue"].IsNullOrEmpty() ? record["expected_revenue"] : null;
-			}
-
-			return stageHistory;
 		}
 
 		public string GetRecordPrimaryValue(JObject record, Module module)

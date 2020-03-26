@@ -349,10 +349,6 @@ namespace PrimeApps.Studio.Controllers
             try
             {
                 resultCreate = await _recordRepository.Create(record, moduleEntity);
-
-                // If module is opportunities create stage history
-                if (module == "opportunities")
-                    await _recordHelper.CreateStageHistory(record);
             }
             catch (PostgresException ex)
             {
@@ -470,10 +466,6 @@ namespace PrimeApps.Studio.Controllers
             try
             {
                 resultUpdate = await _recordRepository.Update(record, moduleEntity);
-
-                // If module is opportunities update stage history
-                if (module == "opportunities")
-                    await _recordHelper.UpdateStageHistory(record, currentRecord);
             }
             catch (PostgresException ex)
             {
@@ -563,10 +555,6 @@ namespace PrimeApps.Studio.Controllers
                 try
                 {
                     resultCreate = await _recordRepository.Create(record, moduleEntity);
-
-                    // If module is opportunities create stage history
-                    if (module == "opportunities")
-                        await _recordHelper.CreateStageHistory(record);
                 }
                 catch (PostgresException ex)
                 {
@@ -662,10 +650,6 @@ namespace PrimeApps.Studio.Controllers
                 {
                     recordUpdate["id"] = recordId;
                     resultUpdate = await _recordRepository.Update(recordUpdate, moduleEntity);
-
-                    // If module is opportunities update stage history
-                    if (module == "opportunities")
-                        await _recordHelper.UpdateStageHistory(recordUpdate, currentRecord);
                 }
                 catch (PostgresException ex)
                 {

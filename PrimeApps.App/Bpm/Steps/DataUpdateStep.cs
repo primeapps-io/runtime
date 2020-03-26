@@ -259,10 +259,6 @@ namespace PrimeApps.App.Bpm.Steps
                                     {
                                         throw new OperationCanceledException("Record cannot be updated! Object: " + recordFieldUpdate);
                                     }
-
-                                    // If module is opportunities create stage history
-                                    if (fieldUpdateModule.Name == "opportunities")
-                                        await recordHelper.UpdateStageHistory(recordFieldUpdate, currentRecordFieldUpdate);
                                 }
                                 catch (Exception ex)
                                 {

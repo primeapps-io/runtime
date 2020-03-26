@@ -774,61 +774,6 @@ angular.module('primeapps')
             'event_reminder',
             'call_time'
         ],
-        opportunities: [
-            'amount',
-            'closing_date',
-            'stage',
-            'probability',
-            'expected_revenue'
-        ],
-        products: [
-            'name',
-            'unit_price',
-            'usage_unit',
-            'purchase_price',
-            'vat_percent',
-            'using_stock',
-            'stock_quantity',
-            'critical_stock_limit'
-        ],
-        quotes: [
-            'account',
-            'quote_stage',
-            'total',
-            'vat_total',
-            'grand_total',
-            'discount_amount',
-            'discount_percent',
-            'discount_type',
-            'vat_list',
-            'email'
-        ],
-        sales_orders: [
-            'account',
-            'order_stage',
-            'total',
-            'vat_total',
-            'grand_total',
-            'discount_amount',
-            'discount_percent',
-            'discount_type',
-            'vat_list',
-            'email',
-            'currency'
-        ],
-        purchase_orders: [
-            'supplier',
-            'order_stage',
-            'total',
-            'vat_total',
-            'grand_total',
-            'discount_amount',
-            'discount_percent',
-            'discount_type',
-            'vat_list',
-            'email',
-            'currency'
-        ],
         calisanlar: [
             'sabit_devreden_izin',
             'devreden_izin',
@@ -878,22 +823,6 @@ angular.module('primeapps')
             'dogum_gunu_izni_kullanimi',
             'sadece_tam_gun_olarak_kullanilir'
         ],
-        current_accounts: [
-            'transaction_type',
-            'date',
-            'customer',
-            'supplier'
-        ],
-        stock_transactions: [
-            'transaction_date',
-            'stock_transaction_type',
-            'quantity',
-            'product',
-            'sales_order',
-            'purchase_order',
-            'supplier',
-            'customer'
-        ],
         holidays: [
             'date',
             'country'
@@ -916,41 +845,6 @@ angular.module('primeapps')
         ],
         opportunities: [
             'expected_revenue'
-        ],
-        products: [
-            'unit_price',
-            'vat_percent',
-            'purchase_price',
-            'stock_quantity'
-        ],
-        quotes: [
-            'account',
-            'quote_stage',
-            'total',
-            'vat_total',
-            'grand_total',
-            'discount_amount',
-            'discount_percent',
-            'discount_type',
-            'email'
-        ],
-        orders: [
-            'account',
-            'order_stage',
-            'total',
-            'vat_total',
-            'grand_total',
-            'discount_amount',
-            'discount_percent',
-            'discount_type',
-            'email'
-        ],
-        current_accounts: [
-            'transaction_type',
-            'date',
-            'amount',
-            'customer',
-            'supplier'
         ],
         holidays: [
             'date',

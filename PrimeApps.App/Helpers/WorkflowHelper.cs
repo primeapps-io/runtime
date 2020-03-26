@@ -26,7 +26,7 @@ namespace PrimeApps.App.Helpers
 {
     public interface IWorkflowHelper
     {
-        Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate, JObject previousRecord = null);
+        Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, AfterCreate AfterCreate, JObject previousRecord = null);
 
         Task<Workflow> CreateEntity(WorkflowBindingModel workflowModel, string tenantLanguage);
 
@@ -63,7 +63,7 @@ namespace PrimeApps.App.Helpers
             _environmentHelper = environmentHelper;
         }
 
-        public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate, JObject previousRecord)
+        public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, AfterCreate AfterCreate, JObject previousRecord)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -600,10 +600,6 @@ namespace PrimeApps.App.Helpers
                                         ErrorHandler.LogError(new Exception("Record cannot be updated! Object: " + recordFieldUpdate), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
                                         return;
                                     }
-
-                                    // If module is opportunities create stage history
-                                    if (fieldUpdateModule.Name == "opportunities")
-                                        await UpdateStageHistory(recordFieldUpdate, currentRecordFieldUpdate);
                                 }
                                 catch (Exception ex)
                                 {

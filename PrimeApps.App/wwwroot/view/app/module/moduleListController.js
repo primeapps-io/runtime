@@ -38,12 +38,6 @@ angular.module('primeapps')
 				return;
 			}
 
-			var salesInvoiceModule = $filter('filter')($scope.modules, { name: 'sales_invoices' }, true);
-			if (salesInvoiceModule.length < 1)
-				$scope.salesInvoiceModule = false;
-			else
-				$scope.salesInvoiceModule = true;
-
 			$scope.bulkUpdate = {};
 			$scope.filter = {};
 
@@ -479,16 +473,6 @@ angular.module('primeapps')
 			$scope.showActivityButtons = function () {
 				$scope.activityButtonsPopover = $scope.activityButtonsPopover || $popover(angular.element(document.getElementById('activityButtons')), {
 					templateUrl: 'view/common/newactivity.html',
-					placement: 'bottom',
-					autoClose: true,
-					scope: $scope,
-					show: true
-				});
-			};
-
-			$scope.showTransactionButtons = function () {
-				$scope.transactionButtonsPopover = $scope.transactionButtonsPopover || $popover(angular.element(document.getElementById('transactionButtons')), {
-					templateUrl: 'view/common/newtransaction.html',
 					placement: 'bottom',
 					autoClose: true,
 					scope: $scope,

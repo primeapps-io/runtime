@@ -127,7 +127,6 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 					$cache.remove('sales_orders_sales_orders');
 					$cache.remove('purchase_orders_purchase_orders');
 					$cache.remove('current_accounts_current_accounts');
-					$cache.remove('suppliers_suppliers');
 					$cache.remove('calendar_events');
 
 					$scope.sampleRemoving = false;

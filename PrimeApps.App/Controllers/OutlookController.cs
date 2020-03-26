@@ -618,10 +618,6 @@ namespace PrimeApps.App.Controllers
             try
             {
                 resultCreate = await _recordRepository.Create(mail, moduleEntity);
-
-                // If module is opportunities create stage history
-                if (module.Name == "opportunities")
-                    await _recordHelper.CreateStageHistory(mail);
             }
             catch (PostgresException ex)
             {

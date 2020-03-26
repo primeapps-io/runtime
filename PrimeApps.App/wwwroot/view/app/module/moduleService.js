@@ -72,14 +72,6 @@ angular.module('primeapps')
 
                 findRecords: function (module, request) {
                     $rootScope.activeModuleName = null;
-                    if (module === 'current_accounts' || module === 'kasa_hareketleri' || module === 'banka_hareketleri' || module === 'stock_transactions') {
-                        if (module === 'stock_transactions' && request.sort_field) {
-                            request.sort_field = 'transaction_date,id';
-                        } else if (module !== 'stock_transactions' && request.sort_field) {
-                            request.sort_field += ',id';
-                        }
-                    }
-
                     return $http.post(config.apiUrl + 'record/find/' + module, request);
                 },
 
@@ -235,14 +227,6 @@ angular.module('primeapps')
 
                 getAllProcess: function (id) {
                     return $http.get(config.apiUrl + 'process/get_all');
-                },
-
-                convertSalesInvoice: function (query) {
-                    return $http.post(config.apiUrl + 'convert/convert_sales_orders', query);
-                },
-
-                convertPurchaseInvoice: function (query) {
-                    return $http.post(config.apiUrl + 'convert/convert_purchase_orders', query);
                 },
 
                 sendSMS: function (moduleId, ids, query, isAllSelected, message, phoneField, templateId) {
@@ -856,18 +840,6 @@ angular.module('primeapps')
                         picklists['activity_type'] = activityTypePicklistCache;
                     else
                         picklists['activity_type'] = activityTypes;
-
-                    var transactionTypePicklistCache = $cache.get('picklist_transaction_type');
-
-                    if (transactionTypePicklistCache)
-                        picklists['transaction_type'] = transactionTypePicklistCache;
-                    else {
-                        if (module.name === 'accounts') {
-                            picklists['transaction_type'] = $filter('filter')(transactionTypes, { type: 1 }, true);
-                        } else if (module.name === 'suppliers') {
-                            picklists['transaction_type'] = $filter('filter')(transactionTypes, { type: 2 }, true);
-                        }
-                    }
 
                     var yesNoPicklistCache = $cache.get('picklist_yes_no');
 
@@ -2019,112 +1991,6 @@ angular.module('primeapps')
                                 });
                         }
                     }
-
-                    if (module.name === 'current_accounts') {
-                        var salesInvoiceModule = $filter('filter')(scope.modules, { name: 'sales_invoices' }, true);
-                        if (salesInvoiceModule.length < 1)
-                            return false;
-
-                        if (scope.subtype === 'collection') {
-                            switch (record.currency.system_code) {
-                                case 'try':
-                                    $filter('filter')(scope.module.fields, { name: 'alacak' }, true)[0].display_form = true;
-                                    $filter('filter')(scope.module.fields, { name: 'alacak_usd' }, true)[0].display_form = false;
-                                    $filter('filter')(scope.module.fields, { name: 'alacak_euro' }, true)[0].display_form = false;
-
-                                    if (record.alacak_euro)
-                                        delete record.alacak_euro;
-
-                                    if (record.alacak_usd)
-                                        delete record.alacak_usd;
-                                    break;
-                                case 'usd':
-                                    $filter('filter')(scope.module.fields, { name: 'alacak' }, true)[0].display_form = false;
-                                    $filter('filter')(scope.module.fields, { name: 'alacak_usd' }, true)[0].display_form = true;
-                                    $filter('filter')(scope.module.fields, { name: 'alacak_euro' }, true)[0].display_form = false;
-
-                                    if (record.alacak)
-                                        delete record.alacak;
-
-                                    if (record.alacak_euro)
-                                        delete record.alacak_euro;
-                                    break;
-                                case 'eur':
-                                    $filter('filter')(scope.module.fields, { name: 'alacak' }, true)[0].display_form = false;
-                                    $filter('filter')(scope.module.fields, { name: 'alacak_usd' }, true)[0].display_form = false;
-                                    $filter('filter')(scope.module.fields, { name: 'alacak_euro' }, true)[0].display_form = true;
-
-                                    if (record.alacak)
-                                        delete record.alacak;
-
-                                    if (record.alacak_usd)
-                                        delete record.alacak_usd;
-                                    break;
-                            }
-                        } else if (scope.subtype === 'payment') {
-                            switch (record.currency.system_code) {
-                                case 'try':
-                                    $filter('filter')(scope.module.fields, { name: 'borc_tl' }, true)[0].display_form = true;
-                                    $filter('filter')(scope.module.fields, { name: 'borc_usd' }, true)[0].display_form = false;
-                                    $filter('filter')(scope.module.fields, { name: 'borc_euro' }, true)[0].display_form = false;
-                                    break;
-                                case 'usd':
-                                    $filter('filter')(scope.module.fields, { name: 'borc_tl' }, true)[0].display_form = false;
-                                    $filter('filter')(scope.module.fields, { name: 'borc_usd' }, true)[0].display_form = true;
-                                    $filter('filter')(scope.module.fields, { name: 'borc_euro' }, true)[0].display_form = false;
-                                    break;
-                                case 'eur':
-                                    $filter('filter')(scope.module.fields, { name: 'borc_tl' }, true)[0].display_form = false;
-                                    $filter('filter')(scope.module.fields, { name: 'borc_usd' }, true)[0].display_form = false;
-                                    $filter('filter')(scope.module.fields, { name: 'borc_euro' }, true)[0].display_form = true;
-                                    break;
-                            }
-                        }
-
-
-                        $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].display_form = false;
-                        $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].display_form = false;
-                        $filter('filter')(scope.module.fields, { name: 'payment_due' }, true)[0].display_form = false;
-                        $filter('filter')(scope.module.fields, { name: 'odendi' }, true)[0].display_form = false;
-                        if (record.payment_method) {
-                            switch (record.payment_method.system_code) {
-                                case 'cash':
-                                    $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].display_form = true;
-                                    $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].validation.required = true;
-                                    $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].display_form = false;
-                                    $filter('filter')(scope.module.fields, { name: 'payment_due' }, true)[0].display_form = false;
-                                    $filter('filter')(scope.module.fields, { name: 'odendi' }, true)[0].display_form = false;
-                                    if (record.banka)
-                                        delete record.banka;
-                                    break;
-                                case 'bank_transfer':
-                                case 'credit_card':
-                                    $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].display_form = false;
-                                    $filter('filter')(scope.module.fields, { name: 'payment_due' }, true)[0].display_form = false;
-                                    $filter('filter')(scope.module.fields, { name: 'odendi' }, true)[0].display_form = false;
-                                    $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].display_form = true;
-                                    $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].validation.required = true;
-                                    if (record.kasa)
-                                        delete record.kasa;
-                                    break;
-                                case 'cheque':
-                                case 'bill':
-                                    $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].display_form = false;
-                                    $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].display_form = false;
-                                    $filter('filter')(scope.module.fields, { name: 'payment_due' }, true)[0].display_form = true;
-                                    $filter('filter')(scope.module.fields, { name: 'odendi' }, true)[0].display_form = true;
-                                    if (record.odendi) {
-                                        $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].display_form = true;
-                                        $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].display_form = true;
-                                        $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].validation.required = false;
-                                        $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].validation.required = false;
-                                    }
-                                    break;
-                            }
-                        }
-                    }
-
-                    //}
                 },
 
                 customValidations: function (module, record, checkUsed) {
@@ -3254,38 +3120,14 @@ angular.module('primeapps')
                                                                     sortField = viewState.sort_field;
                                                                     sortDirection = viewState.sort_direction;
                                                                 } else {
-                                                                    if (scope.module.name === 'kasa_hareketleri' || scope.module.name === 'banka_hareketleri') {
-                                                                        sortField = 'islem_tarihi,id';
-                                                                        sortDirection = 'desc';
-                                                                    } else if (scope.module.name === 'current_accounts') {
-                                                                        sortField = 'date,id';
-                                                                        sortDirection = 'desc';
-                                                                    } else if (scope.module.name === 'stock_transactions') {
-                                                                        sortField = 'transaction_date,id';
-                                                                        sortDirection = 'desc';
-                                                                    } else {
-                                                                        sortField = 'created_at';
-                                                                        sortDirection = 'desc';
-                                                                    }
-
+                                                                    sortField = 'created_at';
+                                                                    sortDirection = 'desc';
                                                                     newViewState(sortField, sortDirection, viewId);
                                                                 }
                                                             } else {
                                                                 if (viewState) {
-                                                                    if (scope.module.name === 'kasa_hareketleri' || scope.module.name === 'banka_hareketleri') {
-                                                                        sortField = 'islem_tarihi,id';
-                                                                        sortDirection = 'desc';
-                                                                    } else if (scope.module.name === 'current_accounts') {
-                                                                        sortField = 'date,id';
-                                                                        sortDirection = 'desc';
-                                                                    } else if (scope.module.name === 'stock_transactions') {
-                                                                        sortField = 'transaction_date,id';
-                                                                        sortDirection = 'desc';
-                                                                    } else {
-                                                                        viewState.sort_field = sortField;
-                                                                        viewState.sort_direction = sortDirection;
-                                                                    }
-
+                                                                    viewState.sort_field = sortField;
+                                                                    viewState.sort_direction = sortDirection;
                                                                     that.setViewState(viewState, scope.module.id, viewState.id);
                                                                 } else {
                                                                     newViewState(sortField, sortDirection, viewId);

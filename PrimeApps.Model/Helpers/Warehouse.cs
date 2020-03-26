@@ -130,67 +130,6 @@ namespace PrimeApps.Model.Helpers
                 CreateColumn(database, table, module, field);
             }
 
-            //Opportunities module specific fields
-            if (module.Name == "opportunities")
-            {
-                //Create forecast columns
-                var forecastTypeColumn = new Column(table, "forecast_type", DataType.NVarChar(101));
-                forecastTypeColumn.Nullable = true;
-                table.Columns.Add(forecastTypeColumn);
-
-                var forecastCategoryColumn = new Column(table, "forecast_category", DataType.NVarChar(101));
-                forecastCategoryColumn.Nullable = true;
-                table.Columns.Add(forecastCategoryColumn);
-
-                var forecastYearColumn = new Column(table, "forecast_year", DataType.Int);
-                forecastYearColumn.Nullable = true;
-                table.Columns.Add(forecastYearColumn);
-
-                var forecastMonthColumn = new Column(table, "forecast_month", DataType.Int);
-                forecastMonthColumn.Nullable = true;
-                table.Columns.Add(forecastMonthColumn);
-
-                var forecastQuarterColumn = new Column(table, "forecast_quarter", DataType.Int);
-                forecastQuarterColumn.Nullable = true;
-                table.Columns.Add(forecastQuarterColumn);
-
-                //Create nonclustered index for forecast fields
-                var forecastTypeIx = new Microsoft.SqlServer.Management.Smo.Index(table, "IX_" + table.Name + "_forecast_type");
-                table.Indexes.Add(forecastTypeIx);
-                forecastTypeIx.IndexedColumns.Add(new IndexedColumn(forecastTypeIx, "forecast_type", true));
-                forecastTypeIx.IsClustered = false;
-                forecastTypeIx.IsUnique = false;
-                forecastTypeIx.IndexKeyType = IndexKeyType.None;
-
-                var forecastCategoryIx = new Microsoft.SqlServer.Management.Smo.Index(table, "IX_" + table.Name + "_forecast_category");
-                table.Indexes.Add(forecastCategoryIx);
-                forecastCategoryIx.IndexedColumns.Add(new IndexedColumn(forecastCategoryIx, "forecast_category", true));
-                forecastCategoryIx.IsClustered = false;
-                forecastCategoryIx.IsUnique = false;
-                forecastCategoryIx.IndexKeyType = IndexKeyType.None;
-
-                var forecastYearIx = new Microsoft.SqlServer.Management.Smo.Index(table, "IX_" + table.Name + "_forecast_year");
-                table.Indexes.Add(forecastYearIx);
-                forecastYearIx.IndexedColumns.Add(new IndexedColumn(forecastYearIx, "forecast_year", true));
-                forecastYearIx.IsClustered = false;
-                forecastYearIx.IsUnique = false;
-                forecastYearIx.IndexKeyType = IndexKeyType.None;
-
-                var forecastMonthIx = new Microsoft.SqlServer.Management.Smo.Index(table, "IX_" + table.Name + "_forecast_month");
-                table.Indexes.Add(forecastMonthIx);
-                forecastMonthIx.IndexedColumns.Add(new IndexedColumn(forecastMonthIx, "forecast_month", true));
-                forecastMonthIx.IsClustered = false;
-                forecastMonthIx.IsUnique = false;
-                forecastMonthIx.IndexKeyType = IndexKeyType.None;
-
-                var forecastQuarterIx = new Microsoft.SqlServer.Management.Smo.Index(table, "IX_" + table.Name + "_forecast_quarter");
-                table.Indexes.Add(forecastQuarterIx);
-                forecastQuarterIx.IndexedColumns.Add(new IndexedColumn(forecastQuarterIx, "forecast_quarter", true));
-                forecastQuarterIx.IsClustered = false;
-                forecastQuarterIx.IsUnique = false;
-                forecastQuarterIx.IndexKeyType = IndexKeyType.None;
-            }
-
             //Activities module specific fields
             if (module.Name == "activities")
             {
@@ -207,23 +146,7 @@ namespace PrimeApps.Model.Helpers
                 activityTypeIx.IsUnique = false;
                 activityTypeIx.IndexKeyType = IndexKeyType.None;
             }
-
-            //CurrentAccounts module specific fields
-            if (module.Name == "current_accounts")
-            {
-                //Create transaction_type_system column
-                var transactionTypeColumn = new Column(table, "transaction_type_system", DataType.VarChar(30));
-                transactionTypeColumn.Nullable = true;
-                table.Columns.Add(transactionTypeColumn);
-
-                //Create nonclustered index for transaction_type_system field
-                var transactionTypeIx = new Microsoft.SqlServer.Management.Smo.Index(table, "IX_" + table.Name + "_transaction_type_system");
-                table.Indexes.Add(transactionTypeIx);
-                transactionTypeIx.IndexedColumns.Add(new IndexedColumn(transactionTypeIx, "transaction_type_system", true));
-                transactionTypeIx.IsClustered = false;
-                transactionTypeIx.IsUnique = false;
-                transactionTypeIx.IndexKeyType = IndexKeyType.None;
-            }
+            
 
             //Create system fields
             var sharedUsersColumn = new Column(table, "shared_users", DataType.VarChar(2000));
@@ -1682,11 +1605,6 @@ namespace PrimeApps.Model.Helpers
                     }
 
                     break;
-                case "current_accounts":
-                    command.Parameters.Add(new SqlParameter { ParameterName = "transaction_type_system", SqlValue = (string)record["transaction_type_system"], SqlDbType = SqlDbType.VarChar });
-                    columns.Add("[transaction_type_system]");
-                    values.Add("@transaction_type_system");
-                    break;
             }
         }
 
@@ -1760,14 +1678,6 @@ namespace PrimeApps.Model.Helpers
                     {
                         command.Parameters.Add(new SqlParameter { ParameterName = "forecast_quarter", SqlValue = (int)record["forecast_quarter"], SqlDbType = SqlDbType.Int });
                         sets.Add("[forecast_quarter] = @forecast_quarter");
-                    }
-
-                    break;
-                case "current_accounts":
-                    if (!record["transaction_type_system"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new SqlParameter { ParameterName = "transaction_type_system", SqlValue = (string)record["transaction_type_system"], SqlDbType = SqlDbType.VarChar });
-                        sets.Add("[transaction_type_system] = @transaction_type_system");
                     }
 
                     break;

@@ -72,31 +72,6 @@ namespace PrimeApps.Model.Helpers
             if (module == null)
                 return fields;
 
-            switch (module.Name)
-            {
-                case "quotes":
-                case "sales_invoices":
-                case "purchase_invoices":
-                case "sales_orders":
-                case "purchase_orders":
-                    var hasCurrencyField = module.Fields.Any(x => x.Name == "currency");
-
-                    if (hasCurrencyField)
-                    {
-                        fields.AddRange(new List<string>
-                        {
-                            "exchange_rate_try_usd",
-                            "exchange_rate_try_eur",
-                            "exchange_rate_usd_try",
-                            "exchange_rate_usd_eur",
-                            "exchange_rate_eur_try",
-                            "exchange_rate_eur_usd"
-                        });
-                    }
-
-                    break;
-            }
-
             return fields;
         }
 
@@ -137,11 +112,6 @@ namespace PrimeApps.Model.Helpers
             if (module.Name == "activities")
             {
                 columns.Add(string.Format(ColumnTemplate, "activity_type_system", "VARCHAR (10)", ""));
-            }
-
-            if (module.Name == "current_accounts")
-            {
-                columns.Add(string.Format(ColumnTemplate, "transaction_type_system", "VARCHAR (30)", ""));
             }
 
             columns.Add(string.Format(ColumnTemplate, "shared_users", "INTEGER[]", ""));

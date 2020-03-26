@@ -55,7 +55,7 @@
                         </li>
                         <li role="separator" class="divider"></li>
                         <li ng-show="hasPermission(type, operations.write)" ng-disabled="loading"
-                            ng-if="module.name != 'activities' && module.name != 'current_accounts' && !hideNewButton">
+                            ng-if="module.name != 'activities' && !hideNewButton">
                             <a href="#/app/moduleForm/{{type}}">
                                 <i class="fa fa-plus"></i>{{'Module.New' | translate:{title:module['label_' + language + '_singular']} }}
                             </a>
@@ -92,7 +92,7 @@
                 <a href="#/app/moduleForm/{{type}}" class="btn btn-sm btn-custom"
                    ng-disabled="loading"
                    ng-show="hasPermission(type, operations.write)"
-                   ng-if="module.name != 'activities' && module.name != 'current_accounts' && !hideNewButton">
+                   ng-if="module.name != 'activities' && !hideNewButton">
                     <i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + '_singular']} }}
                 </a>
 
@@ -102,21 +102,17 @@
                 <a href="#/app/moduleForm/{{type}}?stype={{activityTypeActive.value}}" id="activityButton" class="btn btn-sm btn-custom" ng-if="activityTypeActive">
                     <i class="fa fa-plus"></i> {{'Module.New' | translate:{title:activityTypeActive.label[language]} }}
                 </a>
-                <a href id="transactionButtons" class="btn btn-sm btn-custom" ng-click="showTransactionButtons()"
-                   ng-if="module.name === 'current_accounts'">
-                    <i class="fa fa-plus"></i> {{'Module.NewTransaction' | translate }}
-                </a>
 
                 <span class="dropdown list-dropdown-menu"
                       ng-show="hasPermission(type, operations.remove) || user.profile.send_email || user.profile.send_sms">
                     <button id="moreButton" type="button" class="btn btn-sm btn-custom dropdown-toggle" bs-dropdown data-placement="bottom-right" ng-disabled="loading"><i class="fa fa-ellipsis-h"></i></button>
                     <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="moreButton">
-                        <li ng-show="hasPermission(type, operations.remove) && module.name != 'current_accounts' && module.name != 'kasa_hareketleri' && module.name != 'banka_hareketleri' && module.name != 'stock_transactions' && !hideDeleteAll">
+                        <li ng-show="hasPermission(type, operations.remove) && !hideDeleteAll">
                             <a href ng-click="showDeleteModal()">
                                 <i class="fa fa-trash pull-left"></i> {{'Module.DeleteSelecteds' | translate }}
                             </a>
                         </li>
-                        <li ng-show="hasBulkUpdatePermission || hasPermission(type, operations.modify) && module.name != 'current_accounts' && module.name != 'kasa_hareketleri' && module.name != 'banka_hareketleri' && module.name != 'stock_transactions'">
+                        <li ng-show="hasBulkUpdatePermission || hasPermission(type, operations.modify)">
                             <a href ng-click="showUpdateModal()">
                                 <i class="fa fa-pencil-square-o pull-left"></i> {{'Module.UpdateSelecteds' | translate }}
                             </a>
@@ -185,7 +181,7 @@
                         </td>
                         <td class="text-right">
                             <span style="display:block; width: 40px"></span>
-                            <span class="action-buttons" ng-show="(!record.isProcessItem || isAdmin) && (salesInvoiceModule ?  module.name != 'current_accounts' : true )  && module.name != 'kasa_hareketleri' && module.name != 'banka_hareketleri' && module.name != 'stock_transactions'">
+                            <span class="action-buttons" ng-show="(!record.isProcessItem || isAdmin)">
                                 <a href="#/app/moduleForm/{{type}}{{'?id=' + record.id + '&back=' + type}}" class="action-icon" title="{{'Common.Edit' | translate}}" ng-show="hasPermission(type, operations.modify, record)"><i class="flaticon-pencil124"></i></a>
                                 <i class="action-icon flaticon-bin9" confirm-click action="delete(record.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ng-show="hasPermission(type, operations.remove, record)"></i>
                             </span>
