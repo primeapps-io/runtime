@@ -1377,30 +1377,6 @@ namespace PrimeApps.Model.Helpers
             columnsView.Add("[id] AS [Id]");
             labelsView.Add("Id");
 
-            if (module.Name == "opportunities")
-            {
-                var labelForecastType = tenantLanguage == "tr" ? "Öngörü Tipi" : "Forecast Type";
-                var labelForecastCategory = tenantLanguage == "tr" ? "Öngörü Kategorisi" : "Forecast Category";
-                var labelForecastYear = tenantLanguage == "tr" ? "Öngörü Yılı" : "Forecast Year";
-                var labelForecastMonth = tenantLanguage == "tr" ? "Öngörü Ayı" : "Forecast Month";
-                var labelForecastQuarter = tenantLanguage == "tr" ? "Öngörü Çeyreği" : "Forecast Quarter";
-
-                columnsView.Add($"[forecast_type] AS [{labelForecastType}]");
-                labelsView.Add(labelForecastType);
-
-                columnsView.Add($"[forecast_category] AS [{labelForecastCategory}]");
-                labelsView.Add(labelForecastCategory);
-
-                columnsView.Add($"[forecast_year] AS [{labelForecastYear}]");
-                labelsView.Add(labelForecastYear);
-
-                columnsView.Add($"[forecast_month] AS [{labelForecastMonth}]");
-                labelsView.Add(labelForecastMonth);
-
-                columnsView.Add($"[forecast_quarter] AS [{labelForecastQuarter}]");
-                labelsView.Add(labelForecastQuarter);
-            }
-
             foreach (var field in fields)
             {
                 if (ModuleHelper.StandardFields.Contains(field.Name))
@@ -1568,43 +1544,6 @@ namespace PrimeApps.Model.Helpers
                     columns.Add("[activity_type_system]");
                     values.Add("@activity_type_system");
                     break;
-                case "opportunities":
-                    if (!record["forecast_type"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new SqlParameter { ParameterName = "forecast_type", SqlValue = (string)record["forecast_type"], SqlDbType = SqlDbType.NVarChar });
-                        columns.Add("[forecast_type]");
-                        values.Add("@forecast_type");
-                    }
-
-                    if (!record["forecast_category"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new SqlParameter { ParameterName = "forecast_category", SqlValue = (string)record["forecast_category"], SqlDbType = SqlDbType.NVarChar });
-                        columns.Add("[forecast_category]");
-                        values.Add("@forecast_category");
-                    }
-
-                    if (!record["forecast_year"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new SqlParameter { ParameterName = "forecast_year", SqlValue = (int)record["forecast_year"], SqlDbType = SqlDbType.Int });
-                        columns.Add("[forecast_year]");
-                        values.Add("@forecast_year");
-                    }
-
-                    if (!record["forecast_month"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new SqlParameter { ParameterName = "forecast_month", SqlValue = (int)record["forecast_month"], SqlDbType = SqlDbType.Int });
-                        columns.Add("[forecast_month]");
-                        values.Add("@forecast_month");
-                    }
-
-                    if (!record["forecast_quarter"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new SqlParameter { ParameterName = "forecast_quarter", SqlValue = (int)record["forecast_quarter"], SqlDbType = SqlDbType.Int });
-                        columns.Add("[forecast_quarter]");
-                        values.Add("@forecast_quarter");
-                    }
-
-                    break;
             }
         }
 
@@ -1646,38 +1585,6 @@ namespace PrimeApps.Model.Helpers
                     {
                         command.Parameters.Add(new SqlParameter { ParameterName = "activity_type_system", SqlValue = (string)record["activity_type_system"], SqlDbType = SqlDbType.VarChar });
                         sets.Add("[activity_type_system] = @activity_type_system");
-                    }
-
-                    break;
-                case "opportunities":
-                    if (!record["forecast_type"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new SqlParameter { ParameterName = "forecast_type", SqlValue = (string)record["forecast_type"], SqlDbType = SqlDbType.NVarChar });
-                        sets.Add("[forecast_type] = @forecast_type");
-                    }
-
-                    if (!record["forecast_category"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new SqlParameter { ParameterName = "forecast_category", SqlValue = (string)record["forecast_category"], SqlDbType = SqlDbType.NVarChar });
-                        sets.Add("[forecast_category] = @forecast_category");
-                    }
-
-                    if (!record["forecast_year"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new SqlParameter { ParameterName = "forecast_year", SqlValue = (int)record["forecast_year"], SqlDbType = SqlDbType.Int });
-                        sets.Add("[forecast_year] = @forecast_year");
-                    }
-
-                    if (!record["forecast_month"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new SqlParameter { ParameterName = "forecast_month", SqlValue = (int)record["forecast_month"], SqlDbType = SqlDbType.Int });
-                        sets.Add("[forecast_month] = @forecast_month");
-                    }
-
-                    if (!record["forecast_quarter"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new SqlParameter { ParameterName = "forecast_quarter", SqlValue = (int)record["forecast_quarter"], SqlDbType = SqlDbType.Int });
-                        sets.Add("[forecast_quarter] = @forecast_quarter");
                     }
 
                     break;

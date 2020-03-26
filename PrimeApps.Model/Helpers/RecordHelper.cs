@@ -890,43 +890,6 @@ namespace PrimeApps.Model.Helpers
                     columns.Add("\"activity_type_system\"");
                     values.Add("@activity_type_system");
                     break;
-                case "opportunities":
-                    if (!record["forecast_type"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new NpgsqlParameter { ParameterName = "forecast_type", NpgsqlValue = (string)record["forecast_type"], NpgsqlDbType = NpgsqlDbType.Varchar });
-                        columns.Add("\"forecast_type\"");
-                        values.Add("@forecast_type");
-                    }
-
-                    if (!record["forecast_category"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new NpgsqlParameter { ParameterName = "forecast_category", NpgsqlValue = (string)record["forecast_category"], NpgsqlDbType = NpgsqlDbType.Varchar });
-                        columns.Add("\"forecast_category\"");
-                        values.Add("@forecast_category");
-                    }
-
-                    if (!record["forecast_year"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new NpgsqlParameter { ParameterName = "forecast_year", NpgsqlValue = (int)record["forecast_year"], NpgsqlDbType = NpgsqlDbType.Integer });
-                        columns.Add("\"forecast_year\"");
-                        values.Add("@forecast_year");
-                    }
-
-                    if (!record["forecast_month"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new NpgsqlParameter { ParameterName = "forecast_month", NpgsqlValue = (int)record["forecast_month"], NpgsqlDbType = NpgsqlDbType.Integer });
-                        columns.Add("\"forecast_month\"");
-                        values.Add("@forecast_month");
-                    }
-
-                    if (!record["forecast_quarter"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new NpgsqlParameter { ParameterName = "forecast_quarter", NpgsqlValue = (int)record["forecast_quarter"], NpgsqlDbType = NpgsqlDbType.Integer });
-                        columns.Add("\"forecast_quarter\"");
-                        values.Add("@forecast_quarter");
-                    }
-
-                    break;
             }
         }
 
@@ -1026,38 +989,6 @@ namespace PrimeApps.Model.Helpers
                     }
 
                     break;
-                case "opportunities":
-                    if (!record["forecast_type"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new NpgsqlParameter { ParameterName = "forecast_type", NpgsqlValue = (string)record["forecast_type"], NpgsqlDbType = NpgsqlDbType.Varchar });
-                        sets.Add("\"forecast_type\" = @forecast_type");
-                    }
-
-                    if (!record["forecast_category"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new NpgsqlParameter { ParameterName = "forecast_category", NpgsqlValue = (string)record["forecast_category"], NpgsqlDbType = NpgsqlDbType.Varchar });
-                        sets.Add("\"forecast_category\" = @forecast_category");
-                    }
-
-                    if (!record["forecast_year"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new NpgsqlParameter { ParameterName = "forecast_year", NpgsqlValue = (int)record["forecast_year"], NpgsqlDbType = NpgsqlDbType.Integer });
-                        sets.Add("\"forecast_year\" = @forecast_year");
-                    }
-
-                    if (!record["forecast_month"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new NpgsqlParameter { ParameterName = "forecast_month", NpgsqlValue = (int)record["forecast_month"], NpgsqlDbType = NpgsqlDbType.Integer });
-                        sets.Add("\"forecast_month\" = @forecast_month");
-                    }
-
-                    if (!record["forecast_quarter"].IsNullOrEmpty())
-                    {
-                        command.Parameters.Add(new NpgsqlParameter { ParameterName = "forecast_quarter", NpgsqlValue = (int)record["forecast_quarter"], NpgsqlDbType = NpgsqlDbType.Integer });
-                        sets.Add("\"forecast_quarter\" = @forecast_quarter");
-                    }
-
-                    break;
             }
         }
 
@@ -1149,14 +1080,6 @@ namespace PrimeApps.Model.Helpers
             sql += $"UPDATE process_approvers SET user_id={user.Id};\n";
 
             var tenant = user.TenantsAsUser.Single();
-
-            if (tenant.Tenant.AppId == 1)
-            {
-                //sql += "UPDATE sales_orders_d SET onay_tarihi=now() WHERE id=19281;\n";
-                sql += "UPDATE sales_orders_d SET onay_tarihi=now(), created_at=now(), updated_at=now() WHERE id=19281;\n";
-                sql += "UPDATE quotes_d SET created_at=now(), updated_at=now()";
-            }
-
 
             if (tenant.Tenant.AppId == 4 && !string.IsNullOrEmpty(user.Email))
             {

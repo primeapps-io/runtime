@@ -38,7 +38,7 @@ angular.module('primeapps')
 					}
 				];
 
-				if (moduleItem.name !== 'opportunities' && moduleItem.name !== 'activities' && moduleItem.name !== 'mails' && moduleItem.name !== 'quotes' && moduleItem.name !== 'sales_orders' && moduleItem.name !== 'purchase_orders') {
+				if ( moduleItem.name !== 'activities' && moduleItem.name !== 'mails') {
 					menuItems.push(
 						{
 							'text': $filter('translate')('Common.Copy'),
@@ -52,23 +52,6 @@ angular.module('primeapps')
 						{
 							'text': $filter('translate')('Common.Delete'),
 							'click': 'showDeleteForm(\'' + moduleItem.id + '\')'
-						}
-					);
-				}
-
-				if (moduleItem.name === 'leads') {
-					menuItems.push(
-						{
-							'text': $filter('translate')('Setup.Conversion.ConversionMapping'),
-							'href': '#app/setup/leadconvertmap'
-						}
-					);
-				}
-				if (moduleItem.name === 'quotes') {
-					menuItems.push(
-						{
-							'text': $filter('translate')('Setup.Conversion.ConversionMapping'),
-							'href': '#app/setup/quoteconvertmap'
 						}
 					);
 				}

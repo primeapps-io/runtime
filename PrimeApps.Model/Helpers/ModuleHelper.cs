@@ -100,15 +100,6 @@ namespace PrimeApps.Model.Helpers
                 AddViewColumn(columnsView, labelsView, field, language);
             }
 
-            if (module.Name == "opportunities")
-            {
-                columns.Add(string.Format(ColumnTemplate, "forecast_type", "VARCHAR (100)", ""));
-                columns.Add(string.Format(ColumnTemplate, "forecast_category", "VARCHAR (100)", ""));
-                columns.Add(string.Format(ColumnTemplate, "forecast_year", "NUMERIC", ""));
-                columns.Add(string.Format(ColumnTemplate, "forecast_month", "NUMERIC", ""));
-                columns.Add(string.Format(ColumnTemplate, "forecast_quarter", "NUMERIC", ""));
-            }
-
             if (module.Name == "activities")
             {
                 columns.Add(string.Format(ColumnTemplate, "activity_type_system", "VARCHAR (10)", ""));

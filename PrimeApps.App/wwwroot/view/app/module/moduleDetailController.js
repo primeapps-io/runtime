@@ -973,9 +973,6 @@ angular.module('primeapps')
 
                 if (!$scope.parentId) {
                     $cache.remove(cacheKey);
-
-                    if ($scope.module.name === 'opportunities')
-                        $cache.remove('opportunity' + $scope.id + '_stage_history');
                 }
                 else {
                     cacheKey = (!$scope.relatedToField ? $scope.parentType : 'related_to') + $scope.parentId + '_' + $scope.module.name;

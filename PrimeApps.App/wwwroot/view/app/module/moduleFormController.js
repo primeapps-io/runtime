@@ -1005,8 +1005,6 @@ angular.module('primeapps')
 					if ($scope.clone) {
 						if ($scope.revise) {
 							record.master_id = record.id;
-							var quoteStageField = $filter('filter')($scope.module.fields, { name: 'quote_stage' }, true)[0];
-							record.quote_stage = $filter('filter')($scope.picklistsModule[quoteStageField.picklist_id], { value: 'delivered' }, true)[0].id;
 						}
 
 						delete record.id;
@@ -1032,8 +1030,6 @@ angular.module('primeapps')
 										.then(function onSuccess(recordDataMaster) {
 											var masterRecord = ModuleService.processRecordSingle(recordDataMaster.data, $scope.module, $scope.picklistsModule);
 											var masterRecordState = angular.copy(masterRecord);
-											var quoteStageField = $filter('filter')($scope.module.fields, { name: 'quote_stage' }, true)[0];
-											masterRecord.quote_stage = $filter('filter')($scope.picklistsModule[quoteStageField.picklist_id], { value: 'revised' }, true)[0];
 											masterRecord = ModuleService.prepareRecord(masterRecord, $scope.module, masterRecordState);
 
 											ModuleService.updateRecord($scope.module.name, masterRecord)
@@ -1160,9 +1156,6 @@ angular.module('primeapps')
 
 						if (!$scope.parentId) {
 							$cache.remove(cacheKey);
-
-							if ($scope.module.name === 'opportunities')
-								$cache.remove('opportunity' + $scope.id + '_stage_history');
 						} else {
 							cacheKey = (!$scope.relatedToField ? $scope.parentType : 'related_to') + $scope.parentId + '_' + (!$scope.many ? $scope.module.name : $scope.many);
 							var parentCacheKey = $scope.parentType + '_' + $scope.parentType;

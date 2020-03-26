@@ -1494,23 +1494,6 @@ angular.module('primeapps')
 
                         this.setDisplayDependency(module, record);
                     }
-
-                    //Set default currency
-                    var currencyField = $filter('filter')(module.fields, { name: 'currency', deleted: '!true' })[0];
-
-                    if ((module.name === 'products' || module.name === 'quotes' || module.name === 'sales_orders' || module.name === 'purchase_orders') && !record['currency'] && currencyField) {
-                        if ($rootScope.currencySymbol) {
-                            var currencySymbol = angular.copy($rootScope.currencySymbol);
-
-                            if (currencySymbol === '\u20ba')
-                                currencySymbol = '₺';
-
-                            var picklistCurrencyItem = $filter('filter')(picklists[currencyField.picklist_id], { value: currencySymbol }, true)[0];
-                            record['currency'] = picklistCurrencyItem;
-
-                            this.setDisplayDependency(module, record);
-                        }
-                    }
                 },
 
                 setDependency: function (field, module, record, picklistsModule, scope) {

@@ -36,7 +36,6 @@ namespace PrimeApps.App.Helpers
         bool ValidateFilterLogic(string filterLogic, List<Filter> filters);
         Task SetCombinations(JObject record, IModuleRepository _moduleRepository, string culture, JObject currentRecord, Field fieldCombination, int timeZoneOffset = 180);
         Task SetActivityType(JObject record);
-        Task SetForecastFields(JObject record);
         string GetRecordPrimaryValue(JObject record, Module module);
         Task<List<string>> GetAllFieldsForFindRequest(string moduleName, bool withLookups = true);
         void SetCurrentUser(UserItem appUser);
@@ -311,70 +310,6 @@ namespace PrimeApps.App.Helpers
                     }
                 }
             }
-
-            //if (module.Name != "sales_orders")
-            //{
-            //	//Validate metadata
-            //	var moduleFields = module.Fields.Where(x => !x.Deleted && x.DataType != DataType.NumberAuto).ToList();
-
-            //	IDictionary<string, JToken> dictionary = record;
-
-            //	for (int i = 0; i < moduleFields.Count; i++)
-            //	{
-            //		var moduleField = moduleFields[i];
-
-            //		if (ModelModuleHelper.SystemFieldsExtended.Contains(moduleField.Name))
-            //			continue;
-
-            //		if (FieldHasDependencyOrCombination(module, moduleField, record, tenantLanguage, picklistRepository))
-            //			continue;
-
-            //		if (moduleField.Validation != null)
-            //		{
-            //			if (moduleField.Validation.Required != null && (bool)moduleField.Validation.Required &&
-            //			((!operationUpdate && record[moduleField.Name].IsNullOrEmpty()) ||
-            //			(operationUpdate && dictionary.ContainsKey(moduleField.Name) && record[moduleField.Name].IsNullOrEmpty())))
-            //			{
-            //				modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' is required.");
-            //				return StatusCodes.Status400BadRequest;
-            //			}
-
-            //			if (moduleField.Validation.Min != null && !record[moduleField.Name].IsNullOrEmpty() && int.Parse((string)record[moduleField.Name]) < moduleField.Validation.Min)
-            //			{
-            //				modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' minimum value must be {moduleField.Validation.Min}.");
-            //				return StatusCodes.Status400BadRequest;
-            //			}
-
-            //			if (moduleField.Validation.Max != null && !record[moduleField.Name].IsNullOrEmpty() && int.Parse((string)record[moduleField.Name]) > moduleField.Validation.Max)
-            //			{
-            //				modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' maximum value must be {moduleField.Validation.Max}.");
-            //				return StatusCodes.Status400BadRequest;
-            //			}
-
-            //			if (moduleField.Validation.MinLength != null && !record[moduleField.Name].IsNullOrEmpty() && record[moduleField.Name].ToString().Length < moduleField.Validation.MinLength)
-            //			{
-            //				modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' minimum length must be {moduleField.Validation.MinLength}.");
-            //				return StatusCodes.Status400BadRequest;
-            //			}
-
-            //			if (moduleField.Validation.MaxLength != null && !record[moduleField.Name].IsNullOrEmpty() && record[moduleField.Name].ToString().Length > moduleField.Validation.MaxLength)
-            //			{
-            //				modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' minimum length must be {moduleField.Validation.MaxLength}.");
-            //				return StatusCodes.Status400BadRequest;
-            //			}
-
-            //			if (moduleField.Validation.Pattern != null && !record[moduleField.Name].IsNullOrEmpty())
-            //			{
-            //				Match match = Regex.Match((string)record[moduleField.Name], "^" + moduleField.Validation.Pattern + "$", RegexOptions.IgnoreCase);
-            //				if (!match.Success)
-            //				{
-            //					modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' regex not match. Regex template: {moduleField.Validation.Pattern}");
-            //					return StatusCodes.Status400BadRequest;
-            //				}
-            //			}
-            //		}
-            //	}
-            //}
 
             //Check profile permissions
 
@@ -803,38 +738,7 @@ namespace PrimeApps.App.Helpers
 
             return false;
         }
-        
-        public async Task SetForecastFields(JObject record)
-        {
-            if (!record["stage"].IsNullOrEmpty())
-            {
-                using (var _scope = _serviceScopeFactory.CreateScope())
-                {
-                    var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-                    using (var _picklistRepository = new PicklistRepository(databaseContext, _configuration))
-                    {
-                        _picklistRepository.CurrentUser = _currentUser;
-                        var stage = await _picklistRepository.GetItemById((int)record["stage"]);
 
-                        if (stage == null)
-                            throw new Exception("Stage picklist not found!");
-
-                        record["forecast_type"] = stage.Value2;
-                        record["forecast_category"] = stage.Value3;
-                    }
-                }
-            }
-
-            if (!record["closing_date"].IsNullOrEmpty())
-            {
-                var closingDate = (DateTime)record["closing_date"];
-
-                record["forecast_year"] = closingDate.Year;
-                record["forecast_month"] = closingDate.Month;
-                record["forecast_quarter"] = closingDate.ToQuarter();
-            }
-        }
-        
         public string GetRecordPrimaryValue(JObject record, Module module)
         {
             var recordName = string.Empty;

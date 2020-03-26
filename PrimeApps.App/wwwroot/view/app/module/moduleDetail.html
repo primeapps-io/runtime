@@ -18,10 +18,6 @@
                                         <button type="button" class="btn btn-custom dropdown-toggle" bs-dropdown="dropdown" aria-haspopup="false" data-toggle="dropdown" aria-expanded="false" data-placement="bottom-right">{{'Module.DropdownButtons' | translate}} <span class="caret"></span></button>
                                         <ul class="dropdown-menu  dropdown-menu-right" role="menu">
                                             <li><a href="{{!back ? (!parentId ? '#/app/modules/' + type : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab)) : (back != 'calendar' && back != 'dashboard' && back != 'tasks' ? '#/app/modules/' + back : '#/app/' + back)}}"><i class="fa fa-chevron-left"></i> {{'Common.Back' | translate}}</a></li>
-
-                                            <li ng-show="module.name === 'leads' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('accounts', operations.write) && hasPermission('contacts', operations.write)">
-                                                <a href="#/app/leadconvert{{'?id=' + record.id }}" id="LeadConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
-                                            </li>
                                             <li role="separator" class="divider"></li>
                                             <li>
                                                 <a href ng-click="refresh()" ng-disabled="loading"><i class="fa fa-refresh"></i> {{'Common.Refresh' | translate}}</a>
@@ -31,9 +27,6 @@
                                                 <a href ng-click="openExportDialog();dropdownHide();" data-spinner-color="#666" ladda="pdfCreating" ng-disabled="loading"><i class="fa fa-file-text-o"></i> {{'Module.Download' | translate}}</a>
                                             </li>
                                             <li role="separator" class="divider"></li>
-                                            <li ng-show="displayConvertButton && hasPermission(type, operations.modify, record) && hasPermission('sales_orders', operations.write)">
-                                                <a href="#/app/quoteconvert{{'?id=' + record.id }}" id="QuoteConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
-                                            </li>
                                             <li ng-show="hasPermission(type, operations.write)" ng-if="displayReviseButton">
                                                 <a href="#/app/moduleForm/{{type}}{{'?clone=true&revise=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" ng-disabled="loading"><i class="fa fa-edit"></i> {{'Common.Revise' | translate}}</a>
                                             </li>
@@ -99,13 +92,9 @@
                                 <div class="pull-right" ng-show="!isAvailableForSmallDevice()">
                                     <a href="{{!back ? (!parentId ? '#/app/modules/' + type : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab + (previousParentId ? ('&rpptype=' + previousParentType + '&rppid=' + previousParentId + '&rprtab=' + previousReturnTab) : ''))) : (back != 'calendar' && back != 'dashboard' && back != 'tasks' ? '#/app/modules/' + back : '#/app/' + back)}}" class="btn btn-sm btn-custom"><i class="fa fa-chevron-left"></i> {{'Common.Back' | translate}}</a>
                                     <a href ng-click="refresh()" ng-disabled="loading" class="btn btn-sm btn-custom"><i class="fa fa-refresh"></i> {{'Common.Refresh' | translate}}</a>
-                                    <a ng-show="user.profile.lead_convert && module.name === 'leads' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('accounts', operations.write) && hasPermission('contacts', operations.write)" href="#/app/leadconvert{{'?id=' + record.id }}" class="btn btn-sm btn-custom" id="LeadConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
                                     <a ng-show="appId === 4 && module.name === 'adaylar' && record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('calisanlar', operations.write)" href="#/app/personalconvert{{'?id=' + record.id }}" class="btn btn-sm btn-custom" id="PersonalConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
                                     <a ng-if="user.profile.word_pdf_download" href ng-click="openExportDialog()" class="btn btn-sm btn-custom" data-spinner-color="#666" ladda="pdfCreating" ng-disabled="loading"><i class="fa fa-file-text-o"></i> {{'Module.Download' | translate}}</a>
-                                    <!--<a ng-click="showSingleSMSModal()" class="btn btn-sm btn-custom" ng-if="user.profile.SendSMS && module.name != 'quotes'" ng-show="hasPermission(type, operations.read)" ng-disabled="loading"><i class="fa fa-mobile"></i> {{'Module.SendSMS' | translate }}</a>-->
-                                    <!--<a ng-click="showEMailModal()" class="btn btn-sm btn-custom" ng-if="user.profile.SendEmail && module.name != 'quotes'" ng-show="hasPermission(type, operations.read)" ng-disabled="loading"><i class="fa fa-envelope-o"></i> {{'Module.SendEMail' | translate }}</a>-->
                                     <a href ng-click="showQuoteEMailModal()" ng-if="user.profile.send_email" class="btn btn-sm btn-custom" ng-show="hasPermission(type, operations.write)" data-spinner-color="#666" ladda="emailOpening" ng-disabled="loading"><i class="fa fa-envelope-o"></i> {{ module['label_' + language + '_singular']}} {{'Module.ModuleEmail' | translate}} </a>
-                                    <a ng-show="displayConvertButton && hasPermission(type, operations.modify, record) && hasPermission('sales_orders', operations.write)" href="#/app/quoteconvert{{'?id=' + record.id }}" class="btn btn-sm btn-custom" id="QuoteConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
                                     <a href="#/app/moduleForm/{{type}}{{'?clone=true&revise=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" class="btn btn-sm btn-custom" ng-show="hasPermission(type, operations.write)" ng-if="displayReviseButton" ng-disabled="loading"><i class="fa fa-edit"></i> {{'Common.Revise' | translate}}</a>
                                     <a href="#/app/moduleForm/{{type}}{{'?clone=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" class="btn btn-sm btn-custom" ng-show="hasPermission(type, operations.write)" ng-disabled="loading || (record.freeze && !isAdmin) || (record.process_id && record.process_status != 3 && !isAdmin && !hasProcessEditPermission)"><i class="fa fa-copy"></i> {{'Common.Clone' | translate}}</a>
                                     <a href="#/app/moduleForm/{{type}}{{'?id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) + '&rtab=' + returnTab + (previousParentId ? ('&rpptype=' + previousParentType + '&rppid=' + previousParentId + '&rprtab=' + previousReturnTab) : '') : '')}}" class="btn btn-sm btn-custom" ng-if="hasPermission(type, operations.modify, record) && !customHide" ng-disabled="loading || (record.freeze && !isAdmin) || (record.process_id && record.process_status != 3 && !isAdmin && !hasProcessEditPermission)"><i class="fa fa-edit"></i> {{'Common.Edit' | translate}}</a>
@@ -754,35 +743,6 @@
                                         </div>
 
 
-                                        <div class="subpanel" ng-if="masterRecord && module.name === 'quotes'">
-                                            <h5 class="subpanel-heading">{{'Module.RevisionMasters' | translate}}</h5>
-                                            <div class="subpanel-body">
-                                                <div class="row row-custom" ng-style="{ 'min-height': !tabconfig ? '' : '400px'}">
-                                                    <div class="col-sm-12">
-                                                        <table class="table">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>{{'Module.Subject' | translate}}</th>
-                                                                    <th>{{'Module.Account' | translate}}</th>
-                                                                    <th>{{'Module.Stage' | translate}}</th>
-                                                                    <th>{{'Module.ValidTill' | translate}}</th>
-                                                                    <th>{{'Module.Date' | translate}}</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td><a href="#/app/module/quotes?id={{masterRecord.id}}&ptype=quotes&pid={{id}}">{{masterRecord.subject}}</a></td>
-                                                                    <td>{{masterRecord.account.primary_value}}</td>
-                                                                    <td>{{masterRecord.quote_stage.labelStr}}</td>
-                                                                    <td>{{masterRecord.valid_till | date:'short'}}</td>
-                                                                    <td>{{masterRecord.created_at | date:'short'}}</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                         <div class="subpanel"
                                              ng-repeat="relatedModule in module.relations | filter:{deleted:'!true',detail_view_type:'flat'} | orderBy:'order'"
                                              ng-show="hasPermission(relatedModule.related_module, operations.read) && (!tabconfig || relatedModule.detail_view_type==='flat')">

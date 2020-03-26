@@ -843,9 +843,6 @@ angular.module('primeapps')
             'related_to',
             'task_status'
         ],
-        opportunities: [
-            'expected_revenue'
-        ],
         holidays: [
             'date',
             'country'

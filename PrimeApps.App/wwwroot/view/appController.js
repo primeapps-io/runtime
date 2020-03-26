@@ -120,13 +120,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 					$cache.remove('leads_leads');
 					$cache.remove('accounts_accounts');
 					$cache.remove('contacts_contacts');
-					$cache.remove('opportunities_opportunities');
 					$cache.remove('activities_activities');
-					$cache.remove('products_products');
-					$cache.remove('quotes_quotes');
-					$cache.remove('sales_orders_sales_orders');
-					$cache.remove('purchase_orders_purchase_orders');
-					$cache.remove('current_accounts_current_accounts');
 					$cache.remove('calendar_events');
 
 					$scope.sampleRemoving = false;

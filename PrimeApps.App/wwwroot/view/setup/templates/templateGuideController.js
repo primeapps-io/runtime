@@ -97,13 +97,6 @@ angular.module('primeapps')
                 addNoteModuleRelation(module);
             };
 
-            // $scope.filterReferences = function (field) {
-            //     if ($scope.selectedSubModule && ($scope.selectedSubModule.name === 'quote_products' || $scope.selectedModule.name === 'order_products') && field.name === 'usage_unit')
-            //         return;
-            //
-            //     return field.data_type != 'relation' && field.data_type != 'lookup';
-            // };
-
             $scope.filterUsers = function (field) {
                 return field.data_type != 'users';
             };

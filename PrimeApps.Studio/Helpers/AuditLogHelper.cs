@@ -43,10 +43,8 @@ namespace PrimeApps.Studio.Helpers
 
             _currentUser = currentUser;
         }
-       
-		private readonly List<string> ExcludedModules = new List<string> { "stage_history", "quote_products", "order_products" };
 
-		public async Task CreateLog(UserItem appUser, int? recordId, string recordName, AuditType type, RecordActionType? recordActionType, SetupActionType? setupActionType, Module module = null)
+        public async Task CreateLog(UserItem appUser, int? recordId, string recordName, AuditType type, RecordActionType? recordActionType, SetupActionType? setupActionType, Module module = null)
 		{
 			var auditLog = new AuditLog
 			{
@@ -65,9 +63,6 @@ namespace PrimeApps.Studio.Helpers
 
 					if (module == null)
 						throw new Exception("module cannot be null.");
-
-					if (ExcludedModules.Contains(module.Name))
-						return;
 
 					auditLog.RecordActionType = recordActionType.Value;
 					auditLog.ModuleId = module.Id;

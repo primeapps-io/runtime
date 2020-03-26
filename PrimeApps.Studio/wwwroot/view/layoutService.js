@@ -592,41 +592,6 @@ angular.module('primeapps')
                     "appId": 5
                 },
                 {
-
-                    "route": "#/app/modules/opportunities",
-                    "help": "https://yardim.ofisim.com/firsat-yonetimi/",
-                    "language": "tr",
-                    "appId": 1
-                },
-                {
-
-                    "route": "#/app/modules/opportunities",
-                    "help": "https://yardim.ofisim.com/firsat-yonetimi/",
-                    "language": "tr",
-                    "appId": 2
-                },
-                {
-
-                    "route": "#/app/modules/opportunities",
-                    "help": "https://yardim.ofisim.com/firsat-yonetimi/",
-                    "language": "tr",
-                    "appId": 3
-                },
-                {
-
-                    "route": "#/app/modules/opportunities",
-                    "help": "https://yardim.ofisim.com/firsat-yonetimi/",
-                    "language": "tr",
-                    "appId": 4
-                },
-                {
-
-                    "route": "#/app/modules/opportunities",
-                    "help": "https://yardim.ofisim.com/firsat-yonetimi/",
-                    "language": "tr",
-                    "appId": 5
-                },
-                {
                     "route": "#/app/modules/activities",
                     "help": "https://yardim.ofisim.com/aktivite-liste-gorunumu/",
                     "language": "tr",
@@ -653,96 +618,6 @@ angular.module('primeapps')
                 {
                     "route": "#/app/modules/activities",
                     "help": "https://yardim.ofisim.com/aktivite-liste-gorunumu/",
-                    "language": "tr",
-                    "appId": 5
-                },
-                {
-                    "route": "#/app/modules/products",
-                    "help": "https://yardim.ofisim.com/urunler-modulu/",
-                    "language": "tr",
-                    "appId": 1
-                },
-                {
-                    "route": "#/app/modules/products",
-                    "help": "https://yardim.ofisim.com/urunler-modulu/",
-                    "language": "tr",
-                    "appId": 2
-                },
-                {
-                    "route": "#/app/modules/products",
-                    "help": "https://yardim.ofisim.com/urunler-modulu/",
-                    "language": "tr",
-                    "appId": 3
-                },
-                {
-                    "route": "#/app/modules/products",
-                    "help": "https://yardim.ofisim.com/urunler-modulu/",
-                    "language": "tr",
-                    "appId": 4
-                },
-                {
-                    "route": "#/app/modules/products",
-                    "help": "https://yardim.ofisim.com/urunler-modulu/",
-                    "language": "tr",
-                    "appId": 5
-                },
-                {
-                    "route": "#/app/modules/quotes",
-                    "help": "https://yardim.ofisim.com/teklif-yonetimi/",
-                    "language": "tr",
-                    "appId": 1
-                },
-                {
-                    "route": "#/app/modules/quotes",
-                    "help": "https://yardim.ofisim.com/teklif-yonetimi/",
-                    "language": "tr",
-                    "appId": 2
-                },
-                {
-                    "route": "#/app/modules/quotes",
-                    "help": "https://yardim.ofisim.com/teklif-yonetimi/",
-                    "language": "tr",
-                    "appId": 3
-                },
-                {
-                    "route": "#/app/modules/quotes",
-                    "help": "https://yardim.ofisim.com/teklif-yonetimi/",
-                    "language": "tr",
-                    "appId": 4
-                },
-                {
-                    "route": "#/app/modules/quotes",
-                    "help": "http://yardim.ofisim.com/teklif-hazirlama-ve-yonetimi/",
-                    "language": "tr",
-                    "appId": 5
-                },
-                {
-                    "route": "#/app/modules/sales_orders",
-                    "help": "https://yardim.ofisim.com/siparis-yonetimi/",
-                    "language": "tr",
-                    "appId": 1
-                },
-                {
-                    "route": "#/app/modules/sales_orders",
-                    "help": "https://yardim.ofisim.com/siparis-yonetimi/",
-                    "language": "tr",
-                    "appId": 2
-                },
-                {
-                    "route": "#/app/modules/sales_orders",
-                    "help": "https://yardim.ofisim.com/siparis-yonetimi/",
-                    "language": "tr",
-                    "appId": 3
-                },
-                {
-                    "route": "#/app/modules/sales_orders",
-                    "help": "https://yardim.ofisim.com/siparis-yonetimi/",
-                    "language": "tr",
-                    "appId": 4
-                },
-                {
-                    "route": "#/app/modules/sales_orders",
-                    "help": "http://yardim.ofisim.com/satis-detaylari-ve-liste-gorunumu/",
                     "language": "tr",
                     "appId": 5
                 },
