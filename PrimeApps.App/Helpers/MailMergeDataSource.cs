@@ -143,11 +143,6 @@ namespace PrimeApps.App.Helpers
 			else
 			{
 				fieldValue = records[row - 1][fieldName];
-
-				if (fieldName == "discount_percent" && !string.IsNullOrEmpty(fieldValue.ToString()))
-				{
-					fieldValue = "%" + records[row - 1]["discount_percent"];
-				}
 			}
 
 			return fieldValue != null;

@@ -323,9 +323,6 @@ namespace PrimeApps.App.Notifications
 
                                 await (Create(appUser, databaseRecord, module, warehouse, true, timezoneOffset: timezoneOffset));
                                 break;
-                                //case "opportunities"://check here if any need on that
-
-                                //    break;
                         }
 
                         return;

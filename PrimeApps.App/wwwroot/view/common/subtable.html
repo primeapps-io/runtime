@@ -34,7 +34,7 @@
     <a href="#/app/moduleForm/{{relatedModule.related_module}}?ptype={{relatedModule.relation_field}}&pid={{ $parent.$parent.record.id }}&rtab={{ relatedModule.detail_view_type != 'flat' ?  relatedModule.id :''}}"
        class="btn btn-sm btn-custom"
        ng-show="$parent.hasPermission(relatedModule.related_module, $parent.operations.write)  && parentModule != 'calisanlar'"
-       ng-if="relatedModule.related_module != 'activities' && relatedModule.related_module != 'mails' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly && relatedModule.related_module != 'current_accounts' && !(parentType === 'katilimci' && parentModule ==='calisanlar') && !$parent.$parent.$parent.record.freeze && !hiddenNewButton">
+       ng-if="relatedModule.related_module != 'activities' && relatedModule.related_module != 'mails' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly && !(parentType === 'katilimci' && parentModule ==='calisanlar') && !$parent.$parent.$parent.record.freeze && !hiddenNewButton">
         <i class="fa fa-plus"></i> {{'Module.New' |
         translate:{title:relatedModule['label_' + language + '_singular']} }}
     </a>
@@ -59,13 +59,6 @@
         <i class="fa fa-plus"></i> {{'Module.Add' |
         translate:{title:$parent.relatedModule['label_' + language + '_singular']} }}
     </a>
-    <a href="#/app/moduleForm/{{relatedModule.related_module}}?stype={{$parent.transactionType.system_code}}&ptype={{$parent.$parent.$parent.$parent.type}}&pid={{$parent.$parent.$parent.$parent.id}}&rtab={{ relatedModule.detail_view_type != 'flat' ?  relatedModule.id :''}}"
-       class="btn btn-sm btn-custom" ng-show="$parent.hasPermission(relatedModule.related_module, operations.write)"
-       ng-repeat="transactionType in $parent.$parent.picklistsModule.transaction_type | filter:{show:true}"
-       ng-if="relatedModule.related_module === 'current_accounts' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly && !$parent.$parent.$parent.record.freeze">
-        <i class="fa fa-plus"></i> {{'Module.New' |
-        translate:{title:transactionType.label[language]} }}
-    </a>
     <a href="#/app/moduleForm/{{relatedModule.related_module}}?ptype={{$parent.$parent.type}}&pid={{$parent.$parent.record.id}}&rtab={{ relatedModule.detail_view_type != 'flat' ?  relatedModule.id :''}}"
        class="btn btn-sm btn-custom"
        ng-show="$parent.hasPermission(relatedModule.related_module,$parent. operations.write)"
@@ -78,7 +71,7 @@
         <i class="fa fa-refresh"></i>
     </a>
     <span class="dropdown list-dropdown-menu"
-          ng-if="relatedModule.relation_type != 'many_to_many' && $parent.hasPermission(relatedModule.related_module, $parent.operations.remove) && relatedModule.related_module !== 'current_accounts' && relatedModule.related_module !== 'masraf_kalemleri' && relatedModule.related_module !== 'kasa_hareketleri' && relatedModule.related_module !== 'banka_hareketleri' && !$parent.$parent.$parent.record.freeze">
+          ng-if="relatedModule.relation_type != 'many_to_many' && $parent.hasPermission(relatedModule.related_module, $parent.operations.remove) && !$parent.$parent.$parent.record.freeze">
         <button id="moreButton" type="button" class="btn btn-sm btn-custom dropdown-toggle" bs-dropdown
                 data-placement="bottom-right" ng-disabled="loading"><i class="fa fa-ellipsis-h"></i></button>
         <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="moreButton">
@@ -114,8 +107,7 @@
                 <td class="text-right">
                     <span style="display:block; width: 40px"></span>
                     <span class="action-buttons"
-                          ng-if="!readonly && !$parent.$parent.$parent.$parent.record.freeze && (!record.isProcessItem || isAdmin) && (salesInvoiceModule ?  module.name != 'current_accounts' : true )"
-                          ng-hide="(module.name == 'kasa_hareketleri' && (record.fields | filter:{name:'ilgili_cari_hareket'})[0].value) || (module.name == 'banka_hareketleri' && (record.fields | filter:{name:'ilgili_cari_hareket'})[0].value) || (module.name == 'stock_transactions' && (record.fields | filter:{name:'sales_order'})[0].value) || (module.name == 'stock_transactions' && (record.fields | filter:{name:'purchase_order'})[0].value)">
+                          ng-if="!readonly && !$parent.$parent.$parent.$parent.record.freeze && (!record.isProcessItem || isAdmin)">
                             <a href="#/app/moduleForm/{{type}}{{'?id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) +  (relatedModule.detail_view_type != 'flat' ?  '&rtab=' + relatedModule.id : '')  + (previousParentId ? ('&pptype=' + previousParentType + '&ppid=' + previousParentId + '&prtab=' + previousReturnTab) : '') : '')}}"
                                class="action-icon" title="{{'Common.Edit' | translate}}"
                                ng-show="hasPermission(type, operations.modify)"><i class="flaticon-pencil124"></i></a>

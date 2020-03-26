@@ -206,15 +206,6 @@ angular.module('primeapps')
 			if ($scope.parentType) {
 				if ($scope.type === 'activities' || $scope.type === 'mails' || $scope.many) {
 					$scope.parentModule = $scope.parentType;
-				} else if ($scope.type === 'current_accounts') {
-					if ($scope.id) {
-						if ($scope.parentType === 'supplier')
-							$scope.parentModule = 'suppliers';
-						else if ($scope.parentType === 'customer')
-							$scope.parentModule = 'accounts';
-					} else {
-						$scope.parentModule = $scope.parentType;
-					}
 				} else {
 					var parentTypeField = $filter('filter')($scope.module.fields, { name: $scope.parentType }, true)[0];
 
@@ -258,28 +249,7 @@ angular.module('primeapps')
 				return type;
 			};
 
-			//<--TODO:COMPONENT
-			var setCurrencyCurrentAccounts = function () {
-				if ($scope.module.name === 'current_accounts' && $scope.currencyField) {
-					var currencyValue;
-
-					if ($scope.record['customer'])
-						currencyValue = $scope.record['customer']['currency'];
-
-					if ($scope.record['supplier'])
-						currencyValue = $scope.record['supplier']['currency'];
-
-					if (currencyValue) {
-						if (!angular.isObject(currencyValue))
-							$scope.record['currency'] = $filter('filter')($scope.picklistsModule[$scope.currencyField.picklist_id], { labelStr: currencyValue }, true)[0];
-						else
-							$scope.record['currency'] = currencyValue;
-					}
-				}
-			};
-			//TODO:COMPONENT --> 
-
-			//<--TODO:COMPONENT
+			
 			var checkBranchSettingsAvailable = function () {
 				if ($rootScope.branchAvailable) {
 					$scope.branchManager = $filter('filter')($rootScope.users, { role_id: parseInt($scope.record['branch']) }, true)[0];
@@ -366,30 +336,13 @@ angular.module('primeapps')
 									$scope.userLicenseKalan = $scope.userLicenseControl.total - $scope.userLicenseControl.used;
 								});
 						}
-
-						//TODO:COMPONENT --> 
-
-						//<--TODO:COMPONENT
+						
 						if ($scope.subtype) {
 							if ($scope.type === 'activities') {
 								$scope.record['activity_type'] = $filter('filter')(activityTypes, { system_code: $scope.subtype }, true)[0];
 								$scope.subtypeNameLang = $filter('translate')('Module.New', { title: $scope.record['activity_type'].label[$rootScope.language] });
-							} else if ($scope.type === 'current_accounts') {
-								$scope.record['transaction_type'] = $filter('filter')(transactionTypes, { system_code: $scope.subtype }, true)[0];
-								$scope.subtypeNameLang = $filter('translate')('Module.New', { title: $scope.record['transaction_type'].label[$rootScope.language] });
 							}
 						}
-						//TODO:COMPONENT --> 
-
-						//Teklif burası kaldıralım gerek yok olmaması lazım 
-						//<--TODO:COMPONENT
-						// if (($scope.module.name === 'accounts' || $scope.module.name === 'current_accounts' || $scope.module.name === 'products' || $scope.module.name === 'sales_orders' || $scope.module.name === 'purchase_orders' || $scope.module.name === 'sales_invoices' || $scope.module.name === 'purchase_invoices') && $scope.currencyField) {
-						//     if (!$scope.currencyField.validation)
-						//         $scope.currencyField.validation = {};
-						//
-						//     $scope.currencyField.validation.readonly = false;
-						// }
-						//TODO:COMPONENT --> 
 
 						if ($scope.parentId) {
 							var moduleParent = $filter('filter')($rootScope.modules, { name: $scope.parentModule }, true)[0];
@@ -404,13 +357,7 @@ angular.module('primeapps')
 									var lookupRecord = {};
 									lookupRecord.id = parent.data.id;
 									lookupRecord.primary_value = parent.data[moduleParentPrimaryField.name];
-
-									//<--TODO:COMPONENT
-									if (parent.data['currency']) {
-										lookupRecord['currency'] = parent.data['currency'];
-										setCurrencyCurrentAccounts();
-									}
-
+									
 									if ($scope.parentModule === 'calisanlar') {
 										lookupRecord['e_posta'] = parent.data['e_posta'];
 									}
@@ -425,14 +372,9 @@ angular.module('primeapps')
 										$scope.record['related_to'] = lookupRecord;
 										$scope.record['related_module'] = $filter('filter')(picklists['900000'], { value: $scope.parentType }, true)[0];
 									} else {
-										if ($scope.parentModule === 'accounts' && $scope.type === 'current_accounts') {
-											$scope.record['customer'] = lookupRecord;
-										} else if ($scope.parentModule === 'suppliers' && $scope.type === 'current_accounts') {
-											$scope.record['supplier'] = lookupRecord;
-										} else {
-											$scope.record[$scope.parentType] = lookupRecord;
-										}
-
+										
+										$scope.record[$scope.parentType] = lookupRecord;
+										
 										var relatedDependency = $filter('filter')($scope.module.dependencies, { dependent_field: $scope.parentType }, true)[0];
 
 										if (relatedDependency && relatedDependency.deleted !== true) {
@@ -645,27 +587,7 @@ angular.module('primeapps')
 					$scope.$broadcast('angucomplete-alt:clearInput', $scope.currentLookupField.name);
 					return $q.defer().promise;
 				}
-
-				if ($scope.module.name === 'current_accounts' && $scope.currencyField) {
-					var parentModuleName = '';
-
-					if ($scope.currentLookupField.name === 'customer')
-						parentModuleName = 'accounts';
-					else if ($scope.currentLookupField.name === 'supplier')
-						parentModuleName = 'suppliers';
-
-					if (parentModuleName) {
-						var parentModule = $filter('filter')($rootScope.modules, { name: parentModuleName }, true)[0];
-						var parentCurrencyField = $filter('filter')(parentModule.fields, { name: 'currency' }, true)[0];
-
-						if (parentCurrencyField) {
-							return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['currency']);
-						} else {
-							return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record);
-						}
-					}
-				}
-
+				
 				$scope.customFilters = null;
 
 				components.run('BeforeLookup', 'Script', $scope);
@@ -888,11 +810,7 @@ angular.module('primeapps')
 			$scope.submit = function (record) {
 				function validate() {
 					var isValid = true;
-
-					//Scriptx
-					if ($scope.module.name === 'current_accounts')
-						var hasShownWarning = false;
-
+					
 					angular.forEach($scope.module.fields, function (field) {
 						if (!record[field.name])
 							return;
@@ -908,36 +826,6 @@ angular.module('primeapps')
 
 						if (field.data_type === 'document' && $scope.document[field.name] && $scope.document[field.name].UniqueName && record[field.name] != null) {
 							record[field.name] = $scope.document[field.name].UniqueName;
-						}
-
-						if ($scope.module.name === 'current_accounts') {
-							if (record.odendi && (record.payment_method.system_code === 'cheque' || record.payment_method.system_code === 'bill')) {
-								if (record['kasa'] && record['banka']) {
-									if (!hasShownWarning) {
-										ngToast.create({
-											content: $filter('translate')('Common.BankAndCaseChosen'),
-											className: 'warning'
-										});
-										hasShownWarning = true;
-									}
-
-									delete record['kasa'];
-									delete record['banka'];
-									isValid = false;
-								} else if (!record['kasa'] && !record['banka']) {
-									if (!hasShownWarning) {
-										ngToast.create({
-											content: $filter('translate')('Common.ChooseBankOrCase'),
-											className: 'warning'
-										});
-										hasShownWarning = true;
-									}
-
-									delete record['kasa'];
-									delete record['banka'];
-									isValid = false;
-								}
-							}
 						}
 
 					});
@@ -1055,14 +943,7 @@ angular.module('primeapps')
 				if (record.activity_type_system || record.activity_type_system === null)
 					delete record.activity_type_system;
 
-				if (record.transaction_type_system || record.transaction_type_system === null)
-					delete record.transaction_type_system;
-
 				if (!$scope.id) {
-
-					if ($scope.module.name === 'masraf_kalemleri' && !record.masraf)
-						record.masraf = $scope.$parent.$parent.currentExpense.id;
-
 					ModuleService.insertRecord($scope.module.name, record)
 						.then(function onSuccess(response) {
 							var moduleProcesses = $filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true);
@@ -1124,8 +1005,6 @@ angular.module('primeapps')
 					if ($scope.clone) {
 						if ($scope.revise) {
 							record.master_id = record.id;
-							var quoteStageField = $filter('filter')($scope.module.fields, { name: 'quote_stage' }, true)[0];
-							record.quote_stage = $filter('filter')($scope.picklistsModule[quoteStageField.picklist_id], { value: 'delivered' }, true)[0].id;
 						}
 
 						delete record.id;
@@ -1151,8 +1030,6 @@ angular.module('primeapps')
 										.then(function onSuccess(recordDataMaster) {
 											var masterRecord = ModuleService.processRecordSingle(recordDataMaster.data, $scope.module, $scope.picklistsModule);
 											var masterRecordState = angular.copy(masterRecord);
-											var quoteStageField = $filter('filter')($scope.module.fields, { name: 'quote_stage' }, true)[0];
-											masterRecord.quote_stage = $filter('filter')($scope.picklistsModule[quoteStageField.picklist_id], { value: 'revised' }, true)[0];
 											masterRecord = ModuleService.prepareRecord(masterRecord, $scope.module, masterRecordState);
 
 											ModuleService.updateRecord($scope.module.name, masterRecord)
@@ -1279,9 +1156,6 @@ angular.module('primeapps')
 
 						if (!$scope.parentId) {
 							$cache.remove(cacheKey);
-
-							if ($scope.module.name === 'opportunities')
-								$cache.remove('opportunity' + $scope.id + '_stage_history');
 						} else {
 							cacheKey = (!$scope.relatedToField ? $scope.parentType : 'related_to') + $scope.parentId + '_' + (!$scope.many ? $scope.module.name : $scope.many);
 							var parentCacheKey = $scope.parentType + '_' + $scope.parentType;
@@ -1296,67 +1170,28 @@ angular.module('primeapps')
 							$cache.remove('calendar_events');
 
 						if ($scope.saveAndNew) {
-							//Teklif
-							if ($scope.type === 'quotes' || $scope.type === 'sales_invoices') {
-								ModuleService.getDailyRates()
-									.then(function (response) {
-										if (!response.data)
-											return;
-
-										var dailyRates = response.data;
-										$scope.exchangeRatesDate = $filter('date')(dailyRates.date, 'dd MMMM yyyy') + ' 15:30';
-
-										$scope.record.exchange_rate_try_usd = dailyRates.usd;
-										$scope.record.exchange_rate_try_eur = dailyRates.eur;
-										$scope.record.exchange_rate_usd_try = 1 / dailyRates.usd;
-										$scope.record.exchange_rate_usd_eur = (1 / dailyRates.usd) * dailyRates.eur;
-										$scope.record.exchange_rate_eur_try = 1 / dailyRates.eur;
-										$scope.record.exchange_rate_eur_usd = (1 / dailyRates.eur) * dailyRates.usd;
-									});
-
-								if ($scope.type === 'sales_invoices') {
-									$scope.salesInvoiceProducts.quantity = null;
-									$scope.salesInvoiceProducts.grand_total = "";
-									$scope.salesInvoiceProducts.product = {};
-									$scope.salesInvoiceProducts = [];
-									$scope.vatList = [];
-									$scope.record.grand_total = 0;
-
-								}
-							}
-
 							if ($scope.type === 'activities') {
 								$scope.submitting = false;
 								$scope.record['activity_type'] = $filter('filter')(activityTypes, { system_code: $scope.subtype }, true)[0];
 								$scope.subtypeNameLang = $filter('translate')('Module.New', { title: $scope.record['activity_type'].label[$rootScope.language] });
-							} else if ($scope.type === 'current_accounts') {
-								$scope.record['transaction_type'] = $filter('filter')(transactionTypes, { system_code: $scope.subtype }, true)[0];
-								$scope.subtypeNameLang = $filter('translate')('Module.New', { title: $scope.record['transaction_type'].label[$rootScope.language] });
 							}
 						} else {
-							if ($scope.module.name === 'stock_transactions') {
-								setTimeout(function () {
+							if ($rootScope.isEmployee === $scope.module.name || $scope.module.name === 'calisanlar') {
+								//Kullanıcı bilgilerinin yer aldığı modalda Detaya Git butonuna basılınca çalışacak fonksiyon.
+								$scope.goModuleDetail = function () {
 									$state.go('app.moduleDetail', params);
-								}, 500);
-							} else {
-								if ($rootScope.isEmployee === $scope.module.name || $scope.module.name === 'calisanlar') {
-									//Kullanıcı bilgilerinin yer aldığı modalda Detaya Git butonuna basılınca çalışacak fonksiyon.
-									$scope.goModuleDetail = function () {
-										$state.go('app.moduleDetail', params);
-										$scope.userCreateModal.hide();
-									};
+									$scope.userCreateModal.hide();
+								};
 
-									//Çalışanlar modülünde User oluşturulurken kullanıcı bilgilerinin yer aldığı Modalın
-									//gösterilebilmesi için kullanıcının ModüleForm sayfasında bekletilmesi
-									if (!$scope.id && ($scope.record['kullanici_olustur'] || $rootScope.branchAvailable)) {
-										$scope.loading = true;
-									} else
-										$state.go('app.moduleDetail', params);
+								//Çalışanlar modülünde User oluşturulurken kullanıcı bilgilerinin yer aldığı Modalın
+								//gösterilebilmesi için kullanıcının ModüleForm sayfasında bekletilmesi
+								if (!$scope.id && ($scope.record['kullanici_olustur'] || $rootScope.branchAvailable)) {
+									$scope.loading = true;
 								} else
 									$state.go('app.moduleDetail', params);
-							}
-
-						}
+							} else
+								$state.go('app.moduleDetail', params);
+												}
 						$scope.izinTuruData = null;
 					};
 					$scope.success();
@@ -1400,9 +1235,6 @@ angular.module('primeapps')
 
 				if ($scope.record.currency)
 					$scope.currencySymbol = $scope.record.currency.value || $rootScope.currencySymbol;
-
-				if ($scope.module.name === 'current_accounts' && $scope.currencyField && (field.name === 'customer' || field.name === 'supplier'))
-					setCurrencyCurrentAccounts();
 			};
 
 			$scope.hideCreateNew = function (field) {

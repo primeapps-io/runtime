@@ -522,39 +522,7 @@ namespace PrimeApps.Model.Repositories
 
             return records;
         }
-
-        public decimal CalculateBalance(string currentTransactionType, int id)
-        {
-            string type, transactionType1, transactionType2;
-
-            switch (currentTransactionType)
-            {
-                case "sales_invoice":
-                case "collection":
-                    type = "customer";
-                    transactionType1 = "collection";
-                    transactionType2 = "sales_invoice";
-                    break;
-                case "purchase_invoice":
-                case "payment":
-                    type = "supplier";
-                    transactionType1 = "payment";
-                    transactionType2 = "purchase_invoice";
-                    break;
-                default:
-                    throw new Exception("TransactionType must be sales_invoice, collection, purchase_invoice or payment.");
-            }
-
-            var sql = RecordHelper.GenerateBalanceSql(type, id, transactionType1, transactionType2);
-            var record = (JObject)DbContext.Database.SqlQueryDynamic(sql).FirstOrDefault();
-            decimal balance = 0;
-
-            if (record != null && !record.IsNullOrEmpty() && !record["balance"].IsNullOrEmpty())
-                balance = (decimal)record["balance"];
-
-            return balance;
-        }
-
+        
         private void GetRoleBasedInfo(string moduleName, out string owners, out string userGroups)
         {
             var sqlRoleBased = RecordHelper.GenerateRoleBasedSql(moduleName, CurrentUser.UserId);

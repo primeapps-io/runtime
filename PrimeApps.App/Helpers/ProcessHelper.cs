@@ -25,13 +25,13 @@ namespace PrimeApps.App.Helpers
 {
     public interface IProcessHelper
     {
-        Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate);
+        Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest, AfterUpdate AfterUpdate, AfterCreate AfterCreate);
         Task<Process> CreateEntity(ProcessBindingModel processModel, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, Warehouse warehouse, UserItem appUser);
         Task UpdateEntity(ProcessBindingModel processModel, Process process, string tenantLanguage);
         Task ApproveRequest(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
         Task RejectRequest(ProcessRequest request, string message, UserItem appUser, Warehouse warehouse);
         Task SendToApprovalAgain(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
-        Task AfterCreateProcess(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
+        Task AfterCreateProcess(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, AfterCreate AfterCreate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
     }
 
     public class ProcessHelper : IProcessHelper
@@ -70,7 +70,7 @@ namespace PrimeApps.App.Helpers
             _calculationHelper = new CalculationHelper(configuration, serviceScopeFactory, currentUser);
         }
 
-        public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate)
+        public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest, AfterUpdate AfterUpdate, AfterCreate AfterCreate)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -536,7 +536,7 @@ namespace PrimeApps.App.Helpers
                                 ErrorHandler.LogError(new Exception("ProcessRequest cannot be created! Object: " + processRequest.ToJsonString()), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
 
                             var newRecord = await _recordRepository.GetById(module, (int)record["id"], false, profileBasedEnabled: false);
-                            await _workflowHelper.Run(operationType, newRecord, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate);
+                            await _workflowHelper.Run(operationType, newRecord, module, appUser, warehouse, BeforeCreateUpdate, AfterUpdate, AfterCreate);
                             //TODO BPM RUN
                         }
                         catch (Exception ex)
@@ -1694,94 +1694,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        //public static async Task SendToApprovalApprovedRequest(OperationType operationType, JObject record, UserItem appUser, Warehouse warehouse)
-        //{
-        //    using (var databaseContext = new TenantDBContext(appUser.TenantId))
-        //    {
-        //        using (var recordRepository = new RecordRepository(databaseContext, warehouse, configuration))
-        //        {
-        //            warehouse.DatabaseName = appUser.WarehouseDatabaseName;
-
-        //            using (var processRequestRepository = new ProcessRequestRepository(databaseContext, configuration))
-        //            {
-        //                var requestEntity = await processRequestRepository.GetByRecordId((int)record["id"], operationType);
-        //                using (var processRepository = new ProcessRepository(databaseContext, configuration))
-        //                {
-        //                    var process = await processRepository.GetById(requestEntity.ProcessId);
-
-        //                    requestEntity.ProcessStatusOrder = 1;
-        //                    requestEntity.Status = Model.Enums.ProcessStatus.Waiting;
-
-        //                    using (var userRepository = new UserRepository(databaseContext, configuration))
-        //                    {
-        //                        var nextApproverOrder = requestEntity.ProcessStatusOrder;
-        //                        var nextApprover = process.Approvers.FirstOrDefault(x => x.Order == nextApproverOrder);
-        //                        var user = await userRepository.GetById(nextApprover.UserId);
-
-        //                        var emailData = new Dictionary<string, string>();
-        //                        string domain;
-
-        //                        domain = "https://{0}.ofisim.com/";
-        //                        var appDomain = "crm";
-
-        //                        switch (appUser.AppId)
-        //                        {
-        //                            case 2:
-        //                                appDomain = "kobi";
-        //                                break;
-        //                            case 3:
-        //                                appDomain = "asistan";
-        //                                break;
-        //                            case 4:
-        //                                appDomain = "ik";
-        //                                break;
-        //                            case 5:
-        //                                appDomain = "cagri";
-        //                                break;
-        //                        }
-
-        //                        var subdomain = configuration.GetValue("AppSettings")["TestMode") == "true" ? "test" : appDomain;
-        //                        domain = string.Format(domain, subdomain);
-
-        //                        //domain = "http://localhost:5554/";
-        //                        string url = "";
-        //                        if (process.Module.Name == "timetrackers")
-        //                        {
-        //                            var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)requestEntity.RecordId, No = 1 } }, Limit = 9999 };
-        //                            var timetrackerRecord = await recordRepository.Find("timetrackers", findTimetracker);
-        //                            url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
-        //                        }
-        //                        else
-        //                        {
-        //                            url = domain + "#/app/module/" + process.Module.Name + "?id=" + requestEntity.RecordId;
-        //                        }
-
-        //                        if (appUser.TenantLanguage == "tr")
-        //                            emailData.Add("ModuleName", process.Module.LabelTrSingular);
-        //                        else
-        //                            emailData.Add("ModuleName", process.Module.LabelEnSingular);
-
-        //                        emailData.Add("Url", url);
-        //                        emailData.Add("ApproverName", user.FullName);
-        //                        emailData.Add("UserName", appUser.UserName);
-
-        //                        if (!string.IsNullOrWhiteSpace(user.Culture) && Constants.CULTURES.Contains(user.Culture))
-        //                            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(user.Culture);
-
-        //                        var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
-        //                        notification.AddRecipient(user.Email);
-        //                        notification.AddToQueue(appUser.TenantId, process.Module.Id, (int)record["id"], appUser: appUser);
-        //                    }
-
-        //                    await processRequestRepository.Update(requestEntity);
-        //                }
-
-        //            }
-        //        }
-        //    }
-        //}
-
-        public async Task AfterCreateProcess(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest)
+        public async Task AfterCreateProcess(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, AfterCreate AfterCreate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest)
         {
             warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
@@ -1796,7 +1709,7 @@ namespace PrimeApps.App.Helpers
                     process = _environmentHelper.DataFilter(process);
 
                     var record = await _recordRepository.GetById(process.Module, request.RecordId, false, profileBasedEnabled: false);
-                    await _workflowHelper.Run(request.OperationType, record, process.Module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate);
+                    await _workflowHelper.Run(request.OperationType, record, process.Module, appUser, warehouse, BeforeCreateUpdate, AfterUpdate, AfterCreate);
                     //TODO BPM RUN
 
                     if (process.Module.Name == "izinler")

@@ -18,10 +18,6 @@
                                         <button type="button" class="btn btn-custom dropdown-toggle" bs-dropdown="dropdown" aria-haspopup="false" data-toggle="dropdown" aria-expanded="false" data-placement="bottom-right">{{'Module.DropdownButtons' | translate}} <span class="caret"></span></button>
                                         <ul class="dropdown-menu  dropdown-menu-right" role="menu">
                                             <li><a href="{{!back ? (!parentId ? '#/app/modules/' + type : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab)) : (back != 'calendar' && back != 'dashboard' && back != 'tasks' ? '#/app/modules/' + back : '#/app/' + back)}}"><i class="fa fa-chevron-left"></i> {{'Common.Back' | translate}}</a></li>
-
-                                            <li ng-show="module.name === 'leads' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('accounts', operations.write) && hasPermission('contacts', operations.write)">
-                                                <a href="#/app/leadconvert{{'?id=' + record.id }}" id="LeadConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
-                                            </li>
                                             <li role="separator" class="divider"></li>
                                             <li>
                                                 <a href ng-click="refresh()" ng-disabled="loading"><i class="fa fa-refresh"></i> {{'Common.Refresh' | translate}}</a>
@@ -31,13 +27,10 @@
                                                 <a href ng-click="openExportDialog();dropdownHide();" data-spinner-color="#666" ladda="pdfCreating" ng-disabled="loading"><i class="fa fa-file-text-o"></i> {{'Module.Download' | translate}}</a>
                                             </li>
                                             <li role="separator" class="divider"></li>
-                                            <li ng-show="displayConvertButton && hasPermission(type, operations.modify, record) && hasPermission('sales_orders', operations.write)">
-                                                <a href="#/app/quoteconvert{{'?id=' + record.id }}" id="QuoteConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
-                                            </li>
                                             <li ng-show="hasPermission(type, operations.write)" ng-if="displayReviseButton">
                                                 <a href="#/app/moduleForm/{{type}}{{'?clone=true&revise=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" ng-disabled="loading"><i class="fa fa-edit"></i> {{'Common.Revise' | translate}}</a>
                                             </li>
-                                            <li ng-show="hasPermission(type, operations.write)" ng-if="module.name != 'mails' && module.name != 'current_accounts' && module.name != 'kasa_hareketleri' && module.name != 'banka_hareketleri' && module.name != 'stock_transactions'">
+                                            <li ng-show="hasPermission(type, operations.write)" ng-if="module.name != 'mails'">
                                                 <a href="#/app/moduleForm/{{type}}{{'?clone=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" ng-disabled="loading"><i class="fa fa-copy"></i> {{'Common.Clone' | translate}}</a>
                                             </li>
                                             <li ng-if="hasPermission(type, operations.modify, record) && !customHide">
@@ -46,21 +39,11 @@
                                             <li ng-show="hasPermission(type, operations.remove, record) && tab ==='general'">
                                                 <a href id="DeleteConfirmButton" confirm-click action="delete()" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" ng-disabled="loading || (record.freeze && !isAdmin)"><i class="fa fa-minus-circle"></i> {{'Common.Delete' | translate}}</a>
                                             </li>
-                                            <li ng-if="module.name != 'activities' && module.name != 'current_accounts' && hasPermission(type, operations.write) && !customHide">
+                                            <li ng-if="module.name != 'activities' && hasPermission(type, operations.write) && !customHide">
                                                 <a href="#/app/moduleForm/{{type}}" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + 'singular']} }}</a>
                                             </li>
                                             <li ng-show="hasPermission(type, operations.write)" ng-if="module.name === 'activities'">
                                                 <a href id="activityButtons" ng-click="showActivityButtons()" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + 'singular']} }}</a>
-                                            </li>
-                                            <li ng-show="hasPermission(type, operations.write)" ng-if="module.name === 'current_accounts'">
-                                                <a href id="transactionButtons" ng-click="showTransactionButtons()" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.NewTransaction' | translate}}</a>
-                                            </li>
-                                            <li role="separator" class="divider"></li>
-                                            <li ng-if="custombutton.action_type === 'ModalFrame' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)" style="text-align: center;" ng-repeat="custombutton in actionButtons" class="{{custombutton.css_class}}">
-                                                <a href id="transactionButtons" ng-click="showModuleFrameModal(custombutton.url)"><i ng-class="custombutton.icon"></i> {{custombutton.name}}</a>
-                                            </li>
-                                            <li data-spinner-color="#666" type="button" ng-if="custombutton.action_type === 'Scripting' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)" style="text-align: center;" ladda="running" custom-scripting="{{custombutton.template}}" ng-repeat="custombutton in actionButtons" class="{{custombutton.css_class}}">
-                                                <a href id="transactionButtons"><i ng-class="custombutton.icon"></i> {{custombutton.name}}</a>
                                             </li>
                                             <li role="separator" class="divider"></li>
                                             <li>
@@ -109,29 +92,22 @@
                                 <div class="pull-right" ng-show="!isAvailableForSmallDevice()">
                                     <a href="{{!back ? (!parentId ? '#/app/modules/' + type : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab + (previousParentId ? ('&rpptype=' + previousParentType + '&rppid=' + previousParentId + '&rprtab=' + previousReturnTab) : ''))) : (back != 'calendar' && back != 'dashboard' && back != 'tasks' ? '#/app/modules/' + back : '#/app/' + back)}}" class="btn btn-sm btn-custom"><i class="fa fa-chevron-left"></i> {{'Common.Back' | translate}}</a>
                                     <a href ng-click="refresh()" ng-disabled="loading" class="btn btn-sm btn-custom"><i class="fa fa-refresh"></i> {{'Common.Refresh' | translate}}</a>
-                                    <a ng-show="user.profile.lead_convert && module.name === 'leads' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('accounts', operations.write) && hasPermission('contacts', operations.write)" href="#/app/leadconvert{{'?id=' + record.id }}" class="btn btn-sm btn-custom" id="LeadConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
                                     <a ng-show="appId === 4 && module.name === 'adaylar' && record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('calisanlar', operations.write)" href="#/app/personalconvert{{'?id=' + record.id }}" class="btn btn-sm btn-custom" id="PersonalConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
-                                    <a ng-show="module.name === 'sales_orders' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('sales_invoices', operations.write)" ng-disabled="salesOrderStageSystemCode != 'confirmed_order_stage' " confirm-click action="convertSalesOrder()" placement="bottom" confirm-message="Emin misiniz?" confirm-yes="Evet" confirm-no="Hayır" class="btn btn-sm btn-custom" id="SalesOrderConvertButton"><i class="fa fa-retweet"></i> {{'Module.ConvertToSalesInvoice' | translate}}</a>
-                                    <a ng-show="module.name === 'purchase_orders' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('purchase_invoices', operations.write)" ng-disabled="purchaseOrderStageSystemCode != 'confirmed_purchase_order_stage' " confirm-click action="convertPurchaseOrder()" placement="bottom" confirm-message="Emin misiniz?" confirm-yes="Evet" confirm-no="Hayır" class="btn btn-sm btn-custom" id="PurchaseOrderConvertButton"><i class="fa fa-retweet"></i>{{'Module.ConvertToBuyingInvoice' | translate}}</a>
                                     <a ng-if="user.profile.word_pdf_download" href ng-click="openExportDialog()" class="btn btn-sm btn-custom" data-spinner-color="#666" ladda="pdfCreating" ng-disabled="loading"><i class="fa fa-file-text-o"></i> {{'Module.Download' | translate}}</a>
-                                    <!--<a ng-click="showSingleSMSModal()" class="btn btn-sm btn-custom" ng-if="user.profile.SendSMS && module.name != 'quotes'" ng-show="hasPermission(type, operations.read)" ng-disabled="loading"><i class="fa fa-mobile"></i> {{'Module.SendSMS' | translate }}</a>-->
-                                    <!--<a ng-click="showEMailModal()" class="btn btn-sm btn-custom" ng-if="user.profile.SendEmail && module.name != 'quotes'" ng-show="hasPermission(type, operations.read)" ng-disabled="loading"><i class="fa fa-envelope-o"></i> {{'Module.SendEMail' | translate }}</a>-->
                                     <a href ng-click="showQuoteEMailModal()" ng-if="user.profile.send_email" class="btn btn-sm btn-custom" ng-show="hasPermission(type, operations.write)" data-spinner-color="#666" ladda="emailOpening" ng-disabled="loading"><i class="fa fa-envelope-o"></i> {{ module['label_' + language + '_singular']}} {{'Module.ModuleEmail' | translate}} </a>
-                                    <a ng-show="displayConvertButton && hasPermission(type, operations.modify, record) && hasPermission('sales_orders', operations.write)" href="#/app/quoteconvert{{'?id=' + record.id }}" class="btn btn-sm btn-custom" id="QuoteConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
                                     <a href="#/app/moduleForm/{{type}}{{'?clone=true&revise=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" class="btn btn-sm btn-custom" ng-show="hasPermission(type, operations.write)" ng-if="displayReviseButton" ng-disabled="loading"><i class="fa fa-edit"></i> {{'Common.Revise' | translate}}</a>
-                                    <a href="#/app/moduleForm/{{type}}{{'?clone=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" class="btn btn-sm btn-custom" ng-show="hasPermission(type, operations.write)" ng-if="module.name != 'current_accounts' && module.name != 'masraflar'" ng-disabled="loading || (record.freeze && !isAdmin) || (record.process_id && record.process_status != 3 && !isAdmin && !hasProcessEditPermission)"><i class="fa fa-copy"></i> {{'Common.Clone' | translate}}</a>
+                                    <a href="#/app/moduleForm/{{type}}{{'?clone=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" class="btn btn-sm btn-custom" ng-show="hasPermission(type, operations.write)" ng-disabled="loading || (record.freeze && !isAdmin) || (record.process_id && record.process_status != 3 && !isAdmin && !hasProcessEditPermission)"><i class="fa fa-copy"></i> {{'Common.Clone' | translate}}</a>
                                     <a href="#/app/moduleForm/{{type}}{{'?id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) + '&rtab=' + returnTab + (previousParentId ? ('&rpptype=' + previousParentType + '&rppid=' + previousParentId + '&rprtab=' + previousReturnTab) : '') : '')}}" class="btn btn-sm btn-custom" ng-if="hasPermission(type, operations.modify, record) && !customHide" ng-disabled="loading || (record.freeze && !isAdmin) || (record.process_id && record.process_status != 3 && !isAdmin && !hasProcessEditPermission)"><i class="fa fa-edit"></i> {{'Common.Edit' | translate}}</a>
                                     <a href class="btn btn-sm btn-custom" id="DeleteConfirmButton" confirm-click action="delete()"
                                        confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}"
                                        confirm-no="{{'Common.No' | translate}}"
                                        ng-show="hasPermission(type, operations.remove, record) && tab ==='general'"
-                                       ng-disabled="loading || (record.freeze && !isAdmin)|| (module.name == 'current_accounts' && salesInvoiceModule && (record.transaction_type.system_code == 'sales_invoice' || record.transaction_type.system_code == 'purchase_invoice')) || (module.name == 'banka_hareketleri' && record.ilgili_cari_hareket) || (module.name == 'kasa_hareketleri' && record.ilgili_cari_hareket) || (module.name == 'stock_transactions' && record.sales_order) || (module.name == 'stock_transactions' && record.purchase_order)">
+                                       ng-disabled="loading || (record.freeze && !isAdmin)">
                                         <i class="fa fa-minus-circle"></i>
                                         {{'Common.Delete' | translate}}
                                     </a>
-                                    <a href="#/app/moduleForm/{{type}}" class="btn btn-sm btn-custom" ng-if="(module.name != 'activities' && module.name != 'current_accounts' && hasPermission(type, operations.write)) && !customHide" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + 'singular']} }}</a>
+                                    <a href="#/app/moduleForm/{{type}}" class="btn btn-sm btn-custom" ng-if="(module.name != 'activities' && hasPermission(type, operations.write)) && !customHide" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + 'singular']} }}</a>
                                     <a href id="activityButtons" class="btn btn-sm btn-custom" ng-click="showActivityButtons()" ng-show="hasPermission(type, operations.write)" ng-if="module.name === 'activities'" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + 'singular']} }}</a>
-                                    <a href id="transactionButtons" class="btn btn-sm btn-custom" ng-click="showTransactionButtons()" ng-show="hasPermission(type, operations.write)" ng-if="module.name === 'current_accounts'" ng-disabled="loading"><i class="fa fa-plus"></i> {{'Module.NewTransaction' | translate}}</a>
                                     <button ng-click="sendToProcessApproval()" ng-show="hasManuelProcess && (record.owner.id === currentUser.id || hasProcessRights) && !record.process_id && module.name != 'timetrackers'" class="btn btn-sm btn-success ng-animate-disabled" ladda="manuelApproveRequest">{{'Setup.Workflow.ApprovelProcess.SendToApproval' | translate}}</button>
                                     <button ng-click="approveProcess()" ng-show="isApprovalRecord && record.process_status == 1 && module.name != 'timetrackers'" ng-if="!waitingForApproval" class="btn btn-sm btn-success ng-animate-disabled" ladda="approving">{{'Setup.Workflow.ApprovelProcess.Approve' | translate}}</button>
                                     <button ng-click="openRejectApprovalModal()" ng-show="isApprovalRecord && record.process_status == 1 && module.name != 'timetrackers'" ng-if="!waitingForApproval" class="btn btn-sm btn-danger ng-animate-disabled" ladda="rejecting">{{'Setup.Workflow.ApprovelProcess.Reject' | translate}}</button>
@@ -767,35 +743,6 @@
                                         </div>
 
 
-                                        <div class="subpanel" ng-if="masterRecord && module.name === 'quotes'">
-                                            <h5 class="subpanel-heading">{{'Module.RevisionMasters' | translate}}</h5>
-                                            <div class="subpanel-body">
-                                                <div class="row row-custom" ng-style="{ 'min-height': !tabconfig ? '' : '400px'}">
-                                                    <div class="col-sm-12">
-                                                        <table class="table">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>{{'Module.Subject' | translate}}</th>
-                                                                    <th>{{'Module.Account' | translate}}</th>
-                                                                    <th>{{'Module.Stage' | translate}}</th>
-                                                                    <th>{{'Module.ValidTill' | translate}}</th>
-                                                                    <th>{{'Module.Date' | translate}}</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td><a href="#/app/module/quotes?id={{masterRecord.id}}&ptype=quotes&pid={{id}}">{{masterRecord.subject}}</a></td>
-                                                                    <td>{{masterRecord.account.primary_value}}</td>
-                                                                    <td>{{masterRecord.quote_stage.labelStr}}</td>
-                                                                    <td>{{masterRecord.valid_till | date:'short'}}</td>
-                                                                    <td>{{masterRecord.created_at | date:'short'}}</td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                         <div class="subpanel"
                                              ng-repeat="relatedModule in module.relations | filter:{deleted:'!true',detail_view_type:'flat'} | orderBy:'order'"
                                              ng-show="hasPermission(relatedModule.related_module, operations.read) && (!tabconfig || relatedModule.detail_view_type==='flat')">

@@ -21,13 +21,13 @@ namespace PrimeApps.Studio.Helpers
 {
     public interface IProcessHelper
     {
-        Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate);
+        Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest, AfterUpdate AfterUpdate, AfterCreate AfterCreate);
         Task<Process> CreateEntity(ProcessBindingModel processModel, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, Warehouse warehouse, UserItem appUser);
         Task UpdateEntity(ProcessBindingModel processModel, Process process, string tenantLanguage);
         Task ApproveRequest(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
         Task RejectRequest(ProcessRequest request, string message, UserItem appUser, Warehouse warehouse);
         Task SendToApprovalAgain(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
-        Task AfterCreateProcess(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
+        Task AfterCreateProcess(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, AfterCreate AfterCreate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
     }
 
     public class ProcessHelper : IProcessHelper
@@ -57,7 +57,7 @@ namespace PrimeApps.Studio.Helpers
             _workflowHelper = new WorkflowHelper(configuration, serviceScopeFactory, currentUser);
             _calculationHelper = new CalculationHelper(configuration, serviceScopeFactory, currentUser);
         }
-        public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate)
+        public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest, AfterUpdate AfterUpdate, AfterCreate AfterCreate)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -523,7 +523,7 @@ namespace PrimeApps.Studio.Helpers
                                 ErrorHandler.LogError(new Exception("ProcessRequest cannot be created! Object: " + processRequest.ToJsonString()), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
 
                             var newRecord = await _recordRepository.GetById(module, (int)record["id"], false, profileBasedEnabled: false);
-                            await _workflowHelper.Run(operationType, newRecord, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate);
+                            await _workflowHelper.Run(operationType, newRecord, module, appUser, warehouse, BeforeCreateUpdate, AfterUpdate, AfterCreate);
                             //TODO BPM RUN
                         }
                         catch (Exception ex)
@@ -1791,7 +1791,7 @@ namespace PrimeApps.Studio.Helpers
         //    }
         //}
 
-        public async Task AfterCreateProcess(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest)
+        public async Task AfterCreateProcess(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, AfterCreate AfterCreate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest)
         {
             warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
@@ -1805,7 +1805,7 @@ namespace PrimeApps.Studio.Helpers
                     var process = await _processRepository.GetById(request.ProcessId);
 
                     var record = await _recordRepository.GetById(process.Module, request.RecordId, false, profileBasedEnabled: false);
-                    await _workflowHelper.Run(request.OperationType, record, process.Module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate);
+                    await _workflowHelper.Run(request.OperationType, record, process.Module, appUser, warehouse, BeforeCreateUpdate, AfterUpdate, AfterCreate);
                     //TODO BPM RUN
 
                     if (process.Module.Name == "izinler")

@@ -656,9 +656,6 @@ angular.module('primeapps')
                     if (moduleName === 'related_to')
                         moduleName = 'activities';
 
-                    if (moduleName === 'stage_history')
-                        moduleName = 'opportunities';
-
                     var module = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0];
 
                     if (!module) return false;

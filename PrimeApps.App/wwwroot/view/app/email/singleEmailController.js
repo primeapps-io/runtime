@@ -614,23 +614,8 @@ angular.module('primeapps')
                         });
                 };
 
-                if ($scope.$parent.$parent.module.name === 'quotes') {
-                    var quoteRecordUpdate = {};
-                    quoteRecordUpdate.id = $scope.$parent.$parent.record.id;
-
-                    if ($scope.emailField.moduleName === 'contacts')
-                        quoteRecordUpdate.email = $scope.$parent.$parent.record.contact[$scope.emailField.name];
-                    else if ($scope.emailField.moduleName === 'accounts')
-                        quoteRecordUpdate.email = $scope.$parent.$parent.record.account[$scope.emailField.name];
-
-                    ModuleService.updateRecord('quotes', quoteRecordUpdate)
-                        .then(function () {
-                            sendEmail();
-                        })
-                }
-                else {
-                    sendEmail();
-                }
+                sendEmail();
+                
             };
         }
     ]);

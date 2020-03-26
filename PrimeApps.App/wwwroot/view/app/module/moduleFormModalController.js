@@ -228,45 +228,6 @@ angular.module('primeapps')
 
                         if ($scope.$parent.formModalSuccess)
                             $scope.$parent.formModalSuccess();
-                        if ($scope.$parent.currentLookupField.special_type == "quate_products") {
-                            ModuleService.getPicklists($scope.moduleModal).then(function (picklists) {
-                                var record = response.data;
-                                var quoteProductRecord = ModuleService.processRecordSingle(record, $scope.moduleModal, picklists);
-                                var quoteProduct = $scope.$parent.currentLookupField.currentproduct;
-                                quoteProduct.product = quoteProductRecord;
-                                quoteProduct.product.primary_value = quoteProductRecord.name;
-                                $scope.$parent.currentLookupField.currentproduct = quoteProduct;
-                                $scope.$parent.currentLookupField.selectProduct($scope.$parent.currentLookupField.currentproduct);
-                                delete $scope.$parent.record.product;
-
-                            });
-                        }
-                        if ($scope.$parent.currentLookupField.special_type == "order_products") {
-                            ModuleService.getPicklists($scope.moduleModal).then(function (picklists) {
-                                var record = response.data;
-                                var orderProductRecord = ModuleService.processRecordSingle(record, $scope.moduleModal, picklists);
-                                var orderProduct = $scope.$parent.currentLookupField.currentproduct;
-                                orderProduct.product = orderProductRecord;
-                                orderProduct.product.primary_value = orderProductRecord.name;
-                                $scope.$parent.currentLookupField.currentproduct = orderProduct;
-                                $scope.$parent.currentLookupField.selectProduct($scope.$parent.currentLookupField.currentproduct);
-                                delete $scope.$parent.record.product;
-
-                            });
-                        }
-                        if ($scope.$parent.currentLookupField.special_type == "purchase_products") {
-                            ModuleService.getPicklists($scope.moduleModal).then(function (picklists) {
-                                var record = response.data;
-                                var purchaseProductRecord = ModuleService.processRecordSingle(record, $scope.moduleModal, picklists);
-                                var purchaseProduct = $scope.$parent.currentLookupField.currentproduct;
-                                purchaseProduct.product = purchaseProductRecord;
-                                purchaseProduct.product.primary_value = purchaseProductRecord.name;
-                                $scope.$parent.currentLookupField.currentproduct = purchaseProduct;
-                                $scope.$parent.currentLookupField.selectProduct($scope.$parent.currentLookupField.currentproduct);
-                                delete $scope.$parent.record.product;
-
-                            });
-                        }
 
                         $scope.submittingModal = false;
                         $scope.formModal.hide();
@@ -294,18 +255,10 @@ angular.module('primeapps')
             };
 
             $scope.isModalField = function (field) {
-
-                if ($scope.moduleModal.name != 'products') {
-                    if (field.validation.required && field.display_form && !field.deleted) {
-                        return true;
-                    }
-                    return false;
-                }
-                if (field.display_form && !field.deleted) {
+                if (field.validation.required && field.display_form && !field.deleted) {
                     return true;
                 }
                 return false;
-
             }
         }
     ]);

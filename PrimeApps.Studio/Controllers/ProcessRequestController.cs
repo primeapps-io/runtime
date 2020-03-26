@@ -89,7 +89,7 @@ namespace PrimeApps.Studio.Controllers
                 await _processHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
                 await _processRequestRepository.Update(requestEntity);
 
-                await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
+                await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
 
                 if (request["module_name"].ToString() == "izinler")
                 {
