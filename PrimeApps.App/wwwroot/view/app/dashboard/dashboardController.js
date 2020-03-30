@@ -451,7 +451,7 @@ angular.module('primeapps')
                         y_tile_length: $scope.currentDashlet.y_tile_length,
                         x_tile_height: $scope.currentDashlet.x_tile_height,
                     };
-                    
+                  
                     dashletModel['name_tr']=$scope.currentDashlet['name_tr'];
                     dashletModel['name_en']=$scope.currentDashlet['name_en'];
                 
@@ -465,7 +465,18 @@ angular.module('primeapps')
                         dashletModel.view_id = $scope.currentDashlet.view_id;
                         dashletModel.color = $scope.currentDashlet.color;
                         dashletModel.icon = $scope.currentDashlet.icon;
-
+                        if($scope.currentDashlet.dataSource==="view"){
+                            var currentView =   $filter('filter')($scope.views, { id: $scope.currentDashlet.view_id }, true)[0];
+                            dashletModel['name_tr']=currentView['label_tr'];
+                            dashletModel['name_en']=currentView['label_en'];
+                        } 
+                        
+                        if($scope.currentDashlet.dataSource ==="report"){
+                            var currentReport =   $filter('filter')($scope.boards, { id: $scope.currentDashlet.board }, true)[0];
+                            dashletModel['name_tr']=currentReport['label_tr'];
+                            dashletModel['name_en']=currentReport['label_en'];
+                        }
+                 
                     }
                     $scope.formModalDashlet.hide();
                     $scope.loading = true;
