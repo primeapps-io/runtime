@@ -103,6 +103,8 @@ namespace PrimeApps.Model.Repositories
                 var newRecords = new JArray();
                 var user = await GetUser(CurrentUser.UserId);
                 var module = await GetModule(moduleName);
+                var skipMode = false;
+                var removedFields = new List<string>();
 
                 foreach (var record in records)
                 {
@@ -110,11 +112,21 @@ namespace PrimeApps.Model.Repositories
 
                     if (!record.IsNullOrEmpty())
                     {
-                        if (profileBasedEnabled && moduleName != "users" && moduleName != "profiles" && moduleName != "roles")
-                            newRecord = await RecordPermissionControl(moduleName, CurrentUser.UserId, (JObject)record, OperationType.read, user: user, module: module);
+                        if (profileBasedEnabled && moduleName != "users" && moduleName != "profiles" && moduleName != "roles" && !skipMode)
+                        {
+                            newRecord = await RecordPermissionControl(moduleName, CurrentUser.UserId, (JObject)record, OperationType.read, removedFields, user: user, module: module);
+
+                            if (newRecord.IsNullOrEmpty())
+                                return new JArray();
+
+                            skipMode = true;
+                        }
+
+                        if (removedFields != null && removedFields.Count > 0 && skipMode)
+                            newRecord = ClearRecord((JObject)record, fields: removedFields);
 
                         if (newRecord.IsNullOrEmpty())
-                            continue;
+                            return new JArray();
 
                         if (!newRecord["shared_users"].IsNullOrEmpty() || !newRecord["shared_user_groups"].IsNullOrEmpty())
                         {
@@ -159,10 +171,28 @@ namespace PrimeApps.Model.Repositories
             var newRecords = new JArray();
             var user = await GetUser(CurrentUser.UserId);
             var module = await GetModule(moduleName);
-             
+            var skipMode = false;
+            var removedFields = new List<string>();
+
             foreach (var record in records)
             {
-                var newRecord = await RecordPermissionControl(moduleName, CurrentUser.UserId, (JObject)record, OperationType.read, user: user, module: module);
+                var newRecord = record.DeepClone();
+
+                if (!skipMode)
+                {
+                    newRecord = await RecordPermissionControl(moduleName, CurrentUser.UserId, (JObject)record, OperationType.read, removedFields, user: user, module: module);
+
+                    if (newRecord.IsNullOrEmpty())
+                        return new JArray();
+
+                    skipMode = true;
+                }
+
+                if (removedFieldList != null && removedFieldList.Count > 0)
+                    newRecord = ClearRecord((JObject)record, fields: removedFields);
+                else
+                    return records;
+
                 newRecords.Add(newRecord);
             }
 
@@ -522,7 +552,7 @@ namespace PrimeApps.Model.Repositories
 
             return records;
         }
-        
+
         private void GetRoleBasedInfo(string moduleName, out string owners, out string userGroups)
         {
             var sqlRoleBased = RecordHelper.GenerateRoleBasedSql(moduleName, CurrentUser.UserId);
@@ -662,8 +692,6 @@ namespace PrimeApps.Model.Repositories
             if (module == null)
                 module = await GetModule(moduleName);
 
-            bool isCustomSharePermission;
-
             //Module CRUD permisson control
             var modulePermission = ProfilePermissionCheck(profile.Permissions.Where(q => q.ModuleId == module.Id && q.Type == EntityType.Module).ToList(), operation);
 
@@ -682,14 +710,13 @@ namespace PrimeApps.Model.Repositories
                         return record;
                     }
                 case OperationType.update:
-                    isCustomSharePermission = SharedPermissionCheck(record, user, operation);
-                    if (isCustomSharePermission || customBulkUpdatePermission)
-                        return record;
-
                     if (modulePermission == null)
                         return null;
                     else
                     {
+                        if (customBulkUpdatePermission)
+                            return record;
+
                         record = SectionPermission(module, record, user, operation);
                         record = await RelationModulePermission(module, record, user, operation);
                         record = await FieldPermission(module, record, user, operation);
@@ -698,10 +725,6 @@ namespace PrimeApps.Model.Repositories
                         return record;
                     }
                 case OperationType.read:
-                    isCustomSharePermission = SharedPermissionCheck(record, user, operation);
-                    if (isCustomSharePermission)
-                        return record;
-
                     if (modulePermission == null)
                         return null;
                     else
