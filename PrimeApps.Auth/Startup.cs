@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Amazon.Runtime;
 using Amazon;
 using Amazon.S3;
+using Microsoft.AspNetCore.Http;
 
 namespace PrimeApps.Auth
 {
@@ -137,6 +138,11 @@ namespace PrimeApps.Auth
 
                 ctx.Response.Headers.Add("Content-Security-Policy", "default-src 'self' * 'unsafe-inline' 'unsafe-eval' data:");
                 await next();
+            });
+
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.Strict,
             });
 
             app.UseStaticFiles();
