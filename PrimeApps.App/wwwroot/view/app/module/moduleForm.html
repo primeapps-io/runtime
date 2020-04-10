@@ -12,10 +12,10 @@
                               novalidate>
                             <div class="panel panel-default">
                                 <div class="panel-heading clearfix">
-                                    <h4 ng-if="type == 'current_accounts' || type == 'activities'" class="pull-left">
+                                    <h4 ng-if="type == 'activities'" class="pull-left">
                                         {{subtypeNameLang}}<span ng-if="clone && !revise"> ({{'Module.Copy' | translate}})</span><span
                                             ng-if="revise"></span></h4>
-                                    <h4 ng-if="type != 'current_accounts' && type != 'activities'" class="pull-left">{{title}}<span
+                                    <h4 ng-if="type != 'activities'" class="pull-left">{{title}}<span
                                             ng-if="clone && !revise"> ({{'Module.Copy' | translate}})</span><span ng-if="revise"> ({{'Common.Revise' | translate}})</span>
                                     </h4>
                                     <div class="pull-right">
@@ -103,7 +103,7 @@
                                                              ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}"
                                                              ng-repeat="field in module.fields | filter:{section: section.name, section_column: column.no, display_form:true, deleted: false}:true | orderBy:'order'"
                                                              ng-if="!field.hidden && field.data_type != 'number_auto' && (field.show_only_edit ? id : true) && hasFieldFullPermission(field)"
-                                                             ng-show="field.name != 'activity_type' && field.name != 'transaction_type'">
+                                                             ng-show="field.name != 'activity_type'">
                                                             <label for="name={{field.name}}" class="control-label"
                                                                    ng-if="!(module.name == 'izinler' && (field.name == 'from_entry_type' || field.name == 'to_entry_type'))"
                                                                    ng-class="{'col-sm-6':section.column_count === 2, 'col-sm-3':section.column_count === 1, 'required-field':field.validation.required}"
@@ -821,17 +821,6 @@
                                         <div ng-repeat="section in currentSectionComponentsTemplate">
                                             <ng-include src="section"></ng-include>                                            
                                         </div>
-                                        
-                                        <!--<ng-include ng-show="module.name === 'quotes'"-->
-                                                    <!--src="'view/app/product/quoteProducts.html'"></ng-include>-->
-                                        <!--<ng-include ng-show="module.name === 'sales_orders'"-->
-                                                    <!--src="'view/app/product/orderProducts.html'"></ng-include>-->
-                                        <!--<ng-include ng-show="module.name === 'purchase_orders'"-->
-                                                    <!--src="'view/app/product/purchaseProducts.html'"></ng-include>-->
-                                        <!--<ng-include ng-show="module.name === 'sales_invoices'"-->
-                                                    <!--src="'view/app/product/salesInvoiceProducts.html'"></ng-include>-->
-                                        <!--<ng-include ng-show="module.name === 'purchase_invoices'"-->
-                                                    <!--src="'view/app/product/purchaseInvoiceProducts.html'"></ng-include>-->
 
                                         <div class="subpanel" ng-if="hasDocumentsPermission(operations.read) && showAttachments !=='false'">
                                             <h5 class="subpanel-heading">{{'Common.Attachments' | translate}}</h5>
