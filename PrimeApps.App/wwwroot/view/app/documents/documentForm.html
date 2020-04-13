@@ -1,72 +1,66 @@
-<div class="document-form" ng-show="show">
+<div class="document-form" ng-if="show">
     <div ng-show="uploader.isHTML5">
-        <div nv-file-drop uploader="uploader">
-            <div nv-file-over uploader="uploader" over-class="drop-box-over" class="drop-box">
-                <span class="file-input btn btn-primary btn-sm btn-file">
-                {{'Documents.ChooseFiles' | translate}} <input type="file" multiple nv-file-select uploader="uploader">
-                </span>
+        <div class="drop-box" nv-file-drop uploader="uploader">
+            <div nv-file-over uploader="uploader" class="drop-box-in">
+                <span class="btn btn-primary">{{'Documents.ChooseFiles' | translate}} </span>
                 {{'Documents.Drop' | translate}}
-                <button type="button" class="btn btn-xs pull-right close-button" ng-hide="hideCloseButton" ng-click="show = false">
-                    <span class="fa fa-times"></span>
-                </button>
+                <input type="file" multiple nv-file-select uploader="uploader">
             </div>
+            <md-button type="button" class="md-icon-button btn btn-secondary close-button" aria-label="Close"  ng-hide="hideCloseButton" ng-click="close()">
+                <span class="fas fa-times"></span>
+            </md-button>
         </div>
     </div>
-    <table class="table" ng-show="uploader.getNotUploadedItems().length">
-        <thead>
-            <tr>
-                <th width="50%">{{'Documents.FileName' | translate}}</th>
-                <th ng-show="uploader.isHTML5">{{'Documents.Size' | translate}}</th>
-                <th ng-show="uploader.isHTML5">{{'Documents.Progress' | translate}}</th>
-                <th>{{'Documents.Result' | translate}}</th>
-                <th>{{'Documents.Actions' | translate}}</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="item in uploader.queue">
-                <td><strong>{{ item.file.name }}</strong></td>
-                <td ng-show="uploader.isHTML5" nowrap>{{item.file.size | size}}</td>
-                <td ng-show="uploader.isHTML5">
-                    <div class="progress" style="margin-bottom: 0;" ng-show="uploader.getNotUploadedItems().length">
-                        <div class="progress-bar" ng-style="{'width': item.progress + '%'}"></div>
+    <div class="file-upload-item-box" ng-show="uploader.getNotUploadedItems().length">
+        <div  ng-repeat="item in uploader.queue">
+            <div class="d-flex align-items-center">
+                <div class="file-icon-wrapper">
+                    <div class="file-icon">
+                        <i class="fas fa-file-alt"></i>
                     </div>
-                </td>
-                <td class="text-center">
-                    <span ng-show="item.isSuccess"><i class="fa fa-check-circle icon-success"></i></span>
-                    <span ng-show="item.isCancel"><i class="fa fa-ban icon-cancel"></i></span>
-                    <span ng-show="item.isError"><i class="fa fa-exclamation-circle icon-error"></i></span>
-                </td>
-                <td nowrap>
-                    <button type="button" class="btn btn-primary btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess" ng-hide="hideUploadButton">
-                        <span class="fa fa-upload"></span> {{'Documents.Upload' | translate}}
-                    </button>
-                    <button type="button" class="btn btn-custom btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading" ng-hide="hideUploadButton">
-                        <span class="fa fa-ban"></span> {{'Documents.Cancel' | translate}}
-                    </button>
-                    <button type="button" class="btn btn-custom btn-xs" ng-click="item.remove()">
-                        <span class="fa fa-trash-o"></span> {{'Documents.Clear' | translate}}
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <div ng-show="uploader.getNotUploadedItems().length">
-        <div>
-            {{'Documents.Progress' | translate}}:
-            <div class="progress" style="" ng-show="uploader.getNotUploadedItems().length">
-                <div class="progress-bar" ng-style="{'width': uploader.progress + '%'}"></div>
+                    <span class="icon-success" ng-show="item.isSuccess"><i class="fas fa-check"></i></span>
+                    <span class="icon-cancel" ng-show="item.isCancel"><i class="fas fa-ban "></i></span>
+                    <span class="icon-error" ng-show="item.isError"><i class="fas fa-exclamation-triangle"></i></span>
+                </div>
+                <div>
+                    <small>{{'Documents.FileName' | translate}} :</small> <br />
+                    <strong md-truncate>{{ item.file.name }}</strong> <span ng-show="uploader.isHTML5">({{item.file.size | size}})</span>
+                </div>
+                <div flex></div>
+                <div>
+                    <md-button aria-label="{{'Documents.Clear' | translate}}" class="md-icon-button btn btn-secondary btn-xs" ng-click="item.remove()">
+                        <i class="fas fa-trash"></i> <md-tooltip md-direction="bottom">{{'Documents.Clear' | translate}}</md-tooltip>
+                    </md-button>
+                    <md-button aria-label="{{'Documents.Cancel' | translate}}" class="md-icon-button btn btn-secondary btn-xs" ng-click="item.cancel()" ng-if="item.isUploading" ng-hide="hideUploadButton">
+                        <i class="fas fa-ban"></i> <md-tooltip md-direction="bottom">{{'Documents.Cancel' | translate}}</md-tooltip>
+                    </md-button>
+                    <md-button aria-label="{{'Documents.Upload' | translate}}" class="md-icon-button btn btn-primary btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess" ng-hide="hideUploadButton || !entityId">
+                        <i class="fas fa-upload"></i> <md-tooltip md-direction="bottom">{{'Documents.Upload' | translate}}</md-tooltip>
+                    </md-button>
+                </div>
+            </div>
+            <div ng-show="uploader.isHTML5">
+                <div class="progress" style="margin-bottom: 0;">
+                    <div class="progress-bar" ng-style="{'width': item.progress + '%'}"></div>
+                </div>
             </div>
         </div>
-        <div ng-if="!$parent.moduleForm">
-            <button type="button" class="btn btn-primary btn-sm" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
-                <span class="fa fa-upload"></span> {{'Documents.UploadAll' | translate}}
-            </button>
-            <button type="button" class="btn btn-custom btn-sm" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading">
-                <span class="fa fa-ban"></span> {{'Documents.CancelAll' | translate}}
-            </button>
-            <button type="button" class="btn btn-custom btn-sm" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
-                <span class="fa fa-trash-o"></span> {{'Documents.ClearAll' | translate}}
-            </button>
+        <div ng-show="uploader.getNotUploadedItems().length > 1">
+            <md-button aria-label="{{'Documents.ClearAll' | translate}}" class="btn btn-secondary"  ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
+                <i class="fas fa-trash"></i> <span>{{'Documents.ClearAll' | translate}}</span>
+            </md-button>
+            <md-button aria-label="{{'Documents.CancelAll' | translate}}" class="btn btn-secondary" ng-click="uploader.cancelAll()" ng-if="uploader.isUploading">
+                <i class="fas fa-ban"></i> <span>{{'Documents.CancelAll' | translate}}</span>
+            </md-button>
+            <md-button aria-label="{{'Documents.UploadAll' | translate}}" class="btn btn-primary" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length" ng-show="entityId">
+                <i class="fas fa-upload"></i> <span>{{'Documents.UploadAll' | translate}}</span>
+            </md-button>
+            <!--<div ng-show="uploader.isHTML5">
+                <div class="progress">
+                    <div class="progress-bar" ng-style="{'width': uploader.progress + '%'}"></div>
+                </div>
+            </div>-->
         </div>
+        
     </div>
 </div>

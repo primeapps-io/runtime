@@ -1,40 +1,17 @@
-<div class="aside order-dashlet-form" style="z-index: 99999999999; overflow: auto;" tabindex="-1">
-    <div class="aside-dialog">
-        <div class="aside-content">
-            <form name="dashletOrderChange" class="form-horizontal form-custom" ng-submit="dashletOrderSave()"
-                  autocomplete="off" novalidate>
-                <div class="aside-body" style="    padding: 15px !important;">
-                    <div ng-show="loadingModal" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-                    <div ng-show="!loadingModal">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div id="dashletOptionContainer">
-                                    <ul id="dashletOrderContainer" class="list-unstyled">
-                                        <li ng-repeat="dashlet in dashlets" class="option-drag   option-handle">
-                                            <i class="fa fa-arrows"></i> {{ dashlet.dashlet_type === 'widget' ?
-                                            dashlet.widget['name_'+user.language] :
-                                            dashlet.chart_item.chart.caption }}
-
-                                        </li>
-                                    </ul>
-
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-custom" ng-disabled="submittingModal"
-                            ng-click="cancelChangeOrder();">
-                        {{'Common.Cancel' | translate}}
-                    </button>
-                    <button type="submit" class="btn btn-w-md btn-primary" ladda="submittingModal" ng-show="!forbidden">
-                        <i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}
-                    </button>
-                </div>
-            </form>
-        </div>
+<md-toolbar md-scroll-shrink ng-if="true">
+    <div class="md-toolbar-tools">
+        <md-button class="md-icon-button" ng-click="closeSide('sideModal')" aria-label="Close"><i class="fas fa-angle-left"></i></md-button>
+        <h3 flex md-truncate>{{ 'Dashboard.DashletOrders' | translate}} </h3>
+        <md-button ng-disabled="disableSaveBtn" ng-click="mdSidenavScope.dashletOrderSave()" class="md-icon-button btn btn-primary btn-save"><i class="fas fa-save"></i> <md-tooltip md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip></md-button>
     </div>
-</div>
+</md-toolbar>
+<md-content flex>
+    <div ng-show="loadingchanges" id="inside-loader" ><div class=" spin"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div></div>
+    <div ng-show="!loadingchanges" class="container-fluid paddingua20">
+        <ul class="sortable-list" kendo-sortable options="sortableOptions" k-on-end="mdSidenavScope.endHandler(kendoEvent)">
+            <li ng-repeat="dashlet in mdSidenavScope.dashlets" class="sortable">
+                <span>{{ dashlet.dashlet_type === 'widget' ? dashlet.widget['name_'+user.language] : dashlet.chart_item.chart['caption_'+user.language] }}</span>
+            </li>
+        </ul>
+    </div>                
+</md-content>

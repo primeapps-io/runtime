@@ -1,31 +1,31 @@
-﻿<div class="modal message-modal" tabindex="-1" role="dialog" ng-controller="ExportDataController">
-    <div class="modal-dialog">
-        <div class="modal-content" style="width:500px;margin:auto;">
-            <div>
-                <form name="exportModalForm" class="form-horizontal form-custom" autocomplete="off" novalidate>
-                    <div class="modal-header clearfix">
-                        <h4 class="modal-title pull-left">{{view.label}} {{'Module.Export' | translate }}</h4>
-                        <button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true" ng-click="$hide()"><i class="fa fa-close"></i></button>
-                    </div>
-                    <div class="modal-body" style="margin-top:25px">
-                        <div class="row" style="height:120px">
-                            <div class="col-md-12" style="height: 70px;">
-                                <input type="checkbox" id="check" name="moduleAllColumn" ng-model="export.moduleAllColumn" />
-                                <label for="check" style="cursor: pointer" class="control-label">{{'Module.ExcelExportModuleAllColumn'|translate}}</label>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="pull-right" style="height: 50px;">
-                                    <button type="button" class="btn btn-primary" style="margin-right: 10px;" ng-click="getDownloadViewUrlExcel();$hide()">{{'Module.Export' | translate }}</button>
-                                    <button type="button" class="btn btn-custom" ng-click="$hide()">{{'Common.Cancel' | translate}}</button>
-                                </div>
-                            </div>
+<md-dialog flex="30" aria-label="{{view.label}} {{'Module.Export' | translate }}" ng-controller="ExportDataController">
+    <form ng-cloak>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{view.label}} {{'Module.Export' | translate }}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()"><i class="fas fa-times"></i></md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <input type="checkbox" id="check" name="check" class="k-checkbox" ng-model="export.moduleAllColumn" />
+                            <label class="k-checkbox-label" for="check">{{'Module.ExcelExportModuleAllColumn'|translate}}</label>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
-
-
-
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button class="btn btn-primary" type="button" ng-click="getDownloadViewUrlExcel();cancel();" md-autofocus>
+                <i class="fas fa-save"></i>
+                {{'Module.Export' | translate}}
+            </md-button>
+            <span flex></span>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

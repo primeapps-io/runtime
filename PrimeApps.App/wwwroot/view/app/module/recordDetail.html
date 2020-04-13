@@ -1,0 +1,509 @@
+<md-content flex style="height: 100%;" ng-if="true">
+    <div ng-show="loading">
+        <div class="spin">
+            <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
+        </div>
+    </div>
+    <section ng-show="!loading" layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
+        <md-toolbar md-scroll-shrink ng-if="!fastRecordModal && id " class="with-subheader">
+            <div class="md-toolbar-tools">
+                <div class="own-tab own-tab2" flex>
+                    <md-tabs md-dynamic-height md-swipe-content>
+                        <md-tab ng-click="$parent.tab = 'general'">
+                            <md-tab-label id="record-general" aria-controls="{{'Common.General' | translate}}">
+                                <div class="tab-container">
+                                    <span>{{'Common.General' | translate}}</span>
+                                </div>
+                            </md-tab-label>
+                        </md-tab>
+                        <!--<md-tab ng-repeat="relatedModule in module.relations  | filter:{deleted:'!true',id:tab}">-->
+                        <md-tab ng-repeat="relatedModule in module.relations  | filter:{deleted:'false',detail_view_type:'tab'}" ng-click="changeTab(relatedModule); $parent.$parent.tab = relatedModule.id.toString();">
+                            <md-tab-label id="tab{{relatedModule.id}}" aria-controls="Tab{{relatedModule.id}}">
+                                <div class="tab-container">
+                                    <span>{{relatedModule['label_' + language +'_plural']}}</span>
+                                    <span class="badge" ng-show="!relatedModule.loading && relatedModule.total">{{relatedModule.total}}</span>
+                                </div>
+                            </md-tab-label>
+                        </md-tab>
+                        <md-tab ng-if="showNotes !='false' && module.detail_view_type !=='flat'" ng-click="$parent.$parent.tab = 'note'">
+                            <md-tab-label id="record-notes" aria-controls="{{'Note.Notes' | translate}}">
+                                <div class="tab-container">
+                                    <span> {{'Note.Notes' | translate}}</span>
+                                    <span class="badge" ng-show="notesCount">{{notesCount}}</span>
+                                </div>
+                            </md-tab-label>
+                        </md-tab>
+                        <md-tab ng-if="hasDocumentsPermission(operations.read) && showAttachments !=='false' && module.detail_view_type !=='flat'" ng-click="$parent.$parent.tab = 'document'">
+                            <md-tab-label id="record-attachments" aria-controls="{{'Common.Attachments' | translate}}">
+                                <div class="tab-container">
+                                    <span> {{'Common.Attachments' | translate}}</span>
+                                    <span class="badge" ng-show="documentsResultSet.totalDocumentCount">{{documentsResultSet.totalDocumentCount}}</span>
+                                </div>
+                            </md-tab-label>
+                        </md-tab>
+                        <md-tab ng-if="record.latitude && record.longitude && module.detail_view_type !=='flat'" ng-click="$parent.$parent.tab = 'location'">
+                            <md-tab-label id="record-location" aria-controls="{{'Common.Location' | translate}}">
+                                <div class="tab-container">
+                                    <span>{{'Common.Location' | translate}}</span>
+                                </div>
+                            </md-tab-label>
+                        </md-tab>
+                    </md-tabs>
+                </div>
+            </div>
+        </md-toolbar>
+        <md-content flex>
+            <section ng-show="tab === 'general'">
+                <form kendo-validator="moduleForm" ng-submit="submit(moduleForm, record)" class="disable-validation-msg"
+                      autocomplete="off"
+                      novalidate>
+                    <md-subheader class="insetp0">
+                        <md-toolbar md-scroll-shrink ng-if="true">
+                            <div class="md-toolbar-tools">
+                                <md-button class="md-icon-button show-on-m" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()">
+                                    <i class="fas fa-angle-left"></i>
+                                    <md-tooltip md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
+                                </md-button>
+                                <h2 md-truncate>{{title}} - <small>{{'Common.General' | translate}}</small></h2>
+                                <div class="helpbuttons hide-on-m" ng-if="true && !fastRecordModal">
+                                    <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()" aria-label="{{'Common.Help' | translate}}">
+                                        <i class="fas fa-question-circle"></i>
+                                        <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
+                                    </md-button>
+                                    <md-button class="md-icon-button enlarge d-none d-lg-inline-block"
+                                               ng-click="toggleFullLeftMenu()"
+                                               aria-label="{{'Common.FullScreen' | translate}}">
+                                        <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                             viewBox="0 0 36 36"
+                                             style="enable-background:new 0 0 36 36;" xml:space="preserve">
+                                            <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z"/>
+                                            <path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z"/>
+                                            <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
+                                            <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/>
+                                        </svg>
+                                        <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                                        <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                                    </md-button>
+                                </div>
+                                <span class="show-on-m" flex></span>
+                                <div ng-if="actionButtons.length > 0 && id" flex class="action-btn" kendo-toolbar k-options="toolbarOptions"></div>
+                                <div class="ml-auto d-inline-flex">
+                                    <div ng-show="id" class="d-inline-flex">
+                                        <md-button class="md-icon-button btn btn-secondary hide-on-m" ng-disabled="submitting || fileLoadingCounter>0 || loading"
+                                                   ng-click="getRecord(true)"
+                                                   aria-label="{{'Common.Refresh' | translate}}">
+                                            <i class="fas fa-sync-alt"></i>
+                                            <md-tooltip md-direction="bottom">{{'Common.Refresh' | translate}}
+                                            </md-tooltip>
+                                        </md-button>
+                                        <md-button class="md-icon-button btn btn-secondary hide-on-m" ng-disabled="submitting || fileLoadingCounter>0 || loading"
+                                                   ng-click="showSingleSMSModal()"
+                                                   ng-show="hasPermission(type, operations.read) && user.profile.send_sms && module.name != 'quotes'"
+                                                   aria-label="{{'Module.SendSMS' | translate }}">
+                                            <i class="fas fa-sms"></i>
+                                            <md-tooltip md-direction="bottom">{{'Module.SendSMS' | translate }}
+                                            </md-tooltip>
+                                        </md-button>
+                                        <md-button class="md-icon-button btn btn-secondary hide-on-m" ng-disabled="submitting || fileLoadingCounter>0 || loading "
+                                                   ng-click="showQuoteEMailModal()"
+                                                   ng-show="hasPermission(type, operations.write) && user.profile.send_email"
+                                                   aria-label="{{'Module.ModuleEmail' | translate}}">
+                                            <i class="fas fa-envelope"></i>
+                                            <md-tooltip md-direction="bottom">
+                                                {{'Module.ModuleEmail' | translate}}
+                                            </md-tooltip>
+                                        </md-button>
+                                        <md-button class="md-icon-button btn btn-secondary  hide-on-m" ng-disabled="submitting || fileLoadingCounter>0 || loading"
+                                                   ng-click="openExportDialog()"
+                                                   ng-show="user.profile.word_pdf_download"
+                                                   aria-label="{{'Module.Download' | translate}}">
+                                            <i class="fas fa-file-download"></i>
+                                            <md-tooltip md-direction="bottom">{{'Module.Download' | translate}}
+                                            </md-tooltip>
+                                        </md-button>
+                                        <md-button class="md-icon-button btn btn-secondary"
+                                                   ng-disabled="submitting || fileLoadingCounter>0 || loading || (record.freeze && !isAdmin)"
+                                                   ng-click="showConfirm($event)"
+                                                   ng-show="hasPermission(type, operations.remove, record) && tab ==='general'"
+                                                   aria-label=" {{'Common.Delete' | translate}}">
+                                            <i class="fa fa-trash"></i>
+                                            <md-tooltip md-direction="bottom"> {{'Common.Delete' | translate}}
+                                            </md-tooltip>
+                                        </md-button>
+                                        <md-button ng-click="copyHref()"
+                                                   ng-show="hasPermission(type, operations.write)"
+                                                   ng-disabled="submitting || fileLoadingCounter>0 || loading || (record.freeze && !isAdmin) || (record.process_id && record.process_status != 3 && !isAdmin && !hasProcessEditPermission)"
+                                                   class="md-icon-button btn btn-secondary"
+                                                   aria-label="{{'Common.Clone' | translate}}">
+                                            <i class="fas fa-copy"></i>
+                                            <md-tooltip md-direction="bottom">{{'Common.Clone' | translate}}
+                                            </md-tooltip>
+                                        </md-button>
+                                    </div>
+                                    <md-button class="md-icon-button btn btn-primary"
+                                               type="submit"
+                                               ng-disabled="submitting || fileLoadingCounter>0 || loading || (record.freeze && !isAdmin)"
+                                               aria-label="Save">
+                                        <i class="fas fa-save"></i>
+                                        <md-tooltip md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip>
+                                    </md-button>
+                                </div> 
+                            </div>
+                        </md-toolbar>
+                    </md-subheader>
+                    <div class="container-fluid paddingua20">
+                        <section class="whitebox collapsible"
+                                 ng-repeat="section in module.sections | orderBy:'order'"
+                                 ng-show="!section.hidden && ((id && hasPermission(type, operations.modify, record)) || (!id && hasPermission(type, operations.write, record))) && hasSectionFullPermission(section) && (tab === 'general' || !tabconfig)">
+                            <div class="collapsible-head" id="{{'heading'+section.id}}">
+                                <h5>
+                                    {{!section.custom_label ? section['label_' + language] : section.custom_label}}
+                                </h5>
+                                <button class="btn btn-link" type="button" data-toggle="collapse"
+                                        data-target="{{'#collapse'+section.id}}" aria-expanded="true"
+                                        aria-controls="{{'collapse'+section.id}}">
+                                    <i class="fas fa-plus"></i>
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                            </div>
+                            <div id="{{'collapse'+section.id}}" class="collapsible-body collapse show"
+                                 aria-labelledby="{{'heading'+section.id}}">
+                                <div class="row">
+                                    <div ng-class="{'col-sm-6': section.column_count === 2}" class="col-12"
+                                         ng-repeat="column in section.columns track by $index">
+                                        <div ng-repeat="field in module.fields | filter:{section: section.name, section_column: column.no, deleted: false}:true | orderBy:'order'">
+                                            <div ng-include="'view/app/module/fields.html'"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="whitebox collapsible">
+                            <div class="collapsible-head" id="headingshare">
+                                <h5>{{'AdvancedSharing.Title' | translate }}</h5>
+                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse"
+                                        data-target="{{'#collapseshare'}}" aria-expanded="false"
+                                        aria-controls="{{'collapseshare'}}">
+                                    <i class="fas fa-plus"></i>
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                            </div>
+                            <div id="collapseshare" class="collapsible-body collapse "
+                                 aria-labelledby="headingshare">
+                                <div class="row ">
+                                    <div class="col-12">
+                                        <div class="form-group"
+                                             ng-mouseover="setId('shared_read', undefined, true)">
+                                            <label for="sharedUsersRead"
+                                                   ng-class="{'required':field.validation.required}">
+                                                {{'AdvancedSharing.VisibleAndCanNotEdit' | translate}}:
+                                            </label>
+                                            <select kendo-multi-select
+                                                    id="sharedUsersRead"
+                                                    name="sharedRead"
+                                                    k-ng-model="record.shared_read"
+                                                    k-options="lookupOptions_shared_read"></select>
+                                        </div>
+                                        <div class="form-group"
+                                             ng-mouseover="setId('shared_edit', undefined, true)">
+                                            <label for="sharedUsersRead"
+                                                   ng-class="{'required':field.validation.required}">
+                                                {{'AdvancedSharing.VisibleAndEditable' | translate}}:
+                                            </label>
+                                            <select id="sharedEdit"
+                                                    name="sharedUsersRead"
+                                                    kendo-multi-select
+                                                    k-ng-model="record.shared_edit"
+                                                    k-options="lookupOptions_shared_edit"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </form>
+                <div ng-repeat="section in currentSectionComponentsTemplate">
+                    <ng-include src="section"></ng-include>
+                </div>
+            </section>
+            <section ng-if="id" ng-show="hasPermission(relatedModule.related_module, operations.read) && tab === relatedModule.id.toString() || !tabconfig || (relatedModule.detail_view_type === 'flat' && tab === 'general' && id)" ng-repeat="relatedModule in module.relations | filter:{deleted:'false',detail_view_type:'tab'} | orderBy:'order'" >
+                <md-subheader class="insetp0">
+                    <md-toolbar md-scroll-shrink ng-if="true">
+                        <div class="md-toolbar-tools">
+                            <md-button class="md-icon-button show-on-m" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()">
+                                <i class="fas fa-angle-left"></i>
+                                <md-tooltip md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
+                            </md-button>
+                            <h2 md-truncate>{{title}} - <small>{{relatedModule['label_' + language + '_plural']}}</small></h2>
+                            <div class="helpbuttons hide-on-m">
+                                <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()" aria-label="{{'Common.Help' | translate}}">
+                                    <i class="fas fa-question-circle"></i>
+                                    <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
+                                </md-button>
+                                <md-button class="md-icon-button enlarge d-none d-lg-inline-block"
+                                           ng-click="toggleFullLeftMenu()"
+                                           aria-label="{{'Common.FullScreen' | translate}}">
+                                    <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                         viewBox="0 0 36 36"
+                                         style="enable-background:new 0 0 36 36;" xml:space="preserve">
+                                            <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z"/>
+                                        <path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z"/>
+                                        <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
+                                        <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/>
+                                        </svg>
+                                    <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                                    <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                                </md-button>
+                            </div>
+                            <span flex></span>
+                            <md-button  class="md-icon-button btn btn-secondary" ng-click="export(relatedModule)"  ng-show="user.profile.word_pdf_download">
+                                <i class="fas fa-file-download"></i>
+                                <md-tooltip md-direction="bottom">{{'Common.Download' | translate}}</md-tooltip>
+                            </md-button>                        
+                            <md-button
+                                    href="#/app/record/{{relatedModule.related_module}}?ptype={{relatedModule.relation_field}}&pid={{ record.id }}&rtab={{ relatedModule.detail_view_type != 'flat' ?  relatedModule.id :''}}"
+                                    ng-if=" relatedModule.related_module != 'mails' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly  && !record.freeze && !hiddenNewButton"
+                                    ng-show="hasPermission(relatedModule.related_module, operations.write)" class="md-icon-button btn btn-primary" aria-label="Add New">
+                                <i class="fas fa-plus"></i>
+                                <md-tooltip md-direction="bottom">Add New</md-tooltip>
+                            </md-button>    
+                         
+
+
+                            <!--<md-fab-toolbar class="grid-buttons2" md-open="getScopeValue('selectedRows' +  relatedModule.related_module).length >0" count="0" md-direction="left">
+                                <md-fab-trigger class="align-with-text">
+                                    <md-button aria-label="menu" class="md-fab md-primary"></md-button>
+                                </md-fab-trigger>
+
+                                <md-toolbar>
+                                    <md-fab-actions class="md-toolbar-tools">
+                                        <h3 md-truncate>{{  getScopeValue('selectedRows' +  relatedModule.related_module).length }} item selected </h3>
+                                        <md-button class="md-icon-button btn btn-primary" aria-label="Edit">
+                                            <i class="fas fa-pen"></i>
+                                        </md-button>
+                                        <md-button class="md-icon-button btn btn-primary" aria-label="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </md-button>
+                                        <md-button class="md-icon-button btn btn-primary" aria-label="Close">
+                                            <i class="fas fa-times"></i>
+                                        </md-button>
+                                    </md-fab-actions>
+                                </md-toolbar>
+                            </md-fab-toolbar>-->
+                        </div>
+                        <div class="md-toolbar-tools grid-buttons3" ng-show="selectedRecords[relatedModule.related_module].length > 0">
+                            <h2 md-truncate>{{  selectedRecords[relatedModule.related_module].length }} item selected</h2>
+                            <span flex></span>
+                            <md-button class="md-icon-button btn btn-primary" aria-label="Delete"  ng-click="deleteSelectedsSubTable($event,relatedModule.related_module)">
+                                <i class="fas fa-trash"></i>
+                                <md-tooltip md-direction="bottom">{{'Module.DeleteSelecteds' | translate}}</md-tooltip>
+                            </md-button>
+                            <md-button class="md-icon-button btn btn-primary" ng-click="selectedRecords[relatedModule.related_module] =[];selectedRows[relatedModule.related_module] =[];isAllSelected[relatedModule.related_module] =[] ;selectAll($event,relatedModule.related_module); " aria-label="Close">
+                                <i class="fas fa-times"></i>
+                                <md-tooltip md-direction="bottom">{{'Common.Unselect' | translate}}</md-tooltip>
+                            </md-button>
+                        </div>
+                    </md-toolbar>
+                </md-subheader>
+                <div class="container-fluid paddingua20">
+                    <div class="whitebox table-view">
+                        <div class="whitebox table-view">
+                            <!--<div class="grid-top">
+                                <div class="search-box">
+                                    
+                                    <div class="search-box-input">
+                                        <input type="text" id="grid-search{{relatedModule.id}}" class="form-control" placeholder="Search..."
+                                               aria-label="Search" aria-describedby="grid-search">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                    <i class="info-icon fas fa-info-circle"><md-tooltip md-direction="right">You can search in these fields:  First Name, Company Name</md-tooltip></i>
+                                    
+                                </div>
+                                <div>
+                                    <md-button class="btn btn-secondary md-icon-button" ng-click="refreshGrid(relatedModule.related_module)"><i
+                                            class="fas fa-sync-alt"></i>
+                                        <md-tooltip md-direction="bottom">Refresh</md-tooltip>
+                                    </md-button>
+                                </div>
+                            </div>-->
+
+                            <kendo-grid class="grid-theme grid-theme-center"
+                                        k-scope-field="grid[relatedModule.related_module]"
+                                        k-options="relationsGridOptions[relatedModule.id]">
+                            </kendo-grid>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section ng-if="id" ng-show="showNotes !='false' && (tab === 'note' || (!tabconfig && tab === 'general'))">
+                <md-subheader class="insetp0">
+                    <md-toolbar md-scroll-shrink ng-if="true">
+                        <div class="md-toolbar-tools">
+                            <md-button class="md-icon-button show-on-m" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()">
+                                <i class="fas fa-angle-left"></i>
+                                <md-tooltip md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
+                            </md-button>
+                            <h2 md-truncate>{{title}} - <small>{{('Note.Notes' | translate)}}</small></h2>
+                            <div class="helpbuttons hide-on-m">
+                                <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()" aria-label="{{'Common.Help' | translate}}">
+                                    <i class="fas fa-question-circle"></i>
+                                    <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
+                                </md-button>
+                                <md-button class="md-icon-button enlarge d-none d-lg-inline-block"
+                                           ng-click="toggleFullLeftMenu()"
+                                           aria-label="{{'Common.FullScreen' | translate}}">
+                                    <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                         viewBox="0 0 36 36"
+                                         style="enable-background:new 0 0 36 36;" xml:space="preserve">
+                                        <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z"/>
+                                        <path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z"/>
+                                        <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
+                                        <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/>
+                                    </svg>
+                                    <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                                    <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                                </md-button>
+                            </div>
+                            <span flex></span>
+                            <md-button ng-show="!record.freeze"
+                                       ng-click="$parent.showNoteForm = !$parent.showNoteForm"
+                                       class="md-icon-button btn btn-primary "
+                                       aria-label="{{'Note.NewNote' | translate}}">
+                                <i class="fas fa-plus"></i>
+                                <md-tooltip md-direction="bottom">{{'Note.NewNote' | translate}}</md-tooltip>
+                            </md-button>
+                        </div>
+                    </md-toolbar>
+                </md-subheader>
+                <div class="container-fluid paddingua20">
+                    <div class="whitebox">
+                        <div class="row row-custom"
+                             ng-style="{ 'min-height': !tabconfig ? '' : '100%'}">
+                            <div class="col-12">
+                                <div note-form record-id="id" show="showNoteForm"></div>
+                                <div note-list record-id="id"></div>
+                                <div ng-show="loadingNotes" class="page-loading"><i
+                                        class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                <div class="empty-message"
+                                     ng-show="notesCount < 1 && !loadingNote && !showNoteForm">
+                                    {{'Note.Message'|translate}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section ng-show="hasDocumentsPermission(operations.read) && showAttachments !=='false' && (tab === 'document' || (!tabconfig && tab === 'general') || !id )">
+                <md-subheader class="insetp0">
+                    <md-toolbar md-scroll-shrink ng-if="true">
+                        <div class="md-toolbar-tools">
+                            <md-button class="md-icon-button show-on-m" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()"><i
+                                    class="fas fa-angle-left"></i>
+                                <md-tooltip md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
+                            </md-button>
+                            <h2 md-truncate><span ng-if="id">{{title}} - </span><small>{{('Common.Attachments' | translate)}}</small></h2>
+                            <div class="helpbuttons hide-on-m" ng-if="id">
+                                <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()" aria-label="{{'Common.Help' | translate}}"><i
+                                        class="fas fa-question-circle"></i>
+                                    <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
+                                </md-button>
+                                <md-button class="md-icon-button enlarge d-none d-lg-inline-block"
+                                           ng-click="toggleFullLeftMenu()"
+                                           aria-label="{{'Common.FullScreen' | translate}}">
+                                    <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                         viewBox="0 0 36 36"
+                                         style="enable-background:new 0 0 36 36;" xml:space="preserve">
+                                        <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z"/>
+                                        <path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z"/>
+                                        <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
+                                        <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/>
+                                    </svg>
+                                    <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                                    <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                                </md-button>
+                            </div>
+                            <span flex></span>
+                            <md-button class="md-icon-button btn btn-primary "
+                                       ng-click="$parent.showDocumentForm = !$parent.showDocumentForm"
+                                       ng-show="!record.freeze" aria-label="{{'Common.AttachmentNew' | translate}}">
+                                <i class="fas fa-plus"></i>
+                                <md-tooltip md-direction="bottom">
+                                    {{'Common.AttachmentNew' | translate}}
+                                </md-tooltip>
+                            </md-button>
+                        </div>
+                    </md-toolbar>
+                </md-subheader>
+                <div class="container-fluid paddingua20">
+                    <div class="whitebox">
+                        <div document-form entity-id="id" entity-type="guidEmpty" show="showDocumentForm"></div>
+                        <div document-list entity-id="id" entity-type="guidEmpty" documents="documents"></div>
+                        <div ng-show="loadingDocuments" class="page-loading">
+                            <i class="fa fa-sm fa-spinner fa-pulse"></i>
+                        </div>
+                        <div class="empty-message"
+                             ng-show="documentsResultSet.totalDocumentCount < 1 && !loadingDocuments && !showDocumentForm">
+                            {{'Common.AttachmentMessage'|translate}}
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section ng-if="id" ng-show="record.latitude && record.longitude && (tab === 'location' || (!tabconfig && tab === 'general'))">
+                <md-subheader class="insetp0">
+                    <md-toolbar md-scroll-shrink ng-if="true">
+                        <div class="md-toolbar-tools">
+                            <md-button class="md-icon-button show-on-m" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()">
+                                <i class="fas fa-angle-left"></i>
+                                <md-tooltip md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
+                            </md-button>
+                            <h2 md-truncate>{{title}} - <small>{{('Common.Location' | translate)}}</small></h2>
+                            <div class="helpbuttons hide-on-m">
+                                <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()" aria-label="{{'Common.Help' | translate}}">
+                                    <i class="fas fa-question-circle"></i>
+                                    <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
+                                </md-button>
+                                <md-button class="md-icon-button enlarge d-none d-lg-inline-block"
+                                           ng-click="toggleFullLeftMenu()"
+                                           aria-label="{{'Common.FullScreen' | translate}}">
+                                    <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                         viewBox="0 0 36 36"
+                                         style="enable-background:new 0 0 36 36;" xml:space="preserve">
+                                        <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z"/>
+                                        <path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z"/>
+                                        <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
+                                        <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/>
+                                    </svg>
+                                    <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                                    <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                                </md-button>
+                            </div>
+                            <span flex></span>
+                        </div>
+                    </md-toolbar>
+                </md-subheader>
+                <div class="container-fluid paddingua20" ng-if="record.latitude && record.longitude">
+                    <div class="whitebox collapsible">
+                        <div class="card-body">
+                            <a href="http://maps.google.com/maps?q=loc:{{record.latitude}},{{record.longitude}}&z=17"
+                               target="_blank">
+                                <img ng-src="https://maps.googleapis.com/maps/api/staticmap?size=640x640&maptype=roadmap&markers={{record.latitude}},{{record.longitude}}&key={{googleMapsApiKey}}"
+                                     alt="">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </md-content>
+    </section>
+</md-content>
+<md-sidenav ng-show="sideinclude" id="sideModal" class="md-sidenav-right md-whiteframe-2dp" md-component-id="sideModal"
+            md-is-locked-open="isDocked &&  $mdMedia('gt-lg')">
+    <div data-ng-if="sideLoad" data-ng-include="url" layout="column" style="height: 100%;" ng-cloak></div>
+</md-sidenav>
+

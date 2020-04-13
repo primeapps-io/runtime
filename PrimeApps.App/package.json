@@ -3,14 +3,21 @@
   "private": true,
   "description": "PrimeApps App",
   "devDependencies": {
+    "@progress/kendo-theme-bootstrap": "4.3.5",
+    "angular-material": "^1.1.19",
     "gulp": "3.8.11",
     "gulp-bundle-assets": "2.29.0",
     "gulp-clean-css": "3.9.4",
     "gulp-minify-css": "1.0.0",
     "gulp-strip-debug": "1.0.2",
     "gulp-uglify": "1.1.0",
+    "node-sass": "^4.12.0",
     "run-sequence": "*"
   },
-  "scripts": {},
-  "dependencies": {}
+  "scripts": {
+    "build-workbox": "workbox injectManifest workbox-config.js"
+  },
+  "dependencies": {
+    "workbox-cli": "^5.0.0"
+  }
 }

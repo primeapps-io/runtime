@@ -1,72 +1,56 @@
-<div class="sub-menu">
-    <ul class="nav nav-tabs">
-        <li class="active"><a href="#/app/setup/importhistory">{{'Setup.Nav.Tabs.ImportHistory' | translate}}</a></li>
-        <li ng-if="helper.hasAdminRights()"><a href="#/app/setup/auditlog">{{'Setup.Nav.Tabs.AuditLog' | translate}}</a></li>
-        <!--<li><a href="#/app/setup/recyclebin">{{'Setup.Nav.Tabs.RecycleBin' | translate}}</a></li>-->
-    </ul>
-</div>
-<div class="panel panel-default setup-panel audit-log">
-    <div class="panel-body">
-        <div class="subpanel">
-            <h5 class="subpanel-heading">{{'Setup.Nav.Tabs.ImportHistory' | translate}}</h5>
-            <div class="subpanel-body">
-                <div class="text-right" ng-show="!showFilter && !searching && (imports.length > 0 || showFilterButton)">
-                    <button type="button" class="btn btn-custom btn-sm" ng-click="showFilter = true"><i class="fa fa-filter"></i> {{'Common.Filter' | translate}}</button>
+<md-content flex style="height: 100%;">
+    <div ng-show="loading"><div class="spin"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div></div>
+    <section ng-show="!loading" layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
+        <md-toolbar md-scroll-shrink ng-if="true" class="with-subheader">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button show-on-m" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()"> <i class="fas fa-angle-left"></i> <md-tooltip md-direction="right">{{'Common.Back' | translate}}</md-tooltip> </md-button>
+                <h2 md-truncate>{{'Setup.Nav.Data' | translate}}</h2>
+                <div class="helpbuttons hide-on-m">
+                    <md-button class="md-icon-button enlarge d-none d-lg-inline-block" ng-click="toggleFullLeftMenu()" aria-label="{{'Common.FullScreen' | translate}}">
+                        <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 36 36" style="enable-background:new 0 0 36 36;" xml:space="preserve">
+                        <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z" />
+                        <path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z" />
+                        <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z" />
+                        <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z" />
+                        </svg>
+                        <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                        <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                    </md-button>
                 </div>
-                <div ng-show="showFilter" class="filter clearfix">
-                    <div class="form-group pull-left">
-                        <select class="form-control"
-                                ng-model="importHistoryFilter.moduleId"
-                                ng-options="module.id as module['label_' + language + '_plural'] for module in modules">
-                            <option value="">{{'Setup.ImportHistory.SelectModule' | translate}}</option>
-                        </select>
-                    </div>
-                    <div class="form-group pull-left" ng-show="helper.hasAdminRights()">
-                        <select class="form-control"
-                                ng-model="importHistoryFilter.userId"
-                                ng-options="u.id as u.FullName for u in users">
-                            <option value="">{{'Setup.ImportHistory.SelectUser' | translate}}</option>
-                        </select>
-                    </div>
-                    <div class="form-group pull-right">
-                        <button type="button" class="btn btn-xs btn-custom" ng-click="cancel()">{{'Common.Cancel' | translate}}</button>
-                        <button class="btn btn-xs btn-w-xs btn-primary" ladda="searching" ng-click="currentPage = 1; find()"><i class="fa fa-search pull-left"></i> {{'Common.Search' | translate}}</button>
-                    </div>
-                </div>
-                <div ng-show="searching" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-                <div class="empty-message" ng-if="!imports.length" ng-show="!searching">{{'Common.EmptyMessage' | translate}}</div>
-                <table class="table" ng-show="imports.length">
-                    <thead>
-                        <tr>
-                            <th>{{'Common.Module' | translate}}</th>
-                            <th>{{'Setup.ImportHistory.ImportedBy' | translate}}</th>
-                            <th>{{'Setup.ImportHistory.TotalCount' | translate}}</th>
-                            <th>{{'Setup.ImportHistory.FileName' | translate}}</th>
-                            <th>{{'Setup.ImportHistory.ImportDate' | translate}}</th>
-                            <th style="min-width: 70px;"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="importItem in imports">
-                            <td>{{importItem.module['label_' + language + '_plural']}}</td>
-                            <td>{{importItem.created_by.full_name}}</td>
-                            <td>{{importItem.total_count}}</td>
-                            <td><a href="{{importItem.file_url}}" target="_blank">{{importItem.file_name}}</a></td>
-                            <td>{{importItem.created_at | date:'short'}}</td>
-                            <td class="text-right">
-                                <button type="button" class="btn btn-xs btn-custom"  confirm-click action="revert(importItem)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Setup.ImportHistory.Revert' | translate}}">{{'Setup.ImportHistory.Revert' | translate}}</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="paging" style="padding: 15px 0 0 5px;" ng-show="!searching && imports.length >= 30">
-                    <a href ng-click="loadMore()" ng-if="!allImportsLoaded">
-                        <span>{{'Setup.ImportHistory.ShowMore' | translate}}</span>
-                        <i class="fa {{pagingIcon}} ng-animate-disabled" style="font-size: 11px;" ng-if="!allImportsLoaded"></i>
-                    </a>
-                    <span ng-if="allImportsLoaded">{{'Setup.ImportHistory.AllImportsLoaded' | translate}}</span>
+                <span flex></span>
+            </div>
+        </md-toolbar>
+        <md-content flex>
+            <md-subheader class="own-tab">
+                <md-tabs md-dynamic-height md-swipe-content>
+                    <md-tab ui-sref="app.setup.import" md-active="true">
+                        <md-tab-label id="tab1" aria-controls="{{'Setup.Nav.Tabs.ImportHistory' | translate}}">
+                            <div class="tab-container">
+                                <span>{{'Setup.Nav.Tabs.ImportHistory' | translate}}</span>
+                            </div>
+                        </md-tab-label>
+                    </md-tab>
+                    <md-tab ui-sref="app.setup.auditlog">
+                        <md-tab-label id="tab2" aria-controls="{{'Setup.Nav.Tabs.AuditLog' | translate}}">
+                            <div class="tab-container">
+                                <span>{{'Setup.Nav.Tabs.AuditLog'  | translate}}</span>
+                            </div>
+                        </md-tab-label>
+                    </md-tab> 
+                </md-tabs>
+            </md-subheader>
+            <div class="container-fluid paddingua20">
+                <div class="whitebox table-view">
+                    <div kendo-grid="grid" class="grid-theme" id="kendo-grid" k-options="profileGridOptions"></div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
+        </md-content>
+    </section>
+</md-content> 
+<md-sidenav ng-show="sideinclude" id="sideModal" class="md-sidenav-right md-whiteframe-2dp" md-component-id="sideModal" md-is-locked-open="isDocked &&  $mdMedia('gt-lg')">
+    <div data-ng-if="sideLoad" data-ng-include="url" layout="column" style="height: 100%;" ng-cloak></div>
+</md-sidenav>
+
+
+
+

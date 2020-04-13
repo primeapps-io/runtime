@@ -1,368 +1,45 @@
-﻿<div class="modal message-modal" tabindex="-1" role="dialog" ng-controller="ModuleFormController">
-    <div class="modal-dialog">
-        <div class="modal-content" style="width:500px;margin:auto;">
-            <div>
-                <form name="bulkUpdateModalForm" ng-submit="updateSelected(bulkUpdateModalForm)" class="form-horizontal form-custom" autocomplete="off" novalidate>
-                    <div class="modal-header clearfix">
-                        <h4 class="modal-title pull-left" ng-show="!bulkUpdate.field">{{'Common.SelectedUpdate' | translate}}</h4>
-                        <h4 class="modal-title pull-left" ng-show="bulkUpdate.field">{{'Common.NewUpdateValue' | translate}}</h4>
-                        <button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true" ng-click="$hide()"><i class="fa fa-close"></i></button>
-                    </div>
-                    <div class="modal-body" style="height:100%;margin-top:20px">
-                        <div class="custom-angucomplete row">
-                            <div class="col-sm-10 pull-left" ng-class="{'has-error': outlookSettingsForm.$submitted && outlookSettingsForm.outlookModule.$invalid}">
-                                <select id="field"
-                                        name="field"
-                                        style="width:150px"
-                                        class="form-control"
-                                        ng-options="o as o['label_' + language] for o in customModuleFields(module.fields) | filter:{deleted:'!true',display_form:true,readonly:'!true'} | orderBy:'order' track by o.name"
-                                        ng-change="inputReset();"
-                                        ng-model="bulkUpdate.field">
-                                    <option value="">{{'Common.Select' | translate}}</option>
-                                </select>
-                                <div class="col-sm-7 pull-right">
-                                    <input type="text"
-                                           name="{{bulkUpdate.field.name}}"
-                                           class="form-control ng-animate-disabled"
-                                           style="width:265px{{bulkUpdate.field.style.input}}"
-                                           tabindex="{{bulkUpdate.field.order}}"
-                                           placeholder="{{bulkUpdate.field.placeholder}}"
-                                           ng-model="bulkUpdate.value"
-                                           ng-required="{{bulkUpdate.field.validation.required}}"
-                                           ng-readonly="bulkUpdate.field.validation.readonly"
-                                           ng-minlength="field.validation.min_length || 0"
-                                           maxlength="{{bulkUpdate.field.validation.max_length || 50}}"
-                                           pattern="{{bulkUpdate.field.validation.pattern}}"
-                                           ui-mask="{{bulkUpdate.field.mask}}"
-                                           ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'text_single' && bulkUpdate.field.data_type != 'number_auto' && !field.combination" />
-
-                                    <textarea name="{{bulkUpdate.field.name}}"
-                                              class="form-control ng-animate-disabled"
-                                              style="width:265px{{bulkUpdate.field.style.input}}"
-                                              tabindex="{{bulkUpdate.field.order}}"
-                                              placeholder="{{bulkUpdate.field.placeholder}}"
-                                              ng-model="bulkUpdate.value"
-                                              ng-required="{{bulkUpdate.field.validation.required}}"
-                                              ng-minlength="field.validation.min_length || 0"
-                                              maxlength="{{bulkUpdate.field.validation.max_length || 500}}"
-                                              ng-readonly="bulkUpdate.field.validation.readonly"
-                                              pattern="{{bulkUpdate.field.validation.pattern}}"
-                                              auto-grow
-                                              ng-if="bulkUpdate.field && bulkUpdate.field && bulkUpdate.field.data_type === 'text_multi' && !bulkUpdate.field.multiline_type_use_html"></textarea>
-
-                                    <textarea ng-model="bulkUpdate.value"
-                                              ui-tinymce-multi="tinymceOptions"
-                                              ng-required="{{bulkUpdate.field.validation.required}}"
-                                              ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'text_multi' && bulkUpdate.field.multiline_type_use_html"></textarea>
-
-                                    <div class="inner-addon right-addon" ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'location'"
-                                         ng-click="openLocationModal(bulkUpdate.field.name)" style="width:265px">
-                                        <i class="glyphicon glyphicon-map-marker" style="height: 27px;"></i>
-                                        <input name="{{bulkUpdate.field.name}}" ng-model="bulkUpdate.value"
-                                               ng-readonly="bulkUpdate.field.validation.readonly" type="text"
-                                               style="width:265px"
-                                               class="form-control" />
-
-                                    </div>
-
-                                    <input type="text"
-                                           name="{{bulkUpdate.field.name}}"
-                                           class="form-control ng-animate-disabled"
-                                           style="width:265px{{bulkUpdate.field.style.input}}"
-                                           tabindex="{{bulkUpdate.field.order}}"
-                                           placeholder="{{bulkUpdate.field.placeholder}}"
-                                           ng-model="bulkUpdate.value"
-                                           ng-required="field.validation.required"
-                                           ng-readonly="bulkUpdate.field.validation.readonly"
-                                           ng-trim="false"
-                                           ng-minlength="field.validation.min_length || 0"
-                                           maxlength="{{bulkUpdate.field.validation.max_length || 15}}"
-                                           min-value="field.validation.min || 0"
-                                           max-value="field.validation.max || Number.MAX_VALUE"
-                                           numeric
-                                           ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'number'" />
-
-                                    <input type="text"
-                                           name="{{bulkUpdate.field.name}}"
-                                           class="form-control ng-animate-disabled"
-                                           style="width:265px{{bulkUpdate.field.style.input}}"
-                                           tabindex="{{bulkUpdate.field.order}}"
-                                           placeholder="{{bulkUpdate.field.placeholder}}"
-                                           ng-model="bulkUpdate.value"
-                                           ng-required="field.validation.required"
-                                           ng-readonly="bulkUpdate.field.validation.readonly"
-                                           maxlength="{{bulkUpdate.field.validation.max_length || 19}}"
-                                           min-value="field.validation.min || 0"
-                                           max-value="field.validation.max || Number.MAX_VALUE"
-                                           places="field.decimal_places || 2"
-                                           rounding="field.rounding"
-                                           number-decimal
-                                           ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'number_decimal'" />
-
-                                    <input type="text"
-                                           name="{{bulkUpdate.field.name}}"
-                                           class="form-control ng-animate-disabled"
-                                           style="width:265px{{bulkUpdate.field.style.input}}"
-                                           tabindex="{{bulkUpdate.field.order}}"
-                                           placeholder="{{bulkUpdate.field.placeholder}}"
-                                           ng-model="bulkUpdate.value"
-                                           ng-required="field.validation.required"
-                                           ng-readonly="bulkUpdate.field.validation.readonly"
-                                           maxlength="{{bulkUpdate.field.validation.max_length || 21}}"
-                                           min-value="field.validation.min || 0"
-                                           max-value="field.validation.max || Number.MAX_VALUE"
-                                           places="field.decimal_places || 2"
-                                           rounding="field.rounding"
-                                           currency-symbol="currencySymbol || field.currency_symbol"
-                                           number-currency
-                                           ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'currency'" />
-
-                                    <input type="email"
-                                           name="{{bulkUpdate.field.name}}"
-                                           class="form-control ng-animate-disabled"
-                                           style="width:265px{{bulkUpdate.field.style.input}}"
-                                           tabindex="{{bulkUpdate.field.order}}"
-                                           placeholder="{{bulkUpdate.field.placeholder}}"
-                                           ng-model="bulkUpdate.value"
-                                           ng-required="{{bulkUpdate.field.validation.required}}"
-                                           ng-readonly="bulkUpdate.field.validation.readonly"
-                                           ng-minlength="field.validation.min_length || 0"
-                                           maxlength="{{bulkUpdate.field.validation.max_length || 100}}"
-                                           ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'email'" />
-
-                                    <input type="text"
-                                           name="{{bulkUpdate.field.name}}"
-                                           class="form-control ng-animate-disabled"
-                                           style="width:265px{{bulkUpdate.field.style.input}}"
-                                           tabindex="{{bulkUpdate.field.order}}"
-                                           ng-model="bulkUpdate.value"
-                                           ng-required="{{bulkUpdate.field.validation.required}}"
-                                           ng-readonly="bulkUpdate.field.validation.readonly"
-                                           data-autoclose="1"
-                                           data-date-type="iso"
-                                           data-min-date="{{(bulkUpdate.field.validation.min ? (bulkUpdate.field.validation.min === 'today' ? currentDayMin : bulkUpdate.field.validation.min) : undefined)}}"
-                                           data-max-date="{{(bulkUpdate.field.validation.max ? (bulkUpdate.field.validation.max === 'today' ? currentDayMax : bulkUpdate.field.validation.max) : undefined)}}"
-                                           data-icon-left="fa fa-chevron-left"
-                                           data-icon-right="fa fa-chevron-right"
-                                           bs-datepicker
-                                           ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'date'">
-
-                                    <div class="clearfix" ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'date_time'">
-                                        <input type="text"
-                                               name="{{bulkUpdate.field.name}}"
-                                               class="form-control ng-animate-disabled pull-left datetime-date"
-                                               style="width:265px{{bulkUpdate.field.style.input}}"
-                                               tabindex="{{bulkUpdate.field.order}}"
-                                               ng-model="bulkUpdate.value"
-                                               ng-required="{{bulkUpdate.field.validation.required}}"
-                                               ng-readonly="bulkUpdate.field.validation.readonly"
-                                               placeholder="{{'Common.Date' | translate}}"
-                                               data-autoclose="1"
-                                               data-date-type="iso"
-                                               data-min-date="{{(bulkUpdate.field.validation.min ? (bulkUpdate.field.validation.min === 'today' ? currentDayMin : bulkUpdate.field.validation.min) : undefined)}}"
-                                               data-max-date="{{(bulkUpdate.field.validation.max ? (bulkUpdate.field.validation.max === 'today' ? currentDayMax : bulkUpdate.field.validation.max) : undefined)}}"
-                                               data-icon-left="fa fa-chevron-left"
-                                               data-icon-right="fa fa-chevron-right"
-                                               bs-datepicker>
-                                        <input type="text"
-                                               class="form-control datetime-time"
-                                               style="width:265px{{bulkUpdate.field.style.input}}"
-                                               tabindex="{{bulkUpdate.field.order}}"
-                                               ng-model="bulkUpdate.value"
-                                               placeholder="{{'Common.Time' | translate}}"
-                                               data-autoclose="1"
-                                               data-time-type="iso"
-                                               data-icon-up="fa fa-chevron-up"
-                                               data-icon-down="fa fa-chevron-down"
-                                               data-length="1"
-                                               data-minute-step="10"
-                                               data-arrow-behavior="picker"
-                                               bs-timepicker>
-                                    </div>
-
-                                    <input type="text"
-                                           name="{{bulkUpdate.field.name}}"
-                                           class="form-control"
-                                           style="width:265px{{bulkUpdate.field.style.input}}"
-                                           tabindex="{{bulkUpdate.field.order}}"
-                                           ng-model="bulkUpdate.value"
-                                           ng-required="{{bulkUpdate.field.validation.required}}"
-                                           ng-readonly="bulkUpdate.field.validation.readonly"
-                                           data-autoclose="1"
-                                           data-time-type="iso"
-                                           data-icon-up="fa fa-chevron-up"
-                                           data-icon-down="fa fa-chevron-down"
-                                           data-length="1"
-                                           data-minute-step="10"
-                                           data-arrow-behavior="picker"
-                                           placeholder="{{'Common.Time' | translate}}"
-                                           bs-timepicker
-                                           ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'time'">
-
-                                    <select class="form-control ng-animate-disabled custom-readonly"
-                                            name="{{bulkUpdate.field.name}}"
-                                            style="width:265px{{field.style.input}}"
-                                            tabindex="{{bulkUpdate.field.order}}"
-                                            ng-model="bulkUpdate.value"
-                                            ng-required="{{bulkUpdate.field.validation.required}}"
-                                            ng-disabled="bulkUpdate.field.validation.readonly"
-                                            ng-options="o as o.label[language] for o in modulePicklists[!bulkUpdate.field.lookupModulePrimaryField ? bulkUpdate.field.picklist_id : bulkUpdate.field.lookupModulePrimaryField.picklist_id] track by o.id"
-                                            ng-if="!bulkUpdate.field.lookupModulePrimaryField ? bulkUpdate.field.data_type === 'picklist' : bulkUpdate.field.lookupModulePrimaryField.data_type === 'picklist'">
-                                        <option value="">{{'Common.Select' | translate}}</option>
-                                    </select>
-
-                                    <input type="checkbox"
-                                           name="{{bulkUpdate.field.name}}"
-                                           class="ng-animate-disabled custom-readonly"
-                                           style="{{bulkUpdate.field.style.input}}"
-                                           tabindex="{{bulkUpdate.field.order}}"
-                                           ng-checked="bulkUpdate.value"
-                                           ng-disabled="bulkUpdate.field.validation.readonly"
-                                           ng-model="bulkUpdate.value"
-                                           ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'checkbox' && !bulkUpdate.field.custom_label">
-
-                                    <span class="ng-animate-disabled"
-                                          tabindex="{{cell.field.order}}"
-                                          ng-model="field.custom_label"
-                                          ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'checkbox' && bulkUpdate.field.custom_label">{{bulkUpdate.field.custom_label}}</span>
-
-                                    <input type="text"
-                                           name="{{bulkUpdate.field.name}}"
-                                           class="form-control ng-animate-disabled"
-                                           style="width:265px{{bulkUpdate.field.style.input}}"
-                                           tabindex="{{bulkUpdate.field.order}}"
-                                           ng-value="record[field.combination.field_1] && record[field.combination.field_2] ? record[field.combination.field_1] + ' ' + record[field.combination.field_2] : null"
-                                           ng-readonly="true"
-                                           ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'text_single' && field.combination" />
-
-                                    <tags-input class="ng-animate-disabled"
-                                                ng-model="bulkUpdate.value"
-                                                display-property="labelStr"
-                                                key-property="id"
-                                                style="width:265px;border:1px solid #cbd5dd{{bulkUpdate.field.style.input}}"
-                                                placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
-                                                replace-spaces-with-dashes="false"
-                                                add-from-autocomplete-only="true"
-                                                ng-if="!bulkUpdate.field.lookupModulePrimaryField ? bulkUpdate.field.data_type === 'multiselect' : bulkUpdate.field.lookupModulePrimaryField.data_type === 'multiselect'">
-                                    <auto-complete source="UpdateMultiselect($query, bulkUpdate.field)"
-                                                   min-length="0"
-                                                   load-on-focus="true"
-                                                   load-on-empty="true"
-                                                   max-results-to-show="9999"></auto-complete>
-                                    </tags-input>
-                                    <!--Create new input above. angucomplete-alt must be at the bottom of the form-->
-                                    <angucomplete-alt input-name="{{bulkUpdate.field.name}}"
-                                                      id="{{bulkUpdate.field.name}}"
-                                                      input-class="form-control ng-animate-disabled"
-                                                      match-class="highlight-angucomplete"
-                                                      field-tabindex="{{bulkUpdate.field.order}}"
-                                                      field-required="bulkUpdate.field.validation.required"
-                                                      pause="200"
-                                                      selected-object="bulkUpdate.value"
-                                                      remote-api-handler="lookup"
-                                                      search-fields="name"
-                                                      title-field="primary_value"
-                                                      minlength="1"
-                                                      template-url="view/common/angucomplete.html"
-                                                      focus-in="setCurrentLookupField(bulkUpdate.field)"
-                                                      text-searching="{{'Common.Searching' | translate}}"
-                                                      text-no-results="{{'Common.NoResults' | translate}}"
-                                                      use-original-object="true"
-                                                      hide-create-new="true"
-                                                      ng-if="bulkUpdate.field.data_type === 'lookup'" />
-                                    <!--Don't add new input below angucomplete-alt. Add above angucomplete-alt-->
-                                    <span class="file-input btn btn-primary btn-sm btn-file" ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'document'">
-                                            {{'Documents.ChooseFiles' | translate}}
-                                            <input
-                                                    id="fileDocument_{{bulkUpdate.field.name}}"
-                                                    type="file"
-                                                    name="{{bulkUpdate.field.name}}"
-                                                    class="fileInput"
-                                                    tabindex="{{bulkUpdate.field.order}}"
-                                                    nv-file-select uploader="uploaderBasic(field)"
-                                                    ng-model='bulkUpdate.value'
-                                                    ng-required="{{bulkUpdate.field.validation.required}}"
-                                                    ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'document'" />
-
-                                        </span>
-                                    <label for="fileDocument_{{bulkUpdate.field.name}}" ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'document'" ng-value='bulkUpdate.value' id="lbl_fileDocument_{{bulkUpdate.field.name}}">{{bulkUpdate.value}}</label>
-                                    <span ng-show="bulkUpdate.value" ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'document'">
-                                                <a href ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'document'" ng-click="removeDocument(field)">
-                                                    <i class="fa fa-minus-circle"></i>
-                                                </a>
-                                         </span>
-                                    <div ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'image'" class="image-type">
-                                                <span class="file-input btn btn-primary btn-sm btn-file"
-                                                      ng-disabled="fileLoadingCounter>0">
-                                                 {{'Documents.ChooseFiles' | translate}}
-                                                <input id="fileImage_{{bulkUpdate.field.name}}"
-                                                       type="file"
-                                                       name="{{bulkUpdate.field.name}}"
-                                                       class="fileInput"
-                                                       tabindex="{{bulkUpdate.field.order}}"
-                                                       nv-file-select uploader="uploaderImage(field)"
-                                                       ng-model='bulkUpdate.value'
-                                                       ng-required="{{bulkUpdate.field.validation.required}}"
-                                                       ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'image'" />
-
-                                                 </span>
-                                        <label for="fileImage_{{bulkUpdate.field.name}}"
-                                               ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'image'"
-                                               ng-value='bulkUpdate.value'
-                                               id="lbl_fileDocument_{{bulkUpdate.field.name}}">{{bulkUpdate.value}}</label>
-                                        <span ng-show="bulkUpdate.value" ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'image'">
-                                                    <a ng-show="fileLoadingCounter<1" href
-                                                       ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'image'"
-                                                       ng-click="removeDocument(field)">
-                                                        <i class="fa fa-minus-circle"></i>
-                                                    </a>
-                                                    <i ng-if="fileLoadingCounter>0"
-                                                       class="fa  fa-spinner fa-spin ng-animate-disabled"></i>
-                                                </span>
-                                    </div>
-                                    <input type="text"
-                                           name="{{bulkUpdate.field.name}}"
-                                           class="form-control ng-animate-disabled"
-                                           style="width:265px{{field.style.input}}"
-                                           tabindex="{{bulkUpdate.field.order}}"
-                                           placeholder="{{bulkUpdate.field.placeholder}}"
-                                           ng-model="bulkUpdate.value"
-                                           ng-required="{{bulkUpdate.field.validation.required}}"
-                                           ng-readonly="bulkUpdate.field.validation.readonly"
-                                           ng-minlength="bulkUpdate.field.validation.min_length || 0"
-                                           maxlength="{{bulkUpdate.field.validation.max_length || 400}}"
-                                           pattern="{{bulkUpdate.field.validation.pattern}}"
-                                           ng-if="bulkUpdate.field && bulkUpdate.field.data_type === 'url' " />
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group" ng-show="bulkUpdateModalForm.$submitted && bulkUpdateModalForm.$invalid">
-                            <div class="col-sm-offset-2 col-sm-8">
-                                <div class="callout callout-danger">
-                                    <p ng-if="bulkUpdateModalForm.$error.required || bulkUpdateModalForm.$error['autocomplete-required']">{{'Module.RequiredError' | translate}}</p>
-                                    <p ng-if="bulkUpdateModalForm.$error['autocomplete-required'] || bulkUpdateModalForm.$error.leftoverText">{{'Module.RequiredAutoCompleteError' | translate}}</p>
-                                    <p ng-if="bulkUpdateModalForm.$error.email">{{'Module.EmailError' | translate}}</p>
-                                    <p ng-if="bulkUpdateModalForm.$error.min">{{'Module.MinError' | translate}}</p>
-                                    <p ng-if="bulkUpdateModalForm.$error.max">{{'Module.MaxError' | translate}}</p>
-                                    <p ng-if="bulkUpdateModalForm.$error.minlength">{{'Module.MinLengthError' | translate}}</p>
-                                    <p ng-if="bulkUpdateModalForm.$error.pattern">{{'Module.PatternError' | translate}}</p>
-                                    <p ng-if="bulkUpdateModalForm.$error.date && bulkUpdateModalForm.$error.parse">{{'Module.DateError' | translate}}</p>
-                                    <p ng-if="bulkUpdateModalForm.$error.unique">{{'Module.UniqueError ' | translate}}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row clearfix modal-footer" style="margin-top:70px">
-                            <div class="pull-left">
-                                <label style="margin-top: 5px;">{{'Module.SelectedRecordsCount' | translate}} {{selected}}</label>
-                            </div>
-                            <div class="col-md-8 pull-right">
-                                <button type="button" class="btn btn-custom" ng-disabled="saving" ng-click="modalCancel(); $hide()">{{'Common.Cancel' | translate}}</button>
-                                <button type="submit" class="btn btn-primary" ng-if="bulkUpdate.field" ng-disabled="bulkUpdate.value == null" ladda="submittingModal">{{'Common.Save' | translate}}</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+﻿<md-dialog flex="33">
+    <form kendo-validator="bulkUpdateModalForm" ng-submit="updateSelected(bulkUpdateModalForm)" class="disable-validation-msg" autocomplete="off" novalidate>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2 ng-show="!bulkUpdate.field">{{'Common.SelectedUpdate' | translate}}</h2>
+                <h2 ng-show="bulkUpdate.field">{{'Common.NewUpdateValue' | translate}}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="closeLightBox()"><i class="fas fa-times"></i></md-button>
             </div>
-        </div>
-    </div>
-</div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div ng-show="loadingModal" id="inside-loader"><div class="spin"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div></div>
+                <div ng-show="!loadingModal">
+                    <div class="form-group">
+                        <select id="field"
+                                name="field"
+                                class="form-control"
+                                required
+                                kendo-drop-down-list
+                                k-options="{{'fieldOptions'}}"
+                                k-ng-model="field"
+                                k-on-change="inputReset();">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div ng-include="'view/app/module/common/bulk-update-fields.html'"></div>
+                    </div>
+                </div>
+            </div>
+        </md-dialog-content>
+
+
+        <md-dialog-actions>
+            <md-button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> {{'Common.Save' | translate}}
+            </md-button>
+            <span flex></span>
+        </md-dialog-actions>
+    </form>
+</md-dialog>
+
+
+

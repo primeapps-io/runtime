@@ -5,8 +5,8 @@ angular.module('primeapps')
     .factory('AuthService', ['$http', 'config', '$localStorage', '$window', '$location', '$timeout', '$rootScope', '$q', '$sessionStorage', '$cache',
         function ($http, config, $localStorage, $window, $location, $timeout, $rootScope, $q, $sessionStorage, $cache) {
             return {
-                isUniqueEmail: function (email) {
-                    return $http.get(config.apiUrl + 'Public/IsUniqueEmail?email=' + email);
+                isUniqueEmail: function (email, appId) {
+                    return $http.get(config.apiUrl + 'Public/IsUniqueEmail?email=' + email + '&appId=' + appId);
                 },
 
                 register: function (userModel) {

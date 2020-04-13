@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.2",
-    "signature": "1e4b7a8ec109d6a82fb192dc047379caacd76b42"
+    "signature": "c2aa3a0f233081a0ca79f378a04ebf50ea0e1b9c"
   },
   "compilationOptions": {
     "defines": [
@@ -26,8 +26,8 @@
         "dependencies": {
           "AWSSDK.Extensions.NETCore.Setup": "3.3.100.1",
           "AWSSDK.S3": "3.3.104.36",
-          "Aspose.Cells": "19.11.0",
-          "Aspose.Words": "19.12.0",
+          "Aspose.Cells": "18.12.0",
+          "Aspose.Words": "19.1.0",
           "Hangfire": "1.7.9",
           "Hangfire.AspNetCore": "1.7.9",
           "Hangfire.Dashboard.BasicAuthorization": "1.0.2",
@@ -38,6 +38,7 @@
           "Microsoft.AspNetCore.App": "2.2.0",
           "Microsoft.AspNetCore.Authentication": "2.2.0",
           "Microsoft.AspNetCore.Mvc.WebApiCompatShim": "2.2.0",
+          "Microsoft.AspNetCore.OData": "7.2.1",
           "Microsoft.AspNetCore.WebUtilities": "2.2.0",
           "Microsoft.Azure.Search": "5.0.3",
           "Microsoft.Extensions.Caching.Abstractions": "2.2.0",
@@ -48,56 +49,49 @@
           "Microsoft.NETCore.App": "2.2.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "2.2.0",
           "MimeMapping": "1.0.1.12",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "PowerBI.NetStandard.Api": "1.0.0",
           "PrimeApps.Model": "1.0.0",
           "Sentry": "1.1.0",
           "Sentry.AspNetCore": "1.1.0",
           "System.Linq.Dynamic.Core": "1.0.9",
           "WindowsAzure.Storage": "9.3.3",
-          "WorkflowCore": "1.9.3",
-          "WorkflowCore.Providers.Redis": "1.9.1"
+          "WorkflowCore": "3.1.5",
+          "WorkflowCore.DSL": "3.1.5",
+          "WorkflowCore.Providers.Redis": "3.0.1"
         },
         "runtime": {
           "PrimeApps.App.dll": {}
-        },
-        "resources": {
-          "tr-TR/PrimeApps.App.resources.dll": {
-            "locale": "tr-TR"
-          },
-          "tr/PrimeApps.App.resources.dll": {
-            "locale": "tr"
-          }
         },
         "compile": {
           "PrimeApps.App.dll": {}
         }
       },
-      "Aspose.Cells/19.11.0": {
+      "Aspose.Cells/18.12.0": {
         "dependencies": {
-          "System.Drawing.Common": "4.5.1",
+          "System.Drawing.Common": "4.5.0",
           "System.Text.Encoding.CodePages": "4.5.0"
         },
         "runtime": {
-          "lib/netstandard20/Aspose.Cells.dll": {
-            "assemblyVersion": "19.11.0.0",
-            "fileVersion": "19.11.0.0"
+          "lib/netstandard2.0/Aspose.Cells.dll": {
+            "assemblyVersion": "18.12.0.0",
+            "fileVersion": "18.12.0.0"
           }
         },
         "compile": {
-          "lib/netstandard20/Aspose.Cells.dll": {}
+          "lib/netstandard2.0/Aspose.Cells.dll": {}
         }
       },
-      "Aspose.Words/19.12.0": {
+      "Aspose.Words/19.1.0": {
         "dependencies": {
-          "SkiaSharp": "1.68.1",
+          "SkiaSharp": "1.60.3",
           "System.Reflection.Emit": "4.3.0",
           "System.Reflection.Emit.ILGeneration": "4.3.0",
           "System.Text.Encoding.CodePages": "4.5.0"
         },
         "runtime": {
           "lib/netstandard2.0/Aspose.Words.dll": {
-            "assemblyVersion": "19.12.0.0",
+            "assemblyVersion": "19.1.0.0",
             "fileVersion": "0.0.0.0"
           }
         },
@@ -151,7 +145,7 @@
         "dependencies": {
           "System.Data.SqlClient": "4.6.0",
           "System.Reflection.Emit.Lightweight": "4.3.0",
-          "System.Reflection.TypeExtensions": "4.4.0"
+          "System.Reflection.TypeExtensions": "4.7.0"
         },
         "runtime": {
           "lib/netstandard2.0/Dapper.dll": {
@@ -191,7 +185,7 @@
       },
       "Hangfire.Core/1.7.9": {
         "dependencies": {
-          "Newtonsoft.Json": "12.0.1"
+          "Newtonsoft.Json": "12.0.3"
         },
         "runtime": {
           "lib/netstandard2.0/Hangfire.Core.dll": {
@@ -240,7 +234,7 @@
           "Dapper": "1.50.5",
           "Hangfire.Core": "1.7.9",
           "Microsoft.CSharp": "4.5.0",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "Npgsql": "4.0.4"
         },
         "runtime": {
@@ -256,8 +250,8 @@
       "Hangfire.Redis.StackExchange/1.8.0": {
         "dependencies": {
           "Hangfire.Core": "1.7.9",
-          "Newtonsoft.Json": "12.0.1",
-          "StackExchange.Redis": "2.0.519"
+          "Newtonsoft.Json": "12.0.3",
+          "StackExchange.Redis": "2.0.601"
         },
         "runtime": {
           "lib/netstandard2.0/Hangfire.Redis.StackExchange.dll": {
@@ -297,7 +291,7 @@
       },
       "IdentityModel/3.10.0": {
         "dependencies": {
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "System.Text.Encodings.Web": "4.5.0"
         },
         "runtime": {
@@ -360,13 +354,29 @@
           "lib/netstandard2.0/Microsoft.AspNetCore.Mvc.WebApiCompatShim.dll": {}
         }
       },
+      "Microsoft.AspNetCore.OData/7.2.1": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Mvc.Core": "2.2.0",
+          "Microsoft.Extensions.DependencyInjection": "2.2.0",
+          "Microsoft.OData.Core": "7.6.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.AspNetCore.OData.dll": {
+            "assemblyVersion": "7.2.1.30805",
+            "fileVersion": "7.2.1.30805"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.AspNetCore.OData.dll": {}
+        }
+      },
       "Microsoft.Azure.KeyVault/2.3.2": {
         "dependencies": {
           "Microsoft.Azure.KeyVault.WebKey": "2.0.7",
           "Microsoft.Rest.ClientRuntime": "2.3.17",
           "Microsoft.Rest.ClientRuntime.Azure": "3.3.18",
           "NETStandard.Library": "2.0.3",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "System.Net.Http": "4.3.0"
         },
         "runtime": {
@@ -383,7 +393,7 @@
         "dependencies": {
           "Microsoft.NETCore.Platforms": "2.2.0",
           "NETStandard.Library": "2.0.3",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "System.Collections": "4.3.0",
           "System.Collections.Concurrent": "4.3.0",
           "System.Linq": "4.3.0",
@@ -407,7 +417,7 @@
           "Microsoft.Rest.ClientRuntime": "2.3.17",
           "Microsoft.Rest.ClientRuntime.Azure": "3.3.18",
           "NETStandard.Library": "2.0.3",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "System.Net.Http": "4.3.0"
         },
         "runtime": {
@@ -425,7 +435,7 @@
           "Microsoft.Rest.ClientRuntime": "2.3.17",
           "Microsoft.Rest.ClientRuntime.Azure": "3.3.18",
           "NETStandard.Library": "2.0.3",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "System.Net.Http": "4.3.0"
         },
         "runtime": {
@@ -443,9 +453,9 @@
           "Microsoft.Azure.Search.Common": "5.0.3",
           "Microsoft.Rest.ClientRuntime": "2.3.17",
           "Microsoft.Rest.ClientRuntime.Azure": "3.3.18",
-          "Microsoft.Spatial": "7.2.0",
+          "Microsoft.Spatial": "7.6.0",
           "NETStandard.Library": "2.0.3",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "System.Net.Http": "4.3.0"
         },
         "runtime": {
@@ -463,9 +473,9 @@
           "Microsoft.Azure.Search.Common": "5.0.3",
           "Microsoft.Rest.ClientRuntime": "2.3.17",
           "Microsoft.Rest.ClientRuntime.Azure": "3.3.18",
-          "Microsoft.Spatial": "7.2.0",
+          "Microsoft.Spatial": "7.6.0",
           "NETStandard.Library": "2.0.3",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "System.Net.Http": "4.3.0"
         },
         "runtime": {
@@ -583,10 +593,36 @@
           "lib/netstandard1.3/Microsoft.IdentityModel.Clients.ActiveDirectory.dll": {}
         }
       },
+      "Microsoft.OData.Core/7.6.0": {
+        "dependencies": {
+          "Microsoft.OData.Edm": "7.6.0",
+          "Microsoft.Spatial": "7.6.0"
+        },
+        "runtime": {
+          "lib/netstandard1.1/Microsoft.OData.Core.dll": {
+            "assemblyVersion": "7.6.0.30605",
+            "fileVersion": "7.6.0.30605"
+          }
+        },
+        "compile": {
+          "lib/netstandard1.1/Microsoft.OData.Core.dll": {}
+        }
+      },
+      "Microsoft.OData.Edm/7.6.0": {
+        "runtime": {
+          "lib/netstandard1.1/Microsoft.OData.Edm.dll": {
+            "assemblyVersion": "7.6.0.30605",
+            "fileVersion": "7.6.0.30605"
+          }
+        },
+        "compile": {
+          "lib/netstandard1.1/Microsoft.OData.Edm.dll": {}
+        }
+      },
       "Microsoft.Rest.ClientRuntime/2.3.17": {
         "dependencies": {
           "NETStandard.Library": "2.0.3",
-          "Newtonsoft.Json": "12.0.1"
+          "Newtonsoft.Json": "12.0.3"
         },
         "runtime": {
           "lib/netstandard1.4/Microsoft.Rest.ClientRuntime.dll": {
@@ -602,7 +638,7 @@
         "dependencies": {
           "Microsoft.Rest.ClientRuntime": "2.3.17",
           "NETStandard.Library": "2.0.3",
-          "Newtonsoft.Json": "12.0.1"
+          "Newtonsoft.Json": "12.0.3"
         },
         "runtime": {
           "lib/netstandard1.4/Microsoft.Rest.ClientRuntime.Azure.dll": {
@@ -614,40 +650,11 @@
           "lib/netstandard1.4/Microsoft.Rest.ClientRuntime.Azure.dll": {}
         }
       },
-      "Microsoft.Spatial/7.2.0": {
+      "Microsoft.Spatial/7.6.0": {
         "runtime": {
           "lib/netstandard1.1/Microsoft.Spatial.dll": {
-            "assemblyVersion": "7.2.0.0",
-            "fileVersion": "7.2.0.0"
-          }
-        },
-        "resources": {
-          "lib/netstandard1.1/de/Microsoft.Spatial.resources.dll": {
-            "locale": "de"
-          },
-          "lib/netstandard1.1/es/Microsoft.Spatial.resources.dll": {
-            "locale": "es"
-          },
-          "lib/netstandard1.1/fr/Microsoft.Spatial.resources.dll": {
-            "locale": "fr"
-          },
-          "lib/netstandard1.1/it/Microsoft.Spatial.resources.dll": {
-            "locale": "it"
-          },
-          "lib/netstandard1.1/ja/Microsoft.Spatial.resources.dll": {
-            "locale": "ja"
-          },
-          "lib/netstandard1.1/ko/Microsoft.Spatial.resources.dll": {
-            "locale": "ko"
-          },
-          "lib/netstandard1.1/ru/Microsoft.Spatial.resources.dll": {
-            "locale": "ru"
-          },
-          "lib/netstandard1.1/zh-Hans/Microsoft.Spatial.resources.dll": {
-            "locale": "zh-Hans"
-          },
-          "lib/netstandard1.1/zh-Hant/Microsoft.Spatial.resources.dll": {
-            "locale": "zh-Hant"
+            "assemblyVersion": "7.6.0.30605",
+            "fileVersion": "7.6.0.30605"
           }
         },
         "compile": {
@@ -793,7 +800,7 @@
       },
       "Microsoft.VisualStudio.Web.CodeGeneration.Contracts/2.2.0": {
         "dependencies": {
-          "Newtonsoft.Json": "12.0.1"
+          "Newtonsoft.Json": "12.0.3"
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.VisualStudio.Web.CodeGeneration.Contracts.dll": {
@@ -809,7 +816,7 @@
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection": "2.2.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Templating": "2.2.0",
-          "Newtonsoft.Json": "12.0.1"
+          "Newtonsoft.Json": "12.0.3"
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.VisualStudio.Web.CodeGeneration.Core.dll": {
@@ -869,7 +876,7 @@
         "dependencies": {
           "Microsoft.CodeAnalysis.CSharp.Workspaces": "2.8.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Contracts": "2.2.0",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "NuGet.Frameworks": "4.7.0"
         },
         "runtime": {
@@ -936,11 +943,11 @@
           "lib/netstandard1.1/MimeMapping.dll": {}
         }
       },
-      "Newtonsoft.Json/12.0.1": {
+      "Newtonsoft.Json/12.0.3": {
         "runtime": {
           "lib/netstandard2.0/Newtonsoft.Json.dll": {
             "assemblyVersion": "12.0.0.0",
-            "fileVersion": "12.0.1.22727"
+            "fileVersion": "12.0.3.23909"
           }
         },
         "compile": {
@@ -949,7 +956,7 @@
       },
       "Npgsql/4.0.4": {
         "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "4.5.1",
+          "System.Runtime.CompilerServices.Unsafe": "4.5.2",
           "System.Threading.Tasks.Extensions": "4.5.1",
           "System.ValueTuple": "4.5.0"
         },
@@ -994,26 +1001,27 @@
           "lib/netstandard1.6/NuGet.Frameworks.dll": {}
         }
       },
-      "Pipelines.Sockets.Unofficial/1.0.7": {
+      "Pipelines.Sockets.Unofficial/2.0.22": {
         "dependencies": {
           "System.Buffers": "4.5.0",
-          "System.IO.Pipelines": "4.5.2"
+          "System.IO.Pipelines": "4.5.2",
+          "System.Runtime.CompilerServices.Unsafe": "4.5.2"
         },
         "runtime": {
-          "lib/netcoreapp2.1/Pipelines.Sockets.Unofficial.dll": {
+          "lib/netcoreapp2.2/Pipelines.Sockets.Unofficial.dll": {
             "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.7.56431"
+            "fileVersion": "2.0.22.26858"
           }
         },
         "compile": {
-          "lib/netcoreapp2.1/Pipelines.Sockets.Unofficial.dll": {}
+          "lib/netcoreapp2.2/Pipelines.Sockets.Unofficial.dll": {}
         }
       },
       "PowerBI.NetStandard.Api/1.0.0": {
         "dependencies": {
           "Microsoft.Rest.ClientRuntime": "2.3.17",
           "NETStandard.Library": "2.0.3",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "System.IdentityModel.Tokens.Jwt": "5.3.0"
         },
         "runtime": {
@@ -1030,7 +1038,7 @@
         "dependencies": {
           "Microsoft.Extensions.Logging": "2.2.0",
           "Microsoft.Extensions.Logging.Abstractions": "2.2.0",
-          "StackExchange.Redis": "2.0.519"
+          "StackExchange.Redis": "2.0.601"
         },
         "runtime": {
           "lib/netstandard2.0/RedLockNet.Abstractions.dll": {
@@ -1055,7 +1063,7 @@
       },
       "Sentry/1.1.0": {
         "dependencies": {
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "Sentry.PlatformAbstractions": "1.0.0",
           "Sentry.Protocol": "1.0.2",
           "System.Collections.Immutable": "1.5.0"
@@ -1126,11 +1134,25 @@
           "lib/netstandard2.0/Sentry.Protocol.dll": {}
         }
       },
-      "SkiaSharp/1.68.1": {
+      "SharpYaml/1.6.5": {
+        "dependencies": {
+          "System.Reflection.TypeExtensions": "4.7.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/SharpYaml.dll": {
+            "assemblyVersion": "1.6.5.0",
+            "fileVersion": "1.6.5.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/SharpYaml.dll": {}
+        }
+      },
+      "SkiaSharp/1.60.3": {
         "runtime": {
           "lib/netstandard1.3/SkiaSharp.dll": {
-            "assemblyVersion": "1.68.0.0",
-            "fileVersion": "1.68.1.0"
+            "assemblyVersion": "1.60.0.0",
+            "fileVersion": "1.60.3.0"
           }
         },
         "runtimeTargets": {
@@ -1149,13 +1171,13 @@
             "assetType": "native",
             "fileVersion": "0.0.0.0"
           },
-          "runtimes/win-x64/native/libSkiaSharp.dll": {
-            "rid": "win-x64",
+          "runtimes/win7-x64/native/libSkiaSharp.dll": {
+            "rid": "win7-x64",
             "assetType": "native",
             "fileVersion": "0.0.0.0"
           },
-          "runtimes/win-x86/native/libSkiaSharp.dll": {
-            "rid": "win-x86",
+          "runtimes/win7-x86/native/libSkiaSharp.dll": {
+            "rid": "win7-x86",
             "assetType": "native",
             "fileVersion": "0.0.0.0"
           }
@@ -1164,9 +1186,9 @@
           "lib/netstandard1.3/SkiaSharp.dll": {}
         }
       },
-      "StackExchange.Redis/2.0.519": {
+      "StackExchange.Redis/2.0.601": {
         "dependencies": {
-          "Pipelines.Sockets.Unofficial": "1.0.7",
+          "Pipelines.Sockets.Unofficial": "2.0.22",
           "System.Diagnostics.PerformanceCounter": "4.5.0",
           "System.IO.Pipelines": "4.5.2",
           "System.Threading.Channels": "4.5.0"
@@ -1174,7 +1196,7 @@
         "runtime": {
           "lib/netstandard2.0/StackExchange.Redis.dll": {
             "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.0.519.65453"
+            "fileVersion": "2.0.601.3402"
           }
         },
         "compile": {
@@ -1196,7 +1218,7 @@
           "System.Net.Sockets": "4.3.0",
           "System.Reflection.Emit": "4.3.0",
           "System.Reflection.Emit.Lightweight": "4.3.0",
-          "System.Reflection.TypeExtensions": "4.4.0",
+          "System.Reflection.TypeExtensions": "4.7.0",
           "System.Runtime.Extensions": "4.3.0",
           "System.Runtime.InteropServices.RuntimeInformation": "4.3.0",
           "System.Security.Cryptography.Algorithms": "4.3.0",
@@ -1416,29 +1438,29 @@
           }
         }
       },
-      "System.Drawing.Common/4.5.1": {
+      "System.Drawing.Common/4.5.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "2.2.0",
           "Microsoft.Win32.SystemEvents": "4.5.0"
         },
         "runtime": {
           "lib/netstandard2.0/System.Drawing.Common.dll": {
-            "assemblyVersion": "4.0.0.1",
-            "fileVersion": "4.6.26919.2"
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.6.26515.6"
           }
         },
         "runtimeTargets": {
           "runtimes/unix/lib/netcoreapp2.0/System.Drawing.Common.dll": {
             "rid": "unix",
             "assetType": "runtime",
-            "assemblyVersion": "4.0.0.1",
-            "fileVersion": "4.6.26919.2"
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.6.26515.6"
           },
           "runtimes/win/lib/netcoreapp2.0/System.Drawing.Common.dll": {
             "rid": "win",
             "assetType": "runtime",
-            "assemblyVersion": "4.0.0.1",
-            "fileVersion": "4.6.26919.2"
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.6.26515.6"
           }
         },
         "compile": {
@@ -1565,7 +1587,18 @@
           "System.Threading.Tasks": "4.3.0"
         }
       },
-      "System.Reflection.TypeExtensions/4.4.0": {},
+      "System.Reflection.TypeExtensions/4.7.0": {},
+      "System.Runtime.CompilerServices.Unsafe/4.5.2": {
+        "runtime": {
+          "lib/netcoreapp2.0/System.Runtime.CompilerServices.Unsafe.dll": {
+            "assemblyVersion": "4.0.4.1",
+            "fileVersion": "4.0.0.0"
+          }
+        },
+        "compile": {
+          "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll": {}
+        }
+      },
       "System.Runtime.Serialization.Json/4.0.2": {
         "dependencies": {
           "System.IO": "4.3.0",
@@ -1606,7 +1639,7 @@
       "WindowsAzure.Storage/9.3.3": {
         "dependencies": {
           "NETStandard.Library": "2.0.3",
-          "Newtonsoft.Json": "12.0.1"
+          "Newtonsoft.Json": "12.0.3"
         },
         "runtime": {
           "lib/netstandard1.3/Microsoft.WindowsAzure.Storage.dll": {
@@ -1618,43 +1651,59 @@
           "lib/netstandard1.3/Microsoft.WindowsAzure.Storage.dll": {}
         }
       },
-      "WorkflowCore/1.9.3": {
+      "WorkflowCore/3.1.5": {
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "2.2.0",
-          "Microsoft.Extensions.Logging": "2.2.0",
+          "Microsoft.Extensions.Hosting.Abstractions": "2.2.0",
+          "Microsoft.Extensions.Logging.Abstractions": "2.2.0",
           "Microsoft.Extensions.ObjectPool": "2.2.0",
-          "NETStandard.Library": "2.0.3",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "System.Linq.Dynamic.Core": "1.0.9",
           "System.Linq.Queryable": "4.3.0",
           "System.Reflection": "4.3.0",
-          "System.Reflection.TypeExtensions": "4.4.0",
+          "System.Reflection.TypeExtensions": "4.7.0",
           "System.Threading.Tasks.Parallel": "4.3.0",
           "System.Threading.Thread": "4.3.0",
           "System.Threading.ThreadPool": "4.3.0"
         },
         "runtime": {
-          "lib/netstandard1.3/WorkflowCore.dll": {
-            "assemblyVersion": "1.9.3.0",
-            "fileVersion": "1.9.3.0"
+          "lib/netstandard2.0/WorkflowCore.dll": {
+            "assemblyVersion": "3.1.5.0",
+            "fileVersion": "3.1.5.0"
           }
         },
         "compile": {
-          "lib/netstandard1.3/WorkflowCore.dll": {}
+          "lib/netstandard2.0/WorkflowCore.dll": {}
         }
       },
-      "WorkflowCore.Providers.Redis/1.9.1": {
+      "WorkflowCore.DSL/3.1.5": {
+        "dependencies": {
+          "Newtonsoft.Json": "12.0.3",
+          "SharpYaml": "1.6.5",
+          "WorkflowCore": "3.1.5"
+        },
+        "runtime": {
+          "lib/netstandard2.0/WorkflowCore.DSL.dll": {
+            "assemblyVersion": "3.1.5.0",
+            "fileVersion": "3.1.5.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/WorkflowCore.DSL.dll": {}
+        }
+      },
+      "WorkflowCore.Providers.Redis/3.0.1": {
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "2.2.0",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "RedLock.net": "2.2.0",
-          "StackExchange.Redis": "2.0.519",
-          "WorkflowCore": "1.9.3"
+          "StackExchange.Redis": "2.0.601",
+          "WorkflowCore": "3.1.5"
         },
         "runtime": {
           "lib/netstandard2.0/WorkflowCore.Providers.Redis.dll": {
-            "assemblyVersion": "1.9.1.0",
-            "fileVersion": "1.9.1.0"
+            "assemblyVersion": "3.0.1.0",
+            "fileVersion": "3.0.1.0"
           }
         },
         "compile": {
@@ -1697,7 +1746,7 @@
       },
       "Microsoft.AspNet.WebApi.Client/5.2.6": {
         "dependencies": {
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "Newtonsoft.Json.Bson": "1.0.1"
         },
         "compile": {
@@ -1985,7 +2034,7 @@
       "Microsoft.AspNetCore.Authentication.OAuth/2.2.0": {
         "dependencies": {
           "Microsoft.AspNetCore.Authentication": "2.2.0",
-          "Newtonsoft.Json": "12.0.1"
+          "Newtonsoft.Json": "12.0.3"
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.AspNetCore.Authentication.OAuth.dll": {}
@@ -2263,7 +2312,7 @@
           "Microsoft.AspNetCore.Http.Connections.Common": "1.1.0",
           "Microsoft.AspNetCore.Routing": "2.2.0",
           "Microsoft.AspNetCore.WebSockets": "2.2.0",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "System.Security.Principal.Windows": "4.5.0"
         },
         "compile": {
@@ -2274,7 +2323,7 @@
       "Microsoft.AspNetCore.Http.Connections.Common/1.1.0": {
         "dependencies": {
           "Microsoft.AspNetCore.Connections.Abstractions": "2.2.0",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "System.Buffers": "4.5.0"
         },
         "compile": {
@@ -2368,7 +2417,7 @@
       "Microsoft.AspNetCore.JsonPatch/2.2.0": {
         "dependencies": {
           "Microsoft.CSharp": "4.5.0",
-          "Newtonsoft.Json": "12.0.1"
+          "Newtonsoft.Json": "12.0.3"
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.AspNetCore.JsonPatch.dll": {}
@@ -2601,7 +2650,7 @@
         "dependencies": {
           "Microsoft.AspNetCore.Hosting.Abstractions": "2.2.0",
           "Microsoft.Extensions.Logging.Console": "2.2.0",
-          "Newtonsoft.Json": "12.0.1"
+          "Newtonsoft.Json": "12.0.3"
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.AspNetCore.NodeServices.dll": {}
@@ -2753,7 +2802,7 @@
           "System.IO.Pipelines": "4.5.2",
           "System.Memory": "4.5.1",
           "System.Numerics.Vectors": "4.5.0",
-          "System.Runtime.CompilerServices.Unsafe": "4.5.1",
+          "System.Runtime.CompilerServices.Unsafe": "4.5.2",
           "System.Security.Principal.Windows": "4.5.0"
         },
         "compile": {
@@ -2785,7 +2834,7 @@
           "Microsoft.Net.Http.Headers": "2.2.0",
           "System.Memory": "4.5.1",
           "System.Numerics.Vectors": "4.5.0",
-          "System.Runtime.CompilerServices.Unsafe": "4.5.1",
+          "System.Runtime.CompilerServices.Unsafe": "4.5.2",
           "System.Security.Cryptography.Cng": "4.5.0",
           "System.Threading.Tasks.Extensions": "4.5.1"
         },
@@ -2851,7 +2900,7 @@
         "dependencies": {
           "Microsoft.AspNetCore.Connections.Abstractions": "2.2.0",
           "Microsoft.Extensions.Options": "2.2.0",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "System.Buffers": "4.5.0"
         },
         "compile": {
@@ -2877,7 +2926,7 @@
       "Microsoft.AspNetCore.SignalR.Protocols.Json/1.1.0": {
         "dependencies": {
           "Microsoft.AspNetCore.SignalR.Common": "1.1.0",
-          "Newtonsoft.Json": "12.0.1"
+          "Newtonsoft.Json": "12.0.3"
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.AspNetCore.SignalR.Protocols.Json.dll": {}
@@ -3021,7 +3070,7 @@
           "System.Collections": "4.3.0",
           "System.IO": "4.3.0",
           "System.IO.FileSystem": "4.3.0",
-          "System.Reflection.TypeExtensions": "4.4.0",
+          "System.Reflection.TypeExtensions": "4.7.0",
           "System.Runtime.Extensions": "4.3.0",
           "System.Runtime.InteropServices": "4.3.0",
           "System.Runtime.InteropServices.RuntimeInformation": "4.3.0"
@@ -3202,7 +3251,7 @@
         "dependencies": {
           "Microsoft.Extensions.Configuration": "2.2.0",
           "Microsoft.Extensions.Configuration.FileExtensions": "2.2.0",
-          "Newtonsoft.Json": "12.0.1"
+          "Newtonsoft.Json": "12.0.3"
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.Extensions.Configuration.Json.dll": {}
@@ -3257,7 +3306,7 @@
       "Microsoft.Extensions.DependencyModel/2.1.0": {
         "dependencies": {
           "Microsoft.DotNet.PlatformAbstractions": "2.1.0",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "System.Diagnostics.Debug": "4.3.0",
           "System.Dynamic.Runtime": "4.3.0",
           "System.Linq": "4.3.0"
@@ -3464,7 +3513,7 @@
       "Microsoft.Extensions.Logging.EventSource/2.2.0": {
         "dependencies": {
           "Microsoft.Extensions.Logging": "2.2.0",
-          "Newtonsoft.Json": "12.0.1"
+          "Newtonsoft.Json": "12.0.3"
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.Extensions.Logging.EventSource.dll": {}
@@ -3523,7 +3572,7 @@
       "Microsoft.Extensions.Primitives/2.2.0": {
         "dependencies": {
           "System.Memory": "4.5.1",
-          "System.Runtime.CompilerServices.Unsafe": "4.5.1"
+          "System.Runtime.CompilerServices.Unsafe": "4.5.2"
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.Extensions.Primitives.dll": {}
@@ -3544,7 +3593,7 @@
       "Microsoft.IdentityModel.JsonWebTokens/5.3.0": {
         "dependencies": {
           "Microsoft.IdentityModel.Tokens": "5.3.0",
-          "Newtonsoft.Json": "12.0.1"
+          "Newtonsoft.Json": "12.0.3"
         },
         "compile": {
           "lib/netstandard2.0/Microsoft.IdentityModel.JsonWebTokens.dll": {}
@@ -3579,7 +3628,7 @@
       "Microsoft.IdentityModel.Protocols.OpenIdConnect/5.3.0": {
         "dependencies": {
           "Microsoft.IdentityModel.Protocols": "5.3.0",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "System.Dynamic.Runtime": "4.3.0",
           "System.IdentityModel.Tokens.Jwt": "5.3.0"
         },
@@ -3603,7 +3652,7 @@
       "Microsoft.IdentityModel.Tokens/5.3.0": {
         "dependencies": {
           "Microsoft.IdentityModel.Logging": "5.3.0",
-          "Newtonsoft.Json": "12.0.1",
+          "Newtonsoft.Json": "12.0.3",
           "System.Collections": "4.3.0",
           "System.Diagnostics.Tools": "4.3.0",
           "System.Reflection": "4.3.0",
@@ -3846,7 +3895,7 @@
       "Newtonsoft.Json.Bson/1.0.1": {
         "dependencies": {
           "NETStandard.Library": "2.0.3",
-          "Newtonsoft.Json": "12.0.1"
+          "Newtonsoft.Json": "12.0.3"
         },
         "compile": {
           "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {}
@@ -4114,7 +4163,7 @@
           "System.Reflection.Emit": "4.3.0",
           "System.Reflection.Emit.ILGeneration": "4.3.0",
           "System.Reflection.Primitives": "4.3.0",
-          "System.Reflection.TypeExtensions": "4.4.0",
+          "System.Reflection.TypeExtensions": "4.7.0",
           "System.Resources.ResourceManager": "4.3.0",
           "System.Runtime": "4.3.0",
           "System.Runtime.Extensions": "4.3.0",
@@ -4154,7 +4203,7 @@
         "dependencies": {
           "Microsoft.IdentityModel.JsonWebTokens": "5.3.0",
           "Microsoft.IdentityModel.Tokens": "5.3.0",
-          "Newtonsoft.Json": "12.0.1"
+          "Newtonsoft.Json": "12.0.3"
         },
         "compile": {
           "lib/netstandard2.0/System.IdentityModel.Tokens.Jwt.dll": {}
@@ -4246,7 +4295,7 @@
           "System.Reflection.Emit.Lightweight": "4.3.0",
           "System.Reflection.Extensions": "4.3.0",
           "System.Reflection.Primitives": "4.3.0",
-          "System.Reflection.TypeExtensions": "4.4.0",
+          "System.Reflection.TypeExtensions": "4.7.0",
           "System.Resources.ResourceManager": "4.3.0",
           "System.Runtime": "4.3.0",
           "System.Runtime.Extensions": "4.3.0",
@@ -4329,7 +4378,7 @@
           "System.Reflection.Emit.Lightweight": "4.3.0",
           "System.Reflection.Extensions": "4.3.0",
           "System.Reflection.Primitives": "4.3.0",
-          "System.Reflection.TypeExtensions": "4.4.0",
+          "System.Reflection.TypeExtensions": "4.7.0",
           "System.Resources.ResourceManager": "4.3.0",
           "System.Runtime": "4.3.0",
           "System.Runtime.Extensions": "4.3.0",
@@ -4417,12 +4466,6 @@
         "dependencies": {
           "Microsoft.NETCore.Platforms": "2.2.0",
           "Microsoft.NETCore.Targets": "2.0.0"
-        },
-        "compileOnly": true
-      },
-      "System.Runtime.CompilerServices.Unsafe/4.5.1": {
-        "compile": {
-          "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll": {}
         },
         "compileOnly": true
       },
@@ -4685,7 +4728,7 @@
       "System.Text.Encoding.CodePages/4.5.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "2.2.0",
-          "System.Runtime.CompilerServices.Unsafe": "4.5.1"
+          "System.Runtime.CompilerServices.Unsafe": "4.5.2"
         },
         "compile": {
           "ref/netstandard2.0/System.Text.Encoding.CodePages.dll": {}
@@ -4819,7 +4862,7 @@
           "System.Reflection.Emit.ILGeneration": "4.3.0",
           "System.Reflection.Extensions": "4.3.0",
           "System.Reflection.Primitives": "4.3.0",
-          "System.Reflection.TypeExtensions": "4.4.0",
+          "System.Reflection.TypeExtensions": "4.7.0",
           "System.Resources.ResourceManager": "4.3.0",
           "System.Runtime": "4.3.0",
           "System.Runtime.Extensions": "4.3.0",
@@ -4866,19 +4909,19 @@
       "serviceable": false,
       "sha512": ""
     },
-    "Aspose.Cells/19.11.0": {
+    "Aspose.Cells/18.12.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-poqLbuSvt4LJqwiWFTcviGgKLpsoVNv1o2S/D5YXwbQkIjLTrnD59l9KFSzzUul2+uN9idFVmBl613Ni3ojXwg==",
-      "path": "aspose.cells/19.11.0",
-      "hashPath": "aspose.cells.19.11.0.nupkg.sha512"
+      "sha512": "sha512-KjA9Z2VUkfIsppnj7A9FJ8z7xq83eKOrS5IKGSODJmCwLs1epaMNgTTIzxB81XRuCHm/1Prr58/ykN0ge44sYg==",
+      "path": "aspose.cells/18.12.0",
+      "hashPath": "aspose.cells.18.12.0.nupkg.sha512"
     },
-    "Aspose.Words/19.12.0": {
+    "Aspose.Words/19.1.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-VCgK09UHPae2KC53dXa+Ec6Pg7RKzFvhTmyZJAaH+BOhFtGxpJSV3kQxPaWvdyhsEl4hBNW8YQzs76qp5UIuFA==",
-      "path": "aspose.words/19.12.0",
-      "hashPath": "aspose.words.19.12.0.nupkg.sha512"
+      "sha512": "sha512-84Cp1JbhtK9HdpE9sgmFhXTYSB5w1KT8XDJh365z2G+cLjjrSWc0xDIKm2yeWKnyfLw6XYoiMXoxRsV57PAz3w==",
+      "path": "aspose.words/19.1.0",
+      "hashPath": "aspose.words.19.1.0.nupkg.sha512"
     },
     "AWSSDK.Core/3.3.103.48": {
       "type": "package",
@@ -4992,6 +5035,13 @@
       "path": "microsoft.aspnetcore.mvc.webapicompatshim/2.2.0",
       "hashPath": "microsoft.aspnetcore.mvc.webapicompatshim.2.2.0.nupkg.sha512"
     },
+    "Microsoft.AspNetCore.OData/7.2.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-GhYZHuBQTcqWvo8bN7HViSr34hhsESW4vkvZWW1gFZxLrq0qaeo2QW4g9AdT33oX1USQk71k3kzQKxc9mvAe3Q==",
+      "path": "microsoft.aspnetcore.odata/7.2.1",
+      "hashPath": "microsoft.aspnetcore.odata.7.2.1.nupkg.sha512"
+    },
     "Microsoft.Azure.KeyVault/2.3.2": {
       "type": "package",
       "serviceable": true,
@@ -5076,6 +5126,20 @@
       "path": "microsoft.identitymodel.clients.activedirectory/3.14.2",
       "hashPath": "microsoft.identitymodel.clients.activedirectory.3.14.2.nupkg.sha512"
     },
+    "Microsoft.OData.Core/7.6.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-p2U+Q3sCHZiieo7/hCV2AaT88D5aE3neS5rugllorkVNQR3wtr0I0/ZKuxB2UoOwO4gtrFwtTeCEGmZzxBaF4A==",
+      "path": "microsoft.odata.core/7.6.0",
+      "hashPath": "microsoft.odata.core.7.6.0.nupkg.sha512"
+    },
+    "Microsoft.OData.Edm/7.6.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-D1YTLORPgu3UNI0cg4Waxj6nh4IKXxV7TpvHqQguSZXN3/cn75iDbIzqabxo7FqF2+qDo77g1EtH3utZyrRhSQ==",
+      "path": "microsoft.odata.edm/7.6.0",
+      "hashPath": "microsoft.odata.edm.7.6.0.nupkg.sha512"
+    },
     "Microsoft.Rest.ClientRuntime/2.3.17": {
       "type": "package",
       "serviceable": true,
@@ -5090,12 +5154,12 @@
       "path": "microsoft.rest.clientruntime.azure/3.3.18",
       "hashPath": "microsoft.rest.clientruntime.azure.3.3.18.nupkg.sha512"
     },
-    "Microsoft.Spatial/7.2.0": {
+    "Microsoft.Spatial/7.6.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-qLZ+g9Bfn87Ui9Jbb5loO+5jYCPGlTlV+JowSXXUQmkspSNPoWkbsmLpulbMbNpnTOiBEf/ishpz5GmYi6cSCA==",
-      "path": "microsoft.spatial/7.2.0",
-      "hashPath": "microsoft.spatial.7.2.0.nupkg.sha512"
+      "sha512": "sha512-5llx2KOxx9iDL0BL44U9piAJjS/0rbPaJ3SS6UMJra+ZvSvJGmY1mb1U78YGqG65pUaqpxkqxLaZfwzfhs4EdQ==",
+      "path": "microsoft.spatial/7.6.0",
+      "hashPath": "microsoft.spatial.7.6.0.nupkg.sha512"
     },
     "Microsoft.SqlServer.SqlManagementObjects/140.17283.0": {
       "type": "package",
@@ -5181,12 +5245,12 @@
       "path": "mimemapping/1.0.1.12",
       "hashPath": "mimemapping.1.0.1.12.nupkg.sha512"
     },
-    "Newtonsoft.Json/12.0.1": {
+    "Newtonsoft.Json/12.0.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-pBR3wCgYWZGiaZDYP+HHYnalVnPJlpP1q55qvVb+adrDHmFMDc1NAKio61xTwftK3Pw5h7TZJPJEEVMd6ty8rg==",
-      "path": "newtonsoft.json/12.0.1",
-      "hashPath": "newtonsoft.json.12.0.1.nupkg.sha512"
+      "sha512": "sha512-6mgjfnRB4jKMlzHSl+VD+oUc1IebOZabkbyWj2RiTgWwYPPuaK1H97G1sHqGwPlS5npiF5Q0OrxN1wni2n5QWg==",
+      "path": "newtonsoft.json/12.0.3",
+      "hashPath": "newtonsoft.json.12.0.3.nupkg.sha512"
     },
     "Npgsql/4.0.4": {
       "type": "package",
@@ -5209,12 +5273,12 @@
       "path": "nuget.frameworks/4.7.0",
       "hashPath": "nuget.frameworks.4.7.0.nupkg.sha512"
     },
-    "Pipelines.Sockets.Unofficial/1.0.7": {
+    "Pipelines.Sockets.Unofficial/2.0.22": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-n+YKaKVd9ZSa7uVeT0gyOT8eoeCWbiTdpVtnHkjthqmNopVPc4+efRQUReO+WH3WFyVKxgn5QS4BLi2Q+sioqA==",
-      "path": "pipelines.sockets.unofficial/1.0.7",
-      "hashPath": "pipelines.sockets.unofficial.1.0.7.nupkg.sha512"
+      "sha512": "sha512-KBrLHtOjnSSgVtNLA3FPxR8+/7+NOjo3CDtUKDKlvFvGiE+x82pEzOgf4J/dRePlTVCaLQzfjssqom6GegNiPg==",
+      "path": "pipelines.sockets.unofficial/2.0.22",
+      "hashPath": "pipelines.sockets.unofficial.2.0.22.nupkg.sha512"
     },
     "PowerBI.NetStandard.Api/1.0.0": {
       "type": "package",
@@ -5272,19 +5336,26 @@
       "path": "sentry.protocol/1.0.2",
       "hashPath": "sentry.protocol.1.0.2.nupkg.sha512"
     },
-    "SkiaSharp/1.68.1": {
+    "SharpYaml/1.6.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-HT+Ks5hC71IkOKlmWYPeb9SkHqdOV5FVYuQxXgkQF06qmbhDD7cIvB0p+TcnxtKgO5U7bb9wK6BkOQ9Ni7PubQ==",
-      "path": "skiasharp/1.68.1",
-      "hashPath": "skiasharp.1.68.1.nupkg.sha512"
+      "sha512": "sha512-z4MKt+NxdGE5BsmNDNkcTylNx6evl9kvia/ER3jfBf+j2mLUUDz8pTbzoQLCTULR02tziDtX1Ij+eQcAey11Gw==",
+      "path": "sharpyaml/1.6.5",
+      "hashPath": "sharpyaml.1.6.5.nupkg.sha512"
     },
-    "StackExchange.Redis/2.0.519": {
+    "SkiaSharp/1.60.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-8+2UwZ5/xBzU0OxM/Rs273VXY9G1oFFM4WrHzF4BZQBbFqyJRM5Sj32zZSj9xJT9mPel2escaYEwKjfDUAgieQ==",
-      "path": "stackexchange.redis/2.0.519",
-      "hashPath": "stackexchange.redis.2.0.519.nupkg.sha512"
+      "sha512": "sha512-9L8luXSspkXMhRuBx7CPjEVNJ2CJljpc5XMkDUITCQnhuJJadyCwYSWcAsgEqeRqmAimI2TyJWu73BRsvKTFZg==",
+      "path": "skiasharp/1.60.3",
+      "hashPath": "skiasharp.1.60.3.nupkg.sha512"
+    },
+    "StackExchange.Redis/2.0.601": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-aEZQui10BTYL787+GCRlcT5qZe4ioyU2NKIO20ppDFbWE9bUuQLIq2FWQyvVcD+e/a88JFusT77KaQ8C7UDP9g==",
+      "path": "stackexchange.redis/2.0.601",
+      "hashPath": "stackexchange.redis.2.0.601.nupkg.sha512"
     },
     "StackExchange.Redis.StrongName/1.2.6": {
       "type": "package",
@@ -5356,12 +5427,12 @@
       "path": "system.diagnostics.process/4.3.0",
       "hashPath": "system.diagnostics.process.4.3.0.nupkg.sha512"
     },
-    "System.Drawing.Common/4.5.1": {
+    "System.Drawing.Common/4.5.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-GiyeGi/v4xYDz1vCNFwFvhz9k1XddOG7VD3jxRqzRBCbTHji+s3HxxbxtoymuK4OadEpgotI8zQ5+GEEH9sUEQ==",
-      "path": "system.drawing.common/4.5.1",
-      "hashPath": "system.drawing.common.4.5.1.nupkg.sha512"
+      "sha512": "sha512-AiJFxxVPdeITstiRS5aAu8+8Dpf5NawTMoapZ53Gfirml24p7HIfhjmCRxdXnmmf3IUA3AX3CcW7G73CjWxW/Q==",
+      "path": "system.drawing.common/4.5.0",
+      "hashPath": "system.drawing.common.4.5.0.nupkg.sha512"
     },
     "System.Linq.Dynamic.Core/1.0.9": {
       "type": "package",
@@ -5405,12 +5476,19 @@
       "path": "system.net.sockets/4.3.0",
       "hashPath": "system.net.sockets.4.3.0.nupkg.sha512"
     },
-    "System.Reflection.TypeExtensions/4.4.0": {
+    "System.Reflection.TypeExtensions/4.7.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-dkmh/ySlwnXJp/1qYP9uyKkCK1CXR/REFzl7abHcArxBcV91mY2CgrrzSRA5Z/X4MevJWwXsklGRdR3A7K9zbg==",
-      "path": "system.reflection.typeextensions/4.4.0",
-      "hashPath": "system.reflection.typeextensions.4.4.0.nupkg.sha512"
+      "sha512": "sha512-VybpaOQQhqE6siHppMktjfGBw1GCwvCqiufqmP8F1nj7fTUNtW35LOEt3UZTEsECfo+ELAl/9o9nJx3U91i7vA==",
+      "path": "system.reflection.typeextensions/4.7.0",
+      "hashPath": "system.reflection.typeextensions.4.7.0.nupkg.sha512"
+    },
+    "System.Runtime.CompilerServices.Unsafe/4.5.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-wprSFgext8cwqymChhrBLu62LMg/1u92bU+VOwyfBimSPVFXtsNqEWC92Pf9ofzJFlk4IHmJA75EDJn1b2goAQ==",
+      "path": "system.runtime.compilerservices.unsafe/4.5.2",
+      "hashPath": "system.runtime.compilerservices.unsafe.4.5.2.nupkg.sha512"
     },
     "System.Runtime.Serialization.Json/4.0.2": {
       "type": "package",
@@ -5454,19 +5532,26 @@
       "path": "windowsazure.storage/9.3.3",
       "hashPath": "windowsazure.storage.9.3.3.nupkg.sha512"
     },
-    "WorkflowCore/1.9.3": {
+    "WorkflowCore/3.1.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-8q4KKV+fZl8nWu0dgzPFR4MGGNEH4G0b/WbD2iK12cMsXmHs7em34nhD8OCwHvPysigm5p6Yiagwo4IulHQu2Q==",
-      "path": "workflowcore/1.9.3",
-      "hashPath": "workflowcore.1.9.3.nupkg.sha512"
+      "sha512": "sha512-rhOgBjWiWCes0xd6hm2FPNIh7ooFzAnci0+DbvgdTP1q43dTSAo1LlJVDxgck44goyemsw2rH/e3Ern/pR4LPQ==",
+      "path": "workflowcore/3.1.5",
+      "hashPath": "workflowcore.3.1.5.nupkg.sha512"
     },
-    "WorkflowCore.Providers.Redis/1.9.1": {
+    "WorkflowCore.DSL/3.1.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Bh933SpjmYJIUbflJzVRcxsCAVdp8ec1EDH9GM63GI1bSspsyVSqMGbh4u5KbxvZwzxMN8aZ3icP4oOTzZXBdQ==",
-      "path": "workflowcore.providers.redis/1.9.1",
-      "hashPath": "workflowcore.providers.redis.1.9.1.nupkg.sha512"
+      "sha512": "sha512-NLrK5UrdBv6n/6kW4EfL/B1YMd8+uwZ/UueS34wfjSn88GbNMGrifhoLUUKtepIsibhmnILTPlykGZkS12rsQg==",
+      "path": "workflowcore.dsl/3.1.5",
+      "hashPath": "workflowcore.dsl.3.1.5.nupkg.sha512"
+    },
+    "WorkflowCore.Providers.Redis/3.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-uPfSCBYhcW09Dr/9KTwo61MAZvxpHRqP6VuXdVQbC0TeBbK5Md3T/GIBhA1a3nf7wbqsCboRQY2XbDaCVUYiXw==",
+      "path": "workflowcore.providers.redis/3.0.1",
+      "hashPath": "workflowcore.providers.redis.3.0.1.nupkg.sha512"
     },
     "PrimeApps.Model/1.0.0": {
       "type": "project",
@@ -7152,13 +7237,6 @@
       "sha512": "sha512-JufQi0vPQ0xGnAczR13AUFglDyVYt4Kqnz1AZaiKZ5+GICq0/1MH/mO/eAJHt/mHW1zjKBJd7kV26SrxddAhiw==",
       "path": "system.runtime/4.3.0",
       "hashPath": "system.runtime.4.3.0.nupkg.sha512"
-    },
-    "System.Runtime.CompilerServices.Unsafe/4.5.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-Zh8t8oqolRaFa9vmOZfdQm/qKejdqz0J9kr7o2Fu0vPeoH3BL1EOXipKWwkWtLT1JPzjByrF19fGuFlNbmPpiw==",
-      "path": "system.runtime.compilerservices.unsafe/4.5.1",
-      "hashPath": "system.runtime.compilerservices.unsafe.4.5.1.nupkg.sha512"
     },
     "System.Runtime.Extensions/4.3.0": {
       "type": "package",

@@ -9,7 +9,7 @@
             </div>
             <div>
                 <div>
-                    <div class="page" ng-style="trial ? {'margin-top':'17px'}: ''" block-ui="pageBlockUI">
+                    <div class="page" ng-style="trial ? {'margin-top':'17px'}: ''">
                         <div class="panel panel-default" style="margin-bottom: 0;">
                             <div class="panel-heading clearfix">
                                 <h4 class="pull-left">{{title}}</h4>
@@ -94,6 +94,8 @@
                                     <a href ng-click="refresh()" ng-disabled="loading" class="btn btn-sm btn-custom"><i class="fa fa-refresh"></i> {{'Common.Refresh' | translate}}</a>
                                     <a ng-show="appId === 4 && module.name === 'adaylar' && record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('calisanlar', operations.write)" href="#/app/personalconvert{{'?id=' + record.id }}" class="btn btn-sm btn-custom" id="PersonalConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
                                     <a ng-if="user.profile.word_pdf_download" href ng-click="openExportDialog()" class="btn btn-sm btn-custom" data-spinner-color="#666" ladda="pdfCreating" ng-disabled="loading"><i class="fa fa-file-text-o"></i> {{'Module.Download' | translate}}</a>
+                                    <a ng-click="showSingleSMSModal()" class="btn btn-sm btn-custom" ng-if="user.profile.send_sms" ng-show="hasPermission(type, operations.read)" ng-disabled="loading"><i class="fa fa-mobile"></i> {{'Module.SendSMS' | translate }}</a>
+                                    <!--<a ng-click="showEMailModal()" class="btn btn-sm btn-custom" ng-if="user.profile.SendEmail" ng-show="hasPermission(type, operations.read)" ng-disabled="loading"><i class="fa fa-envelope-o"></i> {{'Module.SendEMail' | translate }}</a>-->
                                     <a href ng-click="showQuoteEMailModal()" ng-if="user.profile.send_email" class="btn btn-sm btn-custom" ng-show="hasPermission(type, operations.write)" data-spinner-color="#666" ladda="emailOpening" ng-disabled="loading"><i class="fa fa-envelope-o"></i> {{ module['label_' + language + '_singular']}} {{'Module.ModuleEmail' | translate}} </a>
                                     <a href="#/app/moduleForm/{{type}}{{'?clone=true&revise=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" class="btn btn-sm btn-custom" ng-show="hasPermission(type, operations.write)" ng-if="displayReviseButton" ng-disabled="loading"><i class="fa fa-edit"></i> {{'Common.Revise' | translate}}</a>
                                     <a href="#/app/moduleForm/{{type}}{{'?clone=true&id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId) : '')}}" class="btn btn-sm btn-custom" ng-show="hasPermission(type, operations.write)" ng-disabled="loading || (record.freeze && !isAdmin) || (record.process_id && record.process_status != 3 && !isAdmin && !hasProcessEditPermission)"><i class="fa fa-copy"></i> {{'Common.Clone' | translate}}</a>
@@ -183,7 +185,7 @@
                                     </div>
                                     <ul class="nav nav-tabs" ng-show="!isAvailableForSmallDevice() && tabconfig">
                                         <li ng-class="{'active':tab === 'general'}">
-                                            <a class="module-tab-link" href ng-click="$parent.tab = 'general'">{{'Common.General' | translate}}</a>
+                                            <a class="module-tab-link" href ng-click="tab = 'general'">{{'Common.General' | translate}}</a>
                                         </li>
                                         <li ng-class="{'active':tab === relatedModule.id.toString()}"
                                             ng-repeat="relatedModule in module.relations  | filter:{deleted:'!true',detail_view_type:'!flat'} | orderBy:'order'"
@@ -197,10 +199,12 @@
                                             </a>
                                         </li>
                                         <li ng-class="{'active':tab === 'note'}" ng-show="showNotes !='false'">
-                                            <a class="module-tab-link" href ng-click="$parent.tab = 'note'">{{'Note.Notes' | translate}} <span class="badge" ng-if="notesCount">{{notesCount}}</span></a>
+                                            <a class="module-tab-link" href ng-click="tab = 'note'">{{'Note.Notes' | translate}} <span class="badge" ng-if="notesCount">{{notesCount}}</span></a>
                                         </li>
                                         <li ng-class="{'active':tab === 'document'}" ng-show="hasDocumentsPermission(operations.read) && showAttachments !=='false'">
                                             <a class="module-tab-link" href ng-click="$parent.tab = 'document'">{{'Common.Attachments' | translate}} <span class="badge" ng-if="documentsResultSet.totalDocumentCount">{{documentsResultSet.totalDocumentCount}}</span></a>
+                                        <li ng-class="{'active':tab === 'document'}" ng-show="hasDocumentsPermission(operations.read)">
+                                            <a class="module-tab-link" href ng-click="tab = 'document'">{{'Common.Attachments' | translate}} <span class="badge" ng-if="documentsResultSet.totalDocumentCount">{{documentsResultSet.totalDocumentCount}}</span></a>
                                         </li>
                                         <li ng-class="{'active':tab === 'location'}" ng-if="record.latitude && record.longitude">
                                             <a class="module-tab-link" href ng-click="$parent.tab = 'location'">{{'Common.Location' | translate}}</a>
@@ -209,7 +213,6 @@
                                             <button class="{{custombutton.css_class}}" type="button"
                                                     custom-scripting="{{custombutton.template}}" data-spinner-color="#666"
                                                     ladda="scriptRunning[custombutton.id]"
-                                                    ng-disabled="actionButtonDisabled"
                                                     ng-repeat="custombutton in actionButtons"
                                                     ng-if="custombutton.action_type === 'Scripting' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
                                                     style="margin-left: 10px">
@@ -218,7 +221,6 @@
                                             <button class="{{custombutton.css_class}} ladda-button" type="button" data-spinner-color="#666"
                                                     ladda="webhookRequesting[custombutton.id]" ng-click="webhookRequest(custombutton)"
                                                     ng-repeat="custombutton in actionButtons"
-                                                    ng-disabled="actionButtonDisabled"
                                                     ng-if="custombutton.action_type === 'Webhook' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
                                                     style="margin-left: 10px">
                                                 <i ng-class="custombutton.icon"></i> {{custombutton.name}}
@@ -226,14 +228,13 @@
                                             <button class="{{custombutton.css_class}}" type="button"
                                                     ng-click="showModuleFrameModal(custombutton.url)"
                                                     ng-repeat="custombutton in actionButtons"
-                                                    ng-disabled="actionButtonDisabled"
                                                     ng-if="custombutton.action_type === 'ModalFrame' && custombutton.isShown && hasActionButtonDisplayPermission(custombutton)"
                                                     style="margin-left: 10px">
                                                 <i ng-class="custombutton.icon"></i> {{custombutton.name}}
                                             </button>
                                         </li>
                                     </ul>
-                                    <div ng-class="{'subpanel-first':tabconfig}" ng-show="tab === 'general' || !tabconfig"
+            <div ng-class="{'subpanel-first':tabconfig}" ng-show="tab === 'general' || !tabconfig"
                                          ng-style="scrollHeightTab">
                                         <div class="subpanel"
                                              ng-repeat="section in module.sections | filter:{display_detail:true, deleted: false}:true | orderBy:'order'" ng-if="!section.hidden && hasSectionDisplayPermission(section)">
@@ -395,7 +396,7 @@
                                                                            editable-bsdate="record[field.name]"
                                                                            e-ng-change="record[field.name] = $data; fieldValueChange(field);"
                                                                            e-data-time-type="iso"
-                                                                           e-data-icon-up="fa fa-chevron-up"
+                                                                           ng-click="showLightBox(config.imageUrl+record[field.name])"        e-data-icon-up="fa fa-chevron-up"
                                                                            e-data-icon-down="fa fa-chevron-down"
                                                                            e-data-length="1"
                                                                            e-data-minute-step="10"
@@ -691,165 +692,133 @@
                                     <span class="col-sm-6 control-label exchange-field">
                                         <span>{{'1 ' + ('Common.Dollar' | translate)}} =</span>
                                     </span>
-                                                        <div class="col-sm-6">
-                                                            <span>{{record.exchange_rate_try_usd + ' ₺'}}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '₺'">
+                                <div class="col-sm-6">
+                                    <span>{{record.exchange_rate_try_usd + ' ₺'}}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '₺'">
                                     <span class="col-sm-6 control-label exchange-field">
                                         <span>{{'1 ' + ('Common.Euro' | translate)}} =</span>
                                     </span>
-                                                        <div class="col-sm-6">
-                                                            <span>{{record.exchange_rate_try_eur + ' ₺'}}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '$'">
+                                <div class="col-sm-6">
+                                    <span>{{record.exchange_rate_try_eur + ' ₺'}}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '$'">
                                     <span class="col-sm-6 control-label exchange-field">
                                         <span>{{'1 ' + ('Common.TurkishLira' | translate)}} =</span>
                                     </span>
-                                                        <div class="col-sm-6">
-                                                            <span>{{record.exchange_rate_usd_try + ' $'}}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '$'">
+                                <div class="col-sm-6">
+                                    <span>{{record.exchange_rate_usd_try + ' $'}}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '$'">
                                     <span class="col-sm-6 control-label exchange-field">
                                         <span>{{'1 ' + ('Common.Euro' | translate)}} =</span>
                                     </span>
-                                                        <div class="col-sm-6">
-                                                            <span>{{record.exchange_rate_usd_eur + ' $'}}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '€'">
+                                <div class="col-sm-6">
+                                    <span>{{record.exchange_rate_usd_eur + ' $'}}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '€'">
                                     <span class="col-sm-6 control-label exchange-field">
                                         <span>{{'1 ' + ('Common.TurkishLira' | translate)}} =</span>
                                     </span>
-                                                        <div class="col-sm-6">
-                                                            <span>{{record.exchange_rate_eur_try + ' €'}}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '€'">
+                                <div class="col-sm-6">
+                                    <span>{{record.exchange_rate_eur_try + ' €'}}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6" ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}" ng-if="record.currency.value === '€'">
                                     <span class="col-sm-6 control-label exchange-field">
                                         <span>{{'1 ' + ('Common.Dollar' | translate)}} =</span>
                                     </span>
-                                                        <div class="col-sm-6">
-                                                            <span>{{record.exchange_rate_eur_usd + ' €'}}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div ng-repeat="section in currentSectionComponentsTemplate">
-                                            <ng-include src="section"></ng-include>
-                                        </div>
-
-
-                                        <div class="subpanel"
-                                             ng-repeat="relatedModule in module.relations | filter:{deleted:'!true',detail_view_type:'flat'} | orderBy:'order'"
-                                             ng-show="hasPermission(relatedModule.related_module, operations.read) && (!tabconfig || relatedModule.detail_view_type==='flat')">
-                        <span id="relation{{relatedModule.id}}" class="panel-anchor"
-                              ng-if="!tabconfig || relatedModule.detail_view_type==='flat'"></span>
-                                            <h5 class="subpanel-heading" ng-show="!tabconfig || relatedModule.detail_view_type==='flat'">
-                                                {{
-                                                relatedModule['label_' + language + '_plural']
-                                                }}
-                                            </h5>
-                                            <div class="subpanel-body">
-                                                <div class="row row-custom row-table" ng-style="{ 'min-height': !tabconfig ? '' : '100%'}">
-                                                    <div class="col-sm-12">
-                                                        <div related-module="relatedModule"
-                                                             parent-module="type"
-                                                             reload="refreshSubModules[type][relatedModule.related_module]"
-                                                             show-filter="showFilterSubModules[type][relatedModule.related_module]"
-                                                             sub-table></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="subpanel"
-                                         ng-repeat="relatedModule in module.relations | filter:{deleted:'!true',detail_view_type:'!flat'} | orderBy:'order'"
-                                         ng-show="hasPermission(relatedModule.related_module, operations.read) && tab === relatedModule.id.toString() ||!tabconfig">
-                    <span id="relation{{relatedModule.id}}" class="panel-anchor"
-                          ng-if="!tabconfig"></span>
-                                        <h5 class="subpanel-heading" ng-show="!tabconfig">
-                                            {{
-                                            relatedModule['label_' + language + '_plural']
-                                            }}
-                                        </h5>
-                                        <div class="subpanel-body">
-                                            <div class="row row-custom row-table" ng-style="{ 'min-height': !tabconfig ? '' : '100%'}">
-                                                <div class="col-sm-12">
-                                                    <div ng-if="isActive[relatedModule.id] || !tabconfig" related-module="relatedModule" parent-module="type" reload="refreshSubModules[type][relatedModule.related_module]" show-filter="showFilterSubModules[type][relatedModule.related_module]" sub-table></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="subpanel" ng-show="tab === 'note' || !tabconfig" ng-if="showNotes !='false'">
-                                        <h5 class="subpanel-heading" ng-show="!tabconfig">{{ 'Note.Notes' | translate }}</h5>
-                                        <div class="subpanel-body">
-                                            <div class="row row-custom" ng-style="{ 'min-height': !tabconfig ? '' : '100%'}">
-                                                <div class="col-sm-10">
-                                                    <div note-form record-id="id" show="showNoteForm"></div>
-                                                    <div note-list record-id="id"></div>
-                                                    <div ng-if="loadingNotes" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-                                                    <div class="empty-message" style="margin-top: 10px;" ng-show="notesCount < 1 && !loadingNote && !showNoteForm">
-                                                        {{'Note.Message'|translate}}
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-2" ng-show="!record.freeze">
-                                                    <a href class="btn btn-sm btn-custom" ng-click="showNoteForm = !showNoteForm"><i class="fa fa-plus"></i> {{'Note.NewNote' | translate}}</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="subpanel"
-                                         ng-show="(hasDocumentsPermission(operations.read) && tab === 'document' || !tabconfig) && showAttachments !=='false'">
-                                        <h5 class="subpanel-heading" ng-show="!tabconfig">{{ 'Common.Attachments' | translate }}</h5>
-                                        <div class="subpanel-body">
-                                            <div class="row row-custom" ng-style="{ height: !tabconfig ? '' : '100%' }">
-                                                <div class="col-sm-10">
-                                                    <div document-form entity-id="id" entity-type="guidEmpty" show="showDocumentForm"></div>
-                                                    <div document-list entity-id="id" entity-type="guidEmpty" documents="documents"></div>
-                                                    <div ng-if="loadingDocuments" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-                                                    <div class="empty-message" ng-show="documentsResultSet.totalDocumentCount < 1 && !loadingDocuments && !showDocumentForm">
-                                                        {{'Common.AttachmentMessage'|translate}}
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-2" ng-show="!record.freeze">
-                                                    <a href class="btn btn-sm btn-custom" ng-click="showDocumentForm = !showDocumentForm" ng-show="hasDocumentsPermission(operations.write)">
-                                                        <i class="fa fa-plus"></i> {{'Common.AttachmentNew' | translate}}
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="subpanel" ng-show="tab === 'location' || !tabconfig" ng-if="record.latitude && record.longitude">
-                                        <div class="subpanel-body">
-                                            <a href="http://maps.google.com/maps?q=loc:{{record.latitude}},{{record.longitude}}&z=17" target="_blank">
-                                                <img ng-src="https://maps.googleapis.com/maps/api/staticmap?size=640x640&maptype=roadmap&markers={{record.latitude}},{{record.longitude}}&key={{googleMapsApiKey}}" alt="">
-                                            </a>
-                                        </div>
-                                    </div>
+                                <div class="col-sm-6">
+                                    <span>{{record.exchange_rate_eur_usd + ' €'}}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <lightbox-directive class="angular-lightbox" ng-class="{ hidden : !lightBox }">
-
-                        <article>
-                            <header>
-                                <a class="close-btn" id="close-lightbox" ng-click="closeLightBox()"><i class="fa fa-times-circle"></i></a>
-                            </header>
-                            <content ng-click="closeLightBox()">
-                                <img ng-src="{{ ImageUrl }}" />
-                            </content>
-                            <footer>
-                                <a class="download-btn" href="{{ ImageUrl }}" target="_blank"><i class="fa fa-download"></i></a>
-                            </footer>
-                        </article>
-                    </lightbox-directive>
+                </div>
+                <div ng-repeat="section in currentSectionComponentsTemplate">
+                    <ng-include src="section"></ng-include>
+                </div>
+                <div class="whitebox padding0 card" ng-repeat="relatedModule in module.relations | filter:{deleted:'!true',detail_view_type:'flat'} | orderBy:'order'" ng-show="hasPermission(relatedModule.related_module, operations.read) && (!tabconfig || relatedModule.detail_view_type==='flat')">
+                    <span id="relation{{relatedModule.id}}" class="panel-anchor" ng-if="!tabconfig || relatedModule.detail_view_type==='flat'"></span>
+                    <h5 class="card-header" ng-show="!tabconfig || relatedModule.detail_view_type==='flat'"> {{ relatedModule['label_' + language + '_plural'] }} </h5>
+                    <div class="card-body">
+                        <div class="row row-custom row-table" ng-style="{ 'min-height': !tabconfig ? '' : '100%'}">
+                            <div class="col-sm-12">
+                                <div related-module="relatedModule"
+                                     parent-module="type"
+                                     reload="refreshSubModules[type][relatedModule.related_module]"
+                                     show-filter="showFilterSubModules[type][relatedModule.related_module]"
+                                     sub-table></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="whitebox padding0 card" ng-repeat="relatedModule in module.relations | filter:{deleted:'!true',detail_view_type:'!flat'} | orderBy:'order'" ng-show="hasPermission(relatedModule.related_module, operations.read) && tab === relatedModule.id.toString() ||!tabconfig">
+                        <span id="relation{{relatedModule.id}}" class="panel-anchor"
+                              ng-if="!tabconfig"></span>
+                <h5 class="card-header" ng-show="!tabconfig">
+                    {{
+                    relatedModule['label_' + language + '_plural']
+                    }}
+                </h5>
+                <div class="card-body">
+                    <div class="row row-custom row-table" ng-style="{ 'min-height': !tabconfig ? '' : '100%'}">
+                        <div class="col-sm-12">
+                            <div ng-if="isActive[relatedModule.id] || !tabconfig" related-module="relatedModule" parent-module="type" reload="refreshSubModules[type][relatedModule.related_module]" show-filter="showFilterSubModules[type][relatedModule.related_module]" sub-table></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="whitebox padding0 card" ng-show="tab === 'note' || !tabconfig" ng-if="showNotes !='false'">
+                <h5 class="card-header" ng-show="!tabconfig">{{ 'Note.Notes' | translate }}</h5>
+                <div class="card-body">
+                    <div class="row row-custom" ng-style="{ 'min-height': !tabconfig ? '' : '100%'}">
+                        <div class="col-sm-10">
+                            <div note-form record-id="id" show="showNoteForm"></div>
+                            <div note-list record-id="id"></div>
+                            <div ng-if="loadingNotes" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                            <div class="empty-message" style="margin-top: 10px;" ng-show="notesCount < 1 && !loadingNote && !showNoteForm">
+                                {{'Note.Message'|translate}}
+                            </div>
+                        </div>
+                        <div class="col-sm-2" ng-show="!record.freeze">
+                            <a href class="btn btn-sm btn-custom" ng-click="showNoteForm = !showNoteForm"><i class="fa fa-plus"></i> {{'Note.NewNote' | translate}}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="whitebox padding0 card" ng-show="(hasDocumentsPermission(operations.read) && tab === 'document' || !tabconfig) && showAttachments !=='false'">
+                <h5 class="card-header" ng-show="!tabconfig">{{ 'Common.Attachments' | translate }}</h5>
+                <div class="card-body">
+                    <div class="row row-custom" ng-style="{ height: !tabconfig ? '' : '100%' }">
+                        <div class="col-sm-10">
+                            <div document-form entity-id="id" entity-type="guidEmpty" show="showDocumentForm"></div>
+                            <div document-list entity-id="id" entity-type="guidEmpty" documents="documents"></div>
+                            <div ng-show="loadingDocuments" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                            <div class="empty-message" ng-show="documentsResultSet.totalDocumentCount < 1 && !loadingDocuments && !showDocumentForm">
+                                {{'Common.AttachmentMessage'|translate}}
+                            </div>
+                        </div>
+                        <div class="col-sm-2" ng-show="!record.freeze">
+                            <a href class="btn btn-sm btn-custom" ng-click="showDocumentForm = !showDocumentForm" ng-show="hasDocumentsPermission(operations.write)">
+                                <i class="fa fa-plus"></i> {{'Common.AttachmentNew' | translate}}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="whitebox padding0 card" ng-show="tab === 'location' || !tabconfig" ng-if="record.latitude && record.longitude">
+                <div class="card-body">
+                    <a href="http://maps.google.com/maps?q=loc:{{record.latitude}},{{record.longitude}}&z=17" target="_blank">
+                        <img ng-src="https://maps.googleapis.com/maps/api/staticmap?size=640x640&maptype=roadmap&markers={{record.latitude}},{{record.longitude}}&key={{googleMapsApiKey}}" alt="">
+                    </a>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>

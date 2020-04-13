@@ -1,35 +1,38 @@
-﻿<div class="modal module-modal" tabindex="-1" role="dialog" ng-controller="ExportDataController">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header clearfix">
-                <!--<h4 class="modal-title pull-left">{{// 'Module.ChooseTemplate' | translate:{module:module['label_'+language+'_singular']} }}</h4>-->
-                <h4 class="modal-title pull-left">{{'Module.ChooseTemplate' | translate:{module:module['label_'+language+'_singular']} }}</h4>
+<md-dialog flex="30" aria-label="{{'Module.ChooseTemplate' | translate:{module:module['label_'+language+'_singular']} }}" ng-controller="ExportDataController">
+    <form ng-cloak>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{'Module.ChooseTemplate' | translate:{module:module['label_'+language+'_singular']} }}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()"><i class="fas fa-times"></i></md-button>
             </div>
-            <div class="modal-body">
-                <select class="form-control ng-animate-disabled"
-                        name="template"
-                        ng-model="$parent.$parent.quoteTemplate"
-                        ng-required="true"
-                        ng-options="o as o.name for o in quoteTemplates | filter:{active: true, isShown : true} track by o.id"></select>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <input type="checkbox" id="check" name="check" class="k-checkbox" ng-model="export.moduleAllColumn" />
+                            <label class="k-checkbox-label" for="check">{{'Module.ExcelExportModuleAllColumn'|translate}}</label>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer clearfix">
-                <button type="button" class="btn btn-custom" ng-disabled="submittingModal"
-                        ng-click="$hide(); $parent.$parent.pdfCreating = false;">
-                    {{'Common.Cancel' | translate}}
-                </button>
-                <a class="btn btn-custom" ng-disabled="isShownWarning" ng-class="{'btn-w-md':language==='tr', 'btn-w-lg':language==='en'}"
-                   ng-click="excelData()"
-                   target="_blank">
-                    <i class="fa fa-file-excel-o pull-left" style="margin-top: 3px;padding-right: 6px;"></i>
-                    {{'Module.SourceDataExcluded' | translate }}
-                </a>
-                <a class="btn btn-custom" ng-disabled="isShownWarning" ng-class="{'btn-w-md':language==='tr', 'btn-w-lg':language==='en'}"
-                   ng-click="excelNoData()"
-                   target="_blank">
-                    <i class="fa fa-file-excel-o pull-left" style="margin-top: 3px;padding-right: 6px;"></i>
-                    {{'Module.SourceDataIncluded' | translate }}
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button class="btn btn-secondary ripple-effect" type="button" ng-click="cancel()">{{'Common.Cancel' | translate}}</md-button>
+            <md-button class="btn btn-primary" ng-disabled="isShownWarning" type="button" ng-click="excelData();" 
+            ng-class="{'btn-w-md':language==='tr', 'btn-w-lg':language==='en'}" md-autofocus  target="_blank">
+                <i class="fa fa-file-excel-o"></i>
+                {{'Module.SourceDataExcluded' | translate}}
+            </md-button>
+            <md-button class="btn btn-primary" ng-disabled="isShownWarning" type="button" ng-click="excelNoData();"
+                       ng-class="{'btn-w-md':language==='tr', 'btn-w-lg':language==='en'}" md-autofocus target="_blank">
+                <i class="fa fa-file-excel-o"></i>
+                {{'Module.SourceDataIncluded' | translate}}
+            </md-button>
+            <span flex></span>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

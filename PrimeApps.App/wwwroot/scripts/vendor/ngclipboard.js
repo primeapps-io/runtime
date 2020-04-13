@@ -1,19 +1,16 @@
-/*! ngclipboard - v1.1.1 - 2016-02-26
-* https://github.com/sachinchoolur/ngclipboard
-* Copyright (c) 2016 Sachin; Licensed MIT */
 (function() {
     'use strict';
     var MODULE_NAME = 'ngclipboard';
-    var angular, Clipboard;
-    
+    var angular, ClipboardJS;
+
     // Check for CommonJS support
     if (typeof module === 'object' && module.exports) {
       angular = require('angular');
-      Clipboard = require('clipboard');
+      ClipboardJS = require('clipboard');
       module.exports = MODULE_NAME;
     } else {
       angular = window.angular;
-      Clipboard = window.Clipboard;
+      ClipboardJS = window.ClipboardJS;
     }
 
     angular.module(MODULE_NAME, []).directive('ngclipboard', function() {
@@ -24,7 +21,8 @@
                 ngclipboardError: '&'
             },
             link: function(scope, element) {
-                var clipboard = new Clipboard(element[0]);
+                //constructor for clipboardjs changed to ClipboardJS
+                var clipboard = new ClipboardJS(element[0]);
 
                 clipboard.on('success', function(e) {
                   scope.$apply(function () {
@@ -42,7 +40,11 @@
                   });
                 });
 
+                element.on('$destroy', function() {
+                    clipboard.destroy();
+                });
+
             }
         };
     });
-}());
+})();

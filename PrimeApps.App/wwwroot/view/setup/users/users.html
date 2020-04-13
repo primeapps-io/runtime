@@ -1,71 +1,64 @@
-﻿<div class="sub-menu">
-	<ul class="nav nav-tabs">
-		<li class="active"><a href="#/app/setup/users">{{'Setup.Nav.Tabs.Users' | translate}}</a></li>
-		<li><a href="#/app/setup/profiles">{{'Setup.Nav.Tabs.Profiles' | translate}}</a></li>
-		<li ng-if="!branchAvailable"><a href="#/app/setup/roles">{{'Setup.Nav.Tabs.Roles' | translate}}</a></li>
-		<li><a href="#/app/setup/usergroups">{{'Setup.Nav.Tabs.UserGroups' | translate}}</a></li>
-		<li><a href="#/app/setup/usercustomshares">{{'Setup.UserCustomShares.Title' | translate}}</a></li>
-	</ul>
-</div>
-<div class="panel panel-default setup-panel">
-	<div class="panel-body">
-		<div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-		<div ng-show="!loading">
-			<div class="subpanel">
-				<h5 class="subpanel-heading ">
-					{{'Setup.Users.Title' | translate}}
-				</h5>
-				<div class="subpanel-body">
-					<div>
-						<div class="pull-left" style="margin-left:8px;"><b>{{'Setup.Users.LicensesBought' | translate}} :</b> {{ licensesBought }}</div>
-						<div class="pull-left" style="margin-left:40px;"><b>{{'Setup.Users.LicensesUsed' | translate}} :</b> {{ licensesUsed }}</div>
-						<div class="pull-left" style="margin-left:40px;"><b>{{'Setup.Users.LicensesLeft' | translate}} :</b> {{ licenseAvailable }}</div>
-					</div>
-					<div class="text-right" ng-disabled="licenseAvailable <= 0">
-						<div ng-hide="!isOfficeConnected" style="display: inline-block;" data-title="{{'Setup.Office.AddUserInfo' | translate}}" data-trigger="hover" data-placement="bottom" bs-tooltip="officeUserReady ? null : '{{'Setup.Office.AddUserInfo' | translate}}'">
-							<button ng-disabled="!officeUserReady" type="button" id="officeCreateButton" class="btn btn-custom btn-sm btn-w-lg office-add-user" ng-click="showOfficeUserCreateForm()">{{'Setup.Users.NewUserFromOffice' | translate}}</button>
-						</div>
-						<button type="button" id="createButton" class="btn btn-custom btn-sm btn-w-lg " ng-click="showCreateForm()"><i class="fa fa-plus pull-left"></i> {{'Setup.Users.NewUser' | translate}}</button>
-					</div>
-					<table class="table">
-						<thead>
-							<tr>
-								<th>{{'Setup.Users.UserEmail' | translate}}</th>
-								<th>{{'Setup.Users.UserFullName' | translate}}</th>
-								<th>{{'Setup.Users.UserStatus' | translate}}</th>
-								<th>{{'Setup.Users.Profile' | translate}}</th>
-								<th>{{'Setup.Users.Role' | translate}}</th>
-								<th style="min-width: 110px;"></th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr ng-repeat="userItem in users | filter:{ show_account_owner : '!false', show_subscriber: '!false' }">
-								<td>{{userItem.email}}</td>
-								<td><span ng-if="userItem.has_account">{{userItem.user_name}}</span></td>
-								<td>
-									<span ng-if="userItem.is_admin">{{'Setup.Users.GroupOwner' | translate}}</span>
-									<span ng-if="userItem.has_account && !userItem.is_admin">{{'Setup.Users.UserStatus1' | translate}}</span>
-									<span ng-if="!userItem.has_account && !userItem.is_admin">{{'Setup.Users.UserStatus2' | translate}}</span>
-								</td>
-								<td>{{userItem.profile.name}}</td>
-								<td>{{userItem.role['label_'+language]}}</td>
-								<td class="text-right">
-									<button type="button" id="editButton{{userItem.id}}" class="btn btn-xs btn-custom" ng-if="!userItem.is_admin && userItem.has_account && !branchAvailable" ng-hide="userItem.id === user.id" ng-click="showEditForm(userItem)">{{'Common.Edit' | translate}}</button>
-									<button type="button" class="btn btn-xs btn-custom" ng-if="!userItem.is_admin"
-											ng-hide="userItem.id === user.id"
-											data-template-url="view/setup/users/userDelete.html"
-											data-auto-close="true" data-placement="left" bs-popover>
-										{{'Common.Remove' | translate}}
-									</button>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<div class="clearfix">
-			</div>
+﻿<md-content flex style="height: 100%;">
+    <div ng-show="loading"><div class="spin"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div></div>
+    <section ng-show="!loading" layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
+        <md-toolbar md-scroll-shrink ng-if="true" class="with-subheader">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button show-on-m" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()"> <i class="fas fa-angle-left"></i> <md-tooltip md-direction="right">{{'Common.Back' | translate}}</md-tooltip> </md-button>
+                <h2 md-truncate>{{'Setup.Nav.Users' | translate}}</h2>
+                <div class="helpbuttons hide-on-m">
+                    
+                    <md-button class="md-icon-button enlarge d-none d-lg-inline-block" ng-click="toggleFullLeftMenu()" aria-label="{{'Common.FullScreen' | translate}}">
+                        <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 36 36" style="enable-background:new 0 0 36 36;" xml:space="preserve"><path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z" /> <path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z" /><path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z" /><path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z" /> </svg>
+                        <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                        <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                    </md-button>
+                </div>
+                <span flex></span>
+                <md-button ng-hide="!isOfficeConnected" ng-disabled="!officeUserReady" class="md-icon-button btn btn-primary" ng-click="showOfficeUserCreateForm()" aria-label="{{'Setup.User.NewUserFromOffice' | translate}}">
+                    <i class="fas fa-plus"></i>
+                    <md-tooltip md-direction="bottom">
+                        {{'Setup.User.NewUserFromOffice' | translate}}
+                    </md-tooltip>
+                </md-button>
+                <md-button class="md-icon-button btn btn-primary" ng-click="showCreateForm()" aria-label="{{'Setup.Users.NewUser' | translate}}">
+                    <i class="fas fa-plus"></i>
+                    <md-tooltip md-direction="bottom">
+                        {{'Setup.Users.NewUser' | translate}}
+                    </md-tooltip>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-content flex>
+            <md-subheader class="own-tab">
+                <md-tabs md-dynamic-height md-swipe-content>
+                    <md-tab ui-sref="app.setup.users" md-active="true">
+                        <md-tab-label id="tab1" aria-controls="{{'Setup.Nav.Tabs.Users' | translate}}">
+                            <div class="tab-container">
+                                <span>{{'Setup.Nav.Tabs.Users'  | translate}}</span>
+                            </div>
+                        </md-tab-label>
+                    </md-tab>
+                    <md-tab ui-sref="app.setup.usergroups">
+                        <md-tab-label id="tab2" aria-controls="{{'Setup.Nav.Tabs.UserGroups' | translate}}">
+                            <div class="tab-container">
+                                <span>{{'Setup.Nav.Tabs.UserGroups' | translate}}</span>
+                            </div>
+                        </md-tab-label>
+                    </md-tab>
+                </md-tabs>
+            </md-subheader>
+            <div class="container-fluid paddingua20">
+                <div class="whitebox table-view">
+                    <div kendo-grid="grid" class="grid-theme" id="grid" k-options="usersGridOptions"></div>
+                </div>
+            </div>
+        </md-content>
+    </section>
+</md-content>
+<md-sidenav ng-show="sideinclude" id="sideModal" class="md-sidenav-right md-whiteframe-2dp" md-component-id="sideModal" md-is-locked-open="isDocked && $mdMedia('gt-lg')">
+    <div data-ng-if="sideLoad" data-ng-include="url" layout="column" style="height: 100%;" ng-cloak></div>
+</md-sidenav>
 
-		</div>
-	</div>
-</div>
+
+
+

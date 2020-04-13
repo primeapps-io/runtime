@@ -1,218 +1,280 @@
-<trial></trial>
-<help-page module-id="module.id"></help-page>
-<div class="page" ng-style="trial ? {'margin-top':'17px'}: ''">
-    <div class="panel panel-default" block-ui="tableBlockUI">
-        <div class="panel-heading clearfix">
-            <div class="view-panel pull-left" ng-show="!loading">
-                <div class="pull-left">
-                    <select class="form-control"
-                            ng-model="$parent.view"
-                            ng-change="changeView()"
-                            ng-options="o as o.label for o in views track by o.id">
-                        <option value="" ng-if="false"></option>
-                    </select>
+<md-content flex style="height: 100%;">
+    <div ng-show="loading"><div class="spin"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div></div>
+    <div ng-show="!loading" layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
+        <md-toolbar md-scroll-shrink class="with-subheader">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button show-on-m" ng-click="goBack()" aria-label="{{'Common.Back' | translate}}"><i class="fas fa-angle-left"></i>
+                    <md-tooltip md-direction="right">{{'Common.Back' | translate}}</md-tooltip>
+                </md-button>
+                <h2 md-truncate>{{module['label_' + language + '_plural']}}</h2>
+                <div class="helpbuttons hide-on-m">
+                    <md-button class="md-icon-button" aria-label="{{'Common.Help' | translate}}" ng-if="showHelp" ng-click="helpSide()"><i
+                            class="fas fa-question-circle"></i>
+                        <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
+                    </md-button>
+                    <md-button class="md-icon-button enlarge d-none d-lg-inline-block" ng-click="toggleFullLeftMenu()"
+                               aria-label="{{'Common.FullScreen' | translate}}">
+                        <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 36 36"
+                             style="enable-background:new 0 0 36 36;" xml:space="preserve">
+                            <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z"/>
+                            <path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z"/>
+                            <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
+                            <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/>
+                        </svg>
+                        <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                        <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                    </md-button>
                 </div>
-                <div class="view-action-buttons pull-right">
-                    <a href="#app/viewForm/{{type}}?id={{view.id}}" ng-if="(hasViewPermission || view.created_by === user.id || user.profile.has_admin_rights) && view.system_type === 'custom'">{{'Common.Edit' | translate}}</a>
-                    <span ng-if="(view.created_by == user.id || user.profile.has_admin_rights) && view.system_type === 'custom'"> |</span>
-                    <a href="#app/viewForm/{{type}}?clone=true&id={{view.id}}" ng-if="view.created_by === user.ID || user.profile.HasAdminRights">{{'Common.Copy' | translate}}</a>
-                    <span ng-if="view.created_by == user.ID || user.profile.HasAdminRights"> |</span>
-                    <a href confirm-click action="deleteView(view.id)" placement="bottom" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ng-if="view.system_type === 'custom' && (view.created_by === user.id || user.profile.has_admin_rights)">{{'Common.Delete' | translate}}</a>
-                    <span ng-if="view.system_type === 'custom' && (view.created_by === user.id || user.profile.has_admin_rights)"> |</span>
-                    <a ng-hide="(module.name == 'yetkinlik_hedefleri' || module.name == 'performans_degerlendirmeler') && !user.profile.HasAdminRights" href="#app/viewForm/{{type}}">{{'Common.Create' | translate}}</a>
+                <span class="show-on-m" flex></span>
+                <div ng-if="actionButtons.length > 0" flex class="action-btn" kendo-toolbar
+                     k-options="toolbarOptions"></div>
+                <div class="ml-auto d-inline-flex">
+                    <md-menu md-position-mode="target-right target"  ng-if="user.profile.export_data || user.profile.import_data">
+                        <md-button class="md-icon-button btn btn-secondary"
+                                   aria-label="{{'Module.Export' | translate }} - {{'Module.Import' | translate }}"
+                                   ng-click="$mdMenu.open()">
+                            <i class="fas fa-exchange-alt"></i>
+                            <md-tooltip md-direction="bottom"> {{'Module.DataTransfer' | translate }}</md-tooltip>
+                        </md-button>
+                        <md-menu-content width="3" class="md-dense">
+                            <md-menu-item ng-if="user.profile.export_data" ng-disabled="$parent.$parent.$parent.isEmpty"
+                                          ng-show="hasPermission(type, operations.read)">
+                                <md-button ng-click="showExportDataModal()">
+                                    <i class="fas fa-upload"></i> <span>{{'Module.Export' | translate }}</span>
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item ng-if="user.profile.import_data" ng-show="hasPermission(type, operations.write)">
+                                <md-button href="#/app/import/{{type}}">
+                                    <i class="fas fa-download"></i> <span>{{'Module.Import' | translate }}</span>
+                                </md-button>
+                            </md-menu-item>
+                            <!--
+                            <md-menu-item ng-if="user.profile.export_data" ng-show="hasPermission(type, operations.read)">
+                                <md-button ng-click="openExcelTemplate()">
+                                    <i class="fas fa-upload"></i> <span>{{'Module.ExportExcel' | translate }}</span>
+                                </md-button>
+                            </md-menu-item>-->
+                        </md-menu-content>
+                    </md-menu>
+
+                    <md-button ng-click="filterModalOpen()" class="md-icon-button btn btn-secondary filter-button"
+                               aria-label="Filter">
+                        <i class="fas fa-sliders-h"></i>
+
+                        <span class="filter-badge" ng-if="activeView.filters.length<0">{{activeView.filters.length}}0</span>
+                        <md-tooltip md-direction="bottom"> {{'Module.Edit' | translate: {title:module['label_' + language + '_plural']} }}</md-tooltip>
+                    </md-button>
+
+                    <md-button ng-click="goUrl('#/app/record/'+module.name)" class="md-icon-button btn btn-primary"
+                               aria-label="{{'Module.New' | translate:{title:module['label_' + language + '_singular']} }}"
+                               ng-show="hasPermission(type, operations.write)">
+                        <i class="fas fa-plus"></i>
+                        <md-tooltip md-direction="bottom"> {{'Module.New' | translate: {title:module['label_' + language + '_plural']} }}</md-tooltip>
+                    </md-button>
                 </div>
-            </div>
-            <div class="pull-right" ng-if="isAvailableForSmallDevice()">
-                <div class="dropdown action-dropdown-menu">
-                    <button id="dropdownMenu1" type="button" class="btn btn-custom dropdown-toggle" bs-dropdown data-placement="bottom-right">{{'Module.DropdownButtons' | translate}} <span class="caret"></span></button>
-                    <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
-                        <li><a href ng-click="refresh();dropdownHide();" title="{{'Common.Refresh' | translate}}" ng-disabled="loading"><i class="fa fa-refresh"></i> {{'Common.Refresh' | translate}} </a></li>
-                        <li>
-                            <a href ng-click="tableParams.showFilter = !tableParams.showFilter;dropdownHide();" ng-disabled="loading" id="FilterButton">
-                                <i class="fa fa-filter"></i> {{'Common.Filter' | translate}}
-                            </a>
-                        </li>
-                        <li role="separator" class="divider"></li>
 
-                        <li ng-if="(user.profile.export_data || user.profile.import_data) && !hideDataTransfer">
-                            <a href id="dataTransferButtons" ng-click="showDataTransferButtons();"
-                               ng-disabled="loading">
-                                <i class="fa fa-database"></i> {{
-'Module.DataTransfer' |
-                                translate
-                                }}
-                            </a>
-                        </li>
-                        <li ng-if="user.profile.send_sms" ng-show="hasPermission(type, operations.read)">
-                            <a href ng-click="showSMSModal();dropdownHide();" data-spinner-color="#666" ng-disabled="loading">
-                                <i class="fa fa-share-square"></i>{{'Module.SendSMS' | translate }}
-                            </a>
-                        </li>
-                        <li ng-if="user.profile.send_email" ng-show="hasPermission(type, operations.read)">
-                            <a href ng-click="showEMailModal();dropdownHide();" data-spinner-color="#666" ng-disabled="loading">
-                                <i class="fa fa-envelope-o"></i>{{'Module.SendEMail' | translate }}
-                            </a>
-                        </li>
-                        <li role="separator" class="divider"></li>
-                        <li ng-show="hasPermission(type, operations.write)" ng-disabled="loading"
-                            ng-if="module.name != 'activities' && !hideNewButton">
-                            <a href="#/app/moduleForm/{{type}}">
-                                <i class="fa fa-plus"></i>{{'Module.New' | translate:{title:module['label_' + language + '_singular']} }}
-                            </a>
-                        </li>
-                        <li ng-show="hasPermission(type, operations.write)"
-                            ng-if="module.name === 'activities'">
-                            <a href="#/app/moduleForm/{{type}}?stype={{activityType.value}}"
-                               ng-show="hasPermission(type, operations.write)"
-                               ng-repeat="activityType in activityTypes | filter:{hidden:'!true'}">
-                                <i class="fa fa-plus"></i> {{
-'Module.New' |
-                                translate:{title:activityType.label[language]}
-                                }}
-                            </a>
-                        </li>
-                    </ul>
+
+            </div>
+        </md-toolbar>
+
+        <md-content flex>
+            <md-subheader class="own-tab">
+                <md-tabs md-dynamic-height md-swipe-content md-no-select-click="true">
+                    <md-tab ng-repeat='item in views track by $index' ng-click="setView(item)" md-active="activeView.id === item.id">
+                        <md-tab-label aria-controls="{{item['label_' + language]}}">
+                            <div class="tab-container">
+                                <span>{{item['label_' + language]}}</span>
+                            </div>
+                        </md-tab-label>
+                    </md-tab> 
+
+                </md-tabs>
+            </md-subheader>
+            <div class="container-fluid paddingua20">
+                <help-page module-id="module.id"></help-page>
+                <div class="help-page align-items-center" ng-if="show">
+                    <div ng-bind-html="helpTemplatesModal.template"></div>
+                    <md-button type="button"
+                               ng-click="selectedClose = !selectedClose; closeDialog(currentPath, module.id, showModalCheck);"
+                               class="md-icon-button btn btn-secondary help-page-close"><i class="fas fa-times"></i>
+                        <md-tooltip md-diretion="bottom">{{'Common.Close' | translate}}</md-tooltip>
+                    </md-button>
+                    <div>
+                        <input type="checkbox" class="k-checkbox" ng-model="showModalCheck" ng-click="showModal()"
+                               id="showCheck">
+                        <label class="k-checkbox-label" for="showCheck">{{'Setup.HelpGuide.DontShowAgain' |
+                            translate}}</label>
+                    </div>
                 </div>
+
+                <div class="col-12 text-center" ng-if="views.length<1">
+                    <img style="width:100%; max-width: 500px;" src="images/dashboard.svg">
+                    <h1 class="paddingua20"></h1>
+                    <md-button class="btn btn-white" ng-click="openNewDashlet($event)"   title=" New Views"><i class="fas fa-plus"></i>
+                        <span>New Views</span></md-button>
+                </div>
+                
+                <div class="whitebox table-view" ng-if="activeView.view_type ==='grid' || activeView.report_type==='tabular'">
+                    <!--<div class="grid-top">
+                        <div class="search-box">
+                            
+                                <div class="search-box-input">
+                                    <input type="text" id="grid-search{{relatedModule.id}}" class="form-control" placeholder="Search..."
+                                           aria-label="Search" aria-describedby="grid-search">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <i class="info-icon fas fa-info-circle"><md-tooltip md-direction="right">You can search in these fields:  First Name, Company Name</md-tooltip></i>
+                            
+                        </div>
+                        <div>
+                            <md-button class="btn btn-secondary md-icon-button" ng-click="refreshGrid()"><i
+                                    class="fas fa-sync-alt"></i>
+                                <md-tooltip md-direction="bottom">Refresh</md-tooltip>
+                            </md-button>
+                        </div>
+                    </div>-->
+                    
+                    <kendo-grid class="grid-theme table-responsive" k-scope-field="grid"
+                                id="kendo-grid" k-rebind="mainGridOptions"
+                                k-options="mainGridOptions">
+                    </kendo-grid>
+
+                </div>
+                <div ng-if="activeView.report_type==='summary' || activeView.report_type==='single'">
+                    <div ng-if="activeView.report_type==='summary'" >
+                        <div class="whitebox p-2">
+                            <div class="chart-wrapper">
+                                <div ng-if="reportSummary.chart" class="fusion-chart">
+                                    <fusioncharts id="chart-{{activeView.id}}"
+                                                  width="100%"
+                                                  height="300px"
+                                                  type="{{reportSummary.chart.chart_type}}"
+                                                  datasource="{{reportSummary}}"
+                                                  chart="{{reportSummary.chart}}"
+                                                  config="{{reportSummary.config}}">
+                                    </fusioncharts>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="whitebox table-view top20 bottom20" ng-if="reportSummary.chart && reportSummary.data.length >0">
+                            <table class="table table-theme">
+                                <thead>
+                                <tr class="table-head ">
+                                    <th class="table-th sortable "
+                                        ng-click="shortChange('label',current.reverse==false ? true:false)"
+                                        ng-class="current.field =='label' && current.reverse==true ? 'sort-asc':''  + current.field =='label' && current.reverse==false ? 'sort-desc':'' ">
+                                        <div>{{ reportSummary.groupField }}</div>
+                                    </th>
+                                    <th
+                                            class="table-th sortable"
+                                            ng-click="shortChange('value',current.reverse==false ? true:false)"
+                                            ng-class="current.field =='value' && current.reverse==true ? 'sort-asc':''  + current.field =='value' && current.reverse==false ? 'sort-desc':'' ">
+                                        <div>
+                                            <span>{{ reportSummary.chart.yaxisname }}</span>
+                                        </div>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="item in reportSummary.data">
+                                <tr ng-repeat="item in reportSummary.data">
+                                    <td style="text-align: left;" ng-bind-html="item.label"></td>
+                                    <td style="text-align: right;">
+                                        {{activeView.aggregations[0].field===activeView.group_field ? item.value :
+                                        item.valueFormatted }}
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                    <div class="new-widgets" ng-if="activeView.view_type ==='report' && activeView.report_type==='single'">
+                        <div class="widget ">
+                            <div class="dashlet">
+                                <div class="widget-container"
+                                     style="height: 300px;"
+                                     ng-style="{'background-color':activeView.color ? activeView.color: '#555' }"
+                                     tabindex="0">
+                                    <div>
+                                        <i class="{{activeView.icon}}"></i>
+                                        <div class="description">{{activeView.value}}
+                                            <small>{{activeView['name_'+user.language]}}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            <div class="pull-right" ng-if="!isAvailableForSmallDevice()">
-                <a href ng-click="refresh()" class="btn btn-sm btn-custom" title="{{'Common.Refresh' | translate}}" ng-disabled="loading">
-                    <i class="fa fa-refresh"></i>
-                </a>
-                <a href ng-click="tableParams.showFilter = !tableParams.showFilter" class="btn btn-sm btn-custom" ng-disabled="loading" id="FilterButton2">
-                    <i class="fa fa-filter"></i> {{'Common.Filter' | translate}}
-                </a>
-                <a ng-if="(user.profile.export_data || user.profile.import_data) && !hideDataTransfer" href id="dataTransferButtons" class="btn btn-sm btn-custom" ng-click="showDataTransferButtons()" ng-disabled="loading"><i class="fa fa-database"></i> {{'Module.DataTransfer' | translate}}</a>
+        </md-content>
+        <md-fab-speed-dial class="md-fab-bottom-right" ng-show="selectedRows.length > 0" md-direction="up">
+            <md-fab-trigger>
+                <md-button aria-label="menu" class="md-fab md-primary"><strong>{{selectedRows.length}}</strong>
+                </md-button>
+                <md-tooltip md-direction="left">{{selectedRows.length}} {{'Common.SelectedRow'| translate}}</md-tooltip>
+            </md-fab-trigger>
 
-                <!--<a ng-click="collectiveLeave()" class="btn btn-sm btn-custom"
-                   ng-show="hasPermission(type, operations.write)"
-                   ng-if="module.name === 'izinler' && user.profile.CollectiveAnnualLeave">
-                    <i class="fa fa-plus"></i> {{'Leave.CollectiveAnnualLeave' | translate }}
-                </a>-->
-
-                <a href="#/app/moduleForm/{{type}}" class="btn btn-sm btn-custom"
-                   ng-disabled="loading"
-                   ng-show="hasPermission(type, operations.write)"
-                   ng-if="module.name != 'activities' && !hideNewButton">
-                    <i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + '_singular']} }}
-                </a>
-
-                <a href id="activityButtons" class="btn btn-sm btn-custom" ng-click="showActivityButtons()" ng-if="module.name === 'activities' && !activityTypeActive">
-                    <i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + '_singular']} }}
-                </a>
-                <a href="#/app/moduleForm/{{type}}?stype={{activityTypeActive.value}}" id="activityButton" class="btn btn-sm btn-custom" ng-if="activityTypeActive">
-                    <i class="fa fa-plus"></i> {{'Module.New' | translate:{title:activityTypeActive.label[language]} }}
-                </a>
-
-                <span class="dropdown list-dropdown-menu"
-                      ng-show="hasPermission(type, operations.remove) || user.profile.send_email || user.profile.send_sms">
-                    <button id="moreButton" type="button" class="btn btn-sm btn-custom dropdown-toggle" bs-dropdown data-placement="bottom-right" ng-disabled="loading"><i class="fa fa-ellipsis-h"></i></button>
-                    <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="moreButton">
-                        <li ng-show="hasPermission(type, operations.remove) && !hideDeleteAll">
-                            <a href ng-click="showDeleteModal()">
-                                <i class="fa fa-trash pull-left"></i> {{'Module.DeleteSelecteds' | translate }}
-                            </a>
-                        </li>
-                        <li ng-show="hasBulkUpdatePermission || hasPermission(type, operations.modify)">
-                            <a href ng-click="showUpdateModal()">
-                                <i class="fa fa-pencil-square-o pull-left"></i> {{'Module.UpdateSelecteds' | translate }}
-                            </a>
-                        </li>
-                        <li ng-show="hasPermission(type, operations.read) && view.system_code === 'pending_approval_from_me_view'">
-                            <a href ng-click="showCollectiveApproval()">
-                                <i class="fa fa-check-circle-o pull-left"></i> {{'Module.CollectiveApproval' | translate }}
-                            </a>
-                        </li>
-                        <li ng-if="user.profile.send_email" ng-show="hasPermission(type, operations.read)">
-                            <a href ng-click="showEMailModal()">
-                                <i class="fa fa-envelope-o pull-left"></i> {{'Module.SendEMail' | translate }}
-                            </a>
-                        </li>
-                        <li ng-if="user.profile.send_sms && !preview" ng-show="hasPermission(type, operations.read)">
-                            <a href ng-click="showSMSModal()">
-                                <i class="fa fa-mobile pull-left"></i> {{'Module.SendSMS' | translate }}
-                            </a>
-                        </li>
-                    </ul>
-                </span>
-            </div>
-        </div>
-        <div class="pull-right">
-            <button class="{{custombutton.css_class}} ladda-button" type="button"
-                    custom-scripting="{{custombutton.template}}" data-spinner-color="#666" ladda="running"
-                    ng-repeat="custombutton in actionButtons"
-                    ng-disabled="actionButtonDisabled"
-                    ng-if="custombutton.action_type === 'Scripting' && hasActionButtonDisplayPermission(custombutton)"
-                    style="margin-left: 10px">
-                <i ng-class="custombutton.icon"></i>
-                {{custombutton.name}}
-            </button>
-            <button class="{{custombutton.css_class}} ladda-button" type="button" data-spinner-color="#666"
-                    ladda="webhookRequesting[custombutton.id]" ng-click="webhookRequest(custombutton)"
-                    ng-repeat="custombutton in actionButtons"
-                    ng-disabled="actionButtonDisabled"
-                    ng-if="custombutton.action_type === 'Webhook' && hasActionButtonDisplayPermission(custombutton)"
-                    style="margin-left: 10px">
-                <i ng-class="custombutton.icon"></i> {{custombutton.name}}
-            </button>
-            <button class="{{custombutton.css_class}}" type="button"
-                    ng-click="showModuleFrameModal(custombutton.url)"
-                    ng-repeat="custombutton in actionButtons"
-                    ng-disabled="actionButtonDisabled"
-                    ng-if="custombutton.action_type === 'ModalFrame' && hasActionButtonDisplayPermission(custombutton)"
-                    style="margin-left: 10px">
-                <i ng-class="custombutton.icon"></i>
-                {{custombutton.name}}
-            </button>
-        </div>
+            <md-fab-actions>
+                <md-button ng-if="user.profile.send_email" ng-show="hasPermission(type, operations.read)"
+                           class="md-fab md-raised md-mini" aria-label="{{'Module.SendEMail' | translate }}"
+                           ng-click="showEMailModal();"><i class="fas fa-envelope"></i>
+                    <md-tooltip md-direction="left">{{'Module.SendEMail' | translate }}</md-tooltip>
+                </md-button>
+                <md-button ng-if="user.profile.send_sms" ng-show="hasPermission(type, operations.read)"
+                           class="md-fab md-raised md-mini" aria-label="{{'Module.SendSMS' | translate }}"
+                           ng-click="showSMSModal()"><i class="fas fa-sms"></i>
+                    <md-tooltip md-direction="left">{{'Module.SendSMS' | translate }}</md-tooltip>
+                </md-button>
+                <md-button ng-if="hasPermission(type, operations.modify)" ng-click="showUpdateModal($event)"
+                           class="md-fab md-raised md-mini"
+                           aria-label=" {{'Module.UpdateSelecteds' | translate }}"><i
+                        class="fas fa-pen"></i>
+                    <md-tooltip md-direction="left"> {{'Module.UpdateSelecteds' | translate }}</md-tooltip>
+                </md-button>
+                <md-button ng-if="hasPermission(type, operations.remove)" ng-click="deleteSelecteds($event);"
+                           class="md-fab md-raised md-mini"
+                           aria-label="{{'Module.DeleteSelecteds' | translate}}"><i class="fas fa-trash"></i>
+                    <md-tooltip md-direction="left">{{'Module.DeleteSelecteds' | translate}}</md-tooltip>
+                </md-button>
+            </md-fab-actions>
+        </md-fab-speed-dial>
     </div>
-    <div class="panel-body">
-        <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-        <div class="empty-message" ng-if="isEmpty && !loading">{{'Module.Message' | translate:{title:module['label_' + language + '_singular']} }}</div>
-        <div class="table-list-custom table-responsive" ng-show="!isEmpty && !loading">
-            <table template-header="view/common/tableheader.html" template-pagination="view/common/pagination.html" ng-table="tableParams" class="table table-hover">
-                <tbody>
-                    <tr ng-repeat="record in $data">
-                        <td>
-                            <input type="checkbox" ng-click="selectRow($event,record)" ng-checked="isRowSelected(record.id) || isAllSelected" />
-                        </td>
-                        <td></td>
-                        <td ng-repeat="(key, field) in record.fields | orderBy:'order' track by $index">
-                            <ng-include src="'view/common/tablebody.html'"></ng-include>
-                        </td>
-                        <td class="text-right">
-                            <span style="display:block; width: 40px"></span>
-                            <span class="action-buttons" ng-show="(!record.isProcessItem || isAdmin)">
-                                <a href="#/app/moduleForm/{{type}}{{'?id=' + record.id + '&back=' + type}}" class="action-icon" title="{{'Common.Edit' | translate}}" ng-show="hasPermission(type, operations.modify, record)"><i class="flaticon-pencil124"></i></a>
-                                <i class="action-icon flaticon-bin9" confirm-click action="delete(record.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ng-show="hasPermission(type, operations.remove, record)"></i>
-                            </span>
-                            <span ng-show="record.isProcessItem" style="cursor:pointer">
-                                <a ng-if="record['process.process_requests.process_status'] == 1" class="button" ng-click="recordProcessDetail(record)" id="processPopover{{record.id}}"><i class="fa fa-hourglass-half" aria-hidden="true" style="color:darkorange"></i></a>
-                                <a ng-if="record['process.process_requests.process_status'] == 2" class="button" ng-click="recordProcessDetail(record)" id="processPopover{{record.id}}"><i class="fa fa-check-circle-o" aria-hidden="true" style="color:green"></i></a>
-                                <a ng-if="record['process.process_requests.process_status'] == 3" class="button" ng-click="recordProcessDetail(record)" id="processPopover{{record.id}}"><i class="fa fa-times-circle-o" aria-hidden="true" style="color:red"></i></a>
-                            </span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+</md-content>
+
+<md-sidenav ng-show="sideinclude" class="md-sidenav-right md-whiteframe-2dp" md-component-id="sideModal"
+            md-is-locked-open="isDocked &&  $mdMedia('gt-lg')">
+    <ng-include src="url" layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak></ng-include>
+</md-sidenav>
+<div style="visibility: hidden">
+    <div class="md-dialog-container" id="mdLightbox">
+        <md-dialog aria-label="{{ showImageData.title ? showImageData.title  : multiSelectAndTagDatas.title }}">
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>{{ showImageData.title ? showImageData.title  : multiSelectAndTagDatas.title }}</h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" aria-label="{{'Common.Close' | translate}}"
+                               ng-click="closeLightBox()"><i class="fas fa-times"></i></md-button>
+                </div>
+            </md-toolbar>
+            <md-dialog-content>
+                <div ng-if="showImageData.url" class="md-dialog-content">
+                    <img class="width100" style="max-width: 500px;" ng-src="{{ showImageData.url }}"/>
+                </div>
+                <ul class="top20 bottom20" ng-if="multiSelectAndTagDatas && multiSelectAndTagDatas.array.length > 0">
+                    <li ng-repeat="item in multiSelectAndTagDatas.array">{{item}}</li>
+                </ul>
+            </md-dialog-content>
+            <md-dialog-actions layout="row" ng-if="showImageData.url">
+                <span flex></span>
+                <a class="btn btn-secondary" href="{{showImageData.url}}" target="_blank"><i
+                        class="fas fa-download"></i> {{'Common.Download' | translate}}</a>
+            </md-dialog-actions>
+        </md-dialog>
     </div>
 </div>
-</div>
 
-<lightbox-directive class="angular-lightbox" ng-class="{ hidden : !lightBox }">
-    <article>
-        <header>
-            <a class="close-btn" id="close-lightbox" ng-click="closeLightBox()"><i class="fa fa-times-circle"></i></a>
-            <a class="close-btn" id="close-lightbox" ng-click="closeLightBox()"><i class="fa fa-times-circle"></i></a>
-        </header>
-        <content ng-click="closeLightBox()">
-            <img ng-if="recordData.value"
-                 ng-src="{{ config.imageUrl+recordData.value }}" />
-        </content>
-        <footer>
-            <a class="download-btn"
-               href="{{ config.imageUrl+recordData.value }}"
-               target="_blank"><i class="fa fa-download"></i></a>
-        </footer>
-    </article>
-</lightbox-directive>
+

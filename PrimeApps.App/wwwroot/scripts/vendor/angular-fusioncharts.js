@@ -1,3 +1,765 @@
-/*! angularjs-fusioncharts - v4.0.2*/
+// The MIT License (MIT)
+//
+// Copyright (c) 2014 FusionCharts Technologies
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+(function() {
+  var fc = angular.module('ng-fusioncharts', []),
+    scope = {
+      width: '@',
+      height: '@',
+      data: '@',
+      dataset: '@',
+      categories: '@',
+      chart: '@',
+      linkeddata: '@',
+      trendlines: '@',
+      vtrendlines: '@',
+      annotations: '@',
+      colorrange: '@',
+      lineset: '@',
+      axis: '@',
+      connectors: '@',
+      pointers: '@',
+      value: '@',
+      processes: '@',
+      tasks: '@',
+      rows: '@',
+      columns: '@',
+      map: '@',
+      markers: '@',
+      initialized: '&',
+      datasourceDt: '=datasourceDt'
+    },
+    fcEvents = [
+      'beforelinkeditemopen',
+      'linkeditemopened',
+      'beforelinkeditemclose',
+      'linkeditemclosed',
+      'printreadystatechange',
+      'dataloadrequestcompleted',
+      'dataloaderror',
+      'dataloadcancelled',
+      'dataloadrequestcancelled',
+      'dataupdated',
+      'dataupdatecancelled',
+      'dataloadrequested',
+      'beforedataupdate',
+      'realtimeupdatecomplete',
+      'chartcleared',
+      'slicingend',
+      'slicingstart',
+      'entityrollout',
+      'entityrollover',
+      'entityclick',
+      'connectorrollover',
+      'connectorrollout',
+      'connectorclick',
+      'markerrollover',
+      'markerrollout',
+      'markerclick',
+      'pagenavigated',
+      'rotationend',
+      'rotationstart',
+      'centerlabelrollover',
+      'centerlabelrollout',
+      'centerlabelclick',
+      'centerlabelchanged',
+      'chartclick',
+      'chartmousemove',
+      'chartrollover',
+      'chartrollout',
+      'backgroundloaded',
+      'backgroundloaderror',
+      'legenditemclicked',
+      'legenditemrollover',
+      'legenditemrollout',
+      'logorollover',
+      'logorollout',
+      'logoclick',
+      'logoloaded',
+      'logoloaderror',
+      'beforeexport',
+      'exported',
+      'exportcancelled',
+      'beforeprint',
+      'printcomplete',
+      'printcancelled',
+      'datalabelclick',
+      'datalabelrollover',
+      'datalabelrollout',
+      'scrollstart',
+      'scrollend',
+      'onscroll',
+      'zoomreset',
+      'zoomedout',
+      'zoomedin',
+      'zoomed',
+      'zoommodechanged',
+      'pinned',
+      'datarestored',
+      'beforedatasubmit',
+      'datasubmiterror',
+      'datasubmitted',
+      'datasubmitcancelled',
+      'chartupdated',
+      'nodeadded',
+      'nodeupdated',
+      'nodedeleted',
+      'connectoradded',
+      'connectorupdated',
+      'connectordeleted',
+      'labeladded',
+      'labeldeleted',
+      'selectionremoved',
+      'selectionstart',
+      'selectionend',
+      'labelclick',
+      'labelrollover',
+      'labelrollout',
+      'labeldragstart',
+      'labeldragend',
+      'dataplotdragstart',
+      'dataplotdragend',
+      'processclick',
+      'processrollover',
+      'processrollout',
+      'categoryclick',
+      'categoryrollover',
+      'categoryrollout',
+      'milestoneclick',
+      'milestonerollover',
+      'milestonerollout',
+      'charttypechanged',
+      'overlaybuttonclick',
+      'loaded',
+      'rendered',
+      'drawcomplete',
+      'rendercomplete',
+      'datainvalid',
+      'dataxmlinvalid',
+      'dataloaded',
+      'nodatatodisplay',
+      'legendpointerdragstart',
+      'legendpointerdragstop',
+      'legendrangeupdated',
+      'alertcomplete',
+      'realtimeupdateerror',
+      'dataplotrollover',
+      'dataplotrollout',
+      'dataplotclick',
+      'linkclicked',
+      'beforerender',
+      'rendercancelled',
+      'beforeresize',
+      'resized',
+      'resizecancelled',
+      'beforedispose',
+      'disposed',
+      'disposecancelled',
+      'linkedchartinvoked',
+      'beforedrilldown',
+      'drilldown',
+      'beforedrillup',
+      'drillup',
+      'drilldowncancelled',
+      'drillupcancelled'
+    ],
+    currIndex,
+    eventName,
+    eventsLen = fcEvents.length;
+  for (currIndex = 0; currIndex < eventsLen; currIndex++) {
+    eventName =
+      'fcevent' +
+      fcEvents[currIndex][0].toUpperCase() +
+      fcEvents[currIndex].slice(1);
+    scope[eventName] = '&';
+  }
 
-!function () { var a, b, c = angular.module("ng-fusioncharts", []), d = { width: "@", height: "@", data: "@", dataset: "@", categories: "@", chart: "@", linkeddata: "@", trendlines: "@", vtrendlines: "@", annotations: "@", colorrange: "@", lineset: "@", axis: "@", connectors: "@", pointers: "@", value: "@", processes: "@", tasks: "@", rows: "@", columns: "@", map: "@", markers: "@", initialized: "&" }, e = ["beforelinkeditemopen", "linkeditemopened", "beforelinkeditemclose", "linkeditemclosed", "printreadystatechange", "dataloadrequestcompleted", "dataloaderror", "dataloadcancelled", "dataloadrequestcancelled", "dataupdated", "dataupdatecancelled", "dataloadrequested", "beforedataupdate", "realtimeupdatecomplete", "chartcleared", "slicingend", "slicingstart", "entityrollout", "entityrollover", "entityclick", "connectorrollover", "connectorrollout", "connectorclick", "markerrollover", "markerrollout", "markerclick", "pagenavigated", "rotationend", "rotationstart", "centerlabelrollover", "centerlabelrollout", "centerlabelclick", "centerlabelchanged", "chartclick", "chartmousemove", "chartrollover", "chartrollout", "backgroundloaded", "backgroundloaderror", "legenditemclicked", "legenditemrollover", "legenditemrollout", "logorollover", "logorollout", "logoclick", "logoloaded", "logoloaderror", "beforeexport", "exported", "exportcancelled", "beforeprint", "printcomplete", "printcancelled", "datalabelclick", "datalabelrollover", "datalabelrollout", "scrollstart", "scrollend", "onscroll", "zoomreset", "zoomedout", "zoomedin", "zoomed", "zoommodechanged", "pinned", "datarestored", "beforedatasubmit", "datasubmiterror", "datasubmitted", "datasubmitcancelled", "chartupdated", "nodeadded", "nodeupdated", "nodedeleted", "connectoradded", "connectorupdated", "connectordeleted", "labeladded", "labeldeleted", "selectionremoved", "selectionstart", "selectionend", "labelclick", "labelrollover", "labelrollout", "labeldragstart", "labeldragend", "dataplotdragstart", "dataplotdragend", "processclick", "processrollover", "processrollout", "categoryclick", "categoryrollover", "categoryrollout", "milestoneclick", "milestonerollover", "milestonerollout", "charttypechanged", "overlaybuttonclick", "loaded", "rendered", "drawcomplete", "rendercomplete", "datainvalid", "dataxmlinvalid", "dataloaded", "nodatatodisplay", "legendpointerdragstart", "legendpointerdragstop", "legendrangeupdated", "alertcomplete", "realtimeupdateerror", "dataplotrollover", "dataplotrollout", "dataplotclick", "linkclicked", "beforerender", "rendercancelled", "beforeresize", "resized", "resizecancelled", "beforedispose", "disposed", "disposecancelled", "linkedchartinvoked", "beforedrilldown", "drilldown", "beforedrillup", "drillup", "drilldowncancelled", "drillupcancelled"], f = e.length; for (a = 0; a < f; a++)b = "fcevent" + e[a][0].toUpperCase() + e[a].slice(1), d[b] = "&"; c.directive("fusioncharts", ["$http", function (c) { return { scope: d, link: function (c, d, g) { var h, i, j, k, l, m, n, o, p, q, r, s = { NDCObserver: { width: { ifExist: !1, observer: function (a) { a && n.width != a && (n.width = a, v.resizeTo(c.width, c.height)) } }, height: { ifExist: !1, observer: function (a) { a && n.height != a && (n.height = a, v.resizeTo(c.width, c.height)) } }, datasource: { ifExist: !0, observer: function (a) { z.dataSource != a && (z.dataSource = a, "json" === n.dataFormat ? (n.dataSource = JSON.parse(a), x()) : (n.dataSource = a, "xml" === n.dataFormat ? v.setXMLData(a) : "jsonurl" === n.dataFormat ? v.setJSONUrl(a) : "xmlurl" === n.dataFormat && v.setXMLUrl(a))) } }, type: { ifExist: !1, observer: function (a) { a && n.type != a && (n.type = a, v.chartType(a)) } }, config: { ifExist: !1, observer: function (a) { var b, c, d = !1; if (a) { b = JSON.parse(a); for (c in b) n[c] != b[c] && (d = !0, n[c] = b[c]); d && y() } } } }, DCObserver: { chart: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.chart != a && (z.chart = a, n.dataSource.chart = JSON.parse(a), x()) } }, data: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.data != a && (z.data = a, n.dataSource.data = JSON.parse(a), x()) } }, categories: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.categories != a && (z.categories = a, n.dataSource.categories = JSON.parse(a), x()) } }, dataset: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.dataset != a && (z.dataset = a, n.dataSource.dataset = JSON.parse(a), x()) } }, linkeddata: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.linkeddata != a && (z.linkeddata = a, n.dataSource.linkeddata = JSON.parse(a), x()) } }, trendlines: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.trendlines != a && (z.trendlines = a, n.dataSource.trendlines = JSON.parse(a), x()) } }, vtrendlines: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.vtrendlines != a && (z.vtrendlines = a, n.dataSource.vtrendlines = JSON.parse(a), x()) } }, annotations: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.annotations != a && (z.annotations = a, n.dataSource.annotations = JSON.parse(a), x()) } }, colorrange: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.colorrange != a && (z.colorrange = a, n.dataSource.colorrange = JSON.parse(a), x()) } }, lineset: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.lineset != a && (z.lineset = a, n.dataSource.lineset = JSON.parse(a), x()) } }, axis: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.axis != a && (z.axis = a, n.dataSource.axis = JSON.parse(a), x()) } }, connectors: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.connectors != a && (z.connectors = a, n.dataSource.connectors = JSON.parse(a), x()) } }, pointers: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.pointers != a && (z.pointers = a, n.dataSource.pointers = JSON.parse(a), x()) } }, value: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.value != a && (z.value = a, n.dataSource.value = JSON.parse(a), x()) } }, processes: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.processes != a && (z.processes = a, n.dataSource.processes = JSON.parse(a), x()) } }, tasks: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.tasks != a && (z.tasks = a, n.dataSource.tasks = JSON.parse(a), x()) } }, rows: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.rows != a && (z.rows = a, n.dataSource.rows = JSON.parse(a), x()) } }, columns: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.columns != a && (z.columns = a, n.dataSource.columns = JSON.parse(a), x()) } }, map: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.map != a && (z.map = a, n.dataSource.map = JSON.parse(a), x()) } }, markers: { ifExist: !0, observer: function (a) { "json" === n.dataFormat && "object" == typeof n.dataSource && z.markers != a && (z.markers = a, n.dataSource.markers = JSON.parse(a), x()) } } } }, t = {}, u = Object.keys(g), v = null, w = { "*": function (a, b) { t.hasOwnProperty(a.eventType) && t[a.eventType](a, b) } }, x = function () { h && clearTimeout(h), h = setTimeout(function () { v && v.setJSONData && v.setJSONData(n.dataSource) }, 0) }, y = function () { for (v && v.dispose && v.dispose(), v = new FusionCharts(n), c.initialized && c.initialized({ chart: v }), a = 0; a < f; a++)b = "fcevent" + e[a][0].toUpperCase() + e[a].slice(1), function (b) { v.addEventListener(e[a], function (a, d) { c[b] && c[b]({ event: a, args: d }) }) }(b); angular.element(document).ready(function () { d.ready(function () { v = v.render(), c[g.chartobject] = v }) }) }, z = {}; if (g.events) { for (q = g.events.split("."), r = q.length, k = c.$parent, i = 0; i < r; i += 1)k = k && k[q[i]]; if (k) for (l in k) k.hasOwnProperty(l) && (t[l.toLowerCase()] = k[l]) } for (i = 0; i < u.length; i++)j = u[i], j.match(/^on/i) && (l = j.slice(2).toLowerCase(), t[l] = c.$parent[g[j]]); n = { type: g.type, width: g.width, height: g.height, renderAt: d[0], id: g.chartid, dataFormat: g.dataformat || "json", dataSource: {}, events: w }; for (m in s.NDCObserver) attrConfig = s.NDCObserver[m], (!1 === attrConfig.ifExist || g[m]) && g.$observe(m, attrConfig.observer); g.datasource && (n.dataSource = "json" === n.dataFormat ? JSON.parse(g.datasource) : g.datasource, z.dataSource = g.datasource); for (m in s.DCObserver) attrConfig = s.DCObserver[m], p = g[m], p ? (g.$observe(m, attrConfig.observer), z[m] = p, "json" === n.dataFormat && "object" == typeof n.dataSource && (n.dataSource[m] = JSON.parse(p))) : !1 === attrConfig.ifExist && g.$observe(m, attrConfig.observer); if (g.config) { o = JSON.parse(g.config); for (j in o) n[j] = o[j] } y(), c.$on("$destroy", function () { v && v.dispose && v.dispose() }) } } }]) }();
+  fc.directive('fusioncharts', [
+    '$http',
+    function($http) {
+      return {
+        scope: scope,
+        link: function(scope, element, attrs) {
+          function updateData(key, data) {
+            scope.datasourceDt.key = data;
+            chart.setJSONData(scope.datasourceDt);
+          }
+
+          function createWatchersForAttrs(datasource) {
+            const keys = Object.keys(datasource);
+            keys.forEach(function(key) {
+              const isDeep = key !== 'data';
+              scope.$watch(
+                'datasourceDt.' + key,
+                function(newData, oldData) {
+                  if (newData !== oldData && isDeep) updateData(key, newData);
+                },
+                isDeep
+              );
+            });
+          }
+
+          if (scope.datasourceDt) {
+            scope.$watch(
+              'datasourceDt.data',
+              function(newData, oldData) {
+                if (newData !== oldData) updateData(newData, 'data');
+              },
+              false
+            );
+            createWatchersForAttrs(scope.datasourceDt);
+          }
+
+          var observeConf = {
+              // non-data componenet observers
+              NDCObserver: {
+                width: {
+                  ifExist: false,
+                  observer: function(newVal) {
+                    if (newVal && chartConfigObject.width != newVal) {
+                      chartConfigObject.width = newVal;
+                      chart.resizeTo(scope.width, scope.height);
+                    }
+                  }
+                },
+                height: {
+                  ifExist: false,
+                  observer: function(newVal) {
+                    if (newVal && chartConfigObject.height != newVal) {
+                      chartConfigObject.height = newVal;
+                      chart.resizeTo(scope.width, scope.height);
+                    }
+                  }
+                },
+                datasource: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (dataStringStore.dataSource != newVal) {
+                      dataStringStore.dataSource = newVal;
+                      if (chartConfigObject.dataFormat === 'json') {
+                        chartConfigObject.dataSource = JSON.parse(newVal);
+                        setChartData();
+                      } else {
+                        chartConfigObject.dataSource = newVal;
+                        if (chartConfigObject.dataFormat === 'xml') {
+                          chart.setXMLData(newVal);
+                        } else if (chartConfigObject.dataFormat === 'jsonurl') {
+                          chart.setJSONUrl(newVal);
+                        } else if (chartConfigObject.dataFormat === 'xmlurl') {
+                          chart.setXMLUrl(newVal);
+                        }
+                      }
+                    }
+                  }
+                },
+                type: {
+                  ifExist: false,
+                  observer: function(newVal) {
+                    if (newVal && chartConfigObject.type != newVal) {
+                      chartConfigObject.type = newVal;
+                      // createFCChart();
+                      chart.chartType(newVal);
+                    }
+                  }
+                },
+                config: {
+                  ifExist: false,
+                  observer: function(newVal) {
+                    var configObj,
+                      attr,
+                      doReRender = false;
+                    if (newVal) {
+                      configObj = JSON.parse(newVal);
+                      for (attr in configObj) {
+                        // detect the value change
+                        if (chartConfigObject[attr] != configObj[attr]) {
+                          doReRender = true;
+                          chartConfigObject[attr] = configObj[attr];
+                        }
+                      }
+                      if (doReRender) {
+                        createFCChart();
+                      }
+                    }
+                  }
+                }
+              },
+              // data componenet observers
+              DCObserver: {
+                chart: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.chart != newVal
+                    ) {
+                      dataStringStore.chart = newVal;
+                      chartConfigObject.dataSource.chart = JSON.parse(newVal);
+                      setChartData();
+                    }
+                  }
+                },
+                data: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.data != newVal
+                    ) {
+                      dataStringStore.data = newVal;
+                      chartConfigObject.dataSource.data = JSON.parse(newVal);
+                      setChartData();
+                    }
+                  }
+                },
+                categories: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.categories != newVal
+                    ) {
+                      dataStringStore.categories = newVal;
+                      chartConfigObject.dataSource.categories = JSON.parse(
+                        newVal
+                      );
+                      setChartData();
+                    }
+                  }
+                },
+                dataset: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.dataset != newVal
+                    ) {
+                      dataStringStore.dataset = newVal;
+                      chartConfigObject.dataSource.dataset = JSON.parse(newVal);
+                      setChartData();
+                    }
+                  }
+                },
+                linkeddata: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.linkeddata != newVal
+                    ) {
+                      dataStringStore.linkeddata = newVal;
+                      chartConfigObject.dataSource.linkeddata = JSON.parse(
+                        newVal
+                      );
+                      setChartData();
+                    }
+                  }
+                },
+                trendlines: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.trendlines != newVal
+                    ) {
+                      dataStringStore.trendlines = newVal;
+                      chartConfigObject.dataSource.trendlines = JSON.parse(
+                        newVal
+                      );
+                      setChartData();
+                    }
+                  }
+                },
+                vtrendlines: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.vtrendlines != newVal
+                    ) {
+                      dataStringStore.vtrendlines = newVal;
+                      chartConfigObject.dataSource.vtrendlines = JSON.parse(
+                        newVal
+                      );
+                      setChartData();
+                    }
+                  }
+                },
+                annotations: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.annotations != newVal
+                    ) {
+                      dataStringStore.annotations = newVal;
+                      chartConfigObject.dataSource.annotations = JSON.parse(
+                        newVal
+                      );
+                      setChartData();
+                    }
+                  }
+                },
+                colorrange: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.colorrange != newVal
+                    ) {
+                      dataStringStore.colorrange = newVal;
+                      chartConfigObject.dataSource.colorrange = JSON.parse(
+                        newVal
+                      );
+                      setChartData();
+                    }
+                  }
+                },
+                lineset: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.lineset != newVal
+                    ) {
+                      dataStringStore.lineset = newVal;
+                      chartConfigObject.dataSource.lineset = JSON.parse(newVal);
+                      setChartData();
+                    }
+                  }
+                },
+                axis: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.axis != newVal
+                    ) {
+                      dataStringStore.axis = newVal;
+                      chartConfigObject.dataSource.axis = JSON.parse(newVal);
+                      setChartData();
+                    }
+                  }
+                },
+                connectors: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.connectors != newVal
+                    ) {
+                      dataStringStore.connectors = newVal;
+                      chartConfigObject.dataSource.connectors = JSON.parse(
+                        newVal
+                      );
+                      setChartData();
+                    }
+                  }
+                },
+                pointers: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.pointers != newVal
+                    ) {
+                      dataStringStore.pointers = newVal;
+                      chartConfigObject.dataSource.pointers = JSON.parse(
+                        newVal
+                      );
+                      setChartData();
+                    }
+                  }
+                },
+                value: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.value != newVal
+                    ) {
+                      dataStringStore.value = newVal;
+                      chartConfigObject.dataSource.value = JSON.parse(newVal);
+                      setChartData();
+                    }
+                  }
+                },
+                processes: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.processes != newVal
+                    ) {
+                      dataStringStore.processes = newVal;
+                      chartConfigObject.dataSource.processes = JSON.parse(
+                        newVal
+                      );
+                      setChartData();
+                    }
+                  }
+                },
+                tasks: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.tasks != newVal
+                    ) {
+                      dataStringStore.tasks = newVal;
+                      chartConfigObject.dataSource.tasks = JSON.parse(newVal);
+                      setChartData();
+                    }
+                  }
+                },
+                rows: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.rows != newVal
+                    ) {
+                      dataStringStore.rows = newVal;
+                      chartConfigObject.dataSource.rows = JSON.parse(newVal);
+                      setChartData();
+                    }
+                  }
+                },
+                columns: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.columns != newVal
+                    ) {
+                      dataStringStore.columns = newVal;
+                      chartConfigObject.dataSource.columns = JSON.parse(newVal);
+                      setChartData();
+                    }
+                  }
+                },
+                map: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.map != newVal
+                    ) {
+                      dataStringStore.map = newVal;
+                      chartConfigObject.dataSource.map = JSON.parse(newVal);
+                      setChartData();
+                    }
+                  }
+                },
+                markers: {
+                  ifExist: true,
+                  observer: function(newVal) {
+                    if (
+                      chartConfigObject.dataFormat === 'json' &&
+                      typeof chartConfigObject.dataSource == 'object' &&
+                      dataStringStore.markers != newVal
+                    ) {
+                      dataStringStore.markers = newVal;
+                      chartConfigObject.dataSource.markers = JSON.parse(newVal);
+                      setChartData();
+                    }
+                  }
+                }
+              }
+            },
+            eventsObj = {},
+            attribs = Object.keys(attrs),
+            chart = null,
+            events = {
+              '*': function(ev, props) {
+                if (eventsObj.hasOwnProperty(ev.eventType)) {
+                  eventsObj[ev.eventType](ev, props);
+                }
+              }
+            },
+            setDataTimer,
+            setChartData = function() {
+              // clear previous dataUpdate timer
+              if (setDataTimer) {
+                clearTimeout(setDataTimer);
+              }
+              // Update the data with setTimeout
+              // This will solve the issue of consiquitive data update within very small interval
+              setDataTimer = setTimeout(function() {
+                if (chart && chart.setJSONData) {
+                  chart.setJSONData(chartConfigObject.dataSource);
+                }
+              }, 0);
+
+              // chart.setJSONData(chartConfigObject.dataSource);
+            },
+            createFCChart = function() {
+              // dispose if previous chart exists
+              if (chart && chart.dispose) {
+                chart.dispose();
+              }
+              chart = new FusionCharts(chartConfigObject);
+              scope.initialized && scope.initialized({ chart: chart });
+              for (currIndex = 0; currIndex < eventsLen; currIndex++) {
+                eventName =
+                  'fcevent' +
+                  fcEvents[currIndex][0].toUpperCase() +
+                  fcEvents[currIndex].slice(1);
+                // assign all events on chart instance
+                (function(eventName) {
+                  chart.addEventListener(fcEvents[currIndex], function(
+                    event,
+                    args
+                  ) {
+                    scope[eventName] &&
+                      scope[eventName]({ event: event, args: args });
+                  });
+                })(eventName);
+              }
+              /* @todo validate the ready function whether it can be replaced in a better way */
+              angular.element(document).ready(function() {
+                element.ready(function() {
+                  // Render the chart only when angular is done compiling the element and DOM.
+                  chart = chart.render();
+                  scope[attrs.chartobject] = chart;
+                });
+              });
+            },
+            dataStringStore = {},
+            i,
+            attr,
+            _eobj,
+            key,
+            observableAttr,
+            chartConfigObject,
+            configObj,
+            dataComponent,
+            eventScopeArr,
+            l;
+
+          if (attrs.events) {
+            eventScopeArr = attrs.events.split('.');
+            l = eventScopeArr.length;
+            _eobj = scope.$parent;
+            for (i = 0; i < l; i += 1) {
+              _eobj = _eobj && _eobj[eventScopeArr[i]];
+            }
+            if (_eobj) {
+              for (key in _eobj) {
+                if (_eobj.hasOwnProperty(key)) {
+                  eventsObj[key.toLowerCase()] = _eobj[key];
+                }
+              }
+            }
+          }
+          for (i = 0; i < attribs.length; i++) {
+            attr = attribs[i];
+            if (attr.match(/^on/i)) {
+              key = attr.slice(2).toLowerCase();
+              eventsObj[key] = scope.$parent[attrs[attr]];
+            }
+          }
+
+          chartConfigObject = {
+            type: attrs.type,
+            width: attrs.width,
+            height: attrs.height,
+            renderAt: element[0],
+            id: attrs.chartid,
+            dataFormat: attrs.dataformat || 'json',
+            dataSource: {},
+            events: events
+          };
+
+          for (observableAttr in observeConf.NDCObserver) {
+            attrConfig = observeConf.NDCObserver[observableAttr];
+            if (attrConfig.ifExist === false || attrs[observableAttr]) {
+              attrs.$observe(observableAttr, attrConfig.observer);
+            }
+          }
+
+          if (attrs.datasource) {
+            chartConfigObject.dataSource =
+              chartConfigObject.dataFormat === 'json'
+                ? JSON.parse(attrs.datasource)
+                : attrs.datasource;
+            dataStringStore.dataSource = attrs.datasource;
+          }
+
+          for (observableAttr in observeConf.DCObserver) {
+            attrConfig = observeConf.DCObserver[observableAttr];
+            dataComponent = attrs[observableAttr];
+            if (dataComponent) {
+              attrs.$observe(observableAttr, attrConfig.observer);
+              dataStringStore[observableAttr] = dataComponent;
+              if (
+                chartConfigObject.dataFormat === 'json' &&
+                typeof chartConfigObject.dataSource === 'object'
+              ) {
+                chartConfigObject.dataSource[observableAttr] = JSON.parse(
+                  dataComponent
+                );
+              }
+            } else if (attrConfig.ifExist === false) {
+              attrs.$observe(observableAttr, attrConfig.observer);
+            }
+          }
+
+          // add configurations from config
+          if (attrs.config) {
+            configObj = JSON.parse(attrs.config);
+            for (attr in configObj) {
+              chartConfigObject[attr] = configObj[attr];
+            }
+          }
+
+          createFCChart();
+
+          scope.$on('$destroy', function() {
+            // on destroy free used resources to avoid memory leaks
+            if (chart && chart.dispose) {
+              chart.dispose();
+            }
+          });
+        }
+      };
+    }
+  ]);
+})();

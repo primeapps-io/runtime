@@ -1,389 +1,114 @@
-<help-page ng-if="!loading" route="currentPath"></help-page>
-<div class="reports">
-    <div class="row">
-        <div class="col-sm-2 reports-sidebar">
-            <div class="reports-sidebar-header">
-                <div class="input-group input-group-sm report-search">
-                    <i class="fa fa-search" aria-hidden="true"></i>
-                    <input type="text" class="form-control" ng-model="reportSearch"
-                           placeholder="{{'Common.Find' | translate}}"
-                           aria-describedby="sizing-addon3">
-
+<md-content flex style="height: 100%;">
+    <div layout="column"  style="height: 100%; overflow-y: hidden;" ng-cloak>
+        <md-toolbar md-scroll-shrink ng-if="true">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button show-on-m" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()"> <i class="fas fa-angle-left"></i> <md-tooltip md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip> </md-button>
+                <h2 md-truncate>{{ currentReport.name }}</h2>
+                <div class="helpbuttons hide-on-m">
+                    <md-button class="md-icon-button" aria-label="{{'Common.Help' | translate}}" ng-click="helpSide()"> <i class="fas fa-question-circle"></i> <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip></md-button>
+                    <md-button class="md-icon-button enlarge d-none d-lg-inline-block" ng-click="toggleFullLeftMenu()" aria-label="{{'Common.FullScreen' | translate}}" >
+                        <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 36 36" style="enable-background:new 0 0 36 36;" xml:space="preserve">
+                            <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z"/>
+                            <path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z"/>
+                            <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
+                            <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/>
+                        </svg>
+                        <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                        <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                    </md-button>
                 </div>
-                <div id="category-create" style="
-                     position: absolute;
-                     z-index: 999;
-                     bottom: 67px;
-                     left: 120px;
-                     width: 50px;
-                     height: 50px;  "></div>
-                <div class="input-group input-group-sm new-folder " ng-if="user.profile.has_admin_rights">
-                    <button data-title="Klasör  Adı" ng-click="categoryEditModalOpen('create',{created_by_id:0,name:''})" class=" btn btn-sm btn-primary new-btn pull-right">+</button>
-                </div>
-
+    
+                <span flex></span>
+                <md-button class="btn btn-secondary md-icon-button" aria-label="{{'Common.Delete' | translate}}" ng-if="currentReport.created_by_id === user.ID  || user.profile.has_admin_rights" ><i class="fas fa-trash"></i><md-tooltip md-direction="bottom">{{'Common.Delete' | translate}}</md-tooltip> </md-button>
+                <md-button class="btn btn-secondary md-icon-button" aria-label="{{'Report.Copy' | translate}}" ng-if="permissionsReport.write" ><i class="fas fa-copy"></i><md-tooltip md-direction="bottom">{{'Report.Copy' | translate}}</md-tooltip> </md-button>
+                <md-button class="btn btn-secondary md-icon-button" aria-label="{{'Report.Edit' | translate}}" ng-if="currentReport.created_by_id === user.ID  || user.profile.has_admin_rights" ><i class="fas fa-pen"></i><md-tooltip md-direction="bottom">{{'Report.Edit' | translate}}</md-tooltip> </md-button>
+                <md-button class="show-on-m btn btn-secondary md-icon-button" ng-click="openCategoryList()" aria-label="Open Category List"><i class="fa fa-bars"></i></md-button>
             </div>
-            <ul class="list-group" id="style-3">
-                <div class="bs-example" append-source>
-                    <h3 class="warning-box" ng-if="ReportCateogryies.length<1">{{'Report.EmptyCategoryReport' | translate}}</h3>
-                    <div class="panel-group" ng-model="multiplePanels" role="tablist" aria-multiselectable="true"
-                         data-allow-multiple="true"
-                         bs-collapse>
-                        <div class="panel panel-default" style="background: rgba(0,0,0,0.05); padding: 10px;margin-bottom: 20px;"
-                             ng-repeat="item in ReportCateogryies | filter : item | orderBy : order"
-                             ng-if="item.user_id==user.ID || item.user_id==null">
-                            <div class="panel-heading" role="tab">
-                                <h4 class="panel-title">
-                                    <li class="list-group-item" id="category-{{item.id}}" style="background:transparent; padding: 15px 0px">
-                                        <!--<i class="fa fa-folder"></i>-->
-                                        <!--<i data-animation="am-flip-x" bs-dropdown aria-haspopup="true"-->
-                                        <!--ng-show=" permissionsReport.write || user.profile.has_admin_rights"-->
-                                        <!--aria-expanded="false" class="fa fa-pencil"></i>-->
-                                        <!--<ul class="dropdown-menu" role="menu">-->
-                                        <!--<li>-->
-                                        <!--<a ng-show="permissionsReport.write"-->
-                                        <!--href="#/app/report?categoryId={{item.id}}">-->
-                                        <!--{{'Report.Create' | translate}}-->
-                                        <!--</a>-->
-                                        <!--<a ng-show="user.profile.has_admin_rights" href-->
-                                        <!--ng-click="categoryEditModalOpen('update',item)">-->
-                                        <!--{{'Report.CategoryEdit' | translate}}-->
-                                        <!--</a>-->
-                                        <!--<a ng-show="user.profile.has_admin_rights" href-->
-                                        <!--ng-click="categoryDelete(item.id)">-->
-                                        <!--{{'Common.Delete' |-->
-                                        <!--translate}}-->
-                                        <!--</a>-->
-                                        <!--</li>-->
-                                        <!--</ul>-->
-                                        <span style="display: flex; justify-content: space-between; align-items: center;" bs-collapse-toggle>
-                                            <span>
-                                                <i class="glyphicon" style="font-size: 10px;"
-                                                   ng-class="collapseStatus($index) ? 'glyphicon-chevron-up' :'glyphicon-chevron-down'"></i>
-                                                {{ item['name_'+user.language] }}
-                                            </span>
-                                            <span>
-                                                <ul class="list-unstyled list-inline">
-
-
-
-                                                    <!--<li>-->
-                                                    <!--<a ng-show="permissionsReport.write"-->
-                                                    <!--href="#/app/report?categoryId={{item.id}}" title="{{'Report.Create' | translate}}">-->
-                                                    <!--<i class="fa fa-plus"></i>-->
-                                                    <!--</a>-->
-                                                    <!--</li>-->
-                                                    <li>
-                                                        <a ng-show="user.profile.has_admin_rights" href
-                                                           ng-click="categoryEditModalOpen('update',item)" title="{{'Report.CategoryEdit' | translate}}">
-                                                            <i class="fa fa-pencil"></i>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a ng-show="user.profile.has_admin_rights" href
-                                                           ng-click="categoryDelete(item.id)" title="{{'Common.Delete' | translate}}">
-                                                            <i class="fa fa-trash"></i>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </span>
-                                        </span>
-                                    </li>
-                                </h4>
-                            </div>
-                            <div class="panel-collapse" role="tabpanel" bs-collapse-target style="border-top: 1px solid rgba(0,0,0,0.05); padding: 10px 0px;">
-                                <div class="panel-body">
-                                    <ul style="padding-left:0px;">
-                                        <li ng-repeat="report in Reports | filter:reportSearch"
-                                            ng-click="changeReport(report)"
-                                            ng-class="currentReport.id == report.id ? 'active':''"
-                                            ng-if="report.category_id == item.id">
-                                            <i class="fa fa-angle-right"></i>
-                                            {{ report['name_'+user.language] }}
-                                        </li>
-                                    </ul>
-                                    <div>
-                                        <a class="btn btn-sm btn-custom" href="#/app/report?categoryId={{item.id}}" role="button"><i class="fa fa-plus"></i> {{'Report.Create' | translate}}</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </ul>
-        </div>
-        <div class="col-sm-9 report-list" id="reportlist">
-            <div class="container" block-ui="myBlockUI">
-                <style>
-                    .width100 {
-                        width: 100%;
-                    }
-
-                    .roundbutton {
-                        -webkit-transition: all 0.5s ease;
-                        -moz-transition: all 0.5s ease;
-                        -o-transition: all 0.5s ease;
-                        -ms-transition: all 0.5s ease;
-                        border-radius: 30px;
-                        background-color: rgba(13, 111, 170, 0.75);
-                        font-weight: bold;
-                        color: #fff !important;
-                        padding: 9px 20px;
-                        font-size: 14px;
-                        text-decoration: none;
-                    }
-
-                        .roundbutton:hover {
-                            background-color: rgba(13, 111, 170, 1);
-                            text-decoration: none;
-                        }
-                </style>
-                <div class="col-sm-offset-3 col-sm-6" ng-if="Reports.length<1">
-                    <img class="width100" style="padding-top:100px;padding-bottom: 30px" src="images/reports.svg">
-                    <div style="text-align: center;">
-                        <label style="font-size: 18px; color: #000000;opacity: 0.5;font-weight: bold !important;">
-                            Welcome
-                            {{user.full_name}}
-                        </label>
-                    </div>
-                    <div style="text-align: center;">
-                        <label style="font-size: 14px; color: #000000;opacity: 0.5;">
-                            There
-                            is no report to display here.
-                        </label>
-                    </div>
-                    <!--<div style="text-align: center;margin: 15px;">-->
-                    <!--<a href="https://www.primeapps.io/platform/tutorials" style="border:none; padding: 9px 20px; font-size: 14px;" class="roundbutton">-->
-                    <!--Add New Report-->
-                    <!--</a>-->
-                    <!--</div>-->
-                </div>
-                <div class="row report-list-header">
-                    <div class="col-sm-12 report-list-header-title">
-                        <h3>{{ currentReport['name_'+user.language] }}</h3>
-                    </div>
-                    <div class="col-sm-12 pull-right " ng-if="Reports.length>1">
-                        <a confirm-click action="deleteReport(currentReport.id)"
-                           placement="bottom"
-                           confirm-message="{{'Common.AreYouSure' | translate}}"
-                           style="margin-left: 5px"
-                           confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}"
-                           title="{{'Common.Delete' | translate}}"
-                           class="btn btn-sm btn-custom pull-right " role="button"
-                           ng-if="(currentReport.created_by_id === user.ID  || user.profile.has_admin_rights)  && currentReport.system_type === 'custom'">
-                            {{'Common.Delete' | translate}}
-                        </a>
-                        <a href="#/app/report?Id={{currentReport.id +'&categoryId='+ currentReport.category_id+'&clone=true' }}"
-                           class="btn btn-sm btn-custom pull-right col-md-offset-0"
-                           role="button" style="margin-left: 5px" ng-if="permissionsReport.write">
-                            {{'Report.Copy' | translate}}
-                        </a>
-
-                        <a href="#/app/report?Id={{currentReport.id +'&categoryId='+ currentReport.category_id }}"
-                           class="btn btn-sm btn-custom pull-right col-md-offset-0"
-                           role="button" style="margin-left: 5px"
-                           ng-if="(currentReport.created_by_id === user.ID  || user.profile.has_admin_rights || permissionsReport.modify) && currentReport.system_type === 'custom'">
-                            {{'Report.Edit' | translate}}
-                        </a>
-                        <a href="#/app/report?categoryId={{currentReport.category_id }}"
-                           class="btn btn-sm btn-custom pull-right col-md-offset-0"
-                           role="button" style="margin-right: 5px" ng-if="permissionsReport.write">
-                            {{'Report.Create' | translate}}
-                        </a>
-                    </div>
-                    <div class="row report-list-header-search">
-                        <div class="panel panel-default col-sm-12" ng-if="currentReport.report_type==='tabular'">
-                            <div class="panel-body filter-panel">
-                                <div class="col-sm-3">
-                                    <label class="control-label ">
-                                        <span class="required-field">*</span>
-                                        {{'Report.FilteredField' | translate}}
-                                    </label>
-                                    <select class="form-control col-sm-2 ng-animate-disabled date-pick"
-                                            name="dateFields"
-                                            ng-model="newFilter.dateField"
-                                            ng-options="o.name as o.label for o in dateFields">
-                                        <option value="">{{'Common.Select' | translate}}</option>
-                                    </select>
-                                </div>
-                                <div class="col-sm-2">
-                                    <label class="control-label ">
-                                        <span class="required-field">*</span>
-                                        {{'Report.CustomDate' | translate}}
-                                    </label>
-                                    <select class="form-control ng-animate-disabled date-pick"
-                                            name="dateFilter"
-                                            ng-model="newFilter.dateFilter"
-                                            ng-change="changeFilter()"
-                                            ng-disabled="!newFilter.dateField"
-                                            ng-options="o.name as o.label for o in dateFiltes">
-                                        <option value="">{{'Common.Select' | translate}}</option>
-                                    </select>
-                                </div>
-                                <div class="col-sm-2">
-                                    <label class="control-label ">
-                                        <span class="required-field">*</span>
-                                        {{'Report.StartDate' | translate}}
-                                    </label>
-                                    <input type="text"
-                                           class="form-control ng-animate-disabled date-pick"
-                                           ng-model="newFilter.startDate"
-                                           placeholder="{{'Common.Date' | translate}}"
-                                           data-autoclose="1"
-                                           data-date-type="iso"
-                                           data-icon-left="fa fa-chevron-left"
-                                           data-icon-right="fa fa-chevron-right"
-                                           data-placement="bottom-right"
-                                           ng-change="dateChange();"
-                                           ng-disabled="!newFilter.dateFilter || !newFilter.dateField "
-                                           bs-datepicker>
-
-                                </div>
-                                <div class="col-sm-2">
-                                    <label class="control-label ">
-                                        <span class="required-field">*</span>
-                                        {{'Report.EndDate' | translate}}
-                                    </label>
-                                    <input type="text"
-                                           class="form-control ng-animate-disabled date-pick"
-                                           ng-model="newFilter.endDate"
-                                           placeholder="{{'Common.Date' | translate}}"
-                                           data-autoclose="1"
-                                           data-date-type="iso"
-                                           data-icon-left="fa fa-chevron-left"
-                                           data-icon-right="fa fa-chevron-right"
-                                           data-placement="bottom-right"
-                                           ng-change="dateChange();"
-                                           ng-disabled="!newFilter.dateFilter || !newFilter.dateField"
-                                           bs-datepicker>
-
-                                </div>
-
-                                <div class="col-sm-2" style="padding-top: 5px; width: 100px">
-                                    <label class="control-label "><span class="required-field"></span></label>
-                                    <a ng-click="setFilter()" class="form-control btn btn-sm btn-primary"
-                                       role="button"
-                                       style="margin-left: 5px">
-                                        {{'Report.Filter' | translate}}
-                                    </a>
-                                </div>
-                                <div class="col-sm-2" style="padding-top: 5px; width: 100px ">
-                                    <label class="control-label "><span class="required-field"></span></label>
-                                    <a ng-click="clearFilter()" class="form-control btn btn-sm btn-primary"
-                                       role="button"
-                                       style="margin-left: 5px">
-                                        {{'Report.Clear' | translate}}
-                                    </a>
-                                </div>
-
-                            </div>
-                        </div>
-
-
-                    </div>
-
-                </div>
-                <div class="clearfix"></div>
-                <div class="row">
-                    <div class="col-sm-3">
-
-                    </div>
-                </div>
+        </md-toolbar>
+        <md-content flex>
+            <div class="container-fluid paddingua20">
                 <div class="row report-table" style="margin-bottom: 20px;">
                     <div class="col-sm-12 table-column" ng-if="currentReport.report_type==='tabular'">
-                        <h3 class="warning-box" ng-if="currentTable.total ===-1">
-                            {{
-'Dashboard.ChartEmptyMessage' |
-                            translate
-                            }}
-                        </h3>
+                        <h3 class="warning-box" ng-if="currentTable.total ===-1"> {{'Dashboard.ChartEmptyMessage' | translate}} </h3>
                         <table class="table ng-table" ng-if="currentTable.data && currentTable.total >0">
                             <thead>
-                                <tr class="table-head">
-                                    <th class="table-th sortable"
-                                        ng-repeat="column in currentTable.displayFileds | orderBy:'colorder':false"
-                                        ng-click="table.shortChange(column.name)"
-                                        ng-class="{'sort-asc': table.isSortBy(column.name, 'asc'),'sort-desc': table.isSortBy(column.name, 'desc')}">
-
-                                        <div>
-                                            {{ column['label_'+language] }} <span ng-if="column.parentField">({{column.parentField['label_' + language]}})</span>
-                                        </div>
-
-                                    </th>
-                                </tr>
+                            <tr class="table-head">
+                                <th class="table-th sortable"
+                                    ng-repeat="column in currentTable.displayFileds | orderBy:'colorder':false"
+                                    ng-click="table.shortChange(column.name)"
+                                    ng-class="{'sort-asc': table.isSortBy(column.name, 'asc'),'sort-desc': table.isSortBy(column.name, 'desc')}">
+    
+                                    <div>{{ column['label_'+language] }} <span ng-if="column.parentField">({{column.parentField['label_' + language]}})</span>
+                                    </div>
+                                </th>
+                            </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="row in currentTable.data | orderBy:fields:orderModel">
-                                    <td ng-repeat="(key, field) in row.fields | orderBy:'order' track by $index">
-                                        <ng-include src="'view/common/tablebody.html'"></ng-include>
-                                    </td>
-                                </tr>
-
-
-                                <tr style="background: #f8f8f8 !important;">
-                                    <td style="text-align: right;"
-                                        ng-repeat="aggregationsField in currentTable.aggregationsFields | orderBy:'colorder':false">
-                                        <b style="color: #000;">
-                                            {{
- aggregationsField.aggregation ?
-                                        aggregationsField.aggregation.label + ":" :''
-                                            }}
-                                        </b>
-                                        {{
- aggregationsField.aggregation ?
-                                    aggregationsField.valueFormatted :''
-                                        }}
-                                    </td>
-
-                                </tr>
-                                <tr class="pagination-tr">
-                                    <td colspan="5">
-                                        <nav>
-
-                                            <ul class="pagination" ng-if="currentTable.totalPage>0">
-                                                <li class="page-item"
-                                                    ng-class="currentTable.activePage >1 ? '' :'disabled'"
-                                                    ng-click="currentTable.activePage >1 ? table.pageChange(currentTable.activePage-1): false">
-                                                    <a class="page-link">
-                                                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
-                                                    </a>
-                                                </li>
-
-                                                <li ng-if="currentTable.totalPage" class="current-page">
-                                                    <select name="module"
-                                                            required
-                                                            ng-model="currentTable.activePage"
-                                                            ng-change="table.pageChange(currentTable.activePage)"
-                                                            ng-disabled="id"
-                                                            ng-options="o as o for o in getNumber(currentTable.totalPage)"></select>
-                                                </li>
-
-                                                <li class="page-item"
-                                                    ng-class="currentTable.activePage<currentTable.totalPage-1 ? '' :'disabled'">
-                                                    <a class="page-link"
-                                                       ng-class="currentTable.activePage<currentTable.totalPage-1 ? 'disabled' :''"
-                                                       ng-click="currentTable.activePage<currentTable.totalPage-1 ? table.pageChange(currentTable.activePage+1) :'false'">
-                                                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
-
-                                                    </a>
-                                                </li>
-
-
-                                            </ul>
-                                        </nav>
-
-                                        <div class="ng-table-counts btn-group pull-right">
-                                            <div class=" table-total">
-                                                <span> <span>{{('Common.TotalRecord' | translate) + ': ' + currentTable.total }}</span></span>
-                                            </div>
-                                            <button class="btn btn-default" ng-repeat="limit in limits"
-                                                    ng-class="currentTable.activeLimit === limit ? 'active':'' "
-                                                    ng-click="table.limitChange(limit);currentTable.activeLimit=limit">
-                                                <span>{{ limit }}</span>
-                                            </button>
+                            <tr ng-repeat="row in currentTable.data | orderBy:fields:orderModel">
+                                <td ng-repeat="(key, field) in row.fields | orderBy:'order' track by $index">
+                                    <ng-include src="'view/common/tablebody.html'"></ng-include>
+                                </td>
+                            </tr>
+    
+    
+                            <tr style="background: #f8f8f8 !important;">
+                                <td style="text-align: right;"
+                                    ng-repeat="aggregationsField in currentTable.aggregationsFields | orderBy:'colorder':false">
+                                    <b style="color: #000;">{{ aggregationsField.aggregation ?
+                                        aggregationsField.aggregation.label + ":" :'' }}</b>
+                                    {{ aggregationsField.aggregation ?
+                                    aggregationsField.valueFormatted :'' }}
+                                </td>
+    
+                            </tr>
+                            <tr class="pagination-tr">
+                                <td colspan="5">
+                                    <nav>
+    
+                                        <ul class="pagination" ng-if="currentTable.totalPage>0">
+                                            <li class="page-item"
+                                                ng-class="currentTable.activePage >1 ? '' :'disabled'"
+                                                ng-click="currentTable.activePage >1 ? table.pageChange(currentTable.activePage-1): false">
+                                                <a class="page-link">
+                                                    <i class="fa fa-chevron-left" aria-hidden="true"></i> </a>
+                                            </li>
+    
+                                            <li ng-if="currentTable.totalPage" class="current-page">
+                                                <select
+                                                        name="module"
+                                                        required
+                                                        ng-model="currentTable.activePage"
+                                                        ng-change="table.pageChange(currentTable.activePage)"
+                                                        ng-disabled="id"
+                                                        ng-options="o as o for o in getNumber(currentTable.totalPage)">
+                                                </select>
+                                            </li>
+    
+                                            <li class="page-item"
+                                                ng-class="currentTable.activePage<currentTable.totalPage-1 ? '' :'disabled'">
+                                                <a class="page-link"
+                                                   ng-class="currentTable.activePage<currentTable.totalPage-1 ? 'disabled' :''"
+                                                   ng-click="currentTable.activePage<currentTable.totalPage-1 ? table.pageChange(currentTable.activePage+1) :'false'">
+                                                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+    
+                                                </a></li>
+    
+    
+                                        </ul>
+                                    </nav>
+    
+                                    <div class="ng-table-counts btn-group pull-right">
+                                        <div class=" table-total">
+                                            <span> <span>{{('Common.TotalRecord' | translate) + ': ' + currentTable.total }}</span></span>
                                         </div>
-                                    </td>
-                                </tr>
+                                        <button class="btn btn-default" ng-repeat="limit in limits"
+                                                ng-class="currentTable.activeLimit === limit ? 'active':'' "
+                                                ng-click="table.limitChange(limit);currentTable.activeLimit=limit">
+                                            <span>{{ limit }}</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -400,37 +125,36 @@
                                     </fusioncharts>
                                 </div>
                             </div>
-
+    
                             <table class="table ng-table" ng-if="reportSummary.chart && reportSummary.data.length >0">
                                 <thead>
-                                    <tr class="table-head ">
-                                        <th class="table-th sortable "
-                                            ng-click="shortChange('label',current.reverse==false ? true:false)"
-                                            ng-class="current.field =='label' && current.reverse==true ? 'sort-asc':''  + current.field =='label' && current.reverse==false ? 'sort-desc':'' ">
-                                            <div>{{ reportSummary.groupField }}</div>
-                                        </th>
-                                        <th class="table-th sortable"
+                                <tr class="table-head ">
+                                    <th class="table-th sortable "
+                                        ng-click="shortChange('label',current.reverse==false ? true:false)"
+                                        ng-class="current.field =='label' && current.reverse==true ? 'sort-asc':''  + current.field =='label' && current.reverse==false ? 'sort-desc':'' ">
+                                        <div>{{ reportSummary.groupField }}</div>
+                                    </th>
+                                    <th
+                                            class="table-th sortable"
                                             ng-click="shortChange('value',current.reverse==false ? true:false)"
                                             ng-class="current.field =='value' && current.reverse==true ? 'sort-asc':''  + current.field =='value' && current.reverse==false ? 'sort-desc':'' ">
-                                            <div>
-                                                <span>{{ reportSummary.chart["yaxisname_"+user.language] }} </span>
-                                            </div>
-                                        </th>
-                                    </tr>
+                                        <div>
+                                            <span>{{ reportSummary.chart["yaxisname_"+user.language] }} </span>                                             
+                                        </div>
+                                    </th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="item in reportSummary.data">
-                                    <tr ng-repeat="item in reportSummary.data">
-                                        <td style="text-align: left;" ng-bind-html="item.label"></td>
-                                        <td style="text-align: right;">
-                                            {{
-currentReport.aggregations[0].field===currentReport.group_field ? item.value :
-                                        item.valueFormatted
-                                            }}
-                                        </td>
-                                    </tr>
+                                <tr ng-repeat="item in reportSummary.data">
+                                <tr ng-repeat="item in reportSummary.data">
+                                    <td style="text-align: left;" ng-bind-html="item.label"></td>
+                                    <td style="text-align: right;">
+                                        {{currentReport.aggregations[0].field===currentReport.group_field ? item.value :
+                                        item.valueFormatted }}
+                                    </td>
+                                </tr>
                                 </tbody>
-
+    
                             </table>
                             <br>
                             <br>
@@ -438,18 +162,18 @@ currentReport.aggregations[0].field===currentReport.group_field ? item.value :
                         <div ng-if="currentReport.report_type==='single'" style="height:350px; width: 300px;">
                             <table class="table ng-table">
                                 <thead>
-                                    <tr class="table-head ">
-                                        <th class="table-th">
-                                            <div>
-                                                <span style=" font-size: 15px;">{{   reportSingle[0].type  }}</span>
-                                            </div>
-                                        </th>
-                                    </tr>
+                                <tr class="table-head ">
+                                    <th class="table-th">
+                                        <div>
+                                            <span style=" font-size: 15px;">{{   reportSingle[0].type  }}</span>
+                                        </div>
+                                    </th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td style="font-size: 26px; text-align: center">{{reportSingle[0].value}}</td>
-                                    </tr>
+                                <tr>
+                                    <td style="font-size: 26px; text-align: center">{{reportSingle[0].value}}</td>
+                                </tr>
                                 </tbody>
                             </table>
                             <br>
@@ -458,7 +182,112 @@ currentReport.aggregations[0].field===currentReport.group_field ? item.value :
                     </div>
                 </div>
             </div>
-        </div>
+        </md-content>
     </div>
-</div>
+</md-content>
 
+<md-sidenav class="md-sidenav-right md-whiteframe-2dp report-list" md-component-id="reportmenu" md-is-locked-open="$mdMedia('gt-sm')" >
+    <div layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
+        <md-toolbar md-scroll-shrink ng-if="true" class="with-subheader">
+            <div class="md-toolbar-tools">
+                <input type="text" class="form-control" ng-model="reportSearch" placeholder="{{'Common.Find' | translate}}" aria-describedby="sizing-addon3">
+                <span flex></span>
+                <md-menu md-position-mode="target-right target">
+                    <md-button class="btn btn-primary md-icon-button" aria-label="Add Reports" ng-click="$mdMenu.open()"> <i class="fas fa-plus"></i><md-tooltip md-direction="bottom">Add Report or Category</md-tooltip></md-button>
+                    <md-menu-content width="3">
+                        <md-menu-item>
+                            <md-button  ng-click="categoryEditModalOpen('create',{created_by_id:0,name:''},$event)">
+                                <i class="fas fa-plus"></i> <span>Add Category</span>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button aria-label="{{'Report.Create' | translate}}" ng-if="permissionsReport.write">
+                                <i class="fas fa-plus"></i> <span>{{'Report.Create' | translate}}</span>
+                            </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+            </div>
+        </md-toolbar>
+        <md-content>
+            <section ng-repeat="item in ReportCateogryies | filter : item | orderBy : order" ng-if="item.user_id==user.ID || item.user_id==null">
+                <md-subheader>
+                    <h5 md-truncate>{{ item.name }}</h5>
+                    <span flex></span>
+                    <md-button class="btn btn-secondary md-icon-button btn-sm" ng-click="categoryDelete(item.id)" aria-label="{{'Common.Delete' | translate}}">
+                        <i class="fa fa-trash"></i>
+                        <md-tooltip md-direction="bottom">{{'Common.Delete' | translate}}</md-tooltip>
+                    </md-button>
+                    <md-button class="btn btn-secondary md-icon-button btn-sm" ng-click="categoryEditModalOpen('update',item)" aria-label="{{'Report.CategoryEdit' | translate}}">
+                        <i class="fa fa-pen"></i>
+                        <md-tooltip md-direction="bottom">{{'Report.CategoryEdit' | translate}}</md-tooltip>
+                    </md-button>
+                </md-subheader>
+                <md-list layout-padding>
+                    <md-list-item class="md-1-line"
+                                  ng-repeat="report in Reports | filter:reportSearch"
+                                  ng-class="currentReport.id == report.id ? 'active':''"
+                                  ng-if="report.category_id == item.id">
+                        <a href ng-click="changeReport(report)" title="{{ report.name }}">
+                            <i class="fa fa-angle-right"></i>
+                            <span>{{ report.name }}</span>
+                        </a>
+                    </md-list-item>
+                </md-list>
+            </section>
+            <section ng-repeat="item in ReportCateogryies | filter : item | orderBy : order" ng-if="item.user_id==user.ID || item.user_id==null">
+                <md-subheader>
+                    <h5 md-truncate>{{ item.name }}</h5>
+                    <span flex></span>
+                    <md-button class="btn btn-secondary md-icon-button btn-sm" ng-click="categoryDelete(item.id)" aria-label="{{'Common.Delete' | translate}}">
+                        <i class="fa fa-trash"></i>
+                        <md-tooltip md-direction="bottom">{{'Common.Delete' | translate}}</md-tooltip>
+                    </md-button>
+                    <md-button class="btn btn-secondary md-icon-button btn-sm" ng-click="categoryEditModalOpen('update',item)" aria-label="{{'Report.CategoryEdit' | translate}}">
+                        <i class="fa fa-pen"></i>
+                        <md-tooltip md-direction="bottom">{{'Report.CategoryEdit' | translate}}</md-tooltip>
+                    </md-button>
+                </md-subheader>
+                <md-list layout-padding>
+                    <md-list-item class="md-1-line"
+                                  ng-repeat="report in Reports | filter:reportSearch"
+                                  ng-class="currentReport.id == report.id ? 'active':''"
+                                  ng-if="report.category_id == item.id">
+                        <a href ng-click="changeReport(report)" title="{{ report.name }}">
+                            <i class="fa fa-angle-right"></i>
+                            <span>{{ report.name }}</span>
+                        </a>
+                    </md-list-item>
+                </md-list>
+            </section>
+            <section ng-repeat="item in ReportCateogryies | filter : item | orderBy : order" ng-if="item.user_id==user.ID || item.user_id==null">
+                <md-subheader>
+                    <h5 md-truncate>{{ item.name }}</h5>
+                    <span flex></span>
+                    <md-button class="btn btn-secondary md-icon-button btn-sm" ng-click="categoryDelete(item.id)" aria-label="{{'Common.Delete' | translate}}">
+                        <i class="fa fa-trash"></i>
+                        <md-tooltip md-direction="bottom">{{'Common.Delete' | translate}}</md-tooltip>
+                    </md-button>
+                    <md-button class="btn btn-secondary md-icon-button btn-sm" ng-click="categoryEditModalOpen('update',item)" aria-label="{{'Report.CategoryEdit' | translate}}">
+                        <i class="fa fa-pen"></i>
+                        <md-tooltip md-direction="bottom">{{'Report.CategoryEdit' | translate}}</md-tooltip>
+                    </md-button>
+                </md-subheader>
+                <md-list layout-padding>
+                    <md-list-item class="md-1-line"
+                                  ng-repeat="report in Reports | filter:reportSearch"
+                                  ng-class="currentReport.id == report.id ? 'active':''"
+                                  ng-if="report.category_id == item.id">
+                        <a href ng-click="changeReport(report)" title="{{ report.name }}">
+                            <i class="fa fa-angle-right"></i>
+                            <span>{{ report.name }}</span>
+                        </a>
+                    </md-list-item>
+                </md-list>
+            </section>
+        </md-content>
+    </div>
+</md-sidenav>
+<md-sidenav ng-show="sideinclude" id="sideModal" class="md-sidenav-right md-whiteframe-2dp" md-component-id="sideModal" md-is-locked-open="isDocked &&  $mdMedia('gt-lg')">
+    <div data-ng-if="sideLoad" data-ng-include="url" layout="column" style="height: 100%;" ng-cloak></div>
+</md-sidenav>

@@ -1,0 +1,287 @@
+<md-toolbar class="add-view" md-scroll-shrink ng-if="true">
+    <div class="md-toolbar-tools">
+        <md-button class="md-icon-button" ng-click="closeSide('sideModal')" aria-label="{{'Common.Back' | translate}}"><i
+                class="fas fa-angle-left"></i>
+            <md-tooltip md-direction="bottom" >{{'Common.Back' | translate}}</md-tooltip>
+        </md-button>
+        <h3 md-truncate> {{ activeView['label_'+language] || activeView['name_'+language] }}</h3>
+        <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close"><i
+                class="fas fa-thumbtack"></i></md-button>
+        <span flex></span>
+        <md-button
+                ng-if="activeView.system_type !='system'"
+                class="md-icon-button btn btn-secondary" aria-label="Delete" ng-click="deleteView($event)"><i class="fas fa-trash"></i>
+            <md-tooltip md-directtion="bottom"> {{'Common.Delete' | translate}}</md-tooltip>
+        </md-button>
+        <md-button class="md-icon-button btn btn-primary" ng-disabled="isDirty" ng-click="saveModal()" aria-label="Save"><i
+                class="fas fa-save"></i>
+            <md-tooltip md-directtion="bottom">{{'Common.Save' | translate}} </md-tooltip>
+        </md-button>
+    </div>
+</md-toolbar>
+
+<md-content flex>
+    <div class="container-fluid paddingua30">
+        <div class="title">
+            <h5>{{'View.ViewType' | translate}}</h5>
+        </div>
+        <div class="whitebox padding20">
+            <div class="row row5 view-type">
+                <div class="col-4 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('grid');">
+                    <a ng-class="activeView.view_type ==='grid'  ? 'active':''" href
+                       title="{{'View.GridView' | translate}}">
+                        <span class="view-img-holder"><img src="images/views/grid.svg" alt="{{'View.GridView' | translate}}"/><i
+                                class="fas fa-check"></i></span>
+                        <small>{{'View.Grid' | translate}}</small>
+                    </a>
+                </div>
+                <!--<div class="col-4 col-md-3 col-lg-3 col-xl-2">
+                    <a href ng-class="activeView.viewType ==='calendar' ? 'active':''" title="Calendar View">
+                        <span class="view-img-holder"><img src="images/views/calendar.svg" alt="Calendar View"/><i
+                                class="fas fa-check"></i></span>
+                        <small>Calendar</small>
+                    </a>
+                </div>
+                <div class="col-4 col-md-3 col-lg-3 col-xl-2">
+                    <a href ng-class="activeView.viewType ==='gallery' ? 'active':''" title="Gallery View">
+                        <span class="view-img-holder"><img src="images/views/gallery.svg" alt="Gallery View"/><i
+                                class="fas fa-check"></i></span>
+                        <small>Gallery</small>
+                    </a>
+                </div>
+                <div class="col-4 col-md-3 col-lg-3 col-xl-2">
+                    <a href ng-class="activeView.viewType ==='kanban' ? 'active':''" title="Kanban View">
+                        <span class="view-img-holder"><img src="images/views/kanban.svg" alt="Kanban View"/><i
+                                class="fas fa-check"></i></span>
+                        <small>Kanban</small>
+                    </a>
+                </div>-->
+                <div class="col-4 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('report');">
+                    <a href ng-class="activeView.view_type ==='report' ? 'active':''"
+                       title="{{'View.ReportView' | translate}}">
+                        <span class="view-img-holder"><img src="images/views/report.svg" alt="{{'View.ReportView' | translate}}"/><i
+                                class="fas fa-check"></i></span>
+                        <small> {{'View.Report' | translate}}</small>
+                    </a>
+                </div>
+                <!--<div class="col-4 col-md-3 col-lg-3 col-xl-2">
+                    <a href ng-class="activeView.viewType ==='maps' ? 'active':''" title="Maps View">
+                        <span class="view-img-holder"><img src="images/views/maps.svg" alt="Maps View"/><i
+                                class="fas fa-check"></i></span>
+                        <small>Maps</small>
+                    </a>
+                </div>-->
+            </div>
+        </div>
+
+
+        <div class="title" ng-if="activeView.view_type=='report'">
+            <h5>{{'View.ReportSettings' | translate}}</h5> 
+        </div>
+        <div ng-if="activeView.view_type=='report'" class="whitebox padding20 filter-list">
+            <section>
+                <div class="form-group">
+                    <label for="reporttype">
+                        <span>   {{'Report.ReportType' | translate}} </span>
+                    </label>
+                    <select id="reporttype" k-options="reportTypeOptions" ng-model="activeView.report_type"
+                           ng-change="reportTypeChange()"
+                            kendo-drop-down-list></select>
+                </div>
+                <!--Report Group By Field Selection -->
+                <div class="form-group" ng-if="activeView.view_type=='report' && activeView.report_type ==='summary'">
+                    <label for="report-groupby-field">
+                        <span>   {{'Report.GroupArea' | translate}} </span>
+                    </label>
+
+                    <select
+                            id="report-groupby-field"
+                            k-option-label="'{{'Module.SelectField' | translate}}'"
+                            k-data-text-field="'label_{{language}}'"
+                            k-data-value-field="'name'"
+                            k-data-source="module.fields"
+                            k-on-change="chartFilter()"
+                            kendo-drop-down-list ng-model="activeView.group_field"></select>
+                </div>
+                <!--Report Ordering Field E -->
+                <div class="form-group" ng-if="activeView.view_type=='report' && activeView.report_type ==='summary'">
+                    <label for="report-order-field">
+                        <span>   {{'Report.OrderArea' | translate}} </span>
+                    </label>
+
+                    <select
+                            id="report-order-field"
+                            k-option-label="'{{'Module.SelectField' | translate}}'"
+                            k-data-text-field="'label_{{language}}'"
+                            k-data-value-field="'name'"
+                            k-data-source="module.fields"
+                            kendo-drop-down-list ng-model="reportModel.sort_field"></select>
+                </div>
+            </section>
+
+        </div>
+
+        <!--  Calculation Fields-->
+       
+        <div class="title" ng-if="activeView.view_type ==='report' && activeView.report_type !=='tabular'" >
+            <h5>{{ 'Report.CalculationFields' | translate}}</h5>
+        </div>
+
+        <!--    Calculation Fields-->
+        <div ng-if="activeView.report_type==='summary' || activeView.report_type==='single'"
+             class="whitebox padding20 filter-list">
+            <section class="row">
+                <div class="col-12 col-sm-6">
+                    <select id="calculationfields"
+                            k-option-label="'{{'Module.SelectField' | translate}}'"
+                            k-data-text-field="'label_{{language}}'"
+                            k-data-value-field="'name'"
+                            k-data-source="numberFields"
+                            ng-model="activeView.aggregation.field"
+                            k-on-change="activeView.report_type==='single' ?   widgetFilter():chartFilter()"
+                            kendo-drop-down-list></select>
+
+                </div>
+                <div class="col-12 col-sm-6">
+                    <select id="aggregation_type"
+                            k-option-label="'{{'Module.AggregationType' | translate}}'"
+                            k-data-text-field="'label'"
+                            k-data-value-field="'value'"
+                            k-data-source="aggregationTypes"
+                            k-on-change="activeView.report_type==='single' ?   widgetFilter():chartFilter()"
+                            ng-model="activeView.aggregation.aggregation_type"
+                            kendo-drop-down-list></select>
+
+                </div>
+
+
+            </section>
+
+        </div>
+        <!--  Chart Settings -->
+        <div class="title" ng-if="activeView.report_type ==='summary'">
+            <h5> {{'View.ChartSettings' | translate}}  </h5>
+        </div>
+        <section class="whitebox padding20 filter-list"
+                 ng-if="activeView.report_type ==='summary'">
+
+            <div class="form-group">
+                <label>
+                    <span>   {{'Report.Chart.Type' | translate}} </span>
+                </label>
+                <select
+                        id="chart-type"
+                        k-option-label="'{{'Module.Select Field' | translate}}'"
+                        k-data-text-field="'label'"
+                        k-data-value-field="'name'"
+                        k-data-source="chartTypes"
+                        kendo-drop-down-list ng-model="reportSummary.chart.chart_type"></select>
+            </div>
+            <div class="form-group">
+                <label>
+                    <span>    {{ 'Report.Chart.XaxisName' | translate }} </span>
+                </label>
+                <input type="text" id="xaxis_name" name="xaxis_name" ng-model="reportSummary.chart.xaxisname"
+                       class="k-textbox"/>
+            </div>
+            <div class="form-group">
+                <label>
+                    <span>    {{ 'Report.Chart.YaxisName' | translate }} </span>
+                </label>
+                <input type="text" id="yaxisname" name="yaxisname" ng-model="reportSummary.chart.yaxisname"
+                       class="k-textbox"/>
+            </div>
+
+        </section>
+
+        <!--  Widget Settings -->
+        <div class="title" ng-if="activeView.report_type ==='single'">
+            <h5> {{'Report.Widget.Name' | translate}} </h5>
+        </div>
+        <section class="whitebox padding20 filter-list"
+                 ng-if="activeView.view_type==='report' && activeView.report_type ==='single'">
+
+            <div class="form-group">
+                <label>
+                    <span>   {{'Report.Widget.Icon' | translate}} </span>
+                </label>
+                <select id="icon"
+                        ng-model="activeView.icon" kendo-drop-down-list k-options="selectIconOptions">
+                    <option value="">{{'Common.Select' | translate}}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>
+                    <span>    {{ 'Report.Widget.Color' | translate }} </span>
+                </label>
+
+                <input class="form-control" kendo-color-picker k-options="colorPaletOptions" ng-model="activeView.color"
+                       name="colorpicker"/>
+
+            </div>
+
+
+        </section>
+
+
+        <div class="title">
+            <h5> {{'View.ChooseYourCriterion' | translate}}   </h5>
+            <small class="modified">{{activeView.filter_logic}}</small>
+        </div>
+        <div class="whitebox padding20">
+            <query-builder viewfilter="viewFilter" fieldskey="fieldskey" module="module"  group="filtera.group"></query-builder>
+        </div>
+        
+        <!--{{filtera}}-->
+       
+        <!--  Calculation Fields Tabular-->
+
+        <div class="title" ng-if="activeView.view_type==='report' &&  activeView.report_type==='tabular'">
+            <h5>{{ 'Report.CalculationFields' | translate}}</h5>
+        </div>
+
+        <!--    Calculation Fields Tabular -->
+
+        <div ng-if="activeView.view_type==='report' && activeView.report_type==='tabular'" class="whitebox padding20 filter-list">
+            <section class="row" ng-repeat="aggregation in activeView.aggregations">
+                <div class="col-12 col-sm-6">
+                    <input type="text" ng-disabled="true" value="{{fieldskey[aggregation.field].label }}"
+                           class="k-textbox"/>
+                </div>
+                <div class="col-12 col-sm-6">
+                    <select
+                            k-option-label="'{{'Module.AggregationType' | translate}}'"
+                            k-data-text-field="'label'"
+                            k-data-value-field="'value'"
+                            k-data-source="aggregationTypes"
+                            k-on-change="changeAggregationType(aggregation)"
+                            ng-model="aggregation.aggregation_type"
+                            kendo-drop-down-list></select>
+
+                </div>
+
+
+            </section>
+
+        </div>
+        <div class="title" ng-if="activeView.view_type==='grid' ||  activeView.report_type==='tabular'">
+            <h5> {{'View.Columns' | translate}}  </h5>
+        </div>
+        <div class="whitebox padding20" ng-show="activeView.view_type==='grid' || activeView.report_type==='tabular'">
+            <div class="form-group">
+                <div class="row draglistbox">
+                    <div class="col-6">
+                        <label for="available-fields">{{'Setup.Modules.AvailableFields' | translate}}</label>
+                        <select kendo-list-box k-options="availableFieldsOptions" id="available-fields"
+                                k-scope-field name="available-fields"></select>
+                    </div>
+                    <div class="col-6">
+                        <label for="selected-fields">{{'Setup.Modules.ViewFields' | translate}}</label>
+                        <select kendo-list-box k-options="selectedFieldsOptions" id="selected-fields"
+                                name="selected-fields" name="selected-fields"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</md-content>

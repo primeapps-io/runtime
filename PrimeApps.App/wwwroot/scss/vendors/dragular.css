@@ -1,0 +1,40 @@
+.gu-mirror{
+  position:fixed!important;
+  margin:0!important;
+  z-index:9999!important;
+  opacity:.8;
+  background-color: rgba(0, 0, 0, 0.2);
+  -webkit-transition: opacity 0.4s ease-in-out;
+  transition: opacity 0.4s ease-in-out;
+  cursor: move;
+  cursor: grab;
+  cursor: -webkit-grab;
+  list-style-type: none;
+  padding: 10px 20px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  border-radius: 5px;
+}
+.gu-hide
+ {
+   display:none!important;
+ }
+.gu-unselectable{
+     -webkit-user-select:none!important;
+     -moz-user-select:none!important;
+     -ms-user-select:none!important;
+     user-select:none!important;
+     cursor: grabbing;
+     cursor: -webkit-grabbing;
+ }
+.gu-transit{
+  opacity:.2;
+}
+.handle {
+  padding: 0 5px;
+  margin-right: 5px;
+  background-color: rgba(0, 0, 0, 0.4);
+  cursor: move; 
+}

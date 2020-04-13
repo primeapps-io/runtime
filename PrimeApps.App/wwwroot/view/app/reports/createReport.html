@@ -70,24 +70,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="row form-group"
-                                 ng-class="{'has-error': reportForm.$submitted && reportForm.category_id.$invalid}">
-                                <label class="col-sm-3 control-label">
-                                    <span class="required-field">*</span>
-                                    <!--{{'Report.Module' | translate}}-->
-                                    {{'Report.ReportCategory' | translate}} :
-                                </label>
-                                <div class="col-sm-5">
-                                    <select class="form-control"
-                                            name="category_id"
-                                            required
-                                            ng-model="reportModel.category_id"
-                                            ng-disabled="isSystem"
-                                            ng-options="o.id as o['name_'+user.language] for o in reportCategory | orderBy:'order'">
-                                        <option value="">{{'Common.Select' | translate}}</option>
-                                    </select>
-                                </div>
-                            </div>
+                         
                             <div class="row form-group"
                                  ng-class="{'has-error': reportForm.$submitted && reportForm.report_type.$invalid}">
                                 <label class="col-sm-3 control-label">
@@ -100,7 +83,7 @@
                                                ng-model="reportModel.report_type"
                                                value="tabular"
                                                ng-disabled="isEdit || isSystem">
-                                        {{'Report.ListviewReport' | translate}}
+                                        {{'Report.ListViewReport' | translate}}
                                         <!--<span>Liste raporları verilerinizi daha basit şekilde listelemenizi sağlar.</span>-->
                                     </label>
                                     <label class="radio-inline summaryReport">
@@ -814,7 +797,7 @@
                                         {{'Report.ReportType' | translate}}:
                                     </label>
                                     <div class="col-sm-5">
-                                        <span> {{ reportModel.report_type  === 'summary' ? ('Report.SummaryReport' | translate) :  reportModel.report_type  === 'single' ? ('Report.Single' | translate) :('Report.ListviewReport' | translate) }} </span>
+                                        <span> {{ reportModel.report_type  === 'summary' ? ('Report.SummaryReport' | translate) :  reportModel.report_type  === 'single' ? ('Report.Single' | translate) :('Report.ListViewReport' | translate) }} </span>
                                     </div>
                                 </div>
 

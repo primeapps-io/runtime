@@ -1,47 +1,30 @@
-<div class="modal setup-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form name="editForm" ng-submit="delete(transferRoleId)" class="form-horizontal" novalidate>
-                <div class="modal-header">
-                    <h4 class="modal-title">{{'Setup.Roles.RoleDelete' | translate}}</h4>
+<md-dialog flex="33" aria-label="{{'SMS.Title' | translate}}">
+    <form name="editForm" ng-submit="delete(transferRole.id)" autocomplete="off" novalidate ng-cloak>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>
+                    {{'Setup.Roles.RoleDelete' | translate}}
+                </h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-disabled="submittingModal" ng-click="close()"><i class="fas fa-times"></i></md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div class="form-group">
+                    <label for="transferRole">
+                        <span>{{'Setup.Roles.RoleDeleteLabel' | translate}}</span>
+                    </label>
+                    <select id="transferRole" name="transferRole" required k-ng-model="transferRole"
+                            kendo-drop-down-tree k-options="transferRolesOptions" ng-disabled="selectedRoleIsSystem"></select>
                 </div>
-                <div class="modal-body" style="overflow:inherit; max-height:inherit;">
-                   <!-- <div class="form-group">
-                        <div class="col-sm-12">
-                            <label class="control-label" style="margin-bottom: 10px; font-weight: 600;">{{'Setup.Roles.RoleDeleteLabel' | translate}}:</label>
-                            <select
-                                    class="form-control"
-                                    name="transferRoleId"
-                                    ng-model="transferRoleId"
-                                    required
-                                    ng-options="o.id as o['label_'+language] for o in transferRoles"
-                                    ng-init="transferRoleId = transferRoles[0].id">
-                                <option value="" ng-if="false"></option>
-                            </select>
-                        </div>
-                    </div>-->
-                    <div class="form-group">
-                        <label>{{'Setup.Roles.RoleDeleteLabel' | translate}}</label>
-                        <ui-select name="transferRoleId"
-                                   ng-model="transferRoleId"
-                                   ng-init="transferRoleId = transferRoles[0].id"
-                                   required>
-                            <ui-select-match>{{$select.selected[('label_'+language)]}}</ui-select-match>
-                            <ui-select-choices style="width:280px;" repeat="item.id as item in transferRoles | filter:{[('label_'+language)]:$select.search} | orderBy:('label_'+language)" value="{{$select.selected.id}}">
-                                <div ng-bind-html="item[('label_'+language)] | highlight: $select.search" ng-attr-data-id="item.id"></div>
-                            </ui-select-choices>
-                        </ui-select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit"
-                            class="btn btn-primary btn-w-lg"
-                            ladda="roleDeleting">
-                        <i class="fa fa-exclamation-circle pull-left"></i> {{'Setup.Roles.TransferAndDelete' | translate}}
-                    </button>
-                    <button type="button" class="btn btn-custom" ng-click="$hide()" ng-disabled="roleDeleting"> {{'Common.Cancel' | translate}}</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions>
+            <md-button type="submit" ladda="roleDeleting" class="btn btn-danger" ng-disabled="selectedRoleIsSystem">
+                <i class="fa fa-trash"></i> {{'Setup.Roles.TransferAndDelete' | translate}}
+            </md-button>
+            <span flex></span>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

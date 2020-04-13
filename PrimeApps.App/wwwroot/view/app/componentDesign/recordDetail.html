@@ -1,0 +1,327 @@
+<md-content flex style="height: 100%;">
+    <div layout="column"  style="height: 100%; overflow-y: hidden;" ng-cloak>
+        <md-toolbar md-scroll-shrink ng-if="true">
+            <div class="md-toolbar-tools">
+                <div class="own-tab own-tab2" flex>
+                    <md-tabs md-dynamic-height md-swipe-content>
+                        <md-tab>
+                            <md-tab-label id="tab1" aria-controls="Tab 1">
+                                <div class="tab-container">
+                                    <span>General</span>
+                                </div>
+                            </md-tab-label>
+                        </md-tab>
+                        <md-tab>
+                            <md-tab-label id="tab2" aria-controls="Tab2">
+                                <div class="tab-container">
+                                    <span>Contacts</span>
+                                </div>
+                            </md-tab-label>
+                        </md-tab>
+                        <md-tab>
+                            <md-tab-label id="tab3" aria-controls="Tab3">
+                                <div class="tab-container">
+                                    <span>Opportunities</span>
+                                </div>
+                            </md-tab-label>
+                        </md-tab>
+                        <md-tab>
+                            <md-tab-label id="tab4" aria-controls="Tab4">
+                                <div class="tab-container">
+                                    <span>Current Account</span><span class="badge">1</span>
+                                </div>
+                            </md-tab-label>
+                        </md-tab>
+                        <md-tab>
+                            <md-tab-label id="tab5" aria-controls="Tab5">
+                                <div class="tab-container">
+                                    <span>Activities</span>
+                                </div>
+                            </md-tab-label>
+                        </md-tab>
+                        <md-tab>
+                            <md-tab-label id="tab6" aria-controls="Tab6">
+                                <div class="tab-container">
+                                    <span>Notes</span>
+                                </div>
+                            </md-tab-label>
+                        </md-tab>
+                        <md-tab>
+                            <md-tab-label id="tab7" aria-controls="Tab7">
+                                <div class="tab-container">
+                                    <span>Attachments</span>
+                                </div>
+                            </md-tab-label>
+                        </md-tab>
+                    </md-tabs>
+                </div>
+            </div>
+        </md-toolbar>
+        <md-content flex>
+            <section>
+                <md-subheader class="insetp0">
+                    <md-toolbar md-scroll-shrink ng-if="true">
+                        <div class="md-toolbar-tools">
+                            <md-button class="md-icon-button show-on-m" aria-label="{{'Common.Back' | translate}}"> <i class="fas fa-angle-left"></i> <md-tooltip md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip> </md-button>
+                            <h4 md-truncate>Yusuf Çiftci</h4>
+                            <div class="helpbuttons hide-on-m">
+                                <md-button class="md-icon-button" aria-label="{{'Common.Help' | translate}}"> <i class="fas fa-question-circle"></i> <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip></md-button>
+                                <md-button class="md-icon-button enlarge d-none d-lg-inline-block" ng-click="toggleFullLeftMenu()" aria-label="{{'Common.FullScreen' | translate}}" >
+                                    <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 36 36" style="enable-background:new 0 0 36 36;" xml:space="preserve">
+                                    <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z"/>
+                                        <path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z"/>
+                                        <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
+                                        <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/>
+                                </svg>
+                                    <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                                    <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                                </md-button>
+                            </div>
+                            <span flex></span>
+                            <md-button class="md-icon-button btn btn-secondary" aria-label="Copy" ><i class="fas fa-copy"></i><md-tooltip md-direction="bottom">Dublicate</md-tooltip> </md-button>
+                            <md-button class="md-icon-button btn btn-primary" aria-label="Add New" ><i class="fas fa-plus"></i><md-tooltip md-direction="bottom">Add New</md-tooltip> </md-button>
+                        </div>
+                    </md-toolbar>
+                </md-subheader>
+                <div class="container-fluid paddingua20">
+                    <div class="row">
+                        <div class="col-12">
+                            <section class="whitebox collapsible">
+                                <div class="collapsible-head" id="heading1">
+                                    <h5>Kişisel Bilgiler</h5>
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                                        <i class="fas fa-plus"></i>
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                                
+                                <div id="collapse1" class="collapsible-body collapse show" aria-labelledby="heading1">
+                                    <form id="ticketsForm" class="disable-validation-msg">
+                                        <div class="row">
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group text-center">
+                                                    <div class="image-preview">
+                                                        <div class="image-holder">
+                                                            <img src="images/no-image.png" alt="" />
+                                                        </div>
+                                                        <md-button class="upload-btn btn btn-primary md-icon-button btn-sm">
+                                                            <i class="fas fa-upload"></i><md-tooltip md-direction="bottom">Upload Image</md-tooltip>
+                                                            <input type="file" />
+                                                        </md-button>
+                                                        <md-button class="delete-btn btn btn-danger md-icon-button btn-sm"><i class="fas fa-trash"></i><md-tooltip md-direction="bottom">Delete Image</md-tooltip></md-button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group text-center">
+                                                    <div class="image-preview">
+                                                        <div class="image-holder">
+                                                            <img src="images/no-location.png" alt="" />
+                                                        </div>
+                                                        <!--<a class="image-holder" href="https://www.google.com/maps/place/41.0203766,28.890309400000003" target="_blank">-->
+                                                        <!--<img ng-src="https://maps.googleapis.com/maps/api/staticmap?zoom=13&size=300x300&maptype=roadmap&markers=color:red|41.0203766,28.890309400000003&key=AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o" alt="" />-->
+                                                        <!--<img src="images/no-location.png" alt="" />-->
+                                                        <!--</a>-->
+                                                        <md-button class="upload-btn btn btn-primary md-icon-button"><i class="fas fa-map-marker-alt"></i><md-tooltip md-direction="bottom">Choose Location</md-tooltip></md-button>
+                                                        <md-button class="delete-btn btn btn-danger md-icon-button "><i class="fas fa-trash"></i><md-tooltip md-direction="bottom">Delete Location</md-tooltip></md-button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="fullname" class="required">Your Name   <i class="info-icon fas fa-info-circle"><md-tooltip md-direction="top">Tooltip Example</md-tooltip></i> </label>
+                                                    <input type="text" id="fullname" name="fullname" class="k-textbox" placeholder="Full name" required  value="Yusuf Çiftci"/>
+                                                    <span class="k-invalid-msg" data-for="fullname"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="search" class="required">Movie</label>
+                                                    <input type="search" id="search" name="search" required value="Inception" />
+                                                    <span class="k-invalid-msg" data-for="search"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="datepicker" class="required">Date</label>
+                                                    <input id="datepicker" value="10/10/2011" title="datepicker" value="5/6/2017" />
+                                                    <span class="k-invalid-msg" data-for="date"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="time">Start time</label>
+                                                    <select name="time" id="time" required  >
+                                                        <option>14:00</option>
+                                                        <option>15:30</option>
+                                                        <option>17:00</option>
+                                                        <option>20:15</option>
+                                                    </select>
+                                                    <span class="k-invalid-msg" data-for="time"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="amount">Amount</label>
+                                                    <input id="amount" name="Amount" type="text" min="1" max="10" value="1" required />
+                                                    <span class="k-invalid-msg" data-for="amount"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="email" class="required">Email</label>
+                                                    <input type="email" id="email" name="Email" class="k-textbox" placeholder="e.g. myname@example.net"  />
+                                                    <span class="k-invalid-msg" data-for="Email"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </section>
+                            
+                            <div class="whitebox padding0 card">
+                                <h5 class="card-header"> Kişisel Bilgiler</h5>
+                                <div class="card-body">
+                                    <form id="ticketsForm2" class="disable-validation-msg">
+                                        <div class="row">
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="fullname" class="required">Your Name   <i class="info-icon fas fa-info-circle"><md-tooltip md-direction="top">Tooltip Example</md-tooltip></i> </label>
+                                                    <input type="text" id="fullname" name="fullname" class="k-textbox" placeholder="Full name" required  />
+                                                    <span class="k-invalid-msg" data-for="fullname"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="search2" class="required">Movie</label>
+                                                    <input type="search2" id="search2" name="search2" required />
+                                                    <span class="k-invalid-msg" data-for="search"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="datepicker2" class="required">Date</label>
+                                                    <input id="datepicker2" value="10/10/2011" title="datepicker2"  />
+                                                    <span class="k-invalid-msg" data-for="date"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="time2">Start time</label>
+                                                    <select name="time2" id="time2" required  >
+                                                        <option>14:00</option>
+                                                        <option>15:30</option>
+                                                        <option>17:00</option>
+                                                        <option>20:15</option>
+                                                    </select>
+                                                    <span class="k-invalid-msg" data-for="time"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="amount2">Amount</label>
+                                                    <input id="amount2" name="amount2" type="text" min="1" max="10" value="1" required />
+                                                    <span class="k-invalid-msg" data-for="amount"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-6">
+                                                <div class="form-group">
+                                                    <label for="email" class="required">Email</label>
+                                                    <input type="email" id="email" name="Email" class="k-textbox" placeholder="e.g. myname@example.net"  />
+                                                    <span class="k-invalid-msg" data-for="Email"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section>
+                <md-subheader class="insetp0">
+                    <md-toolbar md-scroll-shrink ng-if="true">
+                        <div class="md-toolbar-tools">
+                            <h4 md-truncate>Grid Design</h4>
+                            <div class="helpbuttons hide-on-m">
+                                <md-button class="md-icon-button" aria-label="{{'Common.Help' | translate}}"> <i class="fas fa-question-circle"></i> <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip></md-button>
+                                <md-button class="md-icon-button enlarge d-none d-lg-inline-block" ng-click="toggleFullLeftMenu()" aria-label="{{'Common.FullScreen' | translate}}" >
+                                    <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 36 36" style="enable-background:new 0 0 36 36;" xml:space="preserve">
+                                    <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z"/>
+                                        <path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z"/>
+                                        <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
+                                        <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/>
+                                </svg>
+                                    <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                                    <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                                </md-button>
+                            </div>
+                            <span flex></span>
+                            <md-menu md-position-mode="target-right target">
+                                <md-button class="md-icon-button btn btn-warning" aria-label="Export" ng-click="$mdMenu.open()"> <i class="fas fa-file-import"></i><md-tooltip md-direction="bottom">Export</md-tooltip></md-button>
+                                <md-menu-content width="3" class="md-dense">
+                                    <md-menu-item>
+                                        <md-button>
+                                            <i class="fas fa-file-export"></i> <span>Export</span>
+                                        </md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button>
+                                            <i class="fas fa-file-import"></i> <span>Import</span>
+                                        </md-button>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
+                            <md-button class="md-icon-button btn btn-primary" aria-label="Add New" ><i class="fas fa-plus"></i><md-tooltip md-direction="bottom">Add New</md-tooltip> </md-button>
+                            <md-button class="md-icon-button btn btn-primary" aria-label="Add New" ng-click="isOpen2 = true" ><i class="fas fas fa-ellipsis-v"></i><md-tooltip md-direction="bottom">5 Selected item</md-tooltip> </md-button>
+        
+                            <md-fab-toolbar class="grid-buttons2 md-hover-full" md-open="isOpen2" count="0" md-direction="left">
+                                <md-fab-trigger class="align-with-text">
+                                    <md-button aria-label="menu" class="md-fab md-primary"></md-button>
+                                </md-fab-trigger>
+            
+                                <md-toolbar>
+                                    <md-fab-actions class="md-toolbar-tools">
+                                        <h3 md-truncate>5 item selected</h3>
+                                        <md-button class="md-icon-button btn btn-primary" aria-label="Send E-mail" > <i class="fas fa-envelope"></i></md-button>
+                                        <md-button class="md-icon-button btn btn-primary" aria-label="Send SMS" > <i class="fas fa-sms"></i></md-button>
+                                        <md-button class="md-icon-button btn btn-primary" aria-label="Edit" > <i class="fas fa-pen"></i></md-button>
+                                        <md-button class="md-icon-button btn btn-primary" aria-label="Delete" > <i class="fas fa-trash"></i></md-button>
+                                        <md-button class="md-icon-button btn btn-primary" aria-label="Close" > <i class="fas fa-times"></i></md-button>
+                                    </md-fab-actions>
+                                </md-toolbar>
+                            </md-fab-toolbar>
+                            
+                            
+                            <!--<md-fab-toolbar class="own-grid-toolbar" md-open="isOpen2" count="0" md-direction="left">-->
+                                <!--<md-toolbar>-->
+                                    <!--<md-fab-trigger class="align-with-text">-->
+                                        <!--<md-button aria-label="menu" class="md-fab md-primary">-->
+                                            <!--<i class="fas fa-home"></i>-->
+                                        <!--</md-button>-->
+                                    <!--</md-fab-trigger>-->
+                                    <!--<md-fab-actions class="md-toolbar-tools">-->
+                                        <!--<h3 md-truncate>5 item selected</h3>-->
+                                        <!--<md-button class="md-icon-button btn btn-white" aria-label="Send E-mail" > <i class="fas fa-envelope"></i></md-button>-->
+                                        <!--<md-button class="md-icon-button btn btn-white" aria-label="Send SMS" > <i class="fas fa-sms"></i></md-button>-->
+                                        <!--<md-button class="md-icon-button btn btn-white" aria-label="Edit" > <i class="fas fa-pen"></i></md-button>-->
+                                        <!--<md-button class="md-icon-button btn btn-white" aria-label="Delete" > <i class="fas fa-trash"></i></md-button>-->
+                                    <!--</md-fab-actions>-->
+                                <!--</md-toolbar>-->
+                            <!--</md-fab-toolbar>-->
+                        </div>
+                    </md-toolbar>
+                </md-subheader>
+                <div class="container-fluid paddingua20">
+                    <div class="whitebox table-view">
+                        <div id="grid2" class="grid-theme"></div>
+                    </div>
+                </div>
+            </section>
+        </md-content>
+    </div>
+</md-content>
+<md-sidenav ng-show="sideinclude" id="sideModal" class="md-sidenav-right md-whiteframe-2dp" md-component-id="sideModal" md-is-locked-open="isDocked &&  $mdMedia('gt-lg')">
+    <div data-ng-if="sideLoad" data-ng-include="url" layout="column" style="height: 100%;" ng-cloak></div>
+</md-sidenav>

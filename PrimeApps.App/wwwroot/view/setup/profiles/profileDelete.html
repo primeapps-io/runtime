@@ -1,32 +1,35 @@
-<div class="popover">
-    <div class="arrow"></div>
-    <h3 class="popover-title">{{'Setup.Profiles.ProfileDelete' | translate}}</h3>
-    <div class="popover-content">
-        <form name="editForm" ng-submit="delete(transferProfileId)" class="form-horizontal" novalidate>
-            <div class="form-group">
-                <div class="col-sm-12">
-                    <label class="control-label" style="margin-bottom: 10px">{{'Setup.Profiles.ProfileDeleteLabel' | translate}}:</label>
-                    <select
-                            class="form-control"
-                            name="transferProfileId"
-                            ng-model="transferProfileId"
-                            required
-                            ng-options="o.id as o.name for o in transferProfiles"
-                            ng-init="transferProfileId = transferProfiles[0].id">
-                        <option value="" ng-if="false"></option>
-                    </select>
-                </div>
+<md-dialog flex="33" aria-label="{{'Setup.Profiles.ProfileDelete' | translate}}">
+    <form ng-cloak>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{'Setup.Profiles.ProfileDelete' | translate}}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="close()"><i class="fas fa-times"></i></md-button>
             </div>
-            <div class="form-group">
-                <div class="col-sm-12">
-                    <button type="submit"
-                            class="btn btn-primary btn-w-lg"
-                            ladda="profileDeleting">
-                        <i class="fa fa-exclamation-circle pull-left"></i> {{'Setup.Profiles.TransferAndDelete' | translate}}
-                    </button>
-                    <button type="button" class="btn btn-custom" ng-click="$hide()" ng-disabled="profileDeleting"> {{'Common.Cancel' | translate}}</button>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div class="form-group">
+                    <label for="transferProfile">{{'Setup.Profiles.ProfileDeleteLabel' | translate}}</label>
+                    <select class="form-control"
+                            id="transferProfile"
+                            name="transferProfile"
+                            kendo-drop-down-list
+                            k-ng-model="transferProfile"
+                            k-options="transferProfileOptions"
+                            k-ng-init="transferProfile = transferProfiles[0]"
+                            required></select>
                 </div>
+
             </div>
-        </form>
-    </div>
-</div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button class="btn btn-danger" type="submit" ng-click="delete(transferProfile)" md-autofocus>
+                <i class="fas fa-trash"></i>
+                {{'Setup.Profiles.TransferAndDelete' | translate}}
+            </md-button>
+            <span flex></span>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

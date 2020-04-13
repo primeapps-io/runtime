@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120" height="80" viewBox="0 0 120 80">
+  <defs>
+    <clipPath id="clip-Report">
+      <rect width="120" height="80"/>
+    </clipPath>
+  </defs>
+  <g id="Report" clip-path="url(#clip-Report)">
+    <rect width="120" height="80" fill="#fff"/>
+    <path id="Path_1399" data-name="Path 1399" d="M5,0H115a5,5,0,0,1,5,5V75a5,5,0,0,1-5,5H5a5,5,0,0,1-5-5V5A5,5,0,0,1,5,0Z" fill="#fff"/>
+    <path id="Path_1401" data-name="Path 1401" d="M5,0H30V80H5a5,5,0,0,1-5-5V5A5,5,0,0,1,5,0Z" fill="#c6d0e1"/>
+    <g id="Group_4074" data-name="Group 4074">
+      <rect id="Rectangle_1182" data-name="Rectangle 1182" width="80" height="2" transform="translate(32) rotate(90)" fill="#e4e7eb"/>
+      <rect id="Rectangle_1182-2" data-name="Rectangle 1182" width="80" height="2" transform="translate(62) rotate(90)" fill="#e4e7eb"/>
+      <rect id="Rectangle_1182-3" data-name="Rectangle 1182" width="80" height="2" transform="translate(92) rotate(90)" fill="#e4e7eb"/>
+      <rect id="Rectangle_1351" data-name="Rectangle 1351" width="120" height="2" transform="translate(0 13)" fill="#e4e7eb"/>
+      <rect id="Rectangle_1351-2" data-name="Rectangle 1351" width="120" height="2" transform="translate(0 26)" fill="#e4e7eb"/>
+      <rect id="Rectangle_1351-3" data-name="Rectangle 1351" width="120" height="2" transform="translate(0 39)" fill="#e4e7eb"/>
+      <rect id="Rectangle_1351-4" data-name="Rectangle 1351" width="120" height="2" transform="translate(0 52)" fill="#e4e7eb"/>
+      <rect id="Rectangle_1351-5" data-name="Rectangle 1351" width="120" height="2" transform="translate(0 65)" fill="#e4e7eb"/>
+    </g>
+    <rect id="Rectangle_1359" data-name="Rectangle 1359" width="88" height="11" transform="translate(32 15)" fill="rgba(31,70,136,0.05)"/>
+    <rect id="Rectangle_1360" data-name="Rectangle 1360" width="88" height="11" transform="translate(32 41)" fill="rgba(31,70,136,0.05)"/>
+    <path id="Rectangle_1361" data-name="Rectangle 1361" d="M0,0H88a0,0,0,0,1,0,0V8a5,5,0,0,1-5,5H0a0,0,0,0,1,0,0V0A0,0,0,0,1,0,0Z" transform="translate(32 67)" fill="rgba(31,70,136,0.05)"/>
+  </g>
+</svg>

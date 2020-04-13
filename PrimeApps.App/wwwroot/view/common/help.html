@@ -1,21 +1,14 @@
-<div class="aside" tabindex="-1" style="overflow: auto;" role="dialog">
-    <div class="aside-dialog">
-        <div class="aside-content">
-            <div class="aside-body" style="height: 100%">
-                <div style="height:65px;border-bottom: 1px solid lightgrey;cursor: pointer" ng-show="modalButtonShow" ng-click="showHelpModal()">
-                    <a href ng-click="showHelpModal()" class="pull-left" style="padding-top: 22px;padding-left: 45px;color: gray;text-decoration: none;">Tanıtım Penceresini Görüntüle</a>
-                    <i class="fa fa-external-link pull-right" style="font-size: 25px;padding-top: 20px;padding-right: 50px;color:gray"></i>
-                </div>
-                <div ng-bind-html="helpTemplateSideModal" ng-show="!noneHelpTemplate"></div>
-                <div ng-show="noneHelpTemplate">
-                    <div style="padding: 30px" class="text-center">
-                        <img src="../../../images/no-data.svg" style="width: 100%" />
-                        <h3>{{'Setup.HelpGuide.NoDataFound' | translate}}</h3>
-                        <p ng-if="preview">Please go to User Guides and add New Side Help</p>
-                    </div>
-                </div>
-                <!--<iframe src="{{getHelpUrl() | trustUrl}}" frameborder="0"></iframe>-->
-            </div>
-        </div>
+<md-toolbar md-scroll-shrink ng-if="true">
+    <div class="md-toolbar-tools">
+        <md-button class="md-icon-button" ng-click="closeSide('sideModal')" aria-label="Close"><i class="fas fa-angle-left"></i></md-button>
+        <h3 md-truncate>{{helpTemplatesSide.name}}</h3>
+        <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close"><i class="fas fa-thumbtack"></i></md-button>
     </div>
-</div>
+</md-toolbar>
+<md-content flex>
+    <div class="container-fluid paddingua20">
+        <div ng-bind-html="helpTemplateSideModal" ng-show="!noneHelpTemplate"></div> 
+    </div>
+</md-content>
+
+

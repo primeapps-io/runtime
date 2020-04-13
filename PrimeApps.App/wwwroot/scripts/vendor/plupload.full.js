@@ -1173,7 +1173,7 @@ define("moxie/core/utils/Env", [
 			}
 
 			if (window && window.console && window.console.log) {
-				window.console.log(data);
+				//window.console.log(data);
 			} else if (document) {
 				var console = document.getElementById('moxie-console');
 				if (!console) {

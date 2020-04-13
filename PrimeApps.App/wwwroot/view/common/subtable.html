@@ -31,6 +31,7 @@
        ladda="exporting">
         <i class="fa fa-upload"></i> {{'Module.Export' | translate }}
     </a>
+    
     <a href="#/app/moduleForm/{{relatedModule.related_module}}?ptype={{relatedModule.relation_field}}&pid={{ $parent.$parent.record.id }}&rtab={{ relatedModule.detail_view_type != 'flat' ?  relatedModule.id :''}}"
        class="btn btn-sm btn-custom"
        ng-show="$parent.hasPermission(relatedModule.related_module, $parent.operations.write)  && parentModule != 'calisanlar'"

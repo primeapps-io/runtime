@@ -1,0 +1,124 @@
+<form class="disable-validation-msg"  name="profileForm" ng-submit="addUserForm ? addUser(addUserModel):sendOfficeUserPassword()" autocomplete="off" style="height:100%;" kendo-validator="validator" ng-cloak>
+    <div ng-show="loadingModal" class="spin">
+        <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
+    </div>
+    <section ng-show="!loadingModal" layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
+        <md-toolbar md-scroll-shrink ng-if="true">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" ng-disabled="userInviting" ng-click=" addUserForm ? closeSide('sideModal'):closeUserInfoPopover()" aria-label="{{'Common.Close' | translate}}"><i class="fas fa-angle-left"></i></md-button>
+                <h3 md-truncate ng-if="!user.id">{{'Setup.Users.NewUser' | translate}}</h3>
+                <h3 md-truncate ng-if="user.id">{{'Setup.Users.UserLicenseInfo' | translate}}</h3>
+                <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close"><i class="fas fa-thumbtack"></i></md-button>
+                <span flex></span>
+                
+                <md-button type="submit" ng-if="addUserForm" class="md-icon-button btn btn-primary" ng-disabled="userInviting"><i class="fas fa-save"></i> <md-tooltip md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip></md-button>
+                
+            </div>
+        </md-toolbar>
+        <md-content flex>
+            <div class="container-fluid paddingua20" ng-if="addUserForm">
+                <div>
+                    <div class="title">
+                        <h5>{{'Setup.Users.UserLicenseInfo' | translate}}</h5>
+                    </div>
+                    <div class="whitebox">
+                        <div class="form-group">
+                            <label for="firstName" class="required">
+                                <span>{{'Setup.Users.NewUserName' | translate}}</span>
+                                <span class="label-right">
+                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                </span>
+                            </label>
+                            <input type="text" id="firstName" name="firstName" class="k-textbox"
+                                   ng-disabled="addUserModel.id"
+                                   placeholder="{{'Setup.Users.NewUserName' | translate}}" required ng-model="addUserModel.first_name"
+                                   validationMessage="{{'Module.Required' | translate}}" />
+                            <span class="k-invalid-msg" data-for="firstName"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName" class="required">
+                                <span>{{'Setup.Users.NewUserLastName' | translate}}</span>
+                                <span class="label-right">
+                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                </span>
+                            </label>
+                            <input type="text" id="lastName" name="lastName" class="k-textbox"
+                                   ng-disabled="addUserModel.id"
+                                   placeholder="{{'Setup.Users.NewUserLastName' | translate}}" required ng-model="addUserModel.last_name"
+                                   validationMessage="{{'Module.Required' | translate}}" />
+                            <span class="k-invalid-msg" data-for="lastName"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="required">
+                                <span>{{'Setup.Users.NewUserEmail' | translate}}</span>
+                                <span class="label-right">
+                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                </span>
+                            </label>
+                            <input type="email" id="email" name="email" class="k-textbox"
+                                   placeholder="{{'Setup.Users.NewUserEmail' | translate}}" required ng-model="addUserModel.email"
+                                   ng-disabled="addUserModel.id"
+                                   validationMessage="{{'Module.Required' | translate}}" />
+                            <span class="k-invalid-msg" data-for="email"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile" class="required">
+                                <span>{{'Setup.Users.NewUserProfile' | translate}}</span>
+                                <span class="label-right">
+                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                </span>
+                            </label>
+                            <select kendo-drop-down-list
+                                    class="form-control"
+                                    id="profile"
+                                    name="profile"
+                                    k-options="profileOptions"
+                                    k-ng-model="addUserModel.profile"
+                                    required
+                                    k-option-label="'{{'Common.Select' | translate}}'"
+                                    validationMessage="{{'Module.Required' | translate}}"></select>
+                            <span class="k-invalid-msg" data-for="profile"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="role" class="required">
+                                <span>{{'Setup.Users.NewUserRole' | translate}}</span>
+                                <span class="label-right">
+                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                </span>
+                            </label>
+                            <select kendo-drop-down-list
+                                    class="form-control"
+                                    id="role"
+                                    name="role"
+                                    k-options="roleOptions"
+                                    k-ng-model="addUserModel.role"
+                                    k-option-label="'{{'Common.Select' | translate}}'"
+                                    validationMessage="{{'Module.Required' | translate}}"
+                                    required></select>
+                            <span class="k-invalid-msg" data-for="role"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="container-fluid padding20" ng-if="!addUserForm">
+                <div class="title">
+                    <h5>{{'Setup.Office.PasswordInfo' | translate}}</h5>
+                </div>
+                <div class="whitebox">
+                    <div class="form-group">
+                        <label for="password" class="required">
+                            <span>{{'Setup.Users.UserPassword' | translate}}</span>
+                            <md-button type="button" class="btn btn-sm btn-secondary md-icon-button" ngclipboard data-clipboard-target="#password" ng-click="copySuccess()">
+                                <i class="fas fa-copy"></i>
+                                <md-tooltip md-direction="bottom">{{'Common.Copy' | translate}}</md-tooltip>
+                            </md-button>
+                        </label>
+                        <input type="text" id="password" name="password" class="form-control" ng-model="userPassword" value="{{userPassword}}" ng-readonly="true" required />
+                    </div>
+                    <md-button type="submit" class="btn btn-primary" ng-disabled="hideSendEmailToUser">{{'Setup.Office.SendEmail' | translate}} <i class="fas fa-paper-plane"></i></md-button>
+                </div>
+            </div>
+        </md-content>
+    </section>
+</form>
