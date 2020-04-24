@@ -139,7 +139,7 @@ angular.module('primeapps')
 
                 var addNewPermissions = function (actionButton) {
                     $scope.actionButtonPermission = [];
-                    if (actionButton.isNew)
+                    if (!actionButton.id)
                         actionButton.permissions = [];
 
                     angular.forEach($rootScope.appProfiles, function (profile) {
@@ -147,16 +147,16 @@ angular.module('primeapps')
                             return;
 
                         if (profile.is_persistent && profile.has_admin_rights)
-                            profile.name = $filter('translate')('Setup.Profiles.Administrator');
+                            profile['name_' + $scope.language] = $filter('translate')('Setup.Profiles.Administrator');
 
                         if (profile.is_persistent && !profile.has_admin_rights)
-                            profile.name = $filter('translate')('Setup.Profiles.Standard');
+                            profile['name_' + $scope.language] = $filter('translate')('Setup.Profiles.Standard');
 
-                        $scope.actionButtonPermission.push({ profile_id: profile.id, profile_name: profile.name, type: 'full', profile_is_admin: profile.has_admin_rights });
+                        $scope.actionButtonPermission.push({ profile_id: profile.id, profile_name: profile['name_' + $scope.language], type: 'full', profile_is_admin: profile.has_admin_rights });
                     });
                 };
 
-                if (!actionButton.isNew) {
+                if (!actionButton.id) {
                     addNewPermissions(actionButton);
                     if ($scope.actionButtonPermission.length != actionButton.permissions.length) {
                         for (var i = actionButton.permissions.length; i < $scope.actionButtonPermission.length; i++) {
@@ -165,7 +165,7 @@ angular.module('primeapps')
                     }
                 }
 
-                if (actionButton.isNew) {
+                if (!actionButton.id) {
                     addNewPermissions(actionButton);
                     actionButton.permissions = $scope.actionButtonPermission;
                 }
@@ -173,7 +173,7 @@ angular.module('primeapps')
                     if (actionButton.permissions && actionButton.permissions.length > 0) {
                         angular.forEach(actionButton.permissions, function (permission) {
                             var profile = $filter('filter')($rootScope.appProfiles, { id: permission.profile_id }, true)[0];
-                            permission.profile_name = profile.name;
+                            permission.profile_name = profile['name_' + $scope.language];
                             permission.profile_is_admin = profile.has_admin_rights;
                         });
                     }
