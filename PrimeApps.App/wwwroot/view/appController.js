@@ -104,6 +104,13 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 		$.extend(true, kendo.ui.DropDownList.prototype.options.messages, {
 			noData:  $filter('translate')('Common.NoDataFound')
 		});
+		$.extend(true, kendo.ui.MultiSelect.prototype.options.messages, {
+			noData:  $filter('translate')('Common.NoDataFound')
+		});
+		$.extend(true, kendo.ui.Pager.prototype.options.messages, {
+			empty:  $filter('translate')('Common.NoItemDisplay'),
+			itemsPerPage:  $filter('translate')('Common.ItemsPerPage')
+		});
 		
 		$scope.adminMenuActive = function () {
 			if ($scope.administrationMenuActive)
@@ -155,7 +162,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 		$rootScope.beforeSend = function () {
 			return function (req) {
 				req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-				if ($rootScope.preview)
+				if (preview)
 					req.setRequestHeader('x-app-id', $rootScope.user.app_id);
 				else
 					req.setRequestHeader('X-Tenant-Id', $rootScope.user.tenant_id);
@@ -365,9 +372,9 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
 		$scope.openSubMenu = function (item, arrayData) {
 			if (arrayData != undefined && arrayData[0] != undefined) {
-				arrayData.forEach(function (itm) {
-					itm.active = false;
-				});
+				for (var i = 0; i <arrayData.length ; i++) {
+					arrayData[i].active = false;
+				}
 			}
 			item.active = true;
 			$scope.administrationMenuActive = false;

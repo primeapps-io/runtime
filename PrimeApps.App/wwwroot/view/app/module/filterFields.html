@@ -140,12 +140,9 @@
     <select
             class="form-control"
             kendo-multi-select
-            k-data-text-field="'label_'+{{language}}"
-            k-data-value-field="'id'"
-            k-data-source="fieldskey[filter.field].picklist"
             k-ng-model="filter.value"
             k-on-change="viewFiltere(filter);"
-            k-options="fieldskey[filter.field].picklist">
+            k-options="fieldskey[filter.field].options">
     </select>
 </div>
 

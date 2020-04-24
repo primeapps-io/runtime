@@ -68,11 +68,11 @@
                                                          user-image="{{user.id}}" alt="" ng-show="!croppedImage" />
                                                     <img ng-src="{{croppedImage}}" class="img-rounded" ng-show="croppedImage" />
                                                 </div>
-                                                <md-button class="upload-btn btn btn-primary md-icon-button btn-sm"  ng-if="!croppedImage && !user.picture ">
+                                                <md-button class="upload-btn btn btn-primary md-icon-button btn-sm"  ng-if="!croppedImage && !tempPicture ">
                                                     <i class="fas fa-upload"></i><md-tooltip md-direction="bottom">{{'Setup.Settings.NewProfilePicture' | translate}}</md-tooltip>
                                                     <input type="file" nv-file-select uploader="uploader" />
                                                 </md-button>
-                                                <md-button class="delete-btn btn btn-danger md-icon-button btn-sm" ng-click="removeProfileImage()" ng-if="user.picture"><i class="fas fa-trash"></i><md-tooltip md-direction="bottom">{{'Setup.Settings.RemoveProfileImage' | translate}}</md-tooltip></md-button>
+                                                <md-button class="delete-btn btn btn-danger md-icon-button btn-sm" ng-click="removeProfileImage(); $parent.croppedImage=null" ng-if="tempPicture || croppedImage"><i class="fas fa-trash"></i><md-tooltip md-direction="bottom">{{'Setup.Settings.RemoveProfileImage' | translate}}</md-tooltip></md-button>
                                             </div>
                                             <div>{{'Setup.Settings.NewProfilePicture' | translate}}</div>
                                         </div>

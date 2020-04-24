@@ -78,7 +78,7 @@
     <div class="image-preview" ng-class="{'required':field.validation.required}" style="width: 100%;">
         <div class="image-holder">
             <img ng-if="!record[field.name]" src="images/no-location.png" class="no-image" alt=""/>
-            <a ng-if="record[field.name]" href="http://www.google.com/maps/place/{{ record[field.name] }}"
+            <a ng-if="record[field.name]" ng-click="showLightBox($event, record, true, field.name)"
                target="_blank">
                 <img ng-src="{{'https://maps.googleapis.com/maps/api/staticmap?zoom=10&size=300x150&maptype=roadmap&markers=color:red|' + record[field.name] + '&key=' + googleMapsApiKey}}"/>
             </a>
@@ -97,7 +97,7 @@
 <div class="form-group"
      ng-if="field.data_type === 'number' && !field.show_lock && !field.hidden">
     <label for="{{field.name}}"
-           ng-show="!field.custom_label && field.show_label"
+           ng-show="!field.custom_label && field.show_label" 
            ng-class="{'required':field.validation.required}">
         <span>{{ field['label_' + language] }}</span> 
         <span class="label-right">
@@ -392,14 +392,14 @@
         </span>
     </label>
     <div class="image-preview" ng-class="{'required':field.validation.required}" ng-style="field.image_size_detail > 0 ? {'width':field.image_size_detail+'px'}  : {'width':'100%'}">
-        <a class="image-holder" ng-click="showLightBox($event,record[field.name] && !croppedImage[field.id ]? (config.imageUrl+record[field.name]) : croppedImage[field.id])">
+        <a class="image-holder" ng-click="showLightBox($event, record[field.name] && !croppedImage[field.id ] ? record : croppedImage[field.id], true)">
             <img id="{{field.name}}" src="images/no-image.png" class="no-image"
                  ng-src="{{record[field.name] && !croppedImage[field.id ]? (config.imageUrl+record[field.name]) : 'images/no-image.png'}}"
                  ng-show="!croppedImage[field.id]"/>
             <img id="{{'croppedImage'+field.id}}" ng-src="{{croppedImage[field.id]}}"
                  ng-show="croppedImage[field.id]"/>
         </a>
-        <md-button ng-if="!record[field.name]" class="upload-btn btn btn-sm btn-primary md-icon-button"><i class="fas fa-upload"></i>
+        <md-button ng-if="!record[field.name]" ng-disabled="field.validation.readonly || (id && !field.editable) || (record.freeze && !isAdmin)" class="upload-btn btn btn-sm btn-primary md-icon-button"><i class="fas fa-upload"></i>
             <md-tooltip md-direction="bottom">Upload Image</md-tooltip>
             <input name="files"
                    type="file"
@@ -422,7 +422,7 @@
         <span>{{ field['label_' + language] }}</span> 
         <span class="label-right">
             <md-button class="btn btn-secondary label-btn" ng-show="record[field.name] && fileLoadingCounter<1  && isFinishUpload" title="{{record[field.name]}}"
-               target="_blank" ng-href="{{'storage/record_file_download?fileName='+ record[field.name]}}">
+               target="_blank" ng-click="getFileDownload(record[field.name],document[field.name]['UniqueName'])">
                 <i class="fas fa-download"></i>
                 <md-tooltip md-direction="bottom">{{'Common.Download' | translate}}</md-tooltip>
             </md-button>
@@ -614,27 +614,52 @@
 </div>
 
 <div style="visibility: hidden">
+<!--    <div class="md-dialog-container" id="mdLightbox">-->
+<!--        <md-dialog aria-label="{{ showImageData.title }}">-->
+<!--            <md-toolbar>-->
+<!--                <div class="md-toolbar-tools">-->
+<!--                    <h2>{{ showImageData.title }}</h2>-->
+<!--                    <span flex></span>-->
+<!--                    <md-button class="md-icon-button" id="close-lightbox" aria-label="{{'Common.Close' | translate}}"-->
+<!--                               ng-click="closeLightBox()"><i-->
+<!--                            class="fas fa-times"></i></md-button>-->
+<!--                </div>-->
+<!--            </md-toolbar>-->
+<!--            <md-dialog-content>-->
+<!--                <div class="md-dialog-content">-->
+<!--                    <img class="width100" ng-src="{{ showImageData.url }}"/>-->
+<!--                </div>-->
+<!--            </md-dialog-content>-->
+<!--            <md-dialog-actions layout="row">-->
+<!--                <md-button class="btn btn-secondary" ng-click="imageDownload(showImageData.url,showImageData.title)"  -->
+<!--                           aria-label="{{'Common.Download' | translate}}"><i-->
+<!--                        class="fas fa-download"></i> {{'Common.Download' | translate}}-->
+<!--                </md-button>-->
+<!--            </md-dialog-actions>-->
+<!--        </md-dialog>-->
+<!--    </div>-->
     <div class="md-dialog-container" id="mdLightbox">
-        <md-dialog aria-label="{{ showImageData.title }}">
+        <md-dialog flex="45" tabindex="-1" role="dialog" aria-label="{{ showImageData.title ? showImageData.title  : multiSelectAndTagDatas.title }}">
             <md-toolbar>
                 <div class="md-toolbar-tools">
-                    <h2>{{ showImageData.title }}</h2>
+                    <h2>{{ showImageData.title ? showImageData.title  : multiSelectAndTagDatas.title }}</h2>
                     <span flex></span>
-                    <md-button class="md-icon-button" id="close-lightbox" aria-label="{{'Common.Close' | translate}}"
-                               ng-click="closeLightBox()"><i
-                            class="fas fa-times"></i></md-button>
+                    <md-button class="md-icon-button" aria-label="{{'Common.Close' | translate}}"
+                               ng-click="closeLightBox()"><i class="fas fa-times"></i></md-button>
                 </div>
             </md-toolbar>
             <md-dialog-content>
-                <div class="md-dialog-content">
-                    <img class="width100" ng-src="{{ showImageData.url }}"/>
+                <div ng-if="showImageData.url" class="md-dialog-content">
+                    <img class="width100" style="max-width: 500px;" ng-src="{{ showImageData.url }}"/>
                 </div>
+                <ul class="top20 bottom20" ng-if="multiSelectAndTagDatas && multiSelectAndTagDatas.array.length > 0">
+                    <li ng-repeat="item in multiSelectAndTagDatas.array">{{item}}</li>
+                </ul>
             </md-dialog-content>
-            <md-dialog-actions layout="row">
-                <md-button class="btn btn-secondary" ng-click="imageDownload(showImageData.url,showImageData.title)"  
-                           aria-label="{{'Common.Download' | translate}}"><i
-                        class="fas fa-download"></i> {{'Common.Download' | translate}}
-                </md-button>
+            <md-dialog-actions layout="row" ng-if="showImageData.url">
+                <span flex></span>
+                <a class="btn btn-secondary" href="{{ showImageData.type ==='location' ? showImageData.map_url : showImageData.url}}" target="_blank"><i
+                        ng-class="showImageData.type ==='location' ? 'fas fa-external-link-alt' : 'fas fa-download'"></i> {{showImageData.type ==='location'  ? ('Common.ViewOnMap' | translate) : ('Common.Download'| translate)}}</a>
             </md-dialog-actions>
         </md-dialog>
     </div>

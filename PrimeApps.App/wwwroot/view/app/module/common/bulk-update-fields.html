@@ -5,7 +5,7 @@
            id="{{field.name}}"
            class="k-textbox"
            tabindex="{{field.order}}"
-           required
+           required="{{field.validation.required}}"
            placeholder="{{field.placeholder}}"
            ng-model="bulkUpdate.value"
            ng-readonly="field.validation.readonly || (id && !field.editable)"
@@ -25,7 +25,7 @@
               tabindex="{{field.order}}"
               placeholder="{{field.placeholder}}"
               ng-model="bulkUpdate.value"
-              required
+              required="{{field.validation.required}}"
               minlength="{{field.validation.min_length || 0}}"
               maxlength="{{field.validation.max_length || 500}}"
               ng-readonly="field.validation.readonly || (id && !field.editable)"
@@ -39,7 +39,7 @@
     <textarea class="k-textbox"
               ng-model="bulkUpdate.value"
               ui-tinymce-multi="tinymceOptions"
-              required></textarea>
+              required="{{field.validation.required}}"></textarea>
 
 </div>
 
@@ -52,7 +52,7 @@
            tabindex="{{field.order}}"
            placeholder="{{field.placeholder}}"
            ng-model="bulkUpdate.value"
-           required
+           required="{{field.validation.required}}"
            ng-readonly="field.validation.readonly || (id && !field.editable)"
            ng-trim="false"
            minlength="{{field.validation.min_length || 0}}"
@@ -72,7 +72,7 @@
            tabindex="{{field.order}}"
            ng-placeholder="{{field.placeholder}}"
            ng-model="bulkUpdate.value"
-           required
+           required="{{field.validation.required}}"
            ng-readonly="field.validation.readonly || (id && !field.editable)"
            maxlength="{{field.validation.max_length || 19}}"
            min-value="field.validation.min || Number.MIN_VALUE"
@@ -90,7 +90,7 @@
            tabindex="{{field.order}}"
            placeholder="{{field.placeholder}}"
            ng-model="bulkUpdate.value"
-           required
+           required="{{field.validation.required}}"
            ng-readonly="field.validation.readonly || (id && !field.editable)"
            maxlength="{{field.validation.max_length || 21}}"
            min-value="field.validation.min || 0"
@@ -112,7 +112,7 @@
            placeholder="e.g. myname@example.net"
            tabindex="{{field.order}}"
            ng-model="bulkUpdate.value"
-           required
+           required="{{field.validation.required}}"
            ng-readonly="field.validation.readonly || (id && !field.editable)"
            minlength="{{field.validation.min_length || 0}}"
            maxlength="{{field.validation.max_length || 100}}" />
@@ -128,8 +128,7 @@
            class="width100"
            tabindex="{{field.order}}"
            ng-model="bulkUpdate.value"
-          
-           required
+           required="{{field.validation.required}}"
            ng-click="openCalendar(field)"
            placeholder="{{'Common.Date' | translate}}" />
 </div>
@@ -142,11 +141,9 @@
            id="{{field.name}}"
            class="width100"
            tabindex="{{field.order}}"
-           ng-model="bulkUpdate.value"
            k-ng-model="bulkUpdate.value"
            ng-click="openCalendar(field)"
-           k-on-change="fieldValueChange(field);"
-           required
+           required="{{field.validation.required}}"
            ng-disabled="field.name === 'created_at' ||field.name === 'updated_at'"
            placeholder="{{'Common.DateTime' | translate}}" />
 </div>
@@ -159,11 +156,10 @@
            id="{{field.name}}"
            class="width100"
            tabindex="{{field.order}}"
-           ng-model="bulkUpdate.value"
            k-ng-model="bulkUpdate.value"
            ng-readonly="field.validation.readonly || (id && !field.editable)"
            ng-click="openCalendar(field)"
-           required
+           required="{{field.validation.required}}"
            placeholder="{{'Common.Time' | translate}}" />
 </div>
 
@@ -183,7 +179,7 @@
             name="{{field.name}}"
             class="form-control"
             kendo-drop-down-list
-            required
+            required="{{field.validation.required}}"
             tabindex="{{field.order}}"
             k-data-source="field.picklist"
             k-data-text-field="'label_{{language}}'"
@@ -203,7 +199,7 @@
            ng-disabled="field.validation.readonly || (id && !field.editable)"
            ng-model="bulkUpdate.value"
            tabindex="{{field.order}}"
-           required>
+           required="{{field.validation.required}}">
     <label ng-show="!field.custom_label && field.show_label"
            class="k-checkbox-label" for="{{field.name}}" class="required"><span>{{ field['label_' + language] }}</span></label>
 </div>
@@ -239,7 +235,7 @@
             k-data-text-field="'label_{{language}}'"
             k-data-value-field="'id'"
             k-ng-model="bulkUpdate.value"
-            required>
+            required="{{field.validation.required}}">
     </select>
 </div>
 
@@ -249,7 +245,9 @@
            class="form-control"
            id="{{field.name}}"
            name="{{field.name}}"
-           k-options="{{'ratingOption'+ field.id}}"
+           k-precision="'half'"
+           k-label="false"
+           k-max="getRatingCount('{{field.name}}')"
            k-ng-model="bulkUpdate.value" />
 </div>
 
@@ -263,7 +261,7 @@
            tabindex="{{field.order}}"
            placeholder="{{field.placeholder}}"
            ng-model="bulkUpdate.value"
-           required
+           required="{{field.validation.required}}"
            ng-readonly="field.validation.readonly || (id && !field.editable)"
            minlength="{{field.validation.min_length || 0}}"
            maxlength="{{field.validation.max_length || 400}}"
@@ -278,7 +276,7 @@
             k-options="{{'lookupOptions'+field.id}}"
             ng-model="bulkUpdate.value"
             k-filter="'{{field.lookup_search_type ? field.lookup_search_type : 'startswith' }}'"
-            required
+            required="{{field.validation.required}}"
             ng-disabled="field.name === 'created_by' ||field.name === 'updated_by'"
             k-on-open="setCurrentLookupField(field, {{'lookup'+field.id}});">
     </select>
@@ -290,7 +288,7 @@
            name="{{field.name}}"
            placeholder="{{field.placeholder}}"
            ng-readonly="field.validation.readonly || (id && !field.editable)"
-           required
+           required="{{field.validation.required}}"
            style="{{field.style.input}}"
            tabindex="{{field.order}}"
            ng-model="bulkUpdate.value" />
@@ -325,7 +323,7 @@
                class="k-checkbox"
                tabindex="{{field.order}}"
                ng-disabled="field.validation.readonly || (id && !field.editable)"
-               required
+               required="{{field.validation.required}}"
                name="{{field.name}}"
                type="radio"
                ng-model="bulkUpdate.value"
@@ -341,7 +339,7 @@
             id="{{field.name}}"
             class="form-control"
             name="{{field.name}}"
-            k-options="{{'tagOptions'+field.id}}"
+            k-options="field.tag"
             k-ng-model="bulkUpdate.value"
-            required></select>
+            required="{{field.validation.required}}"></select>
 </div>

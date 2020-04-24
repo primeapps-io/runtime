@@ -24,7 +24,7 @@
                 <div class="form-group">
                     <label>{{'Template.Sharing' | translate}}</label>
                     <ul class="list-unstyled">
-                        <li>
+                        <li ng-if="!preview">
                             <input type="radio" name="sharingType" id="me" class="k-radio" checked="checked"
                                    ng-model="activeView.sharing_type" value="me">
                             <label class="k-radio-label" for="me">{{'View.ShareMe' | translate}}</label>
@@ -64,12 +64,16 @@
             </div>
         </md-dialog-content>
         <md-dialog-actions layout="row" >
-            <md-button ng-if="activeView.system_type !='system'" ng-click="SaveView('edit')" class="btn btn-primary" type="button" md-autofocus><i
+            <md-button ng-if="activeView.system_type !='system' && activeView.id" ng-show="viewPermissions.modify" ng-click="SaveView('edit')" class="btn btn-primary" type="button" md-autofocus><i
+                    class="fas fa-save"></i>
+                {{'Common.Save' | translate}}
+            </md-button>           
+            <md-button ng-if="activeView.isNew" ng-show="viewPermissions.write" ng-click="SaveView('add')" class="btn btn-primary" type="button" md-autofocus><i
                     class="fas fa-save"></i>
                 {{'Common.Save' | translate}}
             </md-button>    
             
-            <md-button ng-click="SaveView('add')" class="btn btn-primary" type="button" md-autofocus><i
+            <md-button ng-if="!activeView.isNew" ng-show="viewPermissions.write"  ng-click="SaveView('add')" class="btn btn-primary" type="button" md-autofocus><i
                     class="fas fa-save"></i>
                 {{'Common.SaveAsNew' | translate}}
             </md-button>

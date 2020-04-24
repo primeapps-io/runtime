@@ -51,7 +51,7 @@
                                 <md-tooltip ng-if="showTooltip" md-direction="right">
                                     {{item['label_' + language]}}
                                 </md-tooltip>
-                            </a>
+                            </a>                            
                             <ul ng-if="!item.route" class="list-unstyled submenu">
                                 <li id="menuItem"
                                     ng-class="{'active': currentPath === '/app/modules/{{subMenu.route}}'}"
@@ -120,15 +120,7 @@
                                 </md-tooltip>
                             </a>
                         </li>
-                        <li ng-class="{'active': currentPath === '/app/setup/templates'}" ng-click="MenuItemHideMenu();" ng-if="user.profile.has_admin_rights || showTemplates">
-                            <a href="#/app/setup/templates">
-                                <i class="fas fa-file-alt"></i>
-                                <span>{{'Layout.Menu.Templates' | translate}}</span>
-                                <md-tooltip ng-if="showTooltip" md-direction="right">
-                                    {{'Layout.Menu.Templates' |translate}}
-                                </md-tooltip>
-                            </a>
-                        </li>
+                        
                     </ul>
                     <ul ng-if="user.profile.has_admin_rights || showAdministration" class="main-menu list-unstyled">
                         <li ng-class="{'active': administrationMenuActive}">
@@ -149,12 +141,22 @@
                                         </md-tooltip>
                                     </a>
                                 </li>
+                                
                                 <li ng-if="user.profile.has_admin_rights || showAccessControl" ng-class="{'active':currentPath == '/app/setup/profiles' || currentPath == '/app/setup/roles' ||  currentPath == '/app/setup/usercustomshares' }">
                                     <a href="#/app/setup/profiles">
                                         <i class="fas fa-shield-alt"></i>
                                         <span>{{'Setup.Nav.AccessControl'| translate}}</span>
                                         <md-tooltip ng-if="showTooltip" md-direction="right">
                                             {{'Setup.Nav.AccessControl'| translate}}
+                                        </md-tooltip>
+                                    </a>
+                                </li>
+                                <li ng-if="user.profile.has_admin_rights || showTemplates" ng-class="{'active': currentPath === '/app/setup/templates'}" >
+                                    <a href="#/app/setup/templates">
+                                        <i class="fas fa-file-alt"></i>
+                                        <span>{{'Layout.Menu.Templates' | translate}}</span>
+                                        <md-tooltip ng-if="showTooltip" md-direction="right">
+                                            {{'Layout.Menu.Templates' |translate}}
                                         </md-tooltip>
                                     </a>
                                 </li>
@@ -222,14 +224,14 @@
     </ul>
     <ul class="list-unstyled" ng-if="customMenu">
         <li ng-repeat="item in mobileMenus" ng-class="(item.active) ? 'active' : ' '">
-            <md-button ng-if="item.route" style="min-width: 50px;" href="#/app/modules/{{item.route}}" aria-label="item">
+            <md-button ng-if="item.route" style="min-width: 50px;" href="{{ item.is_dynamic ? '#/app/modules/' + item.route : '#/app/' +item.route   }}" aria-label="item">
                 <i class="fas {{item.menu_icon}}"></i> <span>{{item['label_' + language]}}</span>
             </md-button>
             <md-menu md-position-mode="target-right target" ng-if="!item.route">
                 <md-button aria-label="item" ng-click="$mdMenu.open($event)"> <i class="fas {{item.menu_icon}}"></i> <span md-truncate>{{item['label_' + language]}}</span></md-button>
                 <md-menu-content width="3" class="md-dense">
                     <md-menu-item ng-repeat="categoryItem in item.menu_items">
-                        <md-button ng-click="MenuItemHideMenu();" ng-class="(categoryItem.active) ? 'active' : ' '" href="#/app/modules/{{categoryItem.route}}"><i class="fas {{categoryItem.menu_icon}}"></i> <span>{{categoryItem['label_' + language]}}</span></md-button>
+                        <md-button ng-click="MenuItemHideMenu();" ng-class="(categoryItem.active) ? 'active' : ' '" href=" {{categoryItem.is_dynamic ? '#/app/modules/' + categoryItem.route : '#/app/' +categoryItem.route}}"><i class="fas {{categoryItem.menu_icon}}"></i> <span>{{categoryItem['label_' + language]}}</span></md-button>
                     </md-menu-item>
                 </md-menu-content>
             </md-menu>

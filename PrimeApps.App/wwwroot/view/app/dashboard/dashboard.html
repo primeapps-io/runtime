@@ -34,7 +34,7 @@
             <md-subheader class="own-tab">
                 <md-tabs md-dynamic-height md-swipe-content>
                     <md-tab ng-repeat="dashboard in dashboards" ng-click="changeDashboard(dashboard);">
-                        <md-tab-label id="tab{{dashboard.id}}" aria-controls="Tab 1" >
+                        <md-tab-label id="tab{{dashboard.id}}" aria-controls="{{dashboard['name_'+user.language] }}" >
                             <div class="tab-container">
                                 <span>{{dashboard['name_'+user.language] }}</span>
                                 <div class="tab-icons">
@@ -43,7 +43,7 @@
                             </div>
                         </md-tab-label>
                     </md-tab>
-                    <md-tab class="md-tab-icon" ng-click="dashboardformModal($event)" ng-show="dashboardprofile.length >0 && user.profile.has_admin_rights" g-click="dashboardformModal($event)">
+                    <md-tab class="md-tab-icon" ng-click="dashboardformModal($event)" ng-if="dashboardprofile.length >0 && user.profile.has_admin_rights">
                         <md-tab-label>
                             <div class="tab-container">
                                 <span><i class="fas fa-plus"></i></span>
@@ -53,15 +53,14 @@
                     </md-tab>
         
                 </md-tabs>
-            </md-subheader>
-            
+            </md-subheader> 
             <div class="container-fluid paddingua20">
                 <help-page route="currentPath"></help-page>
                 <div class="help-page align-items-center" ng-if="show">
-                    <div ng-bind-html="helpTemplatesModal.template"></div>
+                    <div class="alert alert-secondary" role="alert"  ng-bind-html="helpTemplatesModal.template"></div>
                     <md-button type="button"
                                ng-click="selectedClose = !selectedClose; closeDialog(currentPath, module.id, showModalCheck);"
-                               class="md-icon-button btn btn-secondary help-page-close"><i class="fas fa-times"></i>
+                               class="md-icon-button help-page-close"><i class="fas fa-times"></i>
                         <md-tooltip md-diretion="bottom">{{'Common.Close' | translate}}</md-tooltip>
                     </md-button>
                     <div>
@@ -77,8 +76,8 @@
                         <h1 class="paddingua20">{{ language === 'en' ? ('Common.Welcome' | translate)+' '+ user.full_name :
                             user.full_name +' '+('Common.Welcome' | translate) }}</h1>
                         <p>{{'Common.DashletMessage' | translate}}</p>
-                        <md-button class="btn btn-white" ng-click="openNewDashlet($event)"   title="Add New Dashlets"><i class="fas fa-plus"></i>
-                            <span>Add New</span></md-button>
+                        <md-button class="btn btn-white" ng-click="openNewDashlet($event)"   title="{{'Common.Add' | translate}}"><i class="fas fa-plus"></i>
+                            <span>{{'Common.Add' | translate}}</span></md-button>
                     </div>
                     <div class="col-12 dashboard" ng-show="showNewDashboard" ng-class="{'dashlet-edit':dashletMode}">
                         <div class="row">

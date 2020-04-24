@@ -63,7 +63,7 @@
 </ul>
 
 <div class="document-list-footer" ng-show="isAll && !$parent.record.freeze">
-    <a class="btn btn-secondary" ng-href="{{'#/app/record/'+type+'?id=' +  entityId}}"><i class="fa fa-chevron-left"></i> {{'Common.Back' | translate}} </a>
+    <a class="btn btn-secondary" ng-href="{{'#/app/record/'+type+'?id=' +  entityId+'&back=att'}}" ng-click="backAttachment()"><i class="fa fa-chevron-left"></i> {{'Common.Back' | translate}} </a>
 </div>
 <div class="document-list-footer" ng-show="!isAll && documents.length > 0 && !$parent.record.freeze">
     <a class="btn btn-secondary" ng-href="{{'#/app/documents/'+type+'?id=' +  entityId}}">{{'Documents.ShowAllDocuments' | translate}} <i class="fa fa-chevron-right"></i></a>

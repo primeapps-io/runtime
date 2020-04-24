@@ -176,6 +176,12 @@
                                           ng-required="formType === 'template'"
                                           mentio-iframe-element="iframeElement['tinymceTemplateEdit']"
                                           ng-model="newtemplate.tinymce_content"></textarea>
+                                <div class="hide" plupload="imgUpload">
+                                    <input id="uploadImage" type="file" add-file="add-file" />
+                                </div>
+                                <div class="hide" plupload="fileUpload">
+                                    <input id="uploadFile" type="file" add-file="add-file" />
+                                </div>
                                 <script type="text/ng-template" id="tag-mentions.tpl">
                                     <ul class="ment-tags" style="max-height: 250px;overflow: auto;">
                                         <li mentio-menu-item="tag" ng-repeat="tag in items"

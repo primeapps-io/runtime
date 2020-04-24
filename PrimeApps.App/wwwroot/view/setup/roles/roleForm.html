@@ -33,14 +33,17 @@
                                ng-disabled="role.system_type === 'system'"/>
                         <span class="k-invalid-msg" data-for="label"></span>
                     </div>
-                    <div class="form-group">
-                        <label for="description">
+                    <div class="form-group" >
+                        <label for="description" class="required">
                             {{'Setup.Roles.RoleDescription' | translate}}
+                            <span class="label-right">
+                                <span class="required-label">{{'Common.Required' | translate}}</span>
+                            </span>
                         </label>
                         <textarea rows="2" name="description" class="form-control" maxlength="250" id="description"
-                                  placeholder="{{'Setup.Roles.RoleDescription' | translate}}" auto-grow ng-model="role.description" ng-disabled="role.system_type === 'system'"></textarea>
+                                  placeholder="{{'Setup.Roles.RoleDescription' | translate}}" auto-grow ng-model="role.description" ng-disabled="role.system_type === 'system'" required></textarea>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" ng-if="!role.master">
                         <label for="reportsTo" class="required">
                             {{'Setup.Roles.ReportsTo' | translate}} {{role.master ? '':'*'}}
                         </label>

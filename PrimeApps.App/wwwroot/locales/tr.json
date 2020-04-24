@@ -36,6 +36,8 @@
     "NotFoundRecord": "Aradığınız kayıt bulunamadı.",
     "NoRecord": "Kayıt yok.",
     "NoDataFound": "Veri bulunamadı.",
+    "NoItemDisplay": "Görüntülenecek öğe yok",
+    "ItemsPerPage": "Sayfa başına ürün",
     "Forbidden": "Bu işlemi gerçekleştirmek için yetkiniz bulunmamaktadır.",
     "Search": "Ara",
     "SearchTitle": "Tüm alanlar üzerinde arama yapabilirsiniz.",
@@ -72,7 +74,7 @@
     "NoResults": "Sonuç bulunamadı",
     "Warning": "Uyarı",
     "User": "Kullanıcı",
-    "Clone": "Kopyala", 
+    "Clone": "Kopyala",
     "EMail": "E-Posta",
     "Pdf": "Pdf",
     "Revise": "Revize Et",
@@ -141,7 +143,9 @@
     "Required": "Zorunlu",
     "ShowMore": "Daha fazlasını göster",
     "Conflict": "{{fieldName}} : {{value}} zaten var.",
-    "SaveAsNew": "Yeni olarak kaydet"
+    "SaveAsNew": "Yeni olarak kaydet",
+    "ViewOnMap": "Haritada Göster",
+    "AddNew": "Yeni Ekle"
   },
   "Auth": {
     "Email": "E-posta",
@@ -217,7 +221,7 @@
       "Timesheet": "TIMESHEET",
       "Timetracker": "ZAMAN ÇİZELGEM",
       "AdvancedDocumentSearch": "DOKÜMAN ARA",
-      "Reports": "Raporlar",
+      "Views": "Görünüm",
       "Templates": "Şablonlar"
     }
   },
@@ -251,6 +255,7 @@
     "EditDashboard": "Panoyu Düzenle",
     "DashboardName": "Pano Adı",
     "DashboardDescription": "Pano Açıklaması",
+    "ProfileRequired": "Profil gereklidir",
     "NewDashlet": "Yeni Pano Öğesi",
     "EditDashlet": "Pano Öğesini Düzenle",
     "Type": "Tipi",
@@ -383,7 +388,8 @@
     "DownloadPdfWordMessage": "{{value}} dosyanız başarılı bir şekilde indirilmiştir.",
     "SelectOperator": "Bir operatör seçiniz",
     "SelectField": "Bir alan seçiniz",
-    "AggregationType": "Bir toplama türü seçiniz"
+    "AggregationType": "Bir toplama türü seçiniz",
+    "AddNewItem": "Yeni bir öğe eklemek ister misiniz ?"
   },
   "View": {
     "Edit": "Görünüm Düzenle",
@@ -440,18 +446,21 @@
     "ViewAddSucces": "Görünüm başarılı bir şekilde Eklendi",
     "Profiles": "Belirli profiller tarafından görüntülenebilir",
     "ChartSettings": "Grafik Ayarları",
-    "Columns" : "Alanlar",
+    "Columns": "Alanlar",
     "ChooseYourCriterion": "Kriterlerinizi seçin",
-    "ViewType" : "Görünüm Tipi",
+    "ViewType": "Görünüm Tipi",
     "Grid": "Liste",
     "Report": "Rapor",
     "GridView": "Liste Görünümü",
     "ReportView": "Rapor Görünümü",
     "SaveOptions": "Kaydetme Seçenekleri",
     "ReportSettings": "Report Ayarları",
-    "DeleteGroup" : "Grubu Sil",
+    "DeleteGroup": "Grubu Sil",
     "AddGroup": "Grup Ekle",
-    "AddCondition": "Filtre Ekle"
+    "AddCondition": "Filtre Ekle",
+    "TotalCount" : "Kayıt Sayısı",
+    "SelectedFieldsMobileInfo": "İlk 5 alan mobil görünümde gösterilecektir",
+    "ViewSettings" : "Görünüm Ayarları"
   },
   "Note": {
     "Notes": "Notlar",
@@ -1302,7 +1311,7 @@
         "module_deleted": "Modül Silme",
         "module_created": "Modül Oluşturma"
       },
-      "RelatedRecord": "İlişkili Katıt(lar)",
+      "RelatedRecord": "İlişkili Kayıt(lar)",
       "Date": "Tarih",
       "User": "Kullanıcı"
     },
@@ -2052,8 +2061,8 @@
     "NewCategory": "Yeni Kategori",
     "EditCategory": " Kategoriyi Düzenle",
     "CategoryName": "Kategori Adı",
-    "ExportImage": "Resim Olarak indir",
-    "ExportPdf": "Pdf Olarak indir",
+    "ExportImage": "Resmini indir",
+    "ExportPdf": "PDF'ini indir",
     "RemoveSelection": "Seçimi Kaldır"
   },
   "Directory": {

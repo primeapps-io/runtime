@@ -1,9 +1,7 @@
-<md-dialog flex="45" tabindex="-1" role="dialog" ng-controller="locationFormModalController"><!--aria-label="{{'' | translate}}"-->
+<md-dialog flex="45" tabindex="-1" role="dialog" ng-controller="locationFormModalController">
         <md-toolbar>
             <div class="md-toolbar-tools">
-                <!--<h2>-->
-                    <!--{{'..' | translate}}-->
-                <!--</h2>-->
+                <h2>{{title}}</h2>
                 <span flex></span>
                 <md-button class="md-icon-button" ng-disabled="submittingModal" ng-click="close()"><i
                         class="fas fa-times"></i></md-button>

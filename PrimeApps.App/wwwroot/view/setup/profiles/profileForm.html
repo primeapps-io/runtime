@@ -29,15 +29,21 @@
                         <input type="text" id="name" name="name" class="k-textbox"
                                placeholder="{{'Setup.Profiles.ProfileName' | translate}}"
                                required validationMessage="{{'Module.Required' | translate}}" maxlength="50"
-                               ng-model="profile.name" ng-change="profileForm['name'].$setValidity('unique', true)"
+                               ng-model="profile['name_' + language]" ng-change="profileForm['name'].$setValidity('unique', true)"
                                ng-disabled="profile.is_persistent || profile.system_type === 'system'" />
                         <span class="k-invalid-msg" data-for="name"></span>
                     </div>
                     <div class="form-group">
                         <label for="description">
-                            {{'Setup.Profiles.ProfileDescription' | translate}}
+                            <span>  {{'Setup.Profiles.ProfileDescription' | translate}}</span>
+                            <span class="label-right">
+                                <span class="required-label">{{'Common.Required' | translate}}</span>
+                            </span>
                         </label>
-                        <textarea rows="2" name="description" class="form-control" maxlength="255" id="description" placeholder="{{'Setup.Profiles.ProfileDescription' | translate}}" auto-grow ng-model="profile.description" ng-disabled="profile.is_persistent || profile.system_type === 'system'"></textarea>
+                        <textarea required rows="2" name="description" class="form-control" 
+                        maxlength="255" id="description" placeholder="{{'Setup.Profiles.ProfileDescription' | translate}}" 
+                        auto-grow ng-model="profile['description_' + language]" 
+                        ng-disabled="profile.is_persistent || profile.system_type === 'system'"></textarea>
                     </div>
                     <div class="form-group" ng-show="!profile || !(profile.has_admin_rights && profile.is_persistent)">
                         <label for="PageStart">{{'Setup.Profiles.StarPage' | translate}} </label>
@@ -67,7 +73,7 @@
                         <tr ng-repeat="permission in profile.permissions">
                             <td>{{permission.EntityTypeName}}</td>
                             <td class="text-center">
-                                <input type="checkbox" id="read{{$index}}" class="k-checkbox" ng-model="permission.read" ng-disabled="profile.is_persistent || profile.system_type === 'system'" ng-change="!permission.read ? permission.modify = false : ''; !permission.read ? permission.write = false : ''; !permission.read ? permission.remove = false : '';">
+                                <input type="checkbox" id="read{{$index}}" class="k-checkbox" ng-model="permission.read" ng-disabled="profile.is_persistent || profile.system_type === 'system' || permission.type === 2" ng-change="!permission.read ? permission.modify = false : ''; !permission.read ? permission.write = false : ''; !permission.read ? permission.remove = false : '';">
                                 <label class="k-checkbox-label" for="read{{$index}}"></label>
                             </td>
                             <td class="text-center">
@@ -121,7 +127,7 @@
                             <kendo-switch id="smtpSettings" ng-model="profile.smtp_settings" ng-disabled="profile.system_type === 'system'"></kendo-switch>
                         </li>
                         <li ng-if="!profile.has_admin_rights">
-                            <span>Pano</span>
+                            <span>{{'Setup.HelpGuide.Dashboard' | translate}}</span>
                             <kendo-switch id="dashboard" ng-model="profile.dashboard" ng-disabled="profile.system_type === 'system'"></kendo-switch>
                         </li>
                     </ul>

@@ -1,4 +1,4 @@
-<form class="disable-validation-msg"  name="profileForm" ng-submit="addUserForm ? addUser(addUserModel):sendOfficeUserPassword()" autocomplete="off" style="height:100%;" kendo-validator="validator" ng-cloak>
+<form class="disable-validation-msg" name="profileForm" ng-submit="addUserForm ? addUser(addUserModel):sendOfficeUserPassword()" autocomplete="off" style="height:100%;" kendo-validator="validator" ng-cloak>
     <div ng-show="loadingModal" class="spin">
         <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
     </div>
@@ -10,9 +10,9 @@
                 <h3 md-truncate ng-if="user.id">{{'Setup.Users.UserLicenseInfo' | translate}}</h3>
                 <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close"><i class="fas fa-thumbtack"></i></md-button>
                 <span flex></span>
-                
+
                 <md-button type="submit" ng-if="addUserForm" class="md-icon-button btn btn-primary" ng-disabled="userInviting"><i class="fas fa-save"></i> <md-tooltip md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip></md-button>
-                
+
             </div>
         </md-toolbar>
         <md-content flex>
@@ -30,7 +30,7 @@
                                 </span>
                             </label>
                             <input type="text" id="firstName" name="firstName" class="k-textbox"
-                                   ng-disabled="addUserModel.id"
+                                   ng-disabled="addUserModel.id" maxlength="100"
                                    placeholder="{{'Setup.Users.NewUserName' | translate}}" required ng-model="addUserModel.first_name"
                                    validationMessage="{{'Module.Required' | translate}}" />
                             <span class="k-invalid-msg" data-for="firstName"></span>
@@ -43,7 +43,7 @@
                                 </span>
                             </label>
                             <input type="text" id="lastName" name="lastName" class="k-textbox"
-                                   ng-disabled="addUserModel.id"
+                                   ng-disabled="addUserModel.id" maxlength="100"
                                    placeholder="{{'Setup.Users.NewUserLastName' | translate}}" required ng-model="addUserModel.last_name"
                                    validationMessage="{{'Module.Required' | translate}}" />
                             <span class="k-invalid-msg" data-for="lastName"></span>
@@ -56,6 +56,7 @@
                                 </span>
                             </label>
                             <input type="email" id="email" name="email" class="k-textbox"
+                                   maxlength="100"
                                    placeholder="{{'Setup.Users.NewUserEmail' | translate}}" required ng-model="addUserModel.email"
                                    ng-disabled="addUserModel.id"
                                    validationMessage="{{'Module.Required' | translate}}" />

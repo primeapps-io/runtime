@@ -22,10 +22,21 @@
                     <ul class="list-unstyled">
                         <li ng-repeat="profile in dashboardprofile" ng-if="!currentDashboard.id">
                             <input type="radio" id="profile-{{profile.id}}" class="k-radio"
-                                   name="profile-{{profile.id}}" required
-                                   ng-model="currentDashboard.profile_id" ng-value="profile.id" required>
-                            <label class="k-radio-label" for="profile-{{profile.id}}"> {{ profile.name
-                                }} </label>
+                                   name="dash" required
+                                   ng-model="currentDashboard.profile_id" ng-value="profile.id">
+                            <label class="k-radio-label" for="profile-{{profile.id}}"> {{profile.name}} </label>
+                        </li>
+                    </ul>
+                </div>   
+                <div class="form-group"   ng-if="user.profile.has_admin_rights && currentDashboard.id && currentDashboard.profile">
+                    <label for="description" class="required">{{'Dashboard.Profile' | translate}} </label>
+                    <ul class="list-unstyled">
+                        <li>
+                            <input type="radio" id="profile-{{currentDashboard.profile_id" class="k-radio"
+                                   name="dash" required
+                                   disabled
+                                   ng-model="currentDashboard.profile_id" ng-value="currentDashboard.profile_id">
+                            <label class="k-radio-label" for="profile-{{currentDashboard.profile_id}}"> {{currentDashboard.profile['name_'+language]}} </label>
                         </li>
                     </ul>
                 </div>
