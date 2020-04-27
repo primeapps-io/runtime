@@ -919,7 +919,7 @@
       "ChooseUser": "Choose User",
       "NewUserEmail": "E-Mail",
       "NewUserName": "Name",
-      "NewUserLastName": "LastName",
+      "NewUserLastName": "Last Name",
       "NewUserProfile": "Select Profile",
       "NewUserRole": "Select Role",
       "NewUserError": "This e-mail has been already using from another user",

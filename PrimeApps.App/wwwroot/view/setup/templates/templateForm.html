@@ -33,7 +33,7 @@
                         
                         </div>
                         
-                        <div class="form-group">
+                        <div  ng-show="current.template_type !== 'system'" class="form-group">
                             <label for="module">
                                 <span>{{'Module' | translate}} </span>
                                 <span class="required-label label-right">{{'Common.Required' | translate}}</span>
@@ -44,11 +44,11 @@
                                     id="module"
                                     name="module"
                                     k-options="moduleOptions"
-                                    ng-model="current.module",
+                                    ng-model="current.module"
                                     ng-change="currentChangeModule()"
                                     k-option-label="'{{'Common.Select' | translate}}'"
                                     required
-                                    ng-disabled="current.system_type == 'system'"></select>
+                                    ng-disabled="current.system_type === 'system'"></select>
                             <span class="k-invalid-msg" data-for="role"></span>
                         </div>
                         

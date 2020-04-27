@@ -279,7 +279,7 @@
                         <div class="md-toolbar-tools grid-buttons3" ng-show="selectedRecords[relatedModule.related_module].length > 0">
                             <h2 md-truncate>{{  selectedRecords[relatedModule.related_module].length }} item selected</h2>
                             <span flex></span>
-                            <md-button class="md-icon-button btn btn-primary" aria-label="Delete" ng-click="relatedModule.relation_type === 'many_to_many' ? deleteRelation($event, relatedModule) : deleteSelectedsSubTable($event,relatedModule.related_module)">
+                            <md-button class="md-icon-button btn btn-primary" aria-label="Delete" ng-show="hasPermission(relatedModule.related_module, operations.remove)" ng-click="relatedModule.relation_type === 'many_to_many' ? deleteRelation($event, relatedModule) : deleteSelectedsSubTable($event,relatedModule.related_module)">
                                 <i ng-class="relatedModule.relation_type === 'many_to_many' ? 'fas fa-minus-circle' : 'fas fa-trash'"></i>
                                 <md-tooltip md-direction="bottom">{{relatedModule.relation_type === 'many_to_many' ?('Module.RemoveRelation' | translate) : ('Module.DeleteSelecteds' | translate)}}</md-tooltip>
                             </md-button>

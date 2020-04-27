@@ -30,8 +30,8 @@
                 <div ng-if="toolbarOptions.items.length > 0" flex class="action-btn" kendo-toolbar
                      k-options="toolbarOptions"></div>
                 <div class="ml-auto d-inline-flex">
-                    <md-menu md-position-mode="target-right target"  ng-if="user.profile.export_data || user.profile.import_data">
-                        <md-button class="md-icon-button btn btn-secondary"
+                    <md-menu md-position-mode="target-right target"  ng-if="(user.profile.export_data && hasPermission(type, operations.read) ) || (hasPermission(type, operations.write) && user.profile.import_data )">
+                    <md-button class="md-icon-button btn btn-secondary"
                                    aria-label="{{'Module.Export' | translate }} - {{'Module.Import' | translate }}"
                                    ng-click="$mdMenu.open()">
                             <i class="fas fa-database"></i>
