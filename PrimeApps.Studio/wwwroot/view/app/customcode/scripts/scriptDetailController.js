@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ScriptDetailController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ScriptsService', '$localStorage', '$sce', '$window', 'ScriptsDeploymentService', 'componentPlaces', 'componentPlaceEnums',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ScriptsService, $localStorage, $sce, $window, ScriptsDeploymentService, componentPlaces, componentPlaceEnums) {
+    .controller('ScriptDetailController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ScriptsService', '$localStorage', '$sce', '$window', 'componentPlaces', 'componentPlaceEnums',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ScriptsService, $localStorage, $sce, $window, componentPlaces, componentPlaceEnums) {
             $scope.loadingDeployments = true;
             $scope.loading = true;
             $scope.modalLoading = false;
@@ -24,12 +24,11 @@ angular.module('primeapps')
             $scope.run = {};
             $scope.response = null;
 
-            $scope.pageTotal = 0;
             $scope.activePage = 1;
 
             $scope.app = $rootScope.currentApp;
             $scope.organization = $filter('filter')($rootScope.organizations, { id: $scope.orgId })[0];
-            $scope.giteaUrl = giteaUrl;
+            //$scope.giteaUrl = giteaUrl;
             $scope.environments = ScriptsService.getEnvironments();
 
             if (!$scope.name) {
@@ -92,11 +91,6 @@ angular.module('primeapps')
 
                     if ($scope.script.custom_url)
                         $scope.tabManage.activeTab = 'settings';
-
-                    ScriptsDeploymentService.count($scope.script.id)
-                        .then(function (response) {
-                            $scope.pageTotal = response.data;
-                        });
 
                     if (!$scope.script.place_value)
                         $scope.script.place_value = $scope.script.place;

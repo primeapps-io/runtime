@@ -23,7 +23,7 @@ angular.module('primeapps')
             $scope.loading = true;
             //var currentOrganization = $localStorage.get("currentApp");
             $scope.organization = $filter('filter')($rootScope.organizations, {id: $scope.orgId})[0];
-            $scope.giteaUrl = giteaUrl;
+            //$scope.giteaUrl = giteaUrl;
 
             /*$scope.aceOption = {
              mode: 'javascript',

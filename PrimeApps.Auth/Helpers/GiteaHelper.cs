@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PrimeApps.Auth.Helpers
 {
-    public interface IGiteaHelper
+    /*public interface IGiteaHelper
     {
         Task CreateUser(string email, string password, string firstName, string lastName);
         Task<string> GetToken(string email, string password);
@@ -199,5 +199,5 @@ namespace PrimeApps.Auth.Helpers
                 }
             }
         }
-    }
+    }*/
 }

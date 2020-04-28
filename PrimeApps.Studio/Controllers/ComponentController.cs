@@ -23,22 +23,18 @@ namespace PrimeApps.Studio.Controllers
     public class ComponentController : DraftBaseController
     {
         private IBackgroundTaskQueue Queue;
-        private IDeploymentHelper _deploymentHelper;
         private IModuleRepository _moduleRepository;
         private IComponentRepository _componentRepository;
         private IDeploymentComponentRepository _deploymentComponentRepository;
-        private IComponentHelper _componentHelper;
         private IConfiguration _configuration;
         private IPermissionHelper _permissionHelper;
 
-        public ComponentController(IBackgroundTaskQueue queue, IComponentRepository componentRepository, IDeploymentHelper deploymentHelper, IDeploymentComponentRepository deploymentComponentRepository, IComponentHelper componentHelper, IModuleRepository moduleRepository, IConfiguration configuration, IPermissionHelper permissionHelper)
+        public ComponentController(IBackgroundTaskQueue queue, IComponentRepository componentRepository, IDeploymentComponentRepository deploymentComponentRepository, IModuleRepository moduleRepository, IConfiguration configuration, IPermissionHelper permissionHelper)
         {
             Queue = queue;
-            _deploymentHelper = deploymentHelper;
             _deploymentComponentRepository = deploymentComponentRepository;
             _componentRepository = componentRepository;
             _moduleRepository = moduleRepository;
-            _componentHelper = componentHelper;
             _configuration = configuration;
             _permissionHelper = permissionHelper;
         }
@@ -127,10 +123,10 @@ namespace PrimeApps.Studio.Controllers
                 Environment = model.EnvironmentValues
             };
 
-            var sampleCreated = await _componentHelper.CreateSample((int)AppId, model, OrganizationId);
+            /*var sampleCreated = await _componentHelper.CreateSample((int)AppId, model, OrganizationId);
 
             if (!sampleCreated)
-                return BadRequest("Component not created.");
+                return BadRequest("Component not created.");*/
 
             var result = await _componentRepository.Create(component);
 
@@ -201,22 +197,6 @@ namespace PrimeApps.Studio.Controllers
             return Ok();
         }
 
-        [Route("all_files_names/{id:int}"), HttpGet]
-        public async Task<IActionResult> AllFileNames(int id)
-        {
-            if (UserProfile != ProfileEnum.Manager && !_permissionHelper.CheckUserProfile(UserProfile, "component", RequestTypeEnum.View))
-                return StatusCode(403);
-
-            var component = await _componentRepository.Get(id);
-
-            if (component == null)
-                return BadRequest("Component is not exist.");
-
-            var nameList = await _componentHelper.GetAllFileNames((int)AppId, component.Name, OrganizationId);
-
-            return Ok(nameList);
-        }
-
         [Route("deploy/{id:int}"), HttpGet]
         public async Task<IActionResult> Deploy(int id)
         {
@@ -249,7 +229,7 @@ namespace PrimeApps.Studio.Controllers
             if (result < 1)
                 return BadRequest("An error occurred while creating an deployment.");
 
-            Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartComponentDeployment(component, (int)AppId, deployment.Id, OrganizationId));
+            //Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartComponentDeployment(component, (int)AppId, deployment.Id, OrganizationId));
 
             return Ok();
         }

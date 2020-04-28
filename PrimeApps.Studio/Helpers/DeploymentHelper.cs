@@ -18,7 +18,7 @@ using PrimeApps.Model.Storage;
 
 namespace PrimeApps.Studio.Helpers
 {
-    public interface IDeploymentHelper
+    /*public interface IDeploymentHelper
     {
         Task StartFunctionDeployment(Model.Entities.Tenant.Function function, JObject functionObj, string name, int userId, int organizationId, int appId, int deploymentId);
         Task StartComponentDeployment(Model.Entities.Tenant.Component component, int appId, int deploymentId, int organizationId, int? tenantId = null);
@@ -259,5 +259,5 @@ namespace PrimeApps.Studio.Helpers
                 }
             }
         }
-    }
+    }*/
 }

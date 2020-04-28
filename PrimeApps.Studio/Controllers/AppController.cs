@@ -31,7 +31,6 @@ namespace PrimeApps.Studio.Controllers
         private ICollaboratorsRepository _collaboratorRepository;
         private IOrganizationRepository _organizationRepository;
         private IPermissionHelper _permissionHelper;
-        private IGiteaHelper _giteaHelper;
         private IUnifiedStorage _storage;
         private IUserRepository _userRepository;
         private IAppDraftTemplateHelper _draftTemplateHelper;
@@ -43,7 +42,6 @@ namespace PrimeApps.Studio.Controllers
             ICollaboratorsRepository collaboratorRepository,
             IOrganizationRepository organizationRepository,
             IPermissionHelper permissionHelper,
-            IGiteaHelper giteaHelper,
             IUnifiedStorage storage,
             IUserRepository userRepository,
             IAppDraftTemplateHelper draftTemplateHelper)
@@ -55,7 +53,6 @@ namespace PrimeApps.Studio.Controllers
             _collaboratorRepository = collaboratorRepository;
             _organizationRepository = organizationRepository;
             _permissionHelper = permissionHelper;
-            _giteaHelper = giteaHelper;
             _storage = storage;
             _userRepository = userRepository;
             _draftTemplateHelper = draftTemplateHelper;
@@ -186,7 +183,7 @@ namespace PrimeApps.Studio.Controllers
             }
             #endregion
             Queue.QueueBackgroundWorkItem(token => _draftTemplateHelper.CreateAppDraftTemplates(app));
-            Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser));
+            //Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateRepository(OrganizationId, model.Name, AppUser));
 
             if (Request.Host.Value.Contains("localhost"))
                 await _storage.CreateBucketPolicy($"app{app.Id}", $"{Request.Scheme}://localhost:*", UnifiedStorage.PolicyType.StudioPolicy);

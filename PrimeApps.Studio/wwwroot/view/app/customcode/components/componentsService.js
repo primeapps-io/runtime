@@ -29,9 +29,6 @@ angular.module('primeapps')
                 delete: function (id) {
                     return $http.delete(config.apiUrl + 'component/delete/' + id);
                 },
-                getFileList: function (id) {
-                    return $http.get(config.apiUrl + 'component/all_files_names/' + id);
-                },
                 deploy: function (id) {
                     return $http.get(config.apiUrl + 'component/deploy/' + id);
                 },

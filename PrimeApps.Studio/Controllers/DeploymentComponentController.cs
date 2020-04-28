@@ -23,18 +23,13 @@ namespace PrimeApps.Studio.Controllers
         private IBackgroundTaskQueue Queue;
         private IConfiguration _configuration;
         private IDeploymentComponentRepository _deploymentComponentRepository;
-        private IDeploymentHelper _deploymentHelper;
         private IPermissionHelper _permissionHelper;
 
-        public DeploymentComponentController(IBackgroundTaskQueue queue,
-            IConfiguration configuration,
-            IDeploymentComponentRepository deploymentComponentRepository,
-            IDeploymentHelper deploymentHelper, IPermissionHelper permissionHelper)
+        public DeploymentComponentController(IBackgroundTaskQueue queue, IConfiguration configuration, IDeploymentComponentRepository deploymentComponentRepository, IPermissionHelper permissionHelper)
         {
             Queue = queue;
             _configuration = configuration;
             _deploymentComponentRepository = deploymentComponentRepository;
-            _deploymentHelper = deploymentHelper;
             _permissionHelper = permissionHelper;
         }
 

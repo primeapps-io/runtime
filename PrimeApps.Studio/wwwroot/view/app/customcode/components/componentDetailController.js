@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ComponentDetailController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ComponentsService', 'componentPlaces', 'componentPlaceEnums', 'componentTypeEnums', '$localStorage', 'ComponentsDeploymentService', '$sce',
-        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ComponentsService, componentPlaces, componentPlaceEnums, componentTypeEnums, $localStorage, ComponentsDeploymentService, $sce) {
+    .controller('ComponentDetailController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', '$modal', '$timeout', 'helper', 'dragularService', 'ComponentsService', 'componentPlaces', 'componentPlaceEnums', 'componentTypeEnums', '$localStorage', '$sce',
+        function ($rootScope, $scope, $filter, $state, $stateParams, $modal, $timeout, helper, dragularService, ComponentsService, componentPlaces, componentPlaceEnums, componentTypeEnums, $localStorage, $sce) {
             $scope.modules = [];
             $scope.id = $state.params.id;
             $scope.orgId = $state.params.orgId;
@@ -46,25 +46,9 @@ angular.module('primeapps')
 
             //var currentOrganization = $localStorage.get("currentApp");
             $scope.organization = $filter('filter')($rootScope.organizations, { id: $scope.orgId })[0];
-            $scope.giteaUrl = giteaUrl;
+            //$scope.giteaUrl = giteaUrl;
 
             $scope.deployments = [];
-
-            $scope.getFileList = function () {
-                $scope.filesLoading = true;
-                ComponentsService.getFileList($scope.id)
-                    .then(function (response) {
-                        $scope.files = [];
-                        angular.forEach(response.data, function (file) {
-                            var path = { 'path': file.path, 'value': file.path.replace('components/' + $scope.component.name + '/', '') };
-                            $scope.files.push(path);
-                            $scope.filesLoading = false;
-                        });
-                    })
-                    .catch(function (response) {
-                        $scope.filesLoading = false;
-                    });
-            };
 
             //$scope.getFileList();
 
@@ -107,12 +91,6 @@ angular.module('primeapps')
 
                     $scope.loading = false;
                 });
-
-            $scope.isTemplateFile = function () {
-                return function (item) {
-                    return item.value.contains('.html');
-                };
-            };
 
             $scope.save = function (componentFormValidation) {
                 if (!componentFormValidation.$valid) {
@@ -164,150 +142,8 @@ angular.module('primeapps')
                     })
             };
 
-            $scope.runDeployment = function () {
-                $scope.loadingDeployments = true;
-                ComponentsService.deploy($scope.id)
-                    .then(function (response) {
-                        toastr.success("Deployment Started");
-                        $scope.grid.dataSource.read();
-                    })
-                    .catch(function (response) {
-                        $scope.loadingDeployments = false;
-
-                        if (response.status === 409) {
-                            toastr.warning(response.data);
-                        }
-                        else {
-                            toastr.error($filter('translate')('Common.Error'));
-                        }
-                    });
-            };
-
             $scope.getTime = function (time) {
                 return moment(time).format("DD-MM-YYYY HH:ss");
             };
-
-            $scope.getIcon = function (type) {
-                switch (type) {
-                    case 'running':
-                        return $sce.trustAsHtml('<i style="color:#0d6faa;" class="fas fa-clock"></i>');
-                    case 'failed':
-                        return $sce.trustAsHtml('<i style="color:rgba(218,10,0,1);" class="fas fa-times"></i>');
-                    case 'succeed':
-                        return $sce.trustAsHtml('<i style="color:rgba(16,124,16,1);" class="fas fa-check"></i>');
-                }
-            };
-
-            //For Kendo UI
-
-            var accessToken = $localStorage.read('access_token');
-
-            $scope.mainGridOptions = {
-                dataSource: {
-                    type: "odata-v4",
-                    page: 1,
-                    pageSize: 10,
-                    serverPaging: true,
-                    serverFiltering: true,
-                    serverSorting: true,
-                    transport: {
-                        read: {
-                            url: "/api/deployment_component/find/" + $scope.id,
-                            type: 'GET',
-                            dataType: "json",
-                            beforeSend: function (req) {
-                                req.setRequestHeader('Authorization', 'Bearer ' + accessToken);
-                                req.setRequestHeader('X-App-Id', $rootScope.currentAppId);
-                                req.setRequestHeader('X-Organization-Id', $rootScope.currentOrgId);
-                            },
-                            complete: function () {
-                                $scope.loadingDeployments = false;
-                                $scope.loading = false;
-                            },
-                        }
-                    },
-                    schema: {
-                        data: "items",
-                        total: "count",
-                        model: {
-                            id: "id",
-                            fields: {
-                                StartTime: { type: "date" },
-                                EndTime: { type: "date" },
-                                Status: { type: "enums" }
-                            }
-                        }
-                    }
-
-                },
-                scrollable: false,
-                persistSelection: true,
-                sortable: true,
-                noRecords: true,
-                filterable: {
-                    extra: false
-                },
-                rowTemplate: function (e) {
-                    var trTemp = '<tr>';
-                    trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
-                    trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
-                    trTemp += '<td> <span>' + e.version + '</span></td > ';
-                    trTemp += '<td style="text-align: center;" ng-bind-html="getIcon(dataItem.status)"></td></tr>';
-                    return trTemp;
-                },
-                altRowTemplate: function (e) {
-                    var trTemp = '<tr class="k-alt">';
-                    trTemp += '<td><span>' + $scope.getTime(e.start_time) + '</span></td>';
-                    trTemp += '<td> <span>' + $scope.getTime(e.end_time) + '</span></td > ';
-                    trTemp += '<td> <span>' + e.version + '</span></td > ';
-                    trTemp += '<td style="text-align: center;" ng-bind-html="getIcon(dataItem.status)"></td></tr>';
-                    return trTemp;
-                },
-                pageable: {
-                    refresh: true,
-                    pageSize: 10,
-                    pageSizes: [10, 25, 50, 100],
-                    buttonCount: 5,
-                    info: true,
-                },
-                columns: [
-                    {
-                        field: 'StartTime',
-                        title: 'Start Time',
-                        filterable: {
-                            ui: function (element) {
-                                element.kendoDatePicker({
-                                    format: '{0: dd-MM-yyyy}'
-                                })
-                            }
-                        }
-                    },
-                    {
-                        field: 'EndTime',
-                        title: 'End Time',
-                        filterable: {
-                            ui: function (element) {
-                                element.kendoDatePicker({
-                                    format: '{0: dd-MM-yyyy}'
-                                })
-                            }
-                        }
-                    },
-                    {
-                        field: 'Version',
-                        title: 'Version'
-                    },
-                    {
-                        field: 'Status',
-                        title: 'Status',
-                        values: [
-                            { text: 'Running', value: 'Running' },
-                            { text: 'Failed', value: 'Failed' },
-                            { text: 'Succeed', value: 'Succeed' }
-                        ]
-                    }]
-            };
-
-            //For Kendo UI
         }
     ]);

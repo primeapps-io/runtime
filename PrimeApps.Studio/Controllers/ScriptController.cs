@@ -22,20 +22,15 @@ namespace PrimeApps.Studio.Controllers
     public class ScriptController : DraftBaseController
     {
         private IBackgroundTaskQueue Queue;
-        private IDeploymentHelper _deploymentHelper;
-        private IComponentHelper _componentHelper;
         private IScriptRepository _scriptRepository;
         private IConfiguration _configuration;
         private IDeploymentComponentRepository _deploymentComponentRepository;
         private IModuleRepository _moduleRepository;
         private IPermissionHelper _permissionHelper;
 
-        public ScriptController(IBackgroundTaskQueue queue, IDeploymentHelper deploymentHelper, IComponentHelper componentHelper,
-            IScriptRepository scriptRepository, IConfiguration configuration, IDeploymentComponentRepository deploymentComponentRepository, IModuleRepository moduleRepository, IPermissionHelper permissionHelper)
+        public ScriptController(IBackgroundTaskQueue queue, IScriptRepository scriptRepository, IConfiguration configuration, IDeploymentComponentRepository deploymentComponentRepository, IModuleRepository moduleRepository, IPermissionHelper permissionHelper)
         {
             Queue = queue;
-            _deploymentHelper = deploymentHelper;
-            _componentHelper = componentHelper;
             _scriptRepository = scriptRepository;
             _configuration = configuration;
             _deploymentComponentRepository = deploymentComponentRepository;
@@ -152,13 +147,13 @@ namespace PrimeApps.Studio.Controllers
                 CustomUrl = model.CustomUrl
             };
 
-            if (string.IsNullOrEmpty(model.CustomUrl))
+            /*if (string.IsNullOrEmpty(model.CustomUrl))
             {
                 var sampleCreated = await _componentHelper.CreateSampleScript((int)AppId, model, OrganizationId);
 
                 if (!sampleCreated)
                     return BadRequest("Script not created.");
-            }
+            }*/
 
             var result = await _scriptRepository.Create(script);
 
@@ -279,7 +274,7 @@ namespace PrimeApps.Studio.Controllers
             if (result < 1)
                 return BadRequest("An error occured while creating an deployment");
 
-            Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartScriptDeployment(script, (int)AppId, deployment.Id, OrganizationId));
+            //Queue.QueueBackgroundWorkItem(token => _deploymentHelper.StartScriptDeployment(script, (int)AppId, deployment.Id, OrganizationId));
 
             return Ok();
         }

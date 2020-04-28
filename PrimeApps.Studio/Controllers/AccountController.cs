@@ -25,20 +25,15 @@ namespace PrimeApps.Studio.Controllers
         private IApplicationRepository _applicationRepository;
         private IOrganizationRepository _organizationRepository;
         private IStudioUserRepository _studioUserRepository;
-        private IGiteaHelper _giteaHelper;
         private IPlatformRepository _platformRepository;
         private IConfiguration _configuration;
         private IPlatformUserRepository _platformUserRepository;
 
 
-        public AccountController(IApplicationRepository applicationRepository,
-            IOrganizationRepository organizationRepository,
-            IStudioUserRepository studioUserRepository,
-            IGiteaHelper giteaHelper, IPlatformRepository platformRepository, IConfiguration configuration, IPlatformUserRepository platformUserRepository)
+        public AccountController(IApplicationRepository applicationRepository,IOrganizationRepository organizationRepository,IStudioUserRepository studioUserRepository,IPlatformRepository platformRepository, IConfiguration configuration, IPlatformUserRepository platformUserRepository)
         {
             _organizationRepository = organizationRepository;
             _studioUserRepository = studioUserRepository;
-            _giteaHelper = giteaHelper;
             _applicationRepository = applicationRepository;
             _platformRepository = platformRepository;
             _configuration = configuration;
@@ -108,7 +103,7 @@ namespace PrimeApps.Studio.Controllers
             if (result >= 1)
             {
                 var userEmail = (string)user["email"];
-                var orgName = GiteaHelper.GetUserName(userEmail);
+                var orgName = string.Join("", (userEmail.Replace("@", string.Empty)).Split("."));
                 /*var query = userEmail.Replace("@", "").Split(".");
                 Array.Resize(ref query, query.Length - 1);
                 var orgName = string.Join("", query);*/

@@ -219,17 +219,6 @@ angular.module('primeapps')
 
             };
 
-            $scope.runDeployment = function () {
-                toastr.success("Deployment Started");
-                FunctionsService.deploy($scope.script.name)
-                    .then(function (response) {
-                        //setAceOption($scope.record.runtime);
-                        $scope.reload();
-                    })
-                    .catch(function (response) {
-                    });
-            };
-
             //For Kendo UI
             $scope.goUrl = function (script) {
                 var selection = window.getSelection();
