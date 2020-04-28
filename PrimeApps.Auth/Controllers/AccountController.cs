@@ -63,7 +63,6 @@ namespace PrimeApps.Auth.UI
         private IProfileRepository _profileRepository;
         private IRoleRepository _roleRepository;
         private IRecordRepository _recordRepository;
-        private IGiteaHelper _giteaHelper;
         private IUserHelper _userHelper;
         private IUnifiedStorage _storage;
         public IBackgroundTaskQueue Queue { get; }
@@ -85,13 +84,11 @@ namespace PrimeApps.Auth.UI
             IProfileRepository profileRepository,
             IRoleRepository roleRepository,
             IRecordRepository recordRepository,
-            IGiteaHelper giteaHelper,
             IUserHelper userHelper,
             IConfiguration configuration,
             IUnifiedStorage storage)
         {
             _configuration = configuration;
-            _giteaHelper = giteaHelper;
             _userManager = userManager;
             _signInManager = signInManager;
             _interaction = interaction;

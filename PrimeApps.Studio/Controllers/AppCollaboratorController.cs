@@ -21,14 +21,10 @@ namespace PrimeApps.Studio.Controllers
     {
         private ICollaboratorsRepository _collaboratorRepository;
         private IPermissionHelper _permissionHelper;
-        private IGiteaHelper _giteaHelper;
-        public AppCollaboratorController(ICollaboratorsRepository collaboratorRepository,
-            IPermissionHelper permissionHelper,
-            IGiteaHelper giteaHelper)
+        public AppCollaboratorController(ICollaboratorsRepository collaboratorRepository, IPermissionHelper permissionHelper)
         {
             _permissionHelper = permissionHelper;
             _collaboratorRepository = collaboratorRepository;
-            _giteaHelper = giteaHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -53,7 +49,7 @@ namespace PrimeApps.Studio.Controllers
 
             var result = await _collaboratorRepository.AppCollaboratorAdd(item);
 
-            await _giteaHelper.SyncCollaborators(OrganizationId, "create", (int)AppId, item.TeamId, item.UserId);
+            //await _giteaHelper.SyncCollaborators(OrganizationId, "create", (int)AppId, item.TeamId, item.UserId);
 
             return Ok(result);
         }
@@ -93,7 +89,7 @@ namespace PrimeApps.Studio.Controllers
             var appCollaborator = await _collaboratorRepository.GetById(id);
             var result = await _collaboratorRepository.Delete(appCollaborator);
             
-            await _giteaHelper.SyncCollaborators(OrganizationId, "delete", (int)AppId, appCollaborator.TeamId, appCollaborator.UserId);
+           // await _giteaHelper.SyncCollaborators(OrganizationId, "delete", (int)AppId, appCollaborator.TeamId, appCollaborator.UserId);
 
             return Ok(result);
         }

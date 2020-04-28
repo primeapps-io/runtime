@@ -30,20 +30,17 @@ namespace PrimeApps.Auth.Helpers
         private string previewMode;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly IHttpContextAccessor _context;
-        private readonly IGiteaHelper _giteaHelper;
 
 
         public IConfiguration _configuration { get; }
 
         public UserHelper(IHttpContextAccessor context,
             IServiceScopeFactory serviceScopeFactory,
-            IConfiguration configuration,
-            IGiteaHelper giteaHelper)
+            IConfiguration configuration)
         {
             _context = context;
             _serviceScopeFactory = serviceScopeFactory;
             _configuration = configuration;
-            _giteaHelper = giteaHelper;
 
             previewMode = _configuration.GetValue("AppSettings:PreviewMode", string.Empty);
             previewMode = !string.IsNullOrEmpty(previewMode) ? previewMode : "tenant";
@@ -97,14 +94,14 @@ namespace PrimeApps.Auth.Helpers
 
                 user = await _userManager.FindByNameAsync(userModel.Email);
 
-                if (!string.IsNullOrEmpty(studioUrl) && studioUrl.Contains(domain))
+                /*if (!string.IsNullOrEmpty(studioUrl) && studioUrl.Contains(domain))
                 {
                     await _giteaHelper.CreateUser(userModel.Email, userModel.Password, userModel.FirstName, userModel.LastName);
 
                     var giteaToken = await _giteaHelper.GetToken(userModel.Email, userModel.Password);
                     if (!string.IsNullOrEmpty(giteaToken))
                         await _userManager.AddClaimAsync(user, new Claim("gitea_token", giteaToken));
-                }
+                }*/
 
                 return user;
             }

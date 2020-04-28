@@ -77,14 +77,12 @@ namespace PrimeApps.Studio.Controllers
             var jwtToken = handler.ReadToken(ViewBag.Token) as JwtSecurityToken;
             var emailConfirmed = jwtToken?.Claims.FirstOrDefault(claim => claim.Type == "email_confirmed")?.Value;
 
-            if (!string.IsNullOrEmpty(_configuration.GetValue("AppSettings:GiteaEnabled", string.Empty)) && bool.Parse(_configuration.GetValue("AppSettings:GiteaEnabled", string.Empty)))
+            /*if (!string.IsNullOrEmpty(_configuration.GetValue("AppSettings:GiteaEnabled", string.Empty)) && bool.Parse(_configuration.GetValue("AppSettings:GiteaEnabled", string.Empty)))
             {
                 var giteaToken = jwtToken?.Claims.FirstOrDefault(claim => claim.Type == "gitea_token")?.Value;
-                //var giteaToken = Request.Cookies["gitea_token"];
-                //var giteaToken = jwtToken.Claims.First(claim => claim.Type == "gitea_token")?.Value;
                 if (giteaToken != null)
                     Response.Cookies.Append("gitea_token", giteaToken);
-            }
+            }*/
 
             var previewUrl = _configuration.GetValue("AppSettings:PreviewUrl", string.Empty);
 
@@ -101,10 +99,10 @@ namespace PrimeApps.Studio.Controllers
             if (!string.IsNullOrEmpty(functionUrl))
                 ViewBag.FunctionUrl = functionUrl;
 
-            var giteaUrl = _configuration.GetValue("AppSettings:GiteaUrl", string.Empty);
+            /*var giteaUrl = _configuration.GetValue("AppSettings:GiteaUrl", string.Empty);
 
             if (!string.IsNullOrEmpty(giteaUrl))
-                ViewBag.GiteaUrl = giteaUrl;
+                ViewBag.GiteaUrl = giteaUrl;*/
 
             var useCdnSetting = _configuration.GetValue("AppSettings:UseCdn", string.Empty);
             var useCdn = false;

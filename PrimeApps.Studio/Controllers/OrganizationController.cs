@@ -43,7 +43,6 @@ namespace PrimeApps.Studio.Controllers
         private IStudioUserRepository _studioUserRepository;
         private IApplicationRepository _applicationRepository;
         private ITeamRepository _teamRepository;
-        private IGiteaHelper _giteaHelper;
         private IPermissionHelper _permissionHelper;
         private IOrganizationHelper _organizationHelper;
 
@@ -59,8 +58,7 @@ namespace PrimeApps.Studio.Controllers
             IStudioUserRepository studioUserRepository,
             IServiceScopeFactory serviceScopeFactory,
             IPermissionHelper permissionHelper,
-            IOrganizationHelper organizationHelper,
-            IGiteaHelper giteaHelper)
+            IOrganizationHelper organizationHelper)
         {
             Queue = queue;
             _organizationRepository = organizationRepository;
@@ -74,7 +72,6 @@ namespace PrimeApps.Studio.Controllers
             _teamRepository = teamRepository;
             _configuration = configuration;
 
-            _giteaHelper = giteaHelper;
             _permissionHelper = permissionHelper;
             _organizationHelper = organizationHelper;
         }
@@ -327,7 +324,7 @@ namespace PrimeApps.Studio.Controllers
             if (result < 0)
                 return BadRequest("An error occurred while creating an organization");
 
-            Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateOrganization(model.Name, model.Label, AppUser.Email, "token"));
+            //Queue.QueueBackgroundWorkItem(token => _giteaHelper.CreateOrganization(model.Name, model.Label, AppUser.Email, "token"));
 
             return Ok(organization.Id);
         }

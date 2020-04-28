@@ -1,7 +1,7 @@
 ﻿@{
     var token = ViewBag.Token;
     var previewUrl = ViewBag.PreviewUrl;
-    var giteaUrl = ViewBag.GiteaUrl;
+    //var giteaUrl = ViewBag.GiteaUrl;
     var blobUrl = !string.IsNullOrWhiteSpace(ViewBag.BlobUrl) ? ViewBag.BlobUrl : "";
 }
 
@@ -78,7 +78,6 @@
     var tenantId = '0';
     var components = '';
     var previewUrl = '@previewUrl';
-    var giteaUrl = '@giteaUrl';
 
     document.body.className = 'primeapps';
     window.localStorage.setItem('theme', 'primeapps');

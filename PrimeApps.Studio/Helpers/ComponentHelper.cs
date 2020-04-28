@@ -24,7 +24,7 @@ using PrimeApps.Studio.Models;
 
 namespace PrimeApps.Studio.Helpers
 {
-    public interface IComponentHelper
+   /* public interface IComponentHelper
     {
         Task<JArray> GetAllFileNames(int appId, string path, int organizationId);
         Task<bool> CreateSample(int appId, ComponentModel component, int organizationId);
@@ -295,5 +295,5 @@ namespace PrimeApps.Studio.Helpers
         }
         
         
-    }
+    }*/
 }

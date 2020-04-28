@@ -43,60 +43,6 @@
         <div ng-if="!loading" class="tab-content" style="padding: 20px;position: relative;">
             <div class="bs-docs-section">
                 <div class="bs-example" append-source>
-                    <div bs-active-pane="tabManage.activeTab" bs-tabs>
-                        <div data-title="Overview" name="overview" bs-pane ng-if="!script.custom_url">
-                            <div ng-if="!loading" class="tab-content" style="padding: 20px;">
-                                <div class="setup-title" style="justify-content: normal;">
-                                    <p style="float: left;padding: 5px;background: #0d6faa;border-radius: 9px;color: white;font-size: 15px;padding-left: 10px;padding-right: 10px;margin-right: 5px;">1</p>
-                                    <h2 style="padding-bottom: 10px;">Clone</h2>
-                                </div>
-                                <div class="markdown" style="padding-bottom: 20px;">
-                                    <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
-                                    <code>
-git clone {{giteaUrl.slice(0, giteaUrl.indexOf('//')) + '//' + organization.name}}@{{giteaUrl.slice(giteaUrl.indexOf('//') + 2)}}/{{organization.name}}/{{app.name}}.git
-Enter your account password</code>
-        </pre>
-                                </div>
-                                <div class="setup-title" style="justify-content: normal;">
-                                    <p style="float: left;padding: 5px;background: #0d6faa;border-radius: 9px;color: white;font-size: 15px;padding-left: 10px;padding-right: 10px;margin-right: 5px;">2</p>
-                                    <h2 style="padding-bottom: 10px;">Develop</h2>
-                                </div>
-                                <div class="markdown" style="padding-bottom: 20px;">
-                                    <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
-                                    <code>
-Open project folder in IDE ( We recomended Visual Studio Code )
-Make some changes in {{component.name}} file</code>
-        </pre>
-                                </div>
-                                <div class="setup-title" style="justify-content: normal;">
-                                    <p style="float: left;padding: 5px;background: #0d6faa;border-radius: 9px;color: white;font-size: 15px;padding-left: 10px;padding-right: 10px;margin-right: 5px;">3</p>
-                                    <h2 style="padding-bottom: 10px;">Push</h2>
-                                </div>
-                                <div class="markdown" style="padding-bottom: 20px;">
-                                    <pre style="background-color: #f7f7f7 !important;padding-left: 20px !important;border-radius: 5;">
-                                    <code>
-git add .
-git commit -m "your commit message"
-git push</code>
-        </pre>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div data-title="Deployments" name="deployment" bs-pane ng-if="!script.custom_url">
-                            <div class="tab-content">
-                                <div class="grid-theme grid-theme-center table-responsive" kendo-grid="grid" id="kendo-grid" k-options="mainGridOptions()">
-                                </div>
-                            </div> 
-                            <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;" ng-if="tabManage.activeTab === 'deployment'">
-                                <i class="fas fa-refresh ng-scope pull-right" ng-class="loadingDeployments ? 'fa-spin' : ''" style="font-size: 15px;cursor: pointer;padding: 7px;color: #0d6faa;" ng-click="grid.dataSource.read()"></i>
-
-                                <button ng-disabled="loadingDeployments" class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;" ng-click="runDeployment()">
-                                    <i class="fas fa-plus"></i> Create Deployment
-                                </button>
-                            </div>
-                        </div>
-                        <div data-title="Settings" name="settings" bs-pane ng-if="true">
                             <form ng-if="!modalLoading" name="scriptForm" style="margin-top: 20px;" class="form-horizontal form-custom" ng-submit="save(scriptForm);" autocomplete="off"
                                   novalidate>
 
@@ -169,14 +115,12 @@ git push</code>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;" ng-if="tabManage.activeTab === 'settings'">
+                                <div class="ng-scope" style="position: absolute;top: 20px;right: 10px;display: inline-flex;">
                                     <button type="submit" ladda="saving" class="btn btn-radius btn-blue col-sm-12" style="margin-right: 10px;">
                                         <i class="fas fa-save"></i>{{'Common.Save' | translate}}
                                     </button>
                                 </div>
                             </form>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

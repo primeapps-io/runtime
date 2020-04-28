@@ -739,8 +739,7 @@ angular.module('primeapps')
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/customcode/components/componentsController.js',
-                                cdnUrl + 'view/app/customcode/components/componentsService.js',
-                                cdnUrl + 'view/app/customcode/components/componentsDeploymentService.js'
+                                cdnUrl + 'view/app/customcode/components/componentsService.js'
                             ]);
                         }]
                     }
@@ -767,32 +766,6 @@ angular.module('primeapps')
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/customcode/components/componentDetailController.js',
                                 cdnUrl + 'view/app/customcode/components/componentsService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.functions', {
-                    url: '/functions',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/app/customcode/functions/functions.html',
-                            controller: 'FunctionsController'
-                        }
-                    },
-                    resolve: {
-                        components: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
-                                $state.go('studio.app.overview', {
-                                    orgId: $rootScope.currentOrgId,
-                                    appId: $rootScope.currentAppId
-                                });
-                            }
-                        }],
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/customcode/functions/functionsController.js',
-                                cdnUrl + 'view/app/customcode/functions/functionsService.js'
                             ]);
                         }]
                     }
@@ -844,35 +817,7 @@ angular.module('primeapps')
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/customcode/scripts/scriptDetailController.js',
-                                cdnUrl + 'view/app/customcode/scripts/scriptsService.js',
-                                cdnUrl + 'view/app/customcode/scripts/scriptsDeploymentService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.functionDetail', {
-                    url: '/functionDetail?:name',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/app/customcode/functions/functionDetail.html',
-                            controller: 'FunctionDetailController'
-                        }
-                    },
-                    resolve: {
-                        componentDetail: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
-                                $state.go('studio.app.overview', {
-                                    orgId: $rootScope.currentOrgId,
-                                    appId: $rootScope.currentAppId
-                                });
-                            }
-                        }],
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/customcode/functions/functionDetailController.js',
-                                cdnUrl + 'view/app/customcode/functions/functionsService.js',
-                                cdnUrl + 'view/app/customcode/functions/functionsDeploymentService.js'
+                                cdnUrl + 'view/app/customcode/scripts/scriptsService.js'
                             ]);
                         }]
                     }
@@ -1135,32 +1080,6 @@ angular.module('primeapps')
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/manage/security/passwordpolicies/passwordpoliciesController.js',
                                 cdnUrl + 'view/app/manage/security/passwordpolicies/passwordpoliciesService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.functionsDeployment', {
-                    url: '/functionsDeployment',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/app/deployments/functions/functionsDeployment.html',
-                            controller: 'FunctionsDeploymentController'
-                        }
-                    },
-                    resolve: {
-                        functionsdeployment: ['$rootScope', '$state', 'app', function ($rootScope, $state, app) {
-                            if (!$rootScope.appModules || !$rootScope.appProfiles || !$rootScope.currentApp || !$rootScope.permission) {
-                                $state.go('studio.app.overview', {
-                                    orgId: $rootScope.currentOrgId,
-                                    appId: $rootScope.currentAppId
-                                });
-                            }
-                        }],
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/deployments/functions/functionsDeploymentController.js',
-                                cdnUrl + 'view/app/deployments/functions/functionsDeploymentService.js'
                             ]);
                         }]
                     }

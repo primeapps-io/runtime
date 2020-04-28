@@ -21,7 +21,7 @@ using PrimeApps.Studio.Models;
 
 namespace PrimeApps.Studio.Helpers
 {
-    public interface IFunctionHelper
+   /* public interface IFunctionHelper
     {
         Task<bool> CreateSample(string giteaToken, int appId, FunctionBindingModel function, int organizationId);
         string GetTypeWithRuntime(FunctionRuntime runtime);
@@ -275,8 +275,8 @@ namespace PrimeApps.Studio.Helpers
                 if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.NotFound)
                     return null;
 
-                /*if (!response.IsSuccessStatusCode || string.IsNullOrWhiteSpace(content))
-                    return content;*/
+                //if (!response.IsSuccessStatusCode || string.IsNullOrWhiteSpace(content))
+                //  return content;
 
                 logs = content;
             }
@@ -379,21 +379,5 @@ namespace PrimeApps.Studio.Helpers
                     return "txt";
             }
         }
-
-        public string GetFunctionName(string preview, string currentName, int? tenantId, int? appId)
-        {
-            return preview == "app" ? "app" + appId + "-" + currentName : "tenant" + tenantId + "-" + currentName;
-        }
-
-        public HttpClient SetClientOptions()
-        {
-            var httpClientHandler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true };
-            var client = new HttpClient(httpClientHandler);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _kubernetesClusterAccessToken);
-
-            return client;
-        }
-    }
+*/
 }

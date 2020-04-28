@@ -31,7 +31,7 @@ using PrimeApps.Studio.Models;
 
 namespace PrimeApps.Studio.Helpers
 {
-    public interface IGiteaHelper
+    /*public interface IGiteaHelper
     {
         Task SyncCollaborators(int organizationId, string operation, int appId, int? teamId, int? userId);
         JArray GetFileNames(string location, string path, bool getControllerName = false);
@@ -102,11 +102,10 @@ namespace PrimeApps.Studio.Helpers
                                     }
                                     else
                                     {
-                                        /*
-                                         * If user added without team and also with team.
-                                         * We can not delete from gitea.
-                                         */
-                                        var userAppTeam = await collaboratorsRepository.CheckUserAddedMultipleTimes(user.UserId, organizationId, appId);
+                                        
+                                         // If user added without team and also with team.
+                                         // We can not delete from gitea.
+                                         var userAppTeam = await collaboratorsRepository.CheckUserAddedMultipleTimes(user.UserId, organizationId, appId);
 
                                         if (!userAppTeam)
                                             userIds.Add(user.UserId);
@@ -123,10 +122,8 @@ namespace PrimeApps.Studio.Helpers
                         }
                         else
                         {
-                            /*
-                             * If user added without team and also with team.
-                             * We can not delete from gitea.
-                             */
+                            // If user added without team and also with team.
+                            // We can not delete from gitea.
                             var userAppTeam = await collaboratorsRepository.CheckUserAddedMultipleTimes((int)userId, organizationId, appId, true);
 
                             if (!userAppTeam)
@@ -140,7 +137,7 @@ namespace PrimeApps.Studio.Helpers
                     var ownerName = repo["owner"]["username"].ToString();
                     var currentGiteaUsers = await GetRepositoryCollaborators(ownerName, app.Name);
 
-                    using (var platformUserRepository = new PlatformUserRepository(platformDbContext, _configuration))//, cacheHelper))
+                    using (var platformUserRepository = new PlatformUserRepository(platformDbContext, _configuration))
                     {
                         foreach (var id in userIds)
                         {
@@ -206,20 +203,6 @@ namespace PrimeApps.Studio.Helpers
                 {
                     if (e.Path.StartsWith(path))
                     {
-                        /*if (getControllerName && e.Path.Contains(".js"))
-                        {
-                            var code = File.ReadAllText(location + "//" + e.Path);
-                            if (code.Contains("angular.module('primeapps'"))
-                            {
-                                var match = Regex.Matches(code, @"'(.*?)'");
-                                if (match.Success)
-                                {
-                                    var key = match.Value;
-                                    names.Add(new JObject() {["path"] = e.Path, ["controller_name"] = key});
-                                }
-                            }
-                        }*/
-
                         names.Add(new JObject() { ["path"] = e.Path });
                     }
                 }
@@ -343,7 +326,6 @@ namespace PrimeApps.Studio.Helpers
             }
             else
                 return;
-            //var userName = GetUserName(appUser.Email);
 
             using (var httpClient = new HttpClient())
             {
@@ -638,33 +620,7 @@ namespace PrimeApps.Studio.Helpers
 
             return basicAuthToken;
         }
-
-        /*private async Task<string> GetAccessToken(string userName)
-        {
-            using (var httpClient = new HttpClient())
-            {
-                var request = new JObject
-                {
-                    ["name"] = "primeapps"
-                };
-
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", GetUserBasicAuthToken());
-
-                var response = await httpClient.PostAsync(_configuration.GetValue("AppSettings")["GiteaUrl"] + "/api/v1/users/" + userName + "/tokens", new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
-                var resp = await response.Content.ReadAsStringAsync();
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    ErrorHandler.LogError(new Exception(resp), "Status Code: " + response.StatusCode + ", GiteaHelper get access token method; username : " + userName);
-                    return null;
-                }
-
-                return resp.ToString();
-            }
-        }*/
-
+        
         public static string GetUserName(string email)
         {
             return string.Join("", (email.Replace("@", string.Empty)).Split("."));
@@ -714,5 +670,5 @@ namespace PrimeApps.Studio.Helpers
 
             return GetToken();
         }
-    }
+    }*/
 }
