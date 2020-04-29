@@ -104,22 +104,21 @@
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <input type="text"
+    <input kendo-numeric-text-box
            name="{{field.name}}"
            id="{{field.name}}"
-           class="k-textbox"
            tabindex="{{field.order}}"
-           placeholder="{{field.placeholder}}"
-           ng-model="record[field.name]"
-           ng-change="fieldValueChange(field); calculate(field);"
-           ng-required="field.validation.required"
-           ng-readonly="field.validation.readonly || (id && !field.editable) || (record.freeze && !isAdmin)"
-           ng-trim="false"
+           ng-placeholder="{{field.placeholder}}"
+           k-options="{{'numberOptions'+field.id}}"
+           min="{{field.validation.min}}"
+           max="{{field.validation.max}}"
+           maxlength="{{field.validation.max_length || 19}}"
            minlength="{{field.validation.min_length || 0}}"
-           maxlength="{{field.validation.max_length || 15}}"
-           min-value="field.validation.min || Number.MIN_VALUE"
-           max-value="field.validation.max || Number.MAX_VALUE"
-           numeric/>
+           k-ng-model="record[field.name]"
+           data-range-field="{{field.name}}}"
+           k-on-change="fieldValueChange(field); calculate(field);"
+           ng-required="field.validation.required"
+           ng-readonly="field.validation.readonly || (id && !field.editable) || (record.freeze && !isAdmin)"/>
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
@@ -133,22 +132,19 @@
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <input type="text"
+    <input kendo-numeric-text-box
            name="{{field.name}}"
            id="{{field.name}}"
-           class="k-textbox"
            tabindex="{{field.order}}"
            ng-placeholder="{{field.placeholder}}"
-           ng-model="record[field.name]"
-           ng-change="fieldValueChange(field); calculate(field);"
+           min="{{field.validation.min}}"
+           max="{{field.validation.max}}"  
+           maxlength="{{field.validation.max_length || 19}}" 
+           minlength="{{field.validation.min_length || 0}}" 
+           k-ng-model="record[field.name]"
+           k-on-change="fieldValueChange(field); calculate(field);"
            ng-required="field.validation.required"
-           ng-readonly="field.validation.readonly || (id && !field.editable) || (record.freeze && !isAdmin)"
-           maxlength="{{field.validation.max_length || 19}}"
-           min-value="field.validation.min || Number.MIN_VALUE"
-           max-value="field.validation.max || Number.MAX_VALUE"
-           places="field.decimal_places || 2"
-           rounding="field.rounding"
-           number-decimal/>
+           ng-readonly="field.validation.readonly || (id && !field.editable) || (record.freeze && !isAdmin)"/>
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
@@ -162,23 +158,20 @@
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <input type="text"
+    <input kendo-numeric-text-box
            name="{{field.name}}"
            id="{{field.name}}"
-           class="k-textbox"
            tabindex="{{field.order}}"
-           placeholder="{{field.placeholder}}"
-           ng-model="record[field.name]"
-           ng-change="fieldValueChange(field); calculate(field);"
-           ng-required="field.validation.required"
-           ng-readonly="field.validation.readonly || (id && !field.editable) || (record.freeze && !isAdmin)"
+           ng-placeholder="{{field.placeholder}}"
+           min="{{field.validation.min}}"
+           max="{{field.validation.max}}"
            maxlength="{{field.validation.max_length || 21}}"
-           min-value="field.validation.min || 0"
-           max-value="field.validation.max || Number.MAX_VALUE"
-           places="field.decimal_places || 2"
-           rounding="field.rounding"
-           currency-symbol="field.currency_symbol || currencySymbol"
-           number-currency/>
+           minlength="{{field.validation.min_length || 0}}"
+           k-options="{{'currencyOptions'+ field.id}}"
+           k-ng-model="record[field.name]"
+           k-on-change="fieldValueChange(field); calculate(field);"
+           ng-required="field.validation.required"
+           ng-readonly="field.validation.readonly || (id && !field.editable) || (record.freeze && !isAdmin)"/>
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
@@ -603,7 +596,7 @@
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <select kendo-multi-select
+    <select kendo-multi-select="{{field.name}}"
             id="{{field.name}}"
             class="form-control"
             name="{{field.name}}"

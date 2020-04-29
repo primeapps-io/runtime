@@ -53,7 +53,7 @@
         </md-toolbar>
         <md-content flex>
             <section ng-show="tab === 'general'">
-                <form kendo-validator="moduleForm" ng-submit="submit(moduleForm, record)" class="disable-validation-msg"
+                <form kendo-validator="$parent.moduleForm" ng-submit="submit(record)" class="disable-validation-msg"
                       autocomplete="off"
                       novalidate>
                     <md-subheader class="insetp0">
@@ -269,7 +269,7 @@
                                 <i class="fas fa-plus"></i>
                                 <md-tooltip md-direction="bottom">{{'Common.Add' | translate}}</md-tooltip>
                             </md-button>
-                            <md-button href="#/app/record/{{relatedModule.related_module}}?ptype={{module.name}}&pid={{ record.id }}&rtab={{ relatedModule.detail_view_type != 'flat' ?  relatedModule.id :''}}"
+                            <md-button href="#/app/record/{{relatedModule.related_module}}?ptype={{relatedModule.relation_type === 'many_to_many' ? module.name : relatedModule.relation_field}}&pid={{ record.id }}&rtab={{ relatedModule.detail_view_type != 'flat' ?  relatedModule.id :''}}"
                                        ng-if="relatedModule.related_module != 'mails' && !relatedModule.readonly  && !record.freeze && !hiddenNewButton && relatedModule.relation_type !=='many_to_many'"
                                        ng-show="hasPermission(relatedModule.related_module, operations.write)" class="md-icon-button btn btn-primary" aria-label="{{'Common.Add' | translate}}">
                                 <i class="fas fa-plus"></i>

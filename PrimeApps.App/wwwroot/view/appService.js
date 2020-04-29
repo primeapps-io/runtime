@@ -111,11 +111,11 @@ angular.module('primeapps')
                                         $rootScope.modulus[modules[moduleKey].name] = modules[moduleKey];
 
                                         for (var fieldKey = modules[moduleKey].fields.length - 1; fieldKey >= 0; fieldKey--) {
-                                            if (modules[moduleKey].fields[fieldKey].data_type == "lookup"
-                                                && modules[moduleKey].fields[fieldKey].lookup_type != "users"
-                                                && modules[moduleKey].fields[fieldKey].lookup_type != "profiles"
-                                                && modules[moduleKey].fields[fieldKey].lookup_type != "roles"
-                                                && modules[moduleKey].fields[fieldKey].lookup_type != "relation"
+                                            if (modules[moduleKey].fields[fieldKey].data_type === "lookup"
+                                                && modules[moduleKey].fields[fieldKey].lookup_type !== "users"
+                                                && modules[moduleKey].fields[fieldKey].lookup_type !== "profiles"
+                                                && modules[moduleKey].fields[fieldKey].lookup_type !== "roles"
+                                                && modules[moduleKey].fields[fieldKey].lookup_type !== "relation"
                                                 && activeModuleNames.indexOf(modules[moduleKey].fields[fieldKey].lookup_type) === -1
                                             )
                                                 modules[moduleKey].fields.splice(fieldKey, 1);
@@ -175,8 +175,8 @@ angular.module('primeapps')
                                         })(navigator.userAgent || navigator.vendor || window.opera);
                                         return check;
                                     };
-                                 
-                                    
+
+
                                     $rootScope.openFirtScreenHelpModal = function () {
                                         if ($rootScope.isMobile()) {
                                             return false;
@@ -196,7 +196,7 @@ angular.module('primeapps')
 
                                     };
 
-                                    $rootScope.closeDialog = function (route, moduleId, dontShow) { 
+                                    $rootScope.closeDialog = function (route, moduleId, dontShow) {
                                         if (!dontShow) {
                                             $rootScope.show = false;
                                             return;

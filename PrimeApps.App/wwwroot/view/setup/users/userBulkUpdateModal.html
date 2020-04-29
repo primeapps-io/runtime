@@ -1,0 +1,53 @@
+﻿<md-dialog flex="33">
+    <form name="userBulkUpdateModalForm" kendo-validator="BulkUpdateModalForm" ng-submit="updateSelected(userBulkUpdateModalForm)" class="disable-validation-msg" autocomplete="off" novalidate>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{'Common.SelectedUpdate' | translate}}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="closeLightBox()"><i class="fas fa-times"></i></md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content"> 
+                    <div class="form-group">
+                        <label  for="field" class="required"></label>
+                        <select id="field"
+                                name="field"
+                                class="form-control"
+                                required
+                                kendo-drop-down-list
+                                k-options="fieldOptions"
+                                k-ng-model="field"
+                                k-option-label="'{{'Common.Select' | translate}}'"
+                                validationMessage="{{'Module.Required' | translate}}"></select>
+                        <span class="k-invalid-msg" data-for="field"></span>
+                    </div>
+                    <div class="form-group" ng-if="field.value === 'profile' || field.value === 'role'">
+                        <label for="profile" class="required"></label>
+                        <select kendo-drop-down-list
+                                class="form-control"
+                                id="profile"
+                                name="profile"
+                                k-options="{{field.value}}Options"
+                                k-ng-model="$parent.transferValue"
+                                required
+                                k-option-label="'{{'Common.Select' | translate}}'"
+                                validationMessage="{{'Module.Required' | translate}}"></select>
+                        <span class="k-invalid-msg" data-for="profile"></span>
+                    </div>
+                </div> 
+        </md-dialog-content>
+
+
+        <md-dialog-actions>
+            <md-button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> {{'Common.Save' | translate}}
+            </md-button>
+            <span flex></span>
+        </md-dialog-actions>
+    </form>
+</md-dialog>
+
+
+

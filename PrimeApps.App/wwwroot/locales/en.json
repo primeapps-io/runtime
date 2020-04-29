@@ -938,8 +938,10 @@
       "UserStatus2": "Waiting confirmation",
       "UserDeleteMessage": "This user will be deleted.<br><br>Are you sure?",
       "DismissSuccess": "User has been deleted successfully.",
+      "DismissesSuccess": "Users have been deleted successfully.",
       "UserEdit": "Edit User",
       "EditSuccess": "User has been updated successfully.",
+      "EditsSuccess": "Users have been updated successfully.",
       "LicensesBought": "Licenses Bought",
       "LicensesUsed": "Licenses Used",
       "LicensesLeft": "Licenses Left",
@@ -950,7 +952,8 @@
       "UserPassword": "User Password",
       "GoToDetail": "Go to Detail",
       "UserDelete": "Delete User",
-      "PasswordCopySuccess": "Şifre kopyalandı."
+      "PasswordCopySuccess": "Şifre kopyalandı.",
+      "SelectedUsersCount": "Selected users: "
     },
     "Profiles": {
       "Title": "Profiles",
@@ -981,7 +984,7 @@
       "DuplicateName": "This profile name is in use.",
       "SubmitSuccess": "Profile is successfully created.",
       "ProfileDelete": "Delete Profile",
-      "ProfileDeleteLabel": "Profile to transfer users",
+      "ProfileDeleteLabel": "All {{name}}'s users will be transferred to:",
       "TransferAndDelete": "Transfer and Delete",
       "DeleteSuccess": "Profile has been deleted successfully.",
       "LeadConvert": "Lead Convert",

@@ -95,7 +95,7 @@
                                 </md-tooltip>
                             </a>
                         </li>
-                        <li ng-class="{'active': ((currentPath === '/app/modules/{{module.name}}' || currentPath.indexOf('module/' + module.name) > -1 || module.name.indexOf(activeModuleName) > -1 || currentPath === '/app/record/{{module.name}}' || currentPath.indexOf('record/{{module.name}}?') > -1) && currentPath.indexOf('/setup') <= -1)}"
+                        <li ng-class="{'active': ((currentPath === '/app/modules/{{module.name}}' || currentPath.indexOf('modules/' + module.name) > -1 || module.name.indexOf(activeModuleName) > -1 || currentPath === '/app/record/{{module.name}}' || currentPath.indexOf('record/{{module.name}}?') > -1) && currentPath.indexOf('/setup') <= -1)}"
                             ng-repeat="module in modules | orderBy:['-system_type','order']"
                             ng-click="MenuItemHideMenu();"
                             ng-if="hasPermission(module.name, operations.read) && module.display && module.system_type != 'component'">
@@ -179,7 +179,7 @@
                                     </a>
                                 </li>
                                 <li ng-if="user.profile.has_admin_rights || showSystemSettings" ng-class="{'active':currentPath == '/app/setup/general' || currentPath == '/app/setup/sms' || currentPath == '/app/setup/email'}">
-                                    <a href="#/app/setup/general">
+                                    <a href="#/app/setup/sms">
                                         <i class="fas fa-cogs"></i>
                                         <span>{{'Setup.Nav.System' | translate}}</span>
                                         <md-tooltip ng-if="showTooltip" md-direction="right">

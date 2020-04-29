@@ -1,6 +1,5 @@
 <md-content flex style="height: 100%;">
-    <div ng-show="loading"><div class="spin"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div></div>
-    <div ng-show="!loading" layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
+    <div layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
         <md-toolbar md-scroll-shrink ng-class="views.length >0 ?  'with-subheader' :''">
             <div class="md-toolbar-tools">
                 <md-button class="md-icon-button show-on-m" ng-click="goBack()" aria-label="{{'Common.Back' | translate}}"><i class="fas fa-angle-left"></i>
@@ -89,7 +88,8 @@
 
                 </md-tabs>
             </md-subheader>
-            <div class="container-fluid paddingua20">
+            <div ng-show="loading" id="inside-loader" ><div class="spin"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div></div>
+            <div ng-show="!loading" class="container-fluid paddingua20">
                 <help-page module-id="module.id"></help-page>
                 <div class="help-page align-items-center" ng-if="show">
                     <div class="alert alert-secondary" role="alert" ng-bind-html="helpTemplatesModal.template"></div>

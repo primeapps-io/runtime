@@ -1,4 +1,4 @@
-﻿<form class="disable-validation-msg" name="templateForm" ng-submit="save(templateForm)" autocomplete="off" style="height:100%;" kendo-validator="validator" ng-disabled="current.system_type == 'system'" ng-cloak>
+﻿<form class="disable-validation-msg" name="templateForm" ng-submit="save(templateForm)" autocomplete="off" style="height:100%;" novalidate kendo-validator="validator" ng-disabled="current.system_type == 'system'" ng-cloak>
     <div ng-show="loadingModal" class="spin">
         <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
     </div>
@@ -38,7 +38,7 @@
                                 <span>{{'Module' | translate}} </span>
                                 <span class="required-label label-right">{{'Common.Required' | translate}}</span>
                             </label>
-                            </label>
+                           
                             <select kendo-drop-down-list
                                     class="form-control"
                                     id="module"
@@ -135,10 +135,10 @@
                                             <div nv-file-over="" uploader="fileUpload"
                                                  over-class="another-file-over-class" class="my-drop-zone">
                                                 <input type="file" nv-file-select uploader="fileUpload" ng-disabled="current.system_type == 'system'" nv-file-over>
-                                                <span>
+                                                <span id="fileUploadReq">
                                                         <i class="fas fa-cloud-upload-alt"></i>
                                                         <small>Please choose a file or drag it here</small>
-                                                    </span>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>

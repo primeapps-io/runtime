@@ -939,8 +939,10 @@
       "UserStatus2": "Onay bekliyor",
       "UserDeleteMessage": "Kullanıcı kalıcı olarak silinecektir.<br><br>Onaylıyor musunuz?",
       "DismissSuccess": "Kullanıcı başarılı bir şekilde silindi.",
+      "DismissesSuccess": "Kullanıcılar başarılı bir şekilde silindi.",
       "UserEdit": "Kullanıcı Bilgisi Düzenle",
       "EditSuccess": "Kullanıcı başarılı bir şekilde güncellendi.",
+      "EditsSuccess": "Kullanıcılar başarılı bir şekilde güncellendi.",
       "LicensesBought": "Satın Alınan Lisans",
       "LicensesUsed": "Kullanılan Lisans",
       "LicensesLeft": "Kalan",
@@ -951,7 +953,8 @@
       "UserPassword": "Kullanıcı Şifre",
       "GoToDetail": "Detaya Git",
       "UserDelete": "Kullanıcı Silme",
-      "PasswordCopySuccess": "Şifre kopyalandı."
+      "PasswordCopySuccess": "Şifre kopyalandı.",
+      "SelectedUsersCount": "Seçilen kullanıcılar: "
     },
     "Profiles": {
       "Title": "Profiller",
@@ -982,7 +985,7 @@
       "DuplicateName": "Bu profil adı daha önce kullanılmıştır.",
       "SubmitSuccess": "Profil başarılı bir şekilde kaydedildi.",
       "ProfileDelete": "Profil Silme",
-      "ProfileDeleteLabel": "Kullanıcıların Aktarılacağı Profil",
+      "ProfileDeleteLabel": "Tüm {{name}} kullanıcıları şu profile aktarılacak:",
       "TransferAndDelete": "Aktar ve Sil",
       "DeleteSuccess": "Profil başarılı bir şekilde silindi.",
       "LeadConvert": "Müşteri Adayı Dönüştürme",

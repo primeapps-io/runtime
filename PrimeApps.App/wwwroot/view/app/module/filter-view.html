@@ -125,19 +125,8 @@
         <!--  Calculation Fields-->
        
         <div class="title" ng-show="activeView.view_type ==='report' && activeView.report_type !=='tabular'" >
-            <div class="col-12 col-sm-7 padding0">
-                <h5>{{ 'Report.CalculationFields' | translate}}</h5>
-            </div>  
-            <div class="col-12 col-sm-7 padding0 right-0">
-                <ul class="list-unstyled list-inline">
-                    <div class="form-group">
-                        <li>  {{'View.TotalCount' | translate}}
-                            <kendo-switch id="total-count" k-on-change="changeTotalCount(totalCount)"  k-ng-model="totalCount"></kendo-switch>                          
-                        </li>
-      
-                    </div>
-                </ul>
-            </div>         
+            <h5>{{ 'Report.CalculationFields' | translate}}</h5>
+            <span> {{'View.TotalCount' | translate}} <kendo-switch id="total-count" k-on-change="changeTotalCount(totalCount)"  k-ng-model="totalCount"></kendo-switch></span>
         </div>
 
         <!--    Calculation Fields-->

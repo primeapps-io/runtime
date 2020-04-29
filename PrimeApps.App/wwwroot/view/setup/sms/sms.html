@@ -27,13 +27,6 @@
             <md-content flex>
                 <md-subheader class="own-tab">
                     <md-tabs md-dynamic-height md-swipe-content>
-                       <md-tab ui-sref="app.setup.general">
-                            <md-tab-label id="tab1" aria-controls="{{'Common.General' | translate}}">
-                                <div class="tab-container">
-                                    <span>{{'Common.General' | translate}}</span>
-                                </div>
-                            </md-tab-label>
-                        </md-tab>
                         <md-tab ng-click="goUrl('#/app/setup/sms')" md-active="true">
                             <md-tab-label id="tab2" aria-controls="{{'Setup.Messaging.SMS.Title' | translate}}">
                                 <div class="tab-container">
