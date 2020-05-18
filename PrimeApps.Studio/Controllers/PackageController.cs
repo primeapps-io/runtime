@@ -183,6 +183,7 @@ namespace PrimeApps.Studio.Controllers
 				["enable_ldap"] = false,
 				["enable_registration"] = true,
 				["enable_api_registration"] = true,
+				["picklist_language"] = "en",
 				["protect_modules"] = model["protectModules"],
 				["selected_modules"] = model["selected_modules"]
 			};
@@ -212,7 +213,8 @@ namespace PrimeApps.Studio.Controllers
 					["selected_modules"] = appOptions["selected_modules"],
 					["enable_ldap"] = appOptions["enable_ldap"],
 					["enable_registration"] = appOptions["enable_registration"],
-					["enable_api_registration"] = appOptions["enable_api_registration"]
+					["enable_api_registration"] = appOptions["enable_api_registration"],
+					["picklist_language"] = appOptions["picklist_language"]
 				}.ToString()
 			};
 

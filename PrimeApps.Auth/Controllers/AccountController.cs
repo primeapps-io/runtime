@@ -1709,7 +1709,7 @@ namespace PrimeApps.Auth.UI
                             //Id = tenantId,
                             AppId = applicationInfo.Id,
                             Owner = platformUser,
-                            UseUserSettings = true,
+                            UseUserSettings = false,
                             Title = model.FirstName + " " + model.LastName,
                             GuidId = Guid.NewGuid(),
                             License = new TenantLicense

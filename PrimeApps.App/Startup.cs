@@ -194,10 +194,6 @@ namespace PrimeApps.App
                 }
             }
 
-            app.UseCookiePolicy(new CookiePolicyOptions
-            {
-                MinimumSameSitePolicy = SameSiteMode.Strict,
-            });
 
             app.UseHangfireDashboard();
             app.UseStaticFiles();

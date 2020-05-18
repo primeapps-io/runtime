@@ -34,6 +34,7 @@ angular.module('primeapps')
 				appModel.enable_registration = $scope.app.setting.options.enable_registration;
 				appModel.enable_api_registration = $scope.app.setting.options.enable_api_registration;
 				appModel.enable_ldap = $scope.app.setting.options.enable_ldap;
+				appModel.picklist_language = $scope.app.setting.options.picklist_language;
 
 				preparePackage();
 

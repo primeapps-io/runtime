@@ -206,6 +206,10 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Release>().HasIndex(x => x.StartTime);
             modelBuilder.Entity<Release>().HasIndex(x => x.EndTime);
             modelBuilder.Entity<Release>().HasIndex(x => x.Status);
+            
+            modelBuilder.Entity<AppSetting>()
+                .Property(x => x.PicklistLanguage)
+                .HasDefaultValue("en");
         }
 
         public DbSet<PlatformUser> Users { get; set; }

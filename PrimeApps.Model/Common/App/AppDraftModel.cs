@@ -57,6 +57,9 @@ namespace PrimeApps.Model.Common.App
 
 		[JsonProperty("enable_ldap"), DataMember(Name = "enable_ldap")]
 		public bool EnableLDAP { get; set; }
+		
+		[JsonProperty("picklist_language"), DataMember(Name = "picklist_language")]
+		public bool PicklistLanguage { get; set; }
 
 		[JsonProperty("protect_modules"), DataMember(Name = "protect_modules")]
 		public PackageModulesType ProtectModules { get; set; }

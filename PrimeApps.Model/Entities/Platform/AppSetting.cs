@@ -62,6 +62,9 @@ namespace PrimeApps.Model.Entities.Platform
 
         [Column("enable_ldap")]
         public bool EnableLDAP { get; set; }
+        
+        [Column("picklist_language")]
+        public string PicklistLanguage { get; set; }
 
         public virtual App App { get; set; }
     }

@@ -140,10 +140,6 @@ namespace PrimeApps.Auth
                 await next();
             });
 
-            app.UseCookiePolicy(new CookiePolicyOptions
-            {
-                MinimumSameSitePolicy = SameSiteMode.Strict,
-            });
 
             app.UseStaticFiles();
             app.UseIdentityServer();

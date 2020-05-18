@@ -807,7 +807,7 @@ namespace PrimeApps.Model.Helpers
                     DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.ffffff", CultureInfo.InvariantCulture) +
                     "', NULL, 'f', '" + app["name"] + "', '" + app["label"] + "', '" + app["description"] + "', '" +
                     app["logo"] + "', '" + app["use_tenant_settings"] + "', 0, '" + secret + "');",
-                    $"INSERT INTO \"public\".\"app_settings\"(\"app_id\", \"app_domain\", \"auth_domain\", \"currency\", \"culture\", \"time_zone\", \"language\", \"auth_theme\", \"app_theme\", \"mail_sender_name\", \"mail_sender_email\", \"google_analytics_code\", \"tenant_operation_webhook\", \"registration_type\", \"enable_registration\", \"enable_api_registration\") VALUES (" +
+                    $"INSERT INTO \"public\".\"app_settings\"(\"app_id\", \"app_domain\", \"auth_domain\", \"currency\", \"culture\", \"time_zone\", \"language\", \"auth_theme\", \"app_theme\", \"mail_sender_name\", \"mail_sender_email\", \"google_analytics_code\", \"tenant_operation_webhook\", \"registration_type\", \"enable_registration\", \"enable_api_registration\", \"picklist_language\") VALUES (" +
                     app["id"] + ", '" + appUrl + "', '" + authUrl + "', " +
                     (!string.IsNullOrEmpty(app["setting"]["currency"].ToString())
                         ? "'" + app["setting"]["currency"] + "'"
@@ -843,7 +843,8 @@ namespace PrimeApps.Model.Helpers
                         ? "'" + app["setting"]["tenant_operation_webhook"] + "'"
                         : "NULL") + ", 2, '" +
                     (options["enable_registration"] != null ? options["enable_registration"].ToString().Substring(0, 1).ToLower() : "t") + "','" +
-                    (options["enable_api_registration"] != null ? options["enable_api_registration"].ToString().Substring(0, 1).ToLower() : "t") + "');"
+                    (options["enable_api_registration"] != null ? options["enable_api_registration"].ToString().Substring(0, 1).ToLower() : "t") + "','" +
+                    (options["picklist_language"] != null ? options["picklist_language"].ToString() : "en") + "');"
                 };
 
 
@@ -912,7 +913,8 @@ namespace PrimeApps.Model.Helpers
                         : "NULL") + "," +
                     "registration_type = 2," +
                     "enable_registration = '" + options["enable_registration"].ToString().Substring(0, 1).ToLower() + "'," +
-                    "enable_api_registration = '" + options["enable_api_registration"].ToString().Substring(0, 1).ToLower() + "'" +
+                    "enable_api_registration = '" + options["enable_api_registration"].ToString().Substring(0, 1).ToLower() + "'," +
+                    "picklist_language = '" + options["picklist_language"].ToString() + "'" +
                     " WHERE app_id = " + app["id"] + ";"
                 };
 

@@ -265,14 +265,22 @@ namespace PrimeApps.App.Controllers
 					var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 
 					using (var platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))
+					using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))
 					{
-						platformUserRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = previewMode == "app" ? (int) appId : (int) tenantId, PreviewMode = previewMode};
+						tenantRepository.CurrentUser = platformUserRepository.CurrentUser = new CurrentUser {UserId = userId, TenantId = previewMode == "app" ? (int) appId : (int) tenantId, PreviewMode = previewMode};
 						var platformUser = await platformUserRepository.GetSettings(userId);
-
+						var tenant = await tenantRepository.GetWithSettingsAsync(previewMode == "app" ? 1 : (int) tenantId);
+						
 						if (platformUser != null)
 						{
 							account["user"] = JObject.Parse(JsonConvert.SerializeObject(platformUser, serializerSettings));
-							tenantLanguage = platformUser.Setting?.Language ?? "en";
+
+							if(!app.UseTenantSettings)
+								tenantLanguage = app.Setting?.Language ?? "en";
+							else if (!tenant.UseUserSettings)
+								tenantLanguage = tenant.Setting?.Language ?? "en";
+							else
+								tenantLanguage = platformUser.Setting?.Language ?? "en";
 						}
 					}
 				}

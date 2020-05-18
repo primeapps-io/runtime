@@ -52,7 +52,7 @@ namespace PrimeApps.App.Controllers
                 AppId = tenant.AppId,
                 TenantId = tenant.Id,
                 TenantGuid = tenant.GuidId,
-                TenantLanguage = tenant.Setting?.Language ?? tenant.App.Setting?.Language ?? "en",
+                TenantLanguage = tenant.App.Setting?.PicklistLanguage ?? "en",
                 Email = platformUser.Email,
                 FullName = platformUser.FirstName + " " + platformUser.LastName,
                 IsIntegrationUser = platformUser.IsIntegrationUser

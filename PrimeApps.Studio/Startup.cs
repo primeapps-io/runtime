@@ -176,10 +176,6 @@ namespace PrimeApps.Studio
                 app.UseHsts().UseHttpsRedirection();
             }
 
-            app.UseCookiePolicy(new CookiePolicyOptions
-            {
-                MinimumSameSitePolicy = SameSiteMode.Strict,
-            });
 
             app.UseHangfireDashboard();
             app.UseStaticFiles();

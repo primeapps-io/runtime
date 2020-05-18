@@ -110,6 +110,7 @@ namespace PrimeApps.Studio.Helpers
                                     ["enable_registration"] = true,
 									["enable_ldap"] = false,
 									["enable_api_registration"] = true,
+                                    ["picklist_language"] = "en"
 								}.ToString();
                             }
 

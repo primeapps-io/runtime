@@ -245,7 +245,8 @@ namespace PrimeApps.Auth.UI
                     {
                         ["enable_registration"] = app.Setting.EnableRegistration,
                         ["enable_api_registration"] = app.Setting.EnableAPIRegistration,
-                        ["enable_ldap"] = app.Setting.EnableLDAP
+                        ["enable_ldap"] = app.Setting.EnableLDAP,
+                        ["picklist_language"] = app.Setting.PicklistLanguage
                     }
                 },
                 Preview = preview,
