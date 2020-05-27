@@ -84,13 +84,13 @@
             <div ng-repeat="dashlet in dashlets" class="col-md-{{dashlet.y_tile_length}} dashlet"
                  ng-class="{fullScreenChart: fullScreenDashlet === dashlet.id}">
                 <div class="tool-bar  text-right"
-                     style=" width:{{  dashlet.dashlet_type === 'chart' ? '96.5%' : '93%;'}}; {{'height:'+dashlet.x_tile_height+'px;'}} ;{{ dashletMode ? '' :'display: none'}} ">
+                     style="width:{{  dashlet.dashlet_type === 'chart' ? '96.5%' : '93%;'}}; {{'height:'+dashlet.x_tile_height+'px;'}} ;{{ dashletMode ? '' :'display: none'}} ">
 
-                    <span class="dashlet-edit-icon" ng-click="openNewDashlet(dashlet)">
+                    <span class="dashlet-edit-icon" ng-if="user.profile.has_admin_rights && dashletMode " ng-click="openNewDashlet(dashlet)">
                         <i class="flaticon-pencil124" style="    padding-top: 6px;
     position: absolute;" aria-hidden="true"></i>
                     </span>
-                    <span class="dashlet-edit-icon" confirm-click action="dashletDelete(dashlet.id)" placement="bottom"
+                    <span class="dashlet-edit-icon" ng-if="user.profile.has_admin_rights  && dashletMode" confirm-click action="dashletDelete(dashlet.id)" placement="bottom"
                           confirm-message="{{'Common.AreYouSure' | translate}}"
                           confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}"
                           title="{{'Common.Delete' | translate}}">

@@ -85,6 +85,9 @@ namespace PrimeApps.App.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]DashboardBindingModel dashboard)
         {
+            if(!AppUser.HasAdminProfile)
+                return Forbid();
+            
             var dashboardEntity = DashboardHelper.CreateEntity(dashboard, AppUser);
             var create = await _dashboardRepository.Create(dashboardEntity);
             return Ok(create);
@@ -130,6 +133,9 @@ namespace PrimeApps.App.Controllers
         [Route("delete_dashlet/{id:int}"), HttpDelete]
         public async Task<IActionResult> DeleteDashlet(int id)
         {
+            if(!AppUser.HasAdminProfile)
+                return Forbid();
+            
             var dashletEntity = await _dashletRepository.GetDashletById(id);
 
             if (dashletEntity == null)
@@ -161,7 +167,9 @@ namespace PrimeApps.App.Controllers
         [Route("update_dashlet/{id:int}"), HttpPut]
         public async Task<IActionResult> UpdateDashlet(int id, [FromBody]DashletBindingModel dashlet)
         {
-           
+            if(!AppUser.HasAdminProfile)
+                return Forbid();
+            
             var dashletEntity = await _dashletRepository.GetDashletById(id);
 
             if (dashletEntity == null)
