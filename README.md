@@ -1,5 +1,5 @@
 ## PrimeApps Runtime
-You can easily install the PrimeApps Runtime to your local using this repository.
+You can easily install the PrimeApps Runtime to your local machine using this repository.
 
 ### Prerequisites
 * [ASP.NET Core Runtime 2.2](https://dotnet.microsoft.com/download/dotnet-core/2.2)
@@ -7,9 +7,9 @@ You can easily install the PrimeApps Runtime to your local using this repository
 * [Windows only] [Microsoft Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
 
 ### Setup
-1. Clone this repository
-2. Run install.sh
-3. Run run.sh
+1. [Clone this repository](#1-clone-this-repository)
+2. [Run install.sh](#2-run-installsh)
+3. [Run run.sh](#3-run-runsh)
 
 #### 1. Clone this repository
 ```bash
