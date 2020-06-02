@@ -17,7 +17,7 @@ rm database.zip
 rm setup.zip
 rm startup.zip
 
-git clone https://github.com/primeapps-io/pre.git
+git clone https://github.com/primeapps-io/runtime.git
 
 AUTH_URL="http://file.primeapps.io/pre/PrimeApps.Auth.zip"
 APP_URL="http://file.primeapps.io/pre/PrimeApps.App.zip"
@@ -76,7 +76,7 @@ git config user.email "admin@primeapps.io"
 
 git add .
 git commit -m "Updates and bugfixes"
-git push https://primeappsio:76559642717f22a6384e0720df32813e1a477b2e@github.com/primeapps-io/pre.git
+git push https://primeappsio:76559642717f22a6384e0720df32813e1a477b2e@github.com/primeapps-io/runtime.git
 
 cd ..
 
