@@ -583,7 +583,9 @@ angular.module('primeapps')
 				dateFormat += ' ' + $scope.timeFormat;
 				return dateFormat;
 			};
-
+			if (!$scope.dateDelimiter)
+				$scope.dateDelimiter = $rootScope.locale === 'en' ? '/' : '.';
+			
 			$scope.getSampleDate = function () {
 				if (!$scope.dateOrder)
 					$scope.dateOrder = $rootScope.locale === 'en' ? 'MM/DD/YYYY' : 'DD/MM/YYYY';
@@ -704,7 +706,7 @@ angular.module('primeapps')
 								mmtDate = moment(recordValue, standardDateFormat, true);
 
 								if (!mmtDate.isValid()) {
-									var dateDelimeter = $scope.dateDelimiter;
+									var dateDelimeter = $scope.dateDelimiter || '/';
 									var dateArray = recordValue.split(dateDelimiter);
 									var dateFormatArray = dateFormat.split(dateDelimiter);
 
