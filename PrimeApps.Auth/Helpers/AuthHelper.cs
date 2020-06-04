@@ -33,8 +33,8 @@ namespace PrimeApps.Auth.UI
             //If user language did not detect in current screens, set browser default language.
             if (string.IsNullOrEmpty(language))
             {
-                var defaultCulture = request.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture?.Culture?.Name;
-                var browserLang = request.GetTypedHeaders().AcceptLanguage.First()?.Value.Value;
+                var defaultCulture = request?.HttpContext?.Features?.Get<IRequestCultureFeature>().RequestCulture?.Culture?.Name;
+                var browserLang = request?.GetTypedHeaders()?.AcceptLanguage?.First()?.Value.Value;
                 language = (browserLang == "tr-TR" || browserLang == "tr" || defaultCulture == "tr-TR" || defaultCulture == "tr") ? "tr" : "en";
             }
 
