@@ -407,8 +407,8 @@ angular.module('primeapps')
 				tableBlockUI.start();
 				$scope.selectedView = $scope.view;
 				var cache = $cache.get(cacheKey);
-				var viewStateCache = cache.viewState;
-				var viewState = viewStateCache || {};
+				var viewStateCache = cache ?  cache.viewState || {} : {};
+				var viewState = viewStateCache;
 				viewState.active_view = $scope.selectedView.id;
 
 				ModuleService.setViewState(viewState, $scope.module.id, viewState.id)
