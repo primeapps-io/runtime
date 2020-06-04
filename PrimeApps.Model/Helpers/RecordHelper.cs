@@ -1215,7 +1215,7 @@ namespace PrimeApps.Model.Helpers
                 int outValue;
                 var result = int.TryParse(str, out outValue);
 
-                if (result)
+                if (result && string.IsNullOrEmpty(field))
                 {
                     sql += $"{tableName}.\"id\" = ${i + 1} OR\n";
                     values.Add(outValue.ToString());
