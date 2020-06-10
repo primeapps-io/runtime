@@ -16,17 +16,14 @@ You can easily install the PrimeApps Runtime to your local machine using this re
 git clone https://github.com/primeapps-io/runtime.git
 ```
 
-Enter folder:
-```bash
-cd runtime
-```
-
 #### 2. Run install.sh
 ```bash
-./setup/install.sh
+cd runtime/setup
+./install.sh
 ```
 
 #### 3. Run run.sh
 ```bash
-./startup/run.sh
+cd ../startup
+./run.sh
 ```
