@@ -12,7 +12,8 @@ You can easily install the PrimeApps Runtime to your local machine using this re
 3. [Run run.sh](#3-run-runsh)
 
 #### 1. Download latest release
-> Download latest release files and extract all in a folder
+> Download [latest release](https://github.com/primeapps-io/runtime/releases/latest) files and extract all in a folder
+
 
 #### 2. Run install.sh
 ```bash
