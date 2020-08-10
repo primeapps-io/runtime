@@ -1,0 +1,120 @@
+<div class="panel panel-default setup-panel organization">
+    <div class="panel-body">
+        <div class="subpanel">
+            <h5 class="subpanel-heading">{{'Setup.Organization.Title1' | translate}}</h5>
+            <div class="subpanel-body">
+                <form name="companyForm" ng-submit="editCompany()" class="form-horizontal" novalidate>
+                    <div class="form-group" show-errors>
+                        <label class="col-sm-2 control-label">{{'Setup.Organization.CompanyName' | translate}}</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="companyName" class="form-control" ng-minlength="2" maxlength="20" required ng-model="company.title"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{'Setup.Organization.Culture' | translate}}</label>
+                        <div class="col-sm-10">
+                            <label class="ui-radio">
+                                <input type="radio" name="culture" value="tr-TR" ng-model="company.culture"><span>{{'Setup.Settings.Turkish' | translate}}</span>
+                            </label>
+
+                            <label class="ui-radio">
+                                <input type="radio" name="culture" value="en-US" ng-model="company.culture"><span>{{'Setup.Settings.English' | translate}}</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{'Setup.Organization.Currency' | translate}}</label>
+                        <div class="col-sm-10">
+                            <label class="ui-radio">
+                                <input type="radio" name="currency" value="TRY" ng-model="company.currency"><span>{{'Setup.Settings.TurkishLira' | translate}}</span>
+                            </label>
+
+                            <label class="ui-radio">
+                                <input type="radio" name="currency" value="USD" ng-model="company.currency"><span>{{'Setup.Settings.Dollar' | translate}}</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group am-fade-and-slide-top" ng-show="companyForm.$submitted && companyForm.$invalid">
+                        <div class="col-sm-offset-2 col-sm-8">
+                            <div class="callout callout-danger">
+                                <p ng-if="companyForm.$error.required">{{'Setup.Settings.ErrorEmpty' | translate}}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-primary btn-w-lg" ng-disabled="user.isDemo" ladda="companyUpdating"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="subpanel">
+            <h5 class="subpanel-heading">{{'Setup.Organization.Title2' | translate}}</h5>
+            <div class="subpanel-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{'Setup.Organization.Logo' | translate}}</label>
+                        <div class="col-sm-10">
+                            <img ng-src="{{workgroup.logoUrl}}" ng-if="workgroup.logoUrl && !imagePreview" class="logo-img"/>
+                            <img ng-src="{{imagePreview}}" ng-if="imagePreview" class="logo-img"/>
+                            <span class="file-input btn btn-custom btn-sm btn-file">
+                                {{'Setup.Organization.NewLogo' | translate}} <input type="file" nv-file-select uploader="uploader">
+                            </span>
+                            <a href class="btn btn-sm btn-custom" confirm-click action="removeLogo(this)" confirm-message="{{'Common.AreYouSure' | translate}}" placement="top" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" ng-if="workgroup.logoUrl"><i class="fa fa-minus-circle"></i> {{'Common.Delete' | translate}}</a>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-show="uploader.queue.length > 0">
+                        <label class="col-sm-2 control-label"></label>
+                        <div class="col-sm-10">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th ng-show="uploader.isHTML5">{{'Documents.Size' | translate}}</th>
+                                    <th ng-show="uploader.isHTML5">{{'Documents.Progress' | translate}}</th>
+                                    <th>{{'Documents.Result' | translate}}</th>
+                                    <th>{{'Documents.Actions' | translate}}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="item in uploader.queue">
+                                    <td ng-show="uploader.isHTML5" nowrap>{{item.file.size | size}}</td>
+                                    <td ng-show="uploader.isHTML5">
+                                        <div class="progress" style="margin-bottom: 0;">
+                                            <div class="progress-bar" ng-style="{'width': item.progress + '%'}"></div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span ng-show="item.isSuccess"><i class="fa fa-check-circle icon-success"></i></span>
+                                        <span ng-show="item.isCancel"><i class="fa fa-ban icon-cancel"></i></span>
+                                        <span ng-show="item.isError"><i class="fa fa-exclamation-circle icon-error"></i></span>
+                                    </td>
+                                    <td nowrap>
+                                        <button type="button" class="btn btn-primary btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess || user.isDemo">
+                                            <span class="fa fa-upload"></span> {{'Documents.Upload' | translate}}
+                                        </button>
+                                        <button type="button" class="btn btn-custom btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                                            <span class="fa fa-ban"></span> {{'Documents.Cancel' | translate}}
+                                        </button>
+                                        <button type="button" class="btn btn-custom btn-xs" ng-click="item.remove(); $parent.imagePreview = null;">
+                                            <span class="fa fa-trash-o"></span> {{'Common.Cancel' | translate}}
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>

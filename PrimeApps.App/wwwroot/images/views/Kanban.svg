@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="120" height="80" viewBox="0 0 120 80">
+  <defs>
+    <clipPath id="clip-Kanban">
+      <rect width="120" height="80"/>
+    </clipPath>
+  </defs>
+  <g id="Kanban" clip-path="url(#clip-Kanban)">
+    <rect width="120" height="80" fill="#fff"/>
+    <path id="Path_1399" data-name="Path 1399" d="M5,0H115a5,5,0,0,1,5,5V75a5,5,0,0,1-5,5H5a5,5,0,0,1-5-5V5A5,5,0,0,1,5,0Z" fill="#fff"/>
+    <path id="Path_1400" data-name="Path 1400" d="M5,0H115a5,5,0,0,1,5,5v8H0V5A5,5,0,0,1,5,0Z" fill="#c6d0e1"/>
+    <path id="Path_1409" data-name="Path 1409" d="M0,0H28V32a5,5,0,0,1-5,5H5a5,5,0,0,1-5-5Z" transform="translate(2 15)" fill="rgba(31,70,136,0.05)"/>
+    <path id="Path_1408" data-name="Path 1408" d="M0,0H27V55a5,5,0,0,1-5,5H5a5,5,0,0,1-5-5Z" transform="translate(32 15)" fill="rgba(31,70,136,0.05)"/>
+    <path id="Path_1406" data-name="Path 1406" d="M0,0H27V40a5,5,0,0,1-5,5H5a5,5,0,0,1-5-5Z" transform="translate(61 15)" fill="rgba(31,70,136,0.05)"/>
+    <path id="Path_1407" data-name="Path 1407" d="M0,0H28V32a5,5,0,0,1-5,5H5a5,5,0,0,1-5-5Z" transform="translate(90 15)" fill="rgba(31,70,136,0.05)"/>
+  </g>
+</svg>

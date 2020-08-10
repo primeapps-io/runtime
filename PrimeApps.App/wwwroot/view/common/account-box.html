@@ -1,0 +1,16 @@
+<md-button class="account-link d-flex"  ng-click="gotoSetup('#/app/setup/settings');MenuItemHideMenu();" aria-label="{{'Layout.SettingsTooltip' | translate}}">
+        <span class="d-inline-flex justify-content-center align-items-center">
+            <img ng-if="user.picture" ng-src="{{userPicture}}" class="img-circle" />
+            <i ng-if="!user.picture" class="fas fa-user"></i>
+        </span>
+    <span>{{user.first_name}} {{user.last_name}}<small>{{user.email}}</small> </span>
+</md-button>
+<div>
+    <md-button class="md-button btn btn-warning filter-button md-icon-button d-sm-block d-md-none " ng-click="notificationShowModal()" aria-label="{{'Setup.Nav.Notifications' | translate}}" >
+        <i class="fas fa-bell"></i>
+        <span ng-if="unReadNotificationCount > 0" class="filter-badge">{{unReadNotificationCount}}</span>
+        <md-tooltip md-direction="bottom">{{'Setup.Nav.Notifications' | translate}}</md-tooltip>
+    </md-button>
+    <md-button class="md-icon-button btn btn-danger" ng-click="logout()" aria-label="{{'Layout.LogoutTooltip' | translate}}"> <i class="fas fa-sign-out-alt"></i></md-button>
+
+</div>

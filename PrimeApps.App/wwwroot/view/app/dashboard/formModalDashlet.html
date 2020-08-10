@@ -1,0 +1,125 @@
+<md-dialog flex="33">
+    <form ng-cloak class="disable-validation-msg" kendo-validator="validator"  name="dashletFormModal" ng-submit="saveDashlet(dashletFormModal,$event)" autocomplete="off" novalidate>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h3> {{ !currentDashlet.id ? ('Dashboard.NewDashlet' | translate) : ('Dashboard.EditDashlet' |
+                    translate) }}</h3>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()"><i class="fas fa-times"></i>
+                    <md-tooltip md-direction="bottom">{{'Common.Cancel' | translate}}</md-tooltip>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div class="form-group">
+                    <label><span> {{ 'Dashboard.Type' | translate}}</span></label>
+                    <select class="form-control"
+                            ng-model="currentDashlet.dashlet_type"
+                            name="dashlet_type"
+                            ng-required="true"
+                            validationMessage=""
+                            ng-disabled="currentDashlet.id"
+                            ng-options="o.name as o.label for o in DashletTypes"
+                            ng-change="changeDashletType()">
+                        <option value="">{{'Common.Select' | translate}}</option>
+                    </select>
+                    
+                </div>
+
+                <div class="form-group" ng-show="currentDashlet.dashlet_type ==='widget'">
+                    <label><span>{{'Dashboard.DataSource' | translate}}</span> </label>
+                    <ul class="list-unstyled">
+                        <li>
+                            <input type="radio" name="datasource" ng-model="currentDashlet.dataSource" id="engine1" value="view" class="k-radio">
+                            <label class="k-radio-label" for="engine1"> {{'Dashboard.View' | translate}}</label>
+                        </li>
+<!--                        <li>-->
+<!--                            <input type="radio" ng-model="currentDashlet.dataSource" value="report" name="datasource" id="engine2" class="k-radio">-->
+<!--                            <label class="k-radio-label" for="engine2"> {{'Dashboard.Report' | translate}}</label>-->
+<!--                        </li>-->
+                    </ul>
+                </div>
+                <div class="form-group"
+                     ng-if="currentDashlet.dashlet_type ==='chart' || (currentDashlet.dashlet_type ==='widget' && currentDashlet.dataSource ==='report' )">
+                    <label><span> {{ boardLabel}}</span></label>
+                    <select class="form-control"
+                            ng-model="currentDashlet.board"
+                            required
+                            name="board"
+                            ng-change="changeBoard()"
+                            ng-options="o.id as o['name_'+user.language] for o in boards">
+                        <option value="">{{'Common.Select' | translate}}</option>
+                    </select>
+                </div>
+                <div class="form-group" ng-if="currentDashlet.dataSource ==='view'">
+                    <label><span>{{'Dashboard.Module' | translate}}</span></label>
+                    <select class="form-control"
+                            name="module_id"
+                            required
+                            ng-model="currentDashlet.module_id"
+                            ng-change="selectModule()"
+                            ng-options="o.id as o['label_' + language + '_singular'] for o in modulesOpt | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                        <option value="">{{'Common.Select' | translate}}</option>
+                    </select>
+                </div>        
+                <div class="form-group" ng-if="currentDashlet.dataSource ==='view'">
+                    <label><span>{{'Dashboard.View' | translate}}</span></label>
+                    <select class="form-control"
+                            name="view_id"
+                            required
+                            ng-model="currentDashlet.view_id"
+                            ng-change="changeView()"
+                            ng-options="o.id as o['label_' + language] for o in views | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                        <option value="">{{'Common.Select' | translate}}</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" ng-if="currentDashlet.dataSource ==='view'">
+                    <label><span>{{'Report.Widget.Color' | translate}}</span> </label>                       
+                    <input class="form-control" kendo-color-picker k-options="colorPaletOptions" ng-model="currentDashlet.color" name="colorpicker"  />                     
+                </div>
+                <div class="form-group"  ng-if="views && currentDashlet.dataSource==='view'">
+                    <label><span>{{'Report.Widget.Icon' | translate}}</span></label>
+                    <select id="icon"
+                            ng-model="currentDashlet.icon" kendo-drop-down-list  k-options="selectIconOptions">
+                        <option value="">{{'Common.Select' | translate}}</option>
+                    </select>
+                </div>
+                <div class="form-group"  ng-if="currentDashlet.dashlet_type === 'chart'">
+                    <label><span>{{'Dashboard.Width' | translate}}</span></label>
+                    <select class="form-control"
+                            ng-model="currentDashlet.y_tile_length"
+                            required
+                            name="y_tile_length"
+                            ng-options="o.value as o.label for o in dashletWidths">
+                        <option value="">{{'Common.Select' | translate}}</option>
+                    </select>
+                </div>             
+                <div class="form-group"  ng-if="currentDashlet.dashlet_type === 'chart'">
+                    <label><span>{{'Dashboard.Height' | translate}}</span></label>
+                    <select class="form-control"
+                            ng-model="currentDashlet.x_tile_height"
+                            required
+                            name="x_tile_length"
+                            ng-options="o.value as o.label for o in dashletHeights">
+                        <option value="">{{'Common.Select' | translate}}</option>
+                    </select>
+                </div>
+               
+
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button class="btn btn-primary" type="submit" md-autofocus><i class="fas fa-save"></i>
+                {{'Common.Save' | translate}}
+            </md-button>
+            <span flex></span>
+            
+        </md-dialog-actions>
+    </form>
+</md-dialog>
+
+
+
+ 

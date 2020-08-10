@@ -1,0 +1,445 @@
+﻿<md-content flex style="height: 100%;">
+    <form class="disable-validation-msg" name="userForm" kendo-validator="validator" ng-submit="submitGeneral()" layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
+        <div ng-show="loading"><div class="spin"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div></div>
+        <section ng-show="!loading" layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
+            <md-toolbar md-scroll-shrink ng-if="true" class="with-subheader">
+                <div class="md-toolbar-tools">
+                    <md-button class="md-icon-button show-on-m" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()"> <i class="fas fa-angle-left"></i> <md-tooltip md-direction="right">{{'Common.Back' | translate}}</md-tooltip> </md-button>
+                    <h1 md-truncate>{{activeTabHeaderTitle}}</h1>
+                    <div class="helpbuttons hide-on-m">
+                        <md-button class="md-icon-button enlarge d-none d-lg-inline-block" ng-click="toggleFullLeftMenu()"
+                                   aria-label="{{'Common.FullScreen' | translate}}">
+                            <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                 xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 36 36"
+                                 style="enable-background:new 0 0 36 36;" xml:space="preserve">
+                            <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z" /><path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z" /><path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z" /><path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z" />  </svg>
+                            <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                            <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                        </md-button>
+                    </div>
+                    <span flex></span>
+                    <md-button type="submit" class="md-icon-button btn btn-primary" aria-label="{{'Common.Save' | translate}}">
+                        <i class="fas fa-save"></i>
+                        <md-tooltip md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-content flex>
+                <md-subheader class="own-tab">
+                    <md-tabs md-dynamic-height md-swipe-content>
+                        <md-tab ng-click="changeTab('general')" md-active="activeTab === 'general'">
+                            <md-tab-label id="tab1" aria-controls="{{'Setup.Nav.Tabs.General' | translate}}" >
+                                <div class="tab-container">
+                                    <span>{{'Setup.Nav.Tabs.General' | translate}}</span>
+                                </div>
+                            </md-tab-label>
+                        </md-tab>
+                        <md-tab ng-if="!disablePasswordChange" ng-click="changeTab('security')" md-active="activeTab === 'security'">
+                            <md-tab-label id="tab2" aria-controls="{{'Setup.Nav.Tabs.Security' | translate}}">
+                                <div class="tab-container">
+                                    <span>{{'Setup.Nav.Tabs.Security' | translate}}</span>
+                                </div>
+                            </md-tab-label>
+                        </md-tab>
+                        <md-tab ng-click="changeTab('email')" md-active="activeTab === 'email'" ng-if="(user.profile.has_admin_rights || user.profile.smtp_settings) && !preview">
+                            <md-tab-label id="tab3" aria-controls="{{'Setup.Nav.Tabs.Email' | translate}}">
+                                <div class="tab-container">
+                                    <span>{{ 'Setup.Nav.Tabs.Email' | translate}}</span>
+                                </div>
+                            </md-tab-label>
+                        </md-tab>
+
+                    </md-tabs>
+                </md-subheader>
+                <div class="container-fluid paddingua20">
+                    <div ng-if="activeTab === 'general'">
+                        <section class="whitebox collapsible">
+                            <div class="collapsible-head">
+                                <h5>{{'Setup.Settings.Title1' | translate}} </h5>
+                            </div>
+
+                            <div class="collapsible-body">
+                                <div class="row">
+                                    <div class="col-md-auto">
+                                        <div class="form-group text-center">
+                                            <div class="image-preview image-preview-150">
+                                                <div class="image-holder">
+                                                    <img src="images/no-image.png" ng-src="{{tempPicture ? tempPicture : 'images/no-image.png'}}"
+                                                         user-image="{{user.id}}" alt="" ng-show="!croppedImage" />
+                                                    <img ng-src="{{croppedImage}}" class="img-rounded" ng-show="croppedImage" />
+                                                </div>
+                                                <md-button class="upload-btn btn btn-primary md-icon-button btn-sm"  ng-if="!croppedImage && !tempPicture ">
+                                                    <i class="fas fa-upload"></i><md-tooltip md-direction="bottom">{{'Setup.Settings.NewProfilePicture' | translate}}</md-tooltip>
+                                                    <input type="file" nv-file-select uploader="uploader" />
+                                                </md-button>
+                                                <md-button class="delete-btn btn btn-danger md-icon-button btn-sm" ng-click="removeProfileImage(); $parent.croppedImage=null" ng-if="tempPicture || croppedImage"><i class="fas fa-trash"></i><md-tooltip md-direction="bottom">{{'Setup.Settings.RemoveProfileImage' | translate}}</md-tooltip></md-button>
+                                            </div>
+                                            <div>{{'Setup.Settings.NewProfilePicture' | translate}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="first_name">
+                                                        <span>{{'Setup.Settings.FirstName' | translate}}</span>
+                                                        <span class="label-right">
+                                                            <span class="required-label">{{'Common.Required' | translate}}</span>
+                                                        </span>
+                                                    </label>
+                                                    <input type="text" id="first_name" name="first_name" class="k-textbox" ng-minlength="2"
+                                                           maxlength="100" required ng-model="userModel.first_name" validationMessage="{{'Module.Required' | translate}}" />
+                                                    <span class="k-invalid-msg" data-for="first_name"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group" show-errors>
+                                                    <label for="last_name">
+                                                        <span>{{'Setup.Settings.LastName' | translate}}</span>
+                                                        <span class="label-right">
+                                                            <span class="required-label">{{'Common.Required' | translate}}</span>
+                                                        </span>
+                                                    </label>
+                                                    <input type="text" id="last_name" name="last_name" class="k-textbox" ng-minlength="2"
+                                                           maxlength="100" required ng-model="userModel.last_name" validationMessage="{{'Module.Required' | translate}}" />
+                                                    <span class="k-invalid-msg" data-for="last_name"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group" show-errors>
+                                                    <label for="email">
+                                                        <span>{{'Setup.Settings.Email' | translate}}</span>
+                                                        <span>
+                                                            <md-button class="btn btn-secondary label-btn" ng-if="!preview && user.profile.change_email" ng-click="changeEmailModal($event)">
+                                                                <i class="fas fa-exchange-alt"></i>
+                                                                <md-tooltip md-direction="bottom">{{'Setup.Settings.ChangeEmail' | translate}}</md-tooltip>
+                                                            </md-button>
+                                                        </span>
+                                                    </label>
+                                                    <input type="email" name="email" id="email" class="form-control" maxlength="100"
+                                                           ng-minlength="3" required ng-model-options="{ updateOn: 'blur' }"
+                                                           ng-model="userModel.email" disabled />
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>{{'Setup.Settings.Phone' | translate}}</label>
+                                                    <input type="text" k-valide name="phone" maxlength="50" class="form-control"
+                                                           ui-mask="{{locale === 'tr' ? '0 (999) 999 99-99' : ''}}"
+                                                           ng-model="userModel.phone" />
+                                                </div>
+                                            </div>
+                                            <!--                                <div class="col-md-6">-->
+                                            <!--                                    <div class="am-fade-and-slide-top"-->
+                                            <!--                                         ng-show="userForm.$submitted && userForm.$invalid">-->
+                                            <!--                                        <div class="alert alert-danger shadow-sm">-->
+                                            <!--                                            <p ng-if="userForm.$error.required">{{'Setup.Settings.ErrorEmpty' |-->
+                                            <!--                                                translate}}</p>-->
+                                            <!--                                            <p ng-if="userForm.$error.email">{{'Setup.Settings.ErrorEmail' |-->
+                                            <!--                                                translate}}</p>-->
+                                            <!--                                            <p ng-if="userForm.$error.uniqueEmail">{{'Setup.Settings.ErrorUniqueEmail' |-->
+                                            <!--                                                translate}}</p>-->
+                                            <!--                                            <p ng-if="userForm.$error.minlength">{{'Setup.Settings.NameMinimum' |-->
+                                            <!--                                                translate}}</p>-->
+                                            <!--                                        </div>-->
+                                            <!--                                    </div>-->
+                                            <!--                                </div>-->
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="file-upload-item-box" ng-show="uploader.queue.length > 0">
+                                            <div ng-repeat="item in uploader.queue">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="file-icon-wrapper">
+                                                        <div class="cropArea" style="width: 200px; height: 200px;">
+                                                            <img-crop image="item.image" result-image="$parent.croppedImage" area-type="square" result-image-size="250"></img-crop>
+                                                        </div>
+                                                        <span class="icon-success" ng-show="item.isSuccess"><i class="fas fa-check"></i></span>
+                                                        <span class="icon-cancel" ng-show="item.isCancel"><i class="fas fa-ban "></i></span>
+                                                        <span class="icon-error" ng-show="item.isError"><i class="fas fa-exclamation-triangle"></i></span>
+                                                    </div>
+                                                    <div>
+                                                        <small>{{'Documents.FileName' | translate}} :</small> <br />
+                                                        <strong md-truncate>{{ item.file.name }}</strong> <span ng-show="uploader.isHTML5">({{item.file.size | size}})</span>
+                                                    </div>
+                                                    <div flex></div>
+                                                    <div>
+                                                        <md-button class="md-icon-button btn btn-secondary btn-xs" ng-click="item.remove(); item.image=null; $parent.croppedImage = null;">
+                                                            <i class="fas fa-trash"></i> <md-tooltip md-direction="bottom">{{'Documents.Clear' | translate}}</md-tooltip>
+                                                        </md-button>
+                                                        <md-button class="md-icon-button btn btn-secondary btn-xs" ng-click="item.cancel()" ng-if="uploader.isUploading">
+                                                            <i class="fas fa-ban"></i> <md-tooltip md-direction="bottom">{{'Documents.Cancel' | translate}}</md-tooltip>
+                                                        </md-button>
+                                                        <md-button class="md-icon-button btn btn-primary btn-xs" ng-click="uploadFunc(item,$parent.croppedImage)" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                                            <i class="fas fa-upload"></i> <md-tooltip md-direction="bottom">{{'Documents.Upload' | translate}}</md-tooltip>
+                                                        </md-button>
+                                                    </div>
+                                                </div>
+                                                <div ng-show="uploader.isHTML5">
+                                                    <div class="progress" style="margin-bottom: 0;">
+                                                        <div class="progress-bar" ng-style="{'width': item.progress + '%'}"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="whitebox collapsible" ng-show="multiLanguage">
+                            <div class="collapsible-head">
+                                <h5>{{'Setup.Settings.Title4' | translate}}</h5>
+                            </div>
+                            <div class="collapsible-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="language">{{'Setup.Settings.Language' | translate}}</label>
+                                            <select id="language" name="language"
+                                                    kendo-drop-down-list
+                                                    k-options="languageOptions"
+                                                    ng-model="selectedLanguage"></select>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-6" ng-show="!preview">
+                                        <div class="form-group">
+                                            <label for="locale">{{'Setup.Settings.Format' | translate}}</label>
+                                            <select id="locale" name="locale"
+                                                    kendo-drop-down-list
+                                                    k-options="formatOptions"
+                                                    ng-model="selectedLocale"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="whitebox collapsible">
+                            <div class="collapsible-head">
+                                <h5>{{'Common.ThemeColor' | translate}}</h5>
+                            </div>
+                            <div class="collapsible-body">
+                                <div class="appcolor padding0">
+                                <span ng-click="changeTheme('#1F4688','blue')"
+                                      ng-class="appTheme =='blue' ? 'active':''"
+                                      style="background: #1F4688;"></span>
+                                    <span ng-click="changeTheme('#DC3023','red')"
+                                          ng-class="appTheme =='red' ? 'active':''"
+                                          style="background: #DC3023;"></span>
+                                    <span ng-click="changeTheme('#8E44AD','purple')"
+                                          ng-class="appTheme =='purple' ? 'active':''"
+                                          style="background: #8E44AD;"></span>
+                                    <span ng-click="changeTheme('#19B5FE','light-blue')"
+                                          ng-class="appTheme =='light-blue' ? 'active':''"
+                                          style="background: #19B5FE;"></span>
+                                    <span ng-click="changeTheme('#25A65B','green')"
+                                          ng-class="appTheme =='green' ? 'active':''"
+                                          style="background: #25A65B;"></span>
+                                    <span ng-click="changeTheme('#FFB61E','orange')"
+                                          ng-class="appTheme =='orange'  ? 'active':''"
+                                          style="background: #FFB61E;"></span>
+                                    <span ng-click="changeTheme('#959EA4','gray')"
+                                          ng-class="appTheme =='gray' ? 'active':''"
+                                          style="background: #4D5C66;"></span>
+                                </div>
+                            </div>
+                        </section>
+
+                    </div>
+
+                    <div ng-if="activeTab === 'security' && !disablePasswordChange">
+                        <section class="whitebox collapsible" ng-show="!$scope.showPasswordControl">
+                            <div class="collapsible-head">
+                                <h5>{{'Setup.Settings.Title2' | translate}}</h5>
+                            </div>
+                            <div class="collapsible-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="current">
+                                                <span>{{'Setup.Settings.CurrentPassword' | translate}}</span>
+                                                <span class="label-right">
+                                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                                </span>
+                                            </label>
+                                            <input type="password" id="current" name="current" ng-minlength="6" class="form-control k-textbox" required ng-model="passwordModel.current"
+                                                   ng-change="userForm.current.$setValidity('wrongPassword', true);" validationMessage="{{'Module.Required' | translate}}" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>
+                                                <span>{{'Setup.Settings.Password' | translate}}</span>
+                                                <span class="label-right">
+                                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                                </span>
+                                            </label>
+                                            <input type="password" id="passwordUser" name="passwordUser" class="k-textbox" maxlength="20"
+                                                   ng-minlength="6" required ng-blur="userForm.passwordUser.$error.minlength && showError('minlength')"
+                                                   ng-model="passwordModel.password" validationMessage="{{'Module.Required' | translate}}"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+
+                                        <div class="form-group">
+                                            <label>
+                                                <span>{{'Setup.Settings.PasswordAgain' | translate}}</span>
+                                                <span class="label-right">
+                                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                                </span>
+                                            </label>
+                                            <input type="password" id="confirm" name="confirm" class="k-textbox"
+                                                   required ng-model="passwordModel.confirm" validationMessage="{{'Module.Required' | translate}}"
+                                                   ng-blur="passwordNotMatch(passwordModel.password,passwordModel.confirm)" ;/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div ng-if="activeTab === 'email' && user.profile.smtp_settings">
+                        <section class="whitebox collapsible">
+                            <div class="collapsible-head">
+                                <h5> {{ 'Setup.Messaging.EMail.PersonalTitle' | translate }}</h5>
+                            </div>
+                            <div class="collapsible-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group" show-errors>
+                                            <label>
+                                                <span>{{'Setup.Messaging.EMail.SMTP.Host' | translate}}</span>
+                                                <span class="label-right">
+                                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                                </span>
+                                            </label>
+                                            <input type="text" id="smtpHost" name="smtpHost" class="form-control k-textbox" required
+                                                   ng-model="emailModel.host" validationMessage="{{'Module.Required' | translate}}" />
+                                            <span class="k-invalid-msg" data-for="smtpHost"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group" show-errors>
+                                            <label>
+                                                <span>{{'Setup.Messaging.EMail.SMTP.Port' | translate}}</span>
+                                                <span class="label-right">
+                                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                                </span>
+                                            </label>
+                                            <input type="text" numeric min="1" max="64738" id="smtpPort" name="smtpPort" class="form-control k-textbox"
+                                                   required ng-model="emailModel.port" validationMessage="{{'Module.Required' | translate}}" />
+                                            <span class="k-invalid-msg" data-for="smtpPort"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group" show-errors>
+                                            <label>
+                                                <span>{{'Setup.Messaging.EMail.UserName' | translate}}</span>
+                                                <span class="label-right">
+                                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                                </span>
+                                            </label>
+                                            <input type="text" id="userName" name="userName" class="form-control k-textbox" required
+                                                   ng-model="emailModel.user_name" validationMessage="{{'Module.Required' | translate}}" />
+                                            <span class="k-invalid-msg" data-for="userName"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group" show-errors>
+                                            <label>
+                                                <span>{{'Setup.Messaging.EMail.Password' | translate}}</span>
+                                                <span class="label-right">
+                                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                                </span>
+                                            </label>
+                                            <input type="password" id="password" name="password" class="form-control k-textbox" required
+                                                   ng-model="emailModel.password" validationMessage="{{'Module.Required' | translate}}" />
+                                            <span class="k-invalid-msg" data-for="password"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 bottom10">
+                                        <div class="d-flex align-items-center">
+                                            <kendo-switch id="ssl" name="ssl" ng-model="emailModel.enable_ssl"></kendo-switch>
+                                            <span class="pl-1" for="ssl">
+                                                {{'Setup.Messaging.EMail.SMTP.SSLEnable'| translate}}
+                                                <i class="info-icon fas fa-info-circle">
+                                                    <md-tooltip md-direction="top">{{'Setup.Messaging.EMail.SMTP.WhatIsSSL' | translate}}</md-tooltip>
+                                                </i>
+                                                <span class="required-label">{{'Common.Required' | translate}}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="d-flex align-items-center">
+                                            <kendo-switch id="bulkemail" name="bulkemail" ng-model="emailModel.dont_send_bulk_email_result"></kendo-switch>
+                                            <span class="pl-1" for="bulkemail">
+                                                {{'Setup.Messaging.EMail.DontSendBulkEmailResult'| translate}}
+                                                </i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="whitebox collapsible">
+                            <div class="collapsible-head">
+                                <h5> {{'Setup.Messaging.EMail.Senders' | translate}}</h5>
+                                <md-button type="button" name="addSender" class="md-icon-button btn btn-primary" ng-click="showNewSenderForm()">
+                                    <i class="fas fa-plus"></i>
+                                    <md-tooltip md-direction="bottom"> {{'Common.Add' | translate}}</md-tooltip>
+                                </md-button>
+                            </div>
+                            <div class="collapsible-body">
+                                <div class="form-group" show-error>
+                                    <div ng-if="emailModel.senders.length === 0">
+                                        {{'Setup.Messaging.EMail.NoCustomSender' | translate}}
+                                    </div>
+                                    <div ng-show="emailModel.senders.length">
+                                        <div class="row">
+                                            <div class="col-md-6" ng-repeat="sender in emailModel.senders">
+                                                <div class="dashed-greybox">
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <div md-truncate>
+                                                            <strong>{{sender.alias}}</strong>
+                                                            <span><{{sender.email}}></span>
+                                                        </div>
+                                                        <md-button type="button" class="md-icon-button btn btn-xs btn-danger" ng-click="removeSender($event,sender)"><i class="fas fa-trash"></i><md-tooltip md-direction="right">{{'Common.Delete' | translate}}</md-tooltip></md-button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="alert alert-secondary shadow-sm" role="alert" ng-show="userForm.$submitted && userForm.$invalid && userForm.$error.noSender">
+                                    <div class="row align-items-center">
+                                        <div class="col">
+                                            <div class="row align-items-center justify-content-center">
+                                                <div class="col-auto"><span class="warn-icon"><i class="fas fa-exclamation-triangle"></i></span></div>
+                                                <div class="col-12 col-sm text-center text-sm-left"><div class="paddingua10">{{'Setup.Messaging.EMail.NoSender' | translate}}</div></div>
+                                                <div class="col-auto">
+                                                    <md-button type="button" name="addSender" class="btn btn-primary" ng-click="showNewSenderForm()">
+                                                        <i class="fas fa-plus"></i>
+                                                        <span>{{'Common.Add' | translate}}</span>
+                                                    </md-button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </md-content>
+        </section>
+    </form>
+</md-content>
+
+<md-sidenav ng-show="sideinclude" id="sideModal" class="md-sidenav-right md-whiteframe-2dp" md-component-id="sideModal" md-is-locked-open="isDocked &&  $mdMedia('gt-lg')">
+    <div data-ng-if="sideLoad" data-ng-include="url" layout="column" style="height: 100%;" ng-cloak></div>
+</md-sidenav>
+

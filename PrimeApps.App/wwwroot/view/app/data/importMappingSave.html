@@ -1,0 +1,44 @@
+<md-dialog flex="33" aria-label="{{'Module.TemplateModule' | translate:{module:module['label_'+language+'_plural']} }}">
+    <form name="importMappingForm" ng-submit="mappingSave(importMappingForm)" autocomplete="off" novalidate ng-cloak>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{'Module.TemplateModule' | translate:{module:module['label_'+language+'_plural']} }}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()"><i class="fas fa-times"></i></md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="templateName" class="required"><span>{{'Template.TemplateName' | translate}} *</span></label>
+                            <input type="text"
+                                   id="templateName"
+                                   name="templateName"
+                                   class="form-control ng-animate-disabled"
+                                   ng-model="importMapping.name"
+                                   ng-required="true"
+                                   validationMessage="{{'Module.RequiredError' | translate}}" />
+                            <span class="k-invalid-msg" data-for="templateName"></span>
+                        </div>
+                        <div class="form-group"> 
+                            <input type="checkbox" id="isMappingSkip"  class="k-checkbox" name="isMappingSkip" ng-model="importMapping.skip" />
+                            <label class="k-checkbox-label" for="isMappingSkip">{{'Import.IsMappingSkip' | translate}}</label>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button class="btn btn-primary" type="submit" md-autofocus ng-disabled="!importMappingForm.$dirty && !importForm.$dirty">
+                <i class="fas fa-save"></i>
+                {{'Common.Save' | translate}}
+            </md-button>
+            <span flex></span>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

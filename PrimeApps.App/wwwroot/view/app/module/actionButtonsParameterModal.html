@@ -1,0 +1,63 @@
+﻿<md-dialog flex="33">
+    <form ng-if="showMicroflowParameters" kendo-validator="actionButtonsParameterMicroflowModalForm" ng-submit="runMicroflowParameters(actionButtonsParameterMicroflowModalForm)" class="disable-validation-msg" autocomplete="off" novalidate>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{'Setup.Modules.ActionButtonParameter' | translate}}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="closeLightBox()"><i class="fas fa-times"></i></md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div ng-show="loadingModal" id="inside-loader"><div class="spin"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div></div>
+                <div ng-show="!loadingModal">
+                  <div class="form-group" ng-repeat="field in buttonsParameters">
+                        <div ng-include="'view/app/module/actionButtonsParameterFields.html'"></div>
+                  </div>
+                </div>
+            </div>
+        </md-dialog-content>
+
+
+        <md-dialog-actions>
+            <md-button type="submit" class="btn btn-primary">
+                <i class="fa fa-paper-plane"> </i> {{'Common.Send' | translate}}
+            </md-button>
+            <span flex></span>
+        </md-dialog-actions>
+    </form>
+
+
+    <form ng-if="showScriptParameters" kendo-validator="actionButtonsParameterScriptModalForm" ng-submit="runScriptParameters(actionButtonsParameterScriptModalForm)" class="disable-validation-msg" autocomplete="off" novalidate>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{'Setup.Modules.ActionButtonParameter' | translate}}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="closeLightBox()"><i class="fas fa-times"></i></md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div ng-show="loadingModal" id="inside-loader2"><div class="spin"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div></div>
+                <div ng-show="!loadingModal">
+                    <div class="form-group" ng-repeat="field in buttonsParameters">
+                        <div ng-include="'view/app/module/actionButtonsParameterFields.html'"></div>
+                    </div>
+                </div>
+            </div>
+        </md-dialog-content>
+
+
+        <md-dialog-actions>
+            <md-button type="submit" class="btn btn-primary">
+                <i class="fa fa-paper-plane"> </i> {{'Common.Send' | translate}}
+            </md-button>
+            <span flex></span>
+        </md-dialog-actions>
+    </form>
+</md-dialog>
+
+
+

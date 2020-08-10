@@ -1,0 +1,142 @@
+<form class="disable-validation-msg" name="profileForm" ng-submit="submit(profileForm)" autocomplete="off" style="height:100%;" kendo-validator="validator" ng-cloak >
+    <div ng-show="formLoading" class="spin">
+        <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
+    </div>
+    <section ng-show="!formLoading" layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
+        <md-toolbar md-scroll-shrink ng-if="true">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" ng-click="closeSide('sideModal')" aria-label="{{'Common.Close' | translate}}"><i class="fas fa-angle-left"></i></md-button>
+                <h3 md-truncate ng-if="!profile.id">{{'Setup.Profiles.NewProfile' | translate}}</h3>
+                <h3 md-truncate ng-if="profile.id">{{'Setup.Profiles.EditProfile' | translate}}</h3>
+                <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close"><i class="fas fa-thumbtack"></i></md-button>
+                <span flex></span>
+                <md-button type="submit" class="md-icon-button btn btn-primary" ng-disabled="profile.system_type === 'system'"><i class="fas fa-save"></i> <md-tooltip md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip></md-button>
+            </div>
+        </md-toolbar>
+        <md-content flex>
+            <div class="container-fluid paddingua20">
+                <div class="title">
+                    <h5>{{'Import.Options' | translate}}</h5>
+                </div>
+                <div class="whitebox">
+                    <div class="form-group">
+                        <label for="name" class="required">
+                            <span> {{'Setup.Profiles.ProfileName' | translate}}</span>
+                            <span class="label-right">
+                                <span class="required-label">{{'Common.Required' | translate}}</span>
+                            </span>
+                        </label>
+                        <input type="text" id="name" name="name" class="k-textbox"
+                               placeholder="{{'Setup.Profiles.ProfileName' | translate}}"
+                               required validationMessage="{{'Module.Required' | translate}}" maxlength="100"
+                               ng-model="profile['name_' + language]" ng-change="profileForm['name'].$setValidity('unique', true)"
+                               ng-disabled="profile.is_persistent || profile.system_type === 'system'" />
+                        <span class="k-invalid-msg" data-for="name"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">
+                            <span>  {{'Setup.Profiles.ProfileDescription' | translate}}</span>
+                            <span class="label-right">
+                                <span class="required-label">{{'Common.Required' | translate}}</span>
+                            </span>
+                        </label>
+                        <textarea required rows="2" name="description" class="form-control" 
+                        maxlength="250" id="description" placeholder="{{'Setup.Profiles.ProfileDescription' | translate}}" 
+                        auto-grow ng-model="profile['description_' + language]" 
+                        ng-disabled="profile.is_persistent || profile.system_type === 'system'"></textarea>
+                    </div>
+                    <div class="form-group" ng-show="!profile || !(profile.has_admin_rights && profile.is_persistent)">
+                        <label for="PageStart">{{'Setup.Profiles.StarPage' | translate}} </label>
+                        <select class="form-control"
+                                id="PageStart"
+                                k-ng-model="profile.PageStart"
+                                k-on-change="SetStartPage()"
+                                ng-disabled="profile.system_type === 'system'"
+                                kendo-drop-down-list k-options="pageStartOptions"></select>
+                    </div>
+                </div>
+                <div class="title">
+                    <h5>{{'Setup.Profiles.Permissions' | translate}}</h5>
+                </div>
+                <div class="whitebox table-view table-responsive">
+                    <table id="table" class="table table-bordered table-striped table-theme">
+                        <thead>
+                        <tr>
+                            <th>{{'Setup.Profiles.Module' | translate}}</th>
+                            <th class="text-center"><i class="fas fa-eye"></i></th>
+                            <th class="text-center"><i class="fas fa-edit"></i></th>
+                            <th class="text-center"><i class="fas fa-plus"></i></th>
+                            <th class="text-center"><i class="fas fa-trash"></i></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="permission in profile.permissions">
+                            <td>{{permission.EntityTypeName}}</td>
+                            <td class="text-center">
+                                <input type="checkbox" id="read{{$index}}" class="k-checkbox" ng-model="permission.read" ng-disabled="profile.is_persistent || profile.system_type === 'system' || permission.type === 2" ng-change="!permission.read ? permission.modify = false : ''; !permission.read ? permission.write = false : ''; !permission.read ? permission.remove = false : '';">
+                                <label class="k-checkbox-label" for="read{{$index}}"></label>
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" id="modify{{$index}}" class="k-checkbox" ng-model="permission.modify" ng-disabled="profile.is_persistent || permission.type === 3 || profile.system_type === 'system'" ng-change="permission.modify ? permission.read = true : '';" />
+                                <label class="k-checkbox-label" for="modify{{$index}}"></label>
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" id="write{{$index}}" class="k-checkbox" ng-model="permission.write" ng-disabled="profile.is_persistent || profile.system_type === 'system'" ng-change="permission.write ? permission.read = true : '';" />
+                                <label class="k-checkbox-label" for="write{{$index}}"></label>
+                            </td>
+                            <td class="text-center">
+                                <input type="checkbox" id="remove{{$index}}" class="k-checkbox" ng-model="permission.remove" ng-disabled="profile.is_persistent || permission.type === 3 || profile.system_type === 'system'" ng-change="permission.remove ? permission.read = true : '';" />
+                                <label class="k-checkbox-label" for="remove{{$index}}"></label>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="title">
+                    <h5>{{'Setup.Profiles.PermissionsOther' | translate}}</h5>
+                </div>
+                <div class="whitebox">
+                    <ul class="list-unstyled list-between">
+                        <li>
+                            <span>{{'Setup.Profiles.PermissionSystem' | translate}}</span>
+                            <kendo-switch id="hasAdminRights" ng-model="profile.has_admin_rights" ng-disabled="profile.is_persistent  || profile.system_type === 'system'"></kendo-switch>
+                        </li>
+                        <li ng-if="!profile.has_admin_rights">
+                            <span>{{'Setup.Profiles.PermissionEmail' | translate}}</span>
+                            <kendo-switch id="sendEmail" ng-model="profile.send_email" ng-disabled="profile.system_type === 'system'"></kendo-switch>
+                        </li>
+                        <li ng-if="!profile.has_admin_rights">
+                            <span>{{'Setup.Profiles.PermissionSMS' | translate}}</span>
+                            <kendo-switch id="sendSms" ng-model="profile.send_sms" ng-disabled="profile.system_type === 'system'"></kendo-switch>
+                        </li>
+                        <li ng-if="!profile.has_admin_rights">
+                            <span>{{'Setup.Profiles.PermissionExportData' | translate}}</span>
+                            <kendo-switch id="exportData" ng-model="profile.export_data" ng-disabled="profile.system_type === 'system'"></kendo-switch>
+                        </li>
+                        <li ng-if="!profile.has_admin_rights">
+                            <span>{{'Setup.Profiles.PermissionImportData' | translate}}</span>
+                            <kendo-switch id="importData" ng-model="profile.import_data" ng-disabled="profile.system_type === 'system'"></kendo-switch>
+                        </li>
+                        <li ng-if="!profile.has_admin_rights">
+                            <span>{{'Setup.Profiles.WordPdfDownload' | translate}}</span>
+                            <kendo-switch id="wordPdfDownload" ng-model="profile.word_pdf_download" ng-disabled="profile.system_type === 'system'"></kendo-switch>
+                        </li>
+                        <li ng-if="!profile.has_admin_rights">
+                            <span>{{'Setup.Profiles.SmtpSettings' | translate}}</span>
+                            <kendo-switch id="smtpSettings" ng-model="profile.smtp_settings" ng-disabled="profile.system_type === 'system'"></kendo-switch>
+                        </li>
+                        <li ng-if="!profile.has_admin_rights">
+                            <span>{{'Setup.HelpGuide.Dashboard' | translate}}</span>
+                            <kendo-switch id="dashboard" ng-model="profile.dashboard" ng-disabled="profile.system_type === 'system'"></kendo-switch>
+                        </li>
+                        <li ng-if="!profile.has_admin_rights">
+                            <span>{{'Setup.Profiles.ChangeEmail' | translate}}</span>
+                            <kendo-switch id="changeEmail" ng-model="profile.change_email" ng-disabled="profile.system_type === 'system'"></kendo-switch>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </md-content>
+    </section>
+</form>

@@ -1,0 +1,33 @@
+﻿<md-toolbar md-scroll-shrink ng-if="true">
+    <div class="md-toolbar-tools">
+        <md-button class="md-icon-button" ng-click="closeSide('sideModal')" aria-label="{{'Common.Close' | translate}}"><i class="fas fa-angle-left"></i></md-button>
+        <h3 md-truncate>{{'Setup.Nav.Notifications' | translate}}</h3>
+        <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close"><i class="fas fa-thumbtack"></i></md-button>
+        <span flex></span>
+    </div>
+</md-toolbar>
+<md-content flex>
+    <div ng-show="notificationLoading" class="spin">
+        <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
+    </div>
+    <div  ng-show="!notificationLoading" class="container-fluid paddingua20">
+        <div class="notification-button" ng-repeat="notification in signalNotifications" >
+            <div class="notification-button-inside d-flex align-items-center" ng-click="notificationRead(notification)" ng-class="notification.status === 'Read' ? 'disabled':''">
+                <div ng-if="notification.type ==='Warning'" class="notification-icon col-auto"><i class="fas fa-bell"></i></div>
+                <div ng-if="notification.type ==='Information'" class="notification-icon col-auto info"><i class="fas fa-info"></i></div>
+                <div ng-if="notification.type ==='Success'" class="notification-icon col-auto success"><i class="fas fa-check"></i></div>
+                <div ng-if="notification.type ==='Error'" class="notification-icon col-auto error"><i class="fas fa-times"></i></div>
+                <div class="col notification-text">
+                    <div>{{notification.message}}</div>
+                    <div class="notification-date"><i class="fas fa-clock"></i> <small>{{getTime(notification.created_at)}}</small></div>
+                </div>
+            </div>
+            <div class="notification-hide">
+                <md-button class="btn btn-secondary md-icon-button" ng-click="notificationRead(notification,null,true)" aria-label="{{'Common.Hide' | translate}}">
+                    <i class="fas fa-times"></i>
+                    <md-tooltip md-direction="bottom">{{'Common.Hide' | translate}}</md-tooltip>
+                </md-button>
+            </div>  
+        </div>
+    </div>
+</md-content>

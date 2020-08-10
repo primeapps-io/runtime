@@ -1,0 +1,87 @@
+<div class="filter-list">
+    <div layout="row" class="filter-list-buttons align-items-center">
+        <md-button class="md-icon-button" aria-label="Delete Group" ng-click="removeGroup()" ng-if="group.level>1">
+            <i class="fas fa-trash"></i>
+            <md-tooltip md-directtion="bottom"> {{'View.DeleteGroup' | translate}}  </md-tooltip>
+        </md-button>
+        <select ng-model="group.logic" class="form-control" style="margin-left: 5px;">
+            <option value="and" selected>{{'Filter.And' | translate}}</option>
+            <option value="or">{{'Filter.Or' | translate}}</option>
+        </select>
+        <span flex></span>
+        <md-button class="md-icon-button btn btn-sm btn-secondary" aria-label="{{'View.AddGroup' | translate}}" ng-click="addGroup()"
+                   ng-if="group.level<3">
+            <i class="fas fa-folder-plus"></i>
+            <md-tooltip md-directtion="bottom"> {{'View.AddGroup' | translate}}  </md-tooltip>
+        </md-button>
+        <md-button class="md-icon-button btn btn-sm btn-primary" aria-label="{{'View.AddCondition' | translate}}" ng-click="addCondition()">
+            <i class="fas fa-plus"></i>
+            <md-tooltip md-directtion="bottom"> {{'View.AddCondition' | translate}}  </md-tooltip>
+        </md-button>
+
+    </div>
+
+    <div class="group-conditions">
+        <div ng-repeat="filter in group.filters | orderBy:'index'" class="condition">
+            <div ng-switch="filter.hasOwnProperty('group')">
+                <div ng-switch-when="true">
+                    <query-builder viewfilter="viewfilter" fieldskey="fieldskey" module="module"
+                                   group="filter.group"></query-builder>
+                </div>
+
+                <div ng-switch-default="ng-switch-default">
+                    <div class="d-flex row0">
+                        <div class="col-auto">
+                            <div class="form-group condition-delete-button">
+                                <md-button ng-click="removeCondition($index)" class="md-icon-button"
+                                           aria-label="Delete"><i class="fas fa-trash"></i>
+                                    <md-tooltip md-direction="right">Delete</md-tooltip>
+                                </md-button>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row row5 align-items-center">
+                                <div class="col-auto">
+                                    <div class="form-group">
+
+                                        <select
+                                                k-option-label="'{{'Module.SelectField' | translate}}'"
+                                                k-data-text-field="'label_{{language}}'"
+                                                k-data-value-field="'name'"
+                                                k-data-source="module.fields"
+                                                k-auto-width="true"
+                                                ng-change="filter.value = null; filter.operator = null; filter.disabled = false; filter.costumeDate =null"
+                                                ng-model="filter.field"
+                                                kendo-drop-down-list>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-group">
+                                        <select
+                                                k-option-label="'{{'Module.SelectOperator' | translate}}'"
+                                                k-data-text-field="'label.{{language}}'"
+                                                k-data-value-field="'name'"
+                                                k-auto-width="true"
+                                                k-data-source="fieldskey[filter.field].operators"
+                                                ng-model="filter.operator"
+                                                k-on-change="changeOpertor(filter)"
+                                                kendo-drop-down-list>
+                                            <option>is</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div ng-include="'view/app/module/filterFields.html'"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+       

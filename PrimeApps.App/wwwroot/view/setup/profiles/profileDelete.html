@@ -1,0 +1,35 @@
+<md-dialog flex="33" aria-label="{{'Setup.Profiles.ProfileDelete' | translate}}">
+    <form ng-cloak>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>{{'Setup.Profiles.ProfileDelete' | translate}}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="close()"><i class="fas fa-times"></i></md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div class="form-group">
+                    <label for="transferProfile">{{profileDeleteLabel}}</label>
+                    <select class="form-control"
+                            id="transferProfile"
+                            name="transferProfile"
+                            kendo-drop-down-list
+                            k-ng-model="transferProfile"
+                            k-options="transferProfileOptions"
+                            k-ng-init="transferProfile = transferProfiles[0]"
+                            required></select>
+                </div>
+
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button class="btn btn-danger" type="submit" ng-click="delete(transferProfile)" md-autofocus>
+                <i class="fas fa-trash"></i>
+                {{'Setup.Profiles.TransferAndDelete' | translate}}
+            </md-button>
+            <span flex></span>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

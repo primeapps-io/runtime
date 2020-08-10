@@ -1,0 +1,103 @@
+<div class="popover">
+    <div class="arrow"></div>
+    <h3 ng-if="addUserForm" class="popover-title">{{'Setup.Users.NewUserAdd' | translate}}</h3>
+
+    <h3 ng-if="!addUserForm" class="popover-title">Yeni Kullanıcı Bilgileri</h3>
+    <div ng-if="addUserForm" class="popover-content">
+        <form name="userForm" ng-submit="addUserModel.isOfficeUser = true; addUser(addUserModel)" class="form-horizontal" novalidate ng-if="licenseAvailable">
+            <div class="form-group" ng-class="{'has-error': userForm.$submitted && userForm['profile'].$invalid}">
+                <div class="col-sm-12">
+                    <select class="form-control"
+                            name="users"
+                            ng-model="selectedOfficeUser"
+                            required
+                            ng-change="officeUserChanged(selectedOfficeUser)"
+                            ng-options="o as o.fullName for o in officeUsers">
+                        <option value="">{{'Setup.Users.ChooseUser' | translate}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group" ng-class="{'has-error': userForm.$submitted && userForm['email'].$invalid}">
+                <div class="col-sm-12">
+                    <input type="email" name="email" class="form-control"
+                           placeholder="{{'Setup.Users.NewUserEmail' | translate}}" required
+                           ng-model="addUserModel.email"
+                           ng-disabled="true" />
+                </div>
+            </div>
+            <div class="form-group" ng-class="{'has-error': userForm.$submitted && userForm['profile'].$invalid}">
+                <div class="col-sm-12">
+                    <select class="form-control"
+                            name="profile"
+                            ng-model="addUserModel.profile"
+                            required
+                            ng-options="o.id as o['name_' + language] for o in profiles">
+                        <option value="">{{'Setup.Users.NewUserProfile' | translate}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group" ng-class="{'has-error': userForm.$submitted && userForm['role'].$invalid}">
+                <div class="col-sm-12">
+                    <select class="form-control"
+                            name="role"
+                            ng-model="addUserModel.role"
+                            required
+                            ng-options="o.id as o['label_' + language] for o in roles">
+                        <option value="">{{'Setup.Users.NewUserRole' | translate}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group" ng-show="userForm.$submitted && userForm.$invalid">
+                <div class="col-sm-12">
+                    <div class="callout callout-danger">
+                        <p ng-if="userForm.$error.required">{{'Module.RequiredError' | translate}}</p>
+
+                        <p ng-if="userForm.$error.email">{{'Setup.Settings.ErrorEmail' | translate}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <button type="button" class="btn btn-custom" ng-click="addUserModel.email = ''; $hide();" ng-disabled="userInviting">{{'Common.Cancel' | translate}}</button>
+                    <button type="submit" class="btn btn-primary btn-w-lg" ladda="userInviting"><i class="fa fa-check-circle pull-left"></i> {{'Common.Add' | translate}}</button>
+                </div>
+            </div>
+        </form>
+        <div ng-if="!licenseAvailable" class="not-allowed">
+            <i class="fa fa-2x fa-exclamation-circle"></i>
+            <p ng-bind-html="'Setup.Users.AddonLicenseRequired' | translate"></p>
+            <a href ng-click="gotoLicencePage()" style="margin-left: 40px;">{{'Setup.Users.AddonPageGoto' | translate}}</a>
+            <button type="button" class="btn btn-custom" style="margin: 20px 0 0 40px;" ng-click="$hide()">{{'Common.Cancel' | translate}}</button>
+        </div>
+    </div>
+
+    <div ng-if="!addUserForm" class="popover-content">
+        <form name="userForm" ng-submit="sendOfficeUserPassword()" class="form-horizontal" novalidate>
+            <label>Şifre</label>
+            <div class="form-group" ng-class="{'has-error': userForm.$submitted && userForm['email'].$invalid}">
+                <div class="col-sm-12">
+                    <input type="text" name="pass" class="form-control"
+                           required
+                           ng-model="userPassword"
+                           ng-disabled="true" />
+                </div>
+            </div>
+            <label>{{'Setup.Office.PasswordInfo' | translate}}</label>
+            <div class="form-group" ng-show="userForm.$submitted && userForm.$invalid">
+                <div class="col-sm-12">
+                    <div class="callout callout-danger">
+                        <p ng-if="userForm.$error.required">{{'Module.RequiredError' | translate}}</p>
+
+                        <p ng-if="userForm.$error.email">{{'Setup.Settings.ErrorEmail' | translate}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <button type="button" class="btn btn-custom" ng-click="closeUserInfoPopover()" ng-disabled="userInviting">{{'Common.Close' | translate}}</button>
+                    <button type="submit" class="btn btn-primary btn-w-lg" ladda="submitting"><i class="fa fa-check-circle pull-left"></i>{{'Setup.Office.SendEmail' | translate}}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

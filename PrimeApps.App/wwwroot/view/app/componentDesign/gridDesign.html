@@ -1,0 +1,130 @@
+<md-content flex style="height: 100%;">
+    <div layout="column"  style="height: 100%; overflow-y: hidden;" ng-cloak>
+        <md-toolbar md-scroll-shrink ng-if="true" class="with-subheader">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button show-on-m" aria-label="{{'Common.Back' | translate}}"> <i class="fas fa-angle-left"></i> <md-tooltip md-direction="right">{{'Common.Back' | translate}}</md-tooltip> </md-button>
+                <h2 md-truncate>Grid Design</h2>
+                <div class="helpbuttons hide-on-m">
+                    <md-button class="md-icon-button" aria-label="{{'Common.Help' | translate}}"> <i class="fas fa-question-circle"></i> <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip></md-button>
+                    <md-button class="md-icon-button enlarge d-none d-lg-inline-block" ng-click="toggleFullLeftMenu()" aria-label="{{'Common.FullScreen' | translate}}" >
+                        <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 36 36" style="enable-background:new 0 0 36 36;" xml:space="preserve">
+                            <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z"/>
+                            <path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z"/>
+                            <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
+                            <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/>
+                        </svg>
+                        <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                        <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                    </md-button>
+                </div>
+    
+                <span class="show-on-m" flex></span>
+                <div flex id="action-btn" kendo-toolbar k-options="toolbarOptions"></div>
+    
+                <md-menu md-position-mode="target-right target">
+                    <md-button class="md-icon-button btn btn-secondary" aria-label="Export" ng-click="$mdMenu.open()"> <i class="fas fa-file-import"></i><md-tooltip md-direction="bottom">Export</md-tooltip></md-button>
+                    <md-menu-content width="3" class="md-dense">
+                        <md-menu-item>
+                            <md-button>
+                                <i class="fas fa-file-export"></i> <span>Export</span>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button>
+                                <i class="fas fa-file-import"></i> <span>Import</span>
+                            </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+                <md-button ng-click="filterModalOpen()" class="md-icon-button btn btn-secondary filter-button" aria-label="Filter" >
+                    <i class="fas fa-sliders-h"></i>
+    
+                    <span class="filter-badge">1</span>
+                    <md-tooltip md-direction="bottom">Filter</md-tooltip>
+                </md-button>
+                <md-button class="md-icon-button btn btn-primary" aria-label="{{'Common.Add' | translate}}" ><i class="fas fa-plus"></i> <md-tooltip md-direction="bottom">{{'Common.Add' | translate}}</md-tooltip> </md-button>
+            </div>
+        </md-toolbar>
+    
+        <md-content flex>
+            <md-subheader class="own-tab">
+                <md-tabs md-dynamic-height md-swipe-content>
+                    <md-tab>
+                        <md-tab-label id="tab1" aria-controls="Tab 1">
+                            <div class="tab-container">
+                                <span>All List</span>
+                            </div>
+                        </md-tab-label>
+                    </md-tab>
+                    <md-tab>
+                        <md-tab-label id="tab2" aria-controls="Tab2">
+                            <div class="tab-container">
+                                <span>All Leads List</span>
+                            </div>
+                        </md-tab-label>
+                    </md-tab>
+                    <md-tab>
+                        <md-tab-label id="tab3" aria-controls="Tab3">
+                            <div class="tab-container">
+                                <span>All Leads List</span>
+                            </div>
+                        </md-tab-label>
+                    </md-tab>
+                    <md-tab>
+                        <md-tab-label id="tab4" aria-controls="Tab4">
+                            <div class="tab-container">
+                                <span>All Leads List</span><span class="badge">1</span>
+                            </div>
+                        </md-tab-label>
+                    </md-tab>
+                    <md-tab>
+                        <md-tab-label id="tab5" aria-controls="Tab5">
+                            <div class="tab-container">
+                                <span>All Leads List</span>
+                            </div>
+                        </md-tab-label>
+                    </md-tab>
+                </md-tabs>
+    
+            </md-subheader>
+            <div class="container-fluid paddingua20">
+                <div class="whitebox table-view">
+                    <div class="grid-top">
+                        <div class="search-box">
+                            <div class="search-box-input">
+                                <input type="text" id="grid-search" class="form-control" placeholder="Search..." aria-label="Search" aria-describedby="grid-search">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <i class="info-icon fas fa-info-circle"><md-tooltip md-direction="right">You can search in these fields:  First Name, Company Name</md-tooltip></i>
+                        </div>
+                        <div><small>Total 91 records</small> <md-button class="btn btn-secondary md-icon-button" ng-click="refreshGrid()"><i class="fas fa-sync-alt"></i><md-tooltip md-direction="bottom">Refresh</md-tooltip></md-button></div>
+                    </div>
+    
+                    <div kendo-grid="grid" class="grid-theme" id="kendo-grid" k-options="mainGridOptions"></div>
+                    
+                </div>
+            </div>
+        </md-content>
+        <md-fab-speed-dial class="md-fab-bottom-right md-scale" md-open="isOpen" md-direction="up" >
+            <md-fab-trigger>
+                <md-button aria-label="menu" class="md-fab md-primary" ng-click="isOpen"><strong>5</strong></md-button>
+                <md-tooltip md-direction="left">5 selected item</md-tooltip>
+            </md-fab-trigger>
+    
+            <md-fab-actions>
+                <md-button class="md-fab md-raised md-mini" aria-label="Send E-mail" > <i class="fas fa-envelope"></i> <md-tooltip md-direction="left">Send E-mail</md-tooltip></md-button>
+                <md-button class="md-fab md-raised md-mini" aria-label="Send SMS" > <i class="fas fa-sms"></i> <md-tooltip md-direction="left">Send SMS</md-tooltip></md-button>
+                <md-button class="md-fab md-raised md-mini" aria-label="Edit" > <i class="fas fa-pen"></i> <md-tooltip md-direction="left">Edit</md-tooltip></md-button>
+                <md-button class="md-fab md-raised md-mini" aria-label="Delete" > <i class="fas fa-trash"></i> <md-tooltip md-direction="left">Delete</md-tooltip></md-button>
+            </md-fab-actions>
+        </md-fab-speed-dial>
+    </div>
+</md-content>
+<md-sidenav ng-show="sideinclude" id="sideModal" class="md-sidenav-right md-whiteframe-2dp" md-component-id="sideModal" md-is-locked-open="isDocked &&  $mdMedia('gt-lg')">
+    <div data-ng-if="sideLoad" data-ng-include="url" layout="column" style="height: 100%;" ng-cloak></div>
+</md-sidenav>
+
+
+
+
+

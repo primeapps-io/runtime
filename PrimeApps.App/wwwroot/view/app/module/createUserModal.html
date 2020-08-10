@@ -1,0 +1,39 @@
+<div class="modal message-modal" tabindex="-1" role="dialog" ng-controller="ModuleFormController">
+	<div class="modal-dialog">
+		<div class="modal-content" style="width:500px;margin:auto;">
+			<div>
+				<div class="modal-header clearfix">
+					<h4 class="modal-title pull-left">{{'Setup.Users.UserLicenseInfo' | translate}}</h4>
+					<button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true" ng-click="goModuleDetail()"><i class="fa fa-close"></i></button>
+				</div>
+				<div class="modal-body" style="height:100%">
+					<!-- <div class="row" style="padding-top: 10px;">
+						 <div class="col-md-12"><b>{{'Setup.Users.TotalLicenseCount' | translate}}</b> <label style="padding-left: 12px;font-weight: normal !important;">: {{userLicensesBought}}</label></div>
+					 </div>
+					 <div class="row" style="padding-top: 10px;">
+						 <div class="col-md-12"><b>{{'Setup.Users.RemainingLicense' | translate}} </b> <label style="padding-left: 24px;font-weight: normal !important;">: {{userLicenseAvailable}}</label></div>
+					 </div>-->
+					<div class="row" style="padding-top: 10px;">
+						<div class="col-md-12"><b>{{'Setup.Users.ModalUserEmail' | translate}} </b> <label style="font-weight: normal !important;">: {{userCreateEmail}}</label></div>
+					</div>
+					<div class="row" style="padding-top: 10px;padding-bottom: 12px;">
+						<div class="col-md-12"><b>{{'Setup.Users.UserPassword' | translate}} </b> <label style="font-weight: normal !important;">: {{userCreatePassword}}</label></div>
+					</div>
+					<!--<div class="row clearfix modal-footer" style="border:none;padding: 10px;">-->
+					<!--<div class="col-md-6 pull-right">-->
+					<!--<button type="button" class="btn btn-custom" ng-click="goModuleDetail()">İleri</button>-->
+					<!--</div>-->
+					<!--</div>-->
+					<div class="row clearfix modal-footer" style="margin-top:19px;padding: 15px;height: 0px !important;">
+						<div class="pull-left">
+							<label style="color:#990000;padding-top: 13px;"><b>{{'Setup.Office.PasswordInfo' | translate}}</b></label>
+						</div>
+						<div class="col-md-8 pull-right">
+							<button type="button" class="btn btn-custom" style="margin-top: 6px" ng-click="goModuleDetail()">{{'Setup.Users.GoToDetail' | translate}}</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,45 @@
+﻿<md-dialog flex="45">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>
+                {{'Module.ChooseTemplate' |
+                translate:{module:module['label_'+language+'_singular']} }}
+            </h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-disabled="isDownLoad" ng-click="close()"><i
+                    class="fas fa-times"></i></md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <div class="md-dialog-content">
+            <div ng-show="loadingModal" class="whitebox">
+                <div ng-show="loadingModal" class="spin">
+                    <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
+                </div>
+            </div>
+            <div ng-show="!loadingModal">
+                <div class="form-group">
+                    <select kendo-drop-down-list
+                            id="template"
+                            name="template"
+                            k-ng-model="quoteTemplate"
+                            ng-required="true"
+                            k-options="quoteTemplatesOptions">
+                    </select>
+                </div>
+            </div>
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions>
+        <md-button ng-click=" close(); pdfCreating = false; getDownloadUrl('pdf');" class="btn btn-primary">
+            <i class="fas fa-file-pdf"></i>
+            <span>{{'Module.DownloadPdf' | translate}}</span>
+            
+        </md-button>
+        <md-button ng-click="close(); pdfCreating = false;getDownloadUrl('docx');" class="btn btn-primary">
+            <i class="fas fa-file-word"></i>
+            <span>{{'Module.DownloadWord' | translate}}</span>
+        </md-button>
+        <span flex></span>
+    </md-dialog-actions>
+</md-dialog>

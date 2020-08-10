@@ -1,0 +1,136 @@
+<md-content flex style="height: 100%;">
+    <div ng-show="loading"><div class=" spin"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div></div>
+    <div ng-show="!loading" layout="column"  style="height: 100%; overflow-y: hidden;" ng-cloak>
+        <div id="myStaticDialog"></div>
+        <md-toolbar class="with-subheader" md-scroll-shrink ng-if="true">
+            <div class="md-toolbar-tools">
+                <h1 md-truncate>{{'Dashboard.Dashboard' | translate}}</h1>
+                <div class="helpbuttons hide-on-m">
+                    <md-button class="md-icon-button" aria-label="{{'Common.Help' | translate}}" ng-if="dashboardHelpSide" ng-click="helpSide()"><i class="fas fa-question-circle"></i>
+                        <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
+                    </md-button>
+                    <md-button class="md-icon-button enlarge d-none d-lg-inline-block" ng-click="toggleFullLeftMenu()" aria-label="{{'Common.FullScreen' | translate}}">
+                        <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 36 36" style="enable-background:new 0 0 36 36;" xml:space="preserve">
+                            <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z"/>
+                            <path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z"/>
+                            <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
+                            <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/>
+                        </svg>
+                        <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                        <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                    </md-button>
+                </div>
+                <span flex></span>
+                <md-button ng-if="user.profile.has_admin_rights && !loading && dashlets.length > 1" class="md-icon-button btn btn-secondary" aria-label="{{ 'Dashboard.DashletOrders' | translate}}" ng-click="sideModalLeft()"><i class="fas fa-sort"></i>
+                    <md-tooltip md-direction="bottom">{{ 'Dashboard.DashletOrders' | translate}}</md-tooltip>
+                </md-button>
+                <md-button class="md-icon-button btn btn-primary" aria-label="{{'Dashboard.NewDashlet' | translate}}" ng-click="openNewDashlet($event)"><i class="fas fa-plus"></i>
+                    <md-tooltip md-direction="bottom">{{'Dashboard.NewDashlet' | translate}}</md-tooltip>
+                </md-button>
+            </div>
+        </md-toolbar>
+        
+        <md-content flex>
+            <md-subheader class="own-tab">
+                <md-tabs md-dynamic-height md-swipe-content>
+                    <md-tab ng-repeat="dashboard in dashboards" ng-click="changeDashboard(dashboard);">
+                        <md-tab-label id="tab{{dashboard.id}}" aria-controls="{{dashboard['name_'+language] }}" >
+                            <div class="tab-container">
+                                <span>{{dashboard['name_'+language] }}</span>
+                                <div class="tab-icons">
+                                    <a href ng-click="$event.stopPropagation(); dashboardformModal($event,dashboard)" title="{{'Common.Edit' | translate}}"><i class="fas fa-pen"></i> </a>
+                                </div>
+                            </div>
+                        </md-tab-label>
+                    </md-tab>
+                    <md-tab class="md-tab-icon" ng-click="dashboardformModal($event)" ng-if="dashboardprofile.length >0 && user.profile.has_admin_rights">
+                        <md-tab-label>
+                            <div class="tab-container">
+                                <span><i class="fas fa-plus"></i></span>
+                                <md-tooltip md-direction="bottom">{{'Dashboard.AddNewPanel' | translate}}</md-tooltip>
+                            </div>
+                        </md-tab-label>
+                    </md-tab>
+        
+                </md-tabs>
+            </md-subheader> 
+            <div class="container-fluid paddingua20">
+                <help-page route="currentPath"></help-page>
+                <div class="help-page align-items-center" ng-if="show">
+                    <div class="alert alert-secondary" role="alert"  ng-bind-html="helpTemplatesModal.template"></div>
+                    <md-button type="button"
+                               ng-click="selectedClose = !selectedClose; closeDialog(currentPath, module.id, showModalCheck);"
+                               class="md-icon-button help-page-close"><i class="fas fa-times"></i>
+                        <md-tooltip md-diretion="bottom">{{'Common.Close' | translate}}</md-tooltip>
+                    </md-button>
+                    <div>
+                        <input type="checkbox" class="k-checkbox" ng-model="showModalCheck" ng-click="showModal()"
+                               id="showCheck">
+                        <label class="k-checkbox-label" for="showCheck">{{'Setup.HelpGuide.DontShowAgain' |
+                            translate}}</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 text-center" ng-if="!dashletMode && dashlets.length < 1 ">
+                        <img style="width:100%; max-width: 500px;" src="images/dashboard.svg">
+                        <h1 class="paddingua20">{{ language === 'en' ? ('Common.Welcome' | translate)+' '+ user.full_name :
+                            user.full_name +' '+('Common.Welcome' | translate) }}</h1>
+                        <p>{{'Common.DashletMessage' | translate}}</p>
+                        <md-button class="btn btn-white" ng-click="openNewDashlet($event)"   title="{{'Common.Add' | translate}}"><i class="fas fa-plus"></i>
+                            <span>{{'Common.Add' | translate}}</span></md-button>
+                    </div>
+                    <div class="col-12 dashboard" ng-show="showNewDashboard" ng-class="{'dashlet-edit':dashletMode}">
+                        <div class="row">
+                            <div ng-repeat="dashlet in dashlets" class="col-md-{{dashlet.y_tile_length}}" ng-class="{'col-6':dashlet.dashlet_type === 'widget'}">
+                                <div class="dashlet" ng-class="{'dashlet-cart':dashlet.dashlet_type === 'chart'}">
+                                    <div class="edit-buttons" ng-if="user.profile.has_admin_rights">
+                                        <md-button ng-if="dashlet.dashlet_type === 'chart'"  ng-click="goDetail(dashlet.chart_item.chart.report_id,dashlet.chart_item.chart.view_module_name)" class="md-icon-button" aria-label="" > <i class="fas fa-external-link-alt"></i></md-button>
+                                        <md-button ng-if="dashlet.dashlet_type === 'widget'" ng-click="goDetail(dashlet.widget.view_id,dashlet.widget.widget_data.modulename)" class="md-icon-button" aria-label="" > <i class="fas fa-external-link-alt"></i></md-button>
+                                        <md-menu md-position-mode="target-right target">
+                                            <md-button class="md-icon-button" aria-label="{{'Common.Settings' | translate}}" ng-click="$mdMenu.open()"> <i class="fas fa-ellipsis-v"></i><md-tooltip md-direction="bottom">{{'Common.Settings' | translate}}</md-tooltip></md-button>
+                                            <md-menu-content width="2" class="md-dense">
+                                                <md-menu-item>
+                                                    <md-button ng-click="openNewDashlet($event,dashlet)">
+                                                        <span>{{'Common.Edit' | translate}}</span>
+                                                    </md-button>
+                                                </md-menu-item>
+                                                <md-menu-item>
+                                                    <md-button ng-click="showConfirm($event,dashlet.id)" placement="bottom">
+                                                        <span>{{'Common.Delete' | translate}}</span>
+                                                    </md-button>
+                                                </md-menu-item>
+                                            </md-menu-content>
+                                        </md-menu>
+                                    </div>
+                                    <div class="chart-container" style="{{'height:'+dashlet.x_tile_height+'px'}}"   ng-if="dashlet.dashlet_type === 'chart'">
+                                        <div class="dashlet-chart">                                            
+                                            <fusioncharts
+                                                         id="chart-{{dashlet.id}}"
+                                                          width="100%" 
+                                                          height="{{dashlet.x_tile_height}}"
+                                                          type="{{dashlet.chart_item.chart.chart_type}}"
+                                                          datasource="{{dashlet.chart_item.data}}"
+                                                          chart="{{dashlet.chart_item.chart}}"
+                                                          config="{{dashlet.chart_item.config}}"></fusioncharts>
+                                        </div>
+                                    </div>
+                                    <div class="widget-container" ng-if="dashlet.dashlet_type === 'widget'"
+                                         ng-click="goDetail(dashlet.widget.view_id,dashlet.widget.widget_data.modulename)" style="cursor: pointer"
+                                         ng-style="{'height':dashlet.x_tile_height+'px','background-color':dashlet.widget.color ? dashlet.widget.color: '#555' }">
+                                       
+                                        <i class="{{dashlet.widget.icon}}"></i>
+                                        <div class="description">{{dashlet.widget.widget_data.value}} <small>{{dashlet.widget['name_'+user.language]}}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </md-content>
+    </div>
+</md-content>
+<md-sidenav ng-if="sideinclude" class="md-sidenav-right md-whiteframe-2dp" md-component-id="sideModal"  md-is-locked-open="isDocked &&  $mdMedia('gt-lg')">
+    <ng-include src="url" layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak></ng-include>
+</md-sidenav>

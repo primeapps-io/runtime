@@ -1,0 +1,257 @@
+<div layout="column" class="wrapper" id="wrapper" ng-cloak>
+    <section layout="row" flex>
+        <md-sidenav class="md-sidenav-left main-menu-wrapper md-whiteframe-2dp" md-component-id="menuModal" md-is-locked-open="$mdMedia('gt-sm')">
+            <div class="scroll-primary" layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
+                <md-toolbar class="show-on-m with-subheader" md-scroll-shrink ng-if="true">
+                    <div class="md-toolbar-tools">
+                        <md-button class="md-icon-button" ng-click="closeSide('menuModal')" aria-label="{{'Common.Back' | translate}}"><i class="fas fa-angle-left"></i></md-button>
+                        <h2 flex md-truncate>Menu</h2>
+                    </div>
+                </md-toolbar>
+                <md-content flex class="scroll-primary">
+                    <md-subheader class="show-on-m">
+                        <div class="accountbar-in" flex ng-include="'view/common/account-box.html'"></div>
+                    </md-subheader>
+                    <div class="hide-on-m"><div class="paddingua10"></div></div>
+                    <ul ng-if="customMenu" class="main-menu list-unstyled">
+                        <li id="menuItem" ng-class="(item.active) ? 'active' : ' '"
+                            ng-repeat="item in menu | orderBy: 'order'">
+                            <a ng-if="item.is_dynamic && item.route"
+                               ng-click="openSubMenu(item, menu);"
+                               href="#/app/modules/{{item.route}}"
+                               ng-class="{'active': currentPath === '/app/modules/{{item.route}}'}"
+                               title="{{item['label_' + language]}}">
+                                <i class="fas {{item.menu_icon}}"></i> <span>{{item['label_' + language]}}</span>
+                                <i ng-if="!item.route" class="fas fa-angle-down"></i>
+                                <md-tooltip ng-if="showTooltip" md-direction="right">
+                                    {{item['label_' +language]}}
+                                </md-tooltip>
+                            </a>
+                            <a ng-if="item.is_dynamic && !item.route" ng-click="openSubMenu(item, menu)" href
+                               ng-class="{'active': item.active}" title="{{item['label_' + language]}}">
+                                <i class="fas {{item.menu_icon}}"></i> <span>{{item['label_' + language]}}</span>
+                                <i ng-if="!item.route" class="fas fa-angle-down"></i>
+                                <md-tooltip ng-if="showTooltip" md-direction="right">
+                                    {{item['label_' + language]}}
+                                </md-tooltip>
+                            </a>
+                            <a ng-if="!item.is_dynamic && !item.route" ng-click="openSubMenu(item, menu)" href
+                               ng-class="{'active': item.active}" title="{{item['label_' + language]}}">
+                                <i class="fas {{item.menu_icon}}"></i> <span>{{item['label_' + language]}}</span>
+                                <i ng-if="!item.route" class="fas fa-angle-down"></i>
+                                <md-tooltip ng-if="showTooltip" md-direction="right">
+                                    {{item['label_' + language]}}
+                                </md-tooltip>
+                            </a>
+                            <!--Custom Menude ki Dashboard ve Reports İçin-->
+                            <a ng-if="!item.is_dynamic && item.route" ng-click="openSubMenu(item, menu);MenuItemHideMenu();" href="#/app/{{item.route}}"
+                               ng-class="{'active': currentPath === '/app/{{item.route}}'}" title="{{item['label_' + language]}}">
+                                <i class="fas {{item.menu_icon}}"></i> <span>{{item['label_' + language]}}</span>
+                                <i ng-if="!item.route" class="fas fa-angle-down"></i>
+                                <md-tooltip ng-if="showTooltip" md-direction="right">
+                                    {{item['label_' + language]}}
+                                </md-tooltip>
+                            </a>
+                            <ul ng-if="!item.route" class="list-unstyled submenu">
+                                <li id="menuItem"
+                                    ng-class="{'active': currentPath === '/app/modules/{{subMenu.route}}'}"
+                                    ng-repeat="subMenu in menu[$index].menu_items | orderBy:'order'">
+                                    <a ng-hide="subMenu.hide || subMenu.deleted" ng-if="subMenu.is_dynamic"
+                                       href="#/app/modules/{{subMenu.route}}" ng-click="closeMobileMenu(item, menu)" title="{{subMenu['label_' + language]}}">
+                                        <i class="fas {{subMenu.menu_icon}}"></i>
+                                        <span>{{subMenu['label_' + language]}}</span>
+                                        <md-tooltip ng-if="showTooltip" md-direction="right">
+                                            {{subMenu['label_' +language]}}
+                                        </md-tooltip>
+                                    </a>
+                                    <a ng-hide="subMenu.hide || subMenu.deleted" ng-if="!subMenu.is_dynamic"
+                                       href="#/app/{{subMenu.route}}" ng-click="closeMobileMenu(item, menu)" title="{{subMenu['label_' + language]}}">
+                                        <i class="fas {{subMenu.menu_icon}} "></i>
+                                        <span>{{subMenu['label_' + language]}}</span>
+                                        <md-tooltip ng-if="showTooltip" md-direction="right">
+                                            {{subMenu['label_' +language]}}
+                                        </md-tooltip>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul ng-if="!customMenu" class="main-menu list-unstyled">
+                        <li ng-class="{'active': currentPath === '/app/home'}" ng-if="user.profile.home">
+                            <a href="#/app/home" ng-click="routingPrism('#/app/home')">
+                                <i class="fas fa-home"></i>
+                                <span>{{'Layout.Menu.Homepage' | translate}}</span>
+                                <md-tooltip ng-if="showTooltip" md-direction="right">
+                                    {{'Layout.Menu.Homepage' |translate}}
+                                </md-tooltip>
+                            </a>
+                        </li>
+                        <li ng-class="{'active': currentPath === '/app/dashboard'}" ng-click="MenuItemHideMenu();" ng-if="user.profile.dashboard">
+                            <a href="#/app/dashboard">
+                                <i class="fas fa-home"></i>
+                                <span>{{'Layout.Menu.Dashboard' | translate}}</span>
+                                <md-tooltip ng-if="showTooltip" md-direction="right">
+                                    {{'Layout.Menu.Dashboard' |translate}}
+                                </md-tooltip>
+                            </a>
+                        </li>
+                        <li ng-class="{'active': ((currentPath === '/app/modules/{{module.name}}' || module.name.indexOf(activeModuleName) > -1 || currentPath === '/app/record/{{module.name}}' || currentPath.indexOf('record/{{module.name}}?') > -1) && currentPath.indexOf('/setup') <= -1)}"
+                            ng-repeat="module in modules | orderBy:['-system_type','order']"
+                            ng-click="MenuItemHideMenu();"
+                            ng-if="hasPermission(module.name, operations.read) && module.display && module.system_type != 'component'">
+                            <a href="#/app/modules/{{module.name}}"
+                               title="{{module['label_' + language + '_plural']}}">
+                                <i class="fas {{module.menu_icon}}"></i>
+                                <span>{{module['label_' + language + '_plural']}}</span>
+                                <md-tooltip ng-if="showTooltip" md-direction="right">
+                                    {{module['label_' + language +'_plural']}}
+                                </md-tooltip>
+                            </a>
+                        </li>
+                        <li ng-class="{'active': (currentPath=='/app/' + component.name  && currentPath.indexOf('/setup') < 0)}"
+                            ng-repeat="component in componentModules | orderBy:['-system_type','order']"
+                            ng-show="hasPermission(component.name, operations.read) && component.display && (component.components | filter: {name:component.name}).length > 0">
+                            <a href="#/app/{{component.name}}"
+                               title="{{component['label_' + language + '_plural']}}">
+                                <i class="{{component.menu_icon}}"></i>
+                                <span>{{component['label_' + language + '_plural']}}</span>
+                                <md-tooltip ng-if="showTooltip" md-direction="right">
+                                    {{component['label_' + language +'_plural']}}
+                                </md-tooltip>
+                            </a>
+                        </li>
+
+                    </ul>
+                    <ul ng-if="(user.profile.has_admin_rights || showAdministration)" class="main-menu list-unstyled">
+                        <li ng-class="{'active': administrationMenuActive}">
+                            <a href title="{{'Setup.Nav.Administration'| translate}}" ng-click="adminMenuActive();">
+                                <i class="fas fa-cog"></i> <span>{{'Setup.Nav.Administration'| translate}}</span>
+                                <i class="fas fa-angle-down"></i>
+                                <md-tooltip ng-if="showTooltip" md-direction="right">
+                                    {{'Setup.Nav.Administration'| translate}}
+                                </md-tooltip>
+                            </a>
+                            <ul class="list-unstyled submenu" ng-click="adminMenuItemHideMenu(menu);">
+                                <li ng-if="user.profile.has_admin_rights || showUsers" ng-class="{'active':currentPath == '/app/setup/users' || currentPath == '/app/setup/usergroups'}">
+                                    <a href="#/app/setup/users">
+                                        <i class="fas fa-users"></i>
+                                        <span>{{'Setup.Nav.Users'| translate}}</span>
+                                        <md-tooltip ng-if="showTooltip" md-direction="right">
+                                            {{'Setup.Nav.Users'| translate}}
+                                        </md-tooltip>
+                                    </a>
+                                </li>
+
+                                <li ng-if="user.profile.has_admin_rights || showAccessControl" ng-class="{'active':currentPath == '/app/setup/profiles' || currentPath == '/app/setup/roles' ||  currentPath == '/app/setup/usercustomshares' }">
+                                    <a href="#/app/setup/profiles">
+                                        <i class="fas fa-shield-alt"></i>
+                                        <span>{{'Setup.Nav.AccessControl'| translate}}</span>
+                                        <md-tooltip ng-if="showTooltip" md-direction="right">
+                                            {{'Setup.Nav.AccessControl'| translate}}
+                                        </md-tooltip>
+                                    </a>
+                                </li>
+                                <li ng-if="user.profile.has_admin_rights || showTemplates" ng-class="{'active': currentPath === '/app/setup/templates'}">
+                                    <a href="#/app/setup/templates">
+                                        <i class="fas fa-file-alt"></i>
+                                        <span>{{'Layout.Menu.Templates' | translate}}</span>
+                                        <md-tooltip ng-if="showTooltip" md-direction="right">
+                                            {{'Layout.Menu.Templates' |translate}}
+                                        </md-tooltip>
+                                    </a>
+                                </li>
+                                <li ng-if="user.profile.has_admin_rights" ng-class="{'active': currentPath === '/app/setup/signalnotification'}">
+                                    <a href="#/app/setup/signalnotification">
+                                        <i class="fas fa-bell"></i>
+                                        <span>{{'Layout.Menu.Notifications' | translate}}</span>
+                                        <md-tooltip ng-if="showTooltip" md-direction="right">
+                                            {{'Layout.Menu.Notifications' |translate}}
+                                        </md-tooltip>
+                                    </a>
+                                </li>
+                                <li ng-if="!preview && (user.profile.has_admin_rights || showCompanySettings)" ng-class="{'active':currentPath == '/app/setup/organization'}">
+                                    <a href="#/app/setup/organization">
+                                        <i class="fas fa-building"></i>
+                                        <span>{{'Setup.Nav.OrganizationSettings' | translate}}</span>
+                                        <md-tooltip ng-if="showTooltip" md-direction="right">
+                                            {{'Setup.Nav.OrganizationSettings' | translate}}
+                                        </md-tooltip>
+                                    </a>
+                                </li>
+                                <li ng-if="user.profile.has_admin_rights || showDataAdministration" ng-class="{'active':currentPath == '/app/setup/importhistory' || currentPath == '/app/setup/auditlog'}">
+                                    <a href="#/app/setup/importhistory">
+                                        <i class="fas fa-database"></i>
+                                        <span>{{'Setup.Nav.Data' | translate}}</span>
+                                        <md-tooltip ng-if="showTooltip" md-direction="right">
+                                            {{'Setup.Nav.Data' | translate}}
+                                        </md-tooltip>
+                                    </a>
+                                </li>
+                                <li ng-if="user.profile.has_admin_rights || showSystemSettings" ng-class="{'active':currentPath == '/app/setup/general' || currentPath == '/app/setup/sms' || currentPath == '/app/setup/email'}">
+                                    <a href="#/app/setup/sms">
+                                        <i class="fas fa-cogs"></i>
+                                        <span>{{'Setup.Nav.System' | translate}}</span>
+                                        <md-tooltip ng-if="showTooltip" md-direction="right">
+                                            {{'Setup.Nav.System' | translate}}
+                                        </md-tooltip>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </md-content>
+            </div>
+        </md-sidenav>
+        <md-content class="iefix" flex>
+            <section layout="row" flex ui-view="app" style="height: 100%;"></section>
+        </md-content>
+    </section>
+</div>
+<div class="mobile-menu show-on-m">
+    <ul class="list-unstyled" ng-if="!customMenu">
+        <li ng-class="{'active': currentPath === '/app/dashboard'}">
+            <md-button href="#/app/dashboard" ng-click="MenuItemHideMenu();" ng-if="user.profile.dashboard" aria-label="item">
+                <i class="fas fa-home"></i>
+                <span md-truncate>{{'Layout.Menu.Dashboard' | translate}}</span>
+            </md-button>
+        </li>
+        <li ng-class="(item.active) ? 'active' : ' '"
+            ng-repeat="module in mobileMenus | orderBy:['-system_type','order']"
+            ng-if="hasPermission(module.name, operations.read) && module.display && module.system_type != 'component'">
+            <md-button style="min-width: 50px;" ng-click="MenuItemHideMenu();" href="#/app/modules/{{module.name}}" ng-if="dashboardShow" aria-label="item">
+                <i ng-if="module.menu_icon" class="fas {{module.menu_icon}}"></i>
+                <i ng-if="!module.menu_icon" class="fas fa-layer-group"></i>
+                <span md-truncate>{{module['label_' + language + '_plural']}}</span>
+            </md-button>
+        </li>
+        <li>
+            <md-button aria-label="More" ng-click="sideMenuOpen()">
+                <i class="fas fa-ellipsis-h"></i>
+                <span>More</span>
+            </md-button>
+        </li>
+    </ul>
+    <ul class="list-unstyled" ng-if="customMenu">
+        <li ng-repeat="item in mobileMenus" ng-class="(item.active) ? 'active' : ' '">
+            <md-button ng-if="item.route" style="min-width: 50px;" href="{{ item.is_dynamic ? '#/app/modules/' + item.route : '#/app/' +item.route   }}" aria-label="item">
+                <i class="fas {{item.menu_icon}}"></i> <span>{{item['label_' + language]}}</span>
+            </md-button>
+            <md-menu md-position-mode="target-right target" ng-if="!item.route">
+                <md-button aria-label="item" ng-click="$mdMenu.open($event)"> <i class="fas {{item.menu_icon}}"></i> <span md-truncate>{{item['label_' + language]}}</span></md-button>
+                <md-menu-content width="3" class="md-dense">
+                    <md-menu-item ng-repeat="categoryItem in item.menu_items">
+                        <md-button ng-click="MenuItemHideMenu();" ng-class="(categoryItem.active) ? 'active' : ' '" href=" {{categoryItem.is_dynamic ? '#/app/modules/' + categoryItem.route : '#/app/' +categoryItem.route}}"><i class="fas {{categoryItem.menu_icon}}"></i> <span>{{categoryItem['label_' + language]}}</span></md-button>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
+        </li>
+        <li>
+            <md-button aria-label="More" ng-click="sideMenuOpen()" aria-label="More">
+                <i class="fas fa-ellipsis-h"></i>
+                <span>More</span>
+            </md-button>
+        </li>
+    </ul>
+</div>
+
+

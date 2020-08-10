@@ -1,0 +1,194 @@
+<md-dialog flex="45" aria-label="{{'SMS.SingleTitle' | translate}}" ng-controller="SingleSMSController">
+    <form kendo-validator="smsModalForm" ng-submit="submitSMS()" autocomplete="off" novalidate layout="column"
+          style="height: 100%; overflow-y: hidden;" ng-cloak class="disable-validation-msg">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>
+                    {{'SMS.SingleTitle' | translate}}
+                </h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-disabled="submittingModal" ng-click="close()">
+                    <i class="fas fa-times"></i>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div ng-show="loadingModal" class="whitebox">
+                    <div class="spin">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div ng-show="!loadingModal && formType === 'sms'">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="name"> {{'SMS.To' | translate}} </label>
+                                <input class="k-textbox" id="name" value="{{primaryField.valueFormatted}}"
+                                       disabled="true" />
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="phoneField" class="required">
+                                    <span>{{'SMS.PhoneField' | translate }}*</span>
+                                </label>
+                                <select id="phoneField" name="phoneField" k-ng-model="phoneField"
+                                        k-option-label="'{{'Common.Select' | translate}}'"
+                                        kendo-drop-down-list k-options="phoneFieldOptions" required
+                                        data-required-msg="{{'Module.Required' | translate}}"></select>
+                                <span class="k-invalid-msg" data-for="phoneField"></span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="template">
+                                    <span>{{'Common.SmsTemplate' |translate }}*</span>
+                                </label>
+                                <div class="row row0">
+                                    <div class="col">
+                                        <select id="template" name="template" 
+                                                kendo-drop-down-list k-options="templateOptions" 
+                                                k-ng-model="template" 
+                                                k-auto-bind="false"
+                                                k-option-label="'{{'Common.Select' | translate}}'" 
+                                                data-required-msg="{{'Module.Required' | translate}}" required
+                                                k-on-change="setContent(template);"></select>
+                                    </div>
+                                    <div class="col-auto">
+                                        <md-button class="md-icon-button btn btn-secondary" type="button" ng-show="template && template.id"
+                                                   ng-click="formType = 'template';setTemplate()" ng-disabled="saving">
+                                            <i class="fas fa-pen"></i>
+                                            <md-tooltip md-direction="bottom"> {{'Template.EditTemplate' | translate}} </md-tooltip>
+                                        </md-button>
+                                        <md-button class="md-icon-button btn btn-secondary" type="button" 
+                                                   ng-show="!template || (template && !template.id)"
+                                                   ng-click="formType = 'template';setTemplate()" 
+                                                   ng-disabled="saving">
+                                            <i class="fas fa-plus"></i>
+                                            <md-tooltip md-direction="bottom"> {{'Template.NewTemplate' | translate}} </md-tooltip>
+                                        </md-button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="required">
+                                    <span>{{'SMS.Message' | translate}}*</span>
+                                    <span>{{'SMS.EstimatedSMSCount' | translate}}: <strong>{{totalSMS}}</strong></span>
+                                </label>
+
+                                <textarea class="form-control" mentio-id="'tinyMceTextArea'" mentio name="tinymceModel" mentio-typed-text="typedTerm" mentio-require-leading-space="true" ng-disabled="true"
+                                          ng-required="true" ng-model="tinymceModel" ng-change="calculateSMS(tinymceModel)" rows="6"></textarea>
+                                <script type="text/ng-template" id="tag-mentions.tpl">
+                                    <ul class="ment-tags" style="max-height: 250px;overflow: auto;">
+                                        <li mentio-menu-item="tag" ng-repeat="tag in items" class=" item list-group-item clearfix"
+                                            ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
+                                            {{tag.label}}
+                                        </li>
+                                    </ul>
+                                </script>
+                                <mentio-menu class="mention-scrollbar" id="hastmenu1" mentio-for="'tinyMceTextArea'" mentio-trigger-char="'#'" mentio-items="tags" mentio-template-url="tag-mentions.tpl"
+                                             mentio-search="searchTags(term)" mentio-select="getTagTextRaw(item)" style="height:120px"></mentio-menu>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div ng-if="!loadingModal && formType === 'template'">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="templateName" class="required">
+                                    <span>{{'Template.SmsTemplate' | translate }}</span>
+                                </label>
+                                <input type="text" id="templateName" name="templateName" class="k-textbox" ng-model="smstemplate.template_name" ng-required="true" data-required-msg="{{'Module.Required' | translate}}" />
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="required">
+                                    <span>{{'SMS.Message' | translate}}</span>
+                                    <span>{{'SMS.EstimatedSMSCount' | translate}}: <strong>{{totalSMS}}</strong></span>
+                                </label>
+                                <textarea class="form-control" mentio-id="'tinyMceTextArea2'"
+                                          mentio mentio-typed-text="typedTerm"
+                                          mentio-require-leading-space="true"
+                                          name="tinymceModel" ng-required="true"
+                                          ng-model="smstemplate.tinymce_content"
+                                          ng-change="calculateSMS($parent.smstemplate.tinymce_content)" rows="6"></textarea>
+                                <script type="text/ng-template" id="tag-mentions.tpl">
+                                    <ul class="ment-tags">
+                                        <li mentio-menu-item="tag" ng-repeat="tag in items"
+                                            class=" item list-group-item clearfix"
+                                            ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
+                                            {{tag.label}}
+                                        </li>
+                                    </ul>
+                                </script>
+                                <mentio-menu class="mention-scrollbar" id="hastmenu2"
+                                             mentio-for="'tinyMceTextArea2'" mentio-trigger-char="'#'"
+                                             mentio-items="tags" mentio-template-url="tag-mentions.tpl"
+                                             mentio-search="searchTags(term)"
+                                             mentio-select="getTagTextRaw(item)" style="height:120px"></mentio-menu>
+
+                            </div>
+                            <p>{{'Common.ParameterMessage' | translate}}</p>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>{{'Template.Sharing' | translate}}</label>
+                                <ul class="list-unstyled">
+                                    <li>
+                                        <input type="radio" name="sharingType" id="me" class="k-radio" checked="checked"
+                                               ng-model="smstemplate.sharing_type" value="me">
+                                        <label class="k-radio-label" for="me">{{'View.ShareMe' | translate}}</label>
+                                    </li>
+                                    <li>
+                                        <input type="radio" ng-if="user.profile.has_admin_rights" name="sharingType" id="everybody" class="k-radio"
+                                               ng-model="smstemplate.sharing_type" value="everybody">
+                                        <label class="k-radio-label" for="everybody"> {{'View.ShareEveryone' | translate}}</label>
+                                    </li>
+                                    <li>
+                                        <input type="radio" ng-if="user.profile.has_admin_rights" name="sharingType" id="custom" class="k-radio"
+                                               ng-model="smstemplate.sharing_type" value="custom">
+                                        <label class="k-radio-label" for="custom"> {{'View.ShareCustom' | translate}}</label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-12" ng-show="smstemplate.sharing_type === 'custom'">
+                            <div class="form-group">
+                                <label for="shares">{{'Template.Sharing' | translate}}</label>
+                                <select id="shares" kendo-multi-select k-ng-model="smstemplate.shares"
+                                        k-options="sharesOptions" data-placeholder="'{{'Common.MultiselectPlaceholder' | translate}}'"></select>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row" ng-show="formType === 'sms'">
+            <md-button type="submit" ng-disabled="!phoneField" class="btn btn-primary">
+                <span>{{'SMS.Send' | translate}}</span> <i class="fas fa-paper-plane"></i>
+            </md-button>
+            <span flex></span>
+
+        </md-dialog-actions>
+        <md-dialog-actions layout="row" ng-show="formType === 'template'">
+            <md-button class="btn btn-primary" type="button" ng-show="!template || (template && !template.id)" ng-click="formType = 'sms';templateSave()" ng-disabled="!(smstemplate.template_name  && smstemplate.tinymce_content)"><i class="fas fa-save"></i> {{'Template.TemplateSave' | translate}}</md-button>
+            <md-button class="btn btn-primary" type="button" ng-show="template && template.id" ng-click="templateSave()" ng-disabled="submitting"><i class="fas fa-save"></i> {{'Template.UpdateTemplate' | translate}}</md-button>
+            <md-button class="btn btn-danger" type="button" ng-show="template && template.id" ng-click="deleteTemplate()" ng-disabled="saving"><i class="fas fa-trash"></i> {{'Template.TemplateDelete' | translate}}</md-button>
+            <span flex></span>
+            <md-button class="btn btn-secondary" type="button" ng-click="formType = 'sms';backTemplate()" ng-disabled="saving"><i class="fas fa-angle-left"></i> {{'Template.Back' | translate}}</md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

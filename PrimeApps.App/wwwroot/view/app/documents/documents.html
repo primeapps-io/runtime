@@ -1,0 +1,201 @@
+<md-content flex style="height: 100%;">
+    <div layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
+        <md-toolbar md-scroll-shrink ng-if="true">
+            <div class="md-toolbar-tools">
+                <md-button href="{{'#/app/module/' + entityType + '?id=' + entityId}}" class="md-icon-button btn show-on-m" aria-label="{{'Common.Back' | translate}}"><i class="fas fa-angle-left"></i>
+                    <md-tooltip md-direction="right">{{'Common.Back' | translate}}</md-tooltip>
+                </md-button>
+                <h2 md-truncate>{{title}}</h2>
+                <div class="helpbuttons hide-on-m">
+                    <md-button class="md-icon-button enlarge d-none d-lg-inline-block" ng-click="toggleFullLeftMenu()"
+                               aria-label="{{'Common.FullScreen' | translate}}">
+                        <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 36 36"
+                             style="enable-background:new 0 0 36 36;" xml:space="preserve">
+                            <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z"/>
+                            <path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z"/>
+                            <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
+                            <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/>
+                        </svg>
+                        <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                        <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                    </md-button>
+                </div>
+
+                <span flex></span>
+                <md-menu md-position-mode="target-right target">
+                    <md-button class="md-icon-button btn btn-secondary" aria-label="{{'Common.Search' | translate}}"
+                               ng-click="$mdMenu.open()"><i class="fas fa-search"></i>
+                        <md-tooltip md-direction="bottom">{{'Common.Search' | translate}}</md-tooltip>
+                    </md-button>
+                    <md-menu-content width="4">
+                        <div class="padding20">
+                            <input class="form-control" type="text" ng-model="$parent.searchKey"
+                                   ng-model-options="{debounce: {'default': 250, 'blur': 0} }"
+                                   ng-change="searchDocuments($parent.searchKey)"
+                                   placeholder="{{'Common.Find' | translate}}">
+                        </div>
+                    </md-menu-content>
+                </md-menu>
+                <md-menu md-position-mode="target-right target">
+                    <md-button class="md-icon-button btn btn-secondary" aria-label="{{'Common.Filter' | translate}}"
+                               ng-click="$mdMenu.open()"><i class="fas fa-filter"></i>
+                        <md-tooltip md-direction="bottom">{{'Common.Filter' | translate}}</md-tooltip>
+                    </md-button>
+                    <md-menu-content width="3" class="md-dense">
+                        <md-menu-item
+                                ng-class="{active:$parent.$parent.$parent.filter.created_by === $parent.guidEmpty}"
+                        <md-button ng-click="filterDocuments($parent.guidEmpty);">
+                            <span>{{'Common.Everyone' | translate}}</span>
+                        </md-button>
+                        </md-menu-item  ng-class="
+                        {active:$parent.$parent.$parent.filter.created_by === $parent.guidEmpty}">
+                        <md-menu-item ng-repeat="user in users">
+                            <md-button ng-click="filterDocuments(user.id);">
+                                <span>{{user.full_name}}</span>
+                            </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+                <md-menu md-position-mode="target-right target">
+                    <md-button class="md-icon-button btn btn-secondary" aria-label="{{'Common.Sort' | translate}}"
+                               ng-click="$mdMenu.open()"><i class="fas fa-sort-alpha-down"></i>
+                        <md-tooltip md-direction="bottom">{{'Common.Sort' | translate}}</md-tooltip>
+                    </md-button>
+                    <md-menu-content width="3" class="md-dense">
+                        <md-menu-item ng-class="{active:sortPredicate === 'timestamp'}">
+                            <md-button ng-click="sortDocuments('timestamp', true);">
+                                <span>{{'Documents.SortByDate' | translate}}</span>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item ng-class="{active:sortPredicate === 'name'}">
+                            <md-button ng-click="sortDocuments('name', false);">
+                                <span>{{'Documents.SortByName' | translate}}</span>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item ng-class="{active:sortPredicate === 'file_size'}">
+                            <md-button ng-click="sortDocuments('file_size', false);">
+                                <span>{{'Documents.SortBySize' | translate}}</span>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item ng-class="{active:sortPredicate === 'extension'}">
+                            <md-button ng-click="sortDocuments('extension', false);">
+                                <span>{{'Documents.SortByType' | translate}}</span>
+                            </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+            </div>
+        </md-toolbar>
+
+        <md-content flex>
+            <div class="container-fluid paddingua20">
+                <div ng-show="loading" class="whitebox">
+                    <div ng-show="loading" class="spin">
+                        <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div ng-if="!loading">
+                    <div class="whitebox">
+                        <div class="empty-message" ng-if="documents.length < 1 &&!loading">
+                            {{'Documents.Message'|translate}}
+                        </div>
+                        <div class="subpanel" ng-show="showDocumentForm">
+                            <h5 class="subpanel-heading">{{'Documents.AddDocument' | translate}}</h5>
+                            <div class="subpanel-body">
+                                <div class="documents">
+                                    <div document-form entity-id="entityId" entity-type="entityType" is-all="true"
+                                         show="showDocumentForm"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="subpanel" ng-show="documents.length && !loading">
+                            <div class="subpanel-body">
+                                <div class="documents">
+                                    <div document-list entity-id="entityId" entity-type="entityType" is-all="true"
+                                         documents="documents"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-secondary shadow-sm" role="alert" ng-if="documents.length && !loading">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <div class="row justify-content-center">
+                                    <div class="col-auto"><span class="warn-icon"><i class="fas fa-question"></i></span>
+                                    </div>
+                                    <div class="col-12 col-sm text-center text-sm-left">
+                                        <div class="paddingua10">
+                                            <p>{{'Common.Tips' | translate}}:</p>
+
+                                            <ul>
+                                                <li>{{'Documents.Tip1' | translate}}</li>
+                                                <li>{{'Documents.Tip2' | translate}}</li>
+                                                <li>{{'Documents.Tip3' | translate}}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </md-content>
+
+    </div>
+</md-content>
+
+
+<!--
+
+<div class="page">
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <h4 class="pull-left">{{title}}</h4>
+            <div class="pull-right">
+                <a href="{{'#/app/module/' + entityType + '?id=' + entityId}}" class="btn btn-sm btn-custom"><i
+                        class="fa fa-chevron-left"></i> {{'Common.Back' | translate}}</a>
+                <a href class="btn btn-sm btn-custom" data-template-url="view/app/documents/documentSearch.html"
+                   data-auto-close="1" data-placement="bottom" bs-popover><i class="fa fa-search"></i> {{'Common.Search'
+                    | translate}}</a>
+                <a href class="btn btn-sm btn-custom" data-template-url="view/app/documents/documentFilter.html"
+                   data-auto-close="1" data-placement="bottom" bs-popover><i class="fa fa-filter"></i> {{'Common.Filter'
+                    | translate}}</a>
+                <a href class="btn btn-sm btn-custom" data-template-url="view/app/documents/documentSort.html"
+                   data-auto-close="1" data-placement="bottom" bs-popover><i class="fa fa-sort-alpha-asc"></i>
+                    {{'Common.Sort' | translate}}</a>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+            <div class="empty-message" ng-if="documents.length < 1 &&!loading">{{'Documents.Message'|translate}}</div>
+            <div class="subpanel" ng-show="showDocumentForm" >
+                <h5 class="subpanel-heading">{{'Documents.AddDocument' | translate}}</h5>
+                <div class="subpanel-body">
+                    <div class="documents">
+                        <div document-form entity-id="entityId" entity-type="entityType" is-all="true" show="showDocumentForm"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="subpanel" ng-show="documents.length && !loading">
+                <h5 class="subpanel-heading">{{'Documents.DocumentList' | translate}}</h5>
+                <div class="subpanel-body">
+                    <div class="documents">
+                        <div document-list entity-id="entityId" entity-type="entityType" is-all="true" documents="documents" ></div>
+                    </div>
+                </div>
+            </div>
+            <div class="callout callout-info" ng-if="documents.length && !loading">
+                <p>{{'Common.Tips' | translate}}:</p>
+                <p> - {{'Documents.Tip1' | translate}}</p>
+                <p> - {{'Documents.Tip2' | translate}}</p>
+                <p> - {{'Documents.Tip3' | translate}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+-->

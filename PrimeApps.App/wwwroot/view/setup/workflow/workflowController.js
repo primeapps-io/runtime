@@ -1,0 +1,1 @@
+"use strict";angular.module("primeapps").controller("WorkflowController",["$rootScope","$scope","$filter","guidEmpty","WorkflowService",function(o,e,t,n,l){e.loading=!0;var r=function(){l.getAll().then(function(o){e.workflows=l.process(o.data),e.loading=!1})};r(),e["delete"]=function(o){l["delete"](o).then(function(){r()})}}]);

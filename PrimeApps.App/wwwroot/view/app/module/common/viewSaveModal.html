@@ -1,0 +1,98 @@
+<md-dialog flex="33">
+    <form ng-cloak class="disable-validation-msg">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h3>{{'View.SaveOptions' | translate}} </h3>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="closeLightBox()"><i class="fas fa-times"></i>
+                    <md-tooltip md-direction="bottom">{{'Common.Cancel' | translate}}</md-tooltip>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content">
+
+                <div class="form-group">
+                    <label>
+                        <span>  View Name </span>                   
+                    </label>
+                    <input type="text" name="view_name"
+                           ng-value="activeView['label_'+language] || activeView['name_'+language]" ng-model="viewName"
+                           class="k-textbox"/>
+
+                </div>
+<!--                Todo comming for saas-->
+<!--                <div class="col-12">-->
+<!--                    <ul class="list-unstyled list-inline">-->
+<!--                        <div class="form-group">-->
+<!--                            <li>-->
+<!--                                <span> {{'Common.Default' | translate}} <kendo-switch id="view-default"   k-ng-model="activeView.default"></kendo-switch></span>-->
+<!--                            </li>             -->
+<!--                            <li>-->
+<!--                                <span> {{'Common.EditableByUsers' | translate}} <kendo-switch id="view-editable" k-ng-model="activeView.editable"></kendo-switch></span>-->
+<!--                            </li>-->
+<!--                         -->
+<!--                        </div>-->
+<!--                    </ul>-->
+<!--                </div>-->
+                <div class="form-group">
+                    <label>{{'Template.Sharing' | translate}}</label>
+                    <ul class="list-unstyled">
+                        <li ng-if="!preview">
+                            <input type="radio" name="sharingType" id="me" class="k-radio" checked="checked"
+                                   ng-model="activeView.sharing_type" value="me">
+                            <label class="k-radio-label" for="me">{{'View.ShareMe' | translate}}</label>
+                        </li>
+                        <li>
+                            <input type="radio" ng-if="user.profile.has_admin_rights" name="sharingType" id="everybody"
+                                   class="k-radio"
+                                   ng-model="activeView.sharing_type" value="everybody">
+                            <label class="k-radio-label" for="everybody"> {{'View.ShareEveryone' | translate}}</label>
+                        </li>
+                        <li>
+                            <input type="radio" ng-if="user.profile.has_admin_rights" name="sharingType" id="custom"
+                                   class="k-radio"
+                                   ng-model="activeView.sharing_type" value="custom">
+                            <label class="k-radio-label" for="custom"> {{'View.ShareCustom' | translate}}</label>
+                        </li>            
+                        <li>
+                            <input type="radio"  name="profile" id="profile"
+                                   class="k-radio"
+                                   ng-model="activeView.sharing_type" value="profile">
+                            <label class="k-radio-label" for="profile"> {{'View.Profiles' | translate}}</label>
+                        </li>
+                    </ul>
+                </div>
+                <div class="form-group" ng-show="activeView.sharing_type === 'custom'">
+                    <label for="shares">{{'Setup.Modules.Sharing' | translate}}</label>
+                    <select id="shares" kendo-multi-select k-ng-model="activeView.shares"
+                            k-options="sharesOptions"
+                            data-placeholder="'{{'Common.MultiselectPlaceholder' | translate}}'"></select>
+                </div>      
+                <div class="form-group" ng-show="activeView.sharing_type === 'profile'">
+                    <label for="profiles">{{'Setup.Modules.Profile' | translate}}</label>
+                    <select id="profiles"  kendo-multi-select k-ng-model="activeView.profile"
+                            k-options="profilesOptions"
+                            data-placeholder="'{{'Common.MultiselectPlaceholder' | translate}}'"></select>
+                </div>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row" >
+            <md-button ng-if="(activeView.system_type !='system' || preview)  && activeView.id" ng-show="viewPermissions.modify" ng-click="SaveView('edit')" class="btn btn-primary" type="button" md-autofocus><i
+                    class="fas fa-save"></i>
+                {{'Common.Save' | translate}}
+            </md-button>           
+            <md-button ng-if="activeView.isNew" ng-show="viewPermissions.write" ng-click="SaveView('add')" class="btn btn-primary" type="button" md-autofocus><i
+                    class="fas fa-save"></i>
+                {{'Common.Save' | translate}}
+            </md-button>    
+            
+            <md-button ng-if="!activeView.isNew" ng-show="viewPermissions.write"  ng-click="SaveView('add')" class="btn btn-primary" type="button" md-autofocus><i
+                    class="fas fa-save"></i>
+                {{'Common.SaveAsNew' | translate}}
+            </md-button>
+            <span flex></span>
+
+        </md-dialog-actions>
+    </form>
+</md-dialog> 

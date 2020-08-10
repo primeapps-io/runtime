@@ -1,0 +1,85 @@
+﻿<div class="form-group" ng-if="field.type === 1">
+    <label for="{{field.key}}">
+        <span style="text-transform: capitalize;">{{ field.key}}</span>
+        <span class="label-right">
+<!--            <span class="required-label">{{'Common.Required' | translate}}</span>-->
+        </span>
+    </label>
+    <input type="text"
+           name="{{field.key}}"
+           id="{{field.key}}"
+           class="k-textbox"
+           ng-model="buttonsParametersData[field.key]"
+           maxlength="256"/>
+    <span class="k-invalid-msg" data-for="{{field.key}}"></span>
+</div>
+
+<div class="form-group" ng-if="field.type === 2">
+    <label for="{{field.key}}">
+        <span style="text-transform: capitalize;">{{ field.key}}</span>
+        <span class="label-right">
+        </span>
+    </label>
+    <textarea name="{{field.name}}"
+              id="{{field.name}}"
+              class="k-textbox"
+              ng-model="buttonsParametersData[field.key]"
+              rows="3"
+              maxlength="500"
+              auto-grow></textarea>
+    <span class="k-invalid-msg" data-for="{{field.name}}"></span>
+</div>
+
+<div class="form-group" ng-if="field.type === 5">
+    <label for="{{field.key}}">
+        <span style="text-transform: capitalize;">{{ field.key}}</span>
+        <span class="label-right">
+           
+        </span>
+    </label>
+    <input kendo-numeric-text-box
+           name="{{field.name}}"
+           id="{{field.name}}"
+           k-options="{{'numberOptionsButtons'}}"
+           ng-model="buttonsParametersData[field.key]"/>
+    <span class="k-invalid-msg" data-for="{{field.name}}"></span>
+</div>
+
+<div class="form-group" ng-if="field.type === 3">
+    <label for="{{field.key}}">
+        <span style="text-transform: capitalize;">{{ field.key}}</span>
+        <span class="label-right">
+           
+        </span>
+    </label>
+
+    <select id="{{field.name}}"
+            name="{{field.name}}"
+            class="form-control"
+            ng-model="buttonsParametersData[field.key]"
+            ng-options="o['label_' + tenantLanguage] as o['label_' + language] for o in picklistItems[field.key]['items']">
+        <option value="">{{'Common.Select' | translate}}</option>
+    </select>
+</div>
+
+<div class="form-group" ng-if="field.type === 4">
+    <label for="{{field.key}}">
+        <span style="text-transform: capitalize;">{{ field.key}}</span>
+        <span class="label-right">
+            
+        </span>
+    </label>
+    <ul class="list-unstyled">
+        <li ng-repeat="o in picklistItems[field.key]['items']">
+            <input id="{{field.name+o.id}}"
+                   class="k-radio"
+                   name="{{field.name}}"
+                   type="radio"
+                   ng-model="buttonsParametersData[field.key]"
+                   ng-value="o['label_' + tenantLanguage]">
+            <label class="k-radio-label" for="{{field.name+o.id}}">
+                {{o['label_' + language]}}
+            </label>
+        </li>
+    </ul>
+</div>

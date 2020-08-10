@@ -1,0 +1,110 @@
+<div class="modal setup-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form name="sectionForm" class="form-horizontal form-custom" ng-submit="saveSection(sectionForm); showAdvancedOptionsSection = false;" autocomplete="off" novalidate>
+                <div class="modal-header">
+                    <h4 class="modal-title">{{'Setup.Modules.EditSection' | translate}}</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" ng-class="{'has-error': sectionForm.$submitted && sectionForm.label.$invalid}">
+                        <label class="col-sm-4 required-field">* {{'Setup.Modules.SectionName' | translate}}:</label>
+                        <input type="text"
+                               name="label"
+                               class="form-control ng-animate-disabled col-sm-8"
+                               required
+                               maxlength="50"
+                               focus="true"
+                               ng-model="currentSection['label_' + language]">
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4">{{'Setup.Modules.ColumnCount' | translate}}:</label>
+                        <select
+                                name="dataType"
+                                class="form-control ng-animate-disabled col-sm-8"
+                                ng-model="currentSection.column_count"
+                                ng-change="changeSectionColumn(currentSection)"
+                                ng-options="o for o in [1,2]">
+                        </select>
+                    </div>
+                    <a href class="advanced-options-link" ng-click="showAdvancedOptionsSection = !showAdvancedOptionsSection">
+                        {{'Setup.Modules.AdvancedOptions' | translate}}
+                        <i class="fa fa-caret-right" ng-if="!showAdvancedOptionsSection"></i>
+                        <i class="fa fa-caret-down" ng-if="showAdvancedOptionsSection"></i>
+                    </a>
+                    <div class="advanced-options" ng-show="showAdvancedOptionsSection">
+                        <div class="form-group">
+                            <label class="col-sm-4">{{'Setup.Modules.CustomLabel' | translate}}: </label>
+                            <input type="text"
+                                   name="customLabel"
+                                   maxlength="1000"
+                                   class="form-control ng-animate-disabled col-sm-8"
+                                   ng-model="currentSection.custom_label"/>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-4">{{'Setup.Modules.Display' | translate}}:</label>
+                            <div class="col-sm-8" style="padding-left: 0;">
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" ng-model="currentSection.display_detail"> {{'Setup.Modules.DisplayDetail' | translate}}
+                                </label>
+                            </div>
+                            <div class="col-sm-12">
+                                <a href class="advanced-options-link" style="margin-top: 25px;"
+                                   ng-click="$parent.$parent.showPermissions = !$parent.$parent.showPermissions">
+                                    {{'Setup.Modules.Permissions' | translate}}
+                                    <i class="fa fa-caret-right" ng-if="!$parent.showPermissions"></i>
+                                    <i class="fa fa-caret-down" ng-if="$parent.showPermissions"></i>
+                                </a>
+                                <div class="advanced-options" style="margin-bottom: 20px;"
+                                     ng-show="$parent.$parent.showPermissions">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>{{'Setup.Modules.Profile' | translate}}</th>
+                                            <th class="text-center">{{'Setup.Modules.PermissionFull' | translate}}</th>
+                                            <th class="text-center">{{'Setup.Modules.PermissionReadOnly' | translate}}
+                                            </th>
+                                            <th class="text-center">{{'Setup.Modules.PermissionNone' | translate}}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="permission in currentSection.permissions | orderBy:'profile_id' ">
+                                            <td>{{ permission.profile_name }}</td>
+                                            <td class="text-center user-not-select"><input type="radio"
+                                                                                           ng-model="permission.type"
+                                                                                           value="full"/></td>
+                                            <td class="text-center user-not-select"><input type="radio"
+                                                                                           ng-model="permission.type"
+                                                                                           value="read_only"
+                                                                                           ng-disabled="permission.profile_is_admin"
+                                                                                           title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (('Setup.Modules.PermissionDisabledInfo2' | translate))}}"/>
+                                            </td>
+                                            <td class="text-center user-not-select"><input type="radio"
+                                                                                           ng-model="permission.type"
+                                                                                           value="none"
+                                                                                           ng-disabled="permission.profile_is_admin"
+                                                                                           title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (('Setup.Modules.PermissionDisabledInfo2' | translate) )}}"/>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="sectionForm.$submitted && sectionForm.$invalid">
+                        <div class="col-sm-12">
+                            <div class="callout callout-danger">
+                                <p ng-if="sectionForm.$error.required">{{'Setup.Modules.RequiredError' | translate}}:</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom" ng-click="cancelSection(); showAdvancedOptionsSection = false;">{{'Common.Cancel' | translate}}</button>
+                    <button type="submit" class="btn btn-w-md btn-primary"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
