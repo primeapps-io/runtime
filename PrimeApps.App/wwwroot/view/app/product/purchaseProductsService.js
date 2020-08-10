@@ -1,1 +1,0 @@
-"use strict";angular.module("primeapps").factory("PurchaseProductsService",["$rootScope","$http","$filter","config",function(){return{}}]);

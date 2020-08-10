@@ -1,1 +1,0 @@
-"use strict";angular.module("primeapps").controller("PaymentController",["$scope","PaymentService",function(t,a){a.getPayment().then(function(a){a=a.data,a.HasAdjustment&&(a.CampaignCode=null),a.CardNumberMask=a.LastFourDigitsOfCard?"************"+a.LastFourDigitsOfCard:"",t.payment=a})}]);

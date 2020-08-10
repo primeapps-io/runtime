@@ -1,1 +1,0 @@
-"use strict";angular.module("primeapps").factory("GeneralSettingsService",["$http","config",function(t,e){return{getByKey:function(r,n,i){return t.get(e.apiUrl+"settings/get_by_key/"+r+"/"+n+(i?"?userId="+i:""))},create:function(r){return t.post(e.apiUrl+"settings/create",r)},update:function(r){return t.put(e.apiUrl+"settings/update/"+r.id,r)}}}]);

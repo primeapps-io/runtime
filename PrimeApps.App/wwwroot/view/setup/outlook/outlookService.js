@@ -1,1 +1,0 @@
-"use strict";angular.module("primeapps").factory("OutlookService",["$http","config",function(t,e){return{getSettings:function(){return t.get(e.apiUrl+"outlook/get_settings")},saveSettings:function(o){return t.post(e.apiUrl+"outlook/save_settings",o)},createMailModule:function(){return t.post(e.apiUrl+"outlook/create_mail_module",{})}}}]);

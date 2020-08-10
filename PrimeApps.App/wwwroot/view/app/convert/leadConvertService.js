@@ -1,1 +1,0 @@
-"use strict";angular.module("primeapps").factory("LeadConvertService",["$rootScope","$http","config","$filter","helper",function(e,r,t){return{convert:function(e){return r.post(t.apiUrl+"convert/convert_lead",e)}}}]);

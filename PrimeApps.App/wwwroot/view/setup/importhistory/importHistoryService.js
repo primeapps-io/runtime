@@ -1,1 +1,0 @@
-"use strict";angular.module("primeapps").factory("ImportHistoryService",["$http","$filter","config",function(r,t,e){return{find:function(t){return r.post(e.apiUrl+"data/import_find",t)},revert:function(t){return r["delete"](e.apiUrl+"data/import_revert/"+t)}}}]);

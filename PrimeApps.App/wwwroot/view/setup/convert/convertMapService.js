@@ -1,1 +1,0 @@
-"use strict";angular.module("primeapps").factory("ConvertMapService",["$http","$filter","config",function(e,t,n){return{createMapping:function(t){return e.post(n.apiUrl+"convert/create_mapping",t)},deleteMapping:function(t){return e.post(n.apiUrl+"convert/delete_mapping",t)},getMappings:function(t){return e.get(n.apiUrl+"convert/get_mappings/"+t)}}}]);

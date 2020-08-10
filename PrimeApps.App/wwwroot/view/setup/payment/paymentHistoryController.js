@@ -1,1 +1,0 @@
-"use strict";angular.module("primeapps").controller("PaymentHistoryController",["$scope","PaymentService",function(t,e){t.loading=!0,e.getPaymentHistory().then(function(n){t.invoiceList=e.processPaymentHistory(n.data),t.loading=!1})}]);

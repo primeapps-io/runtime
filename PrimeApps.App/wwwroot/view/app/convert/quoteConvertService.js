@@ -1,1 +1,0 @@
-"use strict";angular.module("primeapps").factory("QuoteConvertService",["$rootScope","$http","config","$filter","helper",function(t,e,r){return{convert:function(t){return e.post(r.apiUrl+"convert/convert_quote",t)}}}]);

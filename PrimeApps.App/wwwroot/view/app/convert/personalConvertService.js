@@ -1,1 +1,0 @@
-"use strict";angular.module("primeapps").factory("PersonalConvertService",["$rootScope","$http","config","$filter","helper",function(r,e,t){return{convert:function(r){return e.post(t.apiUrl+"convert/convert_candidate",r)}}}]);
