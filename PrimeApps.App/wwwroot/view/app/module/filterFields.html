@@ -70,7 +70,7 @@
 <div class="form-group" ng-if="fieldskey[filter.field].data_type === 'date' && filter.value.value==='costume'">
     <input kendo-date-picker
            class="width100"
-           ng-model="filter.value"
+           ng-model="filter.costumeDate"
            k-on-change="viewFiltere(filter);"/>
 </div>
 
@@ -128,7 +128,7 @@
 
 <div class="form-group accept" ng-if="fieldskey[filter.field].data_type === 'checkbox'">
     <input type="checkbox"
-           id="{{filter.key}}"           
+           id="{{filter.key}}"
            class="k-checkbox"
            ng-model="filter.value"
            ng-change="viewFiltere(filter);">
@@ -187,4 +187,3 @@
             k-ng-model="filter.value"
     ></select>
 </div>
- 
