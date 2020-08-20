@@ -85,7 +85,7 @@
                                 <div ng-if="actionButtons.length > 0 && toolbarOptions.items.length > 0 && id" flex class="action-btn" kendo-toolbar k-options="toolbarOptions"></div>
                                 <div class="ml-auto d-inline-flex">
                                     <div ng-show="id" class="d-inline-flex">
-                                        
+
                                         <!--<md-button class="md-icon-button btn btn-secondary hide-on-m" ng-disabled="submitting || fileLoadingCounter>0 || loading"
                                                    ui-sref="app.moduleList({type:module.name})"
                                                    aria-label="{{backToText}}">
@@ -93,8 +93,8 @@
                                             <md-tooltip md-direction="bottom">
                                                 {{backToText}}
                                             </md-tooltip>
-                                        </md-button>-->    
-                                        
+                                        </md-button>-->
+
                                         <md-button class="md-icon-button btn btn-secondary hide-on-m" ng-disabled="submitting || fileLoadingCounter>0 || loading"
                                                    ng-click="getRecord(true)"
                                                    aria-label="{{'Common.Refresh' | translate}}">
@@ -165,7 +165,7 @@
                     <div class="container-fluid paddingua20">
                         <section class="whitebox collapsible"
                                  ng-repeat="section in module.sections | orderBy:'order'"
-                                 ng-show="!section.hidden && (id && (hasPermission(type, operations.modify, record) || hasPermission(type, operations.read, record)) || (!id && hasPermission(type, operations.write, record))) && hasSectionDisplayPermission(section) && (tab === 'general' || !tabconfig)">
+                                 ng-if="!section.hidden && (id && (hasPermission(type, operations.modify, record) || hasPermission(type, operations.read, record)) || (!id && hasPermission(type, operations.write, record))) && hasSectionDisplayPermission(section) && (tab === 'general' || !tabconfig)">
                             <div class="collapsible-head" id="{{'heading'+section.id}}">
                                 <h5>
                                     {{!section.custom_label ? section['label_' + language] : section.custom_label}}

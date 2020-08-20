@@ -305,23 +305,25 @@
     </select>
 </div>
 
-<div class="form-group accept"
-     ng-if="field.data_type === 'checkbox' && !field.custom_label && !field.hidden && (preview ? true : field.name === 'is_sample'? false : true )">
-    <input type="checkbox"
-           id="{{field.name}}"
-           name="{{field.name}}"
-           class="k-checkbox"
-           ng-disabled="field.validation.readonly || (id && !field.editable) || (record.freeze && !isAdmin)"
-           ng-model="record[field.name]"
-           tabindex="{{field.order}}"
-           ng-required="field.validation.required"
-           ng-change="fieldValueChange(field);">
-    <label ng-show="!field.custom_label && field.show_label" class="k-checkbox-label" for="{{field.name}}" ng-class="{'required':field.validation.required}">
-        <span>{{ field['label_' + language] }}</span>
-        <span class="label-right">
+<div class="form-group"  ng-if="field.data_type === 'checkbox' && !field.custom_label && !field.hidden && (preview ? true : field.name === 'is_sample'? false : true )">
+   <div class="custom-control custom-checkbox">
+       <input type="checkbox"
+              id="{{field.name}}"
+              name="{{field.name}}"
+              ng-disabled="field.validation.readonly || (id && !field.editable) || (record.freeze && !isAdmin)"
+              ng-model="record[field.name]"
+              tabindex="{{field.order}}"
+              class="custom-control-input"
+              ng-required="field.validation.required"
+              ng-change="fieldValueChange(field);">
+       <label ng-show="!field.custom_label && field.show_label" class="custom-control-label" for="{{field.name}}" ng-class="{'required':field.validation.required}">
+           <span>{{ field['label_' + language] }}</span>
+           <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
-    </label>
+       </label>
+   </div>
+
 </div>
 
 <div class="form-group"

@@ -13,11 +13,11 @@
             <md-tooltip md-directtion="bottom"> {{'Common.Revert' | translate}}</md-tooltip>
         </md-button>
         <md-button
-                ng-if="activeView.system_type !='system' || !activeView.default "
+                ng-if="activeView.system_type !='system'"
                 ng-show="viewPermissions.remove"
                 class="md-icon-button btn btn-secondary" aria-label="Delete" ng-click="deleteView($event)"><i class="fas fa-trash"></i>
             <md-tooltip md-directtion="bottom"> {{'Common.Delete' | translate}}</md-tooltip>
-        </md-button>   
+        </md-button>
         <md-button ng-if="(viewPermissions.write || viewPermissions.modify)" class="md-icon-button btn btn-primary" ng-disabled="isDirty" ng-click="saveModal(filterForm)" aria-label="Save"><i
                 class="fas fa-save"></i>
             <md-tooltip md-directtion="bottom">{{'Common.Save' | translate}} </md-tooltip>
@@ -26,7 +26,7 @@
 </md-toolbar>
 
 <md-content flex>
-    <form class="container-fluid paddingua30 disable-validation-msg" kendo-validator="filterForm" 
+    <form class="container-fluid paddingua30 disable-validation-msg" kendo-validator="filterForm"
           autocomplete="off"
           novalidate>
         <div class="title">
@@ -83,18 +83,18 @@
 
 
         <div class="title" ng-if="activeView.view_type=='report'">
-            <h5>{{'View.ReportSettings' | translate}}</h5> 
+            <h5>{{'View.ReportSettings' | translate}}</h5>
         </div>
-        <section ng-if="activeView.view_type=='report'" class="whitebox padding20 filter-list">           
+        <section ng-if="activeView.view_type=='report'" class="whitebox padding20 filter-list">
                 <div class="form-group">
                     <label for="reporttype">
                         <span>   {{'Report.ReportType' | translate}} </span>
                     </label>
-                    <select id="reporttype" 
-                            k-options="reportTypeOptions" 
+                    <select id="reporttype"
+                            k-options="reportTypeOptions"
                             ng-model="activeView.report_type"
                             ng-change="reportTypeChange()"
-                            kendo-drop-down-list>                        
+                            kendo-drop-down-list>
                     </select>
                 </div>
                 <!--Report Group By Field Selection -->
@@ -105,7 +105,7 @@
                             <span class="required-label">{{'Common.Required' | translate}}</span>
                         </span>
                     </label>
-                    <select                           
+                    <select
                             k-option-label="'{{'Module.SelectField' | translate}}'"
                             k-data-text-field="'label_{{language}}'"
                             k-data-value-field="'name'"
@@ -127,16 +127,16 @@
                             k-data-value-field="'name'"
                             k-data-source="module.fields"
                             kendo-drop-down-list ng-model="reportModel.sort_field"></select>
-                </div> 
+                </div>
 
         </section>
-        <!--  Calculation Fields-->       
+        <!--  Calculation Fields-->
         <div class="title" ng-show="activeView.view_type ==='report' && activeView.report_type !=='tabular'" >
             <h5>{{ 'Report.CalculationFields' | translate}}</h5>
             <span> {{'View.TotalCount' | translate}} <kendo-switch id="total-count" k-on-change="changeTotalCount(totalCount)"  k-ng-model="totalCount"></kendo-switch></span>
         </div>
         <!--    Calculation Fields-->
-        <div ng-if="(activeView.report_type==='summary' || activeView.report_type==='single')"             
+        <div ng-if="(activeView.report_type==='summary' || activeView.report_type==='single')"
              ng-class="totalCount ? 'k-state-disabled' :''"
              class="whitebox padding20 filter-list">
             <section class="row">
@@ -171,7 +171,7 @@
         <div class="title" ng-if="activeView.report_type ==='summary'">
             <h5> {{'View.ChartSettings' | translate}}  </h5>
         </div>
-        <section class="whitebox padding20 filter-list"  ng-if="activeView.report_type ==='summary'">            
+        <section class="whitebox padding20 filter-list"  ng-if="activeView.report_type ==='summary'">
             <div class="form-group">
                 <label>
                     <span>   {{'Report.Chart.Type' | translate}} </span>
@@ -204,7 +204,7 @@
                          <span class="required-label">{{'Common.Required' | translate}}</span>
                     </span>
                 </label>
-                <input type="text" id="yaxisname" name="yaxisname" ng-required="true" ng-model="reportSummary.chart.yaxisname" class="k-textbox"/>                
+                <input type="text" id="yaxisname" name="yaxisname" ng-required="true" ng-model="reportSummary.chart.yaxisname" class="k-textbox"/>
             </div>
         </section>
 
@@ -223,7 +223,7 @@
                 </label>
                 <select id="icon"
                         ng-model="activeView.icon"
-                        kendo-drop-down-list 
+                        kendo-drop-down-list
                         k-options="selectIconOptions"
                         ng-required="true"
                 >
@@ -239,8 +239,8 @@
                         k-options="colorPaletOptions"
                         ng-model="activeView.color"
                        name="colorpicker"/>
-            </div> 
-        </section> 
+            </div>
+        </section>
         <div class="title">
             <h5> {{'View.ChooseYourCriterion' | translate}}   </h5>
             <small class="modified">{{activeView.filter_logic}}</small>
@@ -248,9 +248,9 @@
         <div class="whitebox padding20">
             <query-builder viewfilter="viewFilter" fieldskey="fieldskey" module="module"  group="filtera.group"></query-builder>
         </div>
-        
+
         <!--{{filtera}}-->
-       
+
         <!--  Calculation Fields Tabular-->
 
         <div class="title" ng-if="activeView.view_type==='report' &&  activeView.report_type==='tabular'">
@@ -310,7 +310,7 @@
                             <div class="col-12 col-sm text-center text-sm-left"><div class="paddingua10">{{'View.SelectedFieldsMobileInfo' | translate}}</div></div>
                         </div>
                     </div>
-                   
+
                 </div>
             </div>
         </div>
