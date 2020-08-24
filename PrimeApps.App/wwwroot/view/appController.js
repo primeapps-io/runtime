@@ -377,11 +377,18 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         };
 
         $scope.openSubMenu = function (item, arrayData) {
+
+            if(item.active){
+                item.active = false;
+                return  false;
+            }
+
             if (arrayData != undefined && arrayData[0] != undefined) {
                 for (var i = 0; i < arrayData.length; i++) {
                     arrayData[i].active = false;
                 }
             }
+
             item.active = true;
             $scope.administrationMenuActive = false;
 
