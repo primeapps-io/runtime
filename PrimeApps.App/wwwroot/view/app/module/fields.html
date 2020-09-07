@@ -305,7 +305,7 @@
     </select>
 </div>
 
-<div class="form-group"  ng-if="field.data_type === 'checkbox' && !field.custom_label && !field.hidden && (preview ? true : field.name === 'is_sample'? false : true )">
+<div class="form-group"  ng-if="field.data_type === 'checkbox' && !field.hidden && (preview ? true : field.name === 'is_sample'? false : true )">
    <div class="custom-control custom-checkbox">
        <input type="checkbox"
               id="{{field.name}}"
@@ -316,23 +316,16 @@
               class="custom-control-input"
               ng-required="field.validation.required"
               ng-change="fieldValueChange(field);">
-       <label ng-show="!field.custom_label && field.show_label" class="custom-control-label" for="{{field.name}}" ng-class="{'required':field.validation.required}">
-           <span>{{ field['label_' + language] }}</span>
+       <label ng-show="field.show_label" class="custom-control-label" for="{{field.name}}" ng-class="{'required':field.validation.required}">
+           <span ng-if="!field.custom_label">{{ field['label_' + language] }}</span>
+           <span ng-if="field.custom_label">{{ field.custom_label }}</span>
            <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
        </label>
    </div>
 
-</div>
-
-<div class="form-group"
-     ng-if="field.data_type === 'checkbox' && field.custom_label && !field.hidden">
-    <span class="ng-animate-disabled"
-          tabindex="{{cell.field.order}}"
-          id="{{field.name}}"
-          ng-model="field.custom_label">{{field.custom_label}}</span>
-</div>
+</div> 
 
 <div class="form-group" ng-if="field.data_type === 'text_single' && field.combination && !field.show_lock && !field.hidden && id">
     <label for="{{field.name}}"
