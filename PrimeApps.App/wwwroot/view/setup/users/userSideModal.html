@@ -120,7 +120,7 @@
                         </label>
                         <input type="text" id="password" name="password" class="form-control" ng-model="userPassword" value="{{userPassword}}" ng-readonly="true" required />
                     </div>
-                    <md-button type="submit" class="btn btn-primary" ng-disabled="hideSendEmailToUser">{{'Setup.Office.SendEmail' | translate}} <i class="fas fa-paper-plane"></i></md-button>
+                    <md-button type="submit" class="btn btn-primary" ng-disabled="hideSendEmailToUser" ng-if="!preview">{{'Setup.Office.SendEmail' | translate}} <i class="fas fa-paper-plane"></i></md-button>
                 </div>
             </div>
         </md-content>
