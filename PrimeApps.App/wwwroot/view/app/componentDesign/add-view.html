@@ -21,7 +21,7 @@
 </md-toolbar>
 
 <md-content flex>
-    <div class="container-fluid paddingua30">
+    <div class="container-fluid paddingua20">
         <div class="title">
             <h5>{{'View.ViewType' | translate}}</h5>
         </div>
@@ -78,7 +78,7 @@
         <div class="title" ng-if="activeView.viewType=='report'">
             <h5>{{'View.ReportSettings' | translate}}</h5>
         </div>
-        <div ng-if="activeView.viewType=='report' || activeView.report_type" class="whitebox padding20 filter-list">
+        <div ng-if="activeView.viewType=='report' || activeView.report_type" class="whitebox padding20">
             <section>
                 <div class="form-group">
                     <label for="reporttype">
@@ -131,7 +131,7 @@
 
         <!--    Calculation Fields-->
         <div ng-if="activeView.report_type==='summary' || activeView.report_type==='single'"
-             class="whitebox padding20 filter-list">
+             class="whitebox padding20">
             <section class="row">
                 <div class="col-12 col-sm-6">
                     <select id="calculationfields"
@@ -165,7 +165,7 @@
         <div class="title" ng-if="activeView.report_type ==='summary'">
             <h5> {{'View.ChartSettings' | translate}} </h5>
         </div>
-        <section class="whitebox padding20 filter-list"
+        <section class="whitebox padding20"
                  ng-if="activeView.report_type ==='summary'">
 
             <div class="form-group">
@@ -201,7 +201,7 @@
         <div class="title" ng-if="activeView.report_type ==='single'">
             <h5> {{'Report.Widget.Name' | translate}} </h5>
         </div>
-        <section class="whitebox padding20 filter-list"
+        <section class="whitebox padding20"
                  ng-if="activeView.viewType==='report' && activeView.report_type ==='single'">
 
             <div class="form-group">
@@ -245,7 +245,7 @@
 
         <!--    Calculation Fields Tabular -->
 
-        <div ng-if="activeView.report_type==='tabular'" class="whitebox padding20 filter-list">
+        <div ng-if="activeView.report_type==='tabular'" class="whitebox padding20">
             <section class="row" ng-repeat="aggregation in activeView.aggregations">
                 <div class="col-12 col-sm-6">
                     <input type="text" ng-disabled="true" value="{{fieldskey[aggregation.field].label }}"

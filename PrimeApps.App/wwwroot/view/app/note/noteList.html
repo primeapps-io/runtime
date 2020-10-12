@@ -7,7 +7,7 @@
     </form>
 
     <div class="note row row5" ng-repeat="note in $parent.notes | filter: {deleted:'!true'}">
-        <div class="col-auto"><span class="note-profile-img"><img src="images/no-profile-image.png" ng-src="{{note.created_by.picture ? note.created_by.picture : 'images/no-profile-image.png'}}" /></span></div>
+        <div class="col-auto"><span class="note-profile-img"><img src="images/no-profile-image.png" ng-src="{{note.created_by.picture ? blobUrl+'/'+ note.created_by.picture : 'images/no-profile-image.png'}}" /></span></div>
         <div class="col">
             <div class="note-head d-flex justify-content-between align-items-center">
                 <h5>{{note.created_by.full_name}} <small class="note-time">{{note.created_at | relativeTime}}</small></h5>
@@ -51,7 +51,7 @@
             </form>
 
             <div class="note row row5" ng-repeat="subNote in note.notes | filter: {deleted:'!true'} | orderBy:'created_at':true | limitTo:(note.subNoteLimit || 2)" ng-show="note.notes">
-                <div class="col-auto"><span class="note-profile-img"><img src="images/no-profile-image.png" ng-src="{{subNote.created_by.picture ? subNote.created_by.picture : 'images/no-profile-image.png'}}" /></span></div>
+                <div class="col-auto"><span class="note-profile-img"><img src="images/no-profile-image.png" ng-src="{{subNote.created_by.picture ? blobUrl+'/'+  subNote.created_by.picture : 'images/no-profile-image.png'}}" /></span></div>
                 <div class="col">
                     <div class="note-head d-flex justify-content-between align-items-center">
                         <h5>{{subNote.created_by.full_name}} <small class="note-time">{{subNote.created_at | relativeTime}}</small></h5>

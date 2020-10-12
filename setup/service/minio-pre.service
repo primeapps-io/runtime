@@ -10,7 +10,7 @@ Type=simple
 Restart=always
 RestartSec=1
 User={{USER}}
-ExecStart={{PROGRAMS}}/minio/minio server --address :9004 {{DATA}}/minio_pre
+ExecStart={{PROGRAMS}}/minio/minio server --address :9004 {{DATA}}/minio_pre{1...4}
 
 [Install]
 WantedBy=multi-user.target

@@ -3,7 +3,7 @@
   "private": true,
   "description": "PrimeApps App",
   "devDependencies": {
-    "@progress/kendo-theme-bootstrap": "4.3.5",
+    "@progress/kendo-theme-bootstrap": "4.19.0",
     "angular-material": "^1.1.19",
     "gulp": "3.8.11",
     "gulp-bundle-assets": "2.29.0",

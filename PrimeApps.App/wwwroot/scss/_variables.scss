@@ -62,8 +62,8 @@ $font-size-base:              .875rem; // Assumes the browser default, typically
 $font-size-lg:                1rem;
 $font-size-sm:                .75rem;
 
-$input-btn-padding-y:         .375rem !default;
-$input-btn-padding-x:         1rem !default;
+$input-btn-padding-y:         .5rem !default;
+$input-btn-padding-x:         .75rem !default;
 $input-btn-padding-y-sm:      .25rem !default;
 $input-btn-padding-x-sm:      .75rem !default;
 $input-btn-padding-y-lg:      .5rem !default;
@@ -75,7 +75,7 @@ $input-disabled-bg: $input-bg;
 $input-border-color: $input-bg;
 $input-btn-focus-width: 2px;
 $border-width: 1px;
-$input-border-width: 2px;
+$input-border-width: 1px;
 $input-default-width: 100%;
 $disabled-opacity: 0.5;
 $btn-disabled-opacity: 0.5;
@@ -107,7 +107,21 @@ $notification-error-border: $error;
 $list-item-padding-x: $input-btn-padding-x;
 $list-item-padding-y: $input-btn-padding-y;
 
-  
+
+$z-index-toast: 105 !default;
+$z-index-tooltip: 100 !default;
+$z-index-menu: 100 !default;
+$z-index-calendar-pane: 100 !default;
+$z-index-select: 90 !default;
+$z-index-dialog: 80 !default;
+$z-index-bottom-sheet: 70 !default;
+$z-index-scroll-mask: 50 !default;
+$z-index-scroll-mask-bar: 65 !default;
+$z-index-sidenav: 60 !default;
+$z-index-backdrop: 50 !default;
+$z-index-fab: 20 !default;
+$z-index-progress-circular: 2 !default; // Used to fix animation bug in Chrome
+
 
 
 /// Material Design Variables ///

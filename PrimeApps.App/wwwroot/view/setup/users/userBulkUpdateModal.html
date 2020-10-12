@@ -14,7 +14,6 @@
                         <label  for="field" class="required"></label>
                         <select id="field"
                                 name="field"
-                                class="form-control"
                                 required
                                 kendo-drop-down-list
                                 k-options="fieldOptions"
@@ -26,7 +25,6 @@
                     <div class="form-group" ng-if="field.value === 'profile' || field.value === 'role'">
                         <label for="profile" class="required"></label>
                         <select kendo-drop-down-list
-                                class="form-control"
                                 id="profile"
                                 name="profile"
                                 k-options="{{field.value}}Options"

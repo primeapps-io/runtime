@@ -1,4 +1,4 @@
-<md-content flex style="height: 100%;">
+<md-content flex style="height: 100%;" class="all-content">
     <div layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
         <md-toolbar md-scroll-shrink ng-class="views.length >0 ?  'with-subheader' :''">
             <div class="md-toolbar-tools">
@@ -11,7 +11,7 @@
                             class="fas fa-question-circle"></i>
                         <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
                     </md-button>
-                    <md-button class="md-icon-button enlarge d-none d-lg-inline-block hide-on-m" ng-click="toggleFullLeftMenu()"
+                    <!--<md-button class="md-icon-button enlarge d-none d-lg-inline-block hide-on-m" ng-click="toggleFullLeftMenu()"
                                aria-label="{{'Common.FullScreen' | translate}}">
                         <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg"
                              xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 36 36"
@@ -23,14 +23,14 @@
                         </svg>
                         <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
                         <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
-                    </md-button>
+                    </md-button>-->
                 </div>
                 <span class="show-on-m" flex></span>
                 <div ng-if="toolbarOptions.items.length > 0" flex class="action-btn" kendo-toolbar
                      k-options="toolbarOptions"></div>
                 <div class="ml-auto d-inline-flex">
                     <md-menu md-position-mode="target-right target"  ng-if="(user.profile.export_data && hasPermission(type, operations.read) ) || (hasPermission(type, operations.write) && user.profile.import_data )">
-                    <md-button class="md-icon-button btn btn-secondary"
+                        <md-button class="md-icon-button btn btn-secondary"
                                    aria-label="{{'Module.Export' | translate }} - {{'Module.Import' | translate }}"
                                    ng-click="$mdMenu.open()">
                             <i class="fas fa-database"></i>
@@ -56,10 +56,8 @@
                         </md-menu-content>
                     </md-menu>
 
-                    <md-button ng-click="filterModalOpen()" ng-if="activeView && views.length>0" class="md-icon-button btn btn-secondary filter-button"
-                               aria-label="Filter">
+                    <md-button ng-mouseover="filterModalOpen()" ng-if="activeView && views.length>0" class="show-on-m md-icon-button btn btn-secondary filter-button" aria-label="Filter">
                         <i class="fas fa-sliders-h"></i>
-
                         <span class="filter-badge" ng-if="activeView.filters.length>0">{{activeView.filters.length}}</span>
                         <md-tooltip md-direction="bottom"> {{'View.ViewSettings' | translate }}</md-tooltip>
                     </md-button>
@@ -70,7 +68,7 @@
                         <i class="fas fa-plus"></i>
                         <md-tooltip md-direction="bottom">{{'Common.AddNew' | translate }}</md-tooltip>
                     </md-button>
-                </div> 
+                </div>
             </div>
         </md-toolbar>
 
@@ -83,12 +81,12 @@
                                 <span>{{item['label_' + language]}}</span>
                             </div>
                         </md-tab-label>
-                    </md-tab> 
+                    </md-tab>
 
                 </md-tabs>
             </md-subheader>
             <div ng-if="loading" id="inside-loader" ><div class="spin"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div></div>
-            <div ng-show="!loading" class="container-fluid paddingua20">
+            <div ng-show="!loading" class="container-fluid paddingua20 position-relative pr-view-settings">
                 <help-page module-id="module.id"></help-page>
                 <div class="help-page align-items-center" ng-if="show">
                     <div class="alert alert-secondary" role="alert" ng-bind-html="helpTemplatesModal.template"></div>
@@ -120,7 +118,7 @@
                                     {{'Common.Forbidden' | translate}}
                                 </div></div>
                             </div>
-                        </div>             
+                        </div>
                     </div>
                 </div>
 
@@ -128,14 +126,14 @@
                 <div class="whitebox table-view" ng-if="activeView.view_type ==='grid' || activeView.report_type==='tabular'">
                     <!--<div class="grid-top">
                         <div class="search-box">
-                            
+
                                 <div class="search-box-input">
                                     <input type="text" id="grid-search{{relatedModule.id}}" class="form-control" placeholder="Search..."
                                            aria-label="Search" aria-describedby="grid-search">
                                     <i class="fas fa-search"></i>
                                 </div>
                                 <i class="info-icon fas fa-info-circle"><md-tooltip md-direction="right">You can search in these fields:  First Name, Company Name</md-tooltip></i>
-                            
+
                         </div>
                         <div>
                             <md-button class="btn btn-secondary md-icon-button" ng-click="refreshGrid()"><i
@@ -144,14 +142,14 @@
                             </md-button>
                         </div>
                     </div>-->
-                    
+
                     <kendo-grid class="grid-theme table-responsive" k-scope-field="grid"
                                 id="kendo-grid" k-rebind="mainGridOptions"
                                 k-options="mainGridOptions">
                     </kendo-grid>
 
                 </div>
-                <div ng-if="activeView.report_type==='summary' || activeView.report_type==='single'">
+                <div ng-if="activeView.view_type==='report'&& activeView.report_type==='summary' || activeView.report_type==='single'">
                     <div ng-if="activeView.report_type==='summary'" >
                         <div class="whitebox p-2">
                             <div class="chart-wrapper">
@@ -198,7 +196,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        
+
                     </div>
                     <div class="new-widgets" ng-if="activeView.view_type ==='report' && activeView.report_type==='single'">
                         <div class="widget ">
@@ -218,7 +216,18 @@
                         </div>
                     </div>
                 </div>
-
+                <md-button ng-mouseover="filterModalOpen()" ng-if="activeView && views.length>0" class="btn btn-primary filter-button filter-button2 hide-on-m" aria-label="Filter">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>{{'View.ViewSettings' | translate }} <span ng-if="activeView.filters.length>0"> ({{activeView.filters.length}})</span></span>
+                </md-button>
+                <div  ng-if="activeView.view_type==='calendar'">
+                    <div class="row">
+                        <div kendo-scheduler k-options="calendarOptions" k-rebind="calendarOptions" id="viewCalendar">
+                            <span k-event-template class='custom-event'>{{dataItem[primaryField]}}</span>
+                            <div k-all-day-event-template class='custom-all-day-event'>{{dataItem[primaryField]}}</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </md-content>
         <md-fab-speed-dial class="md-fab-bottom-right" ng-show="selectedRows.length > 0" md-direction="up">
@@ -253,7 +262,9 @@
             </md-fab-actions>
         </md-fab-speed-dial>
     </div>
+
 </md-content>
+
 
 <md-sidenav ng-show="sideinclude" class="md-sidenav-right md-whiteframe-2dp" md-component-id="sideModal"
             md-is-locked-open="isDocked &&  $mdMedia('gt-lg')">

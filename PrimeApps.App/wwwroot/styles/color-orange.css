@@ -1,6 +1,10 @@
 a:hover {
   color: #FF9D00; }
 
+.btn-primary {
+  background-color: #FF9D00;
+  border-color: #FF9D00; }
+
 md-content.scroll-primary::-webkit-scrollbar-track {
   background-color: #FF9D00; }
 
@@ -8,7 +12,11 @@ md-content.scroll-primary::-webkit-scrollbar {
   background-color: #FF9D00; }
 
 .btn.k-primary, .k-button.k-primary {
-  background-color: #FF9D00; }
+  background-color: #FF9D00;
+  border-color: #FF9D00; }
+  .btn.k-primary:hover, .btn.k-primary:visited, .btn.k-primary:focus, .btn.k-primary.md-focused, .k-button.k-primary:hover, .k-button.k-primary:visited, .k-button.k-primary:focus, .k-button.k-primary.md-focused {
+    background-color: #FF9D00 !important;
+    border-color: #FF9D00; }
 
 .btn.md-button, .k-button.md-button {
   background-color: #FF9D00; }
@@ -106,13 +114,16 @@ header .accountbar > md-menu > button {
 .k-radio:focus:not(:checked) ~ .k-radio-label::before {
   border-color: #FF9D00; }
 
-.form-control:hover, .form-control:focus, .k-autocomplete:hover, .k-autocomplete:focus, .k-dateinput-wrap:hover, .k-dateinput-wrap:focus, .k-dropdown-wrap:hover, .k-dropdown-wrap:focus, .k-picker-wrap:hover, .k-picker-wrap:focus, .k-multiselect-wrap:hover, .k-multiselect-wrap:focus, .k-numeric-wrap:hover, .k-numeric-wrap:focus, .k-textbox:hover, .k-textbox:focus, .custom-file-label:hover, .custom-file-label:focus {
+.form-control:hover, .form-control:focus, .k-textbox:hover, .k-textbox:focus, .custom-file-label:hover, .custom-file-label:focus, .k-autocomplete:hover, .k-autocomplete:focus {
   border-color: #ffce80; }
 
-.whitebox .form-control:hover, .whitebox .form-control:focus, .whitebox .k-autocomplete:hover, .whitebox .k-autocomplete:focus, .whitebox .k-dateinput-wrap:hover, .whitebox .k-dateinput-wrap:focus, .whitebox .k-dropdown-wrap:hover, .whitebox .k-dropdown-wrap:focus, .whitebox .k-picker-wrap:hover, .whitebox .k-picker-wrap:focus, .whitebox .k-multiselect-wrap:hover, .whitebox .k-multiselect-wrap:focus, .whitebox .k-numeric-wrap:hover, .whitebox .k-numeric-wrap:focus, .whitebox .k-textbox:hover, .whitebox .k-textbox:focus, .whitebox .custom-file-label:hover, .whitebox .custom-file-label:focus, .md-subheader .form-control:hover, .md-subheader .form-control:focus, .md-subheader .k-autocomplete:hover, .md-subheader .k-autocomplete:focus, .md-subheader .k-dateinput-wrap:hover, .md-subheader .k-dateinput-wrap:focus, .md-subheader .k-dropdown-wrap:hover, .md-subheader .k-dropdown-wrap:focus, .md-subheader .k-picker-wrap:hover, .md-subheader .k-picker-wrap:focus, .md-subheader .k-multiselect-wrap:hover, .md-subheader .k-multiselect-wrap:focus, .md-subheader .k-numeric-wrap:hover, .md-subheader .k-numeric-wrap:focus, .md-subheader .k-textbox:hover, .md-subheader .k-textbox:focus, .md-subheader .custom-file-label:hover, .md-subheader .custom-file-label:focus, .k-popup .form-control:hover, .k-popup .form-control:focus, .k-popup .k-autocomplete:hover, .k-popup .k-autocomplete:focus, .k-popup .k-dateinput-wrap:hover, .k-popup .k-dateinput-wrap:focus, .k-popup .k-dropdown-wrap:hover, .k-popup .k-dropdown-wrap:focus, .k-popup .k-picker-wrap:hover, .k-popup .k-picker-wrap:focus, .k-popup .k-multiselect-wrap:hover, .k-popup .k-multiselect-wrap:focus, .k-popup .k-numeric-wrap:hover, .k-popup .k-numeric-wrap:focus, .k-popup .k-textbox:hover, .k-popup .k-textbox:focus, .k-popup .custom-file-label:hover, .k-popup .custom-file-label:focus {
+.k-widget .k-numeric-wrap:hover, .k-widget .k-numeric-wrap:focus, .k-widget .k-numeric-wrap.k-state-hover, .k-widget .k-numeric-wrap.k-state-focused, .k-widget .k-picker-wrap:hover, .k-widget .k-picker-wrap:focus, .k-widget .k-picker-wrap.k-state-hover, .k-widget .k-picker-wrap.k-state-focused, .k-widget .k-multiselect-wrap:hover, .k-widget .k-multiselect-wrap:focus, .k-widget .k-multiselect-wrap.k-state-hover, .k-widget .k-multiselect-wrap.k-state-focused, .k-widget .k-dropdown-wrap:hover, .k-widget .k-dropdown-wrap:focus, .k-widget .k-dropdown-wrap.k-state-hover, .k-widget .k-dropdown-wrap.k-state-focused {
   border-color: #ffce80; }
 
-.whitebox .k-dropdown .k-dropdown-wrap.k-state-hover, .whitebox .k-dropdown .k-dropdown-wrap.k-state-focused, .whitebox .k-dropdowntree .k-dropdown-wrap.k-state-hover, .whitebox .k-dropdowntree .k-dropdown-wrap.k-state-focused, .md-subheader .k-dropdown .k-dropdown-wrap.k-state-hover, .md-subheader .k-dropdown .k-dropdown-wrap.k-state-focused, .md-subheader .k-dropdowntree .k-dropdown-wrap.k-state-hover, .md-subheader .k-dropdowntree .k-dropdown-wrap.k-state-focused, .k-popup .k-dropdown .k-dropdown-wrap.k-state-hover, .k-popup .k-dropdown .k-dropdown-wrap.k-state-focused, .k-popup .k-dropdowntree .k-dropdown-wrap.k-state-hover, .k-popup .k-dropdowntree .k-dropdown-wrap.k-state-focused {
+.custom-file-input:focus ~ .custom-file-label {
+  border-color: #ffce80; }
+
+.whitebox .form-control:hover, .whitebox .form-control:focus, .whitebox .k-textbox:hover, .whitebox .k-textbox:focus, .whitebox .custom-file-label:hover, .whitebox .custom-file-label:focus, .whitebox .k-autocomplete:hover, .whitebox .k-autocomplete:focus, .md-subheader .form-control:hover, .md-subheader .form-control:focus, .md-subheader .k-textbox:hover, .md-subheader .k-textbox:focus, .md-subheader .custom-file-label:hover, .md-subheader .custom-file-label:focus, .md-subheader .k-autocomplete:hover, .md-subheader .k-autocomplete:focus, .k-popup .form-control:hover, .k-popup .form-control:focus, .k-popup .k-textbox:hover, .k-popup .k-textbox:focus, .k-popup .custom-file-label:hover, .k-popup .custom-file-label:focus, .k-popup .k-autocomplete:hover, .k-popup .k-autocomplete:focus {
   border-color: #ffce80; }
 
 .dropdown-menu li, .k-popup li {
@@ -161,9 +172,6 @@ li.sortable-list-hint {
 .file-upload-item-box .file-icon-wrapper > span {
   background: #FF9D00; }
 
-.document-list li .document-item .form-control:hover, .document-list li .document-item .form-control:focus, .document-list li .document-item .k-autocomplete:hover, .document-list li .document-item .k-autocomplete:focus, .document-list li .document-item .k-dateinput-wrap:hover, .document-list li .document-item .k-dateinput-wrap:focus, .document-list li .document-item .k-dropdown-wrap:hover, .document-list li .document-item .k-dropdown-wrap:focus, .document-list li .document-item .k-picker-wrap:hover, .document-list li .document-item .k-picker-wrap:focus, .document-list li .document-item .k-multiselect-wrap:hover, .document-list li .document-item .k-multiselect-wrap:focus, .document-list li .document-item .k-numeric-wrap:hover, .document-list li .document-item .k-numeric-wrap:focus, .document-list li .document-item .k-textbox:hover, .document-list li .document-item .k-textbox:focus, .document-list li .document-item .custom-file-label:hover, .document-list li .document-item .custom-file-label:focus {
-  border-color: #ffce80; }
-
 .dockside.active i {
   color: #FF9D00; }
 
@@ -179,6 +187,9 @@ li.sortable-list-hint {
   color: #FF9D00; }
   .view-type a.active .view-img-holder {
     background: #ffad29; }
+
+.collapsible .collapsible-head {
+  background: #fffbf5; }
 
 .filter-list:before {
   background: #ffebcc; }
@@ -216,6 +227,10 @@ li.sortable-list-hint {
 .uploadedfilename .clear-button {
   background: #FF9D00; }
 
+@media (min-width: 768px) {
+  md-toolbar .k-widget .k-numeric-wrap:hover, md-toolbar .k-widget .k-numeric-wrap:focus, md-toolbar .k-widget .k-numeric-wrap.k-state-hover, md-toolbar .k-widget .k-numeric-wrap.k-state-focused, md-toolbar .k-widget .k-picker-wrap:hover, md-toolbar .k-widget .k-picker-wrap:focus, md-toolbar .k-widget .k-picker-wrap.k-state-hover, md-toolbar .k-widget .k-picker-wrap.k-state-focused, md-toolbar .k-widget .k-multiselect-wrap:hover, md-toolbar .k-widget .k-multiselect-wrap:focus, md-toolbar .k-widget .k-multiselect-wrap.k-state-hover, md-toolbar .k-widget .k-multiselect-wrap.k-state-focused, md-toolbar .k-widget .k-dropdown-wrap:hover, md-toolbar .k-widget .k-dropdown-wrap:focus, md-toolbar .k-widget .k-dropdown-wrap.k-state-hover, md-toolbar .k-widget .k-dropdown-wrap.k-state-focused {
+    border-color: #ffce80; } }
+
 @media (max-width: 767.98px) {
   .wrapper > section > .main-menu-wrapper .main-menu li {
     border-bottom: 1px solid #fffbf5; }
@@ -241,10 +256,7 @@ li.sortable-list-hint {
 .k-rating-item.k-state-selected, .k-rating-item:hover, .k-rating-item.k-state-hover {
   color: #FF9D00; }
 
-.k-checkbox:checked ~ .k-checkbox-label:before {
-  border-color: #FF9D00; }
-
-.k-checkbox:checked + .k-checkbox-label::before {
+.k-checkbox:checked {
   border-color: #FF9D00;
   background-color: #FF9D00; }
 
@@ -292,15 +304,46 @@ li.sortable-list-hint {
   .k-switch-on .k-switch-container:hover {
     background-color: #d68400; }
 
-.k-radio:checked + .k-radio-label::before {
-  background-color: white; }
-
-.k-radio:checked + .k-radio-label::after {
+.k-slider .k-slider-selection {
   background-color: #FF9D00; }
+
+.k-tabstrip-items .k-item {
+  color: #FF9D00; }
+  .k-tabstrip-items .k-item:hover, .k-tabstrip-items .k-item.k-state-active {
+    color: #FF9D00; }
+
+.k-slider .k-draghandle {
+  background-color: #FF9D00;
+  border-color: #FF9D00; }
+
+.k-radio:checked {
+  background-color: #FF9D00;
+  border-color: #FF9D00; }
+
+.k-radio:checked:focus {
+  border-color: #FF9D00; }
 
 .k-dropdown .k-dropdown-wrap.k-state-hover, .k-dropdown .k-dropdown-wrap.k-state-focused, .k-dropdowntree .k-dropdown-wrap.k-state-hover, .k-dropdowntree .k-dropdown-wrap.k-state-focused, .k-multiselect .k-dropdown-wrap.k-state-hover, .k-multiselect .k-dropdown-wrap.k-state-focused {
   border-color: #ffcc7a; }
 
-.k-pager-numbers .k-state-selected, .k-pager-numbers .k-state-selected:hover {
+.k-pager-numbers .k-link.k-state-selected,
+.k-button-group .k-button:active, .k-button-group .k-button.k-state-active, .k-button-group .k-button.k-state-selected, .k-button-group > input[type="radio"]:checked + .k-button, .k-button-group > input[type="checkbox"]:checked + .k-button {
   border-color: #FF9D00;
   background-color: #FF9D00; }
+
+.k-pager-numbers .k-link.k-state-selected:hover, .k-treeview .k-in.k-state-selected {
+  border-color: #FF9D00;
+  background-color: #FF9D00;
+  color: white; }
+
+.k-list .k-item:hover.k-state-selected, .k-list .k-item.k-state-hover.k-state-selected, .k-list-optionlabel:hover.k-state-selected, .k-list-optionlabel.k-state-hover.k-state-selected {
+  background-color: #FF9D00; }
+
+.k-checkbox:focus {
+  border-color: #d68400; }
+
+.k-checkbox:checked:focus {
+  border-color: #eb9000; }
+
+.k-event {
+  background-color: #ffebcc; }

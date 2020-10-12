@@ -22,7 +22,7 @@
             <string>server</string>
             <string>--address</string>
             <string>:9004</string>
-            <string>{{DATA}}/minio_pre</string>
+            <string>{{DATA}}/minio_pre{1...4}</string>
         </array>
 
     </dict>

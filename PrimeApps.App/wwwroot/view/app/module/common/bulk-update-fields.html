@@ -173,7 +173,6 @@
 
     <select id="{{field.name}}"
             name="{{field.name}}"
-            class="form-control"
             kendo-drop-down-list
             required="{{field.validation.required}}"
             tabindex="{{field.order}}"
@@ -224,7 +223,6 @@
 <div class="form-group" ng-if="field.data_type === 'multiselect' && !field.hidden">
 
     <select id="{{field.name}}"
-            class="form-control"
             name="{{field.name}}"
             kendo-multi-select
             k-options="field.options"
@@ -265,7 +263,7 @@
 <div class="form-group" ng-if="field.data_type === 'lookup' && !field.hidden && (id || (!id && (field.name !== 'created_by' && field.name !== 'updated_by')))">
 
     <select kendo-drop-down-list="{{'lookup'+field.id}}"
-            id="{{field.name}}" class="form-control"
+            id="{{field.name}}"
             name="{{field.name}}"
             k-options="{{'lookupOptions'+field.id}}"
             ng-model="bulkUpdate.value"
@@ -331,7 +329,6 @@
 <div class="form-group" ng-if="field.data_type === 'tag' && !field.hidden" ng-mouseover="setId(field, false)">
     <select kendo-multi-select
             id="{{field.name}}"
-            class="form-control"
             name="{{field.name}}"
             k-options="field.tag"
             k-ng-model="bulkUpdate.value"

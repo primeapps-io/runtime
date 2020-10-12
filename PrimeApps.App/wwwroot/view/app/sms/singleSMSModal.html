@@ -59,12 +59,12 @@
                                                 k-on-change="setContent(template);"></select>
                                     </div>
                                     <div class="col-auto">
-                                        <md-button class="md-icon-button btn btn-secondary" type="button" ng-show="template && template.id"
+                                        <md-button class="md-icon-button btn btn-sm btn-secondary" type="button" ng-show="template && template.id"
                                                    ng-click="formType = 'template';setTemplate()" ng-disabled="saving">
                                             <i class="fas fa-pen"></i>
                                             <md-tooltip md-direction="bottom"> {{'Template.EditTemplate' | translate}} </md-tooltip>
                                         </md-button>
-                                        <md-button class="md-icon-button btn btn-secondary" type="button" 
+                                        <md-button class="md-icon-button btn-sm btn btn-secondary" type="button" 
                                                    ng-show="!template || (template && !template.id)"
                                                    ng-click="formType = 'template';setTemplate()" 
                                                    ng-disabled="saving">

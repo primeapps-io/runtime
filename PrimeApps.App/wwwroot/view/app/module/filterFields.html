@@ -3,7 +3,9 @@
     <input type="text"
            class="k-textbox"
            ng-model="filter.value"
-           ng-disabled="filter.operator ==='empty' || filter.operator ==='not_empty'"
+           ng-show="filter.operator ==='is' || filter.operator ==='is_not' || filter.operator ==='contains' || filter.operator ==='not_contain' || 
+            filter.operator ==='starts_with' || filter.operator ==='ends_with' || filter.operator ==='equals' || filter.operator ==='not_equal' || 
+            filter.operator ==='greater' || filter.operator ==='greater_equal' || filter.operator ==='less' || filter.operator ==='less_equal'"
            ng-change="viewFiltere(filter)"/>
 </div>
 
@@ -23,7 +25,9 @@
            class="k-textbox"
            ng-model="filter.value"
            ng-change="viewFiltere(filter);"
-           ng-disabled="filter.operator ==='empty' || filter.operator ==='not_empty'"
+           ng-show="filter.operator ==='is' || filter.operator ==='is_not' || filter.operator ==='contains' || filter.operator ==='not_contain' || 
+            filter.operator ==='starts_with' || filter.operator ==='ends_with' || filter.operator ==='equals' || filter.operator ==='not_equal' || 
+            filter.operator ==='greater' || filter.operator ==='greater_equal' || filter.operator ==='less' || filter.operator ==='less_equal'"
            numeric/>
 </div>
 
@@ -34,7 +38,9 @@
            ng-change="viewFiltere(filter);"
            places="fieldskey[filter.field].decimal_places || 2"
            rounding="fieldskey[filter.field].rounding"
-           ng-disabled="filter.operator ==='empty' || filter.operator ==='not_empty'"
+           ng-show="filter.operator ==='is' || filter.operator ==='is_not' || filter.operator ==='contains' || filter.operator ==='not_contain' || 
+            filter.operator ==='starts_with' || filter.operator ==='ends_with' || filter.operator ==='equals' || filter.operator ==='not_equal' || 
+            filter.operator ==='greater' || filter.operator ==='greater_equal' || filter.operator ==='less' || filter.operator ==='less_equal'"
            number-decimal/>
 </div>
 
@@ -46,14 +52,15 @@
            places="fieldskey[filter.field].decimal_places || 2"
            rounding="fieldskey[filter.field].rounding"
            currency-symbol="fieldskey[filter.field].currency_symbol || currencySymbol"
-           ng-disabled="filter.operator ==='empty' || filter.operator ==='not_empty'"
+           ng-show="filter.operator ==='is' || filter.operator ==='is_not' || filter.operator ==='contains' || filter.operator ==='not_contain' || 
+            filter.operator ==='starts_with' || filter.operator ==='ends_with' || filter.operator ==='equals' || filter.operator ==='not_equal' || 
+            filter.operator ==='greater' || filter.operator ==='greater_equal' || filter.operator ==='less' || filter.operator ==='less_equal'"
            number-currency/>
 </div>
 
 <div class="form-group"
      ng-if="fieldskey[filter.field].data_type === 'date' || fieldskey[filter.field].data_type === 'date_time'">
     <select
-            class="form-control"
             kendo-drop-down-list
             k-data-text-field="'label'"
             k-data-value-field="'name'"
@@ -61,7 +68,9 @@
             k-ng-model="filter.value"
             k-on-change="viewFiltere(filter);"
             k-auto-width="true"
-            ng-disabled="filter.operator ==='empty' || filter.operator ==='not_empty'"
+            ng-show="filter.operator ==='is' || filter.operator ==='is_not' || filter.operator ==='contains' || filter.operator ==='not_contain' || 
+            filter.operator ==='starts_with' || filter.operator ==='ends_with' || filter.operator ==='equals' || filter.operator ==='not_equal' || 
+            filter.operator ==='greater' || filter.operator ==='greater_equal' || filter.operator ==='less' || filter.operator ==='less_equal'"
             k-option-label="'{{'Common.Select' | translate}}'"
     >
     </select>
@@ -71,7 +80,10 @@
     <input kendo-date-picker
            class="width100"
            ng-model="filter.costumeDate"
-           k-on-change="viewFiltere(filter);"/>
+           k-on-change="viewFiltere(filter);"
+           ng-show="filter.operator ==='is' || filter.operator ==='is_not' || filter.operator ==='contains' || filter.operator ==='not_contain' || 
+            filter.operator ==='starts_with' || filter.operator ==='ends_with' || filter.operator ==='equals' || filter.operator ==='not_equal' || 
+            filter.operator ==='greater' || filter.operator ==='greater_equal' || filter.operator ==='less' || filter.operator ==='less_equal'"/>
 </div>
 
 <div class="form-group" ng-if="fieldskey[filter.field].data_type === 'date_time' && filter.value.value==='costume'">
@@ -79,26 +91,34 @@
            class="width100"
            k-ng-model="filter.costumeDate"
            k-on-change="viewFiltere(filter);"
-           placeholder="{{'Common.Date' | translate}}"/>
+           placeholder="{{'Common.Date' | translate}}"
+           ng-show="filter.operator ==='is' || filter.operator ==='is_not' || filter.operator ==='contains' || filter.operator ==='not_contain' || 
+            filter.operator ==='starts_with' || filter.operator ==='ends_with' || filter.operator ==='equals' || filter.operator ==='not_equal' || 
+            filter.operator ==='greater' || filter.operator ==='greater_equal' || filter.operator ==='less' || filter.operator ==='less_equal'"/>
 </div>
 
 <div class="form-group" ng-if="fieldskey[filter.field].data_type === 'time'">
     <input kendo-time-picker
            class="width100"
            k-ng-model="filter.value"
-           k-on-change="viewFiltere(filter);"/>
+           k-on-change="viewFiltere(filter);"
+           ng-show="filter.operator ==='is' || filter.operator ==='is_not' || filter.operator ==='contains' || filter.operator ==='not_contain' || 
+            filter.operator ==='starts_with' || filter.operator ==='ends_with' || filter.operator ==='equals' || filter.operator ==='not_equal' || 
+            filter.operator ==='greater' || filter.operator ==='greater_equal' || filter.operator ==='less' || filter.operator ==='less_equal'"/>
 </div>
 
 <div class="form-group"
      ng-if="filter.value.value==='costumeN' || filter.value.value==='costumeW' || filter.value.value==='costumeM' || filter.value.value==='costumeY'">
     <input kendo-numeric-text-box
            k-ng-model="filter.valueX"
-           k-on-change="viewFiltere(filter);"/>
+           k-on-change="viewFiltere(filter);"
+           ng-show="filter.operator ==='is' || filter.operator ==='is_not' || filter.operator ==='contains' || filter.operator ==='not_contain' || 
+            filter.operator ==='starts_with' || filter.operator ==='ends_with' || filter.operator ==='equals' || filter.operator ==='not_equal' || 
+            filter.operator ==='greater' || filter.operator ==='greater_equal' || filter.operator ==='less' || filter.operator ==='less_equal'"/>
 </div>
 <div class="form-group"
      ng-if="filter.value.value==='costumeN' || filter.value.value==='costumeW' || filter.value.value==='costumeM' || filter.value.value==='costumeY'">
     <select
-            class="form-control"
             kendo-drop-down-list
             k-data-text-field="'label'"
             k-data-value-field="'value'"
@@ -107,13 +127,15 @@
             k-on-change="viewFiltere(filter);"
             k-option-label="'{{'Common.Select' | translate}}'"
             k-auto-width="true"
+            ng-show="filter.operator ==='is' || filter.operator ==='is_not' || filter.operator ==='contains' || filter.operator ==='not_contain' || 
+            filter.operator ==='starts_with' || filter.operator ==='ends_with' || filter.operator ==='equals' || filter.operator ==='not_equal' || 
+            filter.operator ==='greater' || filter.operator ==='greater_equal' || filter.operator ==='less' || filter.operator ==='less_equal'"
     >
     </select>
 </div>
 
 <div class="form-group" ng-if="fieldskey[filter.field].data_type === 'picklist'">
     <select
-            class="form-control"
             kendo-drop-down-list
             k-data-text-field="'label_{{language}}'"
             k-data-value-field="'id'"
@@ -122,6 +144,9 @@
             k-on-change="viewFiltere(filter);"
             k-option-label="'{{'Common.Select' | translate}}'"
             k-auto-width="true"
+            ng-show="filter.operator ==='is' || filter.operator ==='is_not' || filter.operator ==='contains' || filter.operator ==='not_contain' || 
+            filter.operator ==='starts_with' || filter.operator ==='ends_with' || filter.operator ==='equals' || filter.operator ==='not_equal' || 
+            filter.operator ==='greater' || filter.operator ==='greater_equal' || filter.operator ==='less' || filter.operator ==='less_equal'"
     >
     </select>
 </div>
@@ -132,48 +157,53 @@
            class="k-checkbox"
            ng-model="filter.value"
            ng-change="viewFiltere(filter);">
-    <label   class="k-checkbox-label" for="{{filter.key}}">   <span>{{ fieldskey[filter.field]['label_' + language] }} </span></label>
+    
 </div>
 
 <div class="form-group" ng-if="fieldskey[filter.field].data_type === 'multiselect'">
 
     <select
-            class="form-control"
             kendo-multi-select
             k-ng-model="filter.value"
             k-on-change="viewFiltere(filter);"
-            k-options="fieldskey[filter.field].options">
+            k-options="fieldskey[filter.field].options"
+            ng-show="filter.operator ==='is' || filter.operator ==='is_not' || filter.operator ==='contains' || filter.operator ==='not_contain' || 
+            filter.operator ==='starts_with' || filter.operator ==='ends_with' || filter.operator ==='equals' || filter.operator ==='not_equal' || 
+            filter.operator ==='greater' || filter.operator ==='greater_equal' || filter.operator ==='less' || filter.operator ==='less_equal'">
     </select>
 </div>
 
 
-<div class="form-group" ng-if="fieldskey[filter.field].data_type === 'rating'">
-    <label for="{{fieldskey[filter.field].name}}" ng-class="{'required':fieldskey[filter.field].validation.required}">
-        <span>{{ field['label_' + language] }}<span
-                ng-show="fieldskey[filter.field].validation.required && fieldskey[filter.field].show_label">*</span></span>
-    </label>
+<div class="form-group rating-fields" ng-if="fieldskey[filter.field].data_type === 'rating'">
     <input kendo-rating
+           class="form-control"
            id="{{fieldskey[filter.field].name}}"
            name="{{fieldskey[filter.field].name}}"
            k-on-precision="half"
            maxlength="{{fieldskey[filter.field].max || 5}}"
-           k-ng-model="record[fieldskey[filter.field].name]"/>
+           k-ng-model="record[fieldskey[filter.field].name]"
+           ng-show="filter.operator ==='is' || filter.operator ==='is_not' || filter.operator ==='contains' || filter.operator ==='not_contain' || 
+            filter.operator ==='starts_with' || filter.operator ==='ends_with' || filter.operator ==='equals' || filter.operator ==='not_equal' || 
+            filter.operator ==='greater' || filter.operator ==='greater_equal' || filter.operator ==='less' || filter.operator ==='less_equal'"/>
 </div>
 
 <div class="form-group" ng-if="fieldskey[filter.field].data_type === 'lookup'">
     <select kendo-drop-down-list ng-if="fieldskey[filter.field].lookup_type === 'users'"
-            class="form-control"
             k-options="fieldskey[filter.field].dataOptions"
             k-on-change="viewFiltere(filter);"
             k-ng-model="filter.value"
             k-auto-width="true"
-            ng-disabled="filter.operator ==='empty' || filter.operator ==='not_empty'"
+            ng-show="filter.operator ==='is' || filter.operator ==='is_not' || filter.operator ==='contains' || filter.operator ==='not_contain' || 
+            filter.operator ==='starts_with' || filter.operator ==='ends_with' || filter.operator ==='equals' || filter.operator ==='not_equal' || 
+            filter.operator ==='greater' || filter.operator ==='greater_equal' || filter.operator ==='less' || filter.operator ==='less_equal'"
     ></select>
     <input type="text"
            ng-if="fieldskey[filter.field].lookup_type != 'users'"
            class="k-textbox"
            ng-model="filter.value"
-           ng-disabled="filter.operator ==='empty' || filter.operator ==='not_empty'"
+           ng-show="filter.operator ==='is' || filter.operator ==='is_not' || filter.operator ==='contains' || filter.operator ==='not_contain' || 
+            filter.operator ==='starts_with' || filter.operator ==='ends_with' || filter.operator ==='equals' || filter.operator ==='not_equal' || 
+            filter.operator ==='greater' || filter.operator ==='greater_equal' || filter.operator ==='less' || filter.operator ==='less_equal'"
            ng-change="viewFiltere(filter);"
     />
 
@@ -185,5 +215,8 @@
             ng-disabled="filter.operator ==='empty' || filter.operator ==='not_empty'"
             k-options="fieldskey[filter.field].Options"
             k-ng-model="filter.value"
+            ng-show="filter.operator ==='is' || filter.operator ==='is_not' || filter.operator ==='contains' || filter.operator ==='not_contain' || 
+            filter.operator ==='starts_with' || filter.operator ==='ends_with' || filter.operator ==='equals' || filter.operator ==='not_equal' || 
+            filter.operator ==='greater' || filter.operator ==='greater_equal' || filter.operator ==='less' || filter.operator ==='less_equal'"
     ></select>
 </div>

@@ -26,7 +26,7 @@
 </md-toolbar>
 
 <md-content flex>
-    <form class="container-fluid paddingua30 disable-validation-msg" kendo-validator="filterForm"
+    <form class="container-fluid paddingua20 disable-validation-msg" kendo-validator="filterForm"
           autocomplete="off"
           novalidate>
         <div class="title">
@@ -42,13 +42,14 @@
                         <small>{{'View.Grid' | translate}}</small>
                     </a>
                 </div>
-                <!--<div class="col-4 col-md-3 col-lg-3 col-xl-2">
-                    <a href ng-class="activeView.viewType ==='calendar' ? 'active':''" title="Calendar View">
-                        <span class="view-img-holder"><img src="images/views/calendar.svg" alt="Calendar View"/><i
+                <div class="col-4 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('calendar');">
+                    <a href ng-class="activeView.view_type ==='calendar'  ? 'active':''" title="{{'View.CalendarView' | translate}}">
+                        <span class="view-img-holder"><img src="images/views/calendar.svg" alt="{{'View.CalendarView' | translate}}"/><i
                                 class="fas fa-check"></i></span>
-                        <small>Calendar</small>
+                        <small>{{'View.CalendarView' | translate}}</small>
                     </a>
                 </div>
+                <!--
                 <div class="col-4 col-md-3 col-lg-3 col-xl-2">
                     <a href ng-class="activeView.viewType ==='gallery' ? 'active':''" title="Gallery View">
                         <span class="view-img-holder"><img src="images/views/gallery.svg" alt="Gallery View"/><i
@@ -85,7 +86,8 @@
         <div class="title" ng-if="activeView.view_type=='report'">
             <h5>{{'View.ReportSettings' | translate}}</h5>
         </div>
-        <section ng-if="activeView.view_type=='report'" class="whitebox padding20 filter-list">
+
+        <section ng-if="activeView.view_type=='report'" class="whitebox padding20">
                 <div class="form-group">
                     <label for="reporttype">
                         <span>   {{'Report.ReportType' | translate}} </span>
@@ -97,6 +99,7 @@
                             kendo-drop-down-list>
                     </select>
                 </div>
+
                 <!--Report Group By Field Selection -->
                 <div class="form-group" ng-if="activeView.view_type=='report' && activeView.report_type ==='summary'">
                     <label >
@@ -114,7 +117,8 @@
                             k-on-change="chartFilter('groupField')"
                             kendo-drop-down-list ng-model="activeView.group_field"></select>
                 </div>
-                <!--Report Ordering Field E -->
+
+            <!--Report Ordering Field E -->
                 <div class="form-group" ng-if="activeView.view_type=='report' && activeView.report_type ==='summary'">
                     <label for="report-order-field">
                         <span>   {{'Report.OrderArea' | translate}} </span>
@@ -130,15 +134,17 @@
                 </div>
 
         </section>
+
         <!--  Calculation Fields-->
         <div class="title" ng-show="activeView.view_type ==='report' && activeView.report_type !=='tabular'" >
             <h5>{{ 'Report.CalculationFields' | translate}}</h5>
             <span> {{'View.TotalCount' | translate}} <kendo-switch id="total-count" k-on-change="changeTotalCount(totalCount)"  k-ng-model="totalCount"></kendo-switch></span>
         </div>
+
         <!--    Calculation Fields-->
         <div ng-if="(activeView.report_type==='summary' || activeView.report_type==='single')"
              ng-class="totalCount ? 'k-state-disabled' :''"
-             class="whitebox padding20 filter-list">
+             class="whitebox padding20">
             <section class="row">
                 <div class="col-12 col-sm-6">
                     <select id="calculationfields"
@@ -167,11 +173,13 @@
             </section>
 
         </div>
+
         <!--  Chart Settings -->
         <div class="title" ng-if="activeView.report_type ==='summary'">
             <h5> {{'View.ChartSettings' | translate}}  </h5>
         </div>
-        <section class="whitebox padding20 filter-list"  ng-if="activeView.report_type ==='summary'">
+
+        <section class="whitebox padding20"  ng-if="activeView.report_type ==='summary'">
             <div class="form-group">
                 <label>
                     <span>   {{'Report.Chart.Type' | translate}} </span>
@@ -208,11 +216,78 @@
             </div>
         </section>
 
+        <!--  Calendar Settings -->
+        <div class="title" ng-if="activeView.view_type ==='calendar'">
+            <h5> {{'View.CalendarSettings' | translate}}  </h5>
+        </div>
+        <section class="whitebox padding20"  ng-if="activeView.view_type ==='calendar'">
+<!--            <div class="form-group">-->
+<!--                <label>-->
+<!--                    <span>   {{'View.VisibleField' | translate}} </span>-->
+<!--                    <span class="label-right">-->
+<!--                         <span class="required-label">{{'Common.Required' | translate}}</span>-->
+<!--                    </span>-->
+<!--                </label>-->
+<!--                <select-->
+<!--                        id="visiblefield"-->
+<!--                        k-option-label="'{{'Module.SelectField' | translate}}'"-->
+<!--                        k-data-text-field="'label'"-->
+<!--                        k-data-value-field="'name'"-->
+<!--                        k-data-source="module.fields"-->
+<!--                        ng-required="true"-->
+<!--                        k-on-change="setViewCalendar()"-->
+<!--                        kendo-drop-down-list ng-model="activeView.settings.visiblefield"></select>-->
+<!--            </div>-->
+            <ul class="list-unstyled list-inline bottom10" ng-init="dateRangeSelect='date'">
+                <li>
+                    <input type="radio" name="dateRangeSelect" ng-model="dateRangeSelect" value="date" id="date" class="k-radio">
+                    <label class="k-radio-label" for="date">Date</label>
+                </li>
+                <li>
+                    <input type="radio" name="dateRangeSelect" ng-model="dateRangeSelect" value="dateRange" id="dateRange" ng-change="activeView.settings.enddatefield= ''" class="k-radio">
+                    <label class="k-radio-label" for="dateRange">Date Range</label>
+                </li>
+            </ul>
+            
+            <div class="form-group">
+                <label>
+                    <span ng-if="dateRangeSelect === 'date'">{{'View.DateField' | translate}}</span>
+                    <span ng-if="dateRangeSelect === 'dateRange'">{{'View.StartDateField' | translate}}</span>
+                    <span class="label-right">
+                         <span class="required-label">{{'Common.Required' | translate}}</span>
+                    </span>
+                </label>
+                <select
+                        id="startdatefield"
+                        k-option-label="'{{'Module.SelectField' | translate}}'"
+                        k-data-text-field="'label'"
+                        k-data-value-field="'name'"
+                        k-data-source="dateFields"
+                        ng-required="true"
+                        k-on-change="setViewCalendar()"
+                        kendo-drop-down-list ng-model="activeView.settings.startdatefield"></select>
+             </div>
+            <div class="form-group" ng-if="dateRangeSelect === 'dateRange'">
+                <label>
+                    <span>   {{'View.EndDateField' | translate}} </span>
+                </label>
+                <select
+                        id="enddatefield"
+                        k-option-label="'{{'Module.SelectField' | translate}}'"
+                        k-data-text-field="'label'"
+                        k-data-value-field="'name'"
+                        k-data-source="dateFields"
+                        k-on-change="setViewCalendar()"
+                        kendo-drop-down-list ng-model="activeView.settings.enddatefield"></select>
+             </div>
+
+        </section>
+
         <!--  Widget Settings -->
         <div class="title" ng-if="activeView.report_type ==='single'">
             <h5> {{'Report.Widget.Name' | translate}} </h5>
         </div>
-        <section class="whitebox padding20 filter-list" ng-if="activeView.view_type==='report' && activeView.report_type ==='single'">
+        <section class="whitebox padding20" ng-if="activeView.view_type==='report' && activeView.report_type ==='single'">
 
             <div class="form-group">
                 <label>
@@ -259,7 +334,7 @@
 
         <!--    Calculation Fields Tabular -->
 
-        <div ng-if="activeView.view_type==='report' && activeView.report_type==='tabular'" class="whitebox padding20 filter-list">
+        <div ng-if="activeView.view_type==='report' && activeView.report_type==='tabular'" class="whitebox padding20">
             <section class="row" ng-repeat="aggregation in activeView.aggregations">
                 <div class="col-12 col-sm-6">
                     <input type="text" ng-disabled="true" value="{{fieldskey[aggregation.field].label }}"
@@ -302,15 +377,14 @@
                     </div>
                 </div>
             </div>
-            <div class="alert alert-primary shadow-sm" role="alert" ng-if="isMobile()">
+            <div class="alert alert-secondary padding10 shadow-sm" role="alert" ng-if="isMobile()">
                 <div class="row align-items-center">
                     <div class="col">
                         <div class="row align-items-center justify-content-center">
-                            <div class="col-auto"><span class="warn-icon"><i class="fas fa-info"></i></span></div>
-                            <div class="col-12 col-sm text-center text-sm-left"><div class="paddingua10">{{'View.SelectedFieldsMobileInfo' | translate}}</div></div>
+                            <div class="col-auto"><span class="warn-icon" style="width: 40px;height: 40px; font-size: 20px;"><i class="fas fa-info"></i></span></div>
+                            <div class="col"><div>{{'View.SelectedFieldsMobileInfo' | translate}}</div></div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

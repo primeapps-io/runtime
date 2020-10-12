@@ -3,7 +3,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
     function ($rootScope, $scope, mdToast, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, entityTypes, guidEmpty, component, helper, operations, blockUI, $cache, AppService, AuthService, $sessionStorage, HelpService, $sce, $mdSidenav, $mdDialog, $mdMedia, icons2, GeneralSettingsService, SignalNotificationService, NotificationService) {
 
         $scope.disablePasswordChange = disablePasswordChange;
-
+        
         $rootScope.fastRecordAddModal = function (moduleName, fastAddRecord, lookupValue, lookupName, id, customScope) {
             $scope.modalCustomScopeRecord = customScope.record;
 
@@ -267,13 +267,12 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.sideMenuOpen = $rootScope.buildToggler2('menuModal');
 
         angular.element($window).bind('resize', function () {
+            $rootScope.showTooltip = false;
             if (window.innerWidth > 768 && window.innerWidth < 992) {
                 $rootScope.showTooltip = true;
-            } else if (window.innerWidth < 768) {
-                $rootScope.showTooltip = false;
-            } else {
-                if ($(".hide-sidebar").length > 0)
-                    $rootScope.showTooltip = true;
+            }
+            if (window.innerWidth > 768) {
+                angular.element('#wrapper').addClass('hide-sidebar');
             }
         });
 
@@ -305,7 +304,10 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         };
 
         $scope.goBack = function () {
-            window.history.back();
+            if($state.current.name ==="app.moduleList" || $state.current.name.includes("app.setup") )
+                window.location = "#/app/dashboard";
+            else
+                window.history.back();
         }
 
         $scope.logout = function () {
@@ -398,8 +400,9 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         };
 
         $scope.toggleFullLeftMenu = function () {
-            angular.element('#wrapper').toggleClass('hide-sidebar');
-            $rootScope.showTooltip = $rootScope.showTooltip ? false : true;
+            if (window.innerWidth > 768 ) {
+                angular.element('#wrapper').toggleClass('hide-sidebar');
+            }
         };
 
         // KENDO UI FUNCTIONS START

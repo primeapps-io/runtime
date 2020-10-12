@@ -17,7 +17,9 @@
                         <span>  View Name </span>                   
                     </label>
                     <input type="text" name="view_name"
-                           ng-value="activeView['label_'+language] || activeView['name_'+language]" ng-model="viewName"
+                           ng-value="activeView['label_'+language] || activeView['name_'+language]" 
+                           ng-model="viewName"
+                           ng-change="viewNameMax()"
                            class="k-textbox"/>
 
                 </div>

@@ -3,10 +3,12 @@
 @import "variables";
 @font-face {font-family: 'Nunito'; src: url('#{$font-path}/Nunito-BoldItalic.woff2') format('woff2'), url('#{$font-path}/Nunito-BoldItalic.woff') format('woff'); font-weight: bold; font-style: italic; font-display: swap;  }
 @font-face {font-family: 'Nunito'; src: url('#{$font-path}/Nunito-Bold.woff2') format('woff2'), url('#{$font-path}/Nunito-Bold.woff') format('woff');  font-weight: bold;  font-style: normal;  font-display: swap;  }
+//@font-face {font-family: 'Nunito'; src: url('#{$font-path}/Nunito-SemiBold.woff2') format('woff2'), url('#{$font-path}/Nunito-SemiBold.woff') format('woff');font-weight: 600;font-style: normal;font-display: swap;}
+//@font-face {font-family: 'Nunito'; src: url('#{$font-path}/Nunito-SemiBolditalic.woff2') format('woff2'), url('#{$font-path}/Nunito-SemiBolditalic.woff') format('woff'); font-weight: 600;font-style: italic;font-display: swap;}
 @font-face {font-family: 'Nunito'; src: url('#{$font-path}/Nunito-Italic.woff2') format('woff2'), url('#{$font-path}/Nunito-Italic.woff') format('woff');font-weight: normal;font-style: italic;font-display: swap;}
 @font-face {font-family: 'Nunito'; src: url('#{$font-path}/Nunito-Regular.woff2') format('woff2'), url('#{$font-path}/Nunito-Regular.woff') format('woff'); font-weight: normal;font-style: normal;font-display: swap;}
 @import "fontawesome/fontawesome";
-@import "fontawesome/solid";    
+@import "fontawesome/solid";     
   
 @import "../../node_modules/@progress/kendo-theme-bootstrap/modules/bootstrap/scss/bootstrap";
-@import "../../node_modules/@progress/kendo-theme-bootstrap/scss/all"; 
+@import "../../node_modules/@progress/kendo-theme-bootstrap/scss/all";

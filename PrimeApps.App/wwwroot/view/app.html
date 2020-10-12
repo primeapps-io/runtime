@@ -47,7 +47,7 @@
                                     <img ng-if="user.picture" ng-src="{{userPicture}}" class="img-circle" />
                                     <i ng-if="!user.picture" class="fas fa-user"></i>
                                 </span>
-                                <span>
+                                <span class="md-truncate">
                                     <small>{{'Common.Welcome' | translate}}</small> {{user.first_name}} {{user.last_name}} <i class="fas fa-angle-down"></i>
                                 </span>
                             </md-button>

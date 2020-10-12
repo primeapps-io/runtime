@@ -132,7 +132,7 @@ md-content.iefix {
   .btn.md-button, .k-button.md-button {
     background-color: #1F4688;
     color: white;
-    padding: 0.375rem 1rem;
+    padding: 0.5rem 0.75rem;
     margin: 0px 5px;
     box-shadow: 3px 3px 3px 0px rgba(0, 0, 0, 0.05) !important;
     min-width: inherit;
@@ -351,7 +351,7 @@ md-menu-item > a.md-button {
   position: relative;
   padding: 30px;
   margin-bottom: 20px; }
-  .whitebox.table-view {
+  .whitebox.table-view, .whitebox.collapsible {
     padding: 0px; }
   .whitebox.primarybox-outline {
     border: 1px solid #d2dae7;
@@ -359,13 +359,13 @@ md-menu-item > a.md-button {
 
 .greybox {
   background-color: #f2f2f2;
-  padding: 0.375rem 1rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 0.25rem;
   width: 100%; }
 
 .dashed-greybox {
   border: 1px dashed #e4e7eb;
-  padding: 0.375rem 1rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 0.25rem;
   width: 100%;
   margin-bottom: 10px; }
@@ -461,7 +461,8 @@ header {
       opacity: .8;
       margin: 0; }
       header .accountbar > md-menu > button span {
-        margin-right: 10px; }
+        margin-right: 10px;
+        max-width: 150px; }
         header .accountbar > md-menu > button span:first-child {
           width: 25px;
           height: 25px;
@@ -480,7 +481,8 @@ header {
         opacity: 1; }
 
 md-menu-content.account-dropdown-box {
-  max-height: inherit; }
+  max-height: inherit;
+  max-width: 300px; }
   md-menu-content.account-dropdown-box.md-dense {
     max-height: inherit; }
     md-menu-content.account-dropdown-box.md-dense .md-button.md-icon-button {
@@ -501,7 +503,9 @@ md-menu-content.account-dropdown-box {
   -moz-align-items: center;
   -ms-align-items: center;
   -ms-flex-align: center;
-  align-items: center; }
+  align-items: center;
+  width: 100%;
+  padding-bottom: 10px; }
   .accountbar-in .account-link {
     font-size: 0.875rem;
     display: inline-flex;
@@ -518,10 +522,14 @@ md-menu-content.account-dropdown-box {
       margin-right: 10px;
       line-height: 20px; }
       .accountbar-in .account-link span:first-child {
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
+        display: block;
+        line-height: 40px;
+        text-align: center;
         background: rgba(0, 0, 0, 0.1);
         color: rgba(0, 0, 0, 0.25);
+        flex: none;
         -webkit-border-radius: 35px;
         -moz-border-radius: 35px;
         -ms-border-radius: 35px;
@@ -814,7 +822,7 @@ md-menu-content.account-dropdown-box {
   .own-tab md-tabs {
     border-radius: inherit; }
   .own-tab .md-tab {
-    max-width: 264px !important;
+    max-width: 400px !important;
     padding: 0px 10px;
     font-size: 0.9625rem;
     text-transform: inherit;
@@ -841,6 +849,9 @@ md-menu-content.account-dropdown-box {
       height: 100%;
       min-width: 20px;
       font-weight: bold; }
+      .own-tab .md-tab .tab-container span {
+        text-overflow: ellipsis;
+        overflow: hidden; }
       .own-tab .md-tab .tab-container .badge {
         background: rgba(0, 0, 0, 0.25);
         margin-left: 5px;
@@ -879,15 +890,15 @@ md-menu-content.account-dropdown-box {
     border-top-right-radius: 5px;
     height: 3px; }
   .own-tab md-prev-button md-icon, .own-tab md-next-button md-icon {
-    color: #1F4688;
-    fill: #1F4688; }
+    color: #1F4688 !important;
+    fill: #1F4688 !important; }
   .own-tab ~ .container-fluid {
     padding-bottom: 50px !important; }
 
 .mobile-menu {
   position: fixed;
   bottom: 0px;
-  z-index: 106;
+  z-index: 80;
   left: 0px;
   background: white;
   width: 100%;
@@ -985,11 +996,11 @@ md-menu-content.account-dropdown-box {
   display: -webkit-flex;
   display: flex;
   background: #f2f2f2;
-  padding: 0 1rem 0 0;
+  padding: 0 0.75rem 0 0;
   border: none; }
   .treeview .k-in > strong {
-    padding: 0.375rem 1rem;
-    height: calc(1.5em + 0.75rem);
+    padding: 0.5rem 0.75rem;
+    height: calc(1.5em + 1rem);
     line-height: 1.5; }
   .treeview .k-in.k-state-selected {
     background: #e4e7eb;
@@ -1143,9 +1154,11 @@ md-menu-content.account-dropdown-box {
     top: 5px;
     z-index: 1; }
 
-.k-checkbox ~ .k-checkbox-label:before {
-  border: #adb5bd solid 2px;
-  background: #FFFFFF; }
+.k-checkbox ~ .k-checkbox-label {
+  margin-left: 5px; }
+  .k-checkbox ~ .k-checkbox-label:before {
+    border: #adb5bd solid 1px;
+    background: #FFFFFF; }
 
 .k-checkbox:checked ~ .k-checkbox-label:before {
   border-color: #285bb2; }
@@ -1164,9 +1177,11 @@ md-menu-content.account-dropdown-box {
 .no-text-checkbox {
   padding-left: 16px; }
 
-.k-radio ~ .k-radio-label:before {
-  border: #adb5bd solid 2px;
-  background: #FFFFFF; }
+.k-radio ~ .k-radio-label {
+  margin-left: 2px; }
+  .k-radio ~ .k-radio-label:before {
+    border: #adb5bd solid 1px;
+    background: #FFFFFF; }
 
 .k-radio:checked ~ .k-radio-label:before {
   border-color: #285bb2; }
@@ -1191,6 +1206,11 @@ md-menu-content.account-dropdown-box {
   .form-group > label, .form-group > input, .form-group > span, .form-group .k-invalid-msg {
     width: 100%;
     font-weight: bold; }
+  .form-group .k-textbox {
+    font-weight: bold; }
+  .form-group .k-checkbox {
+    width: 16px;
+    min-width: 16px; }
   .form-group label {
     display: -webkit-box;
     display: -moz-box;
@@ -1219,31 +1239,61 @@ md-menu-content.account-dropdown-box {
       -ms-align-items: center;
       -ms-flex-align: center;
       align-items: center; }
+    .form-group label.readonly {
+      opacity: 0.5; }
   .form-group > .k-colorpicker {
     width: auto; }
+    .form-group > .k-colorpicker .k-selected-color {
+      border: none; }
+    .form-group > .k-colorpicker .k-picker-wrap .k-select {
+      border: none; }
   .form-group .custom-file-input:disabled ~ .custom-file-label {
     opacity: 0.5; }
 
-.form-control, .k-autocomplete, .k-dateinput-wrap, .k-dropdown-wrap, .k-picker-wrap, .k-multiselect-wrap, .k-numeric-wrap, .k-textbox, .custom-file-label {
+label {
+  margin-bottom: 0;
+  padding-bottom: .5rem; }
+
+.form-control, .k-textbox, .custom-file-label, .k-autocomplete {
   border-left: none;
   border-right: none;
   border-top: none;
-  border-width: 2px; }
-  .form-control:hover, .form-control:focus, .k-autocomplete:hover, .k-autocomplete:focus, .k-dateinput-wrap:hover, .k-dateinput-wrap:focus, .k-dropdown-wrap:hover, .k-dropdown-wrap:focus, .k-picker-wrap:hover, .k-picker-wrap:focus, .k-multiselect-wrap:hover, .k-multiselect-wrap:focus, .k-numeric-wrap:hover, .k-numeric-wrap:focus, .k-textbox:hover, .k-textbox:focus, .custom-file-label:hover, .custom-file-label:focus {
+  border-width: 1px;
+  border-color: #e4e7eb;
+  background: #FFFFFF; }
+  .form-control:hover, .form-control:focus, .k-textbox:hover, .k-textbox:focus, .custom-file-label:hover, .custom-file-label:focus, .k-autocomplete:hover, .k-autocomplete:focus {
     background: #e4e7eb;
-    border-color: #5082d7;
-    transition: none; }
-  .form-control.k-state-disabled, .form-control.k-state-invalid, .form-control[readonly="true"], .form-control[readonly="readOnly"], .k-autocomplete.k-state-disabled, .k-autocomplete.k-state-invalid, .k-autocomplete[readonly="true"], .k-autocomplete[readonly="readOnly"], .k-dateinput-wrap.k-state-disabled, .k-dateinput-wrap.k-state-invalid, .k-dateinput-wrap[readonly="true"], .k-dateinput-wrap[readonly="readOnly"], .k-dropdown-wrap.k-state-disabled, .k-dropdown-wrap.k-state-invalid, .k-dropdown-wrap[readonly="true"], .k-dropdown-wrap[readonly="readOnly"], .k-picker-wrap.k-state-disabled, .k-picker-wrap.k-state-invalid, .k-picker-wrap[readonly="true"], .k-picker-wrap[readonly="readOnly"], .k-multiselect-wrap.k-state-disabled, .k-multiselect-wrap.k-state-invalid, .k-multiselect-wrap[readonly="true"], .k-multiselect-wrap[readonly="readOnly"], .k-numeric-wrap.k-state-disabled, .k-numeric-wrap.k-state-invalid, .k-numeric-wrap[readonly="true"], .k-numeric-wrap[readonly="readOnly"], .k-textbox.k-state-disabled, .k-textbox.k-state-invalid, .k-textbox[readonly="true"], .k-textbox[readonly="readOnly"], .custom-file-label.k-state-disabled, .custom-file-label.k-state-invalid, .custom-file-label[readonly="true"], .custom-file-label[readonly="readOnly"] {
+    transition: none;
+    border-color: #5082d7; }
+  .form-control.k-state-disabled, .form-control.k-state-invalid, .form-control[readonly="true"], .form-control[readonly="readOnly"], .form-control[readonly="readonly"], .k-textbox.k-state-disabled, .k-textbox.k-state-invalid, .k-textbox[readonly="true"], .k-textbox[readonly="readOnly"], .k-textbox[readonly="readonly"], .custom-file-label.k-state-disabled, .custom-file-label.k-state-invalid, .custom-file-label[readonly="true"], .custom-file-label[readonly="readOnly"], .custom-file-label[readonly="readonly"], .k-autocomplete.k-state-disabled, .k-autocomplete.k-state-invalid, .k-autocomplete[readonly="true"], .k-autocomplete[readonly="readOnly"], .k-autocomplete[readonly="readonly"] {
     opacity: 0.5;
     pointer-events: none;
-    border: none !important; }
+    background-color: #FFFFFF !important; }
+  .form-control.disabled, .form-control:disabled, .form-control[readonly="true"], .form-control[readonly="readOnly"], .k-textbox.disabled, .k-textbox:disabled, .k-textbox[readonly="true"], .k-textbox[readonly="readOnly"], .custom-file-label.disabled, .custom-file-label:disabled, .custom-file-label[readonly="true"], .custom-file-label[readonly="readOnly"], .k-autocomplete.disabled, .k-autocomplete:disabled, .k-autocomplete[readonly="true"], .k-autocomplete[readonly="readOnly"] {
+    opacity: 0.5;
+    pointer-events: none; }
 
-.form-control.disabled, .form-control:disabled, .form-control[readonly="true"], .form-control[readonly="readOnly"] {
+.k-widget .k-numeric-wrap, .k-widget .k-picker-wrap, .k-widget .k-dropdown-wrap, .k-widget .k-multiselect-wrap {
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-width: 1px;
+  border-color: #e4e7eb;
+  background: #FFFFFF; }
+  .k-widget .k-numeric-wrap:hover, .k-widget .k-numeric-wrap:focus, .k-widget .k-numeric-wrap.k-state-hover, .k-widget .k-numeric-wrap.k-state-focused, .k-widget .k-picker-wrap:hover, .k-widget .k-picker-wrap:focus, .k-widget .k-picker-wrap.k-state-hover, .k-widget .k-picker-wrap.k-state-focused, .k-widget .k-dropdown-wrap:hover, .k-widget .k-dropdown-wrap:focus, .k-widget .k-dropdown-wrap.k-state-hover, .k-widget .k-dropdown-wrap.k-state-focused, .k-widget .k-multiselect-wrap:hover, .k-widget .k-multiselect-wrap:focus, .k-widget .k-multiselect-wrap.k-state-hover, .k-widget .k-multiselect-wrap.k-state-focused {
+    background: #e4e7eb;
+    transition: none;
+    border-color: #5082d7; }
+
+.k-widget.readonly {
   opacity: 0.5;
   pointer-events: none; }
 
-label {
-  margin-bottom: .5rem; }
+.custom-file-input:focus ~ .custom-file-label {
+  border-color: #5082d7; }
+
+.k-select {
+  margin-left: .5rem !important; }
 
 .info-icon {
   padding-left: 10px;
@@ -1264,22 +1314,32 @@ label {
 .input-group-text {
   border-width: 0; }
 
+.k-pager-numbers {
+  z-index: 1; }
+
 .whitebox, .md-subheader, .k-popup {
   background-color: white !important; }
-  .whitebox .form-control, .whitebox .k-autocomplete, .whitebox .k-dateinput-wrap, .whitebox .k-dropdown-wrap, .whitebox .k-picker-wrap, .whitebox .k-multiselect-wrap, .whitebox .k-numeric-wrap, .whitebox .k-textbox, .whitebox .custom-file-label, .md-subheader .form-control, .md-subheader .k-autocomplete, .md-subheader .k-dateinput-wrap, .md-subheader .k-dropdown-wrap, .md-subheader .k-picker-wrap, .md-subheader .k-multiselect-wrap, .md-subheader .k-numeric-wrap, .md-subheader .k-textbox, .md-subheader .custom-file-label, .k-popup .form-control, .k-popup .k-autocomplete, .k-popup .k-dateinput-wrap, .k-popup .k-dropdown-wrap, .k-popup .k-picker-wrap, .k-popup .k-multiselect-wrap, .k-popup .k-numeric-wrap, .k-popup .k-textbox, .k-popup .custom-file-label {
-    background: #f2f2f2;
-    border-color: #f2f2f2; }
-    .whitebox .form-control:hover, .whitebox .form-control:focus, .whitebox .k-autocomplete:hover, .whitebox .k-autocomplete:focus, .whitebox .k-dateinput-wrap:hover, .whitebox .k-dateinput-wrap:focus, .whitebox .k-dropdown-wrap:hover, .whitebox .k-dropdown-wrap:focus, .whitebox .k-picker-wrap:hover, .whitebox .k-picker-wrap:focus, .whitebox .k-multiselect-wrap:hover, .whitebox .k-multiselect-wrap:focus, .whitebox .k-numeric-wrap:hover, .whitebox .k-numeric-wrap:focus, .whitebox .k-textbox:hover, .whitebox .k-textbox:focus, .whitebox .custom-file-label:hover, .whitebox .custom-file-label:focus, .md-subheader .form-control:hover, .md-subheader .form-control:focus, .md-subheader .k-autocomplete:hover, .md-subheader .k-autocomplete:focus, .md-subheader .k-dateinput-wrap:hover, .md-subheader .k-dateinput-wrap:focus, .md-subheader .k-dropdown-wrap:hover, .md-subheader .k-dropdown-wrap:focus, .md-subheader .k-picker-wrap:hover, .md-subheader .k-picker-wrap:focus, .md-subheader .k-multiselect-wrap:hover, .md-subheader .k-multiselect-wrap:focus, .md-subheader .k-numeric-wrap:hover, .md-subheader .k-numeric-wrap:focus, .md-subheader .k-textbox:hover, .md-subheader .k-textbox:focus, .md-subheader .custom-file-label:hover, .md-subheader .custom-file-label:focus, .k-popup .form-control:hover, .k-popup .form-control:focus, .k-popup .k-autocomplete:hover, .k-popup .k-autocomplete:focus, .k-popup .k-dateinput-wrap:hover, .k-popup .k-dateinput-wrap:focus, .k-popup .k-dropdown-wrap:hover, .k-popup .k-dropdown-wrap:focus, .k-popup .k-picker-wrap:hover, .k-popup .k-picker-wrap:focus, .k-popup .k-multiselect-wrap:hover, .k-popup .k-multiselect-wrap:focus, .k-popup .k-numeric-wrap:hover, .k-popup .k-numeric-wrap:focus, .k-popup .k-textbox:hover, .k-popup .k-textbox:focus, .k-popup .custom-file-label:hover, .k-popup .custom-file-label:focus {
-      background: #e4e7eb;
-      border-color: #5082d7; }
-  .whitebox .k-dropdown .k-dropdown-wrap.k-state-default, .whitebox .k-dropdowntree .k-dropdown-wrap.k-state-default, .md-subheader .k-dropdown .k-dropdown-wrap.k-state-default, .md-subheader .k-dropdowntree .k-dropdown-wrap.k-state-default, .k-popup .k-dropdown .k-dropdown-wrap.k-state-default, .k-popup .k-dropdowntree .k-dropdown-wrap.k-state-default {
-    background-color: #f2f2f2;
-    border-color: #f2f2f2; }
-  .whitebox .k-dropdown .k-dropdown-wrap.k-state-hover, .whitebox .k-dropdown .k-dropdown-wrap.k-state-focused, .whitebox .k-dropdowntree .k-dropdown-wrap.k-state-hover, .whitebox .k-dropdowntree .k-dropdown-wrap.k-state-focused, .md-subheader .k-dropdown .k-dropdown-wrap.k-state-hover, .md-subheader .k-dropdown .k-dropdown-wrap.k-state-focused, .md-subheader .k-dropdowntree .k-dropdown-wrap.k-state-hover, .md-subheader .k-dropdowntree .k-dropdown-wrap.k-state-focused, .k-popup .k-dropdown .k-dropdown-wrap.k-state-hover, .k-popup .k-dropdown .k-dropdown-wrap.k-state-focused, .k-popup .k-dropdowntree .k-dropdown-wrap.k-state-hover, .k-popup .k-dropdowntree .k-dropdown-wrap.k-state-focused {
-    border-color: #5082d7; }
-  .whitebox .custom-file-input:disabled ~ .custom-file-label, .md-subheader .custom-file-input:disabled ~ .custom-file-label, .k-popup .custom-file-input:disabled ~ .custom-file-label {
-    background: #f2f2f2;
-    opacity: 0.5; }
+  .whitebox .form-control, .whitebox .k-textbox, .whitebox .custom-file-label, .whitebox .k-autocomplete, .md-subheader .form-control, .md-subheader .k-textbox, .md-subheader .custom-file-label, .md-subheader .k-autocomplete, .k-popup .form-control, .k-popup .k-textbox, .k-popup .custom-file-label, .k-popup .k-autocomplete {
+    background: #f2f2f2; }
+    .whitebox .form-control:hover, .whitebox .form-control:focus, .whitebox .k-textbox:hover, .whitebox .k-textbox:focus, .whitebox .custom-file-label:hover, .whitebox .custom-file-label:focus, .whitebox .k-autocomplete:hover, .whitebox .k-autocomplete:focus, .md-subheader .form-control:hover, .md-subheader .form-control:focus, .md-subheader .k-textbox:hover, .md-subheader .k-textbox:focus, .md-subheader .custom-file-label:hover, .md-subheader .custom-file-label:focus, .md-subheader .k-autocomplete:hover, .md-subheader .k-autocomplete:focus, .k-popup .form-control:hover, .k-popup .form-control:focus, .k-popup .k-textbox:hover, .k-popup .k-textbox:focus, .k-popup .custom-file-label:hover, .k-popup .custom-file-label:focus, .k-popup .k-autocomplete:hover, .k-popup .k-autocomplete:focus {
+      background: #e4e7eb; }
+    .whitebox .form-control.k-state-disabled, .whitebox .form-control.k-state-invalid, .whitebox .form-control[readonly="true"], .whitebox .form-control[readonly="readOnly"], .whitebox .form-control[readonly="readonly"], .whitebox .k-textbox.k-state-disabled, .whitebox .k-textbox.k-state-invalid, .whitebox .k-textbox[readonly="true"], .whitebox .k-textbox[readonly="readOnly"], .whitebox .k-textbox[readonly="readonly"], .whitebox .custom-file-label.k-state-disabled, .whitebox .custom-file-label.k-state-invalid, .whitebox .custom-file-label[readonly="true"], .whitebox .custom-file-label[readonly="readOnly"], .whitebox .custom-file-label[readonly="readonly"], .whitebox .k-autocomplete.k-state-disabled, .whitebox .k-autocomplete.k-state-invalid, .whitebox .k-autocomplete[readonly="true"], .whitebox .k-autocomplete[readonly="readOnly"], .whitebox .k-autocomplete[readonly="readonly"], .md-subheader .form-control.k-state-disabled, .md-subheader .form-control.k-state-invalid, .md-subheader .form-control[readonly="true"], .md-subheader .form-control[readonly="readOnly"], .md-subheader .form-control[readonly="readonly"], .md-subheader .k-textbox.k-state-disabled, .md-subheader .k-textbox.k-state-invalid, .md-subheader .k-textbox[readonly="true"], .md-subheader .k-textbox[readonly="readOnly"], .md-subheader .k-textbox[readonly="readonly"], .md-subheader .custom-file-label.k-state-disabled, .md-subheader .custom-file-label.k-state-invalid, .md-subheader .custom-file-label[readonly="true"], .md-subheader .custom-file-label[readonly="readOnly"], .md-subheader .custom-file-label[readonly="readonly"], .md-subheader .k-autocomplete.k-state-disabled, .md-subheader .k-autocomplete.k-state-invalid, .md-subheader .k-autocomplete[readonly="true"], .md-subheader .k-autocomplete[readonly="readOnly"], .md-subheader .k-autocomplete[readonly="readonly"], .k-popup .form-control.k-state-disabled, .k-popup .form-control.k-state-invalid, .k-popup .form-control[readonly="true"], .k-popup .form-control[readonly="readOnly"], .k-popup .form-control[readonly="readonly"], .k-popup .k-textbox.k-state-disabled, .k-popup .k-textbox.k-state-invalid, .k-popup .k-textbox[readonly="true"], .k-popup .k-textbox[readonly="readOnly"], .k-popup .k-textbox[readonly="readonly"], .k-popup .custom-file-label.k-state-disabled, .k-popup .custom-file-label.k-state-invalid, .k-popup .custom-file-label[readonly="true"], .k-popup .custom-file-label[readonly="readOnly"], .k-popup .custom-file-label[readonly="readonly"], .k-popup .k-autocomplete.k-state-disabled, .k-popup .k-autocomplete.k-state-invalid, .k-popup .k-autocomplete[readonly="true"], .k-popup .k-autocomplete[readonly="readOnly"], .k-popup .k-autocomplete[readonly="readonly"] {
+      opacity: 0.5;
+      pointer-events: none;
+      background-color: #f2f2f2 !important; }
+  .whitebox .k-widget .k-numeric-wrap, .whitebox .k-widget .k-picker-wrap, .whitebox .k-widget .k-dropdown-wrap, .whitebox .k-widget .k-multiselect-wrap, .md-subheader .k-widget .k-numeric-wrap, .md-subheader .k-widget .k-picker-wrap, .md-subheader .k-widget .k-dropdown-wrap, .md-subheader .k-widget .k-multiselect-wrap, .k-popup .k-widget .k-numeric-wrap, .k-popup .k-widget .k-picker-wrap, .k-popup .k-widget .k-dropdown-wrap, .k-popup .k-widget .k-multiselect-wrap {
+    background: #f2f2f2; }
+    .whitebox .k-widget .k-numeric-wrap:hover, .whitebox .k-widget .k-numeric-wrap:focus, .whitebox .k-widget .k-numeric-wrap.k-state-hover, .whitebox .k-widget .k-numeric-wrap.k-state-focused, .whitebox .k-widget .k-picker-wrap:hover, .whitebox .k-widget .k-picker-wrap:focus, .whitebox .k-widget .k-picker-wrap.k-state-hover, .whitebox .k-widget .k-picker-wrap.k-state-focused, .whitebox .k-widget .k-dropdown-wrap:hover, .whitebox .k-widget .k-dropdown-wrap:focus, .whitebox .k-widget .k-dropdown-wrap.k-state-hover, .whitebox .k-widget .k-dropdown-wrap.k-state-focused, .whitebox .k-widget .k-multiselect-wrap:hover, .whitebox .k-widget .k-multiselect-wrap:focus, .whitebox .k-widget .k-multiselect-wrap.k-state-hover, .whitebox .k-widget .k-multiselect-wrap.k-state-focused, .md-subheader .k-widget .k-numeric-wrap:hover, .md-subheader .k-widget .k-numeric-wrap:focus, .md-subheader .k-widget .k-numeric-wrap.k-state-hover, .md-subheader .k-widget .k-numeric-wrap.k-state-focused, .md-subheader .k-widget .k-picker-wrap:hover, .md-subheader .k-widget .k-picker-wrap:focus, .md-subheader .k-widget .k-picker-wrap.k-state-hover, .md-subheader .k-widget .k-picker-wrap.k-state-focused, .md-subheader .k-widget .k-dropdown-wrap:hover, .md-subheader .k-widget .k-dropdown-wrap:focus, .md-subheader .k-widget .k-dropdown-wrap.k-state-hover, .md-subheader .k-widget .k-dropdown-wrap.k-state-focused, .md-subheader .k-widget .k-multiselect-wrap:hover, .md-subheader .k-widget .k-multiselect-wrap:focus, .md-subheader .k-widget .k-multiselect-wrap.k-state-hover, .md-subheader .k-widget .k-multiselect-wrap.k-state-focused, .k-popup .k-widget .k-numeric-wrap:hover, .k-popup .k-widget .k-numeric-wrap:focus, .k-popup .k-widget .k-numeric-wrap.k-state-hover, .k-popup .k-widget .k-numeric-wrap.k-state-focused, .k-popup .k-widget .k-picker-wrap:hover, .k-popup .k-widget .k-picker-wrap:focus, .k-popup .k-widget .k-picker-wrap.k-state-hover, .k-popup .k-widget .k-picker-wrap.k-state-focused, .k-popup .k-widget .k-dropdown-wrap:hover, .k-popup .k-widget .k-dropdown-wrap:focus, .k-popup .k-widget .k-dropdown-wrap.k-state-hover, .k-popup .k-widget .k-dropdown-wrap.k-state-focused, .k-popup .k-widget .k-multiselect-wrap:hover, .k-popup .k-widget .k-multiselect-wrap:focus, .k-popup .k-widget .k-multiselect-wrap.k-state-hover, .k-popup .k-widget .k-multiselect-wrap.k-state-focused {
+      background: #e4e7eb; }
+  .whitebox .custom-file-input, .md-subheader .custom-file-input, .k-popup .custom-file-input {
+    opacity: 0; }
+    .whitebox .custom-file-input:disabled ~ .custom-file-label, .md-subheader .custom-file-input:disabled ~ .custom-file-label, .k-popup .custom-file-input:disabled ~ .custom-file-label {
+      background: #f2f2f2;
+      opacity: 0.5;
+      pointer-events: none;
+      border: none !important; }
+  .whitebox .image-preview .image-holder, .md-subheader .image-preview .image-holder, .k-popup .image-preview .image-holder {
+    background: #ffffff; }
 
 .k-invalid {
   background-color: #fef7f8 !important;
@@ -1367,30 +1427,6 @@ label {
   .dropdown-menu.k-colorpalette, .k-popup.k-colorpalette {
     padding: 10px; }
 
-.k-dropdown .k-dropdown-wrap.k-state-default, .k-dropdowntree .k-dropdown-wrap.k-state-default, .k-multiselect .k-dropdown-wrap.k-state-default {
-  background-color: #FFFFFF;
-  border-color: #FFFFFF; }
-
-.k-dropdown .k-dropdown-wrap.k-state-hover, .k-dropdown .k-dropdown-wrap.k-state-focused, .k-dropdowntree .k-dropdown-wrap.k-state-hover, .k-dropdowntree .k-dropdown-wrap.k-state-focused, .k-multiselect .k-dropdown-wrap.k-state-hover, .k-multiselect .k-dropdown-wrap.k-state-focused {
-  background-color: #e4e7eb;
-  border-color: #5082d7;
-  box-shadow: none; }
-
-.k-dropdown .k-dropdown-wrap.k-state-disabled, .k-dropdown .k-dropdown-wrap.k-state-invalid, .k-dropdowntree .k-dropdown-wrap.k-state-disabled, .k-dropdowntree .k-dropdown-wrap.k-state-invalid, .k-multiselect .k-dropdown-wrap.k-state-disabled, .k-multiselect .k-dropdown-wrap.k-state-invalid {
-  background-color: #f2f2f2;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #b0b0b0; }
-  .k-dropdown .k-dropdown-wrap.k-state-disabled .k-input, .k-dropdown .k-dropdown-wrap.k-state-invalid .k-input, .k-dropdowntree .k-dropdown-wrap.k-state-disabled .k-input, .k-dropdowntree .k-dropdown-wrap.k-state-invalid .k-input, .k-multiselect .k-dropdown-wrap.k-state-disabled .k-input, .k-multiselect .k-dropdown-wrap.k-state-invalid .k-input {
-    background-color: #f2f2f2;
-    color: #333333; }
-
-.k-dropdown.form-control, .k-dropdowntree.form-control, .k-multiselect.form-control {
-  border: none; }
-
-.k-dropdown .k-multiselect-wrap .k-button .k-select, .k-dropdowntree .k-multiselect-wrap .k-button .k-select, .k-multiselect .k-multiselect-wrap .k-button .k-select {
-  margin-left: 3px; }
-
 .rating-fields .form-control {
   height: auto; }
 
@@ -1409,23 +1445,22 @@ label {
     white-space: nowrap;
     margin: 2px; }
 
-.mobile-grid-block {
-  white-space: nowrap; }
-  .mobile-grid-block > span {
-    font-size: 0.7rem;
-    line-height: 1.5;
-    font-weight: bold;
-    white-space: nowrap;
-    display: block;
-    margin-top: 10px; }
-    .mobile-grid-block > span.rating-stars {
-      font-size: 0.875rem;
-      background: rgba(0, 0, 0, 0.05);
-      padding: 0.375rem 0;
-      border-radius: 0.25rem;
-      display: inline-block; }
-  .mobile-grid-block .grid-list-button {
-    margin: 5px 0px; }
+.mobile-grid-block > span {
+  font-size: 0.7rem;
+  line-height: 1.5;
+  font-weight: bold;
+  white-space: nowrap;
+  display: block;
+  margin-top: 10px; }
+  .mobile-grid-block > span.rating-stars {
+    font-size: 0.875rem;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.5rem 0;
+    border-radius: 0.25rem;
+    display: inline-block; }
+
+.mobile-grid-block .grid-list-button {
+  margin: 5px 0px; }
 
 .grid-list-button {
   background-color: rgba(0, 0, 0, 0.05);
@@ -1433,11 +1468,10 @@ label {
   border-radius: 0.25rem;
   font-size: 0.7875rem; }
   .grid-list-button span {
-    padding: 0.375rem 0.5rem;
-    white-space: nowrap;
+    padding: 0.5rem 0.375rem;
     display: inline-block; }
   .grid-list-button a, .grid-list-button button {
-    padding: 0.375rem 0.5rem;
+    padding: 0.5rem 0.375rem;
     border: none;
     background: rgba(0, 0, 0, 0.05);
     min-width: 30px;
@@ -1448,16 +1482,15 @@ label {
       background: rgba(0, 0, 0, 0.05); }
 
 .required-label {
-  background-color: rgba(0, 0, 0, 0.05);
-  color: rgba(0, 0, 0, 0.5);
-  padding: 0.375rem;
+  background-color: #ed969e;
+  color: white;
+  padding: 5px 10px;
   min-width: inherit;
   line-height: 1;
   min-height: auto;
   font-size: 0.7rem;
   border-radius: 0.25rem;
-  margin-left: 5px;
-  font-weight: bold; }
+  margin-left: 5px; }
 
 .mce-btn i {
   text-shadow: inherit !important; }
@@ -1468,8 +1501,8 @@ label {
   top: 0; }
 
 .icon30 i:before {
-  width: 30px;
-  text-align: center;
+  width: 20px;
+  text-align: left;
   display: inline-block; }
 
 .date-range-picker {
@@ -1542,7 +1575,8 @@ label {
     align-items: center;
     overflow: hidden;
     border-radius: 0.25rem;
-    background: #f2f2f2; }
+    background: #FFFFFF;
+    border-bottom: 1px solid #e4e7eb; }
     .image-preview .image-holder img {
       width: 100%;
       height: 100%;
@@ -1581,6 +1615,10 @@ label {
     height: 60px; }
     .image-preview.image-preview-60 .image-holder {
       border-radius: 50%; }
+  .image-preview[disabled="disabled"] {
+    opacity: 0.5;
+    pointer-events: none;
+    border: none !important; }
 
 .ng-submitted .image-preview.required .image-holder {
   background: #fef7f8 !important; }
@@ -1613,10 +1651,10 @@ label {
   .grid-theme .k-grouping-header {
     background-color: transparent;
     color: rgba(0, 0, 0, 0.5);
-    padding: 0.375rem 1rem; }
+    padding: 0.5rem 0.75rem; }
   .grid-theme .k-grid-pager {
     background-color: transparent;
-    padding: 1rem; }
+    padding: 0.75rem; }
   .grid-theme .k-grid-header {
     background-color: white;
     border-bottom: 1px solid #e4e7eb; }
@@ -1626,7 +1664,8 @@ label {
     font-size: 0.7875rem; }
     .grid-theme .k-pager-sizes > .k-dropdown {
       order: 2;
-      margin: 0px 0px 0px 10px; }
+      margin: 0px 0px 0px 10px;
+      width: 70px; }
   .grid-theme .k-loading-mask {
     display: none; }
     .grid-theme .k-loading-mask ~ table td {
@@ -1672,7 +1711,7 @@ label {
     .grid-theme tr[ng-click] td[ng-click] {
       cursor: default;
       position: relative; }
-  .grid-theme .k-checkbox {
+  .grid-theme .k-checkbox ~ label {
     width: 100%;
     height: 100%;
     left: 0;
@@ -1680,7 +1719,11 @@ label {
     pointer-events: inherit;
     -webkit-appearance: inherit;
     clip: inherit;
-    cursor: pointer; }
+    cursor: pointer;
+    position: absolute;
+    display: block;
+    opacity: 0;
+    margin-left: 0; }
 
 .table-theme thead th {
   border: none; }
@@ -1738,7 +1781,7 @@ label {
       opacity: 1;
       box-shadow: none;
       border-width: 0;
-      padding: 0.375rem; }
+      padding: 0.5rem; }
       .grid-buttons > div .btn span {
         display: none; }
   .grid-buttons.active {
@@ -1898,7 +1941,7 @@ label {
 
 li.sortable {
   list-style-type: none;
-  padding: 0.375rem 1rem;
+  padding: 0.5rem 0.75rem;
   background: #FFFFFF;
   cursor: move;
   display: -webkit-box;
@@ -2132,6 +2175,26 @@ li.sortable-list-placeholder {
   .filter-button:hover .filter-badge {
     color: #1F4688;
     background: white; }
+  .filter-button.filter-button2 {
+    position: absolute;
+    margin: 0;
+    right: 0;
+    top: 20px;
+    -webkit-transform: rotate(90deg) translate(100%, 0%);
+    -moz-transform: rotate(90deg) translate(100%, 0%);
+    -ms-transform: rotate(90deg) translate(100%, 0%);
+    -o-transform: rotate(90deg) translate(100%, 0%);
+    transform: rotate(90deg) translate(100%, 0%);
+    transform-origin: top right;
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+    border-bottom-right-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+    padding: 5px 20px;
+    z-index: 10; }
+    .filter-button.filter-button2:hover {
+      background: transparent;
+      box-shadow: none !important; }
 
 .filter-list > section > div {
   padding-bottom: 10px; }
@@ -2253,7 +2316,7 @@ li.sortable-list-placeholder {
     margin-bottom: 10px; }
   .note-list .note .note-text .note-pre {
     background: #f2f2f2;
-    padding: 1rem;
+    padding: 0.75rem;
     border-radius: 0.25rem;
     margin-bottom: 0; }
   .note-list .note .note-text .action-buttons button:first-child {
@@ -2290,7 +2353,7 @@ li.sortable-list-placeholder {
     .document-form .drop-box .drop-box-in {
       padding: 5px;
       position: relative;
-      padding: 1rem;
+      padding: 0.75rem;
       background: #f2f2f2;
       border-radius: 0.25rem;
       border: 1px dashed #e4e7eb;
@@ -2387,15 +2450,14 @@ li.sortable-list-placeholder {
     padding: 10px;
     border-radius: 0.25rem;
     background: #f2f2f2; }
-    .document-list li .document-item .form-control, .document-list li .document-item .k-autocomplete, .document-list li .document-item .k-dateinput-wrap, .document-list li .document-item .k-dropdown-wrap, .document-list li .document-item .k-picker-wrap, .document-list li .document-item .k-multiselect-wrap, .document-list li .document-item .k-numeric-wrap, .document-list li .document-item .k-textbox, .document-list li .document-item .custom-file-label {
-      background: #FFFFFF;
-      border-color: #FFFFFF; }
-      .document-list li .document-item .form-control:hover, .document-list li .document-item .form-control:focus, .document-list li .document-item .k-autocomplete:hover, .document-list li .document-item .k-autocomplete:focus, .document-list li .document-item .k-dateinput-wrap:hover, .document-list li .document-item .k-dateinput-wrap:focus, .document-list li .document-item .k-dropdown-wrap:hover, .document-list li .document-item .k-dropdown-wrap:focus, .document-list li .document-item .k-picker-wrap:hover, .document-list li .document-item .k-picker-wrap:focus, .document-list li .document-item .k-multiselect-wrap:hover, .document-list li .document-item .k-multiselect-wrap:focus, .document-list li .document-item .k-numeric-wrap:hover, .document-list li .document-item .k-numeric-wrap:focus, .document-list li .document-item .k-textbox:hover, .document-list li .document-item .k-textbox:focus, .document-list li .document-item .custom-file-label:hover, .document-list li .document-item .custom-file-label:focus {
-        background: #e4e7eb;
-        border-color: #5082d7; }
-    .document-list li .document-item .k-dropdown .k-dropdown-wrap.k-state-default {
-      background-color: #FFFFFF;
-      border-color: #FFFFFF; }
+    .document-list li .document-item .form-control, .document-list li .document-item .k-textbox, .document-list li .document-item .custom-file-label, .document-list li .document-item .k-autocomplete {
+      background: #FFFFFF; }
+      .document-list li .document-item .form-control:hover, .document-list li .document-item .form-control:focus, .document-list li .document-item .k-textbox:hover, .document-list li .document-item .k-textbox:focus, .document-list li .document-item .custom-file-label:hover, .document-list li .document-item .custom-file-label:focus, .document-list li .document-item .k-autocomplete:hover, .document-list li .document-item .k-autocomplete:focus {
+        background: #e4e7eb; }
+    .document-list li .document-item .k-widget .k-numeric-wrap, .document-list li .document-item .k-widget .k-picker-wrap, .document-list li .document-item .k-widget .k-multiselect-wrap, .document-list li .document-item .k-widget .k-dropdown-wrap {
+      background: #FFFFFF; }
+      .document-list li .document-item .k-widget .k-numeric-wrap:hover, .document-list li .document-item .k-widget .k-numeric-wrap:focus, .document-list li .document-item .k-widget .k-numeric-wrap.k-state-hover, .document-list li .document-item .k-widget .k-numeric-wrap.k-state-focused, .document-list li .document-item .k-widget .k-picker-wrap:hover, .document-list li .document-item .k-widget .k-picker-wrap:focus, .document-list li .document-item .k-widget .k-picker-wrap.k-state-hover, .document-list li .document-item .k-widget .k-picker-wrap.k-state-focused, .document-list li .document-item .k-widget .k-multiselect-wrap:hover, .document-list li .document-item .k-widget .k-multiselect-wrap:focus, .document-list li .document-item .k-widget .k-multiselect-wrap.k-state-hover, .document-list li .document-item .k-widget .k-multiselect-wrap.k-state-focused, .document-list li .document-item .k-widget .k-dropdown-wrap:hover, .document-list li .document-item .k-widget .k-dropdown-wrap:focus, .document-list li .document-item .k-widget .k-dropdown-wrap.k-state-hover, .document-list li .document-item .k-widget .k-dropdown-wrap.k-state-focused {
+        background: #e4e7eb; }
     .document-list li .document-item .custom-file-input:disabled ~ .custom-file-label {
       background: #FFFFFF;
       opacity: 0.5; }
@@ -2659,39 +2721,42 @@ md-toolbar {
         display: -webkit-flex;
         display: flex; }
 
-.collapsible .collapsible-head {
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-justify-content: space-between;
-  -moz-justify-content: space-between;
-  -ms-justify-content: space-between;
-  justify-content: space-between;
-  -ms-flex-pack: space-between;
-  -webkit-align-items: center;
-  -moz-align-items: center;
-  -ms-align-items: center;
-  -ms-flex-align: center;
-  align-items: center;
-  width: 100%; }
-  .collapsible .collapsible-head button {
-    padding: 0;
-    text-decoration: none; }
-    .collapsible .collapsible-head button .fa-plus {
-      display: none; }
-    .collapsible .collapsible-head button.collapsed .fa-plus {
-      display: inline-block; }
-    .collapsible .collapsible-head button.collapsed .fa-minus {
-      display: none; }
-  .collapsible .collapsible-head .md-icon-button .fa-plus {
-    display: block; }
-
-.collapsible .collapsible-body {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 2px solid rgba(0, 0, 0, 0.05); }
+.collapsible {
+  padding: 0px;
+  overflow: hidden; }
+  .collapsible .collapsible-head {
+    padding: 20px 30px;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-justify-content: space-between;
+    -moz-justify-content: space-between;
+    -ms-justify-content: space-between;
+    justify-content: space-between;
+    -ms-flex-pack: space-between;
+    -webkit-align-items: center;
+    -moz-align-items: center;
+    -ms-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    background: #f6f8fa;
+    width: 100%; }
+    .collapsible .collapsible-head button {
+      padding: 0;
+      text-decoration: none; }
+      .collapsible .collapsible-head button .fa-plus {
+        display: none; }
+      .collapsible .collapsible-head button.collapsed .fa-plus {
+        display: inline-block; }
+      .collapsible .collapsible-head button.collapsed .fa-minus {
+        display: none; }
+    .collapsible .collapsible-head .md-icon-button .fa-plus {
+      display: block; }
+  .collapsible .collapsible-body {
+    margin-top: 10px;
+    padding: 20px 30px; }
 
 .filter-list {
   padding-left: 10px;
@@ -2782,7 +2847,7 @@ md-toolbar {
     .newupload .uploadlink input ~ span {
       display: block;
       position: relative;
-      padding: 1rem 0.375rem;
+      padding: 0.75rem 0.5rem;
       background: #f2f2f2;
       border-radius: 0.25rem;
       text-align: center;
@@ -3400,10 +3465,6 @@ md-dialog .md-actions, md-dialog md-dialog-actions {
   -o-border-radius: 25px;
   border-radius: 25px; }
 
-@media (min-width: 1200px) {
-  .md-sidenav-right {
-    transition: 0s all !important; } }
-
 @media (max-width: 1199.98px) {
   html body {
     font-size: 0.7875rem; }
@@ -3486,10 +3547,19 @@ md-dialog .md-actions, md-dialog md-dialog-actions {
     background: white !important;
     color: #292b2c !important;
     font-weight: bold; }
-    md-toolbar .form-control, md-toolbar .k-autocomplete, md-toolbar .k-dateinput-wrap, md-toolbar .k-dropdown-wrap, md-toolbar .k-picker-wrap, md-toolbar .k-multiselect-wrap, md-toolbar .k-numeric-wrap, md-toolbar .k-textbox, md-toolbar .custom-file-label {
-      background: #f2f2f2; }
-      md-toolbar .form-control:hover, md-toolbar .form-control:focus, md-toolbar .k-autocomplete:hover, md-toolbar .k-autocomplete:focus, md-toolbar .k-dateinput-wrap:hover, md-toolbar .k-dateinput-wrap:focus, md-toolbar .k-dropdown-wrap:hover, md-toolbar .k-dropdown-wrap:focus, md-toolbar .k-picker-wrap:hover, md-toolbar .k-picker-wrap:focus, md-toolbar .k-multiselect-wrap:hover, md-toolbar .k-multiselect-wrap:focus, md-toolbar .k-numeric-wrap:hover, md-toolbar .k-numeric-wrap:focus, md-toolbar .k-textbox:hover, md-toolbar .k-textbox:focus, md-toolbar .custom-file-label:hover, md-toolbar .custom-file-label:focus {
-        background: #e4e7eb; }
+    md-toolbar .form-control, md-toolbar .k-textbox, md-toolbar .custom-file-label, md-toolbar .k-autocomplete {
+      background: #f2f2f2;
+      border-color: #f2f2f2; }
+    md-toolbar .k-widget .k-numeric-wrap, md-toolbar .k-widget .k-picker-wrap, md-toolbar .k-widget .k-multiselect-wrap, md-toolbar .k-widget .k-dropdown-wrap {
+      background: #f2f2f2;
+      border-color: #f2f2f2; }
+      md-toolbar .k-widget .k-numeric-wrap:hover, md-toolbar .k-widget .k-numeric-wrap:focus, md-toolbar .k-widget .k-numeric-wrap.k-state-hover, md-toolbar .k-widget .k-numeric-wrap.k-state-focused, md-toolbar .k-widget .k-picker-wrap:hover, md-toolbar .k-widget .k-picker-wrap:focus, md-toolbar .k-widget .k-picker-wrap.k-state-hover, md-toolbar .k-widget .k-picker-wrap.k-state-focused, md-toolbar .k-widget .k-multiselect-wrap:hover, md-toolbar .k-widget .k-multiselect-wrap:focus, md-toolbar .k-widget .k-multiselect-wrap.k-state-hover, md-toolbar .k-widget .k-multiselect-wrap.k-state-focused, md-toolbar .k-widget .k-dropdown-wrap:hover, md-toolbar .k-widget .k-dropdown-wrap:focus, md-toolbar .k-widget .k-dropdown-wrap.k-state-hover, md-toolbar .k-widget .k-dropdown-wrap.k-state-focused {
+        background: #e4e7eb;
+        border-color: #5082d7;
+        transition: none; }
+      md-toolbar .k-widget .k-numeric-wrap.k-state-default, md-toolbar .k-widget .k-picker-wrap.k-state-default, md-toolbar .k-widget .k-multiselect-wrap.k-state-default, md-toolbar .k-widget .k-dropdown-wrap.k-state-default {
+        background-color: #f2f2f2;
+        border-color: #f2f2f2; }
     md-toolbar .helpbuttons {
       margin-left: 10px;
       display: inline-flex;
@@ -3512,7 +3582,9 @@ md-dialog .md-actions, md-dialog md-dialog-actions {
       md-toolbar .helpbuttons:after {
         content: '';
         display: table;
-        clear: both; } }
+        clear: both; }
+  .pr-view-settings {
+    padding-right: 50px !important; } }
 
 @media (max-width: 767.98px) {
   .hide-on-m {
@@ -3566,8 +3638,6 @@ md-dialog .md-actions, md-dialog md-dialog-actions {
               width: 40px; }
               .wrapper > section > .main-menu-wrapper .main-menu li ul li a i:first-child {
                 left: 20px; }
-        .wrapper > section > .main-menu-wrapper .main-menu li:last-child {
-          border-color: transparent; }
   .accountbar-in .md-button:hover {
     color: white; }
   .accountbar-in .account-link {
@@ -3614,6 +3684,7 @@ md-dialog .md-actions, md-dialog md-dialog-actions {
     .own-tab md-pagination-wrapper, .own-tab md-tabs-canvas {
       margin: 0; }
     .own-tab .md-tab {
+      max-width: 220px !important;
       color: white;
       opacity: .8;
       font-size: 0.875rem;
@@ -3671,9 +3742,11 @@ md-dialog .md-actions, md-dialog md-dialog-actions {
       margin: 0 5px;
       box-shadow: none; }
   .dashboard .dashlet .edit-buttons {
-    display: block; }
+    display: block;
+    opacity: 1; }
   .dashboard .dashlet:before {
-    display: block; }
+    display: block;
+    opacity: 1; }
   .dockside i {
     color: rgba(255, 255, 255, 0.5); }
   md-dialog {
@@ -3681,7 +3754,23 @@ md-dialog .md-actions, md-dialog md-dialog-actions {
   .draglistbox .k-listbox {
     width: 100% !important; }
     .draglistbox .k-listbox .k-item {
-      padding: 5px 10px; } }
+      padding: 5px 10px; }
+  md-content .container-fluid.paddingua20 {
+    padding: 5px 0px 0px 0px !important; }
+    md-content .container-fluid.paddingua20 > .row {
+      margin: 0; }
+    md-content .container-fluid.paddingua20 .whitebox {
+      border-radius: 0;
+      margin-bottom: 5px; }
+      md-content .container-fluid.paddingua20 .whitebox .grid-theme {
+        border-width: 0; }
+    md-content .container-fluid.paddingua20 .title {
+      padding: 15px 15px 0px 15px; }
+  .collapsible .collapsible-head, .collapsible .collapsible-body {
+    padding-left: 20px;
+    padding-right: 20px; }
+  .wrapper > section > .main-menu-wrapper .main-menu li a {
+    font-size: 0.7875rem; } }
 
 @media (min-width: 576px) {
   .show-on-m2 {
@@ -3716,3 +3805,20 @@ md-dialog .md-actions, md-dialog md-dialog-actions {
   .row10 > *[class^="col"] {
     padding-left: 10px;
     padding-right: 10px; }
+
+.profile-settings .user-profile {
+  font-size: 0.9em;
+  background-color: rgba(128, 128, 128, 0.15);
+  padding: 1px 9px;
+  margin-left: 10px;
+  border-radius: 5px;}
+.profile-settings .user-profile-content {
+  text-align: end;}
+.profile-settings .user-profile-mobile {
+  margin-top: 5px;
+  display: inline-block;}
+.profile-settings .profile-image-delete {
+  top: 60px;}
+.profile-settings .profile-image-upload {
+  top: 60px;
+  left: 0px;}

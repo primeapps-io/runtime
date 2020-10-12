@@ -1,6 +1,6 @@
-<div layout="column" class="wrapper" id="wrapper" ng-cloak>
+<div layout="column" class="wrapper hide-sidebar" id="wrapper" ng-cloak>
     <section layout="row" flex>
-        <md-sidenav class="md-sidenav-left main-menu-wrapper md-whiteframe-2dp" md-component-id="menuModal" md-is-locked-open="$mdMedia('gt-sm')">
+        <md-sidenav class="md-sidenav-left main-menu-wrapper md-whiteframe-2dp" ng-mouseover="toggleFullLeftMenu()" ng-mouseout="toggleFullLeftMenu()" md-component-id="menuModal" md-is-locked-open="$mdMedia('gt-sm')">
             <div class="scroll-primary" layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
                 <md-toolbar class="show-on-m with-subheader" md-scroll-shrink ng-if="true">
                     <div class="md-toolbar-tools">

@@ -47,8 +47,7 @@
                     </div>
                     <div class="form-group" ng-show="!profile || !(profile.has_admin_rights && profile.is_persistent)">
                         <label for="PageStart">{{'Setup.Profiles.StarPage' | translate}} </label>
-                        <select class="form-control"
-                                id="PageStart"
+                        <select id="PageStart"
                                 k-ng-model="profile.PageStart"
                                 k-on-change="SetStartPage()"
                                 ng-disabled="profile.system_type === 'system'"
