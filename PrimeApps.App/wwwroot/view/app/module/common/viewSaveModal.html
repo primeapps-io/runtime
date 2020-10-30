@@ -14,10 +14,10 @@
 
                 <div class="form-group">
                     <label>
-                        <span>  View Name </span>                   
+                        <span>  View Name </span>
                     </label>
                     <input type="text" name="view_name"
-                           ng-value="activeView['label_'+language] || activeView['name_'+language]" 
+                           ng-value="activeView['label_'+language] || activeView['name_'+language]"
                            ng-model="viewName"
                            ng-change="viewNameMax()"
                            class="k-textbox"/>
@@ -46,17 +46,17 @@
                             <label class="k-radio-label" for="me">{{'View.ShareMe' | translate}}</label>
                         </li>
                         <li>
-                            <input type="radio" ng-if="user.profile.has_admin_rights" name="sharingType" id="everybody"
+                            <input type="radio"  name="sharingType" id="everybody"
                                    class="k-radio"
                                    ng-model="activeView.sharing_type" value="everybody">
                             <label class="k-radio-label" for="everybody"> {{'View.ShareEveryone' | translate}}</label>
                         </li>
-                        <li>
-                            <input type="radio" ng-if="user.profile.has_admin_rights" name="sharingType" id="custom"
+                        <li ng-if="!preview">
+                            <input type="radio"  name="sharingType" id="custom"
                                    class="k-radio"
                                    ng-model="activeView.sharing_type" value="custom">
                             <label class="k-radio-label" for="custom"> {{'View.ShareCustom' | translate}}</label>
-                        </li>            
+                        </li>
                         <li>
                             <input type="radio"  name="profile" id="profile"
                                    class="k-radio"
@@ -70,7 +70,7 @@
                     <select id="shares" kendo-multi-select k-ng-model="activeView.shares"
                             k-options="sharesOptions"
                             data-placeholder="'{{'Common.MultiselectPlaceholder' | translate}}'"></select>
-                </div>      
+                </div>
                 <div class="form-group" ng-show="activeView.sharing_type === 'profile'">
                     <label for="profiles">{{'Setup.Modules.Profile' | translate}}</label>
                     <select id="profiles"  kendo-multi-select k-ng-model="activeView.profile"
@@ -80,15 +80,15 @@
             </div>
         </md-dialog-content>
         <md-dialog-actions layout="row" >
-            <md-button ng-if="(activeView.system_type !='system' || preview)  && activeView.id" ng-show="viewPermissions.modify" ng-click="SaveView('edit')" class="btn btn-primary" type="button" md-autofocus><i
+            <md-button ng-if="(activeView.system_type !='system' || preview)  && activeView.id" ng-show="viewPermissions.modify && (activeView.created_by_id === user.id || user.profile.has_admin_rights)" ng-click="SaveView('edit')" class="btn btn-primary" type="button" md-autofocus><i
                     class="fas fa-save"></i>
                 {{'Common.Save' | translate}}
-            </md-button>           
+            </md-button>
             <md-button ng-if="activeView.isNew" ng-show="viewPermissions.write" ng-click="SaveView('add')" class="btn btn-primary" type="button" md-autofocus><i
                     class="fas fa-save"></i>
                 {{'Common.Save' | translate}}
-            </md-button>    
-            
+            </md-button>
+
             <md-button ng-if="!activeView.isNew" ng-show="viewPermissions.write"  ng-click="SaveView('add')" class="btn btn-primary" type="button" md-autofocus><i
                     class="fas fa-save"></i>
                 {{'Common.SaveAsNew' | translate}}
@@ -97,4 +97,4 @@
 
         </md-dialog-actions>
     </form>
-</md-dialog> 
+</md-dialog>

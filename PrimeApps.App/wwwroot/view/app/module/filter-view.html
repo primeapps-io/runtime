@@ -14,7 +14,7 @@
         </md-button>
         <md-button
                 ng-if="activeView.system_type !='system'"
-                ng-show="viewPermissions.remove"
+                ng-show="viewPermissions.remove && (activeView.created_by_id === user.id || user.profile.has_admin_rights)"
                 class="md-icon-button btn btn-secondary" aria-label="Delete" ng-click="deleteView($event)"><i class="fas fa-trash"></i>
             <md-tooltip md-directtion="bottom"> {{'Common.Delete' | translate}}</md-tooltip>
         </md-button>
@@ -248,7 +248,7 @@
                     <label class="k-radio-label" for="dateRange">Date Range</label>
                 </li>
             </ul>
-            
+
             <div class="form-group">
                 <label>
                     <span ng-if="dateRangeSelect === 'date'">{{'View.DateField' | translate}}</span>

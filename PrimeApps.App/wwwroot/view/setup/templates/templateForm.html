@@ -153,18 +153,18 @@
                             </label>
                             <ul class="list-unstyled">
                                 <li>
-                                    <input type="radio" name="sharingType" id="me" class="k-radio" checked="checked"
+                                    <input type="radio" name="sharingType" id="me" class="k-radio" ng-checked="true"
                                            ng-model="current.sharing_type" value="me">
                                     <label class="k-radio-label" for="me">{{'View.ShareMe' | translate}}</label>
                                 </li>
                                 <li>
-                                    <input type="radio" ng-if="user.profile.has_admin_rights" name="sharingType" id="everybody"
+                                    <input type="radio" ng-disabled="!user.profile.has_admin_rights" name="sharingType" id="everybody"
                                            class="k-radio"
                                            ng-model="current.sharing_type" value="everybody">
                                     <label class="k-radio-label" for="everybody"> {{'View.ShareEveryone' | translate}}</label>
                                 </li>
                                 <li>
-                                    <input type="radio" ng-if="user.profile.has_admin_rights" name="sharingType" id="custom"
+                                    <input type="radio" ng-disabled="!user.profile.has_admin_rights" name="sharingType" id="custom"
                                            class="k-radio"
                                            ng-model="current.sharing_type" value="custom">
                                     <label class="k-radio-label" for="custom"> {{'View.ShareCustom' | translate}}</label>

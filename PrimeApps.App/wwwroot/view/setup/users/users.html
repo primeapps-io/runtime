@@ -19,7 +19,7 @@
                         {{'Setup.User.NewUserFromOffice' | translate}}
                     </md-tooltip>
                 </md-button>
-                <md-button class="md-icon-button btn btn-primary" ng-click="showCreateForm()" aria-label="{{'Setup.Users.NewUser' | translate}}">
+                <md-button ng-if="!preview" class="md-icon-button btn btn-primary" ng-click="showCreateForm()" aria-label="{{'Setup.Users.NewUser' | translate}}">
                     <i class="fas fa-plus"></i>
                     <md-tooltip md-direction="bottom">
                         {{'Setup.Users.NewUser' | translate}}
