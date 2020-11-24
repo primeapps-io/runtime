@@ -196,7 +196,7 @@
            tabindex="{{field.order}}"
            required="{{field.validation.required}}">
     <label ng-show="!field.custom_label && field.show_label"
-           class="k-checkbox-label" for="{{field.name}}" class="required"><span>{{ field['label_' + language] }}</span></label>
+           class="k-checkbox-label" for="{{field.name}}" class="required"><span>{{ field.languages[globalization.Label]['label'] }}</span></label>
 </div>
 
 <div class="form-group"

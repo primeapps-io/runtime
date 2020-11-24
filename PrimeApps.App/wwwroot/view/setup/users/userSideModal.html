@@ -20,10 +20,31 @@
                 <div>
                     <div class="title">
                         <h5>{{'Setup.Users.UserLicenseInfo' | translate}}</h5>
+                        <button class="btn" type="button" ng-click="changeUserIsActive()">
+                            <span ng-if="!addUserModel.is_active" class="required-label" style="background-color: red;">{{'Common.Deactivate' | translate}}</span>
+                            <span ng-if="addUserModel.is_active" class="required-label" style="background-color: green;">{{'Common.Active' | translate}}</span>
+                        </button>
                     </div>
                     <div class="whitebox">
-                        <div class="form-group">
-                            <label for="firstName" class="required">
+                        <div class="form-group text-center">
+                            <div class="image-preview image-preview-150">
+                                <div class="image-holder" style="background-color: #f9f9f9; border-radius: 200px;">
+                                    <img ng-src="{{addUserModel.pictureData ? addUserModel.pictureData : 'images/no-image.png'}}"
+                                         alt="" style="border-radius: 15px;"/>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="form-group text-center" ng-if="user.profile.has_admin_rights === true && !preview && !addNewUser">
+                            <button class="btn" type="button" ng-click="sendResetPassword()" style="padding-bottom: 20px;">
+                                <span  class="required-label" style="background-color: #e2e1e1; color: #5d5b5b;">
+                                    <i class="fas fa-unlock-alt"></i> {{'Setup.Users.ResetPasswordLink' | translate}}
+                                </span>
+                            </button>
+                        </div>
+                        <div class="form-group" style="display: flex" ng-if="!isMobile()">
+                            <div class="col-sm-6 col-xs-6 col-md-6"  style="padding-left: 0px !important;"> 
+                            <label for="firstName" class="required col-sm-12 col-xs-12 col-md-12" style="padding-right: 0px !important;padding-left: 0px !important;">
                                 <span>{{'Setup.Users.NewUserName' | translate}}</span>
                                 <span class="label-right">
                                     <span class="required-label">{{'Common.Required' | translate}}</span>
@@ -34,9 +55,9 @@
                                    placeholder="{{'Setup.Users.NewUserName' | translate}}" required ng-model="addUserModel.first_name"
                                    validationMessage="{{'Module.Required' | translate}}" />
                             <span class="k-invalid-msg" data-for="firstName"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="lastName" class="required">
+                            </div>
+                            <div class="col-sm-6 col-xs-6 col-md-6"  style=" padding-right: 0px !important;">
+                            <label for="lastName" class="required col-sm-12 col-xs-12 col-md-12" style="padding-right: 0px !important;padding-left: 0px !important;">
                                 <span>{{'Setup.Users.NewUserLastName' | translate}}</span>
                                 <span class="label-right">
                                     <span class="required-label">{{'Common.Required' | translate}}</span>
@@ -47,6 +68,34 @@
                                    placeholder="{{'Setup.Users.NewUserLastName' | translate}}" required ng-model="addUserModel.last_name"
                                    validationMessage="{{'Module.Required' | translate}}" />
                             <span class="k-invalid-msg" data-for="lastName"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-if="isMobile()">
+                            <label for="firstName2" class="required">
+                                <span>{{'Setup.Users.NewUserName' | translate}}</span>
+                                <span class="label-right">
+                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                </span>
+                            </label>
+                            <input type="text" id="firstName2" name="firstName" class="k-textbox"
+                                   ng-disabled="addUserModel.id" maxlength="100"
+                                   placeholder="{{'Setup.Users.NewUserName' | translate}}" required ng-model="addUserModel.first_name"
+                                   validationMessage="{{'Module.Required' | translate}}" />
+                            <span class="k-invalid-msg" data-for="firstName2"></span>
+                        </div>
+                        <div class="form-group" ng-if="isMobile()">
+                            <label for="lastName2" class="required">
+                                <span>{{'Setup.Users.NewUserLastName' | translate}}</span>
+                                <span class="label-right">
+                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                </span>
+                            </label>
+                            <input type="text" id="lastName2" name="lastName" class="k-textbox"
+                                   ng-disabled="addUserModel.id" maxlength="100"
+                                   placeholder="{{'Setup.Users.NewUserLastName' | translate}}" required ng-model="addUserModel.last_name"
+                                   validationMessage="{{'Module.Required' | translate}}" />
+                            <span class="k-invalid-msg" data-for="lastName2"></span>
                         </div>
                         <div class="form-group">
                             <label for="email" class="required">
@@ -96,9 +145,20 @@
                                     required></select>
                             <span class="k-invalid-msg" data-for="role"></span>
                         </div>
-                        <div class="form-group" ng-if="addUserModel.id">
-                            <span>   <kendo-switch id="view-editable" k-ng-model="addUserModel.is_active"></kendo-switch> {{'Common.Active' | translate}} </span>
-                         </div>                        
+                        <div class="form-group">
+                            <label for="phone">
+                                <span>{{'Setup.Users.Phone' | translate}}</span>
+                            </label>
+                            <input kendo-numeric-text-box 
+                                   name="phone"
+                                   id="phone"
+                                   ng-placeholder="{{'Setup.Users.Phone' | translate}}"
+                                   k-options="{{'numberOptions'}}"
+                                   maxlength="12"
+                                   minlength="0"
+                                   k-ng-model="addUserModel.phone"
+                                   ng-disabled="addUserModel.id" />
+                        </div>
                     </div>
 
                 </div>

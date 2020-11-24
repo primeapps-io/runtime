@@ -48,7 +48,7 @@
                             required
                             name="board"
                             ng-change="changeBoard()"
-                            ng-options="o.id as o['name_'+user.language] for o in boards">
+                            ng-options="o.id as o.languages[globalization.Label]['name'] for o in boards">
                         <option value="">{{'Common.Select' | translate}}</option>
                     </select>
                 </div>
@@ -59,7 +59,7 @@
                             required
                             ng-model="currentDashlet.module_id"
                             ng-change="selectModule()"
-                            ng-options="o.id as o['label_' + language + '_singular'] for o in modulesOpt | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                            ng-options="o.id as o.languages[globalization.Label]['label']['singular'] for o in modulesOpt | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
                         <option value="">{{'Common.Select' | translate}}</option>
                     </select>
                 </div>        
@@ -70,7 +70,7 @@
                             required
                             ng-model="currentDashlet.view_id"
                             ng-change="changeView()"
-                            ng-options="o.id as o['label_' + language] for o in views | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                            ng-options="o.id as o.languages[globalization.Label]['label'] for o in views | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
                         <option value="">{{'Common.Select' | translate}}</option>
                     </select>
                 </div>

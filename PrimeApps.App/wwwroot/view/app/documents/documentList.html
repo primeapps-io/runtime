@@ -21,7 +21,6 @@
                             <i class="fas fa-save"></i>
                             <md-tooltip md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip>
                         </md-button>
-                        
                     </div>
                 </div>
             </div>
@@ -36,7 +35,7 @@
                     </div>
                     <div class="col-12 text-center text-md-left col-md">
                         <div class="document-text">
-                            <md-button class="btn btn-secondary" target="_blank" ng-href="{{'/storage/download?fileId='+ document.id}}"><i class="fas fa-download"></i> {{document.name}} <small> ({{document.file_size | size}})</small> </md-button>
+                            <md-button class="btn btn-secondary" target="_blank" ng-href="{{'/storage/download?fileId='+ document.id}}"><i class="fas fa-download"></i>{{document.name}}<small> ({{document.file_size | size}})</small> </md-button>
                             <span class="mt-2 mt-md-0 ml-2 d-block d-md-inline-block" ng-show="document.description">{{document.description}}</span>
                         </div>
                         <div class="document-edit">

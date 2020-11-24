@@ -212,7 +212,7 @@
 
                                 <section class="whitebox collapsible" ng-repeat="section in module.sections | filter:{deleted: false}:true | orderBy:'order'">
                                     <div class="collapsible-head" id="heading{{$index}}">
-                                        <h5>{{section['label_' + language]}}</h5>
+                                        <h5>{{section.languages[globalization.Label]['label']}}</h5>
                                         <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{$index}}" aria-expanded="true" aria-controls="collapse{{$index}}">
                                             <i class="fas fa-plus"></i>
                                             <i class="fas fa-minus"></i>
@@ -224,7 +224,7 @@
                                                  ng-repeat="column in section.columns track by $index">
                                                 <div class="form-group text-center" ng-repeat="field in module.fields | filter:{section: section.name, section_column: column.no, deleted: false, data_type: '!number_auto'}: true | filter:combinationFilter | orderBy:'order'">
                                                     <label for="{{field.name}}" style="{{field.style_label}}">
-                                                        <span>{{field['label_' + language]}}  {{field.validation.required ? '*':''}}</span>
+                                                        <span>{{field.languages[globalization.Label]['label']}}  {{field.validation.required ? '*':''}}</span>
                                                         <md-button type="button" class="md-icon-button btn btn-sm" ng-click="openFixedValueModal(field,$event)" ng-if="getColumnName(field.name) === 'fixed'"><i class="fas fa-cog"></i></md-button>
                                                     </label>
 

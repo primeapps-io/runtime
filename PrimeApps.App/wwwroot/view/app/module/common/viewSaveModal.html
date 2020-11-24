@@ -1,5 +1,5 @@
 <md-dialog flex="33">
-    <form ng-cloak class="disable-validation-msg">
+    <form kendo-validator="viewSaveModalForm" ng-cloak class="disable-validation-msg"   autocomplete="off" novalidate>
         <md-toolbar>
             <div class="md-toolbar-tools">
                 <h3>{{'View.SaveOptions' | translate}} </h3>
@@ -14,10 +14,10 @@
 
                 <div class="form-group">
                     <label>
-                        <span>  View Name </span>
+                        <span>{{'View.Name' | translate}}</span>
                     </label>
                     <input type="text" name="view_name"
-                           ng-value="activeView['label_'+language] || activeView['name_'+language]"
+                           ng-value="activeView.languages[globalization.Label]['label'] || activeView.languages[globalization.Label]['name']" 
                            ng-model="viewName"
                            ng-change="viewNameMax()"
                            class="k-textbox"/>
@@ -89,7 +89,7 @@
                 {{'Common.Save' | translate}}
             </md-button>
 
-            <md-button ng-if="!activeView.isNew" ng-show="viewPermissions.write"  ng-click="SaveView('add')" class="btn btn-primary" type="button" md-autofocus><i
+            <md-button ng-if="!activeView.isNew" ng-show="viewPermissions.write" ng-disabled="viewIsSaveing" ng-click="SaveView('add')" class="btn btn-primary" type="button" md-autofocus><i
                     class="fas fa-save"></i>
                 {{'Common.SaveAsNew' | translate}}
             </md-button>

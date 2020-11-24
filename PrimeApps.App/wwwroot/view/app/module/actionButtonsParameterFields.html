@@ -57,7 +57,7 @@
             name="{{field.name}}"
             class="form-control"
             ng-model="buttonsParametersData[field.key]"
-            ng-options="o['label_' + tenantLanguage] as o['label_' + language] for o in picklistItems[field.key]['items']">
+            ng-options="o.languages[globalization.Label]['label'] as o.languages[globalization.Label]['label'] for o in picklistItems[field.key]['items']">
         <option value="">{{'Common.Select' | translate}}</option>
     </select>
 </div>
@@ -76,9 +76,9 @@
                    name="{{field.name}}"
                    type="radio"
                    ng-model="buttonsParametersData[field.key]"
-                   ng-value="o['label_' + tenantLanguage]">
+                   ng-value="o.languages[globalization.Label]['label']">
             <label class="k-radio-label" for="{{field.name+o.id}}">
-                {{o['label_' + language]}}
+                {{o.languages[globalization.Label]['label']}}
             </label>
         </li>
     </ul>

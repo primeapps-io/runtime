@@ -1,8 +1,8 @@
 <form class="note-form bottom20"  ng-show="show" ng-submit="create(note)">
     <div class="form-group">
-        <textarea placeholder="{{'Note.NotePlaceholder' | translate }}" ui-tinymce="tinymceTemplate" class="form-control" ng-model="note.text" focus="show" ng-required="true"></textarea>
+        <textarea placeholder="{{'Note.NotePlaceholder' | translate }}" ui-tinymce="tinymceTemplate" class="form-control" ng-model="note.languages[globalization.Label].text" focus="show" ng-required="true"></textarea>
     </div>
-    <md-button aria-label=" {{'Note.Submit' | translate}}" title=" {{'Note.Submit' | translate}}" type="submit" class="btn btn-primary" ng-disabled="!note.text" ><i class="fas fa-save"></i> {{'Note.Submit' | translate}}</md-button>
+    <md-button aria-label=" {{'Note.Submit' | translate}}" title=" {{'Note.Submit' | translate}}" type="submit" class="btn btn-primary" ng-disabled="!note.languages[globalization.Label].text" ><i class="fas fa-save"></i> {{'Note.Submit' | translate}}</md-button>
     <md-button aria-label="{{'Common.Cancel' | translate}}" title="{{'Common.Cancel' | translate}}" type="button" class="btn btn-secondary" ng-click="note = null; show = false;">{{'Common.Cancel' | translate}}</md-button>
 
     <div class="d-none" plupload="imgUploadForm">

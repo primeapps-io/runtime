@@ -4,7 +4,7 @@
                 class="fas fa-angle-left"></i>
             <md-tooltip md-direction="bottom" >{{'Common.Close' | translate}}</md-tooltip>
         </md-button>
-        <h3 md-truncate> {{ activeView['label_'+language] || activeView['name_'+language] }}</h3>
+        <h3 md-truncate> {{ activeView.languages[globalization.Label]['label'] || activeView.languages[globalization.Label]['name'] }}</h3>
         <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close"><i
                 class="fas fa-thumbtack"></i></md-button>
         <span flex></span>
@@ -110,7 +110,7 @@
                     </label>
                     <select
                             k-option-label="'{{'Module.SelectField' | translate}}'"
-                            k-data-text-field="'label_{{language}}'"
+                            k-data-text-field="'languages.{{globalization.Label}}.label'"
                             k-data-value-field="'name'"
                             k-data-source="module.fields"
                             ng-required="true"
@@ -127,7 +127,7 @@
                     <select
                             id="report-order-field"
                             k-option-label="'{{'Module.SelectField' | translate}}'"
-                            k-data-text-field="'label_{{language}}'"
+                            k-data-text-field="'languages.{{globalization.Label}}.label'"
                             k-data-value-field="'name'"
                             k-data-source="module.fields"
                             kendo-drop-down-list ng-model="reportModel.sort_field"></select>
@@ -149,7 +149,7 @@
                 <div class="col-12 col-sm-6">
                     <select id="calculationfields"
                             k-option-label="'{{'Module.SelectField' | translate}}'"
-                            k-data-text-field="'label_{{language}}'"
+                            k-data-text-field="'languages.{{globalization.Label}}.label'"
                             k-data-value-field="'name'"
                             k-data-source="numberFields"
                             ng-model="activeView.aggregation.field"
@@ -203,7 +203,7 @@
                          <span class="required-label">{{'Common.Required' | translate}}</span>
                     </span>
                 </label>
-                <input type="text" id="xaxis_name" name="xaxis_name" ng-required="true" ng-model="reportSummary.chart.xaxisname" class="k-textbox"/>
+                <input type="text" id="xaxis_name" name="xaxis_name" ng-required="true" ng-model="reportSummary.chart['xaxisname']" class="k-textbox"/>
             </div>
             <div class="form-group">
                 <label>
@@ -212,7 +212,7 @@
                          <span class="required-label">{{'Common.Required' | translate}}</span>
                     </span>
                 </label>
-                <input type="text" id="yaxisname" name="yaxisname" ng-required="true" ng-model="reportSummary.chart.yaxisname" class="k-textbox"/>
+                <input type="text" id="yaxisname" name="yaxisname" ng-required="true" ng-model="reportSummary.chart['yaxisname']" class="k-textbox"/>
             </div>
         </section>
 
@@ -241,11 +241,11 @@
             <ul class="list-unstyled list-inline bottom10" ng-init="dateRangeSelect='date'">
                 <li>
                     <input type="radio" name="dateRangeSelect" ng-model="dateRangeSelect" value="date" id="date" class="k-radio">
-                    <label class="k-radio-label" for="date">Date</label>
+                    <label class="k-radio-label" for="date">{{'View.DateField' | translate}}</label>
                 </li>
                 <li>
                     <input type="radio" name="dateRangeSelect" ng-model="dateRangeSelect" value="dateRange" id="dateRange" ng-change="activeView.settings.enddatefield= ''" class="k-radio">
-                    <label class="k-radio-label" for="dateRange">Date Range</label>
+                    <label class="k-radio-label" for="dateRange">{{'View.DateRange' | translate}}</label>
                 </li>
             </ul>
 

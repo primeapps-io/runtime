@@ -105,7 +105,7 @@
                                                 class="form-control ng-animate-disabled"
                                                 name="module_name"
                                                 ng-model="moduleItem"
-                                                ng-options="o as o['label_' + language + '_plural'] for o in newModuleList | filter:{display:'!false'} | orderNotZero | orderBy:'label_' + language + '_plural'">
+                                                ng-options="o as o.languages[globalization.label]['label']['plural'] for o in newModuleList | filter:{display:'!false'} | orderNotZero | orderBy:'label_' + language + '_plural'">
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
                                     </div>
@@ -229,5 +229,4 @@
             </form>
         </div>
     </div>
-</div>
 </div>

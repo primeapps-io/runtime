@@ -46,7 +46,7 @@
 
                                         <select
                                                 k-option-label="'{{'Module.SelectField' | translate}}'"
-                                                k-data-text-field="'label_{{language}}'"
+                                                k-data-text-field="'languages.{{globalization.Label}}.label'"
                                                 k-data-value-field="'name'"
                                                 k-data-source="module.fields"
                                                 k-auto-width="true"
@@ -61,7 +61,7 @@
                                     <div class="form-group">
                                         <select
                                                 k-option-label="'{{'Module.SelectOperator' | translate}}'"
-                                                k-data-text-field="'label.{{language}}'"
+                                                k-data-text-field="'label'"
                                                 k-data-value-field="'name'"
                                                 k-auto-width="true"
                                                 k-data-source="fieldskey[filter.field].operators"

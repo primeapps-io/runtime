@@ -36,10 +36,11 @@
                         <div  ng-show="current.template_type !== 'system'" class="form-group">
                             <label for="module">
                                 <span>{{'Module' | translate}} </span>
-                                <span class="required-label label-right">{{'Common.Required' | translate}}</span>
+                                <span class="label-right">
+                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                </span>
                             </label>
-                           
-                            <select kendo-drop-down-list
+                            <input kendo-drop-down-list
                                     id="module"
                                     name="module"
                                     k-options="moduleOptions"
@@ -47,13 +48,13 @@
                                     ng-change="currentChangeModule()"
                                     k-option-label="'{{'Common.Select' | translate}}'"
                                     required
-                                    ng-disabled="current.system_type === 'system'"></select>
+                                    ng-disabled="current.system_type === 'system'"/>
                             <span class="k-invalid-msg" data-for="role"></span>
                         </div>
                         
                         <ul class="form-group">
                             <li class="d-flex justify-content-between align-items-center">
-                                <span>{{'Status'  | translate}}</span>
+                                <span>{{'Setup.Templates.Status'  | translate}}</span>
                                 <kendo-switch name="shareData1" ng-model="current.active" ng-disabled="current.system_type == 'system'"></kendo-switch>
                             </li>
                         </ul>
@@ -64,12 +65,26 @@
                                 <span class="required-label label-right">{{'Common.Required' | translate}}</span>
                             </label>
                             <input type="text" name="subject" class="k-textbox" placeholder="{{'Subject' | translate}}" required ng-model="current.subject" maxlength="200" ng-disabled="current.system_type == 'system'"/>
+                        </div>
 
+                        <div class="form-group">
+                            <label>
+                                <span>{{'Setup.Settings.Language' | translate}}</span>
+                                <span class="label-right">
+                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                </span>
+                            </label>
+                            <input kendo-drop-down-list
+                                    id="language"
+                                    name="language"
+                                    k-options="languageOptions"
+                                    ng-model="current.language"
+                                    required/>
                         </div>
 
                         <div class="form-group" ng-if="templateActiveTab !='document' && templateActiveTab !='excel' && templateActiveTab !='email'">
                             <label>
-                                <span>{{'Content ' | translate}}</span>
+                                <span>{{'Template.Content' | translate}}</span>
                                 <span class="required-label label-right">{{'Common.Required' | translate}}</span>
                             </label>
                             <label>
@@ -79,7 +94,7 @@
 
                         <div class="form-group mentiofix" ng-if="templateActiveTab !='document' && templateActiveTab !='excel' && templateActiveTab !='sms'"  >
                             <label>
-                                <span>{{'Content ' | translate}}</span>
+                                <span>{{'Template.Content' | translate}}</span>
                                 <span class="required-label label-right">{{'Common.Required' | translate}}</span>
                             </label>
                             <textarea mentio-id="'tinyMceTextArea2'"
@@ -137,13 +152,13 @@
                                                 <input type="file"  nv-file-select uploader="fileUpload" ng-disabled="current.system_type == 'system'" nv-file-over>
                                                 <span id="fileUploadReq">
                                                         <i class="fas fa-cloud-upload-alt"></i>
-                                                        <small>Please choose a file or drag it here</small>
+                                                        <small>{{'Template.Choose' | translate}}</small>
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
                                 </label>
-                                <span class="col-sm-12" style="font-size: 12px; margin: 0px;padding: 0px;">Template file must not exceed 10 MB.</span>
+                                <span class="col-sm-12" style="font-size: 12px; margin: 0px;padding: 0px;">{{'Template.Warning' | translate}}</span>
                             </div>
                         </div>
 
@@ -153,7 +168,7 @@
                             </label>
                             <ul class="list-unstyled">
                                 <li>
-                                    <input type="radio" name="sharingType" id="me" class="k-radio" ng-checked="true"
+                                    <input type="radio" name="sharingType" id="me" class="k-radio" ng-checked="true" 
                                            ng-model="current.sharing_type" value="me">
                                     <label class="k-radio-label" for="me">{{'View.ShareMe' | translate}}</label>
                                 </li>
@@ -165,7 +180,7 @@
                                 </li>
                                 <li>
                                     <input type="radio" ng-disabled="!user.profile.has_admin_rights" name="sharingType" id="custom"
-                                           class="k-radio"
+                                           class="k-radio" 
                                            ng-model="current.sharing_type" value="custom">
                                     <label class="k-radio-label" for="custom"> {{'View.ShareCustom' | translate}}</label>
                                 </li>

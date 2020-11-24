@@ -4,7 +4,7 @@
         <div id="myStaticDialog"></div>
         <md-toolbar class="with-subheader" md-scroll-shrink ng-if="true">
             <div class="md-toolbar-tools">
-                <h1 md-truncate>{{'Dashboard.Dashboard' | translate}}</h1>
+                <h1 md-truncate>{{'Dashboard.Label' | translate}}</h1>
                 <div class="helpbuttons hide-on-m">
                     <md-button class="md-icon-button" aria-label="{{'Common.Help' | translate}}" ng-if="dashboardHelpSide" ng-click="helpSide()"><i class="fas fa-question-circle"></i>
                         <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
@@ -34,9 +34,9 @@
             <md-subheader class="own-tab">
                 <md-tabs md-dynamic-height md-swipe-content>
                     <md-tab ng-repeat="dashboard in dashboards" ng-click="changeDashboard(dashboard);">
-                        <md-tab-label id="tab{{dashboard.id}}" aria-controls="{{dashboard['name_'+language] }}" >
+                        <md-tab-label id="tab{{dashboard.id}}" aria-controls="{{dashboard.languages[globalization.Label]['name']}}" >
                             <div class="tab-container">
-                                <span>{{dashboard['name_'+language] }}</span>
+                                <span>{{dashboard.languages[globalization.Label]['name']}}</span>
                                 <div class="tab-icons">
                                     <a href ng-click="$event.stopPropagation(); dashboardformModal($event,dashboard)" title="{{'Common.Edit' | translate}}"><i class="fas fa-pen"></i> </a>
                                 </div>
@@ -73,8 +73,7 @@
                 <div class="row">
                     <div class="col-12 text-center" ng-if="!dashletMode && dashlets.length < 1 ">
                         <img style="width:100%; max-width: 500px;" src="images/dashboard.svg">
-                        <h1 class="paddingua20">{{ language === 'en' ? ('Common.Welcome' | translate)+' '+ user.full_name :
-                            user.full_name +' '+('Common.Welcome' | translate) }}</h1>
+                        <h1 class="paddingua20">{{ ('Common.Welcome' | translate)+' '+ user.full_name}}</h1>
                         <p>{{'Common.DashletMessage' | translate}}</p>
                         <md-button class="btn btn-white" ng-click="openNewDashlet($event)"   title="{{'Common.Add' | translate}}"><i class="fas fa-plus"></i>
                             <span>{{'Common.Add' | translate}}</span></md-button>
@@ -119,7 +118,7 @@
                                          ng-style="{'height':dashlet.x_tile_height+'px','background-color':dashlet.widget.color ? dashlet.widget.color: '#555' }">
                                        
                                         <i class="{{dashlet.widget.icon}}"></i>
-                                        <div class="description">{{dashlet.widget.widget_data.value}} <small>{{dashlet.widget['name_'+user.language]}}</small>
+                                        <div class="description">{{dashlet.widget.widget_data.value}} <small>{{dashlet.widget.languages[globalization.Label]['name']}}</small>
                                         </div>
                                     </div>
                                 </div>

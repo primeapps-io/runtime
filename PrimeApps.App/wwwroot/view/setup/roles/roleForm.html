@@ -29,7 +29,7 @@
                         <input type="text" id="label" name="label" class="k-textbox"
                                placeholder="{{'Setup.Roles.RoleName' | translate}}"
                                required validationMessage="{{'Module.Required' | translate}}" maxlength="100"
-                               ng-model="role.label"
+                               ng-model="role.languages[globalization.Label]['label']"
                                ng-disabled="role.system_type === 'system'"/>
                         <span class="k-invalid-msg" data-for="label"></span>
                     </div>
@@ -41,7 +41,7 @@
                             </span>
                         </label>
                         <textarea rows="2" name="description" class="form-control" maxlength="250" id="description"
-                                  placeholder="{{'Setup.Roles.RoleDescription' | translate}}" auto-grow ng-model="role.description" ng-disabled="role.system_type === 'system'" required></textarea>
+                                  placeholder="{{'Setup.Roles.RoleDescription' | translate}}" auto-grow ng-model="role.languages[globalization.Label]['description']" ng-disabled="role.system_type === 'system'" required></textarea>
                     </div>
                     <div class="form-group" ng-if="!role.master">
                         <label for="reportsTo" class="required">

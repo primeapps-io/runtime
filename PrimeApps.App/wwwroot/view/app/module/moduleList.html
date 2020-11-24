@@ -5,7 +5,7 @@
                 <md-button class="md-icon-button show-on-m" ng-click="goBack()" aria-label="{{'Common.Back' | translate}}"><i class="fas fa-angle-left"></i>
                     <md-tooltip md-direction="right">{{'Common.Back' | translate}}</md-tooltip>
                 </md-button>
-                <h2 md-truncate>{{module['label_' + language + '_plural']}}</h2>
+                <h2 md-truncate>{{module.languages[globalization.Label]['label']['plural']}}</h2>
                 <div class="helpbuttons">
                     <md-button class="md-icon-button" aria-label="{{'Common.Help' | translate}}" ng-if="showHelp" ng-click="helpSide()"><i
                             class="fas fa-question-circle"></i>
@@ -63,7 +63,7 @@
                     </md-button>
 
                     <md-button ng-click="goUrl('#/app/record/'+module.name)" class="md-icon-button btn btn-primary"
-                               aria-label="{{'Module.New' | translate:{title:module['label_' + language + '_singular']} }}"
+                               aria-label="{{'Module.New' | translate:{title:module.languages[globalization.Label]['label']['singular']} }}"
                                ng-show="hasPermission(type, operations.write)">
                         <i class="fas fa-plus"></i>
                         <md-tooltip md-direction="bottom">{{'Common.AddNew' | translate }}</md-tooltip>
@@ -76,9 +76,9 @@
             <md-subheader class="own-tab" ng-show="views.length>0">
                 <md-tabs md-dynamic-height md-swipe-content md-no-select-click="true">
                     <md-tab ng-repeat='item in views track by $index' ng-click="setView(item)" md-active="activeView.id === item.id">
-                        <md-tab-label aria-controls="{{item['label_' + language]}}">
+                        <md-tab-label aria-controls="{{item.languages[globalization.Label]['label']}}">
                             <div class="tab-container">
-                                <span>{{item['label_' + language]}}</span>
+                                <span>{{item.languages[globalization.Label]['label']}}</span>
                             </div>
                         </md-tab-label>
                     </md-tab>
@@ -189,8 +189,7 @@
                                 <tr ng-repeat="item in reportSummary.data">
                                     <td style="text-align: left;" ng-bind-html="item.label"></td>
                                     <td style="text-align: right;">
-                                        {{activeView.aggregations[0].field===activeView.group_field ? item.value :
-                                        item.valueFormatted }}
+                                        {{activeView.aggregations[0].field===activeView.group_field ? item.value : item.valueFormatted }}
                                     </td>
                                 </tr>
                                 </tbody>
@@ -208,7 +207,7 @@
                                     <div>
                                         <i class="{{activeView.icon}}"></i>
                                         <div class="description">{{activeView.value}}
-                                            <small>{{activeView['name_'+user.language]}}</small>
+                                            <small>{{activeView.languages[globalization.Label]['name']}}</small>
                                         </div>
                                     </div>
                                 </div>

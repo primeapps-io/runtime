@@ -11,11 +11,11 @@
             <div class="md-dialog-content">
                 <div class="form-group">
                     <label for="name" class="required"> {{'Dashboard.Name' | translate}} </label>
-                    <input type="text" id="name" name="name" validationMessage="Zorunlu Alan" ng-model="currentDashboard['name_'+language]" maxlength="50" class="k-textbox" placeholder=" {{'Dashboard.Name' | translate}}" required />
+                    <input type="text" id="name" name="name" validationMessage="Zorunlu Alan" ng-model="currentDashboard.languages[globalization.Label]['name']" maxlength="50" class="k-textbox" placeholder=" {{'Dashboard.Name' | translate}}" required />
                 </div>
                 <div class="form-group">
                     <label for="description"> {{'Dashboard.Description' |  translate}} </label>
-                    <input type="text" id="description" name="description" ng-model="currentDashboard['description_'+language]" class="k-textbox" maxlength="250"  placeholder=" {{'Dashboard.Description' | translate}}"/>
+                    <input type="text" id="description" name="description" ng-model="currentDashboard.languages[globalization.Label]['description']" class="k-textbox" maxlength="250"  placeholder=" {{'Dashboard.Description' | translate}}"/>
                 </div>
                 <div class="form-group"   ng-if="user.profile.has_admin_rights && !currentDashboard.id">
                     <label for="description" class="required">{{'Dashboard.Profile' | translate}} </label>
@@ -24,7 +24,7 @@
                             <input type="radio" id="profile-{{profile.id}}" class="k-radio"
                                    name="dash" required
                                    ng-model="currentDashboard.profile_id" ng-value="profile.id">
-                            <label class="k-radio-label" for="profile-{{profile.id}}"> {{profile.name}} </label>
+                            <label class="k-radio-label" for="profile-{{profile.id}}"> {{profile.languages[globalization.Label]['name']}} </label>
                         </li>
                     </ul>
                 </div>   
@@ -36,7 +36,7 @@
                                    name="dash" required
                                    disabled
                                    ng-model="currentDashboard.profile_id" ng-value="currentDashboard.profile_id">
-                            <label class="k-radio-label" for="profile-{{currentDashboard.profile_id}}"> {{currentDashboard.profile['name_'+language]}} </label>
+                            <label class="k-radio-label" for="profile-{{currentDashboard.profile_id}}"> {{currentDashboard.profile.languages[globalization.Label]['name']}} </label>
                         </li>
                     </ul>
                 </div>

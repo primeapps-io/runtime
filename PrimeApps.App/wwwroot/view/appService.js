@@ -64,6 +64,7 @@ angular.module('primeapps')
                             promises.push($http.get(config.apiUrl + 'settings/get_all/1'));
                             promises.push($http.get(config.apiUrl + 'settings/get_by_key/1/custom_profile_permissions'));
                             promises.push($http.get(config.apiUrl + 'module/get_all'));
+                            promises.push($http.get(config.apiUrl + 'module/get_default_system_fields?label=' + $rootScope.globalization.Label));
 
                             $q.all(promises)
                                 .then(function (response) {
@@ -98,6 +99,7 @@ angular.module('primeapps')
                                     var moduleSettings = response[3].data;
                                     var phoneSettings = response[4].data;
                                     var userSettings = response[10].data;
+                                    $rootScope.defaultSystemFields = response[14].data;
 
                                     if (myAccount.instances.length < 1) {
                                         $state.go('join');
@@ -131,6 +133,10 @@ angular.module('primeapps')
                                         }
                                     }
 
+                                    $rootScope.modulus['users'] = that.getUserModule();
+                                    $rootScope.modulus['profiles'] = that.getProfileModule();
+                                    $rootScope.modulus['roles'] = that.getRoleModule();
+
                                     //697 End
 
                                     $rootScope.user = myAccount.user;
@@ -150,17 +156,86 @@ angular.module('primeapps')
                                     config['imageUrl'] = blobUrl + '/';
                                     config['storage_host'] = blobUrl + '/';
 
+                                    $rootScope.processLanguage = function (entity) {
+                                        if (entity && entity.languages && !angular.isObject(entity.languages))
+                                            entity.languages = JSON.parse(entity.languages);
+                                        for (var key in entity) {
+                                            if (entity.hasOwnProperty(key)) {
+                                                if (angular.isArray(entity[key])) {
+                                                    $rootScope.processLanguages(entity[key]);
+                                                }
+                                                else if (angular.isObject(entity[key]) && key !== 'languages') {
+                                                    for (var key1 in entity[key]) {
+                                                        if (entity[key].hasOwnProperty(key1) && entity[key][key1] && angular.isObject(entity[key][key1])) {
+                                                            $rootScope.processLanguage(entity[key]);
+                                                        }
+                                                        else if (entity[key][key1] && entity[key][key1] && !angular.isObject(entity[key][key1]) && key1 === 'languages')
+                                                            entity[key][key1] = JSON.parse(entity[key][key1]);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    };
+
+                                    $rootScope.processLanguages = function (entities) {
+                                        if (entities && entities.length > 0) {
+                                            for (var o = 0; o < entities.length; o++) {
+                                                $rootScope.processLanguage(entities[o]);
+                                            }
+                                        }
+                                    };
+
+                                    $rootScope.languageStringify = function (entity) {
+                                        if (entity && entity.languages && angular.isObject(entity.languages)) {
+                                            entity.languages = JSON.stringify(entity.languages);
+                                            for (var key in entity) {
+                                                if (entity.hasOwnProperty(key))
+                                                    if (angular.isArray(entity[key])) {
+                                                        for (var l = 0; l < entity[key].length; l++) {
+                                                            var prop = entity[key][l];
+                                                            $rootScope.languageStringify(prop);
+                                                        }
+                                                    }
+                                                    else if (angular.isObject(entity[key])) {
+                                                        for (var key1 in entity[key]) {
+                                                            if (entity[key].hasOwnProperty(key1) && entity[key][key1] && angular.isObject(entity[key][key1])) {
+                                                                $rootScope.languageStringify(entity[key]);
+                                                            }
+                                                        }
+                                                    }
+                                            }
+                                        }
+                                    };
+
+                                    $rootScope.processPicklistLanguages = function (entities) {
+                                        for (var key in entities) {
+                                            if (entities.hasOwnProperty(key))
+                                                $rootScope.processLanguages(entities[key]);
+                                        }
+                                    };
+
+                                    $rootScope.getLanguageValue = function (language, firstProperty, secondProperty) {
+                                        if (language && language[$rootScope.globalization.Label]) {
+                                            if (!secondProperty)
+                                                return language[$rootScope.globalization.Label][firstProperty] || '';
+
+                                            return language[$rootScope.globalization.Label][firstProperty][secondProperty] || '';
+                                        }
+                                        return undefined;
+                                    };
 
                                     $rootScope.config = config;
                                     $rootScope.users = users;
                                     $rootScope.language = $localStorage.read('NG_TRANSLATE_LANG_KEY');
                                     $rootScope.locale = $localStorage.read('locale_key');
                                     $rootScope.currencySymbol = that.getCurrencySymbol($rootScope.workgroup.currency);
+                                    $rootScope.processLanguages(modules);
                                     $rootScope.modules = modules;
                                     $rootScope.modules.push(that.getUserModule());
                                     $rootScope.modules.push(that.getProfileModule());
                                     $rootScope.modules.push(that.getRoleModule());
 
+                                    $rootScope.processLanguages(profiles);
                                     $rootScope.profiles = profiles;
                                     $rootScope.moduleSettings = moduleSettings;
                                     $rootScope.system = {};
@@ -290,7 +365,9 @@ angular.module('primeapps')
                                     $rootScope.customMenu = false;
                                     // var menu = response[10].data;
                                     var menu = $filter('filter')(response[9].data, { deleted: false }, true);
+
                                     if (menu.length > 0) {
+                                        $rootScope.processLanguages(menu);
                                         $rootScope.customMenu = true;
                                         $rootScope.menu = $filter('orderBy')(menu, 'order', false);
                                     }
@@ -356,8 +433,8 @@ angular.module('primeapps')
                                             //display values are taken according to module IDs.
                                             if (mainMenuItem.module_id) {
                                                 var result_module = $filter('filter')($rootScope.modules, { id: mainMenuItem.module_id }, true)[0];
-                                                
-                                                if(result_module)
+
+                                                if (result_module)
                                                     mainMenuItem.display = result_module.display;
                                             }
                                             /**Parentlar ya da Ana Kırılımlar, Örn: Genel / module1, module2 vb.
@@ -500,7 +577,8 @@ angular.module('primeapps')
                     profileModule.menu_icon = 'fa fa-users';
                     profileModule.sections = [];
                     profileModule.fields = [];
-
+                    profileModule.languages = {};
+                    profileModule.languages[$rootScope.globalization.Label] = angular.copy($rootScope.defaultSystemFields['profiles']);
                     var section = {};
                     section.name = 'profile_information';
                     section.system_type = 'system';
@@ -509,39 +587,45 @@ angular.module('primeapps')
                     section.label_en = 'Profile Information';
                     section.label_tr = 'Profil Bilgisi';
                     section.display_detail = true;
+                    section.languages = {};
+                    section.languages[$rootScope.globalization.Label] = angular.copy($rootScope.defaultSystemFields['profile_information']);
 
-                    var fieldEmail = {};
-                    //fieldEmail.name = 'name';
-                    fieldEmail.name = 'name_' + $rootScope.language;
-                    fieldEmail.system_type = 'system';
-                    fieldEmail.data_type = 'text_single';
-                    fieldEmail.order = 2;
-                    fieldEmail.section = 1;
-                    fieldEmail.section_column = 1;
-                    fieldEmail.primary = true;
-                    fieldEmail.inline_edit = false;
-                    fieldEmail.label_en = 'Name';
-                    fieldEmail.label_tr = 'İsim';
-                    fieldEmail.display_list = true;
-                    fieldEmail.display_detail = true;
-                    profileModule.fields.push(fieldEmail);
+                    var fieldName = {};
+                    fieldName.name = 'languages.' + $rootScope.globalization.Label + '.name';
+                    fieldName.system_type = 'system';
+                    fieldName.data_type = 'text_single';
+                    fieldName.order = 2;
+                    fieldName.section = 1;
+                    fieldName.section_column = 1;
+                    fieldName.primary = true;
+                    fieldName.inline_edit = false;
+                    fieldName.label_en = 'Name';
+                    fieldName.label_tr = 'İsim';
+                    fieldName.display_list = true;
+                    fieldName.display_detail = true;
+                    fieldName.languages = {};
+                    fieldName.languages[$rootScope.globalization.Label] = angular.copy($rootScope.defaultSystemFields['name']);
+
+                    profileModule.fields.push(fieldName);
 
                     return profileModule;
                 },
                 getRoleModule: function () {
-                    var profileModule = {};
-                    profileModule.id = 1001;
-                    profileModule.name = 'roles';
-                    profileModule.system_type = 'system';
-                    profileModule.order = 999;
-                    profileModule.display = false;
-                    profileModule.label_en_singular = 'Role';
-                    profileModule.label_en_plural = 'Roles';
-                    profileModule.label_tr_singular = 'Rol';
-                    profileModule.label_tr_plural = 'Roller';
-                    profileModule.menu_icon = 'fa fa-users';
-                    profileModule.sections = [];
-                    profileModule.fields = [];
+                    var roleModule = {};
+                    roleModule.id = 1001;
+                    roleModule.name = 'roles';
+                    roleModule.system_type = 'system';
+                    roleModule.order = 999;
+                    roleModule.display = false;
+                    roleModule.label_en_singular = 'Role';
+                    roleModule.label_en_plural = 'Roles';
+                    roleModule.label_tr_singular = 'Rol';
+                    roleModule.label_tr_plural = 'Roller';
+                    roleModule.menu_icon = 'fa fa-users';
+                    roleModule.sections = [];
+                    roleModule.fields = [];
+                    roleModule.languages = {};
+                    roleModule.languages[$rootScope.globalization.Label] = angular.copy($rootScope.defaultSystemFields['roles']);
 
                     var section = {};
                     section.name = 'role_information';
@@ -551,38 +635,29 @@ angular.module('primeapps')
                     section.label_en = 'Role Information';
                     section.label_tr = 'Rol Bilgisi';
                     section.display_detail = true;
+                    section.languages = {};
+                    section.languages[$rootScope.globalization.Label] = angular.copy($rootScope.defaultSystemFields['role_information']);
 
                     var fieldLabelEn = {};
-                    fieldLabelEn.name = 'label_en';
+                    //fieldLabelEn.name = 'label_en';
+                    fieldLabelEn.name = 'languages.' + $rootScope.globalization.Label + '.label';
                     fieldLabelEn.system_type = 'system';
                     fieldLabelEn.data_type = 'text_single';
                     fieldLabelEn.order = 2;
                     fieldLabelEn.section = 1;
                     fieldLabelEn.section_column = 1;
-                    fieldLabelEn.primary = $rootScope.user.tenant_language === "en";
+                    fieldLabelEn.primary = true;
                     fieldLabelEn.inline_edit = false;
                     fieldLabelEn.label_en = 'Name English';
                     fieldLabelEn.label_tr = 'İsim İngilizce';
                     fieldLabelEn.display_list = true;
                     fieldLabelEn.display_detail = true;
-                    profileModule.fields.push(fieldLabelEn);
+                    fieldLabelEn.languages = {};
+                    fieldLabelEn.languages[$rootScope.globalization.Label] = angular.copy($rootScope.defaultSystemFields['name']);
 
-                    var fieldLabelTr = {};
-                    fieldLabelTr.name = 'label_tr';
-                    fieldLabelTr.system_type = 'system';
-                    fieldLabelTr.data_type = 'text_single';
-                    fieldLabelTr.order = 2;
-                    fieldLabelTr.section = 1;
-                    fieldLabelTr.section_column = 1;
-                    fieldLabelTr.primary = $rootScope.user.tenant_language === "tr";
-                    fieldLabelTr.inline_edit = false;
-                    fieldLabelTr.label_en = 'Name Turkish';
-                    fieldLabelTr.label_tr = 'İsim Türkçe';
-                    fieldLabelTr.display_list = true;
-                    fieldLabelTr.display_detail = true;
-                    profileModule.fields.push(fieldLabelTr);
+                    roleModule.fields.push(fieldLabelEn);
 
-                    return profileModule;
+                    return roleModule;
                 },
                 getUserModule: function () {
                     var userModule = {};
@@ -598,6 +673,9 @@ angular.module('primeapps')
                     userModule.menu_icon = 'fa fa-users';
                     userModule.sections = [];
                     userModule.fields = [];
+                    userModule.languages = {};
+                    userModule.languages[$rootScope.globalization.Label] = angular.copy($rootScope.defaultSystemFields['users']);
+
 
                     var section = {};
                     section.name = 'user_information';
@@ -607,6 +685,8 @@ angular.module('primeapps')
                     section.label_en = 'User Information';
                     section.label_tr = 'Kullanıcı Bilgisi';
                     section.display_detail = true;
+                    section.languages = {};
+                    section.languages[$rootScope.globalization.Label] = angular.copy($rootScope.defaultSystemFields['user_information']);
 
                     var fieldEmail = {};
                     fieldEmail.name = 'email';
@@ -621,6 +701,8 @@ angular.module('primeapps')
                     fieldEmail.label_tr = 'Eposta';
                     fieldEmail.display_list = true;
                     fieldEmail.display_detail = true;
+                    fieldEmail.languages = {};
+                    fieldEmail.languages[$rootScope.globalization.Label] = angular.copy($rootScope.defaultSystemFields['email']);
                     userModule.fields.push(fieldEmail);
 
                     var fieldFirstName = {};
@@ -638,6 +720,8 @@ angular.module('primeapps')
                     fieldFirstName.label_tr = 'Adı';
                     fieldFirstName.display_list = true;
                     fieldFirstName.display_detail = true;
+                    fieldFirstName.languages = {};
+                    fieldFirstName.languages[$rootScope.globalization.Label] = angular.copy($rootScope.defaultSystemFields['first_name']);
                     userModule.fields.push(fieldFirstName);
 
                     var fieldLastName = {};
@@ -655,6 +739,9 @@ angular.module('primeapps')
                     fieldLastName.label_tr = 'Soyadı';
                     fieldLastName.display_list = true;
                     fieldLastName.display_detail = true;
+                    fieldLastName.languages = {};
+                    fieldLastName.languages[$rootScope.globalization.Label] = angular.copy($rootScope.defaultSystemFields['last_name']);
+
                     userModule.fields.push(fieldLastName);
 
                     var fieldFullName = {};
@@ -675,6 +762,9 @@ angular.module('primeapps')
                     fieldFullName.combination = {};
                     fieldFullName.combination.field_1 = 'first_name';
                     fieldFullName.combination.field_2 = 'last_name';
+                    fieldFullName.languages = {};
+                    fieldFullName.languages[$rootScope.globalization.Label] = angular.copy($rootScope.defaultSystemFields['full_name']);
+
                     userModule.fields.push(fieldFullName);
 
                     var fieldPhone = {};
@@ -690,6 +780,9 @@ angular.module('primeapps')
                     fieldPhone.label_tr = 'Telefon';
                     fieldPhone.display_list = true;
                     fieldPhone.display_detail = true;
+                    fieldPhone.languages = {};
+                    fieldPhone.languages[$rootScope.globalization.Label] = angular.copy($rootScope.defaultSystemFields['phone']);
+
                     userModule.fields.push(fieldPhone);
 
                     var fieldProfileId = {};
@@ -707,6 +800,9 @@ angular.module('primeapps')
                     fieldProfileId.label_tr = 'Profile Id';
                     fieldProfileId.display_list = true;
                     fieldProfileId.display_detail = true;
+                    fieldProfileId.languages = {};
+                    fieldProfileId.languages[$rootScope.globalization.Label] = angular.copy($rootScope.defaultSystemFields['profile_id']);
+
                     userModule.fields.push(fieldProfileId);
 
                     var fieldRoleId = {};
@@ -724,6 +820,9 @@ angular.module('primeapps')
                     fieldRoleId.label_tr = 'Role Id';
                     fieldRoleId.display_list = true;
                     fieldRoleId.display_detail = true;
+                    fieldRoleId.languages = {};
+                    fieldRoleId.languages[$rootScope.globalization.Label] = angular.copy($rootScope.defaultSystemFields['role_id']);
+
                     userModule.fields.push(fieldRoleId);
 
                     return userModule;
@@ -778,7 +877,8 @@ angular.module('primeapps')
 
                     for (var l = 0; l < module.fields.length; l++) {
                         var field = module.fields[l];
-                        field.label = field['label_' + $rootScope.language];
+                        $rootScope.processLanguage(field);
+                        field.label = $rootScope.getLanguageValue(field.languages, 'label');
                         field.dataType = dataTypes[field.data_type];
                         field.operators = [];
                         field.sectionObj = $filter('filter')(module.sections, { name: field.section }, true)[0];
@@ -799,14 +899,14 @@ angular.module('primeapps')
 
                                 for (var m = 0; m < lookupModulePrimaryFieldDataType.operators.length; m++) {
                                     var operatorIdLookup = lookupModulePrimaryFieldDataType.operators[m];
-                                    var operatorLookup = operators[operatorIdLookup];
+                                    var operatorLookup = $rootScope.operators[operatorIdLookup];
                                     field.operators.push(operatorLookup);
                                 }
                             } else {
-                                field.operators.push(operators.equals);
-                                field.operators.push(operators.not_equal);
-                                field.operators.push(operators.empty);
-                                field.operators.push(operators.not_empty);
+                                field.operators.push($rootScope.operators.equals);
+                                field.operators.push($rootScope.operators.not_equal);
+                                field.operators.push($rootScope.operators.empty);
+                                field.operators.push($rootScope.operators.not_empty);
 
                                 if (field.lookup_type === 'users') {
                                     lookupModule = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
@@ -823,7 +923,7 @@ angular.module('primeapps')
                         } else {
                             for (var n = 0; n < field.dataType.operators.length; n++) {
                                 var operatorId = field.dataType.operators[n];
-                                var operator = operators[operatorId];
+                                var operator = $rootScope.operators[operatorId];
                                 field.operators.push(operator);
                             }
                         }
@@ -972,6 +1072,9 @@ angular.module('primeapps')
                 },
                 checkPermission: function () {
                     return $http.get(config.apiUrl + 'Profile/check_permission');
+                },
+                getOperators: function (label) {
+                    return $http.get(config.apiUrl + 'localization/get_operators?label=' + label);
                 }
             };
         }]);

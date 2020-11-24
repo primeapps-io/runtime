@@ -19,7 +19,7 @@
                         <md-tab   ng-repeat="relatedModule in module.relations  | filter:{deleted:'false',detail_view_type:'tab'}" ng-click="changeTab(relatedModule); $parent.$parent.tab = relatedModule.id.toString();" md-active="relatedModule.id == tab">
                             <md-tab-label id="tab{{relatedModule.id}}" aria-controls="Tab{{relatedModule.id}}">
                                 <div class="tab-container">
-                                    <span>{{relatedModule['label_' + language +'_plural']}}</span>
+                                    <span>{{relatedModule.languages[globalization.Label]['label']['plural']}}</span>
                                     <span class="badge" ng-show="!relatedModule.loading && relatedModule.total">{{relatedModule.total}}</span>
                                 </div>
                             </md-tab-label>
@@ -168,7 +168,7 @@
                                  ng-if="!section.hidden && (id && (hasPermission(type, operations.modify, record) || hasPermission(type, operations.read, record)) || (!id && hasPermission(type, operations.write, record))) && hasSectionDisplayPermission(section) && (tab === 'general' || !tabconfig)">
                             <div class="collapsible-head" id="{{'heading'+section.id}}">
                                 <h4>
-                                    {{!section.custom_label ? section['label_' + language] : section.custom_label}}
+                                    {{!section.languages[globalization.Label]["custom_label"] ? section.languages[globalization.Label]['label'] : section.languages[globalization.Label]['custom_label']}}
                                 </h4>
                                 <button class="btn btn-link" type="button" data-toggle="collapse"
                                         data-target="{{'#collapse'+section.id}}" aria-expanded="true"
@@ -248,7 +248,7 @@
                                 <i class="fas fa-angle-left"></i>
                                 <md-tooltip md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
                             </md-button>
-                            <h2 md-truncate>{{title}} - <small>{{relatedModule['label_' + language + '_plural']}}</small></h2>
+                            <h2 md-truncate>{{title}} - <small>{{relatedModule.languages[globalization.Label]['label']['plural']}}</small></h2>
                             <div class="helpbuttons hide-on-m">
                                 <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()" aria-label="{{'Common.Help' | translate}}">
                                     <i class="fas fa-question-circle"></i>

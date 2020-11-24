@@ -4,7 +4,7 @@
             <md-button class="md-icon-button" ng-click="closeSide('sideModal')" aria-label="{{'Common.Close' | translate}}">
                 <i class="fas fa-angle-left"></i>
             </md-button>
-            <h3 md-truncate>{{'Setup.Templates.SelectTemplateFields' | translate }}</h3>            
+            <h3 md-truncate>{{'Setup.Templates.SelectTemplateFields' | translate }}</h3>
             <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close">
                 <i class="fas fa-thumbtack"></i>
             </md-button>
@@ -13,7 +13,7 @@
     <md-content flex>
         <div class="container-fluid paddingua20">
             <p ng-show="templateActiveTab ==='excel'">
-                {{'Setup.Templates.TemplateGuide1Excel' | translate}}  
+                {{'Setup.Templates.TemplateGuide1Excel' | translate}}
             </p>
             <div class="form-group">
                 <select kendo-drop-down-list
@@ -31,32 +31,36 @@
                     </div>
                 </div>
             </div>
-            
+
             <div ng-if="templateActiveTab ==='document'">
                 <div class="row" ng-if="selectedModule">
                     <div class="col-sm-12">
                         <div class="alert alert-secondary" role="alert">
                             <small>
                                 <ol style="padding-left: 10px;">
-                                    <li>{{'Setup.Templates.TemplateGuide2' | translate}} <span class="foreach-label"><code>{{ "{{#foreach " + selectedModule.name + "}\}" }}</code><span
-                                            class="copy-button" title="{{'Common.Copy' | translate}}" ng-click="copyToClipboard('{{#foreach ' + selectedModule.name + '}\}')"
+                                    <li>
+                                        {{'Setup.Templates.TemplateGuide2' | translate}} <span class="foreach-label">
+                                            <code>{{ "{{#foreach " + selectedModule.name + "}\}" }}</code><span class="copy-button" title="{{'Common.Copy' | translate}}" ng-click="copyToClipboard('{{#foreach ' + selectedModule.name + '}\}')"
                                     ><i class="copy-icon fa fa-clipboard"></i></span></span>{{'Setup.Templates.TemplateGuide3' | translate}}
                                         <span ng-bind-html="'Setup.Templates.TemplateGuide4' | translate"></span>
                                     </li>
-                                    <li>{{'Setup.Templates.TemplateGuide5' | translate}}
+                                    <li>
+                                        {{'Setup.Templates.TemplateGuide5' | translate}}
                                     </li>
-                                    <li>{{'Setup.Templates.TemplateGuide6' | translate}}
-                                        <span class="foreach-label"><code>{{ "{{"+tempalteFieldName+"}\}" }}</code><span
-                                                class="copy-button" title="{{'Common.Copy' | translate}} 
-                                         ng-click="ng-click="copyToClipboard('{{ ' + tempalteFieldName + '}\}')"
+                                    <li>
+                                        {{'Setup.Templates.TemplateGuide6' | translate}}
+                                        <span class="foreach-label">
+                                            <code>{{ "{{"+tempalteFieldName+"}\}" }}</code><span class="copy-button" title="{{'Common.Copy' | translate}}
+                                                                                                 ng-click="ng-click=" copyToClipboard('{{ ' + tempalteFieldName + '}\}')"
                                         ><i class="copy-icon fa fa-clipboard"></i></span></span>
                                         <!--<label style="background-color:#f9f2f4;color:#ca2594;font-family:Consolas"><label>{{/ </label>{{'Setup.Templates.TemplateFieldName' | translate}}<label>}}</label></label>-->
                                         {{'Setup.Templates.TemplateGuide7' | translate}}
 
                                     </li>
-                                    <li>{{'Setup.Templates.TemplateGuide8' | translate}}<span class="foreach-label"><code>{{ "{{/foreach " + selectedModule.name + "}\}" }}</code><span
-                                            class="copy-button" title="{{'Common.Copy' | translate}}"
-                                            ng-click="copyToClipboard('{{/foreach ' + selectedModule.name + '}\}')"><i
+                                    <li>
+                                        {{'Setup.Templates.TemplateGuide8' | translate}}<span class="foreach-label">
+                                            <code>{{ "{{/foreach " + selectedModule.name + "}\}" }}</code><span class="copy-button" title="{{'Common.Copy' | translate}}"
+                                                                                                                ng-click="copyToClipboard('{{/foreach ' + selectedModule.name + '}\}')"><i
                                             class="copy-icon fa fa-clipboard"></i></span></span> <span ng-bind-html="'Setup.Templates.TemplateGuide9' | translate"></span>
                                     </li>
                                     <li ng-if="selectedModule.relatedModules && selectedModule.relatedModules.length">
@@ -70,47 +74,47 @@
                     <div class="col-sm-12">
                         <table class="table">
                             <thead>
-                            <tr>
-                                <th>{{'Setup.Templates.FieldName' | translate}}</th>
-                                <th>{{'Setup.Templates.TagName' | translate}}</th>
-                                <th style="width: 30px;"></th>
-                            </tr>
+                                <tr>
+                                    <th>{{'Setup.Templates.FieldName' | translate}}</th>
+                                    <th>{{'Setup.Templates.TagName' | translate}}</th>
+                                    <th style="width: 30px;"></th>
+                                </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="field in selectedModule.fields | filter:{deleted:'!true'} | filter:filterUsers | orderBy:'order'">
-                                <td> {{field['label_' + language]}}</td>
-                                <td>
-                                    <span><code>{{'{\{' + (field.multiline_type_use_html ? 'html__' : field.data_type == 'image' ? 'img__' : '') + field.name + '}\}'}}</code></span>
-                                </td>
-                                <td>
-                                    <span class="copy-button" title="{{'Common.Copy' | translate}}"  ng-click="copyToClipboard( '{\{' + (field.multiline_type_use_html ? 'html__' : field.data_type == 'image' ? 'img__' : '') + field.name + '}\}')"><i class="copy-icon fa fa-clipboard"></i></span>
-                                </td>
-                            </tr>
+                                <tr ng-repeat="field in selectedModule.fields | filter:{deleted:'!true'} | filter:filterUsers | orderBy:'order'">
+                                    <td> {{field.languages[globalization.Label]['label']}}</td>
+                                    <td>
+                                        <span><code>{{'{\{' + (field.multiline_type_use_html ? 'html__' : field.data_type == 'image' ? 'img__' : '') + field.name + '}\}'}}</code></span>
+                                    </td>
+                                    <td>
+                                        <span class="copy-button" title="{{'Common.Copy' | translate}}" ng-click="copyToClipboard( '{\{' + (field.multiline_type_use_html ? 'html__' : field.data_type == 'image' ? 'img__' : '') + field.name + '}\}')"><i class="copy-icon fa fa-clipboard"></i></span>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                         <table class="table" ng-repeat="lookupModule in selectedModule.lookupModules">
                             <thead>
-                            <tr>
-                                <th colspan="2">{{lookupModule.parent_field['label_' + language]}} ({{lookupModule['label_' + language + '_singular']}})</th>
-                                <th style="width: 30px;"></th>
-                            </tr>
+                                <tr>
+                                    <th colspan="2">{{lookupModule.parent_field.languages[globalization.Label]['label']}} ({{lookupModule.languages[globalization.Label]['label']['singular']}})</th>
+                                    <th style="width: 30px;"></th>
+                                </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="field in lookupModule.fields | filter:{deleted:'!true'} | orderBy:'order'">
-                                <td> {{field['label_'+language]}}</td>
-                                <td>
-                                    <span><code>{{'{\{' + getRelatedFieldName(field, lookupModule) + '}\}'}}</code></span>
-                                </td>
-                                <td>
-                                    <span class="copy-button" title="{{'Common.Copy' | translate}}"   ng-click="copyToClipboard('{\{' + getRelatedFieldName(field, lookupModule) + '}\}')"><i class="copy-icon fa fa-clipboard"></i></span>
-                                </td>
-                            </tr>
+                                <tr ng-repeat="field in lookupModule.fields | filter:{deleted:'!true'} | orderBy:'order'">
+                                    <td> {{field.languages[globalization.Label]['label']}}</td>
+                                    <td>
+                                        <span><code>{{'{\{' + getRelatedFieldName(field, lookupModule) + '}\}'}}</code></span>
+                                    </td>
+                                    <td>
+                                        <span class="copy-button" title="{{'Common.Copy' | translate}}" ng-click="copyToClipboard('{\{' + getRelatedFieldName(field, lookupModule) + '}\}')"><i class="copy-icon fa fa-clipboard"></i></span>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
 
                     </div>
                 </div>
-                <div class="form-group" ng-if="selectedModule" >
+                <div class="form-group" ng-if="selectedModule">
 
                     <select kendo-drop-down-list
                             name="selectedSubModule"
@@ -120,21 +124,22 @@
                             k-on-change="subModuleChanged(subTemplateModule)"
                             k-option-label="'{{'Setup.Templates.SelectSubModul' | translate}}'"></select>
                 </div>
-                <div class="row"  ng-if="selectedSubModule">
+                <div class="row" ng-if="selectedSubModule">
                     <div class="col-sm-12">
                         <div class="alert alert-secondary" role="alert">
                             <small>
                                 <ol>
-                                    <li ng-if="selectedSubModule">{{'Setup.Templates.TemplateGuide11' | translate}}<span class="foreach-label"><code>{{ "{{#foreach " + selectedSubModule.name + "}\}" }}</code><span
-                                            class="copy-button" title="{{'Common.Copy' | translate}}"  ng-click="copyToClipboard( '{{#foreach ' + selectedSubModule.name + '}\}')"><i
+                                    <li ng-if="selectedSubModule">
+                                        {{'Setup.Templates.TemplateGuide11' | translate}}<span class="foreach-label">
+                                            <code>{{ "{{#foreach " + selectedSubModule.name + "}\}" }}</code><span class="copy-button" title="{{'Common.Copy' | translate}}" ng-click="copyToClipboard( '{{#foreach ' + selectedSubModule.name + '}\}')"><i
                                             class="copy-icon fa fa-clipboard"></i></span></span> {{'Setup.Templates.TemplateGuide12' | translate}}
                                     </li>
                                     <li ng-if="selectedSubModule ">
                                         {{'Setup.Templates.TemplateGuide13' | translate}}
                                     </li>
-                                    <li ng-if="selectedSubModule "> {{'Setup.Templates.TemplateGuide14' | translate}}<span
-                                            class="foreach-label"><code>{{ "{{/foreach " + selectedSubModule.name + "}\}" }}</code><span
-                                            class="copy-button" title="{{'Common.Copy' | translate}}"   ng-click="copyToClipboard('{{/foreach ' + selectedSubModule.name + '}\}')"><i
+                                    <li ng-if="selectedSubModule ">
+                                        {{'Setup.Templates.TemplateGuide14' | translate}}<span class="foreach-label">
+                                            <code>{{ "{{/foreach " + selectedSubModule.name + "}\}" }}</code><span class="copy-button" title="{{'Common.Copy' | translate}}" ng-click="copyToClipboard('{{/foreach ' + selectedSubModule.name + '}\}')"><i
                                             class="copy-icon fa fa-clipboard"></i></span></span><span ng-bind-html="'Setup.Templates.TemplateGuide15' | translate"></span>
                                     </li>
                                 </ol>
@@ -153,7 +158,7 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="field in selectedSubModule.fields | filter:{deleted:'!true'} | filter:filterUsers | orderBy:'order'">
-                                <td> {{field['label_' + language]}}</td>
+                                <td> {{field.languages[globalization.Label]['label']}}</td>
                                 <td>
                                     <span><code>{{'{\{' + (field.multiline_type_use_html ? 'html__' : field.data_type == 'image' ? 'img__' : '') + field.name + '}\}'}}</code></span>
                                 </td>
@@ -166,13 +171,13 @@
                         <table class="table" ng-repeat="lookupModule in selectedSubModule.lookupModules">
                             <thead>
                             <tr>
-                                <th colspan="2">{{lookupModule.parent_field['label_' + language]}} ({{lookupModule['label_' + language + '_singular']}})</th>
+                                <th colspan="2">{{lookupModule.parent_field.languages[globalization.Label]['label']}} ({{lookupModule.languages[globalization.Label]['label']['singular']}})</th>
                                 <th style="width: 30px;"></th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr ng-repeat="field in lookupModule.fields | filter:{deleted:'!true'} | orderBy:'order'">
-                                <td>{{field['label_'+language]}}</td>
+                                <td>{{field.languages[globalization.Label]['label']}}</td>
                                 <td>
                                     <span><code>{{'{\{' + getRelatedFieldName(field, lookupModule) + '}\}'}}</code></span>
                                 </td>
@@ -182,11 +187,11 @@
                             </tr>
                             </tbody>
                         </table>
+                        </div>
+
                     </div>
-
                 </div>
-            </div>
 
-        </div>
+            </div>
     </md-content>
 </section>

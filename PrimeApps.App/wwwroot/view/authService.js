@@ -63,8 +63,8 @@ angular.module('primeapps')
                     });
                 },
 
-                forgotPassword: function (email, culture) {
-                    return $http.get(config.apiUrl + 'account/forgot_password?email=' + email + '&culture=' + culture);
+                forgotPassword: function (email, appId, tenantId) {
+                    return $http.get(config.apiUrl + 'account/forgot_password?email=' + email+"&languageLabel="+ $rootScope.globalization.Label +"&culture="+ $rootScope.globalization.Culture +"&appid="+ appId+ "&tenantid="+ tenantId);
                 },
 
                 resetPassword: function (userId, token, password, confirmPassword) {

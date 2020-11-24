@@ -21,6 +21,7 @@
     "Sort":"Sırala",
     "Everyone":"Herkes",
     "Active":"Aktif",
+    "Deactivate": "Pasif",
     "Find":"Ara",
     "Clear":"Temizle",
     "Error":"Beklenmedik bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.",
@@ -107,7 +108,7 @@
     "AllDocuments":"Tüm Eklentilerım",
     "ChartEmptyMessage":"Veri bulunmamaktadır.",
     "EditDashboard":"Panoyu Düzenle",
-    "Dashboard":"Pano",
+    "Label":"Pano",
     "DashletOrders":"Pano Öğelerini Sırala",
     "NewDashboard":"Yeni Pano",
     "ProfileRequired":"Profil gereklidir",
@@ -294,7 +295,7 @@
     "Future":"İleride"
   },
   "Feed":{
-    "Feed":"Haber Akışı"
+    "Label":"Haber Akışı"
   },
   "Filter":{
     "And":"Ve",
@@ -303,7 +304,7 @@
     "None":"Yok"
   },
   "Documents":{
-    "Documents":"Eklentiler",
+    "Label":"Eklentiler",
     "DocumentList":"Eklenti Listesi",
     "AddDocument":"Eklenti Ekle",
     "Tip1":"Eklentiyi güncellemek için üzerine gelince sol tarafta açılan kalem simgesine tıklayınız.",
@@ -458,6 +459,7 @@
       "NewUserLastName":"Soyad",
       "NewUserProfile":"Profil Seçiniz",
       "NewUserRole":"Rol Seçiniz",
+      "ResetPasswordLink": "Şifre Sıfırlama Bağlantısını Gönder",
       "NewUserError":"Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor.",
       "AddonLicenseRequired":"Yeni kullanıcı eklemek için lisansınız bulunmamaktadır.<br><br> Lisans sayfasından ek kullanıcı lisansı satın alabilirsiniz.",
       "AddonPageGoto":"Lisans sayfasına git",
@@ -467,6 +469,7 @@
       "UserStatus":"Durum",
       "Profile":"Profil",
       "Role":"Rol",
+      "Phone":"Telefon",
       "GroupOwner":"Hesap Sahibi",
       "UserStatus1":"Kullanıcı",
       "UserStatus2":"Onay bekliyor",

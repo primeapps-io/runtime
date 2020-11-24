@@ -137,7 +137,7 @@
 <div class="form-group" ng-if="fieldskey[filter.field].data_type === 'picklist'">
     <select
             kendo-drop-down-list
-            k-data-text-field="'label_{{language}}'"
+            k-data-text-field="'languages.{{globalization.Label}}.label'"
             k-data-value-field="'id'"
             k-data-source="fieldskey[filter.field].picklist"
             k-ng-model="filter.value"

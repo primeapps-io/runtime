@@ -29,7 +29,7 @@
                                 </span>
                             </label>
                             <input id="name" name="name" class="k-textbox" maxlength="100"
-                                   required ng-model="userGroup.name" validationMessage="{{'Module.Required' | translate}}" />
+                                   required ng-model="userGroup.languages[globalization.Label]['name']" validationMessage="{{'Module.Required' | translate}}" />
                             <span class="k-invalid-msg" data-for="name"></span>
                         </div>
                         <div class="form-group">
@@ -37,7 +37,7 @@
                                 {{'Setup.UserGroups.GroupDescription' | translate}}
                             </label>
                             <textarea rows="2" name="description" class="form-control" maxlength="500" id="description"
-                                      auto-grow ng-model="userGroup.description"></textarea>
+                                      auto-grow ng-model="userGroup.languages[globalization.Label]['description']"></textarea>
                         </div>
                         <div class="form-group">
                             <label for="users">

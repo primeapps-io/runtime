@@ -21,6 +21,7 @@
     "Sort":"Sort",
     "Everyone":"Everyone",
     "Active":"Active",
+    "Deactivate": "Deactivate",
     "Find":"Find",
     "Clear":"Clear",
     "Error":"Unexpected error occurred. Please try again later.",
@@ -107,7 +108,7 @@
     "AllDocuments":"All Documents",
     "ChartEmptyMessage":"No data to display.",
     "EditDashboard":"Dashboard Edit",
-    "Dashboard":"Dashboard",
+    "Label":"Dashboard",
     "DashletOrders":"Dashlet Change Orders",
     "NewDashboard":"New Dashboard",
     "ProfileRequired":"Profile is required",
@@ -294,7 +295,7 @@
     "Future":"Later"
   },
   "Feed":{
-    "Feed":"Activity Feed"
+    "Label ":"Activity Feed"
   },
   "Filter":{
     "And":"And",
@@ -303,7 +304,7 @@
     "None":"No"
   },
   "Documents":{
-    "Documents":"Attachments",
+    "Label":"Attachments",
     "DocumentList":"Attachment List",
     "AddDocument":"Add Attachment",
     "Tip1":"Click pencil icon to edit the attachment.",
@@ -458,6 +459,7 @@
       "NewUserLastName":"Last Name",
       "NewUserProfile":"Select Profile",
       "NewUserRole":"Select Role",
+      "ResetPasswordLink": "Send Reset Password Link",
       "NewUserError":"This e-mail has been already using from another user",
       "AddonLicenseRequired":"You have reached your licence limit to add new users. <br><br> Please purchase add-on licences to add new users.",
       "AddonPageGoto":"Go to Licence Page",
@@ -467,6 +469,7 @@
       "UserStatus":"Status",
       "Profile":"Profile",
       "Role":"Role",
+      "Phone":"Phone",
       "GroupOwner":"Account Owner",
       "UserStatus1":"User",
       "UserStatus2":"Waiting confirmation",

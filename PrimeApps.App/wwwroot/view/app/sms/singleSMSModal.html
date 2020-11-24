@@ -113,6 +113,16 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group">
+                                <label for="language" class="required">{{'Setup.Settings.Language' | translate}}</label>
+                                <select id="language" name="language"
+                                        kendo-drop-down-list
+                                        required
+                                        k-options="languageOptions"
+                                        ng-model="smstemplate.language"></select>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
                                 <label class="required">
                                     <span>{{'SMS.Message' | translate}}</span>
                                     <span>{{'SMS.EstimatedSMSCount' | translate}}: <strong>{{totalSMS}}</strong></span>
@@ -184,7 +194,7 @@
 
         </md-dialog-actions>
         <md-dialog-actions layout="row" ng-show="formType === 'template'">
-            <md-button class="btn btn-primary" type="button" ng-show="!template || (template && !template.id)" ng-click="formType = 'sms';templateSave()" ng-disabled="!(smstemplate.template_name  && smstemplate.tinymce_content)"><i class="fas fa-save"></i> {{'Template.TemplateSave' | translate}}</md-button>
+            <md-button class="btn btn-primary" type="button" ng-show="!template || (template && !template.id)" ng-click="formType = 'sms';templateSave()" ng-disabled="!(smstemplate.template_name  && smstemplate.tinymce_content && smstemplate.language)"><i class="fas fa-save"></i> {{'Template.TemplateSave' | translate}}</md-button>
             <md-button class="btn btn-primary" type="button" ng-show="template && template.id" ng-click="templateSave()" ng-disabled="submitting"><i class="fas fa-save"></i> {{'Template.UpdateTemplate' | translate}}</md-button>
             <md-button class="btn btn-danger" type="button" ng-show="template && template.id" ng-click="deleteTemplate()" ng-disabled="saving"><i class="fas fa-trash"></i> {{'Template.TemplateDelete' | translate}}</md-button>
             <span flex></span>

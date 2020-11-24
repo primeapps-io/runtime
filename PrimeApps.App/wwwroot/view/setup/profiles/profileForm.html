@@ -29,7 +29,7 @@
                         <input type="text" id="name" name="name" class="k-textbox"
                                placeholder="{{'Setup.Profiles.ProfileName' | translate}}"
                                required validationMessage="{{'Module.Required' | translate}}" maxlength="100"
-                               ng-model="profile['name_' + language]" ng-change="profileForm['name'].$setValidity('unique', true)"
+                               ng-model="profile.languages[globalization.Label]['name']" ng-change="profileForm['name'].$setValidity('unique', true)"
                                ng-disabled="profile.is_persistent || profile.system_type === 'system'" />
                         <span class="k-invalid-msg" data-for="name"></span>
                     </div>
@@ -42,7 +42,7 @@
                         </label>
                         <textarea required rows="2" name="description" class="form-control" 
                         maxlength="250" id="description" placeholder="{{'Setup.Profiles.ProfileDescription' | translate}}" 
-                        auto-grow ng-model="profile['description_' + language]" 
+                        auto-grow ng-model="profile.languages[globalization.Label]['description']" 
                         ng-disabled="profile.is_persistent || profile.system_type === 'system'"></textarea>
                     </div>
                     <div class="form-group" ng-show="!profile || !(profile.has_admin_rights && profile.is_persistent)">

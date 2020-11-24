@@ -22,7 +22,7 @@
                 <div ng-if="notification.type ==='Success'" class="notification-icon col-auto success"><i class="fas fa-check"></i></div>
                 <div ng-if="notification.type ==='Error'" class="notification-icon col-auto error"><i class="fas fa-times"></i></div>
                 <div class="col notification-text">
-                    <div>{{notification.message}}</div>
+                    <div>{{ getLanguageValue (notification.languages, 'message')}}</div>
                     <div class="notification-date"><i class="fas fa-clock"></i> <small>{{getTime(notification.created_at)}}</small></div>
                 </div>
             </div>

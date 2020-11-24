@@ -4,7 +4,7 @@
                 class="fas fa-angle-left"></i>
             <md-tooltip md-direction="bottom" >{{'Common.Back' | translate}}</md-tooltip>
         </md-button>
-        <h3 md-truncate> {{ activeView['label_'+language] || activeView['name_'+language] }}</h3>
+        <h3 md-truncate> {{ activeView.languages[globalization.Label]['label'] || activeView.languages[globalization.Label]['name'] }}</h3>
         <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close"><i
                 class="fas fa-thumbtack"></i></md-button>
         <span flex></span>
@@ -98,7 +98,7 @@
                     <select
                             id="report-groupby-field"
                             k-option-label="'{{'Module.SelectField' | translate}}'"
-                            k-data-text-field="'label_{{language}}'"
+                            k-data-text-field="'languages.{{globalization.Label}}.label'"
                             k-data-value-field="'name'"
                             k-data-source="module.fields"
                             k-on-change="chartFilter()"
@@ -114,7 +114,7 @@
                     <select
                             id="report-order-field"
                             k-option-label="'{{'Module.SelectField' | translate}}'"
-                            k-data-text-field="'label_{{language}}'"
+                            k-data-text-field="'languages.{{globalization.Label}}.label'"
                             k-data-value-field="'name'"
                             k-data-source="module.fields"
                             kendo-drop-down-list ng-model="reportModel.sort_field"></select>
@@ -136,7 +136,7 @@
                 <div class="col-12 col-sm-6">
                     <select id="calculationfields"
                             k-option-label="'{{'Module.SelectField' | translate}}'"
-                            k-data-text-field="'label_{{language}}'"
+                            k-data-text-field="'languages.{{globalization.Label}}.label'"
                             k-data-value-field="'name'"
                             k-data-source="numberFields"
                             ng-model="activeView.aggregation.field"
@@ -184,14 +184,14 @@
                 <label>
                     <span>    {{ 'Report.Chart.XaxisName' | translate }} </span>
                 </label>
-                <input type="text" id="xaxis_name" name="xaxis_name" ng-model="reportSummary.chart.xaxisname"
+                <input type="text" id="xaxis_name" name="xaxis_name" ng-model="reportSummary.char['xaxisname']"
                        class="k-textbox"/>
             </div>
             <div class="form-group">
                 <label>
                     <span>    {{ 'Report.Chart.YaxisName' | translate }} </span>
                 </label>
-                <input type="text" id="yaxisname" name="yaxisname" ng-model="reportSummary.chart.yaxisname"
+                <input type="text" id="yaxisname" name="yaxisname" ng-model="reportSummary.chart['yaxisname']"
                        class="k-textbox"/>
             </div>
 

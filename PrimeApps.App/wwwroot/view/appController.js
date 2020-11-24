@@ -3,7 +3,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
     function ($rootScope, $scope, mdToast, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, entityTypes, guidEmpty, component, helper, operations, blockUI, $cache, AppService, AuthService, $sessionStorage, HelpService, $sce, $mdSidenav, $mdDialog, $mdMedia, icons2, GeneralSettingsService, SignalNotificationService, NotificationService) {
 
         $scope.disablePasswordChange = disablePasswordChange;
-        
+
         $rootScope.fastRecordAddModal = function (moduleName, fastAddRecord, lookupValue, lookupName, id, customScope) {
             $scope.modalCustomScopeRecord = customScope.record;
 
@@ -304,7 +304,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         };
 
         $scope.goBack = function () {
-            if($state.current.name ==="app.moduleList" || $state.current.name.includes("app.setup") )
+            if ($state.current.name === "app.moduleList" || $state.current.name.includes("app.setup"))
                 window.location = "#/app/dashboard";
             else
                 window.history.back();
@@ -380,9 +380,9 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
         $scope.openSubMenu = function (item, arrayData) {
 
-            if(item.active){
+            if (item.active) {
                 item.active = false;
-                return  false;
+                return false;
             }
 
             if (arrayData != undefined && arrayData[0] != undefined) {
@@ -400,7 +400,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         };
 
         $scope.toggleFullLeftMenu = function () {
-            if (window.innerWidth > 768 ) {
+            if (window.innerWidth > 768) {
                 angular.element('#wrapper').toggleClass('hide-sidebar');
             }
         };
@@ -771,6 +771,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             SignalNotificationService.getAll()
                 .then(function (response) {
                     if (response.data) {
+                        $rootScope.processLanguages(response.data);
                         $scope.signalNotifications = response.data;
                         $scope.unReadNotificationCount = $filter('filter')(response.data, { status: 'Unread' }, true).length;
                     }
