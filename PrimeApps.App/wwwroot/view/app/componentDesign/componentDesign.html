@@ -2,10 +2,10 @@
     <div layout="column"  style="height: 100%; overflow-y: hidden;" ng-cloak>
         <md-toolbar md-scroll-shrink ng-if="true" class="with-subheader">
             <div class="md-toolbar-tools">
-                <md-button class="md-icon-button show-on-m" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()"> <i class="fas fa-angle-left"></i> <md-tooltip md-direction="right">{{'Common.Back' | translate}}</md-tooltip> </md-button>
+                <md-button class="md-icon-button show-on-m" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()"> <i class="fas fa-angle-left"></i> <md-tooltip md-autohide="true" md-direction="right">{{'Common.Back' | translate}}</md-tooltip> </md-button>
                 <h2 md-truncate>Component Design</h2>
                 <div class="helpbuttons hide-on-m">
-                    <md-button class="md-icon-button" aria-label="{{'Common.Help' | translate}}"> <i class="fas fa-question-circle"></i> <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip></md-button>
+                    <md-button class="md-icon-button" aria-label="{{'Common.Help' | translate}}"> <i class="fas fa-question-circle"></i> <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip></md-button>
                     <md-button class="md-icon-button enlarge d-none d-lg-inline-block" ng-click="toggleFullLeftMenu()" aria-label="{{'Common.FullScreen' | translate}}" >
                         <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 36 36" style="enable-background:new 0 0 36 36;" xml:space="preserve">
                             <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z"/>
@@ -13,8 +13,8 @@
                             <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
                             <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/>
                         </svg>
-                        <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
-                        <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
                     </md-button>
                 </div>
 
@@ -22,7 +22,7 @@
                 <div flex id="action-btn" kendo-toolbar k-options="toolbarOptions"></div>
 
                 <md-menu md-position-mode="target-right target">
-                    <md-button class="md-icon-button btn btn-secondary" aria-label="Export" ng-click="$mdMenu.open()"> <i class="fas fa-file-import"></i><md-tooltip md-direction="bottom">Export</md-tooltip></md-button>
+                    <md-button class="md-icon-button btn btn-secondary" aria-label="Export" ng-click="$mdMenu.open()"> <i class="fas fa-file-import"></i><md-tooltip md-autohide="true" md-direction="bottom">Export</md-tooltip></md-button>
                     <md-menu-content width="3" class="md-dense">
                         <md-menu-item>
                             <md-button>
@@ -40,9 +40,9 @@
                     <i class="fas fa-sliders-h"></i>
 
                     <span class="filter-badge">1</span>
-                    <md-tooltip md-direction="bottom">Filter</md-tooltip>
+                    <md-tooltip md-autohide="true" md-direction="bottom">Filter</md-tooltip>
                 </md-button>
-                <md-button class="md-icon-button btn btn-primary" aria-label="{{'Common.Add' | translate}}" ><i class="fas fa-plus"></i> <md-tooltip md-direction="bottom">{{'Common.Add' | translate}}</md-tooltip> </md-button>
+                <md-button class="md-icon-button btn btn-primary" aria-label="{{'Common.Add' | translate}}" ><i class="fas fa-plus"></i> <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Add' | translate}}</md-tooltip> </md-button>
             </div>
         </md-toolbar>
         <md-content flex>
@@ -113,7 +113,7 @@
                                 <div class="col-12 col-sm-4">
                                     <div class="form-group">
                                         <label for="exampleInputEmail1"><span>Email address</span> <i class="info-icon fas fa-info-circle">
-                                            <md-tooltip md-direction="top">Tooltip Example</md-tooltip>
+                                            <md-tooltip md-autohide="true" md-direction="top">Tooltip Example</md-tooltip>
                                         </i></label>
 
                                         <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
@@ -122,7 +122,7 @@
                                 <div class="col-12 col-sm-4">
                                     <div class="form-group">
                                         <label for="exampleInputPassword1"><span>Password</span> <i class="info-icon fas fa-info-circle">
-                                            <md-tooltip md-direction="top">Tooltip Example</md-tooltip>
+                                            <md-tooltip md-autohide="true" md-direction="top">Tooltip Example</md-tooltip>
                                         </i></label>
 
                                         <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
@@ -131,7 +131,7 @@
                                 <div class="col-12 col-sm-4">
                                     <div class="form-group">
                                         <label for="exampleFormControlSelect1"><span>Example select</span> <i class="info-icon fas fa-info-circle">
-                                            <md-tooltip md-direction="top">Tooltip Example</md-tooltip>
+                                            <md-tooltip md-autohide="true" md-direction="top">Tooltip Example</md-tooltip>
                                         </i></label>
                                         <select class="form-control" id="exampleFormControlSelect1">
                                             <option>1</option>
@@ -145,7 +145,7 @@
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
                                         <label for="exampleFormControlSelect2"><span>Example multiple select</span> <i class="info-icon fas fa-info-circle">
-                                            <md-tooltip md-direction="top">Tooltip Example</md-tooltip>
+                                            <md-tooltip md-autohide="true" md-direction="top">Tooltip Example</md-tooltip>
                                         </i></label>
                                         <select multiple class="form-control" id="exampleFormControlSelect2">
                                             <option>1</option>
@@ -159,7 +159,7 @@
                                 <div class="col-12 col-sm-6 ">
                                     <div class="form-group">
                                         <label for="exampleFormControlTextarea1"><span>Example textarea</span> <i class="info-icon fas fa-info-circle">
-                                            <md-tooltip md-direction="top">Tooltip Example</md-tooltip>
+                                            <md-tooltip md-autohide="true" md-direction="top">Tooltip Example</md-tooltip>
                                         </i></label>
 
                                         <textarea class="form-control" id="exampleFormControlTextarea1" rows="2"></textarea>
@@ -338,7 +338,7 @@
                                 <div class="col-12 col-sm-6 col-md-3">
                                     <div class="form-group">
                                         <label for="percentage"><span>Percentage asdada asdadas asdasdasd asdasdsad</span> <i class="info-icon fas fa-info-circle">
-                                            <md-tooltip md-direction="top">Tooltip Example</md-tooltip>
+                                            <md-tooltip md-autohide="true" md-direction="top">Tooltip Example</md-tooltip>
                                         </i></label>
                                         <input id="percentage" value="0.05" title="percentage"/>
                                     </div>
@@ -346,7 +346,7 @@
                                 <div class="col-12 col-sm-6 col-md-3">
                                     <div class="form-group">
                                         <label for="country"><span>Color</span> <i class="info-icon fas fa-info-circle">
-                                            <md-tooltip md-direction="top">Tooltip Example</md-tooltip>
+                                            <md-tooltip md-autohide="true" md-direction="top">Tooltip Example</md-tooltip>
                                         </i></label>
                                         <select id="country" kendo-drop-down-list>
                                             <option>Albania</option>
@@ -360,7 +360,7 @@
                                 <div class="col-12 col-sm-6 col-md-3">
                                     <div class="form-group">
                                         <label for="datepicker"><span>Datepicker</span> <i class="info-icon fas fa-info-circle">
-                                            <md-tooltip md-direction="top">Tooltip Example</md-tooltip>
+                                            <md-tooltip md-autohide="true" md-direction="top">Tooltip Example</md-tooltip>
                                         </i></label>
                                         <input id="datepicker" value="10/10/2011" title="datepicker"/>
 
@@ -369,7 +369,7 @@
                                 <div class="col-12 col-sm-6 col-md-3">
                                     <div class="form-group">
                                         <label for="phone_number"><span>Phone Number</span> <i class="info-icon fas fa-info-circle">
-                                            <md-tooltip md-direction="top">Tooltip Example</md-tooltip>
+                                            <md-tooltip md-autohide="true" md-direction="top">Tooltip Example</md-tooltip>
                                         </i></label>
                                         <input id="phone_number" value="555 123 4567"/>
 
@@ -378,7 +378,7 @@
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
                                         <label for="timepicker"><span>Time Picker</span> <i class="info-icon fas fa-info-circle">
-                                            <md-tooltip md-direction="top">Tooltip Example</md-tooltip>
+                                            <md-tooltip md-autohide="true" md-direction="top">Tooltip Example</md-tooltip>
                                         </i></label>
                                         <input id="timepicker" value="10:00 AM" title="timepicker"/>
                                     </div>
@@ -386,7 +386,7 @@
                                 <div class="col-12 col-sm-6">
                                     <div class="form-group">
                                         <label for="datetimepicker"><span>Date Time Picker</span> <i class="info-icon fas fa-info-circle">
-                                            <md-tooltip md-direction="top">Tooltip Example</md-tooltip>
+                                            <md-tooltip md-autohide="true" md-direction="top">Tooltip Example</md-tooltip>
                                         </i></label>
                                         <input id="datetimepicker" title="datetimepicker"/>
                                     </div>
@@ -559,7 +559,7 @@
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label for="slider">Slider <i class="info-icon fas fa-info-circle">
-                                            <md-tooltip md-direction="top">Tooltip Example</md-tooltip>
+                                            <md-tooltip md-autohide="true" md-direction="top">Tooltip Example</md-tooltip>
                                         </i></label>
                                         <input id="slider" value="0" title="slider"/>
                                     </div>
@@ -577,7 +577,7 @@
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label for="countries"><span>Countries</span><i class="info-icon fas fa-info-circle">
-                                            <md-tooltip md-direction="top">Tooltip Example</md-tooltip>
+                                            <md-tooltip md-autohide="true" md-direction="top">Tooltip Example</md-tooltip>
                                         </i></label>
                                         <input id="countries"/>
 
@@ -690,7 +690,7 @@
                                     <div class="col-12 col-sm-6">
                                         <div class="form-group">
                                             <label for="fullname" class="required">Your Name <i class="info-icon fas fa-info-circle">
-                                                <md-tooltip md-direction="top">Tooltip Example</md-tooltip>
+                                                <md-tooltip md-autohide="true" md-direction="top">Tooltip Example</md-tooltip>
                                             </i> </label>
                                             <input type="text" id="fullname" name="fullname" class="k-textbox" placeholder="Full name" required validationMessage="Select movie"/>
                                             <span class="k-invalid-msg" data-for="fullname"></span>
@@ -832,7 +832,7 @@
                                 <div class="form-group">
                                     <button type="button" class="btn btn-primary">
                                         Angular Material Tooltip
-                                        <md-tooltip md-direction="left">Angular Material</md-tooltip>
+                                        <md-tooltip md-autohide="true" md-direction="left">Angular Material</md-tooltip>
                                     </button>
                                     <button type="button" class="btn btn-primary" kendo-tooltip k-content="'The <b>tooltip</b><br />Time is:'">
                                         Kendo Tooltip

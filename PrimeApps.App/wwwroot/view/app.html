@@ -32,12 +32,12 @@
                     <div class="helpbar">
                         <md-button ng-if="preview" class="btn btn-secondary md-icon-button" ng-click="reload()" aria-label="{{'Common.Reload' | translate}}">
                             <i ng-class="reloading ? 'fa-spinner fa-spin fa-fw' : 'fa-sync-alt'" class="fas"></i>
-                            <md-tooltip md-direction="bottom">{{'Common.Reload' | translate}}</md-tooltip>
+                            <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Reload' | translate}}</md-tooltip>
                         </md-button>
                         <md-button class="md-button btn btn-warning filter-button md-icon-button" style="position: relative;overflow: inherit;" aria-label="{{'Setup.Nav.Notifications' | translate}}" ng-click="notificationShowModal()">
                             <i class="fas fa-bell"></i>
                             <span ng-if="unReadNotificationCount > 0" class="filter-badge" >{{unReadNotificationCount}}</span>
-                            <md-tooltip md-direction="bottom">{{'Setup.Nav.Notifications' | translate}}</md-tooltip>
+                            <md-tooltip md-autohide="true" md-direction="bottom">{{'Setup.Nav.Notifications' | translate}}</md-tooltip>
                         </md-button>
                     </div>
                     <div class="accountbar">

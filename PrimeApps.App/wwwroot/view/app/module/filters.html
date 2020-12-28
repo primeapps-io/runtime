@@ -2,7 +2,7 @@
     <div layout="row" class="filter-list-buttons align-items-center">
         <md-button class="md-icon-button" aria-label="Delete Group" ng-click="removeGroup()" ng-if="group.level>1">
             <i class="fas fa-trash"></i>
-            <md-tooltip md-directtion="bottom"> {{'View.DeleteGroup' | translate}}  </md-tooltip>
+            <md-tooltip md-autohide="true" md-directtion="bottom"> {{'View.DeleteGroup' | translate}}  </md-tooltip>
         </md-button>
         <select ng-model="group.logic" class="form-control" style="margin-left: 5px;">
             <option value="and" selected>{{'Filter.And' | translate}}</option>
@@ -12,11 +12,11 @@
         <md-button class="md-icon-button btn btn-sm btn-secondary" aria-label="{{'View.AddGroup' | translate}}" ng-click="addGroup()"
                    ng-if="group.level<3">
             <i class="fas fa-folder-plus"></i>
-            <md-tooltip md-directtion="bottom"> {{'View.AddGroup' | translate}}  </md-tooltip>
+            <md-tooltip md-autohide="true" md-directtion="bottom"> {{'View.AddGroup' | translate}}  </md-tooltip>
         </md-button>
         <md-button class="md-icon-button btn btn-sm btn-primary" aria-label="{{'View.AddCondition' | translate}}" ng-click="addCondition()">
             <i class="fas fa-plus"></i>
-            <md-tooltip md-directtion="bottom"> {{'View.AddCondition' | translate}}  </md-tooltip>
+            <md-tooltip md-autohide="true" md-directtion="bottom"> {{'View.AddCondition' | translate}}  </md-tooltip>
         </md-button>
 
     </div>
@@ -35,7 +35,7 @@
                             <div class="form-group condition-delete-button">
                                 <md-button ng-click="removeCondition($index)" class="md-icon-button"
                                            aria-label="Delete"><i class="fas fa-trash"></i>
-                                    <md-tooltip md-direction="right">Delete</md-tooltip>
+                                    <md-tooltip md-autohide="true" md-direction="right">Delete</md-tooltip>
                                 </md-button>
                             </div>
                         </div>

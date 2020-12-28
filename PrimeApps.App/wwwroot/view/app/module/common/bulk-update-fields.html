@@ -1,8 +1,8 @@
 <div class="form-group" ng-if="field.data_type === 'text_single' && field.data_type != 'number_auto' && !field.combination && (!field.editable ? field.show_label : true) && !field.show_lock && !field.hidden">
 
     <input type="text"
-           name="{{field.name}}"
-           id="{{field.name}}"
+           name="{{field.name +'_'+ module.id}}"
+           id="{{field.name +'_'+ module.id}}"
            class="k-textbox"
            tabindex="{{field.order}}"
            required="{{field.validation.required}}"
@@ -12,6 +12,7 @@
            minlength="{{field.validation.min_length || 0}}"
            maxlength="{{field.validation.max_length || 50}}"
            pattern="{{field.validation.pattern || '[^=]*'}}"
+           data-range-field="{{field.name +'_'+ module.id}}"
            k-mask="{{field.mask}}" />
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
@@ -46,8 +47,8 @@
 <div class="form-group" ng-if="field.data_type === 'number' && !field.show_lock && !field.hidden">
 
     <input kendo-numeric-text-box
-           name="{{field.name}}"
-           id="{{field.name}}"
+           name="{{field.name +'_'+ module.id}}"
+           id="{{field.name +'_'+ module.id}}"
            tabindex="{{field.order}}"
            ng-placeholder="{{field.placeholder}}"
            k-options="{{'numberOptions'+field.id}}"
@@ -56,7 +57,7 @@
            maxlength="{{field.validation.max_length || 16}}"
            minlength="{{field.validation.min_length || 0}}"
            k-ng-model="bulkUpdate.value"
-           data-range-field="{{field.name}}}"
+           data-range-field="{{field.name +'_'+ module.id}}"
            k-on-change="fieldValueChange(field); calculate(field);"
            ng-readonly="field.validation.readonly || (id && !field.editable)"
            ng-required="field.validation.required" />
@@ -177,7 +178,7 @@
             required="{{field.validation.required}}"
             tabindex="{{field.order}}"
             k-data-source="field.picklist"
-            k-data-text-field="'label_{{language}}'"
+            k-data-text-field="'languages.{{globalization.Label}}.label'"
             k-data-value-field="'id'"
             k-ng-model="bulkUpdate.value"
             ng-disabled="field.validation.readonly || (id && !field.editable)">
@@ -301,7 +302,7 @@
                ng-model="bulkUpdate.value"
                ng-value="radio">
         <label class="k-radio-label" for="{{field.name+radio.id}}">
-            {{radio.label[language]}}
+            {{radio.languages[globalization.Label]['label']}}
         </label>
     </div>
 </div>
@@ -321,7 +322,7 @@
                ng-model="bulkUpdate.value"
                ng-value="checkbox">
         <label class="k-checkbox-label" for="{{field.name+checkbox.id}}">
-            {{checkbox.label[language]}}
+           {{checkbox.languages[globalization.Label]['label']}}
         </label>
     </div>
 </div>

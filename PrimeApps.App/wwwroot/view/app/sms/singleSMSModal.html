@@ -34,7 +34,8 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label for="phoneField" class="required">
-                                    <span>{{'SMS.PhoneField' | translate }}*</span>
+                                    <span>{{'SMS.PhoneField' | translate }}</span>
+                                    <span class="required-label">{{'Common.Required' | translate}}</span>
                                 </label>
                                 <select id="phoneField" name="phoneField" k-ng-model="phoneField"
                                         k-option-label="'{{'Common.Select' | translate}}'"
@@ -46,15 +47,16 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label for="template">
-                                    <span>{{'Common.SmsTemplate' |translate }}*</span>
+                                    <span>{{'Common.SmsTemplate' |translate }}</span>
+                                    <span class="required-label">{{'Common.Required' | translate}}</span>
                                 </label>
                                 <div class="row row0">
                                     <div class="col">
-                                        <select id="template" name="template" 
-                                                kendo-drop-down-list k-options="templateOptions" 
-                                                k-ng-model="template" 
+                                        <select id="template" name="template"
+                                                kendo-drop-down-list k-options="templateOptions"
+                                                k-ng-model="template"
                                                 k-auto-bind="false"
-                                                k-option-label="'{{'Common.Select' | translate}}'" 
+                                                k-option-label="'{{'Common.Select' | translate}}'"
                                                 data-required-msg="{{'Module.Required' | translate}}" required
                                                 k-on-change="setContent(template);"></select>
                                     </div>
@@ -62,14 +64,14 @@
                                         <md-button class="md-icon-button btn btn-sm btn-secondary" type="button" ng-show="template && template.id"
                                                    ng-click="formType = 'template';setTemplate()" ng-disabled="saving">
                                             <i class="fas fa-pen"></i>
-                                            <md-tooltip md-direction="bottom"> {{'Template.EditTemplate' | translate}} </md-tooltip>
+                                            <md-tooltip md-autohide="true" md-direction="bottom"> {{'Template.EditTemplate' | translate}} </md-tooltip>
                                         </md-button>
-                                        <md-button class="md-icon-button btn-sm btn btn-secondary" type="button" 
+                                        <md-button class="md-icon-button btn-sm btn btn-secondary" type="button"
                                                    ng-show="!template || (template && !template.id)"
-                                                   ng-click="formType = 'template';setTemplate()" 
+                                                   ng-click="formType = 'template';setTemplate()"
                                                    ng-disabled="saving">
                                             <i class="fas fa-plus"></i>
-                                            <md-tooltip md-direction="bottom"> {{'Template.NewTemplate' | translate}} </md-tooltip>
+                                            <md-tooltip md-autohide="true" md-direction="bottom"> {{'Template.NewTemplate' | translate}} </md-tooltip>
                                         </md-button>
                                     </div>
                                 </div>
@@ -80,11 +82,11 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label class="required">
-                                    <span>{{'SMS.Message' | translate}}*</span>
-                                    <span>{{'SMS.EstimatedSMSCount' | translate}}: <strong>{{totalSMS}}</strong></span>
+                                    <span>{{'SMS.Message' | translate}}</span>
+                                    <span class="required-label">{{'Common.Required' | translate}}</span>
                                 </label>
 
-                                <textarea class="form-control" mentio-id="'tinyMceTextArea'" mentio name="tinymceModel" mentio-typed-text="typedTerm" mentio-require-leading-space="true" ng-disabled="true"
+                                <textarea class="form-control" ng-class="{'k-invalid': textAreaError}" mentio-id="'tinyMceTextArea'" mentio name="tinymceModel" mentio-typed-text="typedTerm" mentio-require-leading-space="true" ng-disabled="true"
                                           ng-required="true" ng-model="tinymceModel" ng-change="calculateSMS(tinymceModel)" rows="6"></textarea>
                                 <script type="text/ng-template" id="tag-mentions.tpl">
                                     <ul class="ment-tags" style="max-height: 250px;overflow: auto;">
@@ -97,6 +99,7 @@
                                 <mentio-menu class="mention-scrollbar" id="hastmenu1" mentio-for="'tinyMceTextArea'" mentio-trigger-char="'#'" mentio-items="tags" mentio-template-url="tag-mentions.tpl"
                                              mentio-search="searchTags(term)" mentio-select="getTagTextRaw(item)" style="height:120px"></mentio-menu>
 
+                                <span class="paddingua10 d-block">{{'SMS.EstimatedSMSCount' | translate}}: <strong>{{totalSMS}}</strong></span>
                             </div>
                         </div>
                     </div>
@@ -107,27 +110,31 @@
                             <div class="form-group">
                                 <label for="templateName" class="required">
                                     <span>{{'Template.SmsTemplate' | translate }}</span>
+                                    <span class="required-label">{{'Common.Required' | translate}}</span>
                                 </label>
-                                <input type="text" id="templateName" name="templateName" class="k-textbox" ng-model="smstemplate.template_name" ng-required="true" data-required-msg="{{'Module.Required' | translate}}" />
+                                <input type="text" id="templateName" name="templateName" class="k-textbox" ng-class="{'k-invalid' : clicked && !smstemplate.template_name}" ng-model="smstemplate.template_name" ng-required="true" data-required-msg="{{'Module.Required' | translate}}" />
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <label for="language" class="required">{{'Setup.Settings.Language' | translate}}</label>
-                                <select id="language" name="language"
-                                        kendo-drop-down-list
-                                        required
-                                        k-options="languageOptions"
-                                        ng-model="smstemplate.language"></select>
+                                <label for="language" class="required">
+                                    <span>{{'Setup.Settings.Language' | translate}}</span>
+                                    <span class="required-label">{{'Common.Required' | translate}}</span>
+                                </label>
+                                <input id="language" name="language"
+                                       kendo-drop-down-list
+                                       required
+                                       k-options="languageOptions"
+                                       ng-model="smstemplate.language" />
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-group">
                                 <label class="required">
                                     <span>{{'SMS.Message' | translate}}</span>
-                                    <span>{{'SMS.EstimatedSMSCount' | translate}}: <strong>{{totalSMS}}</strong></span>
+                                    <span class="required-label">{{'Common.Required' | translate}}</span>
                                 </label>
-                                <textarea class="form-control" mentio-id="'tinyMceTextArea2'"
+                                <textarea class="form-control" mentio-id="'tinyMceTextArea2'" ng-class="{'k-invalid' : clicked && !smstemplate.tinymce_content}"
                                           mentio mentio-typed-text="typedTerm"
                                           mentio-require-leading-space="true"
                                           name="tinymceModel" ng-required="true"
@@ -149,6 +156,7 @@
                                              mentio-select="getTagTextRaw(item)" style="height:120px"></mentio-menu>
 
                             </div>
+                            <span>{{'SMS.EstimatedSMSCount' | translate}}: <strong>{{totalSMS}}</strong></span>
                             <p>{{'Common.ParameterMessage' | translate}}</p>
                         </div>
                         <div class="col-12">
@@ -160,15 +168,21 @@
                                                ng-model="smstemplate.sharing_type" value="me">
                                         <label class="k-radio-label" for="me">{{'View.ShareMe' | translate}}</label>
                                     </li>
-                                    <li>
-                                        <input type="radio" ng-if="user.profile.has_admin_rights" name="sharingType" id="everybody" class="k-radio"
+                                    <li ng-if="user.profile.has_admin_rights">
+                                        <input type="radio" name="sharingType" id="everybody" class="k-radio" ng-click="smstemplate.shares = []; smstemplate.profile = []"
                                                ng-model="smstemplate.sharing_type" value="everybody">
                                         <label class="k-radio-label" for="everybody"> {{'View.ShareEveryone' | translate}}</label>
                                     </li>
-                                    <li>
-                                        <input type="radio" ng-if="user.profile.has_admin_rights" name="sharingType" id="custom" class="k-radio"
+                                    <li ng-if="user.profile.has_admin_rights && !preview">
+                                        <input type="radio" ng-if="user.profile.has_admin_rights" name="sharingType" id="custom" class="k-radio" ng-click="smstemplate.profile = []"
                                                ng-model="smstemplate.sharing_type" value="custom">
                                         <label class="k-radio-label" for="custom"> {{'View.ShareCustom' | translate}}</label>
+                                    </li>
+                                    <li>
+                                        <input type="radio" name="profile" id="profile" ng-click="smstemplate.shares = []"
+                                               class="k-radio"
+                                               ng-model="smstemplate.sharing_type" value="profile">
+                                        <label class="k-radio-label" for="profile"> {{'View.Profiles' | translate}}</label>
                                     </li>
                                 </ul>
                             </div>
@@ -180,21 +194,27 @@
                                         k-options="sharesOptions" data-placeholder="'{{'Common.MultiselectPlaceholder' | translate}}'"></select>
                             </div>
                         </div>
+                        <div class="col-sm-12">
+                            <div class="form-group" ng-show="smstemplate.sharing_type === 'profile'">
+                                <label for="profiles">{{'Setup.Modules.Profile' | translate}}</label>
+                                <select id="profiles" kendo-multi-select k-ng-model="smstemplate.profile"
+                                        k-options="profilesOptions"
+                                        data-placeholder="'{{'Common.MultiselectPlaceholder' | translate}}'"></select>
+                            </div>
+                        </div>
                     </div>
-
-
                 </div>
             </div>
         </md-dialog-content>
         <md-dialog-actions layout="row" ng-show="formType === 'sms'">
-            <md-button type="submit" ng-disabled="!phoneField" class="btn btn-primary">
+            <md-button type="submit" ng-disabled="submittingModal" class="btn btn-primary">
                 <span>{{'SMS.Send' | translate}}</span> <i class="fas fa-paper-plane"></i>
             </md-button>
             <span flex></span>
 
         </md-dialog-actions>
         <md-dialog-actions layout="row" ng-show="formType === 'template'">
-            <md-button class="btn btn-primary" type="button" ng-show="!template || (template && !template.id)" ng-click="formType = 'sms';templateSave()" ng-disabled="!(smstemplate.template_name  && smstemplate.tinymce_content && smstemplate.language)"><i class="fas fa-save"></i> {{'Template.TemplateSave' | translate}}</md-button>
+            <md-button class="btn btn-primary" type="button" ng-show="!template || (template && !template.id)" ng-click="templateSave()" ng-disabled=""><i class="fas fa-save"></i> {{'Template.TemplateSave' | translate}}</md-button>
             <md-button class="btn btn-primary" type="button" ng-show="template && template.id" ng-click="templateSave()" ng-disabled="submitting"><i class="fas fa-save"></i> {{'Template.UpdateTemplate' | translate}}</md-button>
             <md-button class="btn btn-danger" type="button" ng-show="template && template.id" ng-click="deleteTemplate()" ng-disabled="saving"><i class="fas fa-trash"></i> {{'Template.TemplateDelete' | translate}}</md-button>
             <span flex></span>

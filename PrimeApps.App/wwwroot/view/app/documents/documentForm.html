@@ -29,13 +29,13 @@
                 <div flex></div>
                 <div>
                     <md-button aria-label="{{'Documents.Clear' | translate}}" class="md-icon-button btn btn-secondary btn-xs" ng-click="item.remove()">
-                        <i class="fas fa-trash"></i> <md-tooltip md-direction="bottom">{{'Documents.Clear' | translate}}</md-tooltip>
+                        <i class="fas fa-trash"></i> <md-tooltip md-autohide="true" md-direction="bottom">{{'Documents.Clear' | translate}}</md-tooltip>
                     </md-button>
                     <md-button aria-label="{{'Documents.Cancel' | translate}}" class="md-icon-button btn btn-secondary btn-xs" ng-click="item.cancel()" ng-if="item.isUploading" ng-hide="hideUploadButton">
-                        <i class="fas fa-ban"></i> <md-tooltip md-direction="bottom">{{'Documents.Cancel' | translate}}</md-tooltip>
+                        <i class="fas fa-ban"></i> <md-tooltip md-autohide="true" md-direction="bottom">{{'Documents.Cancel' | translate}}</md-tooltip>
                     </md-button>
                     <md-button aria-label="{{'Documents.Upload' | translate}}" class="md-icon-button btn btn-primary btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess" ng-hide="hideUploadButton || !entityId">
-                        <i class="fas fa-upload"></i> <md-tooltip md-direction="bottom">{{'Documents.Upload' | translate}}</md-tooltip>
+                        <i class="fas fa-upload"></i> <md-tooltip md-autohide="true" md-direction="bottom">{{'Documents.Upload' | translate}}</md-tooltip>
                     </md-button>
                 </div>
             </div>

@@ -1,23 +1,25 @@
 <div class="form-group"
      ng-if="field.data_type === 'text_single' && field.data_type != 'number_auto' && !field.combination && field.show_label && !field.show_lock && !field.hidden">
-    <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}" for="{{field.name}}"
+    <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}" for="{{field.name +'_'+ module.id}}"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly}">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <input ng-if="field.mask" kendo-masked-text-box name="{{field.name}}" id="{{field.name}}" tabindex="{{field.order}}" ng-required="field.validation.required"
-           placeholder="{{field.placeholder}}" ng-model="record[field.name]" ng-change="fieldValueChange(field)"
+    <input ng-if="field.mask" kendo-masked-text-box name="{{field.name +'_'+ module.id}}" id="{{field.name +'_'+ module.id}}" tabindex="{{field.order}}" ng-required="field.validation.required"
+           placeholder="{{field.languages[globalization.Label].placeholder}}" ng-model="record[field.name]" ng-change="fieldValueChange(field)"
            ng-readonly="field.validation.readonly || (record.freeze && !isAdmin)"
            minlength="{{field.validation.min_length || 0}}" maxlength="{{field.validation.max_length || 50}}"
+           data-range-field="{{field.name +'_'+ module.id}}"
            pattern="{{field.validation.pattern || '[^=]*'}}" k-mask="'{{field.mask}}'" />
-    <input ng-if="!field.mask" type="text" name="{{field.name}}" id="{{field.name}}" class="k-textbox" tabindex="{{field.order}}" ng-required="field.validation.required"
-           placeholder="{{field.placeholder}}" ng-model="record[field.name]" ng-change="fieldValueChange(field)"
+    <input ng-if="!field.mask" type="text" name="{{field.name +'_'+ module.id}}" id="{{field.name +'_'+ module.id}}" class="k-textbox" tabindex="{{field.order}}" ng-required="field.validation.required"
+           placeholder="{{field.languages[globalization.Label].placeholder}}" ng-model="record[field.name]" ng-change="fieldValueChange(field)"
            ng-readonly="field.validation.readonly || (record.freeze && !isAdmin)"
            minlength="{{field.validation.min_length || 0}}" maxlength="{{field.validation.max_length || 50}}"
+           data-range-field="{{field.name +'_'+ module.id}}"
            pattern="{{field.validation.pattern || '[^=]*'}}" />
-    
+
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
@@ -32,18 +34,19 @@
     </label>
     <textarea name="{{field.name}}"
               id="{{field.name}}"
-              class="k-textbox"
+              class="k-textarea"
               style="{{'overflow-x: hidden;' + field.style.input}}"
               tabindex="{{field.order}}"
-              placeholder="{{field.placeholder}}"
+              placeholder="{{field.languages[globalization.Label].placeholder}}"
               ng-model="record[field.name]"
               ng-change="fieldValueChange(field);"
               ng-required="field.validation.required"
               minlength="{{field.validation.min_length || 0}}"
-              maxlength="{{field.validation.max_length || 500}}"
+              maxlength="{{field.validation.max_length ? field.validation.max_length : field.multiline_type === 'large' ? 3000 : 500}}"
               ng-readonly="field.validation.readonly  || (record.freeze && !isAdmin)"
               pattern="{{field.validation.pattern}}"
-              auto-grow></textarea>
+              ng-attr-rows="{{field.multiline_type === 'large' ? 8 : 2}}"
+              ></textarea>
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
@@ -57,11 +60,10 @@
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <textarea class="k-textbox"
+    <textarea class="k-textarea"
               ng-model="record[field.name]"
-              ui-tinymce-multi="tinymceOptions"
+              ui-tinymce="tinymceOptions"
               ng-required="field.validation.required"></textarea>
-
 </div>
 
 <div class="form-group"
@@ -82,18 +84,17 @@
         </div>
         <md-button ng-if="!record[field.name]" ng-disabled="field.validation.readonly || (id && !field.editable) || (record.freeze && !isAdmin)" ng-click="openLocationModal(field.name)" class="upload-btn btn btn-primary md-icon-button">
             <i class="fas fa-map-marked"></i>
-            <md-tooltip md-direction="bottom">{{'Module.ChooseLocation' | translate}}</md-tooltip>
+            <md-tooltip md-autohide="true" md-direction="bottom">{{'Module.ChooseLocation' | translate}}</md-tooltip>
         </md-button>
-        <md-button ng-if="record[field.name]" ng-disabled="field.validation.readonly ||  (record.freeze && !isAdmin)" ng-click="record[field.name]= null" class="delete-btn btn btn-danger md-icon-button ">
+        <md-button ng-if="record[field.name]" ng-hide="field.validation.readonly ||  (record.freeze && !isAdmin)" ng-click="record[field.name]= null" class="delete-btn btn btn-danger md-icon-button ">
             <i class="fas fa-trash"></i>
-            <md-tooltip md-direction="bottom">{{'Module.DeleteLocation' | translate}}</md-tooltip>
         </md-button>
     </div>
 </div>
 
 <div class="form-group"
      ng-if="field.data_type === 'number' && !field.show_lock && !field.hidden">
-    <label for="{{field.name}}"
+    <label for="{{field.name +'_'+ module.id}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
@@ -101,19 +102,19 @@
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <input kendo-numeric-text-box ng-class="{'readonly': field.validation.readonly || (record.freeze && !isAdmin)}"
-           name="{{field.name}}"
-           id="{{field.name}}"
+    <input kendo-numeric-text-box
+           ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
+           name="{{field.name +'_'+ module.id}}"
+           id="{{field.name +'_'+ module.id}}"
            tabindex="{{field.order}}"
-           ng-placeholder="{{field.placeholder}}"
+           ng-placeholder="{{field.languages[globalization.Label].placeholder}}"
            k-options="{{'numberOptions'+field.id}}"
+           k-ng-model="record[field.name]"
+           data-range-field="{{field.name +'_'+ module.id}}"
            maxlength="{{field.validation.max_length || 16}}"
            minlength="{{field.validation.min_length || 0}}"
-           k-ng-model="record[field.name]"
-           data-range-field="{{field.name}}}"
            k-on-change="fieldValueChange(field); calculate(field);"
-           ng-required="field.validation.required"
-           ng-readonly="field.validation.readonly || (record.freeze && !isAdmin)" />
+           ng-required="field.validation.required" />
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
@@ -127,18 +128,18 @@
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <input kendo-numeric-text-box ng-class="{'readonly': field.validation.readonly || (record.freeze && !isAdmin)}"
+    <input kendo-numeric-text-box
            name="{{field.name}}"
            id="{{field.name}}"
            tabindex="{{field.order}}"
-           ng-placeholder="{{field.placeholder}}"
+           ng-placeholder="{{field.languages[globalization.Label].placeholder}}"
            k-options="{{'numberDecimalOptions'+field.id}}"
            maxlength="{{field.validation.max_length || 16}}"
            minlength="{{field.validation.min_length || 0}}"
            k-ng-model="record[field.name]"
            k-on-change="fieldValueChange(field); calculate(field);"
            ng-required="field.validation.required"
-           ng-readonly="field.validation.readonly  || (record.freeze && !isAdmin)" />
+           ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)" />
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
@@ -152,18 +153,18 @@
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <input kendo-numeric-text-box ng-class="{'readonly': field.validation.readonly || (record.freeze && !isAdmin)}"
+    <input kendo-numeric-text-box
            name="{{field.name}}"
            id="{{field.name}}"
            tabindex="{{field.order}}"
-           ng-placeholder="{{field.placeholder}}"
+           ng-placeholder="{{field.languages[globalization.Label].placeholder}}"
            maxlength="{{field.validation.max_length || 16}}"
            minlength="{{field.validation.min_length || 0}}"
            k-options="{{'currencyOptions'+ field.id}}"
            k-ng-model="record[field.name]"
            k-on-change="fieldValueChange(field); calculate(field);"
            ng-required="field.validation.required"
-           ng-readonly="field.validation.readonly || (record.freeze && !isAdmin)" />
+           ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)" />
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
@@ -191,7 +192,7 @@
            ng-model="record[field.name]"
            ng-change="fieldValueChange(field);"
            ng-required="field.validation.required"
-           ng-readonly="field.validation.readonly  || (record.freeze && !isAdmin)"
+           ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
            minlength="{{field.validation.min_length || 0}}"
            maxlength="{{field.validation.max_length || 100}}" />
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
@@ -291,7 +292,6 @@
 
     <select id="{{field.name}}"
             name="{{field.name}}"
-             ng-class="{'readonly': field.validation.readonly || (record.freeze && !isAdmin)}"
             kendo-drop-down-list
             ng-required="field.validation.required"
             tabindex="{{field.order}}"
@@ -316,8 +316,9 @@
        <label ng-show="field.show_label" class="k-checkbox-label" for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
            <span ng-if="!field.custom_label">{{ field.languages[globalization.Label]['label'] }}</span>
            <span ng-if="field.custom_label">{{ field.custom_label }}</span>
-           <div class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</div>
+
        </label>
+        <div class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</div>
    </div>
 </div>
 
@@ -338,7 +339,7 @@
            tabindex="{{field.order}}"
            ng-value="record[field.name]"
            ng-required="field.validation.required"
-           ng-readonly="field.validation.readonly  || (record.freeze && !isAdmin)" />
+           ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)" />
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'multiselect' && !field.hidden">
@@ -350,12 +351,12 @@
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <select id="{{field.name}}" ng-class="{'readonly': field.validation.readonly || (record.freeze && !isAdmin)}"
+    <select id="{{field.name}}"
             name="{{field.name}}"
             kendo-multi-select
             ng-required="field.validation.required"
             k-ng-model="record[field.name]"
-            ng-readonly="field.validation.readonly || (record.freeze && !isAdmin)"
+            ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
             k-options="{{'customOptions'+ field.picklist_id}}">
     </select>
 </div>
@@ -378,7 +379,7 @@
         </a>
         <md-button ng-if="!record[field.name]" ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)" class="upload-btn btn btn-primary md-icon-button">
             <i class="fas fa-upload"></i>
-            <md-tooltip md-direction="bottom">{{'Module.UploadImage' | translate}}</md-tooltip>
+            <md-tooltip md-autohide="true" md-direction="bottom">{{'Module.UploadImage' | translate}}</md-tooltip>
             <input name="files"
                    type="file"
                    nv-file-select uploader="uploaderImage(field)"
@@ -386,9 +387,8 @@
                    ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
                    ng-model='record[field.name]' />
         </md-button>
-        <md-button ng-if="record[field.name]" ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)" ng-click="removeDocument(field)" class="delete-btn btn btn-danger md-icon-button btn-sm">
+        <md-button ng-if="record[field.name]" ng-hide="field.validation.readonly || (record.freeze && !isAdmin)" ng-click="removeDocument(field)" class="delete-btn btn btn-danger md-icon-button btn-sm">
             <i class="fas fa-trash"></i>
-            <md-tooltip md-direction="bottom">{{'Module.DeleteImage' | translate}}</md-tooltip>
         </md-button>
     </div>
 </div>
@@ -403,11 +403,11 @@
             <md-button class="btn btn-secondary label-btn" ng-show="record[field.name] && fileLoadingCounter<1  && isFinishUpload" title="{{record[field.name]}}"
                        target="_blank" ng-click="getFileDownload(record[field.name],document[field.name]['UniqueName'])">
                 <i class="fas fa-download"></i>
-                <md-tooltip md-direction="bottom">{{'Common.Download' | translate}}</md-tooltip>
+                <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Download' | translate}}</md-tooltip>
             </md-button>
-            <md-button ng-show="record[field.name]" class="btn btn-secondary label-btn" ng-click="removeDocument(field)">
+            <md-button ng-show="record[field.name]" ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)" class="btn btn-secondary label-btn" ng-click="removeDocument(field)">
                 <i class="fas fa-minus-circle"></i>
-                <md-tooltip md-direction="bottom">{{'Common.Clear' | translate}}</md-tooltip>
+                <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Clear' | translate}}</md-tooltip>
             </md-button>
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
@@ -423,7 +423,7 @@
                ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
                ng-required="field.validation.required"
                ng-model='record[field.name]'>
-        <label class="custom-file-label" for="{{field.name}}" ng-show="field.data_type === 'document'" ng-value='record[field.name]'>
+        <label class="custom-file-label" for="{{field.name}}" ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)" ng-show="field.data_type === 'document'" ng-value='record[field.name]'>
             <span>{{record[field.name] ? record[field.name] : 'Module.ChooseFile' | translate}}</span>
         </label>
     </div>
@@ -468,10 +468,10 @@
            id="{{field.name}}"
            style="{{field.style.input}}"
            tabindex="{{field.order}}"
-           placeholder="{{field.placeholder}}"
+           placeholder="{{field.languages[globalization.Label].placeholder}}"
            ng-model="record[field.name]"
            ng-required="field.validation.required"
-           ng-readonly="field.validation.readonly  || (record.freeze && !isAdmin)"
+           ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
            minlength="{{field.validation.min_length || 0}}"
            maxlength="{{field.validation.max_length || 400}}"
            pattern="{{field.validation.pattern}}" />
@@ -495,8 +495,8 @@
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <select kendo-drop-down-list="{{'lookup'+field.id}}" ng-class="{'readonly': field.validation.readonly || (record.freeze && !isAdmin)}"
-            id="{{field.name}}" 
+    <select kendo-drop-down-list="{{'lookup'+field.id}}"
+            id="{{field.name}}"
             name="{{field.name}}"
             k-options="{{'lookupOptions'+field.id}}"
             k-ng-model="record[field.name]"
@@ -513,8 +513,8 @@
            id="{{field.name}}"
            class="k-textbox"
            name="{{field.name}}"
-           placeholder="{{field.placeholder}}"
-           ng-readonly="field.validation.readonly || (record.freeze && !isAdmin)"
+           placeholder="{{field.languages[globalization.Label].placeholder}}"
+           ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
            ng-required="field.validation.required"
            style="{{field.style.input}}"
            tabindex="{{field.order}}"
@@ -663,7 +663,7 @@
            class="k-textbox"
            tabindex="{{field.order}}"
            ng-required="field.validation.required"
-           placeholder="{{field.placeholder}}"
+           placeholder="{{field.languages[globalization.Label].placeholder}}"
            ng-model="record[field.name]"
            ng-value="field.auto_number_prefix + record[field.name] + field.auto_number_suffix"
            ng-change="fieldValueChange(field); calculate(field);"

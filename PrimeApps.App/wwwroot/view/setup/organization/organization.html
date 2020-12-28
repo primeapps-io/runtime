@@ -18,14 +18,14 @@
                             <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z" />
 
                             <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z" />  </svg>
-                            <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
-                            <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                            <md-tooltip md-autohide="true" ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                            <md-tooltip md-autohide="true" ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
                         </md-button>-->
                     </div>
                     <span flex></span>
                     <md-button type="submit" class="md-icon-button btn btn-primary" aria-label="{{'Common.Save' | translate}}">
                         <i class="fas fa-save"></i>
-                        <md-tooltip md-direction="bottom" ng-disabled="user.isDemo">{{'Common.Save' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" md-direction="bottom" ng-disabled="user.isDemo">{{'Common.Save' | translate}}</md-tooltip>
                     </md-button>
                 </div>
             </md-toolbar>
@@ -47,10 +47,10 @@
                                                 <img ng-src="{{imagePreview}}" ng-if="imagePreview" />
                                             </div>
                                             <md-button class="upload-btn btn btn-primary md-icon-button btn-sm" ng-if="!imagePreview && !logo">
-                                                <i class="fas fa-upload"></i><md-tooltip md-direction="bottom">{{'Setup.Organization.NewLogo' | translate}}</md-tooltip>
+                                                <i class="fas fa-upload"></i><md-tooltip md-autohide="true" md-direction="bottom">{{'Setup.Organization.NewLogo' | translate}}</md-tooltip>
                                                 <input ng-if="uploader" type="file" nv-file-select uploader="uploader" />
                                             </md-button>
-                                            <md-button class="delete-btn btn btn-danger md-icon-button btn-sm" ng-if="logo || imagePreview" ng-click="removeLogo()"><i class="fas fa-trash"></i><md-tooltip md-direction="bottom">{{'Common.Delete' | translate}}</md-tooltip></md-button>
+                                            <md-button class="delete-btn btn btn-danger md-icon-button btn-sm" ng-if="logo || imagePreview" ng-click="removeLogo()"><i class="fas fa-trash"></i><md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Delete' | translate}}</md-tooltip></md-button>
                                         </div>
                                     </div>
                                 </div>
@@ -117,13 +117,13 @@
                                                 <div flex></div>
                                                 <div>
                                                     <md-button class="md-icon-button btn btn-secondary btn-xs" ng-click="item.remove(); item.image=null; $parent.imagePreview = null;">
-                                                        <i class="fas fa-trash"></i> <md-tooltip md-direction="bottom">{{'Documents.Clear' | translate}}</md-tooltip>
+                                                        <i class="fas fa-trash"></i> <md-tooltip md-autohide="true" md-direction="bottom">{{'Documents.Clear' | translate}}</md-tooltip>
                                                     </md-button>
                                                     <md-button class="md-icon-button btn btn-secondary btn-xs" ng-click="item.cancel()" ng-if="uploader.isUploading">
-                                                        <i class="fas fa-ban"></i> <md-tooltip md-direction="bottom">{{'Documents.Cancel' | translate}}</md-tooltip>
+                                                        <i class="fas fa-ban"></i> <md-tooltip md-autohide="true" md-direction="bottom">{{'Documents.Cancel' | translate}}</md-tooltip>
                                                     </md-button>
                                                     <md-button class="md-icon-button btn btn-primary btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
-                                                        <i class="fas fa-upload"></i> <md-tooltip md-direction="bottom">{{'Documents.Upload' | translate}}</md-tooltip>
+                                                        <i class="fas fa-upload"></i> <md-tooltip md-autohide="true" md-direction="bottom">{{'Documents.Upload' | translate}}</md-tooltip>
                                                     </md-button>
                                                 </div>
                                             </div>

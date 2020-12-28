@@ -113,7 +113,10 @@ sleep 3 # Sleep 3 seconds for write database before backup
 echo -e "${GREEN}Compressing data folders...${NC}"
 cd "$basePath/data"
 tar -czf pgsql_pre.tar.gz pgsql_pre
-tar -czf minio_pre.tar.gz minio_pre
 tar -czf redis_pre.tar.gz redis_pre
+tar -czf minio_pre1.tar.gz minio_pre1
+tar -czf minio_pre2.tar.gz minio_pre2
+tar -czf minio_pre3.tar.gz minio_pre3
+tar -czf minio_pre4.tar.gz minio_pre4
 
 echo -e "${BLUE}Completed${NC}"

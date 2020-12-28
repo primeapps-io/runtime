@@ -3,7 +3,7 @@
         <md-toolbar md-scroll-shrink ng-if="true">
             <div class="md-toolbar-tools">
                 <md-button href="{{'#/app/module/' + entityType + '?id=' + entityId}}" class="md-icon-button btn show-on-m" aria-label="{{'Common.Back' | translate}}"><i class="fas fa-angle-left"></i>
-                    <md-tooltip md-direction="right">{{'Common.Back' | translate}}</md-tooltip>
+                    <md-tooltip md-autohide="true" md-direction="right">{{'Common.Back' | translate}}</md-tooltip>
                 </md-button>
                 <h2 md-truncate>{{title}}</h2>
                 <div class="helpbuttons hide-on-m">
@@ -17,8 +17,8 @@
                             <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
                             <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/>
                         </svg>
-                        <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
-                        <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
                     </md-button>-->
                 </div>
 
@@ -26,7 +26,7 @@
                 <md-menu md-position-mode="target-right target">
                     <md-button class="md-icon-button btn btn-secondary" aria-label="{{'Common.Search' | translate}}"
                                ng-click="$mdMenu.open()"><i class="fas fa-search"></i>
-                        <md-tooltip md-direction="bottom">{{'Common.Search' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Search' | translate}}</md-tooltip>
                     </md-button>
                     <md-menu-content width="4">
                         <div class="padding20">
@@ -40,7 +40,7 @@
                 <md-menu md-position-mode="target-right target">
                     <md-button class="md-icon-button btn btn-secondary" aria-label="{{'Common.Filter' | translate}}"
                                ng-click="$mdMenu.open()"><i class="fas fa-filter"></i>
-                        <md-tooltip md-direction="bottom">{{'Common.Filter' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Filter' | translate}}</md-tooltip>
                     </md-button>
                     <md-menu-content width="3" class="md-dense">
                         <md-menu-item
@@ -60,7 +60,7 @@
                 <md-menu md-position-mode="target-right target">
                     <md-button class="md-icon-button btn btn-secondary" aria-label="{{'Common.Sort' | translate}}"
                                ng-click="$mdMenu.open()"><i class="fas fa-sort-alpha-down"></i>
-                        <md-tooltip md-direction="bottom">{{'Common.Sort' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Sort' | translate}}</md-tooltip>
                     </md-button>
                     <md-menu-content width="3" class="md-dense">
                         <md-menu-item ng-class="{active:sortPredicate === 'timestamp'}">

@@ -4,7 +4,7 @@
         <section ng-show="!loading" layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
             <md-toolbar md-scroll-shrink ng-if="true" class="with-subheader">
                 <div class="md-toolbar-tools">
-                    <md-button class="md-icon-button show-on-m" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()"> <i class="fas fa-angle-left"></i> <md-tooltip md-direction="right">{{'Common.Back' | translate}}</md-tooltip> </md-button>
+                    <md-button class="md-icon-button show-on-m" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()"> <i class="fas fa-angle-left"></i> <md-tooltip md-autohide="true" md-direction="right">{{'Common.Back' | translate}}</md-tooltip> </md-button>
                     <h1 md-truncate>{{activeTabHeaderTitle}}</h1>
                     <div class="helpbuttons hide-on-m">
                         <!--<md-button class="md-icon-button enlarge d-none d-lg-inline-block" ng-click="toggleFullLeftMenu()"
@@ -13,14 +13,14 @@
                                  xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 36 36"
                                  style="enable-background:new 0 0 36 36;" xml:space="preserve">
                             <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z" /><path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z" /><path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z" /><path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z" />  </svg>
-                            <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
-                            <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                            <md-tooltip md-autohide="true" ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                            <md-tooltip md-autohide="true" ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
                         </md-button>-->
                     </div>
                     <span flex></span>
                     <md-button type="submit" class="md-icon-button btn btn-primary" aria-label="{{'Common.Save' | translate}}">
                         <i class="fas fa-save"></i>
-                        <md-tooltip md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip>
                     </md-button>
                 </div>
             </md-toolbar>
@@ -56,8 +56,7 @@
                         <section class="whitebox collapsible">
                             <div class="collapsible-head">
                                 <h5>{{'Setup.Settings.Title1' | translate}} </h5>
-                                <h5 class="show-on-m2 user-profile-content"> <span> {{userModel.role}} at {{userModel.appName}} <span class="user-profile user-profile-mobile">{{userModel.profileName}}</span></span> </h5>
-                                <h5 class="hide-on-m2"> <span> {{userModel.role}} at {{userModel.appName}} <span class="user-profile">{{userModel.profileName}}</span></span> </h5>
+                                <div class="ml-3 badge standart badge-secondary">{{userModel.profileName}}</div>
                             </div>
 
                             <div class="collapsible-body">
@@ -71,10 +70,10 @@
                                                     <img ng-src="{{croppedImage}}" class="img-rounded" ng-show="croppedImage" />
                                                 </div>
                                                 <md-button class="upload-btn btn btn-primary md-icon-button btn-sm profile-image-upload"  ng-if="!croppedImage && !tempPicture ">
-                                                    <i class="fas fa-upload"></i><md-tooltip md-direction="bottom">{{'Setup.Settings.NewProfilePicture' | translate}}</md-tooltip>
+                                                    <i class="fas fa-upload"></i><md-tooltip md-autohide="true" md-direction="bottom">{{'Setup.Settings.NewProfilePicture' | translate}}</md-tooltip>
                                                     <input type="file" nv-file-select uploader="uploader" />
                                                 </md-button>
-                                                <md-button class="delete-btn btn btn-danger md-icon-button btn-sm profile-image-delete" ng-click="removeProfileImage(); $parent.croppedImage=null" ng-if="tempPicture || croppedImage"><i class="fas fa-trash"></i><md-tooltip md-direction="bottom">{{'Setup.Settings.RemoveProfileImage' | translate}}</md-tooltip></md-button>
+                                                <md-button class="delete-btn btn btn-danger md-icon-button btn-sm profile-image-delete" ng-click="removeProfileImage(); $parent.croppedImage=null" ng-if="tempPicture || croppedImage"><i class="fas fa-trash"></i><md-tooltip md-autohide="true" md-direction="bottom">{{'Setup.Settings.RemoveProfileImage' | translate}}</md-tooltip></md-button>
                                             </div>
                                             <div>{{'Setup.Settings.NewProfilePicture' | translate}}</div>
                                         </div>
@@ -101,7 +100,7 @@
                                                         <span>
                                                             <md-button class="btn btn-secondary label-btn" ng-if="!preview && user.profile.change_email" ng-click="changeEmailModal($event)">
                                                                 <i class="fas fa-exchange-alt"></i>
-                                                                <md-tooltip md-direction="bottom">{{'Setup.Settings.ChangeEmail' | translate}}</md-tooltip>
+                                                                <md-tooltip md-autohide="true" md-direction="bottom">{{'Setup.Settings.ChangeEmail' | translate}}</md-tooltip>
                                                             </md-button>
                                                         </span>
                                                     </label>
@@ -168,13 +167,13 @@
                                                     <div flex></div>
                                                     <div>
                                                         <md-button class="md-icon-button btn btn-secondary btn-xs" ng-click="item.remove(); item.image=null; $parent.croppedImage = null;">
-                                                            <i class="fas fa-trash"></i> <md-tooltip md-direction="bottom">{{'Documents.Clear' | translate}}</md-tooltip>
+                                                            <i class="fas fa-trash"></i> <md-tooltip md-autohide="true" md-direction="bottom">{{'Documents.Clear' | translate}}</md-tooltip>
                                                         </md-button>
                                                         <md-button class="md-icon-button btn btn-secondary btn-xs" ng-click="item.cancel()" ng-if="uploader.isUploading">
-                                                            <i class="fas fa-ban"></i> <md-tooltip md-direction="bottom">{{'Documents.Cancel' | translate}}</md-tooltip>
+                                                            <i class="fas fa-ban"></i> <md-tooltip md-autohide="true" md-direction="bottom">{{'Documents.Cancel' | translate}}</md-tooltip>
                                                         </md-button>
                                                         <md-button class="md-icon-button btn btn-primary btn-xs" ng-click="uploadFunc(item,$parent.croppedImage)" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
-                                                            <i class="fas fa-upload"></i> <md-tooltip md-direction="bottom">{{'Documents.Upload' | translate}}</md-tooltip>
+                                                            <i class="fas fa-upload"></i> <md-tooltip md-autohide="true" md-direction="bottom">{{'Documents.Upload' | translate}}</md-tooltip>
                                                         </md-button>
                                                     </div>
                                                 </div>
@@ -198,10 +197,10 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="language">{{'Setup.Settings.Language' | translate}}</label>
-                                            <select id="language" name="language"
+                                            <input id="language" name="language"
                                                     kendo-drop-down-list
                                                     k-options="languageOptions"
-                                                    ng-model="selectedLanguage"></select>
+                                                    ng-model="selectedLanguage"/>
                                         </div>
 
                                     </div>
@@ -370,7 +369,7 @@
                                             <span class="pl-1" for="ssl">
                                                 {{'Setup.Messaging.EMail.SMTP.SSLEnable'| translate}}
                                                 <i class="info-icon fas fa-info-circle">
-                                                    <md-tooltip md-direction="top">{{'Setup.Messaging.EMail.SMTP.WhatIsSSL' | translate}}</md-tooltip>
+                                                    <md-tooltip md-autohide="true" md-direction="top">{{'Setup.Messaging.EMail.SMTP.WhatIsSSL' | translate}}</md-tooltip>
                                                 </i>
                                                 <span class="required-label">{{'Common.Required' | translate}}</span>
                                             </span>
@@ -393,7 +392,7 @@
                                 <h5> {{'Setup.Messaging.EMail.Senders' | translate}}</h5>
                                 <md-button type="button" name="addSender" class="md-icon-button btn btn-primary" ng-click="showNewSenderForm()">
                                     <i class="fas fa-plus"></i>
-                                    <md-tooltip md-direction="bottom"> {{'Common.Add' | translate}}</md-tooltip>
+                                    <md-tooltip md-autohide="true" md-direction="bottom"> {{'Common.Add' | translate}}</md-tooltip>
                                 </md-button>
                             </div>
                             <div class="collapsible-body">
@@ -410,7 +409,7 @@
                                                             <strong>{{sender.alias}}</strong>
                                                             <span><{{sender.email}}></span>
                                                         </div>
-                                                        <md-button type="button" class="md-icon-button btn btn-xs btn-danger" ng-click="removeSender($event,sender)"><i class="fas fa-trash"></i><md-tooltip md-direction="right">{{'Common.Delete' | translate}}</md-tooltip></md-button>
+                                                        <md-button type="button" class="md-icon-button btn btn-xs btn-danger" ng-click="removeSender($event,sender)"><i class="fas fa-trash"></i><md-tooltip md-autohide="true" md-direction="right">{{'Common.Delete' | translate}}</md-tooltip></md-button>
                                                     </div>
                                                 </div>
                                             </div>

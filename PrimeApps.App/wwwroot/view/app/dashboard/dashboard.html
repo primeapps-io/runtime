@@ -7,7 +7,7 @@
                 <h1 md-truncate>{{'Dashboard.Label' | translate}}</h1>
                 <div class="helpbuttons hide-on-m">
                     <md-button class="md-icon-button" aria-label="{{'Common.Help' | translate}}" ng-if="dashboardHelpSide" ng-click="helpSide()"><i class="fas fa-question-circle"></i>
-                        <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
                     </md-button>
                     <!--<md-button class="md-icon-button enlarge d-none d-lg-inline-block" ng-click="toggleFullLeftMenu()" aria-label="{{'Common.FullScreen' | translate}}">
                         <svg class="enlarge_icon" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 36 36" style="enable-background:new 0 0 36 36;" xml:space="preserve">
@@ -16,16 +16,16 @@
                             <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
                             <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/>
                         </svg>
-                        <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
-                        <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
                     </md-button>-->
                 </div>
                 <span flex></span>
                 <md-button ng-if="user.profile.has_admin_rights && !loading && dashlets.length > 1" class="md-icon-button btn btn-secondary" aria-label="{{ 'Dashboard.DashletOrders' | translate}}" ng-click="sideModalLeft()"><i class="fas fa-sort"></i>
-                    <md-tooltip md-direction="bottom">{{ 'Dashboard.DashletOrders' | translate}}</md-tooltip>
+                    <md-tooltip md-autohide="true" md-direction="bottom">{{ 'Dashboard.DashletOrders' | translate}}</md-tooltip>
                 </md-button>
                 <md-button class="md-icon-button btn btn-primary" aria-label="{{'Dashboard.NewDashlet' | translate}}" ng-click="openNewDashlet($event)"><i class="fas fa-plus"></i>
-                    <md-tooltip md-direction="bottom">{{'Dashboard.NewDashlet' | translate}}</md-tooltip>
+                    <md-tooltip md-autohide="true" md-direction="bottom">{{'Dashboard.NewDashlet' | translate}}</md-tooltip>
                 </md-button>
             </div>
         </md-toolbar>
@@ -47,7 +47,7 @@
                         <md-tab-label>
                             <div class="tab-container">
                                 <span><i class="fas fa-plus"></i></span>
-                                <md-tooltip md-direction="bottom">{{'Dashboard.AddNewPanel' | translate}}</md-tooltip>
+                                <md-tooltip md-autohide="true" md-direction="bottom">{{'Dashboard.AddNewPanel' | translate}}</md-tooltip>
                             </div>
                         </md-tab-label>
                     </md-tab>
@@ -61,7 +61,7 @@
                     <md-button type="button"
                                ng-click="selectedClose = !selectedClose; closeDialog(currentPath, module.id, showModalCheck);"
                                class="md-icon-button help-page-close"><i class="fas fa-times"></i>
-                        <md-tooltip md-diretion="bottom">{{'Common.Close' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" md-diretion="bottom">{{'Common.Close' | translate}}</md-tooltip>
                     </md-button>
                     <div>
                         <input type="checkbox" class="k-checkbox" ng-model="showModalCheck" ng-click="showModal()"
@@ -86,7 +86,7 @@
                                         <md-button ng-if="dashlet.dashlet_type === 'chart'"  ng-click="goDetail(dashlet.chart_item.chart.report_id,dashlet.chart_item.chart.view_module_name)" class="md-icon-button" aria-label="" > <i class="fas fa-external-link-alt"></i></md-button>
                                         <md-button ng-if="dashlet.dashlet_type === 'widget'" ng-click="goDetail(dashlet.widget.view_id,dashlet.widget.widget_data.modulename)" class="md-icon-button" aria-label="" > <i class="fas fa-external-link-alt"></i></md-button>
                                         <md-menu md-position-mode="target-right target">
-                                            <md-button class="md-icon-button" aria-label="{{'Common.Settings' | translate}}" ng-click="$mdMenu.open()"> <i class="fas fa-ellipsis-v"></i><md-tooltip md-direction="bottom">{{'Common.Settings' | translate}}</md-tooltip></md-button>
+                                            <md-button class="md-icon-button" aria-label="{{'Common.Settings' | translate}}" ng-click="$mdMenu.open()"> <i class="fas fa-ellipsis-v"></i><md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Settings' | translate}}</md-tooltip></md-button>
                                             <md-menu-content width="2" class="md-dense">
                                                 <md-menu-item>
                                                     <md-button ng-click="openNewDashlet($event,dashlet)">
@@ -118,7 +118,7 @@
                                          ng-style="{'height':dashlet.x_tile_height+'px','background-color':dashlet.widget.color ? dashlet.widget.color: '#555' }">
                                        
                                         <i class="{{dashlet.widget.icon}}"></i>
-                                        <div class="description">{{dashlet.widget.widget_data.value}} <small>{{dashlet.widget.languages[globalization.Label]['name']}}</small>
+                                        <div class="description"> <small>{{dashlet.widget.languages[globalization.Label]['name']}}</small> {{dashlet.widget.widget_data.value}}
                                         </div>
                                     </div>
                                 </div>

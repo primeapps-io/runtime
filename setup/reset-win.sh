@@ -19,13 +19,19 @@ echo -e "${GREEN}Deleting data folders...${NC}"
 cd "$basePath/data"
 
 rm -rf pgsql_pre
-rm -rf minio_pre
 rm -rf redis_pre
+rm -rf minio_pre1
+rm -rf minio_pre2
+rm -rf minio_pre3
+rm -rf minio_pre4
 rm -rf primeapps
 
 tar -xzf pgsql_pre.tar.gz pgsql_pre
-tar -xzf minio_pre.tar.gz minio_pre
 tar -xzf redis_pre.tar.gz redis_pre
+tar -xzf minio_pre1.tar.gz minio_pre1
+tar -xzf minio_pre2.tar.gz minio_pre2
+tar -xzf minio_pre3.tar.gz minio_pre3
+tar -xzf minio_pre4.tar.gz minio_pre4
 
 echo -e "${GREEN}Starting services...${NC}"
 net start Postgres-PrimeApps

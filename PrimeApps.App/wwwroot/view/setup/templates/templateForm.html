@@ -11,11 +11,11 @@
                 <h3 md-truncate ng-show="templateActiveTab ==='excel'">{{'Setup.Nav.Tabs.ExcelTemplate' | translate}}</h3>
                 <h3 md-truncate ng-show="templateActiveTab ==='document'">{{'Setup.Nav.Tabs.DocumentTemplate' | translate}}</h3>
                 <h3 md-truncate ng-show="templateActiveTab ==='sms'">{{'Setup.Nav.Tabs.SmsTemplate' | translate}}</h3>
-                
+
                 <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close"><i class="fas fa-thumbtack"></i></md-button>
                 <span flex></span>
 
-                <md-button type="submit" ng-if="templateForm" class="md-icon-button btn btn-primary" ng-disabled="current.system_type == 'system'"><i class="fas fa-save"></i> <md-tooltip md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip></md-button>
+                <md-button type="submit" ng-if="templateForm" class="md-icon-button btn btn-primary" ng-disabled="current.system_type == 'system'"><i class="fas fa-save"></i> <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip></md-button>
 
             </div>
         </md-toolbar>
@@ -30,9 +30,9 @@
                                 <span class="required-label label-right">{{'Common.Required' | translate}}</span>
                             </label>
                             <input type="text" name="name" class="k-textbox" placeholder="{{'Setup.Templates.TemplateName'  | translate}}" required ng-model="current.name" maxlength="200" ng-disabled="current.system_type == 'system'"/>
-                        
+
                         </div>
-                        
+
                         <div  ng-show="current.template_type !== 'system'" class="form-group">
                             <label for="module">
                                 <span>{{'Module' | translate}} </span>
@@ -51,7 +51,7 @@
                                     ng-disabled="current.system_type === 'system'"/>
                             <span class="k-invalid-msg" data-for="role"></span>
                         </div>
-                        
+
                         <ul class="form-group">
                             <li class="d-flex justify-content-between align-items-center">
                                 <span>{{'Setup.Templates.Status'  | translate}}</span>
@@ -61,10 +61,10 @@
 
                         <div class="form-group" ng-if="templateActiveTab !='document' && templateActiveTab !='excel' && templateActiveTab !='sms' ">
                             <label>
-                                <span>{{'Subject ' | translate}}</span>
+                                <span>{{'Template.Subject' | translate}}</span>
                                 <span class="required-label label-right">{{'Common.Required' | translate}}</span>
                             </label>
-                            <input type="text" name="subject" class="k-textbox" placeholder="{{'Subject' | translate}}" required ng-model="current.subject" maxlength="200" ng-disabled="current.system_type == 'system'"/>
+                            <input type="text" name="subject" class="k-textbox" placeholder="{{'Template.Subject' | translate}}" required ng-model="current.subject" maxlength="200" ng-disabled="current.system_type == 'system'"/>
                         </div>
 
                         <div class="form-group">
@@ -103,11 +103,11 @@
                                       name="tinymceModel" ui-tinymce="tinymceTemplate" ng-required="formType === 'template'"
                                       mentio-iframe-element="iframeElement['tinymceTemplate']"
                                       ng-model="current.content"></textarea>
-                            
-                            <div class="hide" plupload="imgUpload">
+
+                            <div class="hide" plupload="imgUpload" ng-show="!isMobile()">
                                 <input id="uploadImage" type="file" add-file="add-file" />
                             </div>
-                            <div class="hide" plupload="fileUpload">
+                            <div class="hide" plupload="fileUpload" ng-show="!isMobile()">
                                 <input id="uploadFile" type="file" add-file="add-file" />
                             </div>
                             <script type="text/ng-template" id="tag-mentions.tpl">
@@ -120,6 +120,7 @@
                                 </ul>
                             </script>
                             <mentio-menu class="mention-scrollbar" id="hastmenu2"
+                                         ng-show="showAddParameter"
                                          mentio-for="'tinyMceTextArea2'" mentio-trigger-char="'#'"
                                          mentio-items="tags" mentio-template-url="tag-mentions.tpl"
                                          mentio-search="searchTags(term)"
@@ -131,13 +132,13 @@
                             <label>
                                 <span>{{'Setup.Templates.UploadTemplate' | translate}}</span>
                                 <span class="label-right">
-                                        <md-button class="btn btn-secondary label-btn" target="_blank" ng-if="current.content && current.id && !templateFileCleared"  ng-click="download(current)">  
-                                            <i class="fas fa-download"> </i>  
-                                            <md-tooltip md-direction="bottom">{{'Common.Download' | translate}}</md-tooltip>  
+                                        <md-button class="btn btn-secondary label-btn" target="_blank" ng-if="current.content && current.id && !templateFileCleared"  ng-click="download(current)">
+                                            <i class="fas fa-download"> </i>
+                                            <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Download' | translate}}</md-tooltip>
                                         </md-button>
                                      <md-button class="btn btn-secondary label-btn" ng-if="current.content"  ng-click="remove()">
                                         <i class="fas fa-minus-circle"></i>
-                                        <md-tooltip md-direction="bottom">{{'Common.Clear' | translate}}</md-tooltip>
+                                        <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Clear' | translate}}</md-tooltip>
                                     </md-button>
                                   <span class="required-label">{{'Common.Required' | translate}}</span>
                                     </span>
@@ -168,43 +169,46 @@
                             </label>
                             <ul class="list-unstyled">
                                 <li>
-                                    <input type="radio" name="sharingType" id="me" class="k-radio" ng-checked="true" 
-                                           ng-model="current.sharing_type" value="me">
+                                    <input type="radio" name="sharingType" id="me" class="k-radio"
+                                           ng-model="current.sharing_type" ng-click="current.shares = []; current.profile = []"
+                                           value="me">
                                     <label class="k-radio-label" for="me">{{'View.ShareMe' | translate}}</label>
                                 </li>
                                 <li>
                                     <input type="radio" ng-disabled="!user.profile.has_admin_rights" name="sharingType" id="everybody"
-                                           class="k-radio"
+                                           class="k-radio" ng-click="current.shares = []; current.sharesData = []; current.profile = []"
                                            ng-model="current.sharing_type" value="everybody">
                                     <label class="k-radio-label" for="everybody"> {{'View.ShareEveryone' | translate}}</label>
                                 </li>
-                                <li>
-                                    <input type="radio" ng-disabled="!user.profile.has_admin_rights" name="sharingType" id="custom"
-                                           class="k-radio" 
-                                           ng-model="current.sharing_type" value="custom">
-                                    <label class="k-radio-label" for="custom"> {{'View.ShareCustom' | translate}}</label>
-                                </li>
+<!--                                <li>-->
+<!--                                    <input type="radio"  ng-if="!preview" ng-disabled="!user.profile.has_admin_rights" name="sharingType" id="custom"-->
+<!--                                           class="k-radio" ng-click="current.profile = []"-->
+<!--                                           ng-model="current.sharing_type" value="custom">-->
+<!--                                    <label class="k-radio-label" ng-if="!preview" for="custom"> {{'View.ShareCustom' | translate}}</label>-->
+<!--                                </li>-->
                                 <li>
                                     <input type="radio"  name="profile" id="profile"
-                                           class="k-radio"
+                                           class="k-radio" ng-click="current.shares = []; current.sharesData = [];"
                                            ng-model="current.sharing_type" value="profile">
                                     <label class="k-radio-label" for="profile"> {{'View.Profiles' | translate}}</label>
                                 </li>
                             </ul>
                         </div>
-                        <div class="form-group" ng-show="current.sharing_type === 'custom'">
-                            <label for="shares">{{'Setup.Modules.Sharing' | translate}}</label>
-                            <select id="shares" kendo-multi-select k-ng-model="current.shares"
-                                    k-options="sharesOptions"
-                                    data-placeholder="'{{'Common.MultiselectPlaceholder' | translate}}'"></select>
-                        </div>
+<!--                        <div class="form-group" ng-show="current.sharing_type === 'custom'">-->
+<!--                            <label for="shares">{{'Setup.Modules.Sharing' | translate}}</label>-->
+<!--                            <select id="shares" kendo-multi-select k-ng-model="current.sharesData"-->
+<!--                                    k-options="sharesOptions"-->
+<!--                                    ng-required="current.sharing_type === 'custom'"-->
+<!--                                    data-placeholder="'{{'Common.MultiselectPlaceholder' | translate}}'"></select>-->
+<!--                        </div>-->
                         <div class="form-group" ng-show="current.sharing_type === 'profile'">
                             <label for="profiles">{{'Setup.Modules.Profile' | translate}}</label>
                             <select id="profiles"  kendo-multi-select k-ng-model="current.profile"
                                     k-options="profilesOptions"
+                                    ng-required="current.sharing_type === 'profile'"
                                     data-placeholder="'{{'Common.MultiselectPlaceholder' | translate}}'"></select>
                         </div>
-                        
+
                     </div>
 
                 </div>

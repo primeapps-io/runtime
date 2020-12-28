@@ -11,7 +11,7 @@
                 <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close"><i class="fas fa-thumbtack"></i></md-button>
                 <span flex></span>
 
-                <md-button type="submit" ng-if="addUserForm" class="md-icon-button btn btn-primary" ng-disabled="userInviting"><i class="fas fa-save"></i> <md-tooltip md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip></md-button>
+                <md-button type="submit" ng-if="addUserForm" class="md-icon-button btn btn-primary" ng-disabled="userInviting"><i class="fas fa-save"></i> <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip></md-button>
 
             </div>
         </md-toolbar>
@@ -108,7 +108,8 @@
                                    maxlength="100"
                                    placeholder="{{'Setup.Users.NewUserEmail' | translate}}" required ng-model="addUserModel.email"
                                    ng-disabled="addUserModel.id"
-                                   validationMessage="{{'Module.Required' | translate}}" />
+                                   validationMessage="{{'Module.Required' | translate}}"
+                                   pattern="^[\w\-\.\+]+\@[a-zA-Z0-9\.\-]+\.[a-zA-z0-9]{1,4}$"/>
                             <span class="k-invalid-msg" data-for="email"></span>
                         </div>
                         <div class="form-group">
@@ -156,8 +157,7 @@
                                    k-options="{{'numberOptions'}}"
                                    maxlength="12"
                                    minlength="0"
-                                   k-ng-model="addUserModel.phone"
-                                   ng-disabled="addUserModel.id" />
+                                   k-ng-model="addUserModel.phone"/>
                         </div>
                     </div>
 
@@ -173,7 +173,7 @@
                             <span>{{'Setup.Users.UserPassword' | translate}}</span>
                             <md-button type="button" class="btn btn-sm btn-secondary md-icon-button" ngclipboard data-clipboard-target="#password" ng-click="copySuccess()">
                                 <i class="fas fa-copy"></i>
-                                <md-tooltip md-direction="bottom">{{'Common.Copy' | translate}}</md-tooltip>
+                                <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Copy' | translate}}</md-tooltip>
                             </md-button>
                         </label>
                         <input type="text" id="password" name="password" class="form-control" ng-model="userPassword" value="{{userPassword}}" ng-readonly="true" required />

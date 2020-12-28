@@ -550,6 +550,7 @@
       "Edit":"Yetki Düzenleme",
       "SaveSuccess":"Özel yetki başarılı bir şekilde kaydedildi.",
       "EditSuccess":"Özel yetki başarılı bir şekilde düzenlendi.",
+      "DeleteSuccess":"Özel yetki başarılı bir şekilde silindi.",
       "CreatedDate":"Oluşturulma Tarihi",
       "UserAtList":"Yetki Verilen Kullanıcı",
       "UserAtForm":"Verinin paylaşılacağı kullanıcı",

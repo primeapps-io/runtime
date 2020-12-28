@@ -5,7 +5,7 @@
                 <h3>{{'View.SaveOptions' | translate}} </h3>
                 <span flex></span>
                 <md-button class="md-icon-button" ng-click="closeLightBox()"><i class="fas fa-times"></i>
-                    <md-tooltip md-direction="bottom">{{'Common.Cancel' | translate}}</md-tooltip>
+                    <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Cancel' | translate}}</md-tooltip>
                 </md-button>
             </div>
         </md-toolbar>
@@ -13,13 +13,17 @@
             <div class="md-dialog-content">
 
                 <div class="form-group">
-                    <label>
+                    <label class="required">
                         <span>{{'View.Name' | translate}}</span>
+                        <span class="label-right">
+                            <span class="required-label">{{'Common.Required' | translate}}</span>
+                        </span>
                     </label>
                     <input type="text" name="view_name"
                            ng-value="activeView.languages[globalization.Label]['label'] || activeView.languages[globalization.Label]['name']" 
                            ng-model="viewName"
                            ng-change="viewNameMax()"
+                           required
                            class="k-textbox"/>
 
                 </div>

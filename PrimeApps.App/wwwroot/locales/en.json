@@ -550,6 +550,7 @@
       "Edit":"Edit Custom Permission",
       "SaveSuccess":"Custom Permission is successfully saved.",
       "EditSuccess":"Custom Permission is successfully updated.",
+      "DeleteSuccess":"Custom Permission is successfully deleted.",
       "CreatedDate":"Created at",
       "UserAtList":"User with access permissions",
       "UserAtForm":"User to be shared",

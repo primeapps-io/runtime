@@ -2,7 +2,7 @@
     <div class="md-toolbar-tools">
         <md-button class="md-icon-button" ng-click="closeSide('sideModal')" aria-label="{{'Common.Close' | translate}}"><i
                 class="fas fa-angle-left"></i>
-            <md-tooltip md-direction="bottom" >{{'Common.Close' | translate}}</md-tooltip>
+            <md-tooltip md-autohide="true" md-direction="bottom" >{{'Common.Close' | translate}}</md-tooltip>
         </md-button>
         <h3 md-truncate> {{ activeView.languages[globalization.Label]['label'] || activeView.languages[globalization.Label]['name'] }}</h3>
         <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close"><i
@@ -10,17 +10,17 @@
         <span flex></span>
         <md-button class="md-icon-button btn btn-secondary" aria-label="Revert" ng-click="revertFilter()">
             <i class="fas fa-undo"></i>
-            <md-tooltip md-directtion="bottom"> {{'Common.Revert' | translate}}</md-tooltip>
+            <md-tooltip md-autohide="true" md-directtion="bottom"> {{'Common.Revert' | translate}}</md-tooltip>
         </md-button>
         <md-button
                 ng-if="activeView.system_type !='system'"
-                ng-show="viewPermissions.remove && (activeView.created_by_id === user.id || user.profile.has_admin_rights)"
+                ng-show="views.length > 1  && viewPermissions.remove && (activeView.created_by_id === user.id || user.profile.has_admin_rights)"
                 class="md-icon-button btn btn-secondary" aria-label="Delete" ng-click="deleteView($event)"><i class="fas fa-trash"></i>
-            <md-tooltip md-directtion="bottom"> {{'Common.Delete' | translate}}</md-tooltip>
+            <md-tooltip md-autohide="true" md-directtion="bottom"> {{'Common.Delete' | translate}}</md-tooltip>
         </md-button>
-        <md-button ng-if="(viewPermissions.write || viewPermissions.modify)" class="md-icon-button btn btn-primary" ng-disabled="isDirty" ng-click="saveModal(filterForm)" aria-label="Save"><i
+        <md-button ng-if="(viewPermissions.write || viewPermissions.modify)" class="md-icon-button btn " ng-class="viewChangeStatus ? 'btn-primary' :'btn-secondary'" ng-disabled="isDirty" ng-click="saveModal(filterForm)" aria-label="Save"><i
                 class="fas fa-save"></i>
-            <md-tooltip md-directtion="bottom">{{'Common.Save' | translate}} </md-tooltip>
+            <md-tooltip md-autohide="true" md-directtion="bottom">{{'Common.Save' | translate}} </md-tooltip>
         </md-button>
     </div>
 </md-toolbar>
@@ -34,6 +34,13 @@
         </div>
         <div class="whitebox padding20">
             <div class="row row5 view-type">
+<!--                <div class="col-4 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('list');">-->
+<!--                    <a href ng-class="activeView.view_type ==='list'  ? 'active':''" title="{{'View.List' | translate}}">-->
+<!--                        <span class="view-img-holder"><img src="images/views/calendar.svg" alt="{{'View.List' | translate}}"/><i-->
+<!--                                class="fas fa-check"></i></span>-->
+<!--                        <small>{{'View.List' | translate}}</small>-->
+<!--                    </a>-->
+<!--                </div>-->
                 <div class="col-4 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('grid');">
                     <a ng-class="activeView.view_type ==='grid'  ? 'active':''" href
                        title="{{'View.GridView' | translate}}">
@@ -320,42 +327,64 @@
             <h5> {{'View.ChooseYourCriterion' | translate}}   </h5>
             <small class="modified">{{activeView.filter_logic}}</small>
         </div>
-        <div class="whitebox padding20">
+        <section class="whitebox padding20">
             <query-builder viewfilter="viewFilter" fieldskey="fieldskey" module="module"  group="filtera.group"></query-builder>
-        </div>
+        </section>
 
         <!--{{filtera}}-->
 
-        <!--  Calculation Fields Tabular-->
-
-        <div class="title" ng-if="activeView.view_type==='report' &&  activeView.report_type==='tabular'">
-            <h5>{{ 'Report.CalculationFields' | translate}}</h5>
+        <!--  Groups Fields -->
+        <div class="title" ng-if="activeView.view_type==='grid'">
+            <h5>{{ 'Report.GroupArea' | translate}}</h5>
         </div>
-
-        <!--    Calculation Fields Tabular -->
-
-        <div ng-if="activeView.view_type==='report' && activeView.report_type==='tabular'" class="whitebox padding20">
-            <section class="row" ng-repeat="aggregation in activeView.aggregations">
-                <div class="col-12 col-sm-6">
-                    <input type="text" ng-disabled="true" value="{{fieldskey[aggregation.field].label }}"
-                           class="k-textbox"/>
+        <!--    Groups Fields -->
+        <section ng-if="activeView.view_type==='grid'" class="whitebox padding20">
+            <div class="row row0 align-items-center" ng-repeat="group in gridGroupBy">
+                <div class="col-auto">
+                    <button class="md-icon-button md-button" type="button" ng-click="gridGroupDelete($index, gridGroupBy)" > <i class="fas fa-trash"></i></button>
                 </div>
-                <div class="col-12 col-sm-6">
-                    <select
-                            k-option-label="'{{'Module.AggregationType' | translate}}'"
-                            k-data-text-field="'label'"
-                            k-data-value-field="'value'"
-                            k-data-source="aggregationTypes"
-                            k-on-change="changeAggregationType(aggregation)"
-                            ng-model="aggregation.aggregation_type"
-                            kendo-drop-down-list></select>
-
+                <div class="col">
+                    <div class="row row5 align-items-center">
+                        <div class="col-auto d-none d-md-block">
+                            <div class="form-group">
+                                <span class="form-control" ng-show="$index === 0">{{'View.Group' | translate}}</span>
+                                <span class="form-control" ng-show="$index > 0">{{'View.After' | translate}}</span>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                            <select k-data-text-field="'label'" 
+                                k-data-value-field="'name'"
+                                k-data-source="viewFields.selectedFields"
+                                k-on-change="changeGridGroupField(group)"
+                                ng-model="group.fieldArea"
+                                kendo-drop-down-list></select>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <button class="md-icon-button md-button group-asc" type="button" ng-click="changeGridGroupSort(group)" >
+                                <i ng-show="group.dir === 'asc'" class="op-increasing"></i>
+                                <i ng-show="group.dir === 'desc'" class="op-decreasing"></i>
+                                <md-tooltip md-autohide="true" md-direction="bottom" ng-show="group.data_type === 'number' || group.data_type === 'number_decimal' || group.data_type === 'currency' || group.data_type === 'number_auto' || group.data_type === 'checkbox'" >
+                                    <span ng-show="group.dir === 'asc'">{{'View.From1to9' | translate}}</span>
+                                    <span ng-show="group.dir === 'desc'">{{'View.From9to1' | translate}}</span>
+                                </md-tooltip>
+                                <md-tooltip md-autohide="true" md-direction="bottom" ng-show="group.data_type === 'text_single' || group.data_type === 'text_multi' || group.data_type === 'email' || group.data_type === 'date' 
+                                    || group.data_type === 'url' || group.data_type === 'tag' || group.data_type === 'date_time' || group.data_type === 'time' 
+                                    || group.data_type === 'picklist' || group.data_type === 'rating' || group.data_type === 'lookup' ">
+                                    <span ng-show="group.dir === 'asc'">{{'View.FromAtoZ' | translate}}</span>
+                                    <span ng-show="group.dir === 'desc'">{{'View.FromZtoA' | translate}}</span>
+                                </md-tooltip>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-
-
-            </section>
-
-        </div>
+            </div>
+            <md-button  class="btn btn-secondary newGroupButton" ng-show="gridGroupBy.length < 2" ng-click="addGridGroup()" aria-label="{{ 'Setup.UserGroups.NewUserGroup' | translate}}">
+                <i class="fas fa-plus"></i> {{ 'Setup.UserGroups.NewUserGroup' | translate}}
+            </md-button>
+        </section>
+        
         <div class="title" ng-if="activeView.view_type==='grid' ||  activeView.report_type==='tabular'">
             <h5> {{'View.Columns' | translate}}  </h5>
         </div>
@@ -388,5 +417,68 @@
                 </div>
             </div>
         </div>
+
+        <!--  Calculation Fields -->
+
+        <div class="title" ng-if="activeView.view_type==='grid' && activeView.aggregations.length > 0 && gridGroupBy.length > 0 || activeView.view_type==='report' &&  activeView.report_type==='tabular' && activeView.aggregations.length > 0">
+            <h5>{{ 'Report.CalculationFields' | translate}}</h5>
+        </div>
+
+        <!--    Calculation Fields Grid -->
+        <section ng-if="activeView.view_type==='grid' && activeView.aggregations.length > 0 && gridGroupBy.length > 0" class="whitebox padding20">
+            <div class="row row5 align-items-center" ng-repeat="aggregation in activeView.aggregations">
+                <div class="col-auto">
+                    <kendo-switch name="aggregation.name" ng-change="switchChange(aggregation)" ng-model="aggregation.active"></kendo-switch>
+                </div>
+                <div class="col">
+                    <div class="row row5" ng-class="aggregation.active === true ? '' : 'k-state-disabled'">
+                        <div class="col" ng-if="aggregation.aggregation_type === 'count'">
+                            <div class="form-group">
+                                <span class="form-control text-truncate">  {{aggregation.label}} </span>
+                            </div>
+                        </div>
+                        <div class="col" ng-if="aggregation.aggregation_type !== 'count'" >
+                            <div class="form-group">
+                                <span class="form-control text-truncate">  {{aggregation.label}} </span>
+                            </div>
+                        </div>
+                        <div class="col" ng-if="aggregation.aggregation_type !== 'count'">
+                            <div class="form-group">
+                                <select
+                                        k-option-label="'{{'Module.AggregationType' | translate}}'"
+                                        k-data-text-field="'label'"
+                                        k-data-value-field="'value'"
+                                        k-data-source="aggregationTypes"
+                                        k-on-change="switchChange(aggregation)"
+                                        ng-disabled="!aggregation.active"
+                                        ng-model="aggregation.aggregation_type"
+                                        kendo-drop-down-list></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!--    Calculation Fields Tabular -->
+        <div ng-if="activeView.view_type==='report' && activeView.report_type==='tabular' && activeView.aggregations.length > 0" class="whitebox padding20 gridByGroup">
+            <section class="row marginBottom10" ng-repeat="aggregation in activeView.aggregations">
+                <div class="col-12 col-sm-6">
+                    <input type="text" ng-disabled="true" value="{{fieldskey[aggregation.field].label }}"
+                           class="k-textbox"/>
+                </div>
+                <div class="col-12 col-sm-6">
+                    <select
+                            k-option-label="'{{'Module.AggregationType' | translate}}'"
+                            k-data-text-field="'label'"
+                            k-data-value-field="'value'"
+                            k-data-source="aggregationTypes"
+                            k-on-change="changeAggregationType(aggregation)"
+                            ng-model="aggregation.aggregation_type"
+                            kendo-drop-down-list></select>
+                </div>
+            </section>
+        </div>
+        
     </form>
 </md-content>

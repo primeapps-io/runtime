@@ -704,7 +704,8 @@ button.md-button::-moz-focus-inner {
     line-height: 16px;
     padding: 8px;
     width: 40px;
-    border-radius: 50%; }
+    border-radius: 50%;
+    }
   .md-button.md-fab {
     z-index: 20;
     line-height: 56px;

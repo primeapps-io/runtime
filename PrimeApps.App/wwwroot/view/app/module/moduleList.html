@@ -1,15 +1,15 @@
-<md-content flex style="height: 100%;" class="all-content">
+<md-content flex style="height: 100%;">
     <div layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
         <md-toolbar md-scroll-shrink ng-class="views.length >0 ?  'with-subheader' :''">
             <div class="md-toolbar-tools">
                 <md-button class="md-icon-button show-on-m" ng-click="goBack()" aria-label="{{'Common.Back' | translate}}"><i class="fas fa-angle-left"></i>
-                    <md-tooltip md-direction="right">{{'Common.Back' | translate}}</md-tooltip>
+                    <md-tooltip md-autohide="true" md-direction="right">{{'Common.Back' | translate}}</md-tooltip>
                 </md-button>
                 <h2 md-truncate>{{module.languages[globalization.Label]['label']['plural']}}</h2>
                 <div class="helpbuttons">
                     <md-button class="md-icon-button" aria-label="{{'Common.Help' | translate}}" ng-if="showHelp" ng-click="helpSide()"><i
                             class="fas fa-question-circle"></i>
-                        <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
                     </md-button>
                     <!--<md-button class="md-icon-button enlarge d-none d-lg-inline-block hide-on-m" ng-click="toggleFullLeftMenu()"
                                aria-label="{{'Common.FullScreen' | translate}}">
@@ -21,8 +21,8 @@
                             <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
                             <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/>
                         </svg>
-                        <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
-                        <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
                     </md-button>-->
                 </div>
                 <span class="show-on-m" flex></span>
@@ -34,7 +34,7 @@
                                    aria-label="{{'Module.Export' | translate }} - {{'Module.Import' | translate }}"
                                    ng-click="$mdMenu.open()">
                             <i class="fas fa-database"></i>
-                            <md-tooltip md-direction="bottom"> {{'Module.DataTransfer' | translate }}</md-tooltip>
+                            <md-tooltip md-autohide="true" md-direction="bottom"> {{'Module.DataTransfer' | translate }}</md-tooltip>
                         </md-button>
                         <md-menu-content width="2" class="md-dense">
                             <md-menu-item ng-if="user.profile.export_data" ng-disabled="$parent.$parent.$parent.isEmpty"
@@ -59,14 +59,14 @@
                     <md-button ng-mouseover="filterModalOpen()" ng-if="activeView && views.length>0" class="show-on-m md-icon-button btn btn-secondary filter-button" aria-label="Filter">
                         <i class="fas fa-sliders-h"></i>
                         <span class="filter-badge" ng-if="activeView.filters.length>0">{{activeView.filters.length}}</span>
-                        <md-tooltip md-direction="bottom"> {{'View.ViewSettings' | translate }}</md-tooltip>
+                        <md-tooltip md-autohide="true" md-direction="bottom"> {{'View.ViewSettings' | translate }}</md-tooltip>
                     </md-button>
 
                     <md-button ng-click="goUrl('#/app/record/'+module.name)" class="md-icon-button btn btn-primary"
                                aria-label="{{'Module.New' | translate:{title:module.languages[globalization.Label]['label']['singular']} }}"
                                ng-show="hasPermission(type, operations.write)">
                         <i class="fas fa-plus"></i>
-                        <md-tooltip md-direction="bottom">{{'Common.AddNew' | translate }}</md-tooltip>
+                        <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.AddNew' | translate }}</md-tooltip>
                     </md-button>
                 </div>
             </div>
@@ -93,7 +93,7 @@
                     <md-button type="button"
                                ng-click="selectedClose = !selectedClose; closeDialog(currentPath, module.id, showModalCheck);"
                                class="md-icon-button help-page-close"><i class="fas fa-times"></i>
-                        <md-tooltip md-diretion="bottom">{{'Common.Close' | translate}}</md-tooltip>
+                        <md-tooltip md-autohide="true" md-diretion="bottom">{{'Common.Close' | translate}}</md-tooltip>
                     </md-button>
                     <div>
                         <input type="checkbox" class="k-checkbox" ng-model="showModalCheck" ng-click="showModal()"
@@ -123,7 +123,7 @@
                 </div>
 
 
-                <div class="whitebox table-view" ng-if="activeView.view_type ==='grid' || activeView.report_type==='tabular'">
+                <div class="whitebox table-view" ng-if="activeView.view_type ==='grid'">
                     <!--<div class="grid-top">
                         <div class="search-box">
 
@@ -132,13 +132,13 @@
                                            aria-label="Search" aria-describedby="grid-search">
                                     <i class="fas fa-search"></i>
                                 </div>
-                                <i class="info-icon fas fa-info-circle"><md-tooltip md-direction="right">You can search in these fields:  First Name, Company Name</md-tooltip></i>
+                                <i class="info-icon fas fa-info-circle"><md-tooltip md-autohide="true" md-direction="right">You can search in these fields:  First Name, Company Name</md-tooltip></i>
 
                         </div>
                         <div>
                             <md-button class="btn btn-secondary md-icon-button" ng-click="refreshGrid()"><i
                                     class="fas fa-sync-alt"></i>
-                                <md-tooltip md-direction="bottom">Refresh</md-tooltip>
+                                <md-tooltip md-autohide="true" md-direction="bottom">Refresh</md-tooltip>
                             </md-button>
                         </div>
                     </div>-->
@@ -146,6 +146,14 @@
                     <kendo-grid class="grid-theme table-responsive" k-scope-field="grid"
                                 id="kendo-grid" k-rebind="mainGridOptions"
                                 k-options="mainGridOptions">
+                    </kendo-grid>
+
+                </div>
+                <div class="whitebox table-view" ng-if="activeView.report_type==='tabular'">
+  
+                    <kendo-grid class="grid-theme table-responsive" k-scope-field="grid"
+                                id="kendo-grid" k-rebind="mainGridTabularOptions"
+                                k-options="mainGridTabularOptions">
                     </kendo-grid>
 
                 </div>
@@ -233,30 +241,30 @@
             <md-fab-trigger>
                 <md-button aria-label="menu" class="md-fab md-primary"><strong>{{selectedRows.length}}</strong>
                 </md-button>
-                <md-tooltip md-direction="left">{{selectedRows.length}} {{'Common.SelectedRow'| translate}}</md-tooltip>
+                <md-tooltip md-autohide="true" md-direction="left">{{selectedRows.length}} {{'Common.SelectedRow'| translate}}</md-tooltip>
             </md-fab-trigger>
 
             <md-fab-actions>
                 <md-button ng-if="user.profile.send_email" ng-show="hasPermission(type, operations.read)"
                            class="md-fab md-raised md-mini" aria-label="{{'Module.SendEMail' | translate }}"
                            ng-click="showEMailModal();"><i class="fas fa-envelope"></i>
-                    <md-tooltip md-direction="left">{{'Module.SendEMail' | translate }}</md-tooltip>
+                    <md-tooltip md-autohide="true" md-direction="left">{{'Module.SendEMail' | translate }}</md-tooltip>
                 </md-button>
                 <md-button ng-if="user.profile.send_sms" ng-show="hasPermission(type, operations.read)"
                            class="md-fab md-raised md-mini" aria-label="{{'Module.SendSMS' | translate }}"
                            ng-click="showSMSModal()"><i class="fas fa-sms"></i>
-                    <md-tooltip md-direction="left">{{'Module.SendSMS' | translate }}</md-tooltip>
+                    <md-tooltip md-autohide="true" md-direction="left">{{'Module.SendSMS' | translate }}</md-tooltip>
                 </md-button>
                 <md-button ng-if="hasPermission(type, operations.modify) || hasBulkUpdatePermission" ng-click="showUpdateModal($event)"
                            class="md-fab md-raised md-mini"
                            aria-label=" {{'Module.UpdateSelecteds' | translate }}"><i
                         class="fas fa-pen"></i>
-                    <md-tooltip md-direction="left"> {{'Module.UpdateSelecteds' | translate }}</md-tooltip>
+                    <md-tooltip md-autohide="true" md-direction="left"> {{'Module.UpdateSelecteds' | translate }}</md-tooltip>
                 </md-button>
                 <md-button ng-if="hasPermission(type, operations.remove)" ng-click="deleteSelecteds($event);"
                            class="md-fab md-raised md-mini"
                            aria-label="{{'Module.DeleteSelecteds' | translate}}"><i class="fas fa-trash"></i>
-                    <md-tooltip md-direction="left">{{'Module.DeleteSelecteds' | translate}}</md-tooltip>
+                    <md-tooltip md-autohide="true" md-direction="left">{{'Module.DeleteSelecteds' | translate}}</md-tooltip>
                 </md-button>
             </md-fab-actions>
         </md-fab-speed-dial>

@@ -1,0 +1,73 @@
+
+[class^="op-"],
+[class*=" op-"] {
+  font-family: "operators" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: inline-block;
+  text-rendering: auto;
+  transform: translate(0px, 10%);
+}
+[class^="op-"]:before,
+[class*=" op-"]:before{
+  display: inline-block;
+}
+
+.op-contains:before {
+  content: "\61";
+}
+.op-decreasing:before {
+  content: "\62";
+}
+.op-empty:before {
+  content: "\63";
+}
+.op-ends-with:before {
+  content: "\64";
+}
+.op-greater:before {
+  content: "\65";
+}
+.op-greater-equal:before {
+  content: "\66";
+}
+.op-increasing:before {
+  content: "\67";
+}
+.op-is:before {
+  content: "\68";
+}
+.op-is-not:before {
+  content: "\69";
+}
+.op-less:before {
+  content: "\6a";
+}
+.op-less-equal:before {
+  content: "\6b";
+}
+.op-not-contain:before {
+  content: "\6c";
+}
+.op-not-empty:before {
+  content: "\6d";
+}
+.op-starts-with:before {
+  content: "\6e";
+}
+.op-primeapps:before {
+  content: "\70";
+}
+.op-microsoft:before {
+  content: "\6f";
+}
+.op-ldap:before {
+  content: "\71";
+}
+ 

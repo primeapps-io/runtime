@@ -10,7 +10,7 @@
                 <h3 md-truncate ng-if="profile.id">{{'Setup.Profiles.EditProfile' | translate}}</h3>
                 <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close"><i class="fas fa-thumbtack"></i></md-button>
                 <span flex></span>
-                <md-button type="submit" class="md-icon-button btn btn-primary" ng-disabled="profile.system_type === 'system'"><i class="fas fa-save"></i> <md-tooltip md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip></md-button>
+                <md-button type="submit" class="md-icon-button btn btn-primary" ng-disabled="profile.system_type === 'system'"><i class="fas fa-save"></i> <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip></md-button>
             </div>
         </md-toolbar>
         <md-content flex>

@@ -9,22 +9,26 @@
             <div class="md-toolbar-tools">
                 <div class="own-tab own-tab2" flex>
                     <md-tabs md-dynamic-height md-swipe-content>
-                        <md-tab ng-click="$parent.tab = 'general'"  >
+                        <md-tab ng-click="$parent.tab = 'general'">
                             <md-tab-label id="record-general" aria-controls="{{'Common.General' | translate}}">
                                 <div class="tab-container">
                                     <span>{{'Common.General' | translate}}</span>
                                 </div>
                             </md-tab-label>
                         </md-tab>
-                        <md-tab   ng-repeat="relatedModule in module.relations  | filter:{deleted:'false',detail_view_type:'tab'}" ng-click="changeTab(relatedModule); $parent.$parent.tab = relatedModule.id.toString();" md-active="relatedModule.id == tab">
+                        <md-tab ng-repeat="relatedModule in module.relations  | filter:{deleted:'false',detail_view_type:'tab'}"
+                                ng-click="changeTab(relatedModule); $parent.$parent.tab = relatedModule.id.toString();"
+                                md-active="relatedModule.id == tab">
                             <md-tab-label id="tab{{relatedModule.id}}" aria-controls="Tab{{relatedModule.id}}">
                                 <div class="tab-container">
                                     <span>{{relatedModule.languages[globalization.Label]['label']['plural']}}</span>
-                                    <span class="badge" ng-show="!relatedModule.loading && relatedModule.total">{{relatedModule.total}}</span>
+                                    <span class="badge"
+                                          ng-show="!relatedModule.loading && relatedModule.total">{{relatedModule.total}}</span>
                                 </div>
                             </md-tab-label>
                         </md-tab>
-                        <md-tab ng-if="showNotes !='false' && module.detail_view_type !=='flat'" ng-click="$parent.$parent.tab = 'note'">
+                        <md-tab ng-if="module.options.show_notes && module.detail_view_type !=='flat'"
+                                ng-click="$parent.$parent.tab = 'note'">
                             <md-tab-label id="record-notes" aria-controls="{{'Note.Notes' | translate}}">
                                 <div class="tab-container">
                                     <span> {{'Note.Notes' | translate}}</span>
@@ -32,15 +36,18 @@
                                 </div>
                             </md-tab-label>
                         </md-tab>
-                        <md-tab ng-if="hasDocumentsPermission(operations.read) && showAttachments !=='false' && module.detail_view_type !=='flat'" ng-click="$parent.$parent.tab = 'document'">
+                        <md-tab ng-if="hasDocumentsPermission(operations.read) && module.options.show_attachments && module.detail_view_type !=='flat'"
+                                ng-click="$parent.$parent.tab = 'document'">
                             <md-tab-label id="record-attachments" aria-controls="{{'Common.Attachments' | translate}}">
                                 <div class="tab-container">
                                     <span> {{'Common.Attachments' | translate}}</span>
-                                    <span class="badge" ng-show="documentsResultSet.totalDocumentCount">{{documentsResultSet.totalDocumentCount}}</span>
+                                    <span class="badge"
+                                          ng-show="documentsResultSet.totalDocumentCount">{{documentsResultSet.totalDocumentCount}}</span>
                                 </div>
                             </md-tab-label>
                         </md-tab>
-                        <md-tab ng-if="record.latitude && record.longitude && module.detail_view_type !=='flat'" ng-click="$parent.$parent.tab = 'location'">
+                        <md-tab ng-if="record.latitude && record.longitude && module.detail_view_type !=='flat'"
+                                ng-click="$parent.$parent.tab = 'location'">
                             <md-tab-label id="record-location" aria-controls="{{'Common.Location' | translate}}">
                                 <div class="tab-container">
                                     <span>{{'Common.Location' | translate}}</span>
@@ -53,21 +60,24 @@
         </md-toolbar>
         <md-content flex>
             <section ng-show="tab === 'general'">
-                <form kendo-validator="$parent.moduleForm" ng-submit="submit(record, $event)" class="disable-validation-msg"
+                <form kendo-validator="$parent.moduleForm" ng-submit="submit(record, $event)"
+                      class="disable-validation-msg"
                       autocomplete="off"
                       novalidate>
                     <md-subheader class="insetp0">
                         <md-toolbar md-scroll-shrink ng-if="true">
                             <div class="md-toolbar-tools">
-                                <md-button class="md-icon-button" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()">
+                                <md-button class="md-icon-button" aria-label="{{'Common.Back' | translate}}"
+                                           ng-click="goBack()">
                                     <i class="fas fa-angle-left"></i>
-                                    <md-tooltip md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
+                                    <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
                                 </md-button>
                                 <h2 md-truncate>{{title}} - <small>{{'Common.General' | translate}}</small></h2>
                                 <div class="helpbuttons hide-on-m" ng-if="true && !fastRecordModal">
-                                    <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()" aria-label="{{'Common.Help' | translate}}">
+                                    <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()"
+                                               aria-label="{{'Common.Help' | translate}}">
                                         <i class="fas fa-question-circle"></i>
-                                        <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
+                                        <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
                                     </md-button>
                                     <!--<md-button class="md-icon-button enlarge d-none d-lg-inline-block"
                                                ng-click="toggleFullLeftMenu()"
@@ -77,12 +87,14 @@
                                              viewBox="0 0 36 36"
                                              style="enable-background:new 0 0 36 36;" xml:space="preserve">
                                         <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z" /><path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z" /><path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z" /><path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z" /></svg>
-                                        <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
-                                        <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                                        <md-tooltip md-autohide="true" ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                                        <md-tooltip md-autohide="true" ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
                                     </md-button>-->
                                 </div>
                                 <span class="show-on-m" flex></span>
-                                <div ng-if="actionButtons.length > 0 && toolbarOptions.items.length > 0 && id" flex class="action-btn" kendo-toolbar k-options="toolbarOptions"></div>
+                                <div ng-if="actionButtons.length > 0 && toolbarOptions.items.length > 0 && id" flex
+                                     class="action-btn" id="action-buttons-record-area" kendo-toolbar
+                                     k-options="toolbarOptions"></div>
                                 <div class="ml-auto d-inline-flex">
                                     <div ng-show="id" class="d-inline-flex">
 
@@ -90,43 +102,47 @@
                                                    ui-sref="app.moduleList({type:module.name})"
                                                    aria-label="{{backToText}}">
                                             <i class="fas fa-angle-left"></i>
-                                            <md-tooltip md-direction="bottom">
+                                            <md-tooltip md-autohide="true" md-direction="bottom">
                                                 {{backToText}}
                                             </md-tooltip>
                                         </md-button>-->
 
-                                        <md-button class="md-icon-button btn btn-secondary hide-on-m" ng-disabled="submitting || fileLoadingCounter>0 || loading"
+                                        <md-button class="md-icon-button btn btn-secondary hide-on-m"
+                                                   ng-disabled="submitting || fileLoadingCounter>0 || loading"
                                                    ng-click="getRecord(true)"
                                                    aria-label="{{'Common.Refresh' | translate}}">
                                             <i class="fas fa-sync-alt"></i>
-                                            <md-tooltip md-direction="bottom">
+                                            <md-tooltip md-autohide="true" md-direction="bottom">
                                                 {{'Common.Refresh' | translate}}
                                             </md-tooltip>
                                         </md-button>
-                                        <md-button class="md-icon-button btn btn-secondary hide-on-m" ng-disabled="submitting || fileLoadingCounter>0 || loading"
+                                        <md-button class="md-icon-button btn btn-secondary hide-on-m"
+                                                   ng-disabled="submitting || fileLoadingCounter>0 || loading"
                                                    ng-click="showSingleSMSModal()"
                                                    ng-show="hasPermission(type, operations.read) && user.profile.send_sms && module.name != 'quotes'"
                                                    aria-label="{{'Module.SendSMS' | translate }}">
                                             <i class="fas fa-sms"></i>
-                                            <md-tooltip md-direction="bottom">
+                                            <md-tooltip md-autohide="true" md-direction="bottom">
                                                 {{'Module.SendSMS' | translate }}
                                             </md-tooltip>
                                         </md-button>
-                                        <md-button class="md-icon-button btn btn-secondary hide-on-m" ng-disabled="submitting || fileLoadingCounter>0 || loading "
+                                        <md-button class="md-icon-button btn btn-secondary hide-on-m"
+                                                   ng-disabled="submitting || fileLoadingCounter>0 || loading "
                                                    ng-click="showQuoteEMailModal()"
                                                    ng-show="hasPermission(type, operations.write) && user.profile.send_email"
                                                    aria-label="{{'Module.ModuleEmail' | translate}}">
                                             <i class="fas fa-envelope"></i>
-                                            <md-tooltip md-direction="bottom">
+                                            <md-tooltip md-autohide="true" md-direction="bottom">
                                                 {{'Module.ModuleEmail' | translate}}
                                             </md-tooltip>
                                         </md-button>
-                                        <md-button class="md-icon-button btn btn-secondary  hide-on-m" ng-disabled="submitting || fileLoadingCounter>0 || loading"
+                                        <md-button class="md-icon-button btn btn-secondary  hide-on-m"
+                                                   ng-disabled="submitting || fileLoadingCounter>0 || loading"
                                                    ng-click="openExportDialog()"
                                                    ng-show="user.profile.word_pdf_download"
                                                    aria-label="{{'Module.Download' | translate}}">
                                             <i class="fas fa-file-download"></i>
-                                            <md-tooltip md-direction="bottom">
+                                            <md-tooltip md-autohide="true" md-direction="bottom">
                                                 {{'Module.Download' | translate}}
                                             </md-tooltip>
                                         </md-button>
@@ -136,7 +152,7 @@
                                                    ng-show="hasPermission(type, operations.remove, record) && tab ==='general'"
                                                    aria-label=" {{'Common.Delete' | translate}}">
                                             <i class="fa fa-trash"></i>
-                                            <md-tooltip md-direction="bottom">
+                                            <md-tooltip md-autohide="true" md-direction="bottom">
                                                 {{'Common.Delete' | translate}}
                                             </md-tooltip>
                                         </md-button>
@@ -146,7 +162,7 @@
                                                    class="md-icon-button btn btn-secondary"
                                                    aria-label="{{'Common.Clone' | translate}}">
                                             <i class="fas fa-copy"></i>
-                                            <md-tooltip md-direction="bottom">
+                                            <md-tooltip md-autohide="true" md-direction="bottom">
                                                 {{'Common.Clone' | translate}}
                                             </md-tooltip>
                                         </md-button>
@@ -156,41 +172,50 @@
                                                ng-disabled="submitting || fileLoadingCounter>0 || loading || (record.freeze && !isAdmin)"
                                                aria-label="Save">
                                         <i class="fas fa-save"></i>
-                                        <md-tooltip md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip>
+                                        <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip>
                                     </md-button>
                                 </div>
                             </div>
                         </md-toolbar>
                     </md-subheader>
                     <div class="container-fluid paddingua20">
-                        <section class="whitebox collapsible"
-                                 ng-repeat="section in module.sections | orderBy:'order'"
-                                 ng-if="!section.hidden && (id && (hasPermission(type, operations.modify, record) || hasPermission(type, operations.read, record)) || (!id && hasPermission(type, operations.write, record))) && hasSectionDisplayPermission(section) && (tab === 'general' || !tabconfig)">
-                            <div class="collapsible-head" id="{{'heading'+section.id}}">
-                                <h4>
-                                    {{!section.languages[globalization.Label]["custom_label"] ? section.languages[globalization.Label]['label'] : section.languages[globalization.Label]['custom_label']}}
-                                </h4>
-                                <button class="btn btn-link" type="button" data-toggle="collapse"
-                                        data-target="{{'#collapse'+section.id}}" aria-expanded="true"
-                                        aria-controls="{{'collapse'+section.id}}">
-                                    <i class="fas fa-plus"></i>
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                            </div>
-                            <div id="{{'collapse'+section.id}}" class="collapsible-body collapse show"
-                                 aria-labelledby="{{'heading'+section.id}}">
-                                <div class="row" ng-class="{'k-state-disabled' : hasSectionReadOnlyPermission(section)}">
-                                    <div ng-class="{'col-sm-6': section.column_count === 2}" class="col-12"
-                                         ng-repeat="column in section.columns track by $index">
-                                        <div ng-repeat="field in getModuleFields() | filter:{section: section.name, section_column: column.no, deleted: false}:true | orderBy:'order'" ng-if="!id || field.display_detail">
-                                            <div ng-include="'view/app/module/fields.html'" ng-class="{'k-state-disabled' : hasFieldReadOnlyPermission(field)}"></div>
+                        <div ng-repeat="section in module.sections | orderBy:'order'"
+                             ng-if="!section.hidden && (id && (hasPermission(type, operations.modify, record) || hasPermission(type, operations.read, record)) || (!id && hasPermission(type, operations.write, record))) && hasSectionDisplayPermission(section) && (tab === 'general' || !tabconfig)">
+                            <section class="whitebox collapsible" ng-if="!section.type">
+                                <div class="collapsible-head" id="{{'heading'+section.id}}">
+                                    <h4>
+                                        {{!section.languages[globalization.Label]["custom_label"] ? section.languages[globalization.Label]['label'] : section.languages[globalization.Label]['custom_label']}}
+                                    </h4>
+                                    <button class="btn btn-link" type="button" data-toggle="collapse"
+                                            data-target="{{'#collapse'+section.id}}" aria-expanded="true"
+                                            aria-controls="{{'collapse'+section.id}}">
+                                        <i class="fas fa-plus"></i>
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                                <div id="{{'collapse'+section.id}}" class="collapsible-body collapse show"
+                                     aria-labelledby="{{'heading'+section.id}}">
+                                    <div class="row"
+                                         ng-class="{'k-state-disabled' : hasSectionReadOnlyPermission(section)}">
+                                        <div ng-class="{'col-sm-6': section.column_count === 2}" class="col-12"
+                                             ng-repeat="column in section.columns track by $index">
+                                            <div ng-repeat="field in getModuleFields() | filter:{section: section.name, section_column: column.no, deleted: false}:true | orderBy:'order'"
+                                                 ng-if="!id || field.display_detail">
+                                                <div ng-include="'view/app/module/fields.html'"
+                                                     ng-class="{'k-state-disabled' : hasFieldReadOnlyPermission(field)}"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </section>
+                            </section>
 
-                        <section class="whitebox collapsible">
+                            <section ng-repeat="sectionTemplate in currentSectionComponentsTemplate" class="whitebox collapsible" ng-if="section.type">
+                                <ng-include src="sectionTemplate"></ng-include>
+                            </section>
+
+                        </div>
+
+                        <section class="whitebox collapsible" ng-if="module.options.advanced_sharing_show">
                             <div class="collapsible-head" id="headingshare">
                                 <h4>{{'AdvancedSharing.Title' | translate }}</h4>
                                 <button class="btn btn-link collapsed" type="button" data-toggle="collapse"
@@ -234,25 +259,204 @@
                                 </div>
                             </div>
                         </section>
+                        <section class="whitebox collapsible" ng-if="module.name==='p_profiles'">
+                            <div class="collapsible-head" id="head-profile-config">
+                                <h4>Menü Ve Paylaşım Ayarları</h4>
+                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse"
+                                        data-target="{{'#profile-config'}}" aria-expanded="true"
+                                        aria-controls="{{'profile-config'}}">
+                                    <i class="fas fa-plus"></i>
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                            </div>
+                            <div id="profile-config" class="collapsible-body collapse show" aria-labelledby="headingshare"  ng-if="profileConfig">
+                                <div class="row">
+                                    <div class="col-sm-4" >
+                                        <div class="form-group ">
+                                            <label for="menu-picklist">Profilde Görüncek Menü Seçiniz  </label>
+                                            <select id="menu-picklist"
+                                                    ng-model="profileConfig.menu"
+                                                    k-data-source="menuDataSource"
+                                                    k-option-label="'Lütfen Menü Seçiniz'"
+                                                    kendo-drop-down-list
+                                                    k-options="menuPicklistOptions">
+                                            </select>
+                                        </div>
+                                        <div class="whitebox treeview" ng-if="menuTreeOptions">
+                                            <div id="tree" kendo-tree-view="menuTree"  k-options="menuTreeOptions"></div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-sm-8" ng-if="menuSelectedModul">
+                                        <section class="whitebox collapsible">
+                                            <div class="collapsible-head">
+                                                <h4>Menü Ve Paylaşım Ayarları</h4>
+                                            </div>
+                                            <div class="collapsible-body">
+                                                <div class="form-group">
+                                                    <label>Hangi Kayıtları Görsün  </label>
+
+                                                    <div class="custom-control custom-radio custom-control-inline">
+                                                        <input type="radio" ng-model='profileConfig.config[menuSelectedModul.name].records.type' value="all" id="all" name="record-share-type" class="custom-control-input">
+                                                        <label class="custom-control-label" for="all">All Record</label>
+                                                    </div>
+
+                                                    <div class="custom-control custom-radio custom-control-inline">
+                                                        <input type="radio" ng-change="setProfileConfig()" ng-model="profileConfig.config[menuSelectedModul.name].records.type" value="organization" id="organization" name="record-share-type" class="custom-control-input">
+                                                        <label class="custom-control-label" for="organization">Organization</label>
+                                                    </div>
+
+                                                    <div class="custom-control custom-radio custom-control-inline">
+                                                        <input type="radio"  ng-change="setProfileConfig()" ng-model="profileConfig.config[menuSelectedModul.name].records.type"  value="peers" id="peers" name="record-share-type" class="custom-control-input">
+                                                        <label class="custom-control-label" for="peers">Peers</label>
+                                                    </div>
+
+                                                    <div class="custom-control custom-radio custom-control-inline">
+                                                        <input type="radio"  ng-change="setProfileConfig()" ng-model="profileConfig.config[menuSelectedModul.name].records.type" value="organization_and_peers" id="organization_and_peers" name="record-share-type" class="custom-control-input">
+                                                        <label class="custom-control-label" for="organization_and_peers">Organization Peers</label>
+                                                    </div>
+
+                                                    <div class="custom-control custom-radio custom-control-inline">
+                                                        <input type="radio"  ng-change="setProfileConfig()" ng-model="profileConfig.config[menuSelectedModul.name].records.type" id="direct_reports" value="direct_reports" name="record-share-type" class="custom-control-input">
+                                                        <label class="custom-control-label" for="direct_reports">Direct Reports Only</label>
+                                                    </div>
+
+                                                </div>
+                                                <!--<div class="form-group">
+                                                    <div class="custom-control custom-checkbox custom-control-inline">
+                                                        <input class="custom-control-input" type="checkbox" id="inlineCheckbox1t" value="option1">
+                                                        <label class="custom-control-label" for="inlineCheckbox1t">Bu kayıtlara Ek olarak uygulanması istenilen filtreler var mı ? </label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <query-builder viewfilter="viewFilter" fieldskey="fieldskey" module="menuSelectedModul"  group="filterJson.group"></query-builder>
+                                                </div>-->
+                                                <div class="row">
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label>Görmesini istemediğiniz alanlar nelerdir ? </label>
+                                                            <select kendo-multi-select
+                                                                    k-options="menuFieldSelectedModulOptions"
+                                                                    k-data-source="menuSelectedModul.fields"
+                                                                    k-on-change="setProfileConfig()"
+                                                                    k-ng-model="profileConfig.config[menuSelectedModul.name].fields.dont_show">
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Görüp  düzenleyemeyeceği  alanlar  nelerdir ?</label>
+                                                            <select kendo-multi-select
+                                                                    k-options="menuFieldSelectedModulOptions"
+                                                                    k-data-source="menuSelectedModul.fields"
+                                                                    k-on-change="setProfileConfig()"
+                                                                    k-ng-model="profileConfig.config[menuSelectedModul.name].fields.readonly">
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <div class="form-group">
+                                                            <label>Görmesini istemediğiniz bölümler nelerdir ? </label>
+                                                            <select kendo-multi-select
+                                                                    k-options="menuSectionSelectedModulOptions"
+                                                                    k-data-source="menuSelectedModul.sections"
+                                                                    k-on-change="setProfileConfig()"
+                                                                    k-ng-model="profileConfig.config[menuSelectedModul.name].sections.dont_show">
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label>Görüp  düzenleyemeyeceği  bölümler nelerdir ?  </label>
+                                                            <select kendo-multi-select
+                                                                    k-options="menuSectionSelectedModulOptions"
+                                                                    k-data-source="menuSelectedModul.sections"
+                                                                    k-on-change="setProfileConfig()"
+                                                                    k-ng-model="profileConfig.config[menuSelectedModul.name].sections.readonly">
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Hangi Aksiyonları Alabilir  </label>
+                                                </div>
+                                                <div class="row row0 align-items-center">
+                                                    <div class="col-auto padding5">
+                                                        <kendo-switch ng-model="profileConfig.config[menuSelectedModul.name].actions.create.enable"></kendo-switch>
+                                                    </div>
+                                                    <div class="col-5 padding5">
+                                                        <div class="form-group">
+                                                            <span class="form-control">Ekleme</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-auto padding5" ng-show="profileConfig.config[menuSelectedModul.name].actions.create.enable">
+<!--                                                        <div class="form-group">-->
+<!--                                                            <input type="checkbox" id="createConditionEnable" name="createConditionEnable"  class="k-checkbox"/>-->
+<!--                                                            <label class="k-checkbox-label" for="createConditionEnable">Şarta bağlı yetki ver.</label>-->
+<!--                                                        </div>-->
+                                                    </div>
+                                                </div>
+                                                <div class="row row0 align-items-center">
+                                                    <div class="col-auto padding5">
+                                                        <kendo-switch ng-model="profileConfig.config[menuSelectedModul.name].actions.update.enable"></kendo-switch>
+                                                    </div>
+                                                    <div class="col-5 padding5">
+                                                        <div class="form-group">
+                                                            <span class="form-control">Güncelleme</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-auto padding5" ng-show="profileConfig.config[menuSelectedModul.name].actions.update.enable">
+<!--                                                        <div class="form-group">-->
+<!--                                                            <input type="checkbox" id="updateConditionEnable" name="updateConditionEnable"  class="k-checkbox"/>-->
+<!--                                                            <label class="k-checkbox-label" for="updateConditionEnable">Şarta bağlı yetki ver.</label>-->
+<!--                                                        </div>-->
+                                                    </div>
+                                                </div>
+
+                                                <div class="row row0 align-items-center">
+                                                    <div class="col-auto padding5">
+                                                        <kendo-switch ng-model="profileConfig.config[menuSelectedModul.name].actions.delete.enable"></kendo-switch>
+                                                    </div>
+                                                    <div class="col-5 padding5">
+                                                        <div class="form-group">
+                                                            <span class="form-control">Silme</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-auto padding5" ng-show="profileConfig.config[menuSelectedModul.name].actions.delete.enable">
+<!--                                                        <div class="form-group">-->
+<!--                                                            <input type="checkbox" id="deleteConditionEnable" name="deleteConditionEnable"  class="k-checkbox"/>-->
+<!--                                                            <label class="k-checkbox-label" for="deleteConditionEnable">Şarta bağlı yetki ver.</label>-->
+<!--                                                        </div>-->
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
                     </div>
                 </form>
-                <div ng-repeat="section in currentSectionComponentsTemplate">
-                    <ng-include src="section"></ng-include>
-                </div>
+
             </section>
-            <section ng-if="id" ng-show="(hasPermission(relatedModule.related_module, operations.read) && tab === relatedModule.id.toString() || !tabconfig || (relatedModule.detail_view_type === 'flat' && tab === 'general' && id)) && ((tab === 'general' && relatedModule.detail_view_type === 'flat') || (tab === relatedModule.id.toString() && relatedModule.detail_view_type === 'tab'))" ng-repeat="relatedModule in module.relations | filter:{deleted:'false'} | orderBy:'order'">
+            <section ng-if="id"
+                     ng-show="(hasPermission(relatedModule.related_module, operations.read) && tab === relatedModule.id.toString() || !tabconfig || (relatedModule.detail_view_type === 'flat' && tab === 'general' && id)) && ((tab === 'general' && relatedModule.detail_view_type === 'flat') || (tab === relatedModule.id.toString() && relatedModule.detail_view_type === 'tab'))"
+                     ng-repeat="relatedModule in module.relations | filter:{deleted:'false'} | orderBy:'order'">
                 <md-subheader class="insetp0">
                     <md-toolbar md-scroll-shrink ng-if="true">
                         <div class="md-toolbar-tools">
-                            <md-button class="md-icon-button" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()">
+                            <md-button class="md-icon-button" aria-label="{{'Common.Back' | translate}}"
+                                       ng-click="goBack()">
                                 <i class="fas fa-angle-left"></i>
-                                <md-tooltip md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
+                                <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
                             </md-button>
-                            <h2 md-truncate>{{title}} - <small>{{relatedModule.languages[globalization.Label]['label']['plural']}}</small></h2>
+                            <h2 md-truncate>{{title}} -
+                                <small>{{relatedModule.languages[globalization.Label]['label']['plural']}}</small></h2>
                             <div class="helpbuttons hide-on-m">
-                                <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()" aria-label="{{'Common.Help' | translate}}">
+                                <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()"
+                                           aria-label="{{'Common.Help' | translate}}">
                                     <i class="fas fa-question-circle"></i>
-                                    <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
+                                    <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
                                 </md-button>
                                 <!--<md-button class="md-icon-button enlarge d-none d-lg-inline-block"
                                            ng-click="toggleFullLeftMenu()"
@@ -262,32 +466,43 @@
                                          viewBox="0 0 36 36"
                                          style="enable-background:new 0 0 36 36;" xml:space="preserve">
                                     <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z" /><path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z" /><path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z" /><path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z" /></svg>
-                                    <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
-                                    <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                                    <md-tooltip md-autohide="true" ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                                    <md-tooltip md-autohide="true" ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
                                 </md-button>-->
                             </div>
                             <span flex></span>
-                            <div   flex class="action-btn" ng-if="toolbarRelationOptions['relation'+relatedModule.id].items.length>0" kendo-toolbar k-options="toolbarRelationOptions['relation'+relatedModule.id]"></div>
-                            <md-button ng-show="selectedRecords[relatedModule.related_module].length > 0 && hasPermission(relatedModule.related_module, operations.remove)" class="md-icon-button btn btn-secondary" aria-label="Delete" ng-click="relatedModule.relation_type === 'many_to_many' ? deleteRelation($event, relatedModule) : deleteSelectedsSubTable($event,relatedModule.related_module)">
+                            <div flex class="action-btn"
+                                 ng-if="toolbarRelationOptions['relation'+relatedModule.id].items.length>0"
+                                 kendo-toolbar k-options="toolbarRelationOptions['relation'+relatedModule.id]"></div>
+                            <md-button
+                                    ng-show="selectedRecords[relatedModule.related_module].length > 0 && hasPermission(relatedModule.related_module, operations.remove)"
+                                    class="md-icon-button btn btn-secondary" aria-label="Delete"
+                                    ng-click="relatedModule.relation_type === 'many_to_many' ? deleteRelation($event, relatedModule) : deleteSelectedsSubTable($event,relatedModule.related_module)">
                                 <i ng-class="relatedModule.relation_type === 'many_to_many' ? 'fas fa-minus-circle' : 'fas fa-trash'"></i>
-                                <md-tooltip md-direction="bottom">{{relatedModule.relation_type === 'many_to_many' ?('Module.RemoveRelation' | translate) : ('Module.DeleteSelecteds' | translate)}}</md-tooltip>
+                                <md-tooltip md-autohide="true" md-direction="bottom">
+                                    {{relatedModule.relation_type === 'many_to_many' ? ('Module.RemoveRelation' | translate) : ('Module.DeleteSelecteds' | translate)}}
+                                </md-tooltip>
                             </md-button>
-                            <md-button class="md-icon-button btn btn-secondary" ng-click="export(relatedModule)" ng-show="user.profile.word_pdf_download">
+                            <md-button class="md-icon-button btn btn-secondary" ng-click="export(relatedModule)"
+                                       ng-show="user.profile.word_pdf_download">
                                 <i class="fas fa-upload"></i>
-                                <md-tooltip md-direction="bottom">{{'Module.Export' | translate}}</md-tooltip>
+                                <md-tooltip md-autohide="true" md-direction="bottom">{{'Module.Export' | translate}}</md-tooltip>
                             </md-button>
                             <md-button
                                     ng-click="openAddModal($event,relatedModule)"
                                     ng-if=" relatedModule.related_module != 'mails' && !relatedModule.readonly  && !record.freeze && !hiddenNewButton && relatedModule.relation_type ==='many_to_many'"
-                                    ng-show="hasPermission(relatedModule.related_module, operations.read)" class="md-icon-button btn btn-primary" aria-label="{{'Common.Add' | translate}}">
+                                    ng-show="hasPermission(relatedModule.related_module, operations.read)"
+                                    class="md-icon-button btn btn-primary" aria-label="{{'Common.Add' | translate}}">
                                 <i class="fas fa-plus"></i>
-                                <md-tooltip md-direction="bottom">{{'Common.Add' | translate}}</md-tooltip>
+                                <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Add' | translate}}</md-tooltip>
                             </md-button>
-                            <md-button href="#/app/record/{{relatedModule.related_module}}?ptype={{relatedModule.relation_type === 'many_to_many' ? module.name : relatedModule.relation_field}}&pid={{ record.id }}&rtab={{ relatedModule.detail_view_type != 'flat' ?  relatedModule.id :''}}"
-                                       ng-if="relatedModule.related_module != 'mails' && !relatedModule.readonly  && !record.freeze && !hiddenNewButton && relatedModule.relation_type !=='many_to_many'"
-                                       ng-show="hasPermission(relatedModule.related_module, operations.write)" class="md-icon-button btn btn-primary" aria-label="{{'Common.Add' | translate}}">
+                            <md-button
+                                    href="#/app/record/{{relatedModule.related_module}}?ptype={{relatedModule.relation_type === 'many_to_many' ? module.name : relatedModule.relation_field}}&pid={{ record.id }}&rtab={{ relatedModule.detail_view_type != 'flat' ?  relatedModule.id :''}}"
+                                    ng-if="relatedModule.related_module != 'mails' && !relatedModule.readonly  && !record.freeze && !hiddenNewButton && relatedModule.relation_type !=='many_to_many'"
+                                    ng-show="hasPermission(relatedModule.related_module, operations.write)"
+                                    class="md-icon-button btn btn-primary" aria-label="{{'Common.Add' | translate}}">
                                 <i class="fas fa-plus"></i>
-                                <md-tooltip md-direction="bottom">{{'Common.Add' | translate}}</md-tooltip>
+                                <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Add' | translate}}</md-tooltip>
                             </md-button>
                         </div>
                         <!--                        <div class="md-toolbar-tools grid-buttons3" ng-show="selectedRecords[relatedModule.related_module].length > 0">-->
@@ -295,11 +510,11 @@
                         <!--                            <span flex></span>-->
                         <!--                            <md-button class="md-icon-button btn btn-primary" aria-label="Delete" ng-show="hasPermission(relatedModule.related_module, operations.remove)" ng-click="relatedModule.relation_type === 'many_to_many' ? deleteRelation($event, relatedModule) : deleteSelectedsSubTable($event,relatedModule.related_module)">-->
                         <!--                                <i ng-class="relatedModule.relation_type === 'many_to_many' ? 'fas fa-minus-circle' : 'fas fa-trash'"></i>-->
-                        <!--                                <md-tooltip md-direction="bottom">{{relatedModule.relation_type === 'many_to_many' ?('Module.RemoveRelation' | translate) : ('Module.DeleteSelecteds' | translate)}}</md-tooltip>-->
+                        <!--                                <md-tooltip md-autohide="true" md-direction="bottom">{{relatedModule.relation_type === 'many_to_many' ?('Module.RemoveRelation' | translate) : ('Module.DeleteSelecteds' | translate)}}</md-tooltip>-->
                         <!--                            </md-button>-->
                         <!--                            <md-button class="md-icon-button btn btn-primary" ng-click="selectedRecords[relatedModule.related_module] =[];selectedRows[relatedModule.related_module] =[];isAllSelected[relatedModule.related_module] =[] ;selectAll($event,relatedModule.related_module); " aria-label="Close">-->
                         <!--                                <i class="fas fa-times"></i>-->
-                        <!--                                <md-tooltip md-direction="bottom">{{'Common.Unselect' | translate}}</md-tooltip>-->
+                        <!--                                <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Unselect' | translate}}</md-tooltip>-->
                         <!--                            </md-button>-->
                         <!--                        </div>-->
                         <!--                    -->
@@ -316,19 +531,21 @@
                     </div>
                 </div>
             </section>
-            <section ng-if="id" ng-show="showNotes !='false' && (tab === 'note' || (!tabconfig && tab === 'general'))">
+            <section ng-if="id" ng-show="module.options.show_notes && (tab === 'note' || (!tabconfig && tab === 'general'))">
                 <md-subheader class="insetp0">
                     <md-toolbar md-scroll-shrink ng-if="true">
                         <div class="md-toolbar-tools">
-                            <md-button class="md-icon-button" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()">
+                            <md-button class="md-icon-button" aria-label="{{'Common.Back' | translate}}"
+                                       ng-click="goBack()">
                                 <i class="fas fa-angle-left"></i>
-                                <md-tooltip md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
+                                <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
                             </md-button>
                             <h2 md-truncate>{{title}} - <small>{{('Note.Notes' | translate)}}</small></h2>
                             <div class="helpbuttons hide-on-m">
-                                <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()" aria-label="{{'Common.Help' | translate}}">
+                                <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()"
+                                           aria-label="{{'Common.Help' | translate}}">
                                     <i class="fas fa-question-circle"></i>
-                                    <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
+                                    <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
                                 </md-button>
                                 <!--<md-button class="md-icon-button enlarge d-none d-lg-inline-block"
                                            ng-click="toggleFullLeftMenu()"
@@ -338,8 +555,8 @@
                                          viewBox="0 0 36 36"
                                          style="enable-background:new 0 0 36 36;" xml:space="preserve">
                                     <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z" /><path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z" /><path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z" /><path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z" /> </svg>
-                                    <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
-                                    <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                                    <md-tooltip md-autohide="true" ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                                    <md-tooltip md-autohide="true" ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
                                 </md-button>-->
                             </div>
                             <span flex></span>
@@ -348,7 +565,7 @@
                                        class="md-icon-button btn btn-primary "
                                        aria-label="{{'Note.NewNote' | translate}}">
                                 <i class="fas fa-plus"></i>
-                                <md-tooltip md-direction="bottom">{{'Note.NewNote' | translate}}</md-tooltip>
+                                <md-tooltip md-autohide="true" md-direction="bottom">{{'Note.NewNote' | translate}}</md-tooltip>
                             </md-button>
                         </div>
                     </md-toolbar>
@@ -358,33 +575,38 @@
                         <div class="row row-custom"
                              ng-style="{ 'min-height': !tabconfig ? '' : '100%'}">
                             <div class="col-12">
-                                <div note-form record-id="id" show="showNoteForm"></div>
-                                <div note-list record-id="id"></div>
+                                <!--<div note-form record-id="id" show="showNoteForm"></div>-->
+                                <!--<div note-list record-id="id"></div>-->
                                 <div ng-show="loadingNotes" class="page-loading">
                                     <i class="fa fa-sm fa-spinner fa-pulse"></i>
                                 </div>
                                 <div class="empty-message"
                                      ng-show="notesCount < 1 && !loadingNote && !showNoteForm">
-                                    {{'Note.Message'|translate}}
+                                    {{'Note.Message' | translate}}
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
-            <section ng-if="hasDocumentsPermission(operations.read) && showAttachments !=='false' && (tab === 'document' || (!tabconfig && tab === 'general') || !id )">
+            <section
+                    ng-if="hasDocumentsPermission(operations.read) && module.options.show_attachments && (tab === 'document' || (!tabconfig && tab === 'general') || !id )">
                 <md-subheader class="insetp0">
                     <md-toolbar md-scroll-shrink ng-if="true">
                         <div class="md-toolbar-tools">
-                            <md-button class="md-icon-button" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()">
+                            <md-button class="md-icon-button" aria-label="{{'Common.Back' | translate}}"
+                                       ng-click="goBack()">
                                 <i class="fas fa-angle-left"></i>
-                                <md-tooltip md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
+                                <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
                             </md-button>
-                            <h2 md-truncate><span ng-if="id">{{title}} - </span><small>{{('Common.Attachments' | translate)}}</small></h2>
+                            <h2 md-truncate><span
+                                    ng-if="id">{{title}} - </span><small>{{('Common.Attachments' | translate)}}</small>
+                            </h2>
                             <div class="helpbuttons hide-on-m" ng-if="id">
-                                <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()" aria-label="{{'Common.Help' | translate}}">
+                                <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()"
+                                           aria-label="{{'Common.Help' | translate}}">
                                     <i class="fas fa-question-circle"></i>
-                                    <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
+                                    <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
                                 </md-button>
                                 <!--<md-button class="md-icon-button enlarge d-none d-lg-inline-block"
                                            ng-click="toggleFullLeftMenu()"
@@ -394,8 +616,8 @@
                                          viewBox="0 0 36 36"
                                          style="enable-background:new 0 0 36 36;" xml:space="preserve">
                                     <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z" /><path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z" /><path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z" /><path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z" /></svg>
-                                    <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
-                                    <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                                    <md-tooltip md-autohide="true" ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
+                                    <md-tooltip md-autohide="true" ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
                                 </md-button>-->
                             </div>
                             <span flex></span>
@@ -403,7 +625,7 @@
                                        ng-click="$parent.showDocumentForm = !$parent.showDocumentForm"
                                        ng-show="!record.freeze" aria-label="{{'Common.AttachmentNew' | translate}}">
                                 <i class="fas fa-plus"></i>
-                                <md-tooltip md-direction="bottom">
+                                <md-tooltip md-autohide="true" md-direction="bottom">
                                     {{'Common.AttachmentNew' | translate}}
                                 </md-tooltip>
                             </md-button>
@@ -419,24 +641,27 @@
                         </div>
                         <div class="empty-message"
                              ng-show="documentsResultSet.totalDocumentCount < 1 && !loadingDocuments && !showDocumentForm">
-                            {{'Common.AttachmentMessage'|translate}}
+                            {{'Common.AttachmentMessage' | translate}}
                         </div>
                     </div>
                 </div>
             </section>
-            <section ng-if="id" ng-show="record.latitude && record.longitude && (tab === 'location' || (!tabconfig && tab === 'general'))">
+            <section ng-if="id"
+                     ng-show="record.latitude && record.longitude && (tab === 'location' || (!tabconfig && tab === 'general'))">
                 <md-subheader class="insetp0">
                     <md-toolbar md-scroll-shrink ng-if="true">
                         <div class="md-toolbar-tools">
-                            <md-button class="md-icon-button" aria-label="{{'Common.Back' | translate}}" ng-click="goBack()">
+                            <md-button class="md-icon-button" aria-label="{{'Common.Back' | translate}}"
+                                       ng-click="goBack()">
                                 <i class="fas fa-angle-left"></i>
-                                <md-tooltip md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
+                                <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
                             </md-button>
                             <h2 md-truncate>{{title}} - <small>{{('Common.Location' | translate)}}</small></h2>
                             <div class="helpbuttons hide-on-m">
-                                <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()" aria-label="{{'Common.Help' | translate}}">
+                                <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()"
+                                           aria-label="{{'Common.Help' | translate}}">
                                     <i class="fas fa-question-circle"></i>
-                                    <md-tooltip md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
+                                    <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
                                 </md-button>
                                 <md-button class="md-icon-button enlarge d-none d-lg-inline-block"
                                            ng-click="toggleFullLeftMenu()"
@@ -445,9 +670,16 @@
                                          xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                                          viewBox="0 0 36 36"
                                          style="enable-background:new 0 0 36 36;" xml:space="preserve">
-                                    <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z" /><path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z" /><path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z" /><path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z" /></svg>
-                                    <md-tooltip ng-if="!showTooltip" md-direction="bottom">{{'Common.FullScreen' | translate}}</md-tooltip>
-                                    <md-tooltip ng-if="showTooltip" md-direction="bottom">{{'Common.ExitFullScreen' | translate}}</md-tooltip>
+                                    <path d="M19.4,12.8c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6V5c0-1.1-0.9-2-2-2h-8.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L19.4,12.8z"/>
+                                        <path d="M16.6,21.2c0.8-0.8,0.8-2.1,0-2.9c-0.8-0.8-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2C4.6,19.5,4,19.8,4,20.9V29c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L16.6,21.2z"/>
+                                        <path d="M31.4,6.5c0.8-0.8,0.8-2.1,0-2.9s-2.1-0.8-2.9,0l-5.1,5.1l-3.2-3.2c-0.8-0.8-1.4-0.5-1.4,0.6v8.1c0,1.1,0.9,2,2,2h8.1 c1.1,0,1.4-0.6,0.6-1.4l-3.2-3.2L31.4,6.5z"/>
+                                        <path d="M4.6,27.5c-0.8,0.8-0.8,2.1,0,2.9c0.8,0.8,2.1,0.8,2.9,0l5.1-5.1l3.2,3.2c0.8,0.8,1.4,0.5,1.4-0.6v-8.1c0-1.1-0.9-2-2-2H7.1 c-1.1,0-1.4,0.6-0.6,1.4l3.2,3.2L4.6,27.5z"/></svg>
+                                    <md-tooltip md-autohide="true" ng-if="!showTooltip" md-direction="bottom">
+                                        {{'Common.FullScreen' | translate}}
+                                    </md-tooltip>
+                                    <md-tooltip md-autohide="true" ng-if="showTooltip" md-direction="bottom">
+                                        {{'Common.ExitFullScreen' | translate}}
+                                    </md-tooltip>
                                 </md-button>
                             </div>
                             <span flex></span>
@@ -466,6 +698,7 @@
                     </div>
                 </div>
             </section>
+
         </md-content>
     </section>
 </md-content>

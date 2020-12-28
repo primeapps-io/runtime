@@ -10,7 +10,7 @@
                 <h3 ng-if="!role.id" md-truncate>{{'Setup.Roles.NewRole' | translate}}</h3>
                 <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Dock"><i class="fas fa-thumbtack"></i></md-button>
                 <span flex></span>
-                <md-button class="md-icon-button btn btn-primary" type="submit" ng-disabled="role.system_type === 'system'"><i class="fas fa-save"></i> <md-tooltip md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip></md-button>
+                <md-button class="md-icon-button btn btn-primary" type="submit" ng-disabled="role.system_type === 'system'"><i class="fas fa-save"></i> <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip></md-button>
             </div>
         </md-toolbar>
         <md-content flex>

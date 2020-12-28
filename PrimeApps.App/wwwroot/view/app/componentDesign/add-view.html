@@ -2,7 +2,7 @@
     <div class="md-toolbar-tools">
         <md-button class="md-icon-button" ng-click="closeSide('sideModal')" aria-label="{{'Common.Back' | translate}}"><i
                 class="fas fa-angle-left"></i>
-            <md-tooltip md-direction="bottom" >{{'Common.Back' | translate}}</md-tooltip>
+            <md-tooltip md-autohide="true" md-direction="bottom" >{{'Common.Back' | translate}}</md-tooltip>
         </md-button>
         <h3 md-truncate> {{ activeView.languages[globalization.Label]['label'] || activeView.languages[globalization.Label]['name'] }}</h3>
         <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close"><i
@@ -11,11 +11,11 @@
         <md-button
                 ng-if="activeView.system_type !='system'"
                 class="md-icon-button btn btn-secondary" aria-label="Delete" ng-click="deleteView($event)"><i class="fas fa-trash"></i>
-            <md-tooltip md-directtion="bottom">{{'Commmon.Delete' | translate}}</md-tooltip>
+            <md-tooltip md-autohide="true" md-directtion="bottom">{{'Commmon.Delete' | translate}}</md-tooltip>
         </md-button>
         <md-button class="md-icon-button btn btn-primary" ng-click="saveModal()" aria-label="Save"><i
                 class="fas fa-save"></i>
-            <md-tooltip md-directtion="bottom">{{'Common.Save' | translate}}</md-tooltip>
+            <md-tooltip md-autohide="true" md-directtion="bottom">{{'Common.Save' | translate}}</md-tooltip>
         </md-button>
     </div>
 </md-toolbar>

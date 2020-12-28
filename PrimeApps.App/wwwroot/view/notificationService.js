@@ -13,7 +13,9 @@ angular.module('primeapps')
                 })
                 .configureLogging(function (logging) {
                     logging.SetMinimumLevel(LogLevel.Error);
-                }).build();
+                })
+                .withAutomaticReconnect()
+                .build();
 
             function start() {
                 try {

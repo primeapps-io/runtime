@@ -14,11 +14,11 @@
                 <div class="action-buttons" ng-show="!$parent.$parent.$parent.record.freeze">
                     <md-button aria-label="{{'Common.Edit' | translate}}" title="{{'Common.Edit' | translate}}" class="md-icon-button btn btn-sm btn-secondary"
                                ng-if="note.created_by.id === user.id" ng-click="note.textCurrent = note.languages[globalization.Label].text; note.showFormEdit = true; note.showForm = false;">
-                        <i class="fas fa-pen"></i><md-tooltip md-direction="bottom">{{'Common.Edit' | translate}}</md-tooltip>
+                        <i class="fas fa-pen"></i><md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Edit' | translate}}</md-tooltip>
                     </md-button>
                     <md-button aria-label="{{'Common.Delete' | translate}}" title="{{'Common.Delete' | translate}}" class="md-icon-button btn btn-sm btn-secondary"
                                ng-if="note.created_by.id === user.id || user.profile.has_admin_rights === true" ng-click="deleteNote($event, note)">
-                        <i class="fas fa-trash"></i><md-tooltip md-direction="bottom">{{'Common.Delete' | translate}}</md-tooltip>
+                        <i class="fas fa-trash"></i><md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Delete' | translate}}</md-tooltip>
                     </md-button>
                 </div>
             </div>
@@ -58,11 +58,11 @@
                         <div class="action-buttons" ng-if="subNote.created_by.id === user.id" ng-show="!$parent.$parent.$parent.record.freeze">
                             <md-button aria-label="{{'Common.Edit' | translate}}" title="{{'Common.Edit' | translate}}" class="md-icon-button btn btn-sm btn-secondary"
                                        ng-click="subNote.textCurrent = subNote.languages[globalization.Label].text; subNote.showFormEdit = true">
-                                <i class="fas fa-pen"></i><md-tooltip md-direction="bottom">{{'Common.Edit' | translate}}</md-tooltip>
+                                <i class="fas fa-pen"></i><md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Edit' | translate}}</md-tooltip>
                             </md-button>
                             <md-button aria-label="{{'Common.Delete' | translate}}" title="{{'Common.Delete' | translate}}" class="md-icon-button btn btn-sm btn-secondary"
                                        ng-click="deleteNote($event, subNote, note)">
-                                <i class="fas fa-trash"></i><md-tooltip md-direction="bottom">{{'Common.Delete' | translate}}</md-tooltip>
+                                <i class="fas fa-trash"></i><md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Delete' | translate}}</md-tooltip>
                             </md-button>
                         </div>
                     </div>
