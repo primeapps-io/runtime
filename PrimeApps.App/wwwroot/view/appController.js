@@ -4,7 +4,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
         $scope.disablePasswordChange = disablePasswordChange;
         $rootScope.expressionRunOrderData = { Value: [], Validation: [] }
-        
+
         $rootScope.fastRecordAddModal = function (moduleName, fastAddRecord, lookupValue, lookupName, id, customScope) {
             $scope.modalCustomScopeRecord = customScope.record;
 
@@ -189,7 +189,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     '</md-button>' +
                     '</md-toast>'
             }).then(function (result) {
-				/*if (result === ACTION_RESOLVE) {
+                /*if (result === ACTION_RESOLVE) {
                     $log.log('Undo action triggered by button.');
                 }
                 else if (result === 'key') {
@@ -308,21 +308,21 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         };
 
         $scope.goBack = function () {
-            if ($state.current.name === "app.moduleList" || $state.current.name.includes("app.setup")){
+            if ($state.current.name === "app.moduleList" || $state.current.name.includes("app.setup")) {
                 window.location = "#/app/dashboard";
-                
-                if ($rootScope.customMenu && this.isMobile()){
-                    
+
+                if ($rootScope.customMenu && this.isMobile()) {
+
                     if ($scope.mobileMenus !== undefined && $scope.mobileMenus[0] !== undefined) {
                         for (var i = 0; i < $scope.mobileMenus.length; i++) {
                             $scope.mobileMenus[i].active = false;
                         }
                     }
-                    var item = $filter('filter')($scope.mobileMenus, {route:'dashboard'})[0];
+                    var item = $filter('filter')($scope.mobileMenus, { route: 'dashboard' })[0];
                     item.active = true;
                 }
             }
-            else{
+            else {
                 $mdDialog.hide();
                 window.history.back();
             }
@@ -595,10 +595,10 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                         if (helps.length === 1) {
                             $scope.helpTemplatesSide = helps[0];
                         }
-						/**Old customers maybe have added on studio a few help record(s) and maybe that(s) have set  'module_ type' = 'module_form'. We have to check it.
-						 * if customer didn't add module_ type = module_detail we have to chek does it have module_ type = module_form.
-						 * if That has module_ type = module_form we will set it.
-						 * But if old customers have added on studio  module_type = module_detail and  module_ type = module_form we will accept module_detail because we will deprecated  module_form on studio**/
+                        /**Old customers maybe have added on studio a few help record(s) and maybe that(s) have set  'module_ type' = 'module_form'. We have to check it.
+                         * if customer didn't add module_ type = module_detail we have to chek does it have module_ type = module_form.
+                         * if That has module_ type = module_form we will set it.
+                         * But if old customers have added on studio  module_type = module_detail and  module_ type = module_form we will accept module_detail because we will deprecated  module_form on studio**/
                         else if (helps.length === 2) {
                             help = $filter('filter')(helps, { module_type: 'module_detail' }, true)[0];
                             $scope.helpTemplatesSide = help;
@@ -738,7 +738,9 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             return kendo.toString(kendo.parseDate(time), "g");
         };
 
-        $scope.notificationShowModal = function () {
+        $scope.notificationShowModal = function () { 
+                $rootScope.notificationModalOpen = $mdSidenav('sideModal').isOpen();
+
             if (!$rootScope.notificationModalOpen) {
                 $rootScope.closeSide("menuModal");
                 $rootScope.notificationModalOpen = true;
@@ -775,13 +777,13 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                                 if (notification.module && notification.record_id) {
                                     $scope.closeSide('sideModal');
                                     var newUrl = '#/app/record/' + notification.module.name + '?id=' + notification.record_id;
-                                    if(newUrl === window.location.hash)
+                                    if (newUrl === window.location.hash)
                                         $state.reload();
                                     window.location = newUrl;
                                 }
                             }
                             else if (url) {
-                                if(url === window.location.hash)
+                                if (url === window.location.hash)
                                     $state.reload();
                                 window.location = url;
                             }
