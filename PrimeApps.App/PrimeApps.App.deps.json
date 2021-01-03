@@ -60,8 +60,8 @@
           "Sentry": "2.1.5",
           "Sentry.AspNetCore": "2.1.5",
           "System.Linq.Dynamic.Core": "1.2.1",
-          "WorkflowCore": "3.2.2",
-          "WorkflowCore.DSL": "3.1.5",
+          "WorkflowCore": "3.3.4",
+          "WorkflowCore.DSL": "3.3.0",
           "WorkflowCore.Providers.Redis": "3.0.2",
           "Microsoft.AspNetCore.Antiforgery": "3.1.0.0",
           "Microsoft.AspNetCore.Authentication.Abstractions.Reference": "3.1.0.0",
@@ -3271,7 +3271,7 @@
           "System.Xml.ReaderWriter": "4.3.0"
         }
       },
-      "WorkflowCore/3.2.2": {
+      "WorkflowCore/3.3.4": {
         "dependencies": {
           "ConcurrentHashSet": "1.1.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "3.1.10",
@@ -3289,24 +3289,24 @@
         },
         "runtime": {
           "lib/netstandard2.0/WorkflowCore.dll": {
-            "assemblyVersion": "3.2.2.0",
-            "fileVersion": "3.2.2.0"
+            "assemblyVersion": "3.3.4.0",
+            "fileVersion": "3.3.4.0"
           }
         },
         "compile": {
           "lib/netstandard2.0/WorkflowCore.dll": {}
         }
       },
-      "WorkflowCore.DSL/3.1.5": {
+      "WorkflowCore.DSL/3.3.0": {
         "dependencies": {
           "Newtonsoft.Json": "12.0.3",
           "SharpYaml": "1.6.5",
-          "WorkflowCore": "3.2.2"
+          "WorkflowCore": "3.3.4"
         },
         "runtime": {
           "lib/netstandard2.0/WorkflowCore.DSL.dll": {
-            "assemblyVersion": "3.1.5.0",
-            "fileVersion": "3.1.5.0"
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.3.0.0"
           }
         },
         "compile": {
@@ -3319,7 +3319,7 @@
           "Newtonsoft.Json": "12.0.3",
           "RedLock.net": "2.2.0",
           "StackExchange.Redis": "2.1.30",
-          "WorkflowCore": "3.2.2"
+          "WorkflowCore": "3.3.4"
         },
         "runtime": {
           "lib/netstandard2.0/WorkflowCore.Providers.Redis.dll": {
@@ -5964,7 +5964,7 @@
     "System.Collections.NonGeneric/4.3.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-prtjIEMhGUnQq6RnPEYLpFt8AtLbp9yq2zxOSrY7KJJZrw25Fi97IzBqY7iqssbM61Ek5b8f3MG/sG1N2sN5KA==",
+      "sha512": "sha512-LE/oChpRvkSi3U25u0KnJcI44JeDZ1QJCyN4qFDx2uusEypdqR24w7lKYw21eYe5esuCBuc862wRmpF63Yy1KQ==",
       "path": "system.collections.nongeneric/4.3.0",
       "hashPath": "system.collections.nongeneric.4.3.0.nupkg.sha512"
     },
@@ -6461,7 +6461,7 @@
     "System.Threading.ThreadPool/4.3.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-k/+g4b7vjdd4aix83sTgC9VG6oXYKAktSfNIJUNGxPEj7ryEOfzHHhfnmsZvjxawwcD9HyWXKCXmPjX8U4zeSw==",
+      "sha512": "sha512-SrCOmTvvOOCmJT4BBxdZcwhz6XEMsjBGZvGSVorOxdCznaUNeVotEjDfXGIZ8gcGo00qgPbTV6puHDgcFYl6Iw==",
       "path": "system.threading.threadpool/4.3.0",
       "hashPath": "system.threading.threadpool.4.3.0.nupkg.sha512"
     },
@@ -6493,19 +6493,19 @@
       "path": "system.xml.xpath/4.3.0",
       "hashPath": "system.xml.xpath.4.3.0.nupkg.sha512"
     },
-    "WorkflowCore/3.2.2": {
+    "WorkflowCore/3.3.4": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-KUjuqzuvETinYwg0imfzdtViJDwl7HQTh60HIbXQP26WxqbRWZMEF5OUT3t1oXobykGmcEOoPAJbUhuQ0J2E2A==",
-      "path": "workflowcore/3.2.2",
-      "hashPath": "workflowcore.3.2.2.nupkg.sha512"
+      "sha512": "sha512-b6eGna8spi+P6osSKeuFmIzNFoZHUaq5CnH0u4dWZTnyKYN4ZpARE2PMOv7dLFSgirk61TlP6/RvYp98suUgVw==",
+      "path": "workflowcore/3.3.4",
+      "hashPath": "workflowcore.3.3.4.nupkg.sha512"
     },
-    "WorkflowCore.DSL/3.1.5": {
+    "WorkflowCore.DSL/3.3.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-NLrK5UrdBv6n/6kW4EfL/B1YMd8+uwZ/UueS34wfjSn88GbNMGrifhoLUUKtepIsibhmnILTPlykGZkS12rsQg==",
-      "path": "workflowcore.dsl/3.1.5",
-      "hashPath": "workflowcore.dsl.3.1.5.nupkg.sha512"
+      "sha512": "sha512-Hi+3GS+NA65cm4SMUnmk8+vipMB4P9nQ6FlfpR1URO8vT5zeY5zacY+7eF1PUKIOrINtkLREntN2P+3Xs7hPJA==",
+      "path": "workflowcore.dsl/3.3.0",
+      "hashPath": "workflowcore.dsl.3.3.0.nupkg.sha512"
     },
     "WorkflowCore.Providers.Redis/3.0.2": {
       "type": "package",

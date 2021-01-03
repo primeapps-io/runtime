@@ -40,19 +40,19 @@
                                 <span class="required-label">{{'Common.Required' | translate}}</span>
                             </span>
                         </label>
-                        <textarea required rows="2" name="description" class="form-control" 
-                        maxlength="250" id="description" placeholder="{{'Setup.Profiles.ProfileDescription' | translate}}" 
-                        auto-grow ng-model="profile.languages[globalization.Label]['description']" 
+                        <textarea required rows="2" name="description" class="form-control"
+                        maxlength="250" id="description" placeholder="{{'Setup.Profiles.ProfileDescription' | translate}}"
+                        auto-grow ng-model="profile.languages[globalization.Label]['description']"
                         ng-disabled="profile.is_persistent || profile.system_type === 'system'"></textarea>
                     </div>
                     <div class="form-group" ng-show="!profile || !(profile.has_admin_rights && profile.is_persistent)">
-                        <label for="PageStart">{{'Setup.Profiles.StarPage' | translate}} </label>
-                        <select id="PageStart"
-                                k-ng-model="profile.PageStart"
-                                k-on-change="SetStartPage()"
-                                ng-disabled="profile.system_type === 'system'"
-                                kendo-drop-down-list k-options="pageStartOptions"></select>
+                        <label for="start-page">{{'Setup.Profiles.StarPage' | translate}} </label>
+                        <input type="text" id="start-page" name="start-page" class="k-textbox"
+                               ng-model="profile.start_page"
+                               ng-disabled="profile.system_type === 'system'" />
+                        <span class="k-invalid-msg" data-for="name"></span>
                     </div>
+
                 </div>
                 <div class="title">
                     <h5>{{'Setup.Profiles.Permissions' | translate}}</h5>

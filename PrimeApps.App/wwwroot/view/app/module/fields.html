@@ -9,13 +9,13 @@
     </label>
     <input ng-if="field.mask" kendo-masked-text-box name="{{field.name +'_'+ module.id}}" id="{{field.name +'_'+ module.id}}" tabindex="{{field.order}}" ng-required="field.validation.required"
            placeholder="{{field.languages[globalization.Label].placeholder}}" ng-model="record[field.name]" ng-change="fieldValueChange(field)"
-           ng-readonly="field.validation.readonly || (record.freeze && !isAdmin)"
+           ng-readonly="field.validation.readonly || (record.freeze && !isAdmin) || setReadonly(field)"
            minlength="{{field.validation.min_length || 0}}" maxlength="{{field.validation.max_length || 50}}"
            data-range-field="{{field.name +'_'+ module.id}}"
            pattern="{{field.validation.pattern || '[^=]*'}}" k-mask="'{{field.mask}}'" />
     <input ng-if="!field.mask" type="text" name="{{field.name +'_'+ module.id}}" id="{{field.name +'_'+ module.id}}" class="k-textbox" tabindex="{{field.order}}" ng-required="field.validation.required"
            placeholder="{{field.languages[globalization.Label].placeholder}}" ng-model="record[field.name]" ng-change="fieldValueChange(field)"
-           ng-readonly="field.validation.readonly || (record.freeze && !isAdmin)"
+           ng-readonly="field.validation.readonly || (record.freeze && !isAdmin) || setReadonly(field)"
            minlength="{{field.validation.min_length || 0}}" maxlength="{{field.validation.max_length || 50}}"
            data-range-field="{{field.name +'_'+ module.id}}"
            pattern="{{field.validation.pattern || '[^=]*'}}" />
@@ -43,10 +43,9 @@
               ng-required="field.validation.required"
               minlength="{{field.validation.min_length || 0}}"
               maxlength="{{field.validation.max_length ? field.validation.max_length : field.multiline_type === 'large' ? 3000 : 500}}"
-              ng-readonly="field.validation.readonly  || (record.freeze && !isAdmin)"
+              ng-readonly="field.validation.readonly  || (record.freeze && !isAdmin) || setReadonly(field)"
               pattern="{{field.validation.pattern}}"
-              ng-attr-rows="{{field.multiline_type === 'large' ? 8 : 2}}"
-              ></textarea>
+              ng-attr-rows="{{field.multiline_type === 'large' ? 8 : 2}}"></textarea>
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
@@ -63,6 +62,7 @@
     <textarea class="k-textarea"
               ng-model="record[field.name]"
               ui-tinymce="tinymceOptions"
+              ng-readonly="{{setReadonly(field)}}"
               ng-required="field.validation.required"></textarea>
 </div>
 
@@ -107,6 +107,7 @@
            name="{{field.name +'_'+ module.id}}"
            id="{{field.name +'_'+ module.id}}"
            tabindex="{{field.order}}"
+           ng-readonly="{{setReadonly(field)}}"
            ng-placeholder="{{field.languages[globalization.Label].placeholder}}"
            k-options="{{'numberOptions'+field.id}}"
            k-ng-model="record[field.name]"
@@ -131,6 +132,7 @@
     <input kendo-numeric-text-box
            name="{{field.name}}"
            id="{{field.name}}"
+           ng-readonly="{{setReadonly(field)}}"
            tabindex="{{field.order}}"
            ng-placeholder="{{field.languages[globalization.Label].placeholder}}"
            k-options="{{'numberDecimalOptions'+field.id}}"
@@ -157,6 +159,7 @@
            name="{{field.name}}"
            id="{{field.name}}"
            tabindex="{{field.order}}"
+           ng-readonly="{{setReadonly(field)}}"
            ng-placeholder="{{field.languages[globalization.Label].placeholder}}"
            maxlength="{{field.validation.max_length || 16}}"
            minlength="{{field.validation.min_length || 0}}"
@@ -187,6 +190,7 @@
            name="{{field.name}}"
            id="{{field.name}}"
            class="k-textbox"
+           ng-readonly="{{setReadonly(field)}}"
            placeholder="e.g. myname@example.net"
            tabindex="{{field.order}}"
            ng-model="record[field.name]"
@@ -212,6 +216,7 @@
            name="{{field.name}}"
            id="{{field.name}}"
            class="width100"
+           ng-readonly="{{setReadonly(field)}}"
            tabindex="{{field.order}}"
            ng-model="record[field.name+'str']"
            ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
@@ -237,6 +242,7 @@
            id="{{field.name}}"
            class="width100"
            tabindex="{{field.order}}"
+           ng-readonly="{{setReadonly(field)}}"
            ng-model="record[field.name+'str']"
            k-ng-model="record[field.name]"
            ng-click="openCalendar(field)"
@@ -262,6 +268,7 @@
            class="width100"
            tabindex="{{field.order}}"
            ng-model="record[field.name+'str']"
+           ng-readonly="{{setReadonly(field)}}"
            k-ng-model="record[field.name]"
            k-on-change="fieldValueChange(field);"
            ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
@@ -295,6 +302,7 @@
             kendo-drop-down-list
             ng-required="field.validation.required"
             tabindex="{{field.order}}"
+            ng-readonly="{{setReadonly(field)}}"
             k-options="{{'customOptions'+ field.picklist_id}}"
             k-ng-model="record[field.name]"
             ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
@@ -304,22 +312,23 @@
 
 <div class="form-group d-flex justify-content-between align-items-center" ng-if="field.data_type === 'checkbox' && !field.hidden && (preview ? true : field.name === 'is_sample'? false : true )">
     <div class="d-flex align-items-center ">
-       <input type="checkbox"
-              id="{{field.name}}"
-              name="{{field.name}}"
-              ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
-              ng-model="record[field.name]"
-              tabindex="{{field.order}}"
-              class="k-checkbox"
-              ng-required="field.validation.required"
-              ng-change="fieldValueChange(field);">
-       <label ng-show="field.show_label" class="k-checkbox-label" for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
-           <span ng-if="!field.custom_label">{{ field.languages[globalization.Label]['label'] }}</span>
-           <span ng-if="field.custom_label">{{ field.custom_label }}</span>
+        <input type="checkbox"
+               id="{{field.name+'-'+formUniqKey}}"
+               name="{{field.name}}"
+               ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
+               ng-model="record[field.name]"
+               tabindex="{{field.order}}"
+               class="k-checkbox"
+               ng-readonly="{{setReadonly(field)}}"
+               ng-required="field.validation.required"
+               ng-change="fieldValueChange(field);">
+        <label ng-show="field.show_label" class="k-checkbox-label" for="{{field.name+'-'+formUniqKey}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+            <span ng-if="!field.custom_label">{{ field.languages[globalization.Label]['label'] }}</span>
+            <span ng-if="field.custom_label">{{ field.custom_label }}</span>
 
-       </label>
+        </label>
         <div class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</div>
-   </div>
+    </div>
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'text_single' && field.combination && !field.show_lock && !field.hidden && id">
@@ -334,6 +343,7 @@
     <input type="text"
            id="{{field.name}}"
            class="k-textbox"
+           ng-readonly="{{setReadonly(field)}}"
            name="{{field.name}}"
            style="{{field.style.input}}"
            tabindex="{{field.order}}"
@@ -354,6 +364,7 @@
     <select id="{{field.name}}"
             name="{{field.name}}"
             kendo-multi-select
+            ng-readonly="{{setReadonly(field)}}"
             ng-required="field.validation.required"
             k-ng-model="record[field.name]"
             ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
@@ -382,6 +393,7 @@
             <md-tooltip md-autohide="true" md-direction="bottom">{{'Module.UploadImage' | translate}}</md-tooltip>
             <input name="files"
                    type="file"
+                   ng-readonly="{{setReadonly(field)}}"
                    nv-file-select uploader="uploaderImage(field)"
                    ng-required="field.validation.required"
                    ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
@@ -416,7 +428,7 @@
     <div class="custom-file">
         <input type="file" class="custom-file-input form-control"
                id="{{field.name}}"
-               id="{{field.name}}"
+               ng-readonly="{{setReadonly(field)}}"
                name="{{field.name}}"
                tabindex="{{field.order}}"
                nv-file-select uploader="uploaderBasic(field)"
@@ -440,6 +452,7 @@
     <input kendo-rating="{{'rating_'+field.id}}"
            class="form-control"
            id="{{field.name}}"
+           ng-readonly="{{setReadonly(field)}}"
            name="{{field.name}}"
            ng-required="field.validation.required"
            ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
@@ -466,6 +479,7 @@
     <input class="k-textbox" type="text"
            name="{{field.name}}"
            id="{{field.name}}"
+           ng-readonly="{{setReadonly(field)}}"
            style="{{field.style.input}}"
            tabindex="{{field.order}}"
            placeholder="{{field.languages[globalization.Label].placeholder}}"
@@ -498,6 +512,7 @@
     <select kendo-drop-down-list="{{'lookup'+field.id}}"
             id="{{field.name}}"
             name="{{field.name}}"
+            ng-readonly="{{setReadonly(field)}}"
             k-options="{{'lookupOptions'+field.id}}"
             k-ng-model="record[field.name]"
             k-filter="'{{field.lookup_search_type ? field.lookup_search_type : 'startswith' }}'"
@@ -512,6 +527,7 @@
     <input type="text"
            id="{{field.name}}"
            class="k-textbox"
+           ng-readonly="{{setReadonly(field)}}"
            name="{{field.name}}"
            placeholder="{{field.languages[globalization.Label].placeholder}}"
            ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
@@ -535,6 +551,7 @@
             <input id="{{field.name+radio.id}}"
                    class="k-radio"
                    tabindex="{{field.order}}"
+                   ng-readonly="{{setReadonly(field)}}"
                    ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
                    ng-required="field.validation.required"
                    name="{{field.name}}"
@@ -567,6 +584,7 @@
                ng-required="field.validation.required"
                name="{{field.name}}"
                type="radio"
+               ng-readonly="{{setReadonly(field)}}"
                ng-model="record[field.name]"
                ng-change="fieldValueChange(field);"
                ng-value="checkbox">
@@ -588,6 +606,7 @@
             id="{{field.name}}"
             name="{{field.name}}"
             k-options="{{'tagOptions'+field.id}}"
+            ng-readonly="{{setReadonly(field)}}"
             k-ng-model="record[field.name]"
             ng-required="field.validation.required"
             ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"></select>
@@ -662,6 +681,7 @@
            id="{{field.name}}"
            class="k-textbox"
            tabindex="{{field.order}}"
+           ng-readonly="{{setReadonly(field)}}"
            ng-required="field.validation.required"
            placeholder="{{field.languages[globalization.Label].placeholder}}"
            ng-model="record[field.name]"

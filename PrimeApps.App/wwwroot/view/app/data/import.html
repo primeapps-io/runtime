@@ -42,7 +42,14 @@
                         <div ng-show="wizardStep === 0">
                             <div class="whitebox">
 
-                                <div class="form-group">
+                                <div ng-show="loading" class="d-flex text-center align-items-center justify-content-center">
+                                    <div>
+                                        <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
+                                        <div class="paddingua10">{{'Data.Import.LoadingMessage' | translate}}</div>
+                                    </div>
+                                </div>
+
+                                <div ng-show="!loading" class="form-group">
                                     <label for="excelFile">
                                         <span class="select-sheet bold">{{'Import.File' | translate}}</span>
                                     </label>
