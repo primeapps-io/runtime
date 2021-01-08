@@ -1,1 +1,20 @@
-"use strict";angular.module("primeapps").factory("ConvertMapService",["$http","$filter","config",function(e,t,n){return{createMapping:function(t){return e.post(n.apiUrl+"convert/create_mapping",t)},deleteMapping:function(t){return e.post(n.apiUrl+"convert/delete_mapping",t)},getMappings:function(t){return e.get(n.apiUrl+"convert/get_mappings/"+t)}}}]);
+'use strict';
+
+angular.module('primeapps')
+    .factory('ConvertMapService', ['$http', '$filter', 'config',
+        function ($http, $filter, config) {
+            return {
+                createMapping: function (request) {
+                    return $http.post(config.apiUrl + 'convert/create_mapping', request);
+                },
+
+                deleteMapping: function (request) {
+                    return $http.post(config.apiUrl + 'convert/delete_mapping', request);
+                },
+
+                getMappings: function (moduleId) {
+                    return $http.get(config.apiUrl + 'convert/get_mappings/' + moduleId);
+
+                }
+            };
+        }]);

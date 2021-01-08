@@ -1,1 +1,98 @@
-"use strict";angular.module("primeapps").factory("TemplateService",["$rootScope","$http","config","$filter","ModuleService",function(e,t,a,l,r){return{get:function(e){return t.get(a.apiUrl+"template/get/"+e)},getAll:function(e,l,r){return t.get(a.apiUrl+"template/get_all?type="+e+"&moduleName="+(l||"")+"&subject="+(r||""))},getAllList:function(e,l){return t.get(a.apiUrl+"template/get_all_list?type="+e+"&excelType="+l)},create:function(e){return t.post(a.apiUrl+"template/create",e)},update:function(e){return t.put(a.apiUrl+"template/update/"+e.id,e)},"delete":function(e){return t["delete"](a.apiUrl+"template/delete/"+e)},getFields:function(t){var a=angular.copy(t.fields),n=[];a=l("filter")(a,{lookup_type:"!relation"},!0);var p={};p.name="seperator-main",p.label="tr"===e.language?t.label_tr_singular:t.label_en_singular,p.order=0,p.seperator=!0,a.push(p);var o=0;return angular.forEach(a,function(t){if("lookup"===t.data_type&&"relation"!==t.lookup_type){var r=angular.copy(l("filter")(e.modules,{name:t.lookup_type},!0)[0]);if(o+=100,null===r||void 0===r)return;var n={};n.name="seperator-"+r.name,n.order=o,n.seperator=!0,n.label="tr"===e.language?r.label_tr_singular+" ("+t.label_tr+")":r.label_en_singular+" ("+t.label_en+")",a.push(n);var p=angular.copy(r.fields);p=l("filter")(p,{display_list:!0},!0),angular.forEach(p,function(l){"lookup"!==l.data_type&&(l.label="tr"===e.language?l.label_tr:l.label_en,l.labelExt="("+t.label+")",l.name=t.name+"."+l.name,l.order=parseInt(l.order)+o,l.parent_type=t.lookup_type,a.push(l))})}}),angular.forEach(a,function(e){if(!e.deleted&&r.hasFieldDisplayPermission(e)&&e.name&&"lookup"!==e.data_type){var t={};t.name=e.name,t.label=e.label,t.labelExt=e.labelExt,t.order=e.order,t.lookup_type=e.lookup_type,t.seperator=e.seperator,t.multiline_type=e.multiline_type,t.data_type=e.data_type,t.parent_type=e.parent_type,n.push(t)}}),n=l("orderBy")(n,"order")}}}]);
+'use strict';
+
+angular.module('primeapps')
+
+    .factory('TemplateService', ['$rootScope', '$http', 'config', '$filter', 'ModuleService',
+        function ($rootScope, $http, config, $filter, ModuleService) {
+            return {
+                get: function (id) {
+                    return $http.get(config.apiUrl + 'template/get/' + id);
+                },
+                getAll: function (type, module, subject) {
+                    return $http.get(config.apiUrl + 'template/get_all?type=' + type + '&moduleName=' + (module || '') + '&subject=' + (subject || ''));
+                },
+                getAllList: function (type, typeExcel) {
+                    return $http.get(config.apiUrl + 'template/get_all_list?type=' + type + '&excelType=' + typeExcel);
+                },
+                create: function (template) {
+                    return $http.post(config.apiUrl + 'template/create', template);
+                },
+                update: function (template) {
+                    return $http.put(config.apiUrl + 'template/update/' + template.id, template);
+                },
+                delete: function (id) {
+                    return $http.delete(config.apiUrl + 'template/delete/' + id);
+                },
+                getFields: function (module) {
+                    var moduleFields = angular.copy(module.fields);
+                    var fields = [];
+                    moduleFields = $filter('filter')(moduleFields, { lookup_type: '!relation' }, true);
+
+                    var seperatorFieldMain = {};
+                    seperatorFieldMain.name = 'seperator-main';
+                    seperatorFieldMain.label = $rootScope.language === 'tr' ? module.label_tr_singular : module.label_en_singular;
+                    seperatorFieldMain.order = 0;
+                    seperatorFieldMain.seperator = true;
+                    moduleFields.push(seperatorFieldMain);
+                    var seperatorLookupOrder = 0;
+                    angular.forEach(moduleFields, function (field) {
+                        if (field.data_type === "lookup" && field.lookup_type !== "relation") {
+                            var lookupModule = angular.copy($filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0]);
+                            seperatorLookupOrder += 100;
+                            if (lookupModule === null || lookupModule === undefined) return;
+                            var seperatorFieldLookup = {};
+                            seperatorFieldLookup.name = "seperator-" + lookupModule.name;
+                            seperatorFieldLookup.order = seperatorLookupOrder;
+                            seperatorFieldLookup.seperator = true;
+
+                            if ($rootScope.language === "tr")
+                                seperatorFieldLookup.label = lookupModule.label_tr_singular + ' (' + field.label_tr + ')';
+                            else
+                                seperatorFieldLookup.label = lookupModule.label_en_singular + ' (' + field.label_en + ')';
+
+                            moduleFields.push(seperatorFieldLookup);
+
+                            var lookupModuleFields = angular.copy(lookupModule.fields);
+                            lookupModuleFields = $filter('filter')(lookupModuleFields, { display_list: true }, true);
+
+                            angular.forEach(lookupModuleFields, function (fieldLookup) {
+                                if (fieldLookup.data_type === 'lookup')
+                                    return;
+
+                                fieldLookup.label = $rootScope.language === 'tr' ? fieldLookup.label_tr : fieldLookup.label_en;
+                                fieldLookup.labelExt = '(' + field.label + ')';
+                                fieldLookup.name = field.name + '.' + fieldLookup.name;
+                                fieldLookup.order = parseInt(fieldLookup.order) + seperatorLookupOrder;
+                                fieldLookup.parent_type = field.lookup_type;
+                                moduleFields.push(fieldLookup);
+                            });
+                        }
+                    });
+
+                    angular.forEach(moduleFields, function (field) {
+                        if (field.deleted || !ModuleService.hasFieldDisplayPermission(field))
+                            return;
+
+                        if (field.name && field.data_type !== 'lookup') {
+                            var newField = {};
+                            newField.name = field.name;
+                            newField.label = field.label;
+                            newField.labelExt = field.labelExt;
+                            newField.order = field.order;
+                            newField.lookup_type = field.lookup_type;
+                            newField.seperator = field.seperator;
+                            newField.multiline_type = field.multiline_type;
+                            newField.data_type = field.data_type;
+                            newField.parent_type = field.parent_type;
+                            fields.push(newField);
+                        }
+
+                    });
+
+                    fields = $filter('orderBy')(fields, 'order');
+
+                    return fields;
+                }
+
+            }
+        }]);

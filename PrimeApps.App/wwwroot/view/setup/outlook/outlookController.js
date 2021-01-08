@@ -1,1 +1,70 @@
-"use strict";angular.module("primeapps").controller("OutlookController",["$rootScope","$scope","$filter","OutlookService","AppService","mdToast",function(e,t,l,o,i,a){t.modulesHasEmail=[],t.hasAdminRight=l("filter")(e.profiles,{id:e.user.profile.id},!0)[0].has_admin_rights;for(var n=0;n<e.modules.length;n++){var u=e.modules[n],s=l("filter")(u.fields,{data_type:"email",deleted:"!true",display_detail:!0});s.length>0&&t.modulesHasEmail.push(angular.copy(u))}var r=function(){o.getSettings().then(function(e){var o=e.data;if(o){t.outlookSetting={};var i=l("filter")(o,{key:"outlook_module"},!0)[0],a=l("filter")(o,{key:"outlook_email_field"},!0)[0];i&&(t.outlookSetting.module=l("filter")(t.modulesHasEmail,{name:i.value},!0)[0]),a&&(t.outlookSetting.emailField=l("filter")(t.outlookSetting.module.fields,{name:a.value},!0)[0])}})};r(),t.save=function(){if(t.outlookSettingsForm.$valid){t.saving=!0;var n=function(){var e={};e.module=t.outlookSetting.module.name,e.email_field=t.outlookSetting.emailField.name,o.saveSettings(e).then(function(){i.getMyAccount(!0),a.success(l("translate")("Setup.Settings.UpdateSuccessGeneralSettings")),t.saving=!1})},u=l("filter")(e.modules,{name:"mails"},!0)[0];u?n():o.createMailModule().then(function(){n()})}}}]);
+'use strict';
+
+angular.module('primeapps')
+
+    .controller('OutlookController', ['$rootScope', '$scope', '$filter', 'OutlookService', 'AppService', 'mdToast',
+        function ($rootScope, $scope, $filter, OutlookService, AppService, mdToast) {
+            $scope.modulesHasEmail = [];
+            $scope.hasAdminRight = $filter('filter')($rootScope.profiles, { id: $rootScope.user.profile.id }, true)[0].has_admin_rights;
+            for (var i = 0; i < $rootScope.modules.length; i++) {
+                var module = $rootScope.modules[i];
+                var emailFields = $filter('filter')(module.fields, { data_type: 'email', deleted: '!true', display_detail: true });
+
+                if (emailFields.length > 0)
+                    $scope.modulesHasEmail.push(angular.copy(module));
+            }
+
+            var getSettings = function () {
+                OutlookService.getSettings()
+                    .then(function (response) {
+                        var settings = response.data;
+
+                        if (settings) {
+                            $scope.outlookSetting = {};
+                            var settingsModule = $filter('filter')(settings, { key: 'outlook_module' }, true)[0];
+                            var settingsEmailField = $filter('filter')(settings, { key: 'outlook_email_field' }, true)[0];
+
+                            if (settingsModule)
+                                $scope.outlookSetting.module = $filter('filter')($scope.modulesHasEmail, { name: settingsModule.value }, true)[0];
+
+                            if (settingsEmailField)
+                                $scope.outlookSetting.emailField = $filter('filter')($scope.outlookSetting.module.fields, { name: settingsEmailField.value }, true)[0];
+                        }
+                    });
+            };
+
+            getSettings();
+
+            $scope.save = function () {
+                if (!$scope.outlookSettingsForm.$valid)
+                    return;
+
+                $scope.saving = true;
+
+                var saveSettings = function () {
+                    var settings = {};
+                    settings.module = $scope.outlookSetting.module.name;
+                    settings.email_field = $scope.outlookSetting.emailField.name;
+
+                    OutlookService.saveSettings(settings)
+                        .then(function () {
+                            AppService.getMyAccount(true);
+                            mdToast.success($filter('translate')('Setup.Settings.UpdateSuccessGeneralSettings'));
+                            $scope.saving = false;
+                        });
+                };
+
+                var mailModule = $filter('filter')($rootScope.modules, { name: 'mails' }, true)[0];
+
+                if (!mailModule) {
+                    OutlookService.createMailModule()
+                        .then(function () {
+                            saveSettings();
+                        });
+                }
+                else {
+                    saveSettings();
+                }
+            }
+        }
+    ]);

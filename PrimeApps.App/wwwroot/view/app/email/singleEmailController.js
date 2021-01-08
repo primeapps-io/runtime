@@ -1,1 +1,847 @@
-"use strict";angular.module("primeapps").controller("SingleEMailController",["$rootScope","$scope","$filter","helper","$location","$state","$stateParams","$q","$window","$localStorage","$cache","config","$http","ModuleService","TemplateService","$cookies","$mdDialog","mdToast","components","$timeout",function(e,t,a,n,l,i,s,r,o,m,c,d,u,p,g,f,_,h,y,b){function v(e){var a=[];return p.getTemplates(t.type,"module").then(function(n){if(0!==n.data.length){t.quoteTemplates=n.data;for(var l=0;l<t.quoteTemplates.length;l++)a[l]={text:t.quoteTemplates[l].name,id:l,onclick:function(){e.setProgressState(!0),t.addTemplate("attachment",t.quoteTemplates[this.settings.id],e)}}}}),a}function E(e,a){e?t.isCc=a:t.isBcc=a}t.loadingModal=!0,t.module=a("filter")(e.modules,{name:s.type},!0)[0],t.loadingModal=!1,t.nonEmails={},t.isBcc=!0,t.isCc=!0;var T=function(){t.loadingModal=!0,g.getAll("email",t.module.name).then(function(e){t.templates=[];for(var a=0;a<e.data.length;a++)"SMS"!==e.data[a].subject&&t.templates.push(e.data[a]);t.loadingModal=!1})["catch"](function(){t.loadingModal=!1})};T(),t.profilesOptions={dataSource:e.profiles,filter:"contains",dataTextField:"languages."+e.globalization.Label+".name",dataValueField:"id",optionLabel:a("translate")("Common.Select")},t.iframeElement={},t.tinymceOptions=function(n){t[n]={setup:function(e){e.addButton("addParameter",{type:"button",text:a("translate")("EMail.AddParameter"),onclick:function(){tinymce.activeEditor.execCommand("mceInsertContent",!1,"#")}}),e.on("init",function(){t.loadingModal=!1})},onChange:function(){},inline:!1,height:200,language:e.language,plugins:["advlist autolink lists link image charmap print preview anchor table","searchreplace visualblocks code fullscreen","insertdatetime table contextmenu paste imagetools wordcount textcolor colorpicker"],toolbar:"addParameter | addQuoteTemplate | styleselect | bold italic underline | forecolor backcolor | alignleft aligncenter alignright alignjustify | link image imagetools | table bullist numlist  blockquote code fullscreen",menubar:"false",templates:[{title:"Test template 1",content:"Test 1"},{title:"Test template 2",content:"Test 2"}],skin:"lightgray",theme:"modern",file_picker_callback:function(e,t,a){if(k=e,"file"==a.filetype){var n=document.getElementById("uploadFile");n.click()}if("image"==a.filetype){var n=document.getElementById("uploadImage");n.click()}},image_advtab:!0,file_browser_callback_types:"image file",paste_data_images:!0,paste_as_text:!0,spellchecker_language:e.language,images_upload_handler:function(e,a,n){var l=e.blob();k=a,w=n,t.imgUpload.uploader.addFile(l)},init_instance_callback:function(e){t.iframeElement[n]=e.iframeElement},resize:!1,width:"99,9%",toolbar_items_size:"small",statusbar:!1,convert_urls:!1,remove_script_host:!1}},t.tinymceOptions("tinymceTemplate"),t.tinymceOptions("tinymceTemplateEdit"),t.formType="email",t.getProfilisByIds=function(t){for(var n=[],l=0;l<t.length;l++){var i=a("filter")(e.profiles,{id:parseInt(t[l])},!0);i&&n.push(i[0])}return n},t.getUsersByIds=function(t){for(var n=[],l=0;l<t.length;l++){var i=a("filter")(e.users,{id:parseInt(t[l].user_id)},!0);i&&n.push(i[0])}return n},t.templateSave=function(){function e(){return t.template_name&&t.template_subject&&t.templateLanguage?t.tinymce_content?!0:(h.error(a("translate")("Template.ContentRequired")),!1):(h.error(a("translate")("Module.RequiredError")),!1)}if(t.saving=!0,t.clicked=!0,!e())return void(t.saving=!1);var n={};if(n.module=t.module.name,n.name=t.template_name,n.subject=t.template_subject,n.content=t.tinymce_content,n.sharing_type=t.newtemplate.sharing_type,n.template_type=2,n.active=!0,n.language=t.templateLanguage,"custom"===t.newtemplate.system_type&&(n.shares=[],angular.forEach(t.newtemplate.shares,function(e){n.shares.push(e.id)})),"profile"===t.newtemplate.sharing_type){for(var l=[],i=0;i<t.newtemplate.profile.length;i++)l.push(t.newtemplate.profile[i].id);n.profiles=l}else n.profiles=null;var s;t.currentTemplate?(n.id=t.currentTemplate.id,s=g.update(n)):s=g.create(n),s.then(function(e){t.currentTemplate=e.data,g.getAll("email",t.module.name).then(function(n){t.saving=!1,t.clicked=!1,t.templates=[];for(var l=0;l<n.data.length;l++)"SMS"!==n.data[l].subject&&t.templates.push(n.data[l]);t.template=e.data,h.success(a("translate")("Template.SuccessMessage")),t.templateOptions.dataSource.read(),t.setContent(t.currentTemplate),t.formType="email"})["catch"](function(){t.saving=!1,t.clicked=!1})})["catch"](function(){t.saving=!1,t.clicked=!1})},t.templateDelete=function(){var e;e=t.template,g["delete"](e.id).then(function(){g.getAll("email",t.module.name).then(function(e){t.templates=[];for(var a=0;a<e.data.length;a++)"SMS"!==e.data[a].subject&&t.templates.push(e.data[a]);t.templateOptions.dataSource.read(),t.currentTemplate=null,t.template=null,t.tinymceModel=null,t.subject=null,t.template_subject=null,t.tinymce_content=null,t.templateLanguage=null,t.template_name=null,t.template_subject=null}),h.success(a("translate")("Template.SuccessDelete"))})},t.setContent=function(e){var n=a("filter")(t.templates,{id:e.id},!0)[0];n?(t.newtemplate.system_type="custom",t.newtemplate.sharing_type="me",t.tinymceModel=n.content,t.subject=n.subject,t.currentTemplate=n,t.template_name=n.name,t.editPermission="custom"===n.system_type):(t.tinymceModel=null,t.subject=null,t.currentTemplate=null,t.template_name=null,t.template_subject=null,t.tinymce_content=null,t.newtemplate.system_type=null,t.shares=[],t.templateLanguage=null)},t.setTemplate=function(){t.template_subject=t.subject,t.tinymce_content=t.tinymceModel,t.currentTemplate?("profile"===t.currentTemplate.sharing_type?t.newtemplate.profile=t.getProfilisByIds(t.currentTemplate.profile_list):t.newtemplate.profiles=null,t.newtemplate.shares="custom"===t.currentTemplate.sharing_type?t.getUsersByIds(t.currentTemplate.shares):[],t.newtemplate.sharing_type=t.currentTemplate.sharing_type,t.templateLanguage=t.currentTemplate.language):(t.newtemplate.sharing_type="me",t.templateLanguage=e.globalization.Label,t.newtemplate.profile=null,t.newtemplate.shares=[])},t.backTemplate=function(){t.subject=t.template_subject,t.tinymceModel=t.tinymce_content,t.template_name&&(t.template=a("filter")(t.templates,{name:t.template_name},!0)[0])},t.newtemplate={},t.newtemplate.system_type="custom",t.newtemplate.sharing_type="me";var k,w;e.system.messaging.PersonalEMail||e.system.messaging.SystemEMail||h.error(a("translate")("EMail.MessageQueued"));var M=angular.copy(e.system.messaging.SystemEMail||{}),S=angular.copy(e.system.messaging.PersonalEMail||{}),x=plupload.guid();t.moduleFields=g.getFields(t.module),t.emailFields=[],angular.forEach(t.moduleFields,function(e){"email"!==e.data_type||e.deleted||"users"===e.parent_type||t.emailFields.push(e)}),t.emailFields.length>0&&(t.emailField=t.emailFields[0]),t.senderAlias=null,t.senders=[],M.senders&&M.senders.length>0&&M.senders.forEach(function(e){e.type=a("translate")("EMail.System"),t.senders.push(e)}),S.senders&&S.senders.length>0&&S.senders.forEach(function(e){e.type=a("translate")("EMail.Personal"),t.senders.push(e)}),t.getTagTextRaw=function(e){return b(function(){t.$broadcast("$tinymce:refreshContent")},50),e.name.indexOf("seperator")<0?'<i style="color:#0f1015;font-style:normal">{'+e.name+"}</i>":void 0},t.searchTags=function(e){var a=[];return angular.forEach(t.moduleFields,function(t){"seperator"!==t.name&&t.label.indexOf(e)>=0&&a.push(t)}),t.tags=a,a},t.primaryField=a("filter")(t.module.fields,{primary:!0})[0],t.recordId=t.$parent.id,t.addressType=function(e){return a("translate")("EMail."+e)},t.imgUpload={settings:{multi_selection:!1,url:"storage/upload",multipart_params:{container:x,type:"mail",upload_id:0,response_list:""},filters:{mime_types:[{title:"Image files",extensions:"jpg,gif,png"}],max_file_size:"2mb"},resize:{quality:90}},events:{filesAdded:function(e){e.start(),tinymce.activeEditor.windowManager.open({title:a("translate")("Common.PleaseWait"),width:50,height:50,body:[{type:"container",name:"container",label:"",html:"<span>"+a("translate")("EMail.UploadingAttachment")+"</span>"}],buttons:[]})},uploadProgress:function(){},fileUploaded:function(e,t,a){e.settings.multipart_params.response_list="",e.settings.multipart_params.upload_id=0,tinymce.activeEditor.windowManager.close();var n=JSON.parse(a.response);k(n.public_url,{alt:t.name}),k=null},error:function(e,t){switch(t.code){case-600:tinymce.activeEditor.windowManager.alert(a("translate")("EMail.MaxImageSizeExceeded"))}w&&(w(),w=null)}}},t.fileUpload={settings:{multi_selection:!1,unique_names:!1,url:d.apiUrl+"Document/upload_attachment",headers:{Authorization:"Bearer "+m.read("access_token"),Accept:"application/json","X-Tenant-Id":f.get(preview?"preview_tenant_id":"tenant_id"),"X-App-Id":f.get(preview?"preview_app_id":"app_id")},multipart_params:{container:x},filters:{mime_types:[{title:"Email Attachments",extensions:"pdf,doc,docx,xls,xlsx,csv"}],max_file_size:"50mb"}},events:{filesAdded:function(e){e.start(),tinymce.activeEditor.windowManager.open({title:a("translate")("Common.PleaseWait"),width:50,height:50,body:[{type:"container",name:"container",label:"",html:"<span>"+a("translate")("EMail.UploadingAttachment")+"</span>"}],buttons:[]})},uploadProgress:function(){},fileUploaded:function(e,t,a){var n=JSON.parse(a.response);k(n.public_url,{alt:t.name}),k=null,tinymce.activeEditor.windowManager.close()},chunkUploaded:function(e,t,a){var n=JSON.parse(a.response);n.upload_id&&(e.settings.multipart_params.upload_id=n.upload_id),e.settings.multipart_params.response_list+=""==e.settings.multipart_params.response_list?n.e_tag:"|"+n.e_tag},error:function(e,t){switch(this.settings.multipart_params.response_list="",this.settings.multipart_params.upload_id=0,t.code){case-600:tinymce.activeEditor.windowManager.alert(a("translate")("EMail.MaxFileSizeExceeded"))}w&&(w(),w=null)}}},t.tinymceOptions={setup:function(n){n.addButton("addQuoteTemplate",{type:"menubutton",text:a("translate")("EMail.AddPdfTemplate",{module:e.getLanguageValue(t.module.languages,"label","singular")}),icon:!1,menu:v(n)}),n.addButton("addParameter",{type:"button",text:a("translate")("EMail.AddParameter"),onclick:function(){tinymce.activeEditor.execCommand("mceInsertContent",!1,"#")}}),n.on("init",function(){t.loadingModal=!1,t.editor=n})},onChange:function(){},inline:!1,height:200,language:e.language,plugins:["advlist autolink lists link image charmap print preview anchor","searchreplace visualblocks code fullscreen","insertdatetime table contextmenu paste imagetools wordcount textcolor colorpicker"],toolbar:"addParameter | addQuoteTemplate | styleselect | bold italic underline | forecolor backcolor | alignleft aligncenter alignright alignjustify | link image imagetools | table bullist numlist  blockquote code fullscreen",menubar:"false",templates:[{title:"Test template 1",content:"Test 1"},{title:"Test template 2",content:"Test 2"}],skin:"lightgray",theme:"modern",file_picker_callback:function(e,t,a){if(k=e,"file"==a.filetype){var n=document.getElementById("uploadFile");n.click()}if("image"==a.filetype){var n=document.getElementById("uploadImage");n.click()}},image_advtab:!0,file_browser_callback_types:"image file",paste_data_images:!0,paste_as_text:!0,spellchecker_language:e.language,images_upload_handler:function(e,a,n){var l=e.blob();k=a,w=n,t.imgUpload.uploader.addFile(l)},init_instance_callback:function(e){t.iframeElement=e.iframeElement},resize:!1,width:"99,9%",toolbar_items_size:"small",statusbar:!1,convert_urls:!1,remove_script_host:!1},t.addCustomField=function(e,t){tinymce.activeEditor.execCommand("mceInsertContent",!1,"{"+t.name+"}")},t.addTemplate=function(n,l,i){if(l){t.templateAdding={},t.templateAdding[n]=!0;var s=a("filter")(t.module.fields,{primary:!0},!0)[0],r=t.$parent.record[s.name]+".pdf";if(l.link)"link"===n?tinymce.activeEditor.execCommand("mceInsertContent",!1,'<a href="'+l.link.fileurl+'">'+r+"</a>"):(t.attachmentLink=l.link.fileurl,t.attachmentName=r.substring(0,50),t.quoteTemplateName=" ( "+l.name+" ) "),t.templateAdding[n]=!1,i.setProgressState(!1),t.$apply();else{var o=d.apiUrl+"Document/export?module="+t.type+"&id="+t.$parent.record.id+"&templateId="+l.id+"&access_token="+m.read("access_token")+"&format=pdf&locale="+e.locale+"&timezoneOffset="+(new Date).getTimezoneOffset()+"&save="+!0;u.get(o).then(function(e){l.link=e.data,"link"===n?tinymce.activeEditor.execCommand("mceInsertContent",!1,'<a href="'+e.data.fileurl+'">'+r+"</a>"):(t.attachmentLink=e.data.fileurl,t.attachmentName=r.substring(0,50),t.quoteTemplateName=" ( "+l.name+" ) "),t.templateAdding[n]=!1,i.setProgressState(!1)})}}},t.submitEMail=function(){if(!t.emailModalForm.validate())return void h.error(a("translate")("Module.RequiredError"));if(!t.isCc||!t.isBcc)return void h.error(t.nonEmails.cc||t.nonEmails.bcc);t.selectedIds=[],t.selectedIds.push(t.$parent.record.id),t.queryRequest={},t.queryRequest.query="*:*";var e=t.senderAlias.type===a("translate")("EMail.System")?1:3;t.submittingModal=!0;var n=function(){p.sendEMail(t.module.id,t.selectedIds,t.queryRequest.query,!1,t.template,t.emailField.name,t.Cc,t.Bcc,t.senderAlias.alias,t.senderAlias.email,e,x,t.subject,t.attachmentLink,t.attachmentName).then(function(){y.run("AfterSingleEmail","Script",t),t.submittingModal=!1,t.close(),t.$parent.isAllSelected=!1,t.$parent.selectedRows=[],t.$parent.emailSent&&t.$parent.emailSent(),h.success(a("translate")("EMail.MessageQueued"))})["catch"](function(){t.submittingModal=!1,t.close(),t.isAllSelected=!1,t.selectedRows=[],h.error(a("translate")("Common.Error"))})};n()},t.close=function(){t.template={},_.hide()},t.senderOptions={dataSource:t.senders,valueTemplate:'<span class="k-state-default">{{dataItem.alias}} <{{dataItem.email}}> - {{dataItem.type}}  </span>',template:'<span class="k-state-default">{{dataItem.alias}} <{{dataItem.email}}> - {{dataItem.type}}  </span>',dataTextField:"alias",dataValueField:"email"},t.emailFieldOptions={dataSource:a("filter")(t.emailFields,{data_type:"email"},!0),valueTemplate:'<span class="k-state-default">{{dataItem.label}}  {{dataItem.labelExt}}  </span>',template:'<span class="k-state-default">{{dataItem.label}}  {{dataItem.labelExt}}  </span>',dataTextField:"label",dataValueField:"name"},t.templateOptions={dataSource:new kendo.data.DataSource({transport:{read:function(e){e.success(t.templates)}}}),dataBound:t.templates,change:t.setContent,dataTextField:"name",dataValueField:"id"},t.users=e.users,t.sharesOptions={dataSource:t.users,filter:"contains",dataTextField:"full_name",dataValueField:"id"},t.deleteTemplate=function(){kendo.confirm(a("translate")("Common.AreYouSure")).then(function(){t.templateDelete(),t.formType="email"},function(){})},t.checkEmails=function(e,n){if(e){const l=e.split(",");var i=a("filter")(l,function(e){return e.indexOf("@")<=0||e.contains("*")||e.indexOf("@")>=e.length},!0);if(i&&i.length>0){const s=a("translate")("Setup.Settings.ErrorEmail")+" "+i.toString();h.error(s),E(n,!1),t.nonEmails[n?"cc":"bcc"]=s}else E(n,!0),t.nonEmails[n?"cc":"bcc"]=""}else E(n,!0),t.nonEmails[n?"cc":"bcc"]=""}}]);
+'use strict';
+
+angular.module('primeapps')
+    .controller('SingleEMailController', ['$rootScope', '$scope', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', '$http', 'ModuleService', 'TemplateService', '$cookies', '$mdDialog', 'mdToast', 'components', '$timeout',
+        function ($rootScope, $scope, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, $http, ModuleService, TemplateService, $cookies, $mdDialog, mdToast, components, $timeout) {
+            $scope.loadingModal = true;
+            $scope.module = $filter('filter')($rootScope.modules, { name: $stateParams.type }, true)[0];
+            $scope.loadingModal = false;
+            $scope.nonEmails = {};
+            $scope.isBcc = true;
+            $scope.isCc = true;
+
+            var loadTemplates = function () {
+                $scope.loadingModal = true;
+                TemplateService.getAll('email', $scope.module.name)
+                    .then(function (response) {
+                        $scope.templates = [];
+                        for (var i = 0; i < response.data.length; i++) {
+                            if (response.data[i].subject !== "SMS") {
+                                $scope.templates.push(response.data[i])
+                            }
+                        }
+                        $scope.loadingModal = false;
+                    })
+                    .catch(function () {
+                        $scope.loadingModal = false;
+                    });
+            };
+            loadTemplates();
+
+            $scope.profilesOptions = {
+                dataSource: $rootScope.profiles,
+                filter: "contains",
+                dataTextField: 'languages.' + $rootScope.globalization.Label + '.name',
+                dataValueField: "id",
+                optionLabel: $filter('translate')('Common.Select')
+            };
+
+            $scope.iframeElement = {};
+            /// tinymce editor configuration.
+            $scope.tinymceOptions = function (scope) {
+                $scope[scope] = {
+                    setup: function (editor) {
+                        editor.addButton('addParameter', {
+                            type: 'button',
+                            text: $filter('translate')('EMail.AddParameter'),
+                            onclick: function () {
+                                tinymce.activeEditor.execCommand('mceInsertContent', false, '#');
+                            }
+                        });
+                        editor.on("init", function () {
+                            $scope.loadingModal = false;
+                        });
+                    },
+                    onChange: function (e) {
+                        
+                        // put logic here for keypress and cut/paste changes
+                    },
+                    inline: false,
+                    height: 200,
+                    language: $rootScope.language,
+                    plugins: [
+                        "advlist autolink lists link image charmap print preview anchor table",
+                        "searchreplace visualblocks code fullscreen",
+                        "insertdatetime table contextmenu paste imagetools wordcount textcolor colorpicker"
+                    ],
+                    toolbar: "addParameter | addQuoteTemplate | styleselect | bold italic underline | forecolor backcolor | alignleft aligncenter alignright alignjustify | link image imagetools | table bullist numlist  blockquote code fullscreen",
+                    menubar: 'false',
+                    templates: [
+                        { title: 'Test template 1', content: 'Test 1' },
+                        { title: 'Test template 2', content: 'Test 2' }
+                    ],
+                    skin: 'lightgray',
+                    theme: 'modern',
+
+                    file_picker_callback: function (callback, value, meta) {
+                        // Provide file and text for the link dialog
+                        uploadSuccessCallback = callback;
+
+                        if (meta.filetype == 'file') {
+                            var uploadButton = document.getElementById('uploadFile');
+                            uploadButton.click();
+                        }
+
+                        // Provide image and alt text for the image dialog
+                        if (meta.filetype == 'image') {
+                            var uploadButton = document.getElementById('uploadImage');
+                            uploadButton.click();
+                        }
+                    },
+                    image_advtab: true,
+                    file_browser_callback_types: 'image file',
+                    paste_data_images: true,
+                    paste_as_text: true,
+                    spellchecker_language: $rootScope.language,
+                    images_upload_handler: function (blobInfo, success, failure) {
+                        var blob = blobInfo.blob();
+                        uploadSuccessCallback = success;
+                        uploadFailedCallback = failure;
+                        $scope.imgUpload.uploader.addFile(blob);
+                        ///TODO: in future will be implemented to upload pasted data images into server.
+                    },
+                    init_instance_callback: function (editor) {
+                        $scope.iframeElement[scope] = editor.iframeElement;
+                    },
+                    resize: false,
+                    width: '99,9%',
+                    toolbar_items_size: 'small',
+                    statusbar: false,
+                    convert_urls: false,
+                    remove_script_host: false
+                };
+            };
+
+            $scope.tinymceOptions('tinymceTemplate');
+            $scope.tinymceOptions('tinymceTemplateEdit');
+
+            $scope.formType = 'email';
+
+            $scope.getProfilisByIds = function (ids) {
+                var profileList = [];
+                for (var i = 0; i < ids.length; i++) {
+                    var profile = $filter('filter')($rootScope.profiles, { id: parseInt(ids[i]) }, true);
+                    if (profile) {
+                        profileList.push(profile[0]);
+                    }
+
+                }
+                return profileList;
+            };
+
+            $scope.getUsersByIds = function (ids) {
+                var usersList = [];
+                for (var i = 0; i < ids.length; i++) {
+                    var user = $filter('filter')($rootScope.users, { id: parseInt(ids[i].user_id) }, true);
+                    if (user) {
+                        usersList.push(user[0]);
+                    }
+
+                }
+                return usersList;
+            };
+
+            $scope.templateSave = function () {
+
+                $scope.saving = true;
+                $scope.clicked = true;
+                
+                function validate() {
+                    
+                    if (!$scope.template_name || !$scope.template_subject || !$scope.templateLanguage) {
+                        mdToast.error($filter('translate')('Module.RequiredError'));
+                        return false;
+                    }
+                    
+                    if (!$scope.tinymce_content) {
+                        mdToast.error($filter('translate')('Template.ContentRequired'));
+                        return false;
+                    }
+                    
+                    return true;
+                }
+
+                if (!validate()){
+                    $scope.saving = false;
+                    return;
+                } 
+
+                var template = {};
+                template.module = $scope.module.name;
+                template.name = $scope.template_name;
+                template.subject = $scope.template_subject;
+                template.content = $scope.tinymce_content;
+                template.sharing_type = $scope.newtemplate.sharing_type;
+                template.template_type = 2;
+                template.active = true;
+                template.language = $scope.templateLanguage;
+
+                if ($scope.newtemplate.system_type === 'custom') {
+                    template.shares = [];
+
+                    angular.forEach($scope.newtemplate.shares, function (user) {
+                        template.shares.push(user.id);
+                    });
+                }
+
+                if ($scope.newtemplate.sharing_type === 'profile') {
+                    var profiles = [];
+                    for (var i = 0; i < $scope.newtemplate.profile.length; i++) {
+                        profiles.push($scope.newtemplate.profile[i].id);
+                    }
+                    template.profiles = profiles;
+                } else {
+                    template.profiles = null;
+                }
+
+                var result;
+
+                if ($scope.currentTemplate) {
+                    template.id = $scope.currentTemplate.id;
+                    result = TemplateService.update(template);
+                } else {
+                    result = TemplateService.create(template);
+                }
+
+                result.then(function (saveResponse) {
+                    $scope.currentTemplate = saveResponse.data;
+                    TemplateService.getAll('email', $scope.module.name)
+                        .then(function (listResponse) {
+                            $scope.saving = false;
+                            $scope.clicked = false;
+                            $scope.templates = [];
+                            for (var i = 0; i < listResponse.data.length; i++) {
+                                if (listResponse.data[i].subject !== "SMS") {
+                                    $scope.templates.push(listResponse.data[i])
+                                }
+                            }
+                            $scope.template = saveResponse.data;
+                            mdToast.success($filter('translate')('Template.SuccessMessage'));
+                            $scope.templateOptions.dataSource.read();
+                            $scope.setContent($scope.currentTemplate);
+                            $scope.formType = 'email';
+                        }).catch(function () {
+                        $scope.saving = false;
+                        $scope.clicked = false;
+                    });
+                }).catch(function () {
+                    $scope.saving = false;
+                    $scope.clicked = false;
+                });
+            };
+
+            $scope.templateDelete = function () {
+                var templates;
+                templates = $scope.template;
+                TemplateService.delete(templates.id)
+                    .then(function () {
+                        TemplateService.getAll('email', $scope.module.name)
+                            .then(function (response) {
+                                $scope.templates = [];
+                                for (var i = 0; i < response.data.length; i++) {
+                                    if (response.data[i].subject !== "SMS") {
+                                        $scope.templates.push(response.data[i])
+                                    }
+                                }
+                                $scope.templateOptions.dataSource.read();
+                                $scope.currentTemplate = null;
+                                $scope.template = null;
+                                $scope.tinymceModel = null;
+                                $scope.subject = null;
+                                $scope.template_subject = null;
+                                $scope.tinymce_content = null;
+                                $scope.templateLanguage = null;
+                                $scope.template_name = null;
+                                $scope.template_subject = null;
+                            });
+                        mdToast.success($filter('translate')('Template.SuccessDelete'));
+                    });
+            };
+
+            $scope.setContent = function (temp) {
+
+                var template = $filter('filter')($scope.templates, { id: temp.id }, true)[0];
+
+                if (template) {
+                    $scope.newtemplate.system_type = 'custom';
+                    $scope.newtemplate.sharing_type = 'me';
+                    $scope.tinymceModel = template.content;
+                    $scope.subject = template.subject;
+                    $scope.currentTemplate = template;
+                    $scope.template_name = template.name;
+                    $scope.editPermission = template.system_type === 'custom';
+                }
+                else {
+                    $scope.tinymceModel = null;
+                    $scope.subject = null;
+                    $scope.currentTemplate = null;
+                    $scope.template_name = null;
+                    $scope.template_subject = null;
+                    $scope.tinymce_content = null;
+                    $scope.newtemplate.system_type = null;
+                    $scope.shares = [];
+                    $scope.templateLanguage = null;
+                }
+            };
+
+            $scope.setTemplate = function () {
+
+                $scope.template_subject = $scope.subject;
+                $scope.tinymce_content = $scope.tinymceModel;
+
+                if ($scope.currentTemplate) {
+                    if ($scope.currentTemplate.sharing_type === 'profile')
+                        $scope.newtemplate.profile = $scope.getProfilisByIds($scope.currentTemplate.profile_list);
+                    else
+                        $scope.newtemplate.profiles = null;
+
+                    if ($scope.currentTemplate.sharing_type === 'custom')
+                        $scope.newtemplate.shares = $scope.getUsersByIds($scope.currentTemplate.shares);
+                    else
+                        $scope.newtemplate.shares = [];
+
+                    $scope.newtemplate.sharing_type = $scope.currentTemplate.sharing_type;
+                    $scope.templateLanguage = $scope.currentTemplate.language;
+                } else {
+                    $scope.newtemplate.sharing_type = 'me';
+                    $scope.templateLanguage = $rootScope.globalization.Label;
+                    $scope.newtemplate.profile = null;
+                    $scope.newtemplate.shares = [];
+                }
+            };
+
+            $scope.backTemplate = function () {
+                $scope.subject = $scope.template_subject;
+                $scope.tinymceModel = $scope.tinymce_content;
+                if ($scope.template_name)
+                    $scope.template = $filter('filter')($scope.templates, { name: $scope.template_name }, true)[0];
+            };
+
+            $scope.newtemplate = {};
+            $scope.newtemplate.system_type = 'custom';
+            $scope.newtemplate.sharing_type = 'me';
+
+            var uploadSuccessCallback,
+                uploadFailedCallback;
+
+            if (!$rootScope.system.messaging.PersonalEMail && !$rootScope.system.messaging.SystemEMail) {
+                mdToast.error($filter('translate')('EMail.MessageQueued'));
+            }
+
+            var systemEmailSettings = angular.copy($rootScope.system.messaging.SystemEMail || {}),
+                personalEmailSettings = angular.copy($rootScope.system.messaging.PersonalEMail || {});
+
+            var dialog_uid = plupload.guid();
+            $scope.moduleFields = TemplateService.getFields($scope.module);
+            $scope.emailFields = [];
+
+            angular.forEach($scope.moduleFields, function (item) {
+                if (item.data_type === 'email' && !item.deleted && item.parent_type !== 'users') {
+                    $scope.emailFields.push(item);
+                }
+            });
+
+            if ($scope.emailFields.length > 0)
+                $scope.emailField = $scope.emailFields[0];
+
+            $scope.senderAlias = null;
+
+            $scope.senders = [];
+
+            /// add system defined senders to the sender list, if exists.
+            if (systemEmailSettings.senders) {
+                if (systemEmailSettings.senders.length > 0) {
+                    systemEmailSettings.senders.forEach(function (sender) {
+                        sender.type = $filter('translate')("EMail.System");
+                        $scope.senders.push(sender);
+                    });
+                }
+            }
+
+            /// add personal defined senders to the sender list, if exists.
+            if (personalEmailSettings.senders) {
+                if (personalEmailSettings.senders.length > 0) {
+                    personalEmailSettings.senders.forEach(function (sender) {
+                        sender.type = $filter('translate')("EMail.Personal");
+                        $scope.senders.push(sender);
+                    });
+                }
+            }
+
+            $scope.getTagTextRaw = function (item) {
+                $timeout(function () {
+                    $scope.$broadcast("$tinymce:refreshContent");
+                }, 50);
+
+                if (item.name.indexOf("seperator") < 0) {
+                    return '<i style="color:#0f1015;font-style:normal">' + '{' + item.name + '}' + '</i>';
+                }
+            };
+
+            $scope.searchTags = function (term) {
+                var tagsList = [];
+                angular.forEach($scope.moduleFields, function (item) {
+                    if (item.name === "seperator")
+                        return;
+                    if (item.label.indexOf(term) >= 0) {
+                        tagsList.push(item);
+                    }
+                });
+
+
+                $scope.tags = tagsList;
+                return tagsList;
+            };
+
+            $scope.primaryField = $filter('filter')($scope.module.fields, { primary: true })[0];
+            $scope.recordId = $scope.$parent.id;
+
+
+            $scope.addressType = function (type) {
+                return $filter('translate')("EMail." + type);
+            };
+
+            /// uploader configuration for image files.
+            $scope.imgUpload = {
+                settings: {
+                    multi_selection: false,
+                    url: 'storage/upload',
+                    multipart_params: {
+                        container: dialog_uid,
+                        type: "mail",
+                        upload_id: 0,
+                        response_list: ""
+                    },
+                    filters: {
+                        mime_types: [
+                            { title: "Image files", extensions: "jpg,gif,png" },
+                        ],
+                        max_file_size: "2mb"
+                    },
+                    resize: { quality: 90 }
+                },
+                events: {
+                    filesAdded: function (uploader, files) {
+                        uploader.start();
+                        tinymce.activeEditor.windowManager.open({
+                            title: $filter('translate')('Common.PleaseWait'),
+                            width: 50,
+                            height: 50,
+                            body: [
+                                {
+                                    type: 'container',
+                                    name: 'container',
+                                    label: '',
+                                    html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
+                                },
+                            ],
+                            buttons: []
+                        });
+                    },
+                    uploadProgress: function (uploader, file) {
+                    },
+                    fileUploaded: function (uploader, file, response) {
+                        uploader.settings.multipart_params.response_list = "";
+                        uploader.settings.multipart_params.upload_id = 0;
+
+                        tinymce.activeEditor.windowManager.close();
+                        var resp = JSON.parse(response.response);
+                        uploadSuccessCallback(resp.public_url, { alt: file.name });
+                        uploadSuccessCallback = null;
+                    },
+                    error: function (file, error) {
+                        switch (error.code) {
+                            case -600:
+                                tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxImageSizeExceeded'));
+                                break;
+                            default:
+                                break;
+                        }
+                        if (uploadFailedCallback) {
+                            uploadFailedCallback();
+                            uploadFailedCallback = null;
+                        }
+                    }
+                }
+            };
+
+            /// uploader configuration for files.
+            $scope.fileUpload = {
+                settings: {
+                    multi_selection: false,
+                    unique_names: false,
+                    url: config.apiUrl + 'Document/upload_attachment',
+                    headers: {
+                        'Authorization': 'Bearer ' + $localStorage.read('access_token'),
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get(preview ? 'preview_tenant_id' : 'tenant_id'),
+                        'X-App-Id': $cookies.get(preview ? 'preview_app_id' : 'app_id')
+                    },
+                    multipart_params: {
+                        container: dialog_uid
+                    },
+                    filters: {
+                        mime_types: [
+                            { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
+                        ],
+                        max_file_size: "50mb"
+                    }
+                },
+                events: {
+                    filesAdded: function (uploader, files) {
+                        uploader.start();
+                        tinymce.activeEditor.windowManager.open({
+                            title: $filter('translate')('Common.PleaseWait'),
+                            width: 50,
+                            height: 50,
+                            body: [
+                                {
+                                    type: 'container',
+                                    name: 'container',
+                                    label: '',
+                                    html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
+                                },
+                            ],
+                            buttons: []
+                        });
+                    },
+                    uploadProgress: function (uploader, file) {
+                    },
+                    fileUploaded: function (uploader, file, response) {
+                        var resp = JSON.parse(response.response);
+                        uploadSuccessCallback(resp.public_url, { alt: file.name });
+                        uploadSuccessCallback = null;
+                        tinymce.activeEditor.windowManager.close();
+                    },
+                    chunkUploaded: function (up, file, response) {
+                        var resp = JSON.parse(response.response);
+                        if (resp.upload_id)
+                            up.settings.multipart_params.upload_id = resp.upload_id;
+
+                        if (up.settings.multipart_params.response_list == "") {
+                            up.settings.multipart_params.response_list += resp.e_tag;
+                        } else {
+                            up.settings.multipart_params.response_list += "|" + resp.e_tag;
+                        }
+                    },
+                    error: function (file, error) {
+                        this.settings.multipart_params.response_list = "";
+                        this.settings.multipart_params.upload_id = 0;
+
+                        switch (error.code) {
+                            case -600:
+                                tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxFileSizeExceeded'));
+                                break;
+                            default:
+                                break;
+                        }
+                        if (uploadFailedCallback) {
+                            uploadFailedCallback();
+                            uploadFailedCallback = null;
+                        }
+                    }
+                }
+            };
+
+            /// tinymce editor configuration.
+            function createTempMenu(editor) {
+                var menuItems = [];
+                ModuleService.getTemplates($scope.type, 'module')
+                    .then(function (templateResponse) {
+                        if (templateResponse.data.length !== 0) {
+                            $scope.quoteTemplates = templateResponse.data;
+                            for (var i = 0; i < $scope.quoteTemplates.length; i++) {
+                                menuItems[i] = {
+                                    text: $scope.quoteTemplates[i].name,
+                                    id: i,
+                                    onclick: function () {
+                                        editor.setProgressState(true);
+                                        $scope.addTemplate('attachment', $scope.quoteTemplates[this.settings.id], editor);
+
+                                    }
+                                };
+                            }
+                        }
+                    });
+
+                return menuItems;
+            }
+
+            $scope.tinymceOptions = {
+                setup: function (editor) {
+                    editor.addButton('addQuoteTemplate', {
+                        type: 'menubutton',
+                        text: $filter('translate')('EMail.AddPdfTemplate', { module: $rootScope.getLanguageValue($scope.module.languages, 'label', 'singular') }),
+                        icon: false,
+                        menu: createTempMenu(editor)
+                    });
+                    editor.addButton('addParameter', {
+                        type: 'button',
+                        text: $filter('translate')('EMail.AddParameter'),
+                        onclick: function () {
+                            tinymce.activeEditor.execCommand('mceInsertContent', false, '#');
+                        }
+                    });
+                    editor.on("init", function () {
+                        $scope.loadingModal = false;
+                        $scope.editor = editor;
+                    });
+                },
+                onChange: function (e) {
+                    
+                    // put logic here for keypress and cut/paste changes
+                },
+                inline: false,
+                height: 200,
+                language: $rootScope.language,
+                plugins: [
+                    "advlist autolink lists link image charmap print preview anchor",
+                    "searchreplace visualblocks code fullscreen",
+                    "insertdatetime table contextmenu paste imagetools wordcount textcolor colorpicker"
+                ],
+                toolbar: "addParameter | addQuoteTemplate | styleselect | bold italic underline | forecolor backcolor | alignleft aligncenter alignright alignjustify | link image imagetools | table bullist numlist  blockquote code fullscreen",
+                menubar: 'false',
+                templates: [
+                    { title: 'Test template 1', content: 'Test 1' },
+                    { title: 'Test template 2', content: 'Test 2' }
+                ],
+                skin: 'lightgray',
+                theme: 'modern',
+
+                file_picker_callback: function (callback, value, meta) {
+                    // Provide file and text for the link dialog
+                    uploadSuccessCallback = callback;
+
+                    if (meta.filetype == 'file') {
+                        var uploadButton = document.getElementById('uploadFile');
+                        uploadButton.click();
+                    }
+
+                    // Provide image and alt text for the image dialog
+                    if (meta.filetype == 'image') {
+                        var uploadButton = document.getElementById('uploadImage');
+                        uploadButton.click();
+                    }
+                },
+                image_advtab: true,
+                file_browser_callback_types: 'image file',
+                paste_data_images: true,
+                paste_as_text: true,
+                spellchecker_language: $rootScope.language,
+                images_upload_handler: function (blobInfo, success, failure) {
+                    var blob = blobInfo.blob();
+                    uploadSuccessCallback = success;
+                    uploadFailedCallback = failure;
+                    $scope.imgUpload.uploader.addFile(blob);
+                    ///TODO: in future will be implemented to upload pasted data images into server.
+                },
+                init_instance_callback: function (editor) {
+                    $scope.iframeElement = editor.iframeElement;
+                },
+                resize: false,
+                width: '99,9%',
+                toolbar_items_size: 'small',
+                statusbar: false,
+                convert_urls: false,
+                remove_script_host: false
+
+            };
+
+            $scope.addCustomField = function ($event, customField) {
+                /// adds custom fields to the html template.
+                tinymce.activeEditor.execCommand('mceInsertContent', false, "{" + customField.name + "}");
+            };
+
+            $scope.addTemplate = function (type, quoteTemplate, editor) {
+                if (!quoteTemplate)
+                    return;
+
+                $scope.templateAdding = {};
+                $scope.templateAdding[type] = true;
+
+                var primaryKey = $filter('filter')($scope.module.fields, { primary: true }, true)[0];
+                var fileName = $scope.$parent.record[primaryKey.name] + '.pdf';
+
+                if (quoteTemplate.link) {
+                    if (type === 'link') {
+                        tinymce.activeEditor.execCommand('mceInsertContent', false, '<a href="' + quoteTemplate.link.fileurl + '">' + fileName + '</a>');
+                    } else {
+                        $scope.attachmentLink = quoteTemplate.link.fileurl;
+                        $scope.attachmentName = fileName.substring(0, 50);
+                        $scope.quoteTemplateName = " ( " + quoteTemplate.name + " ) ";
+                    }
+
+                    $scope.templateAdding[type] = false;
+                    editor.setProgressState(false);
+                    $scope.$apply();
+                } else {
+                    var url = config.apiUrl + 'Document/export?module=' + $scope.type + '&id=' + $scope.$parent.record.id + "&templateId=" + quoteTemplate.id + '&access_token=' + $localStorage.read('access_token') + '&format=pdf&locale=' + $rootScope.locale + '&timezoneOffset=' + new Date().getTimezoneOffset() + '&save=' + true;
+
+                    $http.get(url).then(function (response) {
+                        quoteTemplate.link = response.data;
+
+                        if (type === 'link') {
+                            tinymce.activeEditor.execCommand('mceInsertContent', false, '<a href="' + response.data.fileurl + '">' + fileName + '</a>');
+                        } else {
+                            $scope.attachmentLink = response.data.fileurl;
+                            $scope.attachmentName = fileName.substring(0, 50);
+                            $scope.quoteTemplateName = " ( " + quoteTemplate.name + " ) ";
+                        }
+
+                        $scope.templateAdding[type] = false;
+                        editor.setProgressState(false);
+                    });
+                }
+            };
+
+            $scope.submitEMail = function () {
+                if (!$scope.emailModalForm.validate()) {
+                    mdToast.error($filter('translate')('Module.RequiredError'));
+                    return;
+                }
+
+                if (!$scope.isCc || !$scope.isBcc) {
+                    mdToast.error($scope.nonEmails['cc'] || $scope.nonEmails['bcc']);
+                    return;
+                }
+
+                $scope.selectedIds = [];
+                $scope.selectedIds.push($scope.$parent.record.id);
+
+                $scope.queryRequest = {};
+                $scope.queryRequest.query = '*:*';
+                var emailProviderType = $scope.senderAlias.type === $filter('translate')("EMail.System") ? 1 : 3; //1 = System, 3=Personal
+
+                $scope.submittingModal = true;
+
+                var sendEmail = function () {
+                    ModuleService.sendEMail($scope.module.id,
+                        $scope.selectedIds,
+                        $scope.queryRequest.query,
+                        false, //is all selected value
+                        $scope.template,
+                        $scope.emailField.name,
+                        $scope.Cc,
+                        $scope.Bcc,
+                        $scope.senderAlias.alias,
+                        $scope.senderAlias.email,
+                        emailProviderType,
+                        dialog_uid,
+                        $scope.subject,
+                        $scope.attachmentLink,
+                        $scope.attachmentName).then(function (response) {
+                            components.run('AfterSingleEmail', 'Script', $scope);
+                            $scope.submittingModal = false;
+                            $scope.close();
+                            $scope.$parent.isAllSelected = false;
+                            $scope.$parent.selectedRows = [];
+                            if ($scope.$parent.emailSent) {
+                                $scope.$parent.emailSent();
+                            }
+                            mdToast.success($filter('translate')('EMail.MessageQueued'));
+
+
+                        })
+                        .catch(function () {
+                            $scope.submittingModal = false;
+                            $scope.close();
+                            $scope.isAllSelected = false;
+                            $scope.selectedRows = [];
+                            mdToast.error($filter('translate')('Common.Error'));
+                        });
+                };
+
+                sendEmail();
+
+            };
+
+            //For Kendo IU or MD
+            $scope.close = function () {
+                $scope.template = {};
+                $mdDialog.hide();
+            };
+
+            $scope.senderOptions = {
+                dataSource: $scope.senders,
+                valueTemplate: '<span class="k-state-default">{{dataItem.alias}} <{{dataItem.email}}> - {{dataItem.type}}  </span>',
+                template: '<span class="k-state-default">{{dataItem.alias}} <{{dataItem.email}}> - {{dataItem.type}}  </span>',
+                dataTextField: "alias",
+                dataValueField: "email"
+            };
+
+            $scope.emailFieldOptions = {
+                dataSource: $filter('filter')($scope.emailFields, { data_type: 'email' }, true),
+                valueTemplate: '<span class="k-state-default">{{dataItem.label}}  {{dataItem.labelExt}}  </span>',
+                template: '<span class="k-state-default">{{dataItem.label}}  {{dataItem.labelExt}}  </span>',
+                dataTextField: "label",
+                dataValueField: "name"
+            };
+
+            $scope.templateOptions = {
+                dataSource: new kendo.data.DataSource({
+                    transport: {
+                        read: function (o) {
+                            o.success($scope.templates)
+                        }
+                    }
+                }),
+                dataBound: $scope.templates,
+                change: $scope.setContent,
+                dataTextField: "name",
+                dataValueField: "id",
+            };
+
+            $scope.users = $rootScope.users;
+
+            $scope.sharesOptions = {
+                dataSource: $scope.users,
+                filter: "contains",
+                dataTextField: "full_name",
+                dataValueField: "id",
+            };
+
+            $scope.deleteTemplate = function () {
+                kendo.confirm($filter('translate')('Common.AreYouSure'))
+                    .then(function () {
+                        $scope.templateDelete();
+                        $scope.formType = 'email';
+                    }, function () {
+
+                    });
+            };
+            //For Kendo IU or MD
+
+            $scope.checkEmails = function (emails, isCc) {
+
+                if (emails) {
+                    const emailArray = emails.split(',');
+                    var nonEmails = $filter('filter')(emailArray, function (email) {
+                        return email.indexOf('@') <= 0 || email.contains('*') || email.indexOf('@') >= email.length;
+                    }, true);
+
+                    if (nonEmails && nonEmails.length > 0) {
+                        const message = $filter('translate')('Setup.Settings.ErrorEmail') + ' ' + nonEmails.toString();
+                        mdToast.error(message);
+
+                        condition(isCc, false);
+                        $scope.nonEmails[isCc ? 'cc' : 'bcc'] = message;
+                    }
+                    else {
+                        condition(isCc, true);
+                        $scope.nonEmails[isCc ? 'cc' : 'bcc'] = '';
+                    }
+                } else {
+                    condition(isCc, true);
+                    $scope.nonEmails[isCc ? 'cc' : 'bcc'] = '';
+                }
+            };
+
+            function condition(isCc, value) {
+                if (isCc) {
+                    $scope.isCc = value;
+                } else {
+                    $scope.isBcc = value;
+                }
+            }
+        }
+    ]);

@@ -1,1 +1,1461 @@
-"use strict";angular.module("primeapps").controller("ImportController",["$rootScope","$scope","$stateParams","$state","config","$q","$localStorage","$filter","helper","FileUploader","$timeout","$cache","emailRegex","ModuleService","ImportService","$cookies","components","$mdDialog","mdToast",function(e,a,t,r,i,l,n,o,d,u,s,p,m,c,f,g,v,h,x){function M(e){return new Date(86400*(e-25569)*1e3)}function _(e,t,r){const i=a.rows[t];return i?i[r].toString():void 0}function k(e){return o("filter")(a.cells,{column:e},!0)[0]}function y(e){var a={};for(var t in e)a[t]=e[t].column;return a}function F(e,a){if(e&&e.length>0){var t=o("filter")(e,{field:a.name},!0)[0];!t||"number"!==a.data_type&&"number_auto"!==a.data_type||(t.operator=t.operator.startsWith("starts")||"contains"===t.operator?"equals":t.operator)}}a.type=t.type,a.wizardStep=0,a.fieldMap={},a.fixedValue={},a.importMapping={},a.mappingField={},a.selectedMapping={},a.mappingArray=[];var b=!1;if(a.loading=!1,a.module=o("filter")(e.modules,{name:a.type},!0)[0],!a.module)return x.warning(o("translate")("Common.NotFound")),void r.go("app.dashboard");a.module=angular.copy(a.module),angular.forEach(a.module.fields,function(e){("created_by"===e.name||"updated_by"===e.name||"created_at"===e.name||"updated_at"===e.name)&&(e.validation.required=!1,d.hasAdminRights()||(e.deleted=!0))}),angular.forEach(a.module.sections,function(e){var t=o("filter")(a.module.fields,{section:e.name,deleted:"!true"});t.length||(e.deleted=!0),"component"===e.type&&(e.deleted=!0)}),f.getAllMapping(a.module.id).then(function(e){if(e){var t=e.data;a.mappingArray=t}});var D=function(e,t){var r=new FileReader;r.onload=function(e){if(!e||e.target.error)return void s(function(){x.warning({content:o("translate")("Module.ExportUnsupported"),timeout:1e4})});try{a.workbook=XLS.read(e.target.result,{type:"binary"}),a.sheets=a.workbook.SheetNames,s(function(){a.selectedSheet=a.selectedSheet||a.sheets[0],a.selectSheet(t),a.getSampleDate()})}catch(r){s(function(){x.warning(o("translate")("Data.Import.InvalidExcel")),a.loading=!1})}},r.readAsBinaryString(e)},w={column:"fixed",name:o("translate")("Data.Import.FixedValue")+" -->"},S={column:"currentUser",name:e.user.full_name};a.selectSheet=function(t,r){return a.selectedSheet=r||a.selectedSheet,a.rows=XLSX.utils.sheet_to_json(a.workbook.Sheets[a.selectedSheet],{raw:!0,header:"A"}),a.headerRow=angular.copy(a.rows[0]),a.rows.shift(),a.cells=[],a.rows.length>3e3?(x.warning(o("translate")("Data.Import.CountError")),void(a.loading=!1)):t?void a.submit(!0):(a.selectedMapping.name||(a.fieldMap={},a.fixedValue={},a.fixedValueFormatted={},angular.forEach(a.headerRow,function(t,r){var i=t+o("translate")("Data.Import.ColumnIndex",{index:r}),l={column:r,name:i,used:!1};a.cells.push(l);for(var n=0;n<a.module.fields.length;n++){var d=a.module.fields[n];if(d.deleted)return;var u=e.getLanguageValue(d.languages,"label");if("owner"===d.name)a.fieldMap[d.name]=S;else if(u&&u.toLowerCase()===t.trim().toLowerCase())a.fieldMap[d.name]=k(r);else if(d&&d.default_value)if("picklist"===d.data_type){a.fieldMap[d.name]=w;var s=o("filter")(a.picklistsModule[d.picklist_id],{id:d.default_value})[0];a.fixedValue[d.name]=s,a.fixedValueFormatted[d.name]=e.getLanguageValue(s.languages,"label")}else a.fieldMap[d.name]=w,a.fixedValue[d.name]=d.default_value,a.fixedValueFormatted[d.name]=d.default_value}})),void(a.loading=!1))},u.FileSelect.prototype.isEmptyAfterSelection=function(){return!0};var V=a.uploader=new u;a.fileName=null,V.onAfterAddingFile=function(e){a.selectedSheet=void 0,a.loading=!0,null===a.fileName||a.fileName===e._file.name||0===a.wizardStep?(D(e._file),a.fileName=e._file.name):a.fileName!==e._file.name&&V.clearQueue()},V.onWhenAddingFileFailed=function(e,a){switch(a.name){case"excelFilter":x.warning(o("translate")("Data.Import.FormatError"));break;case"sizeFilter":x.warning(o("translate")("Data.Import.SizeError"))}},V.onBeforeUploadItem=function(e){e.url="storage/upload_import_excel?import_id="+a.importResponse.id},V.filters.push({name:"excelFilter",fn:function(e){var a=d.getFileExtension(e.name);return"xls"===a||"xlsx"===a}}),V.filters.push({name:"sizeFilter",fn:function(e){return e.size<2097152}}),c.getPicklists(a.module).then(function(t){e.processPicklistLanguages(t),a.picklistsModule=t}),a.multiselect=function(t,r){var i=[];return angular.forEach(a.picklistsModule[r.picklist_id],function(a){if(!a.inactive&&!a.hidden){var r=e.getLanguageValue(a.languages,"label");r&&r.toLowerCase().indexOf(t)>-1&&i.push(a),i.push(a)}}),i},a.clear=function(){V.clearQueue(),a.rows=null,a.cells=null,a.sheets=null,a.fieldMap=null,a.fixedValue=null,a.fixedValueFormatted=null,a.showAdvancedOptions=!1},a.cellChanged=function(e,t){return"fixed"===a.fieldMap[e.name]?void a.openFixedValueModal(e,t):(!a.fieldMap[e.name]&&a.fixedValue&&a.fixedValue[e.name]&&delete a.fixedValue[e.name],void("related_module"===e.name&&delete a.fixedValue.related_to))},a.fixedValueChanged=function(e){"related_module"===e.name&&delete a.fixedValue.related_to},a.openFixedValueModal=function(e,t){a.fixedValue=a.fixedValue||{},a.fixedValueState=angular.copy(a.fixedValue),a.fixedField=e;var r=angular.element(document.body);h.show({parent:r,templateUrl:"view/app/data/fixedValue.html",clickOutsideToClose:!0,targetEvent:t,scope:a,preserveScope:!0})},a.closeDialog=function(){h.hide()},a.modalSubmit=function(e){e.validate()&&(a.fixedValue[a.fixedField.name]||delete a.fieldMap[a.fixedField.name],a.fixedValueFormatted=angular.copy(a.fixedValue),c.formatRecordFieldValues(a.fixedValueFormatted,a.module,a.picklistsModule),angular.forEach(a.fixedValueFormatted,function(e,t){var r=o("filter")(a.module.fields,{name:t},!0)[0];r&&r.valueFormatted&&(a.fixedValueFormatted[t]=r.valueFormatted)}),a.excelCellOptions(a.fixedField,!0),a.closeDialog())},a.modalCancel=function(){!a.fixedValueState[a.fixedField.name]&&a.fixedValue[a.fixedField.name]&&delete a.fixedValue[a.fixedField.name],a.fixedValue[a.fixedField.name]||delete a.fieldMap[a.fixedField.name]},a.loadMappingList=function(){f.getAllMapping(a.module.id).then(function(e){e.data&&(a.mappingArray=e.data)}),a.mappingDropDown2.dataSource.read()},a.mappingSave=function(e){a.savingTemplate=!0,a.importMapping.module_id=a.module.id,a.fixedValue&&(a.fieldMap.fixed=angular.copy(a.fixedValue)),a.fixedValueFormatted&&(a.fieldMap.fixedFormat=angular.copy(a.fixedValueFormatted));var t=angular.copy(a.fieldMap);return t?a.importMapping.mapping=JSON.stringify(t):(x.warning({content:o("translate")("Data.Import.MappingNotFound"),timeout:6e3}),a.importMappingSaveModal.hide()),a.importMapping.skip=a.importMapping.skip?a.importMapping.skip:!1,e.$valid?a.importMapping.name||a.selectedMapping?void(a.selectedMapping.id?f.updateMapping(a.selectedMapping.id,a.importMapping).then(function(e){var t=e.data;t?(a.loadMappingList(),s(function(){x.success({content:o("translate")("Data.Import.MappingSaveSucces"),timeout:6e3}),a.savingTemplate=!1,a.cancel()},500)):a.savingTemplate=!1})["catch"](function(){x.error({content:o("translate")("Common.Error"),timeout:6e3}),a.savingTemplate=!1,a.cancel()}):f.getMapping(a.importMapping).then(function(e){var t=e.data;t?(x.warning({content:o("translate")("Data.Import.TryMappingName"),timeout:6e3}),a.importMapping={},a.savingTemplate=!1,a.cancel()):f.saveMapping(a.importMapping).then(function(e){var t=e.data;t?s(function(){a.loadMappingList(),x.success({content:o("translate")("Data.Import.MappingSaveSucces"),timeout:6e3}),a.savingTemplate=!1,a.cancel(),f.getAllMapping(a.module.id).then(function(e){e.data&&(a.mappingArray=e.data,a.selectedMapping=t,a.mappingDropDown2.dataSource.read(),a.mappingSelectedChange(t))})},500):a.savingTemplate=!1})["catch"](function(){x.error({content:o("translate")("Common.Error"),timeout:6e3}),a.savingTemplate=!1,a.cancel()})})):(a.importMapping={},void(a.savingTemplate=!1)):void(a.savingTemplate=!1)},a.deleteMapping=function(e){a.selectedMapping=e,v.run("BeforeDelete","Script",a,a.selectedMapping),f.deleteMapping(a.selectedMapping).then(function(){a.loadMappingList(),x.success({content:o("translate")("Data.Import.DeletedMapping"),timeout:6e3})})["catch"](function(){x.error({content:o("translate")("Common.Error"),timeout:6e3})})},a.showConfirm=function(e,t){var r=h.confirm().title(o("translate")("Common.AreYouSure")).targetEvent(t).ok(o("translate")("Common.Yes")).cancel(o("translate")("Common.No"));h.show(r).then(function(){a.deleteMapping(e)},function(){})},a.mappingModalCancel=function(){a.importMapping={}},a.openMappingModal=function(){if(b=!0,!a.importForm.validate())return void x.warning(o("translate")("Module.RequiredError"));var e=angular.element(document.body);h.show({parent:e,templateUrl:"view/app/data/importMappingSave.html",clickOutsideToClose:!1,scope:a,preserveScope:!0})},a.mappingSelectedChange=function(e){if(e&&e.id){a.selectedMapping=e;var t=o("filter")(a.mappingArray,{id:e.id},!0)[0];if(t){a.importMapping.name=t.name,a.importMapping.skip=t.skip;var r=angular.fromJson(t.mapping);r&&(r.fixed&&(a.fixedValue=r.fixed,delete r.fixed),r.fixedFormat&&(a.fixedValueFormatted=r.fixedFormat,delete r.fixedFormat),a.fieldMap=r)}}else a.selectedMapping={},a.importMapping={}},a.checkWizard=function(){var e=a.user.profile.has_admin_rights;a.fieldMapCopy=angular.copy(a.fieldMap),a.selectedMapping.skip&&!e?(a.wizardStep=2,b=!0,a.submit(!0)):(b=!1,a.wizardStep=1)},a.getDateFormat=function(){var e=angular.copy(a.dateOrder);return e=e.replace(/\//g,a.dateDelimiter)},a.getDateTimeFormat=function(){var e=a.getDateFormat();return e+=" "+a.timeFormat},a.getSampleDate=function(){a.dateOrder||(a.dateOrder="en"===e.locale?"M/D/YYYY":"DD/MM/YYYY"),a.dateDelimiter||(a.dateDelimiter="en"===e.locale?"/":"."),a.timeFormat||(a.timeFormat="en"===e.locale?"H:mm a":"HH:mm");var t=new Date("2010-01-31 16:20:00"),r=a.getDateTimeFormat();a.sampleDate=moment(t).format(r)},a.prepareFixedValue=function(){var t=angular.copy(a.fixedValue);return angular.forEach(t,function(r,i){var l=o("filter")(a.module.fields,{name:i},!0)[0];switch(l.data_type){case"number":t[i]=parseInt(t[i]);break;case"number_decimal":case"currency":t[i]=parseFloat(t[i]);break;case"picklist":t[i]=null!=t[i]?t[i].labelStr:null;break;case"tag":var n=t[i].split("|");t[i]="{";for(var d=0;d<n.length;d++)t[i]+='"'+n[d]+'",';t[i]&&(t[i]=t[i].slice(0,-1)+"}");break;case"multiselect":var u="{{";angular.forEach(t[i],function(a){u+='"'+e.getLanguageValue(a.languages,"label")+'",'}),t[i]=u.slice(0,-1)+"}}";break;case"lookup":t[i]=t[i].id}}),t},a.prepareRecords=function(){for(var t=[],r=function(t,r,i,l){var n="";switch(t&&(n=t.toString().trim()),a.error={},a.error.rowNo=i,a.error.cellName=l,a.error.cellValue=t,a.error.fieldLabel=e.getLanguageValue(r.languages,"label"),r.data_type){case"number":n=parseInt(n),isNaN(n)&&(a.error.message=o("translate")("Data.Import.Error.InvalidNumber"),n=0);break;case"number_decimal":n=parseFloat(n),isNaN(n)&&(a.error.message=o("translate")("Data.Import.Error.InvalidNumber"),n=0);break;case"currency":n=n.replace(",","."),n=parseFloat(n),isNaN(n)&&(a.error.message=o("translate")("Data.Import.Error.InvalidDecimal"),n=null);break;case"date":var d=M(n);n="Invalid Date"===d.toString()?n.split(" ")[0]:d;var u=a.getDateFormat(),s="en"===a.locale?"D/M/YYYY":"DD/MM/YYYY",p=moment(n,u,!0);if(p.isValid())n=p.format();else if(p=moment(n,s,!0),!p.isValid()){var c=a.dateDelimiter,f=n.split(dateDelimiter),g=u.split(dateDelimiter);if(f.length>1){var v=f[g.indexOf("YYYY")],h=f[g.indexOf("MM")],x=f[g.indexOf("DD")],k=Date.parse(h+c+x+dateDelimiter+v);p=moment(new Date(k),u,!0),p.isValid()?n=p.format():(a.error.message=o("translate")("Data.Import.Error.InvalidDate"),n=null)}}break;case"date_time":var y=angular.copy(n),d=M(n);n="Invalid Date"===d.toString()?n.split(" ")[0]:d;var F=a.getDateTimeFormat(),b="en"===a.locale?"D/M/YYYY":"DD/MM/YYYY";b+=" "+a.timeFormat;var D=moment(n,F,!0);D.isValid()?n=D.toDate():(D=moment(y,F,!0),D.isValid()?n=D.toDate():(D=moment(n,b,!0),D.isValid()?n=D.toDate():(a.error.message=o("translate")("Data.Import.Error.InvalidDateTime"),n=null)));break;case"time":var w,S=_(r,i-1,l),V=[];S?(V=S.split(":"),V[1]="en"===a.locale?V[1].split(" ")[0]:V[1],w=moment(new Date(null,null,null,V[0],V[1]),a.timeFormat,!0)):(n=M(n),w=moment(n.toUTCString(),a.timeFormat,!0)),w.isValid()?n=w.format():(a.error.message=o("translate")("Data.Import.Error.InvalidTime"),n=null);break;case"email":m.test(n)||(a.error.message=o("translate")("Data.Import.Error.InvalidEmail"),n=null);break;case"picklist":var I=o("filter")(a.picklistsModule[r.picklist_id],{labelStr:n},!0)[0];I||(a.error.message=o("translate")("Data.Import.Error.PicklistItemNotFound"),n=null);break;case"multiselect":var L=n.split("|");n="{{";for(var C=0;C<L.length;C++){var E=L[C],T=o("filter")(a.picklistsModule[r.picklist_id],{labelStr:E})[0];if(!T){a.error.message=o("translate")("Data.Import.Error.MultiselectItemNotFound",{item:E}),n=null;break}n+='"'+E+'",'}n&&(n=n.slice(0,-1)+"}}");break;case"lookup":"relation"===r.lookup_type&&(r.lookup_type=a.fixedValue.related_module.value);var N=[];if(a.lookupIds[r.lookup_type])for(var Y=0;Y<a.lookupIds[r.lookup_type].length;Y++){var O=a.lookupIds[r.lookup_type][Y],P=n%1===0;P&&O.id===parseInt(n)?N.push(O):O.value==n&&N.push(O)}var A=o("filter")(e.modules,{name:r.lookup_type})[0];if("users"===r.lookup_type&&(A={languages:{}},A.languages[e.globalization.Label]={label:{singular:"User"}}),N.length>1)return a.error.message=o("translate")("Data.Import.Error.LookupMoreThanOne",{module:e.getLanguageValue(A.languages,"label","singular")}),void(n=null);var R=N[0];if(!R)return a.error.message=o("translate")("Data.Import.Error.LookupNotFound",{module:e.getLanguageValue(A.languages,"label","singular")}),void(n=null);n=R.id;break;case"checkbox":"yes"===n.toLowerCase()||"evet"===n.toLowerCase()||"true"===n.toLowerCase()?n="true":"no"===n.toLowerCase()||"hayır"===n.toLowerCaseTurkish()||"false"===n.toLowerCase()?n="false":(a.error.message=o("translate")("Data.Import.Error.InvalidCheckbox"),n=null)}if(null!==n&&void 0!==n){if(r.validation||(r.validation={}),!r.validation.max_length)switch(r.data_type){case"text_single":r.validation.max_length=50;break;case"text_multi":r.validation.max_length=500;break;case"number":r.validation.max_length=15;break;case"number_decimal":r.validation.max_length=19;break;case"currency":r.validation.max_length=21;break;case"email":r.validation.max_length=100}if(r.validation.max||"number"!==r.data_type&&"number_decimal"!==r.data_type&&"currency"!==r.data_type||(r.validation.max=Number.MAX_VALUE),r.validation.max_length&&n.toString().length>r.validation.max_length&&(a.error.message=o("translate")("Data.Import.Validation.MaxLength",{maxLength:r.validation.max_length}),n=null),r.validation.min_length&&n.toString().length<r.validation.min_length&&(a.error.message=o("translate")("Data.Import.Validation.MinLength",{minLength:r.validation.min_length}),n=null),r.validation.max&&n>r.validation.max&&(a.error.message=o("translate")("Data.Import.Validation.Max",{max:r.validation.max}),n=null),r.validation.min&&n<r.validation.min&&(a.error.message=o("translate")("Data.Import.Validation.Min",{min:r.validation.min}),n=null),r.validation.pattern){var U=new RegExp(r.validation.pattern);U.test(n)||(a.error.message=o("translate")("Data.Import.Validation.Pattern"),n=null)}}return null!=n&&void 0!=n&&(a.error=null),n},i=a.prepareFixedValue(),l=0;l<a.rows.length;l++){var n={},d=a.rows[l];a.error=null;var u=y(a.fieldMap);for(var s in u)if("fixed"!==s&&"fixedFormat"!==s&&u.hasOwnProperty(s)){var p=u[s];if("fixed"===p)n[s]=i[s];else{var c=angular.copy(o("filter")(a.module.fields,{name:s},!0)[0]),f=d[p];if(c.validation&&c.validation.required&&!f){a.error={},a.error.rowNo=l+2,a.error.cellName=p,a.error.cellValue=f,a.error.fieldLabel=e.getLanguageValue(c.languages,"label"),a.error.message=o("translate")("Data.Import.Error.Required");break}if(!f&&0!==f)continue;var g=r(f,c,l+2,p);if(angular.isUndefined(g))break;n[s]=g}}if(a.error)break;t.push(n)}return a.preparing=!1,t},a.getLookupIds=function(){var t=l.defer(),r=[],i=y(a.fieldMap);if(!a.processing)for(var n=0;n<a.rows.length;n++){var d=a.rows[n];if(d[i.owner]){var u=o("filter")(a.users,function(e){var a=e.first_name+" "+e.last_name;return a.trim().toLowerCaseTurkish()===d[i.owner].toString().trim().toLowerCaseTurkish()},!0)[0];u||(d[a.fieldMap.owner]=e.user.full_name)}else d[i.owner]=e.user.full_name;for(var s in d)if(d.hasOwnProperty(s)){var p=d[s].toString().trim();for(var m in i)if(i.hasOwnProperty(m)){var c=i[m];if("fixed"!==m&&s===c){var g=angular.copy(o("filter")(a.module.fields,{name:m},!0)[0]);if("lookup"!==g.data_type)break;"relation"===g.lookup_type&&(g.lookup_type=a.fixedValue.related_module.value);var v=o("filter")(r,{type:g.lookup_type},!0)[0];if(!v){if(v={},v.type=g.lookup_type,v.values=[],"users"!==g.lookup_type){var h=o("filter")(e.modules,{name:g.lookup_type},!0)[0];if(h){var g=o("filter")(h.fields,{primary_lookup:!0},!0)[0];g?v.field=g.name:(g=o("filter")(h.fields,{primary:!0},!0)[0],g&&(v.field=g.name))}}else v.field=p.indexOf("@")>-1?"email":"full_name";p&&v.values.indexOf(p)<0&&r.push(v)}p&&v.values.indexOf(p)<0&&v.values.push(p)}}}}return r.length?a.processing||(a.processing=!0,f.getLookupIds(r).then(function(e){t.resolve(e.data),a.processing=!1})["catch"](function(e){t.reject(e.data),a.processing=!1})):t.resolve([]),t.promise},a.submit=function(e){return a.error=null,a.errorUnique=null,a.processing=!1,a.importForm.validate()?b?void(b=!1):(e||(a.wizardStep=2),a.preparing=!0,a.trying=!1,void s(function(){a.getLookupIds().then(function(t){e?a.fieldMap=a.fieldMapOld:a.fieldMapOld=a.fieldMap,a.lookupIds=t,a.records=a.prepareRecords(),a.error&&null!=a.error.message&&V.clearQueue(),v.run("BeforeImport","Script",a)})},200)):void x.warning(o("translate")("Module.RequiredError"))},a.tryAgain=function(){a.trying=!0,a.error=null,a.errorUnique=null;var e=V.queue[0]._file;D(e,!0)},a.saveLoaded=function(){a.getLookupIds().then(function(e){a.lookupIds=e,a.records=a.prepareRecords(),a.save()})},a.save=function(){return!a.records&&a.selectedMapping.id?void a.saveLoaded():(a.saving=!0,s(function(){a.saving&&(a.longProcessing=!0)},4e3),void f["import"](a.records,a.module.name).then(function(e){var t=a.module.name+"_"+a.module.name;p.remove(t),a.importResponse=e.data,a.fileName=null,s(function(){a.saving=!1,a.longProcessing=!1,V.uploadAll(),x.success({content:o("translate")("Data.Import.Success"),timeout:6e3}),r.go("app.moduleList",{type:a.type})},500)})["catch"](function(e){409===e.status&&(a.errorUnique={},a.errorUnique.field=e.data.field,e.data.field2&&(a.errorUnique.field=e.data.field2),V.clearQueue()),a.saving=!1,a.longProcessing=!1}))},a.combinationFilter=function(e){return!e.combination},a.mappingControl=function(){a.importForm.validate()||(a.wizardStep=2)},a.cancel=function(){h.cancel()};var I=[];angular.element(document).ready(function(){a.excelCellOptions=function(e,t){if(I=[],"related_module"!==e.name&&(I=angular.copy(a.cells)),w.name=a.fixedValue[e.name]?a.fixedValueFormatted[e.name]:o("translate")("Data.Import.FixedValue")+" -->",I.push(w),I.push(S),!t)return{dataSource:I,autoBind:!0,dataTextField:"name",dataValueField:"column"};var r=angular.element("#"+e.name).data("kendoDropDownList");r.setDataSource(I)},a.fieldMap=angular.copy(a.fieldMapCopy)}),a.mappingOptions={dataSource:{transport:{read:{url:"/api/data/import_get_all_mappings/"+a.module.id,type:"GET",dataType:"json",beforeSend:e.beforeSend(),cache:!1}}},dataTextField:"name",dataValueField:"id",autoBind:!0},a.dateMinValidationControl=function(e){return e.validation.min?"today"===e.validation.min?a.currentDayMin:e.validation.min:new Date(2e3,0,1,0,0,0)},a.dateMaxValidationControl=function(e){return e.validation.max?"today"===e.validation.max?a.currentDayMax:e.validation.max:new Date(2099,0,1,0,0,0)},a.fixedSelectListOption=function(t){var r=o("filter")(a.picklistsModule[t.picklist_id],{inactive:"!true",hidden:"!true"},!0);return{dataSource:r,dataTextField:"languages."+e.globalization.Label+".label",dataValueField:"id"}},a.fixedMultiSelect=function(t){var r=o("filter")(a.picklistsModule[t.picklist_id],{inactive:"!true",hidden:"!true"},!0);return{placeholder:o("translate")("Common.MultiselectPlaceholder"),dataTextField:"languages."+e.globalization.Label+".label",valuePrimitive:!0,autoBind:!1,dataSource:r}},a.fixedLookupOptions=function(t){return{dataSource:new kendo.data.DataSource({serverFiltering:!0,transport:{read:function(r){const i={module:t.lookup_type,convert:!1};r.data.filter||(r.data.filter={filters:[]});var l=Object.assign({},r.data.filter.filters[0]);if(!r.data.filter||r.data.filter&&0===r.data.filter.filters.length){if(r.data.filter={},r.data.filter.filters=[],r.data.filter.logic="and",t&&t.filters.length>0)for(var n=0;n<t.filters.length;n++){const l=t.filters[n];r.data.filter.filters.push({field:l.filter_field,operator:l.operator,value:l.value})}var o={field:t.lookupModulePrimaryField.name,operator:t.lookup_search_type&&""!==t.lookup_search_type?t.lookup_search_type.replace("_",""):"startswith",value:""};("number"===t.lookupModulePrimaryField.data_type||"number_auto"===t.lookupModulePrimaryField.data_type)&&(o.operator="not_empty",o.value="not_empty"===o.value?"-":o.value)}if(r.data.filter.filters.length>0)if(F(r.data.filter.filters,t.lookupModulePrimaryField),r.data.filter.filters=c.fieldLookupFilters(t,a.record,r.data.filter.filters,i),i.fields.push(t.lookupModulePrimaryField.name),"number"===t.lookupModulePrimaryField.data_type||"number_auto"===t.lookupModulePrimaryField.data_type)r.data.filter.filters[0].operator||(r.data.filter.filters[0].operator="equals");else if(r.data.filter.filters.length>0){const d=r.data.filter.filters[0].operator;d.contains("_")&&(r.data.filter.filters[0].operator=""!==d?d.replace("_",""):"startswith")}$.ajax({url:"/api/record/find_custom",contentType:"application/json",dataType:"json",type:"POST",data:JSON.stringify(Object.assign(i,r.data)),success:function(e){r.success(e)},beforeSend:e.beforeSend()})}},schema:{data:"data",total:"total",model:{id:"id"}}}),optionLabel:o("translate")("Common.Select"),autoBind:!1,dataTextField:t.lookupModulePrimaryField.name,dataValueField:"id"}},a.getColumnName=function(e){var t=a.fieldMap[e];return t?t.column:void 0},a.getFields=function(e,t){var r=o("filter")(a.module.fields,function(a){return!a.deleted&&"number_auto"!==a.data_type&&a.section===e&&a.section_column===t&&!a.combination},!0);return o("orderBy")(r,"order")}}]);
+
+'use strict';
+
+angular.module('primeapps')
+    .controller('ImportController', ['$rootScope', '$scope', '$stateParams', '$state', 'config', '$q', '$localStorage', '$filter', 'helper', 'FileUploader', '$timeout', '$cache', 'emailRegex', 'ModuleService', 'ImportService', '$cookies', 'components', '$mdDialog', 'mdToast',
+        function ($rootScope, $scope, $stateParams, $state, config, $q, $localStorage, $filter, helper, FileUploader, $timeout, $cache, emailRegex, ModuleService, ImportService, $cookies, components, $mdDialog, mdToast) {
+            $scope.type = $stateParams.type;
+            $scope.wizardStep = 0;
+            $scope.fieldMap = {};
+            $scope.fixedValue = {};
+            $scope.importMapping = {};
+            $scope.mappingField = {};
+            $scope.selectedMapping = {};
+            $scope.mappingArray = [];
+            var isSubmitTrigger = false;
+            $scope.loading = false;
+            $scope.module = $filter('filter')($rootScope.modules, { name: $scope.type }, true)[0];
+
+            if (!$scope.module) {
+                mdToast.warning($filter('translate')('Common.NotFound'));
+                $state.go('app.dashboard');
+                return;
+            }
+
+            $scope.module = angular.copy($scope.module);
+
+            angular.forEach($scope.module.fields, function (field) {
+                if (field.name === 'created_by' || field.name === 'updated_by' || field.name === 'created_at' || field.name === 'updated_at') {
+                    field.validation.required = false;
+
+                    if (!helper.hasAdminRights())
+                        field.deleted = true;
+                }
+            });
+
+            angular.forEach($scope.module.sections, function (section) {
+                var fields = $filter('filter')($scope.module.fields, { section: section.name, deleted: '!true' });
+
+                if (!fields.length)
+                    section.deleted = true;
+                if (section.type === 'component')// for fake sections
+                    section.deleted = true;
+            });
+
+            ImportService.getAllMapping($scope.module.id)
+                .then(function (response) {
+                    if (response) {
+                        var result = response.data;
+                        $scope.mappingArray = result;
+                    }
+                });
+
+            var readExcel = function (file, retry) {
+                var fileReader = new FileReader();
+
+                fileReader.onload = function (evt) {
+                    if (!evt || evt.target.error) {
+                        $timeout(function () {
+                            mdToast.warning({ content: $filter('translate')('Module.ExportUnsupported'), timeout: 10000 });
+                        });
+                        return;
+                    }
+
+                    try {
+                        $scope.workbook = XLS.read(evt.target.result, { type: 'binary' });
+                        $scope.sheets = $scope.workbook.SheetNames;
+
+                        $timeout(function () {
+                            $scope.selectedSheet = $scope.selectedSheet || $scope.sheets[0];
+                            $scope.selectSheet(retry);
+                            $scope.getSampleDate();
+                        });
+                    }
+                    catch (ex) {
+                        $timeout(function () {
+                            mdToast.warning($filter('translate')('Data.Import.InvalidExcel'));
+                            $scope.loading = false;
+                        });
+                    }
+                };
+
+                fileReader.readAsBinaryString(file);
+            };
+
+
+            var fixed = {
+                column: 'fixed',
+                name: $filter('translate')('Data.Import.FixedValue') + ' -->'
+            };
+
+            var defaultCurrentUser = {
+                column: 'currentUser',
+                name: $rootScope.user.full_name
+            };
+
+            $scope.selectSheet = function (retry, sheet) {
+
+                $scope.selectedSheet = sheet || $scope.selectedSheet;
+                // $scope.rowsBase = XLSX.utils.sheet_to_json($scope.workbook.Sheets[$scope.selectedSheet], { header: 'A' });
+                $scope.rows = XLSX.utils.sheet_to_json($scope.workbook.Sheets[$scope.selectedSheet], { raw: true, header: 'A' });
+                $scope.headerRow = angular.copy($scope.rows[0]);
+                $scope.rows.shift();
+                $scope.cells = [];
+
+                if ($scope.rows.length > 3000) {
+                    mdToast.warning($filter('translate')('Data.Import.CountError'));
+                    $scope.loading = false;
+                    return;
+                }
+
+                if (retry) {
+                    $scope.submit(true);
+                    return;
+                }
+
+                if (!$scope.selectedMapping.name) {
+                    $scope.fieldMap = {};
+                    $scope.fixedValue = {};
+                    $scope.fixedValueFormatted = {};
+
+                    angular.forEach($scope.headerRow, function (value, key) {
+                        var cellName = value + $filter('translate')('Data.Import.ColumnIndex', { index: key });
+                        var cell = { column: key, name: cellName, used: false };
+                        $scope.cells.push(cell);
+
+                        for (var h = 0; h < $scope.module.fields.length; h++) {
+
+                            var field = $scope.module.fields[h];
+
+                            if (field.deleted)
+                                return;
+
+                            var language = $rootScope.getLanguageValue(field.languages, 'label');
+
+                            if (field.name === 'owner') {
+                                // cell.used = true;
+                                $scope.fieldMap[field.name] = defaultCurrentUser;
+                            } else if (language && language.toLowerCase() === value.trim().toLowerCase()) {
+                                // cell.used = true;
+                                $scope.fieldMap[field.name] = filterCells(key);
+                            } else {
+                                if (field && field.default_value) {
+                                    if (field.data_type === 'picklist') {
+                                        $scope.fieldMap[field.name] = fixed;
+                                        var picklistValue = $filter('filter')($scope.picklistsModule[field.picklist_id], { id: field.default_value })[0];
+                                        $scope.fixedValue[field.name] = picklistValue;
+                                        $scope.fixedValueFormatted[field.name] = $rootScope.getLanguageValue(picklistValue.languages, 'label');
+                                    } else {
+                                        $scope.fieldMap[field.name] = fixed;
+                                        $scope.fixedValue[field.name] = field.default_value;
+                                        $scope.fixedValueFormatted[field.name] = field.default_value;
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                $scope.loading = false;
+            };
+
+            FileUploader.FileSelect.prototype.isEmptyAfterSelection = function () {
+                return true;
+            };
+
+            var uploader = $scope.uploader = new FileUploader();
+
+            $scope.fileName = null;
+            uploader.onAfterAddingFile = function (fileItem) {
+                $scope.selectedSheet = undefined;
+                $scope.loading = true;
+                if ($scope.fileName === null || $scope.fileName === fileItem._file.name || $scope.wizardStep === 0) {
+                    readExcel(fileItem._file);
+                    $scope.fileName = fileItem._file.name;
+                }
+                else if ($scope.fileName !== fileItem._file.name) {
+                    uploader.clearQueue();
+                }
+            };
+
+            uploader.onWhenAddingFileFailed = function (item, filter, options) {
+                switch (filter.name) {
+                    case 'excelFilter':
+                        mdToast.warning($filter('translate')('Data.Import.FormatError'));
+                        break;
+                    case 'sizeFilter':
+                        mdToast.warning($filter('translate')('Data.Import.SizeError'));
+                        break;
+                }
+            };
+
+            uploader.onBeforeUploadItem = function (item) {
+                item.url = 'storage/upload_import_excel?import_id=' + $scope.importResponse.id;
+            };
+
+            uploader.filters.push({
+                name: 'excelFilter',
+                fn: function (item, options) {
+                    var extension = helper.getFileExtension(item.name);
+                    return (extension === 'xls' || extension === 'xlsx');
+                }
+            });
+
+            uploader.filters.push({
+                name: 'sizeFilter',
+                fn: function (item) {
+                    return item.size < 2097152;//2 mb
+                }
+            });
+
+            ModuleService.getPicklists($scope.module)
+                .then(function (picklists) {
+                    $rootScope.processPicklistLanguages(picklists);
+                    $scope.picklistsModule = picklists;
+                });
+
+
+            $scope.multiselect = function (searchTerm, field) {
+                var picklistItems = [];
+
+                angular.forEach($scope.picklistsModule[field.picklist_id], function (picklistItem) {
+                    if (picklistItem.inactive || picklistItem.hidden)
+                        return;
+
+                    //if (picklistItem.labelStr.toLowerCase().indexOf(searchTerm) > -1)
+                    var item = $rootScope.getLanguageValue(picklistItem.languages, 'label');
+                    if (item && item.toLowerCase().indexOf(searchTerm) > -1)
+                        picklistItems.push(picklistItem);
+                    picklistItems.push(picklistItem);
+                });
+
+                return picklistItems;
+            };
+
+            $scope.clear = function () {
+                uploader.clearQueue();
+                $scope.rows = null;
+                $scope.cells = null;
+                $scope.sheets = null;
+                $scope.fieldMap = null;
+                $scope.fixedValue = null;
+                $scope.fixedValueFormatted = null;
+                $scope.showAdvancedOptions = false;
+            };
+
+            $scope.cellChanged = function (field, ev) {
+                if ($scope.fieldMap[field.name] === 'fixed') {
+                    $scope.openFixedValueModal(field, ev);
+                    return;
+                }
+
+                // angular.forEach($scope.cells, function (cell) {
+                //     cell.used = false;
+                // });
+                //
+                // angular.forEach($scope.fieldMap, function (value, key) {
+                //     var selectedCell = $filter('filter')($scope.cells, { column: value }, true)[0];
+                //
+                //     if (selectedCell)
+                //         selectedCell.used = true;
+                // });
+
+                if (!$scope.fieldMap[field.name] && $scope.fixedValue && $scope.fixedValue[field.name])
+                    delete $scope.fixedValue[field.name];
+
+                if (field.name === 'related_module') {
+                    delete $scope.fixedValue['related_to'];
+                }
+            };
+
+            $scope.fixedValueChanged = function (field) {
+                if (field.name === 'related_module') {
+                    delete $scope.fixedValue['related_to'];
+                }
+            };
+
+            $scope.openFixedValueModal = function (field, ev) {
+                $scope.fixedValue = $scope.fixedValue || {};
+                $scope.fixedValueState = angular.copy($scope.fixedValue);
+                $scope.fixedField = field;
+
+                var parentEl = angular.element(document.body);
+
+                $mdDialog.show({
+                    parent: parentEl,
+                    templateUrl: 'view/app/data/fixedValue.html',
+                    clickOutsideToClose: true,
+                    targetEvent: ev,
+                    scope: $scope,
+                    preserveScope: true
+
+                });
+            };
+
+            $scope.closeDialog = function () {
+                $mdDialog.hide();
+            };
+
+            $scope.modalSubmit = function (fixedValueForm) {
+                if (!fixedValueForm.validate())
+                    return;
+
+                if (!$scope.fixedValue[$scope.fixedField.name])
+                    delete $scope.fieldMap[$scope.fixedField.name];
+
+                $scope.fixedValueFormatted = angular.copy($scope.fixedValue);
+                ModuleService.formatRecordFieldValues($scope.fixedValueFormatted, $scope.module, $scope.picklistsModule);
+
+                angular.forEach($scope.fixedValueFormatted, function (value, key) {
+                    var field = $filter('filter')($scope.module.fields, { name: key }, true)[0];
+
+                    if (field && field.valueFormatted) {
+                        // if (field.data_type === 'lookup'){
+                        //     $scope.fixedValueFormatted[key] = $scope.fixedValueFormatted[key];
+                        // }
+                        // else if (field.valueFormatted){
+                        $scope.fixedValueFormatted[key] = field.valueFormatted;
+                        // }
+                    }
+                });
+
+                $scope.excelCellOptions($scope.fixedField, true);
+                $scope.closeDialog();
+            };
+
+            $scope.modalCancel = function () {
+                if (!$scope.fixedValueState[$scope.fixedField.name] && $scope.fixedValue[$scope.fixedField.name])
+                    delete $scope.fixedValue[$scope.fixedField.name];
+
+                if (!$scope.fixedValue[$scope.fixedField.name])
+                    delete $scope.fieldMap[$scope.fixedField.name];
+            };
+
+            $scope.loadMappingList = function () {
+                ImportService.getAllMapping($scope.module.id)
+                    .then(function (value) {
+                        if (value.data) {
+                            $scope.mappingArray = value.data;
+                            //$scope.mappingOptions.setDataSource($scope.mappingArray);
+                        }
+                    });
+
+                $scope.mappingDropDown2.dataSource.read();
+            };
+
+            $scope.mappingSave = function (importMappingForm) {
+                $scope.savingTemplate = true;
+                $scope.importMapping.module_id = $scope.module.id;
+
+                if ($scope.fixedValue)
+                    $scope.fieldMap['fixed'] = angular.copy($scope.fixedValue);
+
+                if ($scope.fixedValueFormatted)
+                    $scope.fieldMap['fixedFormat'] = angular.copy($scope.fixedValueFormatted);
+
+                var fieldMap = angular.copy($scope.fieldMap);
+
+                if (fieldMap)
+                    $scope.importMapping.mapping = JSON.stringify(fieldMap);
+                else {
+                    mdToast.warning({
+                        content: $filter('translate')('Data.Import.MappingNotFound'),
+                        timeout: 6000
+                    });
+                    $scope.importMappingSaveModal.hide();
+                }
+
+                if ($scope.importMapping.skip)
+                    $scope.importMapping.skip = $scope.importMapping.skip;
+                else
+                    $scope.importMapping.skip = false;
+
+
+                if (!importMappingForm.$valid) {
+                    $scope.savingTemplate = false;
+                    return;
+                }
+
+                if ($scope.importMapping.name || $scope.selectedMapping) {
+
+                    if ($scope.selectedMapping.id) {
+                        ImportService.updateMapping($scope.selectedMapping.id, $scope.importMapping)
+                            .then(function (response) {
+                                var result = response.data;
+
+                                if (result) {
+                                    $scope.loadMappingList();
+                                    $timeout(function () {
+                                        mdToast.success({
+                                            content: $filter('translate')('Data.Import.MappingSaveSucces'),
+                                            timeout: 6000
+                                        });
+                                        $scope.savingTemplate = false;
+                                        $scope.cancel();
+
+                                    }, 500);
+                                }
+                                else
+                                    $scope.savingTemplate = false;
+                            })
+                            .catch(function (data) {
+                                mdToast.error({
+                                    content: $filter('translate')('Common.Error'),
+                                    timeout: 6000
+                                });
+                                $scope.savingTemplate = false;
+                                $scope.cancel();
+                            });
+
+                    }
+                    else {
+                        ImportService.getMapping($scope.importMapping)
+                            .then(function (response) {
+                                var result = response.data;
+
+                                if (result) {
+                                    mdToast.warning({
+                                        content: $filter('translate')('Data.Import.TryMappingName'),
+                                        timeout: 6000
+                                    });
+
+                                    $scope.importMapping = {};
+                                    $scope.savingTemplate = false;
+                                    $scope.cancel();
+                                }
+                                else {
+                                    ImportService.saveMapping($scope.importMapping)
+                                        .then(function (response) {
+                                            var newData = response.data;
+
+                                            if (newData) {
+                                                $timeout(function () {
+                                                    $scope.loadMappingList();
+                                                    mdToast.success({
+                                                        content: $filter('translate')('Data.Import.MappingSaveSucces'),
+                                                        timeout: 6000
+                                                    });
+                                                    $scope.savingTemplate = false;
+                                                    $scope.cancel();
+
+                                                    ImportService.getAllMapping($scope.module.id)
+                                                        .then(function (value) {
+                                                            if (value.data) {
+
+                                                                $scope.mappingArray = value.data;
+                                                                $scope.selectedMapping = newData;
+                                                                $scope.mappingDropDown2.dataSource.read()
+                                                                //$scope.mappingOptions.setDataSource(value.data);
+                                                                $scope.mappingSelectedChange(newData);
+                                                            }
+                                                        });
+                                                }, 500);
+                                            }
+                                            else
+                                                $scope.savingTemplate = false;
+                                        })
+                                        .catch(function (data) {
+                                            mdToast.error({
+                                                content: $filter('translate')('Common.Error'),
+                                                timeout: 6000
+                                            });
+                                            $scope.savingTemplate = false;
+                                            $scope.cancel();
+                                        });
+                                }
+
+                            });
+                    }
+                }
+                else {
+                    $scope.importMapping = {};
+                    $scope.savingTemplate = false;
+                    return;
+                }
+            };
+
+            $scope.deleteMapping = function (item) {
+                $scope.selectedMapping = item;
+                components.run('BeforeDelete', 'Script', $scope, $scope.selectedMapping);
+
+                ImportService.deleteMapping($scope.selectedMapping)
+                    .then(function () {
+                        $scope.loadMappingList();
+                        mdToast.success({
+                            content: $filter('translate')('Data.Import.DeletedMapping'),
+                            timeout: 6000
+                        });
+
+                        //components.run('AfterDelete', 'Script', $scope, $scope.selectedMapping);
+                        //$state.go('app.moduleList', { type: $scope.type });
+                    })
+                    .catch(function (data) {
+                        mdToast.error({
+                            content: $filter('translate')('Common.Error'),
+                            timeout: 6000
+                        });
+                    });
+            };
+
+            $scope.showConfirm = function (item, ev) {
+                var confirm = $mdDialog.confirm()
+                    .title($filter('translate')('Common.AreYouSure'))
+                    .targetEvent(ev)
+                    .ok($filter('translate')('Common.Yes'))
+                    .cancel($filter('translate')('Common.No'));
+
+                $mdDialog.show(confirm).then(function () {
+                    $scope.deleteMapping(item);
+                }, function () {
+
+                });
+
+            };
+
+
+            $scope.mappingModalCancel = function () {
+                $scope.importMapping = {};
+            };
+
+            $scope.openMappingModal = function () {
+                isSubmitTrigger = true;
+
+                if (!$scope.importForm.validate()) {
+                    mdToast.warning($filter('translate')('Module.RequiredError'));
+                    return;
+                }
+
+                var parentEl = angular.element(document.body);
+                $mdDialog.show({
+                    parent: parentEl,
+                    templateUrl: 'view/app/data/importMappingSave.html',
+                    clickOutsideToClose: false,
+                    scope: $scope,
+                    preserveScope: true
+
+                });
+
+            };
+
+            $scope.mappingSelectedChange = function (item) {
+                if (item && item.id) {
+                    $scope.selectedMapping = item;
+                    var result = $filter('filter')($scope.mappingArray, { id: item.id }, true)[0];
+
+                    if (result) {
+                        $scope.importMapping.name = result.name;
+                        $scope.importMapping.skip = result.skip;
+
+                        var mappingData = angular.fromJson(result.mapping);
+
+                        if (mappingData) {
+                            if (mappingData.fixed) {
+                                $scope.fixedValue = mappingData.fixed;
+                                delete mappingData.fixed;
+                            }
+
+                            if (mappingData.fixedFormat) {
+                                $scope.fixedValueFormatted = mappingData.fixedFormat;
+                                delete mappingData.fixedFormat;
+                            }
+                            $scope.fieldMap = mappingData;
+                        }
+                    }
+                }
+                else {
+                    $scope.selectedMapping = {};
+                    $scope.importMapping = {};
+                }
+            };
+
+            $scope.checkWizard = function () {
+                var hasAdmin = $scope.user.profile.has_admin_rights;
+                $scope.fieldMapCopy = angular.copy($scope.fieldMap);
+
+                if ($scope.selectedMapping.skip && !hasAdmin) {
+                    $scope.wizardStep = 2;
+                    isSubmitTrigger = true;
+                    $scope.submit(true);
+                }
+                else {
+                    isSubmitTrigger = false;
+                    $scope.wizardStep = 1;
+                }
+            };
+
+            $scope.getDateFormat = function () {
+                var dateFormat = angular.copy($scope.dateOrder);
+                dateFormat = dateFormat.replace(/\//g, $scope.dateDelimiter);
+                return dateFormat;
+            };
+
+            $scope.getDateTimeFormat = function () {
+                var dateFormat = $scope.getDateFormat();
+                dateFormat += ' ' + $scope.timeFormat;
+                return dateFormat;
+            };
+
+            $scope.getSampleDate = function () {
+                if (!$scope.dateOrder)
+                    $scope.dateOrder = $rootScope.locale === 'en' ? 'M/D/YYYY' : 'DD/MM/YYYY'; //TODO culture
+
+                if (!$scope.dateDelimiter)
+                    $scope.dateDelimiter = $rootScope.locale === 'en' ? '/' : '.';
+
+                if (!$scope.timeFormat)
+                    $scope.timeFormat = $rootScope.locale === 'en' ? 'H:mm a' : 'HH:mm'; //TODO culture
+
+                var date = new Date('2010-01-31 16:20:00');
+                var dateFormat = $scope.getDateTimeFormat();
+                $scope.sampleDate = moment(date).format(dateFormat);
+            };
+
+            $scope.prepareFixedValue = function () {
+                var fixedValue = angular.copy($scope.fixedValue);
+
+                angular.forEach(fixedValue, function (value, key) {
+                    var field = $filter('filter')($scope.module.fields, { name: key }, true)[0];
+
+                    switch (field.data_type) {
+                        case 'number':
+                            fixedValue[key] = parseInt(fixedValue[key]);
+                            break;
+                        case 'number_decimal':
+                        case 'currency':
+                            fixedValue[key] = parseFloat(fixedValue[key]);
+                            break;
+                        case 'picklist':
+                            //fixedValue[key] = fixedValue[key] != null ? fixedValue[key].label[$rootScope.user.tenant_language] : null;
+                            fixedValue[key] = fixedValue[key] != null ? fixedValue[key].labelStr : null;
+                            break;
+                        case 'tag':
+                            var picklistItems = fixedValue[key].split('|');
+                            fixedValue[key] = '{';
+
+                            for (var i = 0; i < picklistItems.length; i++) {
+                                fixedValue[key] += '"' + picklistItems[i] + '",';
+                            }
+
+                            if (fixedValue[key])
+                                fixedValue[key] = fixedValue[key].slice(0, -1) + '}';
+                            break;
+                        case 'multiselect':
+                            var values = '{{';
+
+                            angular.forEach(fixedValue[key], function (picklistItem) {
+                                //values += '"' + picklistItem['label_' + $rootScope.user.tenant_language] + '",';
+                                values += '"' + $rootScope.getLanguageValue(picklistItem.languages, "label") + '",';
+                            });
+
+                            fixedValue[key] = values.slice(0, -1) + '}}';
+                            break;
+                        case 'lookup':
+                            fixedValue[key] = fixedValue[key].id;
+                            break;
+                    }
+                });
+
+                return fixedValue;
+            };
+
+            $scope.prepareRecords = function () {
+                var records = [];
+
+                var getRecordFieldValueAndValidate = function (cellValue, field, rowNo, cellName) {
+                    var recordValue = '';
+
+                    if (cellValue)
+                        recordValue = cellValue.toString().trim();
+
+                    $scope.error = {};
+                    $scope.error.rowNo = rowNo;
+                    $scope.error.cellName = cellName;
+                    $scope.error.cellValue = cellValue;
+                    $scope.error.fieldLabel = $rootScope.getLanguageValue(field.languages, "label");
+
+                    switch (field.data_type) {
+                        case 'number':
+                            recordValue = parseInt(recordValue);
+
+                            if (isNaN(recordValue)) {
+                                $scope.error.message = $filter('translate')('Data.Import.Error.InvalidNumber');
+                                recordValue = 0;
+                            }
+                            break;
+                        case 'number_decimal':
+                            recordValue = parseFloat(recordValue);
+
+                            if (isNaN(recordValue)) {
+                                $scope.error.message = $filter('translate')('Data.Import.Error.InvalidNumber');
+                                recordValue = 0;
+                            }
+                            break;
+                        case 'currency':
+                            recordValue = recordValue.replace(',', '.');
+                            recordValue = parseFloat(recordValue);
+
+                            if (isNaN(recordValue)) {
+                                $scope.error.message = $filter('translate')('Data.Import.Error.InvalidDecimal');
+                                recordValue = null;
+                            }
+                            break;
+                        case 'date':
+
+                            var tempValue = getJsDateFromExcel(recordValue);
+
+                            if (tempValue.toString() === "Invalid Date")
+                                recordValue = recordValue.split(' ')[0];
+                            else
+                                recordValue = tempValue;
+
+                            var dateFormat = $scope.getDateFormat();
+                            var standardDateFormat = $scope.locale === 'en' ? 'D/M/YYYY' : 'DD/MM/YYYY';
+
+                            var mmtDate = moment(recordValue, dateFormat, true);
+
+                            if (!mmtDate.isValid()) {
+                                mmtDate = moment(recordValue, standardDateFormat, true);
+
+                                if (!mmtDate.isValid()) {
+                                    var dateDelimeter = $scope.dateDelimiter;
+                                    var dateArray = recordValue.split(dateDelimiter);
+                                    var dateFormatArray = dateFormat.split(dateDelimiter);
+
+                                    if (dateArray.length > 1) {
+                                        var YY = dateArray[dateFormatArray.indexOf('YYYY')];
+                                        var MM = dateArray[dateFormatArray.indexOf('MM')];
+                                        var DD = dateArray[dateFormatArray.indexOf('DD')];
+
+                                        var parseValue = Date.parse(MM + dateDelimeter + DD + dateDelimiter + YY); //dont change sequence
+
+                                        mmtDate = moment(new Date(parseValue), dateFormat, true);
+
+                                        if (!mmtDate.isValid()) {
+                                            $scope.error.message = $filter('translate')('Data.Import.Error.InvalidDate');
+                                            recordValue = null;
+                                        }
+                                        else {
+                                            recordValue = mmtDate.format();
+                                        }
+                                    }
+                                }
+                            }
+                            else {
+                                recordValue = mmtDate.format();
+                            }
+                            break;
+                        case 'date_time':
+                            var tempRecordValue = angular.copy(recordValue);
+                            var tempValue = getJsDateFromExcel(recordValue);
+
+                            if (tempValue.toString() === "Invalid Date")
+                                recordValue = recordValue.split(' ')[0];
+                            else
+                                recordValue = tempValue;
+
+                            var dateTimeFormat = $scope.getDateTimeFormat();
+                            var standardDateTimeFormat = $scope.locale === 'en' ? 'D/M/YYYY' : 'DD/MM/YYYY';
+                            standardDateTimeFormat += ' ' + $scope.timeFormat;
+                            var mmtDateTime = moment(recordValue, dateTimeFormat, true);
+
+                            if (!mmtDateTime.isValid()) {
+                                mmtDateTime = moment(tempRecordValue, dateTimeFormat, true);
+
+                                if (!mmtDateTime.isValid()) {
+                                    mmtDateTime = moment(recordValue, standardDateTimeFormat, true);
+
+                                    if (!mmtDateTime.isValid()) {
+                                        $scope.error.message = $filter('translate')('Data.Import.Error.InvalidDateTime');
+                                        recordValue = null;
+                                    }
+                                    else {
+                                        recordValue = mmtDateTime.toDate();
+                                    }
+                                }
+                                else {
+                                    recordValue = mmtDateTime.toDate();
+                                }
+                            }
+                            else {
+                                recordValue = mmtDateTime.toDate();
+                            }
+                            break;
+                        case 'time':
+                            var baseValue = getExcelBaseValue(field, rowNo - 1, cellName);
+                            var newValueArray = [];
+                            var mmtTime;
+
+                            if (baseValue) {
+                                newValueArray = baseValue.split(":");
+                                newValueArray[1] = $scope.locale === 'en' ? newValueArray[1].split(' ')[0] : newValueArray[1];
+                                mmtTime = moment(new Date(null, null, null, newValueArray[0], newValueArray[1]), $scope.timeFormat, true);
+                            }
+                            else {
+                                recordValue = getJsDateFromExcel(recordValue);
+                                mmtTime = moment(recordValue.toUTCString(), $scope.timeFormat, true);
+                            }
+
+                            if (!mmtTime.isValid()) {
+                                $scope.error.message = $filter('translate')('Data.Import.Error.InvalidTime');
+                                recordValue = null;
+                            }
+                            else {
+                                recordValue = mmtTime.format();
+                            }
+                            break;
+                        case 'email':
+                            if (!emailRegex.test(recordValue)) {
+                                $scope.error.message = $filter('translate')('Data.Import.Error.InvalidEmail');
+                                recordValue = null;
+                            }
+                            break;
+                        case 'picklist':
+                            var picklistItem = $filter('filter')($scope.picklistsModule[field.picklist_id], { labelStr: recordValue }, true)[0];
+
+                            if (!picklistItem) {
+                                $scope.error.message = $filter('translate')('Data.Import.Error.PicklistItemNotFound');
+                                recordValue = null;
+                            }
+                            break;
+                        case 'multiselect':
+                            var picklistItems = recordValue.split('|');
+                            recordValue = '{{';
+
+                            for (var i = 0; i < picklistItems.length; i++) {
+                                var picklistItemLabel = picklistItems[i];
+                                var multiselectPicklistItem = $filter('filter')($scope.picklistsModule[field.picklist_id], { labelStr: picklistItemLabel })[0];
+
+                                if (!multiselectPicklistItem) {
+                                    $scope.error.message = $filter('translate')('Data.Import.Error.MultiselectItemNotFound', { item: picklistItemLabel });
+                                    recordValue = null;
+                                    break;
+                                }
+
+                                recordValue += '"' + picklistItemLabel + '",';
+                            }
+
+                            if (recordValue)
+                                recordValue = recordValue.slice(0, -1) + '}}';
+                            break;
+                        case 'lookup':
+                            if (field.lookup_type === 'relation')
+                                field.lookup_type = $scope.fixedValue.related_module.value;
+
+                            var lookupIds = [];
+
+                            if ($scope.lookupIds[field.lookup_type]) {
+                                for (var j = 0; j < $scope.lookupIds[field.lookup_type].length; j++) {
+                                    var lookupIdItem = $scope.lookupIds[field.lookup_type][j];
+
+                                    var isInt = recordValue % 1 === 0;
+
+                                    if (isInt && lookupIdItem.id === parseInt(recordValue))
+                                        lookupIds.push(lookupIdItem);
+                                    else if (lookupIdItem.value == recordValue)
+                                        lookupIds.push(lookupIdItem);
+                                }
+                            }
+
+                            var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type })[0];
+
+                            if (field.lookup_type === 'users') {
+                                lookupModule = {
+                                    languages: {}
+                                };
+                                lookupModule.languages[$rootScope.globalization.Label] = {
+                                    label: {
+                                        singular: 'User'
+                                    }
+                                };
+                                //lookupModule.label_tr_singular = 'Kullanıcı';
+                                //lookupModule.label_en_singular = 'User';
+                            }
+
+                            if (lookupIds.length > 1) {
+                                $scope.error.message = $filter('translate')('Data.Import.Error.LookupMoreThanOne', { module: $rootScope.getLanguageValue(lookupModule.languages, "label", "singular") });
+                                recordValue = null;
+                                return;
+                            }
+
+                            var lookupId = lookupIds[0];
+
+                            if (!lookupId) {
+                                $scope.error.message = $filter('translate')('Data.Import.Error.LookupNotFound', { module: $rootScope.getLanguageValue(lookupModule.languages, "label", "singular") });
+                                recordValue = null;
+                                return;
+                            }
+
+                            recordValue = lookupId.id;
+                            break;
+                        case 'checkbox':
+                            if (recordValue.toLowerCase() === 'yes' || recordValue.toLowerCase() === 'evet' || recordValue.toLowerCase() === 'true') {
+                                recordValue = 'true';
+                            }
+                            else if (recordValue.toLowerCase() === 'no' || recordValue.toLowerCaseTurkish() === 'hayır' || recordValue.toLowerCase() === 'false') {
+                                recordValue = 'false';
+                            }
+                            else {
+                                $scope.error.message = $filter('translate')('Data.Import.Error.InvalidCheckbox');
+                                recordValue = null;
+                            }
+                            break;
+                    }
+
+                    if (recordValue !== null && recordValue !== undefined) {
+                        if (!field.validation)
+                            field.validation = {};
+
+                        if (!field.validation.max_length) {
+                            switch (field.data_type) {
+                                case 'text_single':
+                                    field.validation.max_length = 50;
+                                    break;
+                                case 'text_multi':
+                                    field.validation.max_length = 500;
+                                    break;
+                                case 'number':
+                                    field.validation.max_length = 15;
+                                    break;
+                                case 'number_decimal':
+                                    field.validation.max_length = 19;
+                                    break;
+                                case 'currency':
+                                    field.validation.max_length = 21;
+                                    break;
+                                case 'email':
+                                    field.validation.max_length = 100;
+                                    break;
+                            }
+                        }
+
+                        if (!field.validation.max && (field.data_type === 'number' || field.data_type === 'number_decimal' || field.data_type === 'currency'))
+                            field.validation.max = Number.MAX_VALUE;
+
+                        if (field.validation.max_length && recordValue.toString().length > field.validation.max_length) {
+                            $scope.error.message = $filter('translate')('Data.Import.Validation.MaxLength', { maxLength: field.validation.max_length });
+                            recordValue = null;
+                        }
+
+                        if (field.validation.min_length && recordValue.toString().length < field.validation.min_length) {
+                            $scope.error.message = $filter('translate')('Data.Import.Validation.MinLength', { minLength: field.validation.min_length });
+                            recordValue = null;
+                        }
+
+                        if (field.validation.max && recordValue > field.validation.max) {
+                            $scope.error.message = $filter('translate')('Data.Import.Validation.Max', { max: field.validation.max });
+                            recordValue = null;
+                        }
+
+                        if (field.validation.min && recordValue < field.validation.min) {
+                            $scope.error.message = $filter('translate')('Data.Import.Validation.Min', { min: field.validation.min });
+                            recordValue = null;
+                        }
+
+                        if (field.validation.pattern) {
+                            var rgx = new RegExp(field.validation.pattern);
+
+                            if (!rgx.test(recordValue)) {
+                                $scope.error.message = $filter('translate')('Data.Import.Validation.Pattern');
+                                recordValue = null;
+                            }
+                        }
+                    }
+
+                    if (recordValue != null && recordValue != undefined)
+                        $scope.error = null;
+
+                    return recordValue;
+                };
+
+                var fixedValue = $scope.prepareFixedValue();
+
+                for (var i = 0; i < $scope.rows.length; i++) {
+                    var record = {};
+                    var row = $scope.rows[i];
+                    $scope.error = null;
+                    var newFieldMap = prepareFieldMap($scope.fieldMap);
+                    for (var fieldMapKey in newFieldMap) {
+                        if (fieldMapKey === 'fixed' || fieldMapKey === 'fixedFormat') //To added excel import mapping
+                            continue;
+
+                        if (newFieldMap.hasOwnProperty(fieldMapKey)) {
+                            var fieldMapValue = newFieldMap[fieldMapKey];
+
+                            if (fieldMapValue === 'fixed') {
+                                record[fieldMapKey] = fixedValue[fieldMapKey];
+                            }
+                            else {
+                                var field = angular.copy($filter('filter')($scope.module.fields, { name: fieldMapKey }, true)[0]);
+                                var cellValue = row[fieldMapValue];
+
+                                if (field.validation && field.validation.required && !cellValue) {
+                                    $scope.error = {};
+                                    $scope.error.rowNo = i + 2;
+                                    $scope.error.cellName = fieldMapValue;
+                                    $scope.error.cellValue = cellValue;
+                                    $scope.error.fieldLabel = $rootScope.getLanguageValue(field.languages, "label");
+                                    $scope.error.message = $filter('translate')('Data.Import.Error.Required');
+                                    break;
+                                }
+
+                                if (!cellValue && cellValue !== 0)
+                                    continue;
+
+                                var recordFieldValue = getRecordFieldValueAndValidate(cellValue, field, i + 2, fieldMapValue);
+
+                                if (angular.isUndefined(recordFieldValue))
+                                    break;
+
+                                record[fieldMapKey] = recordFieldValue;
+                            }
+                        }
+                    }
+
+                    if ($scope.error)
+                        break;
+
+                    records.push(record);
+                }
+
+                $scope.preparing = false;
+
+                return records;
+            };
+
+            $scope.getLookupIds = function () {
+                var deferred = $q.defer();
+                var lookupRequest = [];
+                var newFieldMap = prepareFieldMap($scope.fieldMap);
+
+                if (!$scope.processing) {
+                    for (var i = 0; i < $scope.rows.length; i++) {
+                        var row = $scope.rows[i];
+                        /**Eğer import edilmek istenen excel'de owner sütunu boş ise
+                         *defaultta işlemi  yapan kullanıcıyı setle
+                         **/
+                        if (!row[newFieldMap["owner"]]) {
+                            row[newFieldMap["owner"]] = $rootScope.user.full_name;
+                        } else {
+                            var isRowOwnerRight = $filter('filter')($scope.users, function (user) {
+                                var fullname = user.first_name + " " + user.last_name;
+                                return fullname.trim().toLowerCaseTurkish() === row[newFieldMap["owner"]].toString().trim().toLowerCaseTurkish();
+                            }, true)[0];
+
+                            if (!isRowOwnerRight)
+                                row[$scope.fieldMap["owner"]] = $rootScope.user.full_name;
+                        }
+
+                        for (var rowKey in row) {
+                            if (row.hasOwnProperty(rowKey)) {
+                                var cellValue = row[rowKey].toString().trim();
+
+                                for (var fieldMapKey in newFieldMap) {
+                                    if (newFieldMap.hasOwnProperty(fieldMapKey)) {
+                                        var fieldMapValue = newFieldMap[fieldMapKey];
+
+                                        if (fieldMapKey !== 'fixed' && rowKey === fieldMapValue) {
+                                            var field = angular.copy($filter('filter')($scope.module.fields, { name: fieldMapKey }, true)[0]);
+
+                                            if (field.data_type !== 'lookup')
+                                                break;
+
+                                            if (field.lookup_type === 'relation')
+                                                field.lookup_type = $scope.fixedValue.related_module.value;
+
+                                            var lookupItem = $filter('filter')(lookupRequest, { type: field.lookup_type }, true)[0];
+
+                                            if (!lookupItem) {
+                                                lookupItem = {};
+                                                lookupItem.type = field.lookup_type;
+                                                lookupItem.values = [];
+
+                                                if (field.lookup_type !== 'users') {
+                                                    var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
+                                                    if (lookupModule) {
+                                                        var field = $filter('filter')(lookupModule.fields, { primary_lookup: true }, true)[0];
+                                                        if (field) {
+                                                            lookupItem.field = field.name;
+                                                        } else {
+                                                            field = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                                            if (field)
+                                                                lookupItem.field = field.name
+                                                        }
+                                                    }
+
+                                                }
+                                                else {
+                                                    if (cellValue.indexOf('@') > -1)
+                                                        lookupItem.field = 'email';
+                                                    else
+                                                        lookupItem.field = 'full_name';
+                                                }
+
+                                                if (cellValue && lookupItem.values.indexOf(cellValue) < 0) {
+                                                    lookupRequest.push(lookupItem);
+                                                }
+
+                                            }
+
+                                            if (cellValue && lookupItem.values.indexOf(cellValue) < 0) {
+                                                lookupItem.values.push(cellValue);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (!lookupRequest.length) {
+                    deferred.resolve([]);
+                }
+                else {
+                    if (!$scope.processing) {
+                        $scope.processing = true;
+                        ImportService.getLookupIds(lookupRequest)
+                            .then(function (lookupIds) {
+                                deferred.resolve(lookupIds.data);
+                                $scope.processing = false;
+                            })
+                            .catch(function (reason) {
+                                deferred.reject(reason.data);
+                                $scope.processing = false;
+                            });
+                    }
+                }
+
+                return deferred.promise;
+            };
+
+            $scope.submit = function (retry) {
+                $scope.error = null;
+                $scope.errorUnique = null;
+                $scope.processing = false;
+
+                if (!$scope.importForm.validate()) {
+                    mdToast.warning($filter('translate')('Module.RequiredError'));
+                    return;
+                }
+
+                if (isSubmitTrigger) {
+                    isSubmitTrigger = false;
+                    return;
+                }
+
+                if (!retry)
+                    $scope.wizardStep = 2;
+
+                $scope.preparing = true;
+                $scope.trying = false;
+
+                $timeout(function () {
+                    $scope.getLookupIds()
+                        .then(function (lookupIds) {
+                            if (retry)
+                                $scope.fieldMap = $scope.fieldMapOld;
+                            else
+                                $scope.fieldMapOld = $scope.fieldMap;
+
+                            $scope.lookupIds = lookupIds;
+                            $scope.records = $scope.prepareRecords();
+
+                            if ($scope.error && $scope.error.message != null) {
+                                uploader.clearQueue();
+                            }
+
+                            components.run('BeforeImport', 'Script', $scope);
+                        });
+                }, 200);
+            };
+
+            $scope.tryAgain = function () {
+                $scope.trying = true;
+                $scope.error = null;
+                $scope.errorUnique = null;
+                var file = uploader.queue[0]._file;
+                readExcel(file, true);
+            };
+
+            $scope.saveLoaded = function () {
+                $scope.getLookupIds()
+                    .then(function (lookupIds) {
+                        $scope.lookupIds = lookupIds;
+                        $scope.records = $scope.prepareRecords();
+                        $scope.save();
+                    });
+
+            };
+
+            $scope.save = function () {
+                if (!$scope.records && $scope.selectedMapping.id) {
+                    $scope.saveLoaded();
+                    return;
+                }
+
+                $scope.saving = true;
+
+                $timeout(function () {
+                    if ($scope.saving)
+                        $scope.longProcessing = true;
+                }, 4000);
+
+                ImportService.import($scope.records, $scope.module.name)
+                    .then(function (response) {
+                        var cacheKey = $scope.module.name + '_' + $scope.module.name;
+                        $cache.remove(cacheKey);
+                        $scope.importResponse = response.data;
+                        $scope.fileName = null;
+
+                        $timeout(function () {
+                            $scope.saving = false;
+                            $scope.longProcessing = false;
+                            uploader.uploadAll();
+                            mdToast.success({ content: $filter('translate')('Data.Import.Success'), timeout: 6000 });
+                            $state.go('app.moduleList', { type: $scope.type });
+                        }, 500);
+                    })
+                    .catch(function (data) {
+                        if (data.status === 409) {
+                            $scope.errorUnique = {};
+                            $scope.errorUnique.field = data.data.field;
+
+                            if (data.data.field2)
+                                $scope.errorUnique.field = data.data.field2;
+                            uploader.clearQueue();
+                        }
+
+                        $scope.saving = false;
+                        $scope.longProcessing = false;
+                    });
+            };
+
+            $scope.combinationFilter = function (field) {
+                return !field.combination;
+
+            };
+
+            function getJsDateFromExcel(excelDate) {
+                return new Date((excelDate - (25567 + 2)) * 86400 * 1000);
+            }
+
+            function getExcelBaseValue(field, rowNo, cellName) {
+                //var row = $scope.rowsBase[rowNo];
+                const row = $scope.rows[rowNo];
+                if (row)
+                    return row[cellName].toString();
+            }
+
+            $scope.mappingControl = function () {
+
+                if (!$scope.importForm.validate())
+                    $scope.wizardStep = 2;
+            };
+
+            //For Kendo UI
+            $scope.cancel = function () {
+                $mdDialog.cancel();
+            };
+
+            var dataSource = [];
+
+            angular.element(document).ready(function () {
+                $scope.excelCellOptions = function (field, change) {
+                    dataSource = [];
+
+                    if (field.name !== 'related_module')
+                        dataSource = angular.copy($scope.cells);
+
+                    fixed.name = $scope.fixedValue[field.name] ? $scope.fixedValueFormatted[field.name] : $filter('translate')('Data.Import.FixedValue') + ' -->';
+                    dataSource.push(fixed);
+                    dataSource.push(defaultCurrentUser);
+
+                    if (change) {
+                        var dropdown = angular.element("#" + field.name).data("kendoDropDownList");
+                        dropdown.setDataSource(dataSource);
+                    }
+                    else
+                        return {
+                            dataSource: dataSource,
+                            autoBind: true,
+                            dataTextField: "name",
+                            dataValueField: "column",
+                        };
+                };
+
+                $scope.fieldMap = angular.copy($scope.fieldMapCopy);
+            });
+
+            $scope.mappingOptions = {
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: "/api/data/import_get_all_mappings/" + $scope.module.id,
+                            type: 'GET',
+                            dataType: "json",
+                            beforeSend: $rootScope.beforeSend(),
+                            cache: false
+                        }
+                    },
+                },
+                dataTextField: "name",
+                dataValueField: "id",
+                autoBind: true
+            };
+
+            $scope.dateMinValidationControl = function (fixedField) {
+                return fixedField.validation.min ? (fixedField.validation.min === 'today' ? $scope.currentDayMin : fixedField.validation.min) : new Date(2000, 0, 1, 0, 0, 0);
+            };
+
+            $scope.dateMaxValidationControl = function (fixedField) {
+                return fixedField.validation.max ? (fixedField.validation.max === 'today' ? $scope.currentDayMax : fixedField.validation.max) : new Date(2099, 0, 1, 0, 0, 0);
+            };
+
+            $scope.fixedSelectListOption = function (fixedField) {
+                var data = $filter('filter')($scope.picklistsModule[fixedField.picklist_id], { inactive: '!true', hidden: '!true' }, true);
+                return {
+                    dataSource: data,
+                    dataTextField: "languages." + $rootScope.globalization.Label + ".label",
+                    dataValueField: "id",
+                }
+            };
+
+            $scope.fixedMultiSelect = function (fixedField) {
+                var data = $filter('filter')($scope.picklistsModule[fixedField.picklist_id], { inactive: '!true', hidden: '!true' }, true);
+                return {
+                    placeholder: $filter('translate')('Common.MultiselectPlaceholder'),
+                    dataTextField: "languages." + $rootScope.globalization.Label + ".label",
+                    valuePrimitive: true,
+                    autoBind: false,
+                    dataSource: data
+                }
+            };
+
+            $scope.fixedLookupOptions = function (fixedField) {
+                return {
+                    dataSource: new kendo.data.DataSource({
+                        serverFiltering: true,
+                        transport: {
+                            read: function (options) {
+                                const findRequest = {
+                                    module: fixedField.lookup_type,
+                                    convert: false
+                                };
+
+                                if (!options.data.filter) {
+                                    options.data.filter = {
+                                        "filters": []
+                                    }
+                                }
+
+                                var filter = Object.assign({}, options.data.filter.filters[0]);
+                                if (!options.data.filter || (options.data.filter && options.data.filter.filters.length === 0)) {
+                                    options.data.filter = {};
+                                    options.data.filter.filters = [];
+                                    options.data.filter.logic = 'and';
+
+                                    if (fixedField && fixedField.filters.length > 0) {
+                                        for (var h = 0; h < fixedField.filters.length; h++) {
+                                            const filter = fixedField.filters[h];
+                                            options.data.filter.filters.push({
+                                                field: filter.filter_field,
+                                                operator: filter.operator,
+                                                value: filter.value
+                                            });
+                                        }
+                                    }
+
+                                    var defaultLookupFilter = {
+                                        field: fixedField.lookupModulePrimaryField.name,
+                                        operator: fixedField.lookup_search_type && fixedField.lookup_search_type !== "" ? fixedField.lookup_search_type.replace('_', '') : "startswith",
+                                        value: ''
+                                    };
+
+                                    if (fixedField.lookupModulePrimaryField.data_type === 'number' || fixedField.lookupModulePrimaryField.data_type === 'number_auto') {
+                                        defaultLookupFilter.operator = 'not_empty'// value !== '' ? 'equals' : 'not_empty';
+                                        defaultLookupFilter.value = defaultLookupFilter.value === 'not_empty' ? '-' : defaultLookupFilter.value;
+                                    }
+
+                                }
+                                if (options.data.filter.filters.length > 0) {
+                                    //default lookup operator = starts_with or contains its come from studio
+                                    //if lookup primary field's data_type equal number or auto_number we have to change default operator.
+                                    processLookupOperator(options.data.filter.filters, fixedField.lookupModulePrimaryField);
+                                    options.data.filter.filters = ModuleService.fieldLookupFilters(fixedField, $scope.record, options.data.filter.filters, findRequest);
+                                    findRequest.fields.push(fixedField.lookupModulePrimaryField.name);
+                                    if (fixedField.lookupModulePrimaryField.data_type === 'number' || fixedField.lookupModulePrimaryField.data_type === 'number_auto') {
+
+                                        if (!options.data.filter.filters[0].operator)
+                                            options.data.filter.filters[0].operator = 'equals';
+
+                                    } else if (options.data.filter.filters.length > 0) {
+                                        const operator = options.data.filter.filters[0].operator;
+                                        if (operator.contains('_'))
+                                            options.data.filter.filters[0].operator = operator !== "" ? operator.replace('_', '') : "startswith";
+                                    }
+                                }
+
+                                $.ajax({
+                                    url: '/api/record/find_custom',
+                                    contentType: 'application/json',
+                                    dataType: 'json',
+                                    type: 'POST',
+                                    data: JSON.stringify(Object.assign(findRequest, options.data)),
+                                    success: function (result) {
+                                        options.success(result);
+                                    },
+                                    beforeSend: $rootScope.beforeSend()
+                                })
+                            }
+                        },
+                        schema: {
+                            data: "data",
+                            total: "total",
+                            model: { id: "id" }
+                        },
+                    }),
+                    optionLabel: $filter('translate')('Common.Select'),
+                    autoBind: false,
+                    dataTextField: fixedField.lookupModulePrimaryField.name,
+                    dataValueField: "id"
+                };
+            };
+            //For Kendo UI
+
+            function filterCells(key) {
+                return $filter('filter')($scope.cells, { column: key }, true)[0];
+            }
+
+            function prepareFieldMap(fieldMap) {
+                var newFieldMap = {};
+                for (var key in fieldMap) {
+                    newFieldMap[key] = fieldMap[key].column;
+                }
+                return newFieldMap;
+            }
+
+            $scope.getColumnName = function (fieldName) {
+                var obj = $scope.fieldMap[fieldName];
+                if (obj) {
+                    return obj.column;
+                }
+            };
+
+            $scope.getFields = function (sectionName, sectionColumn) {
+                var result = $filter('filter')($scope.module.fields, function (field) {
+                    return !field.deleted && field.data_type !== 'number_auto' && field.section === sectionName && field.section_column === sectionColumn && !field.combination
+                }, true);
+
+                return $filter('orderBy')(result, 'order');
+            };
+
+            function processLookupOperator(filters, field) {
+                if (filters && filters.length > 0) {
+                    var result = $filter('filter')(filters, { field: field.name }, true)[0];
+                    if (result && (field.data_type === 'number' || field.data_type === 'number_auto')) {
+                        result.operator = result.operator.startsWith('starts') || result.operator === 'contains' ? 'equals' : result.operator
+                    }
+                }
+            }
+        }
+    ]);

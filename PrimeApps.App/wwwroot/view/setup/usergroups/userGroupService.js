@@ -1,1 +1,37 @@
-"use strict";angular.module("primeapps").factory("UserGroupService",["$rootScope","$http","config","$filter",function(e,r,u){return{getAll:function(){return r.get(u.apiUrl+"user_group/get_all")},create:function(e){return r.post(u.apiUrl+"user_group/create",e)},update:function(e){return r.put(u.apiUrl+"user_group/update/"+e.id,e)},"delete":function(e){return r["delete"](u.apiUrl+"user_group/delete/"+e)},prepare:function(r){return r.user_ids=[],angular.forEach(r.users,function(e){r.user_ids.push(e.id)}),delete r.users,e.languageStringify(r),r}}}]);
+'use strict';
+
+angular.module('primeapps')
+
+    .factory('UserGroupService', ['$rootScope', '$http', 'config', '$filter',
+        function ($rootScope, $http, config, $filter) {
+            return {
+                getAll: function () {
+                    return $http.get(config.apiUrl + 'user_group/get_all');
+                },
+
+                create: function (userGroup) {
+                    return $http.post(config.apiUrl + 'user_group/create', userGroup);
+                },
+
+                update: function (userGroup) {
+                    return $http.put(config.apiUrl + 'user_group/update/' + userGroup.id, userGroup);
+                },
+
+                delete: function (id) {
+                    return $http.delete(config.apiUrl + 'user_group/delete/' + id);
+                },
+                prepare: function (userGroup) {
+                    userGroup.user_ids = [];
+
+                    angular.forEach(userGroup.users, function (user) {
+                        userGroup.user_ids.push(user.id);
+                    });
+
+                    delete userGroup.users;
+
+                    $rootScope.languageStringify(userGroup);
+
+                    return userGroup;
+                }
+            };
+        }]);

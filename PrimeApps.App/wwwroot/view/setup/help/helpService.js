@@ -1,1 +1,70 @@
-angular.module("primeapps").factory("HelpService",["$http","config","$filter","$rootScope",function(e,t,l,r){return{create:function(l){return e.post(t.apiUrl+"help/create",l)},update:function(l){return e.put(t.apiUrl+"help/update/"+l.id,l)},"delete":function(l){return e["delete"](t.apiUrl+"help/delete/"+l)},getAll:function(l){return e.get(t.apiUrl+"help/get_all?modalType="+l)},getById:function(l){return e.get(t.apiUrl+"help/get/"+l)},getByType:function(l,r,n){return r=r?r:null,n=n?n:null,e.get(t.apiUrl+"help/get_by_type?helpType="+l+"&moduleId="+r+"&route="+n)},getModuleType:function(l,r,n){return n=n?n:null,e.get(t.apiUrl+"help/get_module_type?helpType="+l+"&moduleType="+r+"&moduleId="+n)},getCustomHelp:function(l,r){return e.get(t.apiUrl+"help/get_custom_help?helpType="+l+"&customhelp="+r)},process:function(e,t,n,u){for(var p=[],i=0;i<e.length;i++){var o=e[i];if(o.binding="",o.module_id){var a=l("filter")(t,{id:o.module_id},!0)[0],d=l("filter")(u,{Name:o.module_type},!0)[0];o.binding=(a?a["label_"+r.language+"_singular"]+" (":"")+(d?d.Label+")":"")}else if(o.route_url){var g=l("filter")(n,{value:o.route_url},!0)[0];g&&(o.binding=g.name)}else o.binding=l("translate")("Setup.HelpGuide.Independent");p.push(o)}return p}}}]);
+angular.module('primeapps')
+    .factory('HelpService', ['$http', 'config', '$filter', '$rootScope',
+        function ($http, config, $filter, $rootScope) {
+            return {
+                create: function (help) {
+                    return $http.post(config.apiUrl + 'help/create', help);
+                },
+
+                update: function (help) {
+                    return $http.put(config.apiUrl + 'help/update/' + help.id, help);
+                },
+
+                delete: function (id) {
+                    return $http.delete(config.apiUrl + 'help/delete/' + id);
+                },
+
+                getAll: function (type) {
+                    return $http.get(config.apiUrl + 'help/get_all?modalType=' + type);
+                },
+
+                getById: function (id) {
+                    return $http.get(config.apiUrl + 'help/get/' + id);
+                },
+
+                getByType: function (type, moduleId, route) {
+                    moduleId = moduleId ? moduleId : null;
+                    route = route ? route : null;
+                    return $http.get(config.apiUrl + 'help/get_by_type?helpType=' + type + '&moduleId=' + moduleId + '&route=' + route);
+                },
+                getModuleType: function (helpType, moduleType, moduleId) {
+                    moduleId = moduleId ? moduleId : null;
+                    return $http.get(config.apiUrl + 'help/get_module_type?helpType=' + helpType + '&moduleType=' + moduleType + '&moduleId=' + moduleId);
+                },
+
+                getCustomHelp: function (helpType, customhelp) {
+
+                    return $http.get(config.apiUrl + 'help/get_custom_help?helpType=' + helpType + '&customhelp=' + customhelp);
+                },
+
+                process: function (helpsidesData, modules, routes, helpEnums) {
+                    var helpsides = [];
+
+                    for (var i = 0; i < helpsidesData.length; i++) {
+                        var helpside = helpsidesData[i];
+                        helpside.binding = '';
+
+                        if (helpside.module_id) {
+                            var module = $filter('filter')(modules, { id: helpside.module_id }, true)[0];
+                            var helpEnum = $filter('filter')(helpEnums, { Name: helpside.module_type }, true)[0];
+
+                            helpside.binding = (module ? module['label_' + $rootScope.language + '_singular'] + ' ' + '(' : '') + (helpEnum ? helpEnum.Label + ')' : '');
+                        }
+                        else if (helpside.route_url) {
+                            var route = $filter('filter')(routes, { value: helpside.route_url }, true)[0];
+
+                            if (route)
+                                helpside.binding = route.name;
+                        }
+                        else {
+                            helpside.binding = $filter('translate')('Setup.HelpGuide.Independent');
+                        }
+
+                        helpsides.push(helpside);
+                    }
+
+                    return helpsides;
+                }
+            };
+        }
+    ]);

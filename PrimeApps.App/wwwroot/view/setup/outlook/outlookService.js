@@ -1,1 +1,18 @@
-"use strict";angular.module("primeapps").factory("OutlookService",["$http","config",function(t,e){return{getSettings:function(){return t.get(e.apiUrl+"outlook/get_settings")},saveSettings:function(o){return t.post(e.apiUrl+"outlook/save_settings",o)},createMailModule:function(){return t.post(e.apiUrl+"outlook/create_mail_module",{})}}}]);
+'use strict';
+
+angular.module('primeapps')
+    .factory('OutlookService', ['$http', 'config',
+        function ($http, config) {
+            return {
+                getSettings: function () {
+                    return $http.get(config.apiUrl + 'outlook/get_settings');
+                },
+                saveSettings: function (outlookSetting) {
+                    return $http.post(config.apiUrl + 'outlook/save_settings', outlookSetting);
+                },
+                createMailModule: function () {
+                    return $http.post(config.apiUrl + 'outlook/create_mail_module', {});
+                }
+            };
+        }
+    ]);

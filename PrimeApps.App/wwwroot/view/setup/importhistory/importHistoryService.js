@@ -1,1 +1,16 @@
-"use strict";angular.module("primeapps").factory("ImportHistoryService",["$http","$filter","config",function(r,t,e){return{find:function(t){return r.post(e.apiUrl+"data/import_find",t)},revert:function(t){return r["delete"](e.apiUrl+"data/import_revert/"+t)}}}]);
+'use strict';
+
+angular.module('primeapps')
+    .factory('ImportHistoryService', ['$http', '$filter', 'config',
+        function ($http, $filter, config) {
+            return {
+                find: function (request) {
+                    return $http.post(config.apiUrl + 'data/import_find', request);
+                },
+
+                revert: function (id) {
+                    return $http.delete(config.apiUrl + 'data/import_revert/' + id);
+                }
+            };
+        }]);
+

@@ -1,1 +1,86 @@
-"use strict";angular.module("primeapps").factory("UserService",["$http","config",function(e,r){return{getUsers:function(e,r,t){var n=[];return angular.forEach(e,function(e){var s=e;angular.forEach(r,function(r){r.user_ids.indexOf(e.id)>-1&&(s.profile=r)}),angular.forEach(t,function(r){r.users.indexOf(e.id)>-1&&(s.role=r)}),s.email.startsWith("integration_")||n.push(s)}),n},getAllUser:function(){return e.get(r.apiUrl+"User/get_all")},sendExternalMail:function(t){return e.post(r.apiUrl+"messaging/send_external_email",t)},sendPasswordToOfficeUser:function(t){return e.post(r.apiUrl+"User/send_user_password",t)},addUser:function(t){return e.post(r.apiUrl+"User/add_user",t)},getOfficeUsers:function(){return e.get(r.apiUrl+"User/get_office_users")},isAvailableToInvite:function(t,n){return e.post(r.apiUrl+"User/IsAvailableToInvite",{EMail:t,InstanceID:n})},updateActiveDirectoryEmail:function(t,n){return e.get(r.apiUrl+"User/UpdateActiveDirectoryEmail?UserId="+t+"&Email="+n)},updateUserPhone:function(t){return e.post(r.apiUrl+"user/update_account_phone",t)},invite:function(t,n,s,i,a,u){return e.post(r.apiUrl+"Instance/Invite",{EMail:t,InstanceID:n,ProfileID:s,RoleID:i,Culture:a,CreatedBy:u})},dismiss:function(t,n){return e.post(r.apiUrl+"Instance/Dismiss",{user_id:t.id,email:t.email,has_account:t.has_account,instance_id:n})},dismissUsers:function(t){return e.post(r.apiUrl+"Instance/dismiss_users",t)},updateUserStatus:function(t){return e.post(r.apiUrl+"user/update_account_status",t)}}}]);
+'use strict';
+
+angular.module('primeapps')
+
+    .factory('UserService', ['$http', 'config',
+        function ($http, config) {
+            return {
+                getUsers: function (workgroupUsers, profiles, roles) {
+                    var users = [];
+
+                    angular.forEach(workgroupUsers, function (workgroupUser) {
+                        var user = workgroupUser;
+
+                        angular.forEach(profiles, function (profile) {
+                            if (profile.user_ids.indexOf(workgroupUser.id) > -1) {
+                                user.profile = profile;
+                            }
+                        });
+
+                        angular.forEach(roles, function (role) {
+                            if (role.users.indexOf(workgroupUser.id) > -1) {
+                                user.role = role;
+                            }
+                        });
+
+                        if (!user.email.startsWith('integration_'))
+                            users.push(user);
+                    });
+
+                    return users;
+                },
+                getAllUser: function () {
+                    return $http.get(config.apiUrl + 'User/get_all');
+                },
+                sendExternalMail: function (requestMail) {
+                    return $http.post(config.apiUrl + 'messaging/send_external_email', requestMail);
+                },
+                sendPasswordToOfficeUser: function (requestMail) {
+                    return $http.post(config.apiUrl + 'User/send_user_password', requestMail);
+                },
+                addUser: function (user) {
+                    return $http.post(config.apiUrl + 'User/add_user', user);
+                },
+                getOfficeUsers: function () {
+                    return $http.get(config.apiUrl + 'User/get_office_users');
+                },
+                isAvailableToInvite: function (email, instanceId) {
+                    return $http.post(config.apiUrl + 'User/IsAvailableToInvite', {
+                        EMail: email,
+                        InstanceID: instanceId
+                    });
+                },
+                updateActiveDirectoryEmail: function (id, email) {
+                    return $http.get(config.apiUrl + 'User/UpdateActiveDirectoryEmail?UserId=' + id + '&Email=' + email);
+                },
+                updateUserPhone:function (accountInfo) {
+                    return $http.post(config.apiUrl + 'user/update_account_phone', accountInfo);
+                },
+                invite: function (email, instanceId, profileId, roleId, culture, createdBy) {
+                    return $http.post(config.apiUrl + 'Instance/Invite', {
+                        EMail: email,
+                        InstanceID: instanceId,
+                        ProfileID: profileId,
+                        RoleID: roleId,
+                        Culture: culture,
+                        CreatedBy: createdBy
+                    });
+                },
+
+                dismiss: function (user, instanceId) {
+                    return $http.post(config.apiUrl + 'Instance/Dismiss', {
+                        user_id: user.id,
+                        email: user.email,
+                        has_account: user.has_account,
+                        instance_id: instanceId
+                    });
+                },
+
+                dismissUsers: function (userList) {
+                    return $http.post(config.apiUrl + 'Instance/dismiss_users', userList);
+                },
+                updateUserStatus:function (accountInfo) {
+                    return $http.post(config.apiUrl + 'user/update_account_status', accountInfo);
+                }
+            };
+        }]);

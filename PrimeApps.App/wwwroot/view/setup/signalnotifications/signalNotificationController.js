@@ -1,1 +1,203 @@
-"use strict";angular.module("primeapps").controller("SignalNotificationController",["$rootScope","$scope","SignalNotificationService","helper","mdToast","$filter","$state",function(t,e,a,i,n,l,o){i.hasAdminRights||(n.error(l("translate")("Common.Forbidden")),o.go("app.dashboard")),e.loading=!0,t.breadcrumblist=[{title:l("translate")("Layout.Menu.Dashboard"),link:"#/app/dashboard"},{title:l("translate")("Setup.Nav.Notifications"),link:"#/app/setup/signalnotification"},{title:l("translate")("Setup.Nav.Notifications")}],e.goUrl2=function(t){var a=window.getSelection();0===a.toString().length&&e.showSideModal(t.id,null)},e.getTime=function(t){return kendo.toString(kendo.parseDate(t),"g")};const s=function(a){var i="-";return a.module_id&&(t.processLanguage(a.module),i=t.getLanguageValue(a.module.languages,"label","plural")),'<td class="hide-on-m2"><span>'+t.getLanguageValue(a.languages,"message")+'</span></td><td class="hide-on-m2"><span>'+a.user.full_name+'</span></td><td class="hide-on-m2"><span>'+i+'</span></td><td class="hide-on-m2">'+(a.record_id?'<div class="grid-list-button"> <span>'+l("translate")("Setup.SignalNotification.RecordDetail")+'</span><a href="#/app/record/'+a.module.name+"?id="+a.record_id+'"><i class= "fas fa-external-link-alt"></i></a> </div>':"-")+'</td><td class="hide-on-m2"><span>'+l("translate")("Setup.SignalNotification.TypeEnum."+a.type)+'</span></td><td class="hide-on-m2"><span>'+e.getTime(a.created_at)+'</span></td><td class="hide-on-m2"><span>'+l("translate")("Unread"!==a.status?"Setup.SignalNotification.StatusEnum.Read":"Setup.SignalNotification.StatusEnum.Unread")+'</span></td><td class="hide-on-m2"><span>'+(a.updated_at||"Unread"!==a.status?e.getTime(a.updated_at):"-")+'</td><td class="show-on-m2"><div>'+l("translate")("Setup.SignalNotification.Message")+": <strong>"+t.getLanguageValue(a.languages,"message")+"</strong></div><div>"+l("translate")("Setup.SignalNotification.User")+": <strong>"+a.user.full_name+"</strong></div><div>"+l("translate")("Setup.SignalNotification.Module")+": "+i+"</div><div>"+l("translate")("Setup.SignalNotification.Record")+": "+(a.record_id?'</span><a href="#/app/record/'+a.module.name+"?id="+a.record_id+'"><i class= "fas fa-external-link-alt"></i></a>':"-")+"</div><div>"+l("translate")("Setup.SignalNotification.Status")+": "+l("translate")("Setup.SignalNotification.TypeEnum."+a.type)+"</div><div>"+l("translate")("Setup.SignalNotification.CreatedAt")+": "+e.getTime(a.created_at)+"</div><div>"+l("translate")("Unread"!==a.status?"Setup.SignalNotification.StatusEnum.Read":"Setup.SignalNotification.StatusEnum.Unread")+"</div><div>"+l("translate")("Setup.SignalNotification.UpdatedAt")+": "+(a.updated_at||"Unread"!==a.status?e.getTime(a.updated_at):"-")+"</div></td>"};var d=function(){e.signalNotificationGridOptions={dataSource:{type:"odata-v4",page:1,pageSize:10,serverPaging:!0,serverFiltering:!0,serverSorting:!0,transport:{read:{url:"/api/signal_notification/find",type:"GET",dataType:"json",beforeSend:t.beforeSend()}},requestEnd:function(a){t.processLanguages(a.response.items||[]),e.loading=!1},schema:{data:"items",total:"count",model:{id:"id",fields:{Status:{type:"enums"},Type:{type:"enums"}}}}},scrollable:!1,persistSelection:!0,sortable:!0,noRecords:!0,pageable:{refresh:!0,pageSize:10,pageSizes:[10,25,50,100],buttonCount:5,info:!0},filterable:!0,filter:function(t){if(t.filter&&"Status"!==t.field&&"Type"!==t.field)for(var e=0;e<t.filter.filters.length;e++)t.filter.filters[e].ignoreCase=!0},rowTemplate:function(t){return"<tr>"+s(t)+"</tr>"},altRowTemplate:function(t){return'<tr class="k-alt">'+s(t)+"</tr>"},columns:[{media:"(min-width: 575px)",field:"Message",title:l("translate")("Setup.SignalNotification.Message")},{media:"(min-width: 575px)",field:"User.FullName",title:l("translate")("Setup.SignalNotification.User")},{media:"(min-width: 575px)",field:"Module.LabelEnPlural",title:l("translate")("Setup.SignalNotification.Module")},{media:"(min-width: 575px)",field:"RecordId",title:l("translate")("Setup.SignalNotification.Record")},{media:"(min-width: 575px)",field:"Type",title:l("translate")("Setup.SignalNotification.Type"),values:[{value:"Information",text:l("translate")("Setup.SignalNotification.TypeEnum.Information")},{value:"Error",text:l("translate")("Setup.SignalNotification.TypeEnum.Error")},{value:"Success",text:l("translate")("Setup.SignalNotification.TypeEnum.Success")},{value:"Warning",text:l("translate")("Setup.SignalNotification.TypeEnum.Warning")}]},{media:"(min-width: 575px)",field:"CreatedAt",title:l("translate")("Setup.SignalNotification.CreatedAt"),filterable:{ui:function(t){t.kendoDateTimePicker({format:"{0: dd-MM-yyyy  hh:mm}"})}}},{media:"(min-width: 575px)",field:"Status",title:l("translate")("Setup.SignalNotification.Status"),values:[{text:l("translate")("Setup.SignalNotification.StatusEnum.Read"),value:"Read"},{text:l("translate")("Setup.SignalNotification.StatusEnum.Unread"),value:"Unread"}]},{media:"(min-width: 575px)",field:"UpdatedAt",title:l("translate")("Setup.SignalNotification.UpdatedAt"),filterable:{ui:function(t){t.kendoDateTimePicker({format:"{0: dd-MM-yyyy  hh:mm}"})}}},{title:"Items",media:"(max-width: 575px)"}]}};angular.element(document).ready(function(){d()})}]);
+'use strict';
+
+angular.module('primeapps')
+    .controller('SignalNotificationController', ['$rootScope', '$scope', 'SignalNotificationService', 'helper', 'mdToast', '$filter', '$state',
+        function ($rootScope, $scope, SignalNotificationService, helper, mdToast, $filter, $state) {
+
+            if (!helper.hasAdminRights) {
+                mdToast.error($filter('translate')('Common.Forbidden'));
+                $state.go('app.dashboard');
+            }
+
+            $scope.loading = true;
+            $rootScope.breadcrumblist = [
+                {
+                    title: $filter('translate')('Layout.Menu.Dashboard'),
+                    link: "#/app/dashboard"
+                },
+                {
+                    title: $filter('translate')('Setup.Nav.Notifications'),
+                    link: '#/app/setup/signalnotification'
+                },
+                {
+                    title: $filter('translate')('Setup.Nav.Notifications')
+                }
+            ];
+
+            //For Kendo UI
+            $scope.goUrl2 = function (item) {
+                var selection = window.getSelection();
+                if (selection.toString().length === 0) {
+                    $scope.showSideModal(item.id, null);
+                }
+            };
+
+            $scope.getTime = function (time) {
+                return kendo.toString(kendo.parseDate(time), "g");
+            };
+
+            const createRow = function (e) {
+
+                var moduleMessage = "-";
+                if (e.module_id) {
+                    $rootScope.processLanguage(e.module);
+                    moduleMessage = $rootScope.getLanguageValue(e.module.languages, 'label', 'plural');
+                }
+                //$rootScope.getLanguageValue(e.languages, 'message')
+                return '<td class="hide-on-m2"><span>' + $rootScope.getLanguageValue(e.languages, 'message') + '</span></td>'
+                    + '<td class="hide-on-m2"><span>' + e.user.full_name + '</span></td>'
+                    + '<td class="hide-on-m2"><span>' + moduleMessage + '</span></td>'
+                    + '<td class="hide-on-m2">' + (!e.record_id ? '-' : '<div class="grid-list-button"> <span>' + $filter('translate')('Setup.SignalNotification.RecordDetail') + '</span><a href="#/app/record/' + e.module.name + '?id=' + e.record_id + '"><i class= "fas fa-external-link-alt"></i></a> </div>') + '</td>'
+                    + '<td class="hide-on-m2"><span>' + $filter('translate')('Setup.SignalNotification.TypeEnum.' + e.type) + '</span></td>'
+                    + '<td class="hide-on-m2"><span>' + $scope.getTime(e.created_at) + '</span></td>'
+                    + '<td class="hide-on-m2"><span>' + (e.status !== 'Unread' ? $filter('translate')('Setup.SignalNotification.StatusEnum.Read') : $filter('translate')('Setup.SignalNotification.StatusEnum.Unread')) + '</span></td>'
+                    + '<td class="hide-on-m2"><span>' + (!e.updated_at && e.status === 'Unread' ? '-' : $scope.getTime(e.updated_at)) + '</td>'
+                    + '<td class="show-on-m2">'
+                    + '<div>' + $filter('translate')('Setup.SignalNotification.Message') + ': <strong>' + $rootScope.getLanguageValue(e.languages, 'message') + '</strong></div>'
+                    + '<div>' + $filter('translate')('Setup.SignalNotification.User') + ': <strong>' + e.user.full_name + '</strong></div>'
+                    + '<div>' + $filter('translate')('Setup.SignalNotification.Module') + ': ' + moduleMessage + '</div>'
+                    + '<div>' + $filter('translate')('Setup.SignalNotification.Record') + ': ' + (!e.record_id ? '-' : '</span><a href="#/app/record/' + e.module.name + '?id=' + e.record_id + '"><i class= "fas fa-external-link-alt"></i></a>') + '</div>'
+                    + '<div>' + $filter('translate')('Setup.SignalNotification.Status') + ': ' + $filter('translate')('Setup.SignalNotification.TypeEnum.' + e.type) + '</div>'
+                    + '<div>' + $filter('translate')('Setup.SignalNotification.CreatedAt') + ': ' + $scope.getTime(e.created_at) + '</div>'
+                    + '<div>' + (e.status !== 'Unread' ? $filter('translate')('Setup.SignalNotification.StatusEnum.Read') : $filter('translate')('Setup.SignalNotification.StatusEnum.Unread')) + '</div>'
+                    + '<div>' + $filter('translate')('Setup.SignalNotification.UpdatedAt') + ': ' + (!e.updated_at && e.status === 'Unread' ? '-' : $scope.getTime(e.updated_at)) + '</div>'
+                    + '</td>';
+            };
+
+            var createGrid = function () {
+
+                $scope.signalNotificationGridOptions = {
+                    dataSource: {
+                        type: "odata-v4",
+                        page: 1,
+                        pageSize: 10,
+                        serverPaging: true,
+                        serverFiltering: true,
+                        serverSorting: true,
+                        transport: {
+                            read: {
+                                url: "/api/signal_notification/find",
+                                type: 'GET',
+                                dataType: "json",
+                                beforeSend: $rootScope.beforeSend()
+                            }
+                        },
+                        requestEnd: function (e) {
+                            $rootScope.processLanguages(e.response.items || []);
+                            $scope.loading = false;
+                        },
+                        schema: {
+                            data: "items",
+                            total: "count",
+                            model: {
+                                id: "id",
+                                fields: {
+                                    Status: { type: "enums" },
+                                    Type: { type: "enums" },
+                                }
+                            }
+                        }
+                    },
+                    scrollable: false,
+                    persistSelection: true,
+                    sortable: true,
+                    noRecords: true,
+                    pageable: {
+                        refresh: true,
+                        pageSize: 10,
+                        pageSizes: [10, 25, 50, 100],
+                        buttonCount: 5,
+                        info: true,
+                    },
+                    filterable: true,
+                    filter: function (e) {
+                        if (e.filter && e.field !== 'Status' && e.field !== 'Type') {
+                            for (var i = 0; i < e.filter.filters.length; i++) {
+                                e.filter.filters[i].ignoreCase = true;
+                            }
+                        }
+                    },
+                    rowTemplate: function (e) {
+                        return '<tr>' + createRow(e) + '</tr>';
+                    },
+                    altRowTemplate: function (e) {
+                        return '<tr class="k-alt">' + createRow(e) + '</tr>';
+                    },
+                    columns: [
+                        {
+                            media: "(min-width: 575px)",
+                            field: "Message",
+                            title: $filter('translate')('Setup.SignalNotification.Message'),
+                        },
+                        {
+                            media: "(min-width: 575px)",
+                            field: "User.FullName",
+                            title: $filter('translate')('Setup.SignalNotification.User'),
+                        },
+                        {
+                            media: "(min-width: 575px)",
+                            field: "Module.LabelEnPlural",
+                            title: $filter('translate')('Setup.SignalNotification.Module'),
+                        },
+                        {
+                            media: "(min-width: 575px)",
+                            field: "RecordId",
+                            title: $filter('translate')('Setup.SignalNotification.Record'),
+                        },
+                        {
+                            media: "(min-width: 575px)",
+                            field: "Type",
+                            title: $filter('translate')('Setup.SignalNotification.Type'),
+                            values: [
+                                { value: "Information", text: $filter('translate')('Setup.SignalNotification.TypeEnum.Information') },
+                                { value: "Error", text: $filter('translate')('Setup.SignalNotification.TypeEnum.Error') },
+                                { value: "Success", text: $filter('translate')('Setup.SignalNotification.TypeEnum.Success') },
+                                { value: "Warning", text: $filter('translate')('Setup.SignalNotification.TypeEnum.Warning') }
+                            ]
+                        },
+                        {
+                            media: "(min-width: 575px)",
+                            field: "CreatedAt",
+                            title: $filter('translate')('Setup.SignalNotification.CreatedAt'),
+                            filterable: {
+                                ui: function (element) {
+                                    element.kendoDateTimePicker({
+                                        format: '{0: dd-MM-yyyy  hh:mm}'
+                                    })
+                                }
+                            }
+                        },
+                        {
+                            media: "(min-width: 575px)",
+                            field: "Status",
+                            title: $filter('translate')('Setup.SignalNotification.Status'),
+                            values: [
+                                { text: $filter('translate')('Setup.SignalNotification.StatusEnum.Read'), value: "Read" },
+                                { text: $filter('translate')('Setup.SignalNotification.StatusEnum.Unread'), value: "Unread" }
+                            ]
+                        },
+                        {
+                            media: "(min-width: 575px)",
+                            field: "UpdatedAt",
+                            title: $filter('translate')('Setup.SignalNotification.UpdatedAt'),
+                            filterable: {
+                                ui: function (element) {
+                                    element.kendoDateTimePicker({
+                                        format: '{0: dd-MM-yyyy  hh:mm}'
+                                    })
+                                }
+                            }
+                        },
+                        {
+                            title: "Items",
+                            media: "(max-width: 575px)"
+                        },]
+
+                };
+            };
+
+            angular.element(document).ready(function () {
+                createGrid();
+            });
+        }
+    ]);

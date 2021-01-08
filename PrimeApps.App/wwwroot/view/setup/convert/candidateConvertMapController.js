@@ -1,1 +1,88 @@
-"use strict";angular.module("primeapps").controller("CandidateConvertMapController",["$rootScope","$scope","$filter","$cache","helper","ConvertMapService","mdToast",function(e,i,o,d,l,n,a){i.$parent.collapsed=!0,i.language=e.language,i.candidateModule=o("filter")(e.modules,{name:"adaylar"},!0)[0],i.employeeModule=o("filter")(e.modules,{name:"calisanlar"},!0)[0];var t=function(){var e=i.candidateModule.id;n.getMappings(e).then(function(e){i.employeeModule.selectedFields={},angular.forEach(e.data,function(e){i.employeeModule.selectedFields[e.field_id]=o("filter")(i.employeeModule.fields,{id:e.mapping_field_id},i.employeeModule,{id:e.mapping_module_id},!0)[0]})})["catch"](function(){a.error(o("translate")("Common.Error"))})};t(),i.customFilter=function(e){return function(i){return"lookup"===i.data_type&&"lookup"===e.data_type?i.lookup_type===e.lookup_type?!0:!1:"picklist"===i.data_type&&"picklist"===e.data_type?i.picklist_id===e.picklist_id?!0:!1:!0}},i.mappingModuleFieldChanged=function(e,d,l){var t={};if(t.module_id=i.candidateModule.id,t.mapping_module_id=e.id,t.field_id=d.id,t.mapping_field_id=null,e.selectedFields[d.id]){var c=e.selectedFields[d.id];t.mapping_field_id=c.id,n.createMapping(t).then(function(){i.showSuccessIcon={},i.showSuccessIcon[d.id]={},i.showSuccessIcon[d.id][e.id]=!0})["catch"](function(){a.error(o("translate")("Common.Error"))})}else t.mapping_field_id=l.id,n.deleteMapping(t).then(function(){i.showSuccessIcon={},i.showSuccessIcon[d.id]=!0})["catch"](function(){a.error(o("translate")("Common.Error"))})}}]);
+'use strict';
+
+angular.module('primeapps')
+    .controller('CandidateConvertMapController', ['$rootScope', '$scope', '$filter', '$cache', 'helper', 'ConvertMapService', 'mdToast',
+        function ($rootScope, $scope, $filter, $cache, helper, ConvertMapService, mdToast) {
+            $scope.$parent.collapsed = true;
+            $scope.language = $rootScope.language;
+            $scope.candidateModule = $filter('filter')($rootScope.modules, { name: 'adaylar' }, true)[0];
+            $scope.employeeModule = $filter('filter')($rootScope.modules, { name: 'calisanlar' }, true)[0];
+
+            var getMappings = function () {
+                var moduleId = $scope.candidateModule.id;
+
+                ConvertMapService.getMappings(moduleId)
+                    .then(function (result) {
+                        $scope.employeeModule.selectedFields = {};
+
+                        angular.forEach(result.data, function (mappedModule) {
+                            $scope.employeeModule.selectedFields[mappedModule.field_id] = $filter('filter')($scope.employeeModule.fields, { id: mappedModule.mapping_field_id }, $scope.employeeModule, { id: mappedModule.mapping_module_id }, true)[0];
+
+                        });
+
+                    })
+                    .catch(function (error) {
+                        mdToast.error($filter('translate')('Common.Error'));
+                    });
+            };
+
+            getMappings();
+
+            $scope.customFilter = function (leadField) {
+                return function (field) {
+                    if (field.data_type === 'lookup' && leadField.data_type === 'lookup') {
+                        if (field.lookup_type === leadField.lookup_type) {
+                            return true;
+                        }
+                        return false;
+                    }
+                    else if (field.data_type === 'picklist' && leadField.data_type === 'picklist') {
+                        if (field.picklist_id === leadField.picklist_id) {
+                            return true;
+                        }
+                        return false;
+                    }
+                    else {
+                        return true;
+                    }
+                };
+            };
+
+            $scope.mappingModuleFieldChanged = function (module, leadField, lastSelection) {
+                var conversionMapping = {};
+                conversionMapping["module_id"] = $scope.candidateModule.id;
+                conversionMapping["mapping_module_id"] = module.id;
+                conversionMapping["field_id"] = leadField.id;
+                conversionMapping["mapping_field_id"] = null;
+
+                if (module.selectedFields[leadField.id]) {
+
+                    var selectedMapping = module.selectedFields[leadField.id];
+                    conversionMapping["mapping_field_id"] = selectedMapping.id;
+
+                    ConvertMapService.createMapping(conversionMapping)
+                        .then(function () {
+                            $scope.showSuccessIcon = {};
+                            $scope.showSuccessIcon[leadField.id] = {};
+                            $scope.showSuccessIcon[leadField.id][module.id] = true;
+                        })
+                        .catch(function (error) {
+                            mdToast.error($filter('translate')('Common.Error'));
+                        });
+                }
+                else {
+                    conversionMapping["mapping_field_id"] = lastSelection.id;
+
+                    ConvertMapService.deleteMapping(conversionMapping)
+                        .then(function () {
+                            $scope.showSuccessIcon = {};
+                            $scope.showSuccessIcon[leadField.id] = true;
+                        })
+                        .catch(function (error) {
+                            mdToast.error($filter('translate')('Common.Error'));
+                        });
+                    //delete service here
+                }
+            };
+        }
+    ]);

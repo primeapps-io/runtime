@@ -1,1 +1,143 @@
-"use strict";angular.module("primeapps").factory("WorkgroupService",["$http","config","$filter","entityTypes",function(e,t,a,n){return{getWorkgoups:function(){return e.post(t.apiUrl+"Instance/GetWorkgroups",{})},getWorkgoup:function(){return e.post(t.apiUrl+"Instance/GetWorkgroup",{})},create:function(a){return e.post(t.apiUrl+"Instance/Create",angular.toJson(a))},edit:function(a,n){return e.post(t.apiUrl+"Instance/Edit",{title:a,instanceID:n})},remove:function(a){return e.post(t.apiUrl+"Instance/Remove",angular.toJson(a))},leave:function(a){return e.post(t.apiUrl+"Instance/Leave",angular.toJson(a))},join:function(a){return e.post(t.apiUrl+"Instance/Join",angular.toJson(a))},decline:function(a){return e.post(t.apiUrl+"Instance/Decline",angular.toJson(a))},isAvailableToInvite:function(a,n){return e.post(t.apiUrl+"User/IsAvailableToInvite",{EMail:a,InstanceID:n})},saveType:function(a){return e.post(t.apiUrl+"Entity/SaveOrUpdateType",a)},removeType:function(a){return e.post(t.apiUrl+"Entity/RemoveType",a)},removeTypeHistory:function(a,n){return e.post(t.apiUrl+"User/RemoveTypeHistory",{EntityType:a,InstanceID:n})},upgradeLicense:function(a,n){return e.post(t.apiUrl+"License/Upgrade",{LicenseID:a,Frequency:n,IsFreeLicense:!0})},getValues:function(e,t,n,r,u){var i=[];return angular.forEach(e,function(e){var i={};switch(angular.copy(e,i),i.ValueId=e.id,e.Type){case 3:i.ValueInt=e.DefaultValue&&parseInt(e.DefaultValue);break;case 4:i.ValueDate=e.DefaultValue&&new Date(e.DefaultValue.split(".").reverse().join("-"));break;case 6:i.ValueList=e.DefaultValue,i.Values=e.Value.split(",");break;case 9:i.ValueText=a("translate")("true"==e.DefaultValue?"Common.Yes":"Common.No");break;case 10:var o=a("filter")(n,{EntityID:e.DefaultValue,InstanceID:u},!0)[0];i.ValueText=o&&o.EntityName,i.ValueObject=o,i.Values=a("filter")(n,{EntityType:e.Value,InstanceID:u},!0);break;case 13:var s=a("filter")(t,{EntityID:e.DefaultValue},!0)[0];i.ValueText=s?s.EntityName:"",i.Values=t;break;case 14:var l=a("filter")(r,{Code:e.DefaultValue},!0)[0];i.ValueText=l&&l.Name,i.Values=r}this.push(i)},i),i=a("orderBy")(i,"Order")},getResourceUsageForType:function(a,n){return e.post(t.apiUrl+"Entity/GetResourceUsageForType",{EntityType:a,InstanceID:n})},getAllEntityTypes:function(e){var t=[];return t.push({id:n.lead,name:a("translate")("Lead.Lead")}),t.push({id:n.account,name:a("translate")("Account.Account")}),t.push({id:n.contact,name:a("translate")("Contact.Contact")}),t.push({id:n.opportunity,name:a("translate")("Opportunity.Opportunity")}),t.push({id:n.activity,name:a("translate")("Activity.Activity")}),angular.forEach(e,function(e){t.push({id:e.id,name:e.Title})}),t}}}]);
+'use strict';
+
+angular.module('primeapps')
+
+    .factory('WorkgroupService', ['$http', 'config', '$filter', 'entityTypes',
+        function ($http, config, $filter, entityTypes) {
+            return {
+                getWorkgoups: function () {
+                    return $http.post(config.apiUrl + 'Instance/GetWorkgroups', {});
+                },
+
+                getWorkgoup: function () {
+                    return $http.post(config.apiUrl + 'Instance/GetWorkgroup', {});
+                },
+
+                create: function (title) {
+                    return $http.post(config.apiUrl + 'Instance/Create', angular.toJson(title));
+                },
+
+                edit: function (title, instanceId) {
+                    return $http.post(config.apiUrl + 'Instance/Edit', {
+                        title: title,
+                        instanceID: instanceId
+                    });
+                },
+
+                remove: function (workgroupId) {
+                    return $http.post(config.apiUrl + 'Instance/Remove', angular.toJson(workgroupId));
+                },
+
+                leave: function (workgroupId) {
+                    return $http.post(config.apiUrl + 'Instance/Leave', angular.toJson(workgroupId));
+                },
+
+                join: function (instanceId) {
+                    return $http.post(config.apiUrl + 'Instance/Join', angular.toJson(instanceId));
+                },
+
+                decline: function (instanceId) {
+                    return $http.post(config.apiUrl + 'Instance/Decline', angular.toJson(instanceId));
+                },
+
+                isAvailableToInvite: function (email, instanceId) {
+                    return $http.post(config.apiUrl + 'User/IsAvailableToInvite', {
+                        EMail: email,
+                        InstanceID: instanceId
+                    });
+                },
+
+                saveType: function (entityType) {
+                    return $http.post(config.apiUrl + 'Entity/SaveOrUpdateType', entityType);
+                },
+
+                removeType: function (entityType) {
+                    return $http.post(config.apiUrl + 'Entity/RemoveType', entityType);
+                },
+
+                removeTypeHistory: function (entityTypeId, instanceId) {
+                    return $http.post(config.apiUrl + 'User/RemoveTypeHistory', {
+                        EntityType: entityTypeId,
+                        InstanceID: instanceId
+                    });
+                },
+
+                upgradeLicense: function (licenseId, frequency) {
+                    return $http.post(config.apiUrl + 'License/Upgrade', {
+                        LicenseID: licenseId,
+                        Frequency: frequency,
+                        IsFreeLicense: true
+                    });
+                },
+
+                getValues: function (fields, users, clientData, countries, instanceId) {
+                    var vals = [];
+
+                    angular.forEach(fields, function (value) {
+                        var newValue = {};
+                        angular.copy(value, newValue);
+                        newValue.ValueId = value.id;
+
+                        switch (value.Type) {
+                            case 3:
+                                newValue.ValueInt = value.DefaultValue && parseInt(value.DefaultValue);
+                                break;
+                            case 4:
+                                newValue.ValueDate = value.DefaultValue && new Date(value.DefaultValue.split('.').reverse().join('-'));
+                                break;
+                            case 6:
+                                newValue.ValueList = value.DefaultValue;
+                                newValue.Values = value.Value.split(',');
+                                break;
+                            case 9:
+                                newValue.ValueText = value.DefaultValue == 'true' ? $filter('translate')('Common.Yes') : $filter('translate')('Common.No');
+                                break;
+                            case 10:
+                                var data = $filter('filter')(clientData, {EntityID: value.DefaultValue, InstanceID: instanceId}, true)[0];
+                                newValue.ValueText = data && data.EntityName;
+                                newValue.ValueObject = data;
+                                newValue.Values = $filter('filter')(clientData, {EntityType: value.Value, InstanceID: instanceId}, true);
+                                break;
+                            case 13:
+                                var user = $filter('filter')(users, {EntityID: value.DefaultValue}, true)[0];
+                                newValue.ValueText = user ? user.EntityName : '';
+                                newValue.Values = users;
+                                break;
+                            case 14:
+                                var country = $filter('filter')(countries, {Code: value.DefaultValue}, true)[0];
+                                newValue.ValueText = country && country.Name;
+                                newValue.Values = countries;
+                                break;
+                        }
+
+                        this.push(newValue);
+                    }, vals);
+
+                    vals = $filter('orderBy')(vals, 'Order');
+
+                    return vals;
+                },
+
+                getResourceUsageForType: function (entityType, instanceId) {
+                    return $http.post(config.apiUrl + 'Entity/GetResourceUsageForType', {
+                        EntityType: entityType,
+                        InstanceID: instanceId
+                    });
+                },
+
+                getAllEntityTypes: function (workGroupEntityTypes) {
+                    var allEntityTypes = [];
+                    allEntityTypes.push({id: entityTypes.lead, name: $filter('translate')('Lead.Lead')});
+                    allEntityTypes.push({id: entityTypes.account, name: $filter('translate')('Account.Account')});
+                    allEntityTypes.push({id: entityTypes.contact, name: $filter('translate')('Contact.Contact')});
+                    allEntityTypes.push({id: entityTypes.opportunity, name: $filter('translate')('Opportunity.Opportunity')});
+                    allEntityTypes.push({id: entityTypes.activity, name: $filter('translate')('Activity.Activity')});
+
+                    angular.forEach(workGroupEntityTypes, function (workGroupEntityType) {
+                        allEntityTypes.push({id: workGroupEntityType.id, name: workGroupEntityType.Title});
+                    });
+
+                    return allEntityTypes;
+                }
+            };
+        }]);

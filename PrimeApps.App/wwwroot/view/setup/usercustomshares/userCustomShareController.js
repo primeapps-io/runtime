@@ -1,1 +1,185 @@
-"use strict";angular.module("primeapps").controller("UserCustomShareController",["$rootScope","$scope","$filter","helper","UserCustomShareService","mdToast","$localStorage","$mdDialog","$state","AppService",function(e,t,a,s,r,i,o,l,n,d){t.loading=!0,d.checkPermission().then(function(s){if(s&&s.data){var o=JSON.parse(s.data.profile),d=void 0;if(s.data.customProfilePermissions&&(d=JSON.parse(s.data.customProfilePermissions)),!o.HasAdminRights){var m=void 0;d&&(m=d.permissions.indexOf("user_custom_shares")>-1),m||(i.error(a("translate")("Common.Forbidden")),n.go("app.dashboard"))}}e.breadcrumblist=[{title:a("translate")("Layout.Menu.Dashboard"),link:"#/app/dashboard"},{title:a("translate")("Setup.Nav.AccessControl"),link:"#/app/setup/profiles"},{title:a("translate")("Setup.UserCustomShares.Title")}],t["delete"]=function(e){var s=l.confirm().title(a("translate")("Common.AreYouSure")).ok(a("translate")("Common.Yes")).cancel(a("translate")("Common.No"));l.show(s).then(function(){r["delete"](e).then(function(){i.success(a("translate")("Setup.UserCustomShares.DeleteSuccess")),t.grid.dataSource.read()})})},t.goUrl2=function(e){var a=window.getSelection();0===a.toString().length&&t.showSideModal(e)};var u='<md-button class="md-icon-button" id="deleteButton-{{dataItem.id}}" ng-click="delete(dataItem.id)"> <i class="fas fa-trash"></i> <md-tooltip md-autohide="true" md-direction="bottom">'+a("translate")("Common.Delete")+"</md-tooltip></md-button>",c=[{field:"User.FullName",title:a("translate")("Setup.UserCustomShares.UserAtList"),media:"(min-width: 575px)"},{field:"User.Email",title:a("translate")("Setup.UserCustomShares.UserEmail"),media:"(min-width: 575px)"},{field:"CreatedAt",title:a("translate")("Setup.UserCustomShares.CreatedDate"),media:"(min-width: 575px)",filterable:{ui:"datetimepicker"}},{title:a("translate")("Setup.UserCustomShares.Title"),media:"(max-width: 575px)"},{field:"",title:"",width:"80px"}],p='<td class="hide-on-m2"><span>{{ dataItem.user.full_name }}</span></td> <td class="hide-on-m2"><span>{{ dataItem.user.email }}</span></td> <td class="hide-on-m2"><span>#=kendo.toString(kendo.parseDate(created_at),"g")#</span></td><td class="show-on-m2"><div><strong>{{ dataItem.user.full_name }}</strong></div> <div>{{ dataItem.user.email }}</div> <td ng-click="$event.stopPropagation();" class="position-relative"><span>'+u+"</span></td>",f=function(){var a=new kendo.data.DataSource({type:"odata-v4",page:1,pageSize:10,serverPaging:!0,serverFiltering:!0,serverSorting:!0,transport:{read:{url:"/api/user_custom_shares/find",type:"GET",dataType:"json",beforeSend:e.beforeSend()}},schema:{data:"items",total:"count",model:{id:"id",fields:{FullName:{type:"string"},Email:{type:"string"},CreatedAt:{type:"date"}}}}});t.sharesGridOptions={dataSource:a,rowTemplate:'<tr ng-click="goUrl2(dataItem.id)">'+p+"</tr>",altRowTemplate:'<tr class="k-alt" ng-click="goUrl2(dataItem.id)">'+p+"</tr>",scrollable:!0,sortable:!0,noRecords:!0,persistSelection:!0,pageable:{refresh:!0,pageSize:10,pageSizes:[10,25,50,100],buttonCount:5,info:!0},filterable:!0,filter:function(e){if(e.filter)for(var t=0;t<e.filter.filters.length;t++)e.filter.filters[t].ignoreCase=!0},columns:c},a.fetch(function(){t.loading=!1,e.isMobile()||$(".k-pager-wrap").removeClass("k-pager-sm")})};t.showSideModal=function(a){e.sideLoad=!1,t.userOwner={},t.selectedShare={id:a},e.buildToggler("sideModal","view/setup/usercustomshares/userCustomShareForm.html"),t.loadingModal=!1},angular.element(document).ready(function(){f()})})}]);
+'use strict';
+
+angular.module('primeapps')
+
+    .controller('UserCustomShareController', ['$rootScope', '$scope', '$filter', 'helper', 'UserCustomShareService', 'mdToast', '$localStorage', '$mdDialog', '$state', 'AppService',
+        function ($rootScope, $scope, $filter, helper, UserCustomShareService, mdToast, $localStorage, $mdDialog, $state, AppService) {
+            $scope.loading = true;
+            AppService.checkPermission().then(function (res) {
+
+                if (res && res.data) {
+                    var profile = JSON.parse(res.data["profile"]);
+                    var customProfilePermissions = undefined;
+                    if (res.data["customProfilePermissions"])
+                        customProfilePermissions = JSON.parse(res.data["customProfilePermissions"]);
+
+                    if (!profile.HasAdminRights) {
+                        var userCustomSharesIsExist = undefined;
+                        if (customProfilePermissions)
+                            userCustomSharesIsExist = customProfilePermissions.permissions.indexOf('user_custom_shares') > -1;
+
+                        if (!userCustomSharesIsExist) {
+                            mdToast.error($filter('translate')('Common.Forbidden'));
+                            $state.go('app.dashboard');
+                        }
+                    }
+                }
+
+                $rootScope.breadcrumblist = [
+                    {
+                        title: $filter('translate')('Layout.Menu.Dashboard'),
+                        link: "#/app/dashboard"
+                    },
+                    {
+                        title: $filter('translate')('Setup.Nav.AccessControl'),
+                        link: '#/app/setup/profiles'
+                    },
+                    {
+                        title: $filter('translate')('Setup.UserCustomShares.Title')
+                    }
+                ]; 
+                
+                $scope.delete = function (id) {
+                    var confirm = $mdDialog.confirm()
+                        .title($filter('translate')('Common.AreYouSure'))
+                        .ok($filter('translate')('Common.Yes'))
+                        .cancel($filter('translate')('Common.No'));
+
+                    $mdDialog.show(confirm).then(function () {
+                        UserCustomShareService.delete(id)
+                            .then(function () {
+                                mdToast.success($filter('translate')('Setup.UserCustomShares.DeleteSuccess'));
+                                $scope.grid.dataSource.read();
+                                //getUserOwners();
+                            });
+                    });
+                };
+
+
+                $scope.goUrl2 = function (id) {
+                    var selection = window.getSelection();
+
+                    if (selection.toString().length === 0) {
+                        $scope.showSideModal(id);
+                    }
+                };
+
+                var optionsTemplate = '<md-button class="md-icon-button" id="deleteButton-{{dataItem.id}}" ng-click="delete(dataItem.id)">'
+                    + ' <i class="fas fa-trash"></i> <md-tooltip md-autohide="true" md-direction="bottom">' + $filter('translate')('Common.Delete') + '</md-tooltip>'
+                    + '</md-button>';
+                var columns = [
+                    {
+                        field: "User.FullName",
+                        title: $filter('translate')('Setup.UserCustomShares.UserAtList'),
+                        media: "(min-width: 575px)"
+                    },
+                    {
+                        field: "User.Email",
+                        title: $filter('translate')('Setup.UserCustomShares.UserEmail'),
+                        media: "(min-width: 575px)"
+                    },
+                    {
+                        field: "CreatedAt",
+                        title: $filter('translate')('Setup.UserCustomShares.CreatedDate'),
+                        media: "(min-width: 575px)",
+                        filterable: {
+                            ui: "datetimepicker"
+                        }
+                    },
+                    {
+                        title: $filter('translate')('Setup.UserCustomShares.Title'),
+                        media: "(max-width: 575px)"
+                    },
+                    {
+                        field: "",
+                        title: "",
+                        width: "80px",
+                    },
+                ];
+
+                var rowTempalte = '<td class="hide-on-m2"><span>{{ dataItem.user.full_name }}</span></td> '
+                    + '<td class="hide-on-m2"><span>{{ dataItem.user.email }}</span></td> '
+                    + '<td class="hide-on-m2"><span>#=kendo.toString(kendo.parseDate(created_at),"g")#</span></td>'
+                    + '<td class="show-on-m2">'
+                    + '<div><strong>{{ dataItem.user.full_name }}</strong></div> '
+                    + '<div>{{ dataItem.user.email }}</div> '
+                    + '<td ng-click="$event.stopPropagation();" class="position-relative"><span>' + optionsTemplate + '</span></td>';
+
+
+                var createGrid = function () {
+                    var dataSource = new kendo.data.DataSource({
+                        type: "odata-v4",
+                        page: 1,
+                        pageSize: 10,
+                        serverPaging: true,
+                        serverFiltering: true,
+                        serverSorting: true,
+                        transport: {
+                            read: {
+                                url: '/api/user_custom_shares/find',
+                                type: 'GET',
+                                dataType: "json",
+                                beforeSend: $rootScope.beforeSend()
+                            }
+                        },
+                        schema: {
+                            data: "items",
+                            total: "count",
+                            model: {
+                                id: "id",
+                                fields: {
+                                    FullName: { type: "string" },
+                                    Email: { type: "string" },
+                                    CreatedAt: { type: "date" }
+                                }
+                            }
+                        }
+                    });
+                    $scope.sharesGridOptions = {
+                        dataSource: dataSource,
+                        rowTemplate: '<tr ng-click="goUrl2(dataItem.id)">' + rowTempalte + '</tr>',
+                        altRowTemplate: '<tr class="k-alt" ng-click="goUrl2(dataItem.id)">' + rowTempalte + '</tr>',
+                        scrollable: true,
+                        sortable: true,
+                        noRecords: true,
+                        persistSelection: true,
+                        pageable: {
+                            refresh: true,
+                            pageSize: 10,
+                            pageSizes: [10, 25, 50, 100],
+                            buttonCount: 5,
+                            info: true,
+                        },
+                        filterable: true,
+                        filter: function (e) {
+                            if (e.filter) {
+                                for (var i = 0; i < e.filter.filters.length; i++) {
+                                    e.filter.filters[i].ignoreCase = true;
+                                }
+                            }
+                        },
+                        columns: columns,
+                    };
+                    //After from service success
+                    dataSource.fetch(function() {
+                        $scope.loading = false;
+                        if(!$rootScope.isMobile())
+                            $(".k-pager-wrap").removeClass("k-pager-sm");
+                    });
+                };
+
+                $scope.showSideModal = function (id) {
+                    $rootScope.sideLoad = false;
+                    $scope.userOwner = {};
+                    $scope.selectedShare = { id: id };
+                    $rootScope.buildToggler('sideModal', 'view/setup/usercustomshares/userCustomShareForm.html');
+                    $scope.loadingModal = false;
+                };
+
+                angular.element(document).ready(function () {
+                    createGrid();
+                    //$scope.loading = false;
+                });
+            });
+        }
+    ]);

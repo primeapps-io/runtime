@@ -483,6 +483,7 @@
            tabindex="{{field.order}}"
            placeholder="{{field.languages[globalization.Label].placeholder}}"
            ng-model="record[field.name]"
+           ng-change="fieldValueChange(field);"
            ng-required="field.validation.required"
            ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
            minlength="{{field.validation.min_length || 0}}"

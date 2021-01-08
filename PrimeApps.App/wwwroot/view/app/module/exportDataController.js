@@ -1,1 +1,58 @@
-"use strict";angular.module("primeapps").controller("ExportDataController",["$rootScope","$scope","$filter","$window","$mdDialog","mdToast",function(e,l,t,a,i,o){l.getDownloadViewUrlExcel=function(){var i=l.module.name,n=l.activeView.id,s=e.user.profile.id,d=l["export"].moduleAllColumn;e.preview?d?a.open("/attach/export_excel_view?module="+i+"&viewId="+n+"&profileId="+s+"&listFindRequestJson="+JSON.stringify(l.findRequest)+"&isViewFields="+!1+"&locale="+e.locale+"&appId="+e.user.app_id,"_blank"):a.open("/attach/export_excel_view?module="+i+"&viewId="+n+"&profileId="+s+"&listFindRequestJson="+JSON.stringify(l.findRequest)+"&isViewFields="+!0+"&locale="+e.locale+"&appId="+e.user.app_id,"_blank"):d?a.open("/attach/export_excel_view?module="+i+"&viewId="+n+"&profileId="+s+"&listFindRequestJson="+JSON.stringify(l.findRequest)+"&isViewFields="+!1+"&locale="+e.locale,"_blank"):a.open("/attach/export_excel_view?module="+i+"&viewId="+n+"&profileId="+s+"&listFindRequestJson="+JSON.stringify(l.findRequest)+"&isViewFields="+!0+"&locale="+e.locale,"_blank"),o.success(t("translate")("Module.ExcelDesktop"))},l.excelNoData=function(){var i=l.module.name,n=l.quoteTemplate.id,s=l.quoteTemplate.name,d=e.activeView.id;a.open("/attach/export_excel_no_data?module="+i+"&viewId="+d+"&templateId="+n+"&templateName="+s+"&locale="+e.locale+"&listFindRequestJson="+JSON.stringify(l.findRequest),"_blank"),o.success(t("translate")("Module.ExcelDesktop"))},l.excelData=function(){var i=l.module.name,n=l.quoteTemplate.id,s=l.quoteTemplate.name,d=e.activeView.id;a.open("/attach/export_excel_data?module="+i+"&viewId="+d+"&templateId="+n+"&templateName="+s+"&locale="+e.locale+"&listFindRequestJson="+JSON.stringify(l.findRequest),"_blank"),o.success(t("translate")("Module.ExcelDesktop"))},l.cancel=function(){i.cancel()},l.quoteTemplatesOptions={dataSource:t("filter")(l.quoteTemplates,{active:!0,isShown:!0}),dataTextField:"name",dataValueField:"id"}}]);
+'use strict';
+
+angular.module('primeapps')
+
+    .controller('ExportDataController', ['$rootScope', '$scope', '$filter', '$window', '$mdDialog', 'mdToast',
+        function ($rootScope, $scope, $filter, $window, $mdDialog, mdToast) {
+
+            $scope.getDownloadViewUrlExcel = function () {
+                var module = $scope.module.name;
+                var viewId = $scope.activeView.id;
+                var profileId = $rootScope.user.profile.id;
+                var isViewFields = $scope.export.moduleAllColumn;
+                if (!$rootScope.preview) {
+                    if (isViewFields)
+                        $window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + "&profileId=" + profileId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + false + '&locale=' + $rootScope.locale, "_blank");
+                    else
+                        $window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + "&profileId=" + profileId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + true + '&locale=' + $rootScope.locale, "_blank");
+                }
+                else {
+                    if (isViewFields)
+                        $window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + "&profileId=" + profileId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + false + '&locale=' + $rootScope.locale + '&appId=' + $rootScope.user.app_id, "_blank");
+                    else
+                        $window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + "&profileId=" + profileId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + true + '&locale=' + $rootScope.locale + '&appId=' + $rootScope.user.app_id, "_blank");
+                }
+
+                mdToast.success($filter('translate')('Module.ExcelDesktop'));
+            };
+
+            $scope.excelNoData = function () {
+                var module = $scope.module.name;
+                var templateId = $scope.quoteTemplate.id;
+                var templateName = $scope.quoteTemplate.name;
+                var viewId = $rootScope.activeView.id;
+                $window.open("/attach/export_excel_no_data?module=" + module + "&viewId=" + viewId + "&templateId=" + templateId + "&templateName=" + templateName + '&locale=' + $rootScope.locale + '&listFindRequestJson=' + JSON.stringify($scope.findRequest), "_blank");
+                mdToast.success($filter('translate')('Module.ExcelDesktop'));
+            };
+
+            $scope.excelData = function () {
+                var module = $scope.module.name;
+                var templateId = $scope.quoteTemplate.id;
+                var templateName = $scope.quoteTemplate.name;
+                var viewId = $rootScope.activeView.id;
+                $window.open("/attach/export_excel_data?module=" + module + "&viewId=" + viewId + "&templateId=" + templateId + "&templateName=" + templateName + '&locale=' + $rootScope.locale + '&listFindRequestJson=' + JSON.stringify($scope.findRequest), "_blank");
+                mdToast.success($filter('translate')('Module.ExcelDesktop'));
+            };
+            
+            $scope.cancel = function () {
+                $mdDialog.cancel();
+            };
+
+            $scope.quoteTemplatesOptions = {
+                dataSource: $filter('filter')($scope.quoteTemplates,{active: true, isShown : true}),
+                dataTextField: "name",
+                dataValueField: "id",
+            };
+            
+        }
+    ]);

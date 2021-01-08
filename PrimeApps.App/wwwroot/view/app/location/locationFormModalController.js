@@ -1,1 +1,48 @@
-angular.module("primeapps").controller("locationFormModalController",["$rootScope","$scope","$mdDialog",function(e,r,d){var o=r.filedName;if(r.record&&r.record[o])r.location=r.record[o];else{r.addres="";for(var l=0;l<r.module.fields.length;l++){if(field=r.module.fields[l],null===field.address_type&&field.deleted!==!1)return!1;switch(field.address_type){case"country":r.record[field.name]&&(r.addres+=r.record[field.name].labelStr);break;case"city":r.record[field.name]&&(r.addres+=" "+r.record[field.name]);break;case"disrict":r.record[field.name]&&(r.addres+=" "+r.record[field.name]);break;case"street":r.record[field.name]&&(r.addres+=" "+r.record[field.name])}}}r.setCoordinat=function(){r.record[o]=r.location},r.close=function(){d.hide()}}]);
+angular.module('primeapps')
+    .controller('locationFormModalController', ['$rootScope', '$scope', '$mdDialog',
+        function ($rootScope, $scope, $mdDialog) {
+
+            // if ($scope.$parent.$parent)
+            //     var moduleScope = $scope.$parent.$parent;
+
+            var filedName = $scope.filedName;
+
+            if ($scope.record && $scope.record[filedName]) {
+                $scope.location = $scope.record[filedName];
+            } else {
+
+                $scope.addres = "";
+                for (var i = 0; i < $scope.module.fields.length; i++) {
+                    field = $scope.module.fields[i];
+                    if (field.address_type === null && field.deleted !== false)
+                        return false;
+                    switch (field.address_type) {
+                        case 'country':
+                            if ($scope.record[field.name])
+                                $scope.addres += $scope.record[field.name].labelStr;
+                            break;
+                        case 'city':
+                            if ($scope.record[field.name])
+                                $scope.addres += " " + $scope.record[field.name];
+                            break;
+                        case 'disrict':
+                            if ($scope.record[field.name])
+                                $scope.addres += " " + $scope.record[field.name];
+                            break;
+                        case 'street':
+                            if ($scope.record[field.name])
+                                $scope.addres += " " + $scope.record[field.name];
+                            break;
+                    }
+                }
+            }
+
+            $scope.setCoordinat = function () {
+                $scope.record[filedName] = $scope.location;
+            };
+
+            $scope.close = function () {
+                $mdDialog.hide();
+            };
+        }
+    ]);

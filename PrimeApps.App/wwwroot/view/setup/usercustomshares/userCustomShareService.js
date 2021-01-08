@@ -1,1 +1,32 @@
-"use strict";angular.module("primeapps").factory("UserCustomShareService",["$http","config",function(e,r){return{get:function(t){return e.get(r.apiUrl+"user_custom_shares/get/"+t)},getAll:function(){return e.get(r.apiUrl+"user_custom_shares/get_all")},create:function(t){return e.post(r.apiUrl+"user_custom_shares/create",t)},update:function(t,u){return e.put(r.apiUrl+"user_custom_shares/update/"+t,u)},"delete":function(t){return e["delete"](r.apiUrl+"user_custom_shares/delete/"+t)},getUserGroups:function(){return e.get(r.apiUrl+"user_group/get_all")}}}]);
+'use strict';
+
+angular.module('primeapps')
+
+    .factory('UserCustomShareService', ['$http', 'config',
+        function ($http, config) {
+            return {
+                get: function (id) {
+                    return $http.get(config.apiUrl + 'user_custom_shares/get/' + id);
+                },
+                getAll: function () {
+                    return $http.get(config.apiUrl + 'user_custom_shares/get_all');
+                },
+
+                create: function (userowner) {
+                    return $http.post(config.apiUrl + 'user_custom_shares/create', userowner);
+                },
+
+                update: function (id, userowner) {
+                    return $http.put(config.apiUrl + 'user_custom_shares/update/' + id, userowner);
+                },
+
+                delete: function (id) {
+                    return $http.delete(config.apiUrl + 'user_custom_shares/delete/' + id);
+                },
+
+                getUserGroups: function () {
+                    return $http.get(config.apiUrl + 'user_group/get_all');
+                },
+
+            };
+        }]);

@@ -1,1 +1,211 @@
-"use strict";angular.module("primeapps").controller("GridDesignController",["$rootScope","$scope","$mdDialog","$mdSidenav","$mdToast","$window","$localStorage","$cookies",function(e,a,t,o,n,s,l){a.title="Grid Design";var i="https://material.angularjs.org/latest/img/list/60.jpeg";a.todos=[];for(var d=0;15>d;d++)a.todos.push({face:i,what:"Brunch this weekend?",who:"Min Li Chan",notes:"I'll be in your neighborhood doing errands."});a.filterModalOpen=function(){e.buildToggler("sideModal","view/app/componentDesign/add-view.html")},a.selectOptions1={draggable:!0,dataTextField:"name",dataValueField:"id",dropSources:["sag"],connectWith:"sag",dataSource:[{name:"Galip ÇEVRİK",id:1},{name:"Galip ÇEVRİK",id:2},{name:"Galip ÇEVRİK",id:3},{name:"Galip ÇEVRİK",id:4}]},a.selectOptions2={draggable:!0,dataTextField:"name",dataValueField:"id",dropSources:["sol"],connectWith:"sol"},setTimeout(function(){a.toolbarOptions={resizable:!0,items:[{template:"<md-button class='btn btn-secondary' aria-label='Send E-mail' > <i class='fas fa-envelope'></i> <span>Send E-mail</span></md-button>",overflowTemplate:"<md-button class='action-dropdown-item'><i class='fas fa-home'></i><span>Test</span></md-button>",overflow:"auto"},{template:"<md-button class='btn btn-secondary' aria-label='Send E-mail' > <i class='fas fa-envelope'></i> <span>Send E-mail</span></md-button>",overflowTemplate:"<md-button class='action-dropdown-item'><i class='fas fa-home'></i><span>Test</span></md-button>",overflow:"auto"},{template:"<md-button class='btn btn-secondary' aria-label='Send E-mail' > <i class='fas fa-envelope'></i> <span>Send E-mail</span></md-button>",overflowTemplate:"<md-button class='action-dropdown-item'><i class='fas fa-home'></i><span>Test</span></md-button>",overflow:"auto"},{template:"<md-button class='btn btn-secondary' aria-label='Send E-mail' > <i class='fas fa-envelope'></i> <span>Send E-mail</span></md-button>",overflowTemplate:"<md-button class='action-dropdown-item'><i class='fas fa-home'></i><span>Test</span></md-button>",overflow:"auto"},{template:"<md-button class='btn btn-secondary' aria-label='Send E-mail' > <i class='fas fa-envelope'></i> <span>Send E-mail</span></md-button>",overflowTemplate:"<md-button class='action-dropdown-item'><i class='fas fa-home'></i><span>Test</span></md-button>",overflow:"auto"},{template:"<md-button class='btn btn-secondary' aria-label='Send E-mail' > <i class='fas fa-envelope'></i> <span>Send E-mail</span></md-button>",overflowTemplate:"<md-button class='action-dropdown-item'><i class='fas fa-home'></i><span>Test</span></md-button>",overflow:"auto"},{template:"<md-button class='btn btn-secondary' aria-label='Send E-mail' > <i class='fas fa-envelope'></i> <span>Send E-mail</span></md-button>",overflowTemplate:"<md-button class='action-dropdown-item'><i class='fas fa-home'></i><span>Test</span></md-button>",overflow:"auto"},{template:"<md-button class='btn btn-secondary' aria-label='Send E-mail' > <i class='fas fa-envelope'></i> <span>Send E-mail</span></md-button>",overflowTemplate:"<md-button class='action-dropdown-item'><i class='fas fa-home'></i><span>Test</span></md-button>",overflow:"auto"}]}},100),$(".ripple-effect").click(function(e){var a=$(this);0==a.find(".ink").length&&a.append("<span class='ink'></span>");var t=a.find(".ink");if(t.removeClass("animate"),!t.height()&&!t.width()){var o=Math.max(a.outerWidth(),a.outerHeight());t.css({height:o,width:o})}var n=e.pageX-a.offset().left-t.width()/2,s=e.pageY-a.offset().top-t.height()/2;t.css({top:s+"px",left:n+"px"}).addClass("animate")});l.read("access_token");a.mainGridOptions={dataSource:{type:"odata-v4",page:1,pageSize:5,serverPaging:!0,serverFiltering:!0,serverSorting:!0,transport:{read:{url:"/api/user/find",type:"GET",dataType:"json",beforeSend:e.beforeSend()}},schema:{data:"items",total:"count",model:{fields:{email:{type:"string"},culture:{type:"string"}}}}},pageable:{refresh:!1,pageSizes:!0,buttonCount:5,info:!1},scrollable:!1,persistSelection:!0,sortable:!0,noRecords:!0,columns:[{field:"email",title:"Email"},{field:"culture",title:"Culture"}]},a.refreshGrid=function(){a.grid.dataSource.read()},$("#grid-search").on("input",function(e){var a=$("#kendo-grid").data("kendoGrid"),t=a.columns,o={logic:"or",filters:[]};t.forEach(function(t){if(t.field){var n=a.dataSource.options.schema.model.fields[t.field].type;if("string"==n)o.filters.push({field:t.field,operator:"contains",value:e.target.value});else if("number"==n)isNumeric(e.target.value)&&o.filters.push({field:t.field,operator:"eq",value:e.target.value});else if("date"==n)for(var s=a.dataSource.data(),l=0;l<s.length;l++){var i=kendo.format(t.format,s[l][t.field]);i.startsWith(e.target.value)&&o.filters.push({field:t.field,operator:"eq",value:s[l][t.field]})}else if("boolean"==n&&null!==getBoolean(e.target.value)){var d=getBoolean(e.target.value);o.filters.push({field:t.field,operator:"eq",value:d})}}}),a.dataSource.filter(o)})}]);
+'use strict';
+angular.module('primeapps').controller('GridDesignController', ['$rootScope', '$scope', '$mdDialog', '$mdSidenav', '$mdToast', '$window', '$localStorage', '$cookies',
+    function ($rootScope, $scope, $mdDialog, $mdSidenav, $mdToast, $window, $localStorage, $cookies) {
+        $scope.title = 'Grid Design';
+        var imagePath = 'https://material.angularjs.org/latest/img/list/60.jpeg';
+        $scope.todos = [];
+        for (var i = 0; i < 15; i++) {
+            $scope.todos.push({
+                face: imagePath,
+                what: "Brunch this weekend?",
+                who: "Min Li Chan",
+                notes: "I'll be in your neighborhood doing errands."
+            });
+        }
+        $scope.filterModalOpen = function(){
+            $rootScope.buildToggler('sideModal','view/app/componentDesign/add-view.html');
+        }
+        
+
+        $scope.selectOptions1 = {
+            draggable: true,
+            dataTextField: "name",
+            dataValueField: "id"  ,
+            dropSources: ["sag"],
+            connectWith: "sag",
+            dataSource:  [{name:"Galip ÇEVRİK",id:1},{name:"Galip ÇEVRİK",id:2},{name:"Galip ÇEVRİK",id:3},{name:"Galip ÇEVRİK",id:4}]
+        };
+        $scope.selectOptions2 = {
+            draggable: true,
+            dataTextField: "name",
+            dataValueField: "id"  ,
+            dropSources: ["sol"],
+            connectWith: "sol",
+        };
+        
+        
+        setTimeout(function() {
+            $scope.toolbarOptions = {
+                resizable:true,
+                items: [
+                    {
+                        template: "<md-button class='btn btn-secondary' aria-label='Send E-mail' > <i class='fas fa-envelope'></i> <span>Send E-mail</span></md-button>",
+                        overflowTemplate: "<md-button class='action-dropdown-item'><i class='fas fa-home'></i><span>Test</span></md-button>",
+                        overflow: "auto"
+                    },
+                    {
+                        template: "<md-button class='btn btn-secondary' aria-label='Send E-mail' > <i class='fas fa-envelope'></i> <span>Send E-mail</span></md-button>",
+                        overflowTemplate: "<md-button class='action-dropdown-item'><i class='fas fa-home'></i><span>Test</span></md-button>",
+                        overflow: "auto"
+                    },
+                    {
+                        template: "<md-button class='btn btn-secondary' aria-label='Send E-mail' > <i class='fas fa-envelope'></i> <span>Send E-mail</span></md-button>",
+                        overflowTemplate: "<md-button class='action-dropdown-item'><i class='fas fa-home'></i><span>Test</span></md-button>",
+                        overflow: "auto"
+                    },
+                    {
+                        template: "<md-button class='btn btn-secondary' aria-label='Send E-mail' > <i class='fas fa-envelope'></i> <span>Send E-mail</span></md-button>",
+                        overflowTemplate: "<md-button class='action-dropdown-item'><i class='fas fa-home'></i><span>Test</span></md-button>",
+                        overflow: "auto"
+                    },
+                    {
+                        template: "<md-button class='btn btn-secondary' aria-label='Send E-mail' > <i class='fas fa-envelope'></i> <span>Send E-mail</span></md-button>",
+                        overflowTemplate: "<md-button class='action-dropdown-item'><i class='fas fa-home'></i><span>Test</span></md-button>",
+                        overflow: "auto"
+                    },
+                    {
+                        template: "<md-button class='btn btn-secondary' aria-label='Send E-mail' > <i class='fas fa-envelope'></i> <span>Send E-mail</span></md-button>",
+                        overflowTemplate: "<md-button class='action-dropdown-item'><i class='fas fa-home'></i><span>Test</span></md-button>",
+                        overflow: "auto"
+                    },
+                    {
+                        template: "<md-button class='btn btn-secondary' aria-label='Send E-mail' > <i class='fas fa-envelope'></i> <span>Send E-mail</span></md-button>",
+                        overflowTemplate: "<md-button class='action-dropdown-item'><i class='fas fa-home'></i><span>Test</span></md-button>",
+                        overflow: "auto"
+                    },
+                    {
+                        template: "<md-button class='btn btn-secondary' aria-label='Send E-mail' > <i class='fas fa-envelope'></i> <span>Send E-mail</span></md-button>",
+                        overflowTemplate: "<md-button class='action-dropdown-item'><i class='fas fa-home'></i><span>Test</span></md-button>",
+                        overflow: "auto"
+                    }
+                ]
+            };
+        },100);
+   
+        
+        //Global yapılacak bu function
+        $(".ripple-effect").click(function(e){
+            var rippler = $(this);
+            if(rippler.find(".ink").length == 0) {
+                rippler.append("<span class='ink'></span>");
+            }
+            var ink = rippler.find(".ink");
+            ink.removeClass("animate");
+            if(!ink.height() && !ink.width())
+            {
+                var d = Math.max(rippler.outerWidth(), rippler.outerHeight());
+                ink.css({height: d, width: d});
+            }
+            var x = e.pageX - rippler.offset().left - ink.width()/2;
+            var y = e.pageY - rippler.offset().top - ink.height()/2;
+            ink.css({
+                top: y+'px',
+                left:x+'px'
+            }).addClass("animate");
+        });
+
+        var accessToken = $localStorage.read('access_token');
+
+        $scope.mainGridOptions = {
+            dataSource: {
+                type: "odata-v4",
+                page: 1,
+                pageSize: 5,
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true,
+                transport: {
+                    read: {
+                        url: "/api/user/find",
+                        type: 'GET',
+                        dataType: "json",
+                        beforeSend:$rootScope.beforeSend()
+                    }
+                },
+                schema: {
+                    data: "items",
+                    total: "count",
+                    model: {
+                        fields: {
+                            email: { type: "string" },
+                            culture: { type: "string" }
+                        }
+                    }
+                }
+            },
+            pageable: {
+                refresh: false,
+                pageSizes: true,
+                buttonCount: 5,
+                info:false
+            },
+            
+            scrollable: false,
+            persistSelection: true,
+            sortable: true,
+            noRecords: true, 
+            columns: [
+                { field: "email", title: "Email" },
+                { field: "culture", title: "Culture"}]
+        };
+        
+ 
+        
+        ///Refresh button on top Angular a uyarlanacak///
+        $scope.refreshGrid = function(){
+            $scope.grid.dataSource.read();
+        }
+        
+        ///Grid General Search Angular a uyarlanacak///
+        $('#grid-search').on('input', function (e) {
+            var grid = $('#kendo-grid').data('kendoGrid');
+            var columns = grid.columns;
+
+            var filter = { logic: 'or', filters: [] };
+            columns.forEach(function (x) {
+                if (x.field) {
+                    var type = grid.dataSource.options.schema.model.fields[x.field].type;
+                    if (type == 'string') {
+                        filter.filters.push({
+                            field: x.field,
+                            operator: 'contains',
+                            value: e.target.value
+                        })
+                    }
+                    else if (type == 'number') {
+                        if (isNumeric(e.target.value)) {
+                            filter.filters.push({
+                                field: x.field,
+                                operator: 'eq',
+                                value: e.target.value
+                            });
+                        }
+
+                    } else if (type == 'date') {
+                        var data = grid.dataSource.data();
+                        for (var i=0;i<data.length ; i++){
+                            var dateStr = kendo.format(x.format, data[i][x.field]);
+                            // change to includes() if you wish to filter that way https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes
+                            if(dateStr.startsWith(e.target.value)){
+                                filter.filters.push({
+                                    field: x.field,
+                                    operator:'eq',
+                                    value: data[i][x.field]
+                                })
+                            }
+                        }
+                    } else if (type == 'boolean' && getBoolean(e.target.value) !== null) {
+                        var bool = getBoolean(e.target.value);
+                        filter.filters.push({
+                            field: x.field,
+                            operator: 'eq',
+                            value: bool
+                        });
+                    }
+                }
+            });
+            grid.dataSource.filter(filter);
+        });
+        
+    }
+]);

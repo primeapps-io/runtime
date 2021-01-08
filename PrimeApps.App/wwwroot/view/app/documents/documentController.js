@@ -1,1 +1,120 @@
-"use strict";angular.module("primeapps").controller("DocumentController",["$rootScope","$scope","$location","guidEmpty","$filter","DocumentService","entityTypes","helper","operations","$stateParams","ModuleService",function(e,t,o,n,s,r,a,u,c,i,l){function d(o){t.loading=!o,r.getDocuments(e.workgroup.tenant_id,t.entityId,t.module.id).then(function(o){e.processLanguages(o.data.documents);var n=r.processDocuments(o.data,e.users,t.filter,t.sortPredicate,t.sortReverse);t.documents=n.documentList,p=angular.copy(n.documentList),t.loading=!1})}t.documents=[],t.title=s("translate")("Documents.Label"),t.guidEmpty=n,t.entityId=n,t.entityType=n,t.type=i.type;var m=o.search().id,g=i.type,p=[];t.filter={},t.filter.created_by=n,t.sortPredicate="timestamp",t.sortReverse=!0,t.hasPermission=u.hasPermission,t.entityTypes=a,t.operations=c,t.module=s("filter")(e.modules,{name:i.type},!0)[0],m&&g&&(null===m&&null===g?(t.title=s("translate")("Dashboard.AllDocuments"),t.filter.created_by=e.user.id):(l.getRecord(t.module.name,m).then(function(e){t.title=null==e.data.name?s("translate")("Documents.Label"):e.data.name}),t.entityId=m,t.entityType=g)),d(),t.filterDocuments=function(o){t.filter.created_by=o,r.getDocuments(e.workgroup.tenant_id,t.entityId,t.module.id).then(function(o){e.processLanguages(o.data.documents);var n=r.processDocuments(o.data,e.users,t.filter,t.sortPredicate,t.sortReverse);t.documents=n.documentList,p=angular.copy(n.documentList)})},t.searchDocuments=function(o){for(var n=[],s=0;s<p.length;s++){var a=p[s],u=e.getLanguageValue(a.languages,"name"),c=e.getLanguageValue(a.languages,"description");if(!u)return;(u.toLowerCase().indexOf(o.toLowerCase())>-1||c.toLowerCase().indexOf(o.toLowerCase())>-1)&&n.push(a)}var i={documents:n,totalDocumentCount:n.length,filteredDocumentCount:n.length},l=r.processDocuments(i,e.users,t.filter,t.sortPredicate,t.sortReverse);t.documents=l.documentList},t.sortDocuments=function(o,n){t.sortPredicate=o,t.sortReverse=n;var s={documents:angular.copy(p),totalDocumentCount:angular.copy(p).length,filteredDocumentCount:angular.copy(p).length},a=r.processDocuments(s,e.users,t.filter,t.sortPredicate,t.sortReverse);t.documents=a.documentList}}]);
+'use strict';
+
+angular.module('primeapps')
+
+    .controller('DocumentController', ['$rootScope', '$scope', '$location', 'guidEmpty', '$filter', 'DocumentService', 'entityTypes', 'helper', 'operations', '$stateParams', 'ModuleService',
+        function ($rootScope, $scope, $location, guidEmpty, $filter, DocumentService, entityTypes, helper, operations, $stateParams, ModuleService) {
+            $scope.documents = [];
+            $scope.title = $filter('translate')('Documents.Label');
+            $scope.guidEmpty = guidEmpty;
+            $scope.entityId = guidEmpty;
+            $scope.entityType = guidEmpty;
+            $scope.type = $stateParams.type;
+
+            var recordId = $location.search().id;
+            var type = $stateParams.type;
+            var documentsData = [];
+
+            $scope.filter = {};
+            $scope.filter.created_by = guidEmpty;
+            $scope.sortPredicate = 'timestamp';
+            $scope.sortReverse = true;
+
+            $scope.hasPermission = helper.hasPermission;
+            $scope.entityTypes = entityTypes;
+            $scope.operations = operations;
+
+            $scope.module = $filter('filter')($rootScope.modules, { name: $stateParams.type }, true)[0];
+
+
+            if (recordId && type) {
+                if (recordId === null && type === null) {
+                    $scope.title = $filter('translate')('Dashboard.AllDocuments');
+                    $scope.filter.created_by = $rootScope.user.id;
+                } else {
+                    ModuleService.getRecord($scope.module.name, recordId).then(function (response) {
+
+                        if (response.data.name == null) {
+                            $scope.title = $filter('translate')('Documents.Label');
+                        } else {
+                            $scope.title = response.data.name;//TODO:Primary field get required for consistency. name field is temporary.
+                        }
+
+                    });
+
+                    $scope.entityId = recordId;
+                    $scope.entityType = type;
+                }
+            }
+
+            function getDocuments(date) {
+                $scope.loading = !date;
+
+                DocumentService.getDocuments($rootScope.workgroup.tenant_id, $scope.entityId, $scope.module.id)
+                    .then(function (response) {
+                        $rootScope.processLanguages(response.data.documents);
+                        var processResults = DocumentService.processDocuments(response.data, $rootScope.users, $scope.filter, $scope.sortPredicate, $scope.sortReverse);
+                        $scope.documents = processResults.documentList;
+                        documentsData = angular.copy(processResults.documentList);
+                        $scope.loading = false;
+                    });
+
+            }
+
+            getDocuments();
+
+            $scope.filterDocuments = function (createdBy) {
+                $scope.filter.created_by = createdBy;
+
+                DocumentService.getDocuments($rootScope.workgroup.tenant_id, $scope.entityId, $scope.module.id)
+                    .then(function (response) {
+                        $rootScope.processLanguages(response.data.documents);
+                        var processResults = DocumentService.processDocuments(response.data, $rootScope.users, $scope.filter, $scope.sortPredicate, $scope.sortReverse);
+                        $scope.documents = processResults.documentList;
+                        documentsData = angular.copy(processResults.documentList);
+                    });
+
+            };
+
+            $scope.searchDocuments = function (searchKey) {
+                var searchedDocuments = [];
+
+                for (var i = 0; i < documentsData.length; i++) {
+                    var document = documentsData[i];
+                    var name = $rootScope.getLanguageValue(document.languages, 'name');
+                    var description = $rootScope.getLanguageValue(document.languages, 'description');
+                    if (!name)
+                        return;
+
+                    if (name.toLowerCase().indexOf(searchKey.toLowerCase()) > -1 || description.toLowerCase().indexOf(searchKey.toLowerCase()) > -1)
+                        searchedDocuments.push(document);
+                }
+
+                var documentsResults = {
+                    documents: searchedDocuments,
+                    totalDocumentCount: searchedDocuments.length,
+                    filteredDocumentCount: searchedDocuments.length
+                };
+
+                var processResults = DocumentService.processDocuments(documentsResults, $rootScope.users, $scope.filter, $scope.sortPredicate, $scope.sortReverse);
+                $scope.documents = processResults.documentList;
+
+            };
+
+            $scope.sortDocuments = function (predicate, reverse) {
+                $scope.sortPredicate = predicate;
+                $scope.sortReverse = reverse;
+
+                var documentsResults = {
+                    documents: angular.copy(documentsData),
+                    totalDocumentCount: angular.copy(documentsData).length,
+                    filteredDocumentCount: angular.copy(documentsData).length//change if any need on filter
+                };
+
+                var processResults = DocumentService.processDocuments(documentsResults, $rootScope.users, $scope.filter, $scope.sortPredicate, $scope.sortReverse);
+                $scope.documents = processResults.documentList;
+
+            };
+
+        }
+    ]);
