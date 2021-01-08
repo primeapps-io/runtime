@@ -177,7 +177,7 @@ template ? 'Template.EditTemplate':'Template.Title' |
 
                                 <input kendo-drop-down-list
                                        id="language" name="language" ng-class="{'k-invalid' : clicked && !templateLanguage}"
-                                       required
+                                       ng-required="formType === 'template'"
                                        k-options="languageOptions"
                                        ng-model="templateLanguage" />
                             </div>

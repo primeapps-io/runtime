@@ -1256,6 +1256,8 @@ md-menu-content.account-dropdown-box{
 	padding-left: $icon-size;
 }
 .k-radio{
+	width: 18px;
+	height: 18px;	
 	~ .k-radio-label{
 		margin-left: 2px;
 		&:before {
@@ -2025,6 +2027,122 @@ label{
 		}
 	}
 }
+
+
+.kanban-view{
+	height: 600px;
+	overflow: hidden;
+	.board{
+		background: transparent;
+		border: none;
+		height: 100%;
+		> .k-listview-content{
+			display: flex;
+			margin-right: -15px;
+			margin-left: -15px;
+			height: 100%;
+			padding-bottom: 20px;
+			padding-right: 10px;
+			.col{
+				min-width: 300px;
+				height: 100%;
+			}
+			.list-wrapper{
+				background-color: $white;
+				box-shadow: $box-shadow-sm;
+				@include radius(5px);
+				position: relative;
+				margin-bottom: 20px;
+				height: 100%;
+				.list-header{
+					padding: $input-btn-padding-x;
+					background: theme-color-level(primary, -10);
+					border-top-right-radius: $input-border-radius;
+					border-top-left-radius: $input-border-radius;
+					font-weight: bold;
+				}
+				.k-listview{
+					padding: 20px 0px;
+					height: calc(100% - 45px);
+					.k-listview-content{
+
+						.kanban-card{
+							@include move(.3s);
+							&:hover{
+								background: $white;
+								border-color: theme-color-level(primary, -11);
+								box-shadow: $box-shadow-sm;
+								.others{
+									span{
+										&.label-data{
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+.kanban-card{
+	padding:$input-btn-padding-y $input-btn-padding-x;
+	display: block;
+	margin: 0px 20px 10px 20px ;
+	border: none;
+	background: theme-color-level(primary, -12);
+	border: 1px solid transparent;
+
+	cursor: pointer;
+	.primary{
+		font-weight: bold;
+		color: $primary;
+		i{
+			color: $black25;
+			margin-right: 10px;
+		}
+	}
+	.others{
+		display: block;
+		color: $black75;
+		margin-bottom: 5px;
+		font-size: $font-size-sm;
+		display: flex;
+		align-items: center;
+		span{
+			white-space: nowrap;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			&.label-data{
+				@include move(.3s);
+				margin-left: 5px;
+				background: $white;
+				border-radius: $input-border-radius;
+				padding: $input-btn-padding-y/2 $input-btn-padding-x/2 ;
+				font-weight: bold;
+			}
+		}
+	}
+	&:hover{
+		.others{
+			color: $black75;
+			span{
+				&.label-data{
+					background: theme-color-level(primary, -12);
+				}
+			}
+		}
+	}
+}
+body>.kanban-card{
+	box-shadow: $box-shadow-lg;
+	background: theme-color-level(primary, -10);
+	border-color: theme-color-level(primary, -10);
+}
+
+
 .group-asc{
 	font-size: $font-size-lg*1.5;
 	line-height: 1;

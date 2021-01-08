@@ -72,8 +72,8 @@
             </div>
         </md-toolbar>
 
-        <md-content flex>
-            <md-subheader class="own-tab" ng-show="views.length>0">
+        <md-content flex id="modul-area-app">
+            <md-subheader id="modul-area-app-menu" class="own-tab" ng-show="views.length>0">
                 <md-tabs md-dynamic-height md-swipe-content md-no-select-click="true">
                     <md-tab ng-repeat='item in views track by $index' ng-click="setView(item)" md-active="activeView.id === item.id">
                         <md-tab-label aria-controls="{{item.languages[globalization.Label]['label']}}">
@@ -157,6 +157,11 @@
                     </kendo-grid>
 
                 </div>
+
+                <div id="kanban-view" class="kanban-view" ng-if="activeView.view_type==='kanban'">
+                    <div class="board" name="board" id="board" k-scope-field="board" kendo-list-view k-rebind="kanbanMainOptions" k-options="kanbanMainOptions"></div>
+                </div>
+                
                 <div ng-if="activeView.view_type==='report'&& activeView.report_type==='summary' || activeView.report_type==='single'">
                     <div ng-if="activeView.report_type==='summary'" >
                         <div class="whitebox p-2">

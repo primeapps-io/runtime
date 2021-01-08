@@ -27,20 +27,20 @@
             <md-content flex>
                 <md-subheader class="own-tab">
                     <md-tabs md-dynamic-height md-swipe-content>
-                        <md-tab ng-click="changeTab('general')" md-active="activeTab === 'general'">
-                            <md-tab-label id="tab1" aria-controls="{{'Setup.Nav.Tabs.General' | translate}}" >
-                                <div class="tab-container">
-                                    <span>{{'Setup.Nav.Tabs.General' | translate}}</span>
-                                </div>
-                            </md-tab-label>
-                        </md-tab>
-                        <md-tab ng-if="!disablePasswordChange" ng-click="changeTab('security')" md-active="activeTab === 'security'">
-                            <md-tab-label id="tab2" aria-controls="{{'Setup.Nav.Tabs.Security' | translate}}">
-                                <div class="tab-container">
-                                    <span>{{'Setup.Nav.Tabs.Security' | translate}}</span>
-                                </div>
-                            </md-tab-label>
-                        </md-tab>
+                        <!--                        <md-tab ng-click="changeTab('general')" md-active="activeTab === 'general'">-->
+                        <!--                            <md-tab-label id="tab1" aria-controls="{{'Setup.Nav.Tabs.General' | translate}}" >-->
+                        <!--                                <div class="tab-container">-->
+                        <!--                                    <span>{{'Setup.Nav.Tabs.General' | translate}}</span>-->
+                        <!--                                </div>-->
+                        <!--                            </md-tab-label>-->
+                        <!--                        </md-tab>-->
+                        <!--                        <md-tab ng-if="!disablePasswordChange" ng-click="changeTab('security')" md-active="activeTab === 'security'">-->
+                        <!--                            <md-tab-label id="tab2" aria-controls="{{'Setup.Nav.Tabs.Security' | translate}}">-->
+                        <!--                                <div class="tab-container">-->
+                        <!--                                    <span>{{'Setup.Nav.Tabs.Security' | translate}}</span>-->
+                        <!--                                </div>-->
+                        <!--                            </md-tab-label>-->
+                        <!--                        </md-tab>-->
                         <md-tab ng-click="changeTab('email')" md-active="activeTab === 'email'" ng-if="(user.profile.has_admin_rights || user.profile.smtp_settings) && !preview">
                             <md-tab-label id="tab3" aria-controls="{{'Setup.Nav.Tabs.Email' | translate}}">
                                 <div class="tab-container">
@@ -69,7 +69,7 @@
                                                          user-image="{{user.id}}" alt="" ng-show="!croppedImage" />
                                                     <img ng-src="{{croppedImage}}" class="img-rounded" ng-show="croppedImage" />
                                                 </div>
-                                                <md-button class="upload-btn btn btn-primary md-icon-button btn-sm profile-image-upload"  ng-if="!croppedImage && !tempPicture ">
+                                                <md-button class="upload-btn btn btn-primary md-icon-button btn-sm profile-image-upload" ng-if="!croppedImage && !tempPicture ">
                                                     <i class="fas fa-upload"></i><md-tooltip md-autohide="true" md-direction="bottom">{{'Setup.Settings.NewProfilePicture' | translate}}</md-tooltip>
                                                     <input type="file" nv-file-select uploader="uploader" />
                                                 </md-button>
@@ -122,7 +122,7 @@
                                                     <span class="k-invalid-msg" data-for="last_name"></span>
                                                 </div>
                                             </div>
-                                         
+
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>{{'Setup.Settings.Phone' | translate}}</label>
@@ -188,7 +188,8 @@
                                 </div>
                             </div>
                         </section>
-                        <section class="whitebox collapsible" ng-show="useUserSettings">  <!--ng-show="multiLanguage"-->
+                        <section class="whitebox collapsible" ng-show="useUserSettings">
+                            <!--ng-show="multiLanguage"-->
                             <div class="collapsible-head">
                                 <h5>{{'Setup.Settings.Title4' | translate}}</h5>
                             </div>
@@ -198,9 +199,9 @@
                                         <div class="form-group">
                                             <label for="language">{{'Setup.Settings.Language' | translate}}</label>
                                             <input id="language" name="language"
-                                                    kendo-drop-down-list
-                                                    k-options="languageOptions"
-                                                    ng-model="selectedLanguage"/>
+                                                   kendo-drop-down-list
+                                                   k-options="languageOptions"
+                                                   ng-model="selectedLanguage" />
                                         </div>
 
                                     </div>
@@ -222,9 +223,9 @@
                             </div>
                             <div class="collapsible-body">
                                 <div class="appcolor padding0">
-                                <span ng-click="changeTheme('#1F4688','blue')"
-                                      ng-class="appTheme =='blue' ? 'active':''"
-                                      style="background: #1F4688;"></span>
+                                    <span ng-click="changeTheme('#1F4688','blue')"
+                                          ng-class="appTheme =='blue' ? 'active':''"
+                                          style="background: #1F4688;"></span>
                                     <span ng-click="changeTheme('#DC3023','red')"
                                           ng-class="appTheme =='red' ? 'active':''"
                                           style="background: #DC3023;"></span>
@@ -278,7 +279,7 @@
                                             </label>
                                             <input type="password" id="passwordUser" name="passwordUser" class="k-textbox" maxlength="20"
                                                    ng-minlength="6" required ng-blur="userForm.passwordUser.$error.minlength && showError('minlength')"
-                                                   ng-model="passwordModel.password" validationMessage="{{'Module.Required' | translate}}"/>
+                                                   ng-model="passwordModel.password" validationMessage="{{'Module.Required' | translate}}" />
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -292,7 +293,7 @@
                                             </label>
                                             <input type="password" id="confirm" name="confirm" class="k-textbox"
                                                    required ng-model="passwordModel.confirm" validationMessage="{{'Module.Required' | translate}}"
-                                                   ng-blur="passwordNotMatch(passwordModel.password,passwordModel.confirm)" ;/>
+                                                   ng-blur="passwordNotMatch(passwordModel.password,passwordModel.confirm)" ; />
                                         </div>
                                     </div>
                                 </div>

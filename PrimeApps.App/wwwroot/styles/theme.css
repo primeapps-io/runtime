@@ -1137,21 +1137,21 @@ md-menu-content.account-dropdown-box {
 .no-text-checkbox {
   padding-left: 16px; }
 
-.k-radio ~ .k-radio-label {
-  margin-left: 2px; }
-  .k-radio ~ .k-radio-label:before {
-    border: #adb5bd solid 1px;
-    background: #FFFFFF; }
-
-.k-radio:checked ~ .k-radio-label:before {
-  border-color: #285bb2; }
-
-.k-radio:focus ~ .k-radio-label::before {
-  box-shadow: 0 0 0 2px rgba(31, 70, 136, 0.25);
-  border-color: #285bb2; }
-
-.k-radio:focus:not(:checked) ~ .k-radio-label::before {
-  border-color: #1F4688; }
+.k-radio {
+  width: 18px;
+  height: 18px; }
+  .k-radio ~ .k-radio-label {
+    margin-left: 2px; }
+    .k-radio ~ .k-radio-label:before {
+      border: #adb5bd solid 1px;
+      background: #FFFFFF; }
+  .k-radio:checked ~ .k-radio-label:before {
+    border-color: #285bb2; }
+  .k-radio:focus ~ .k-radio-label::before {
+    box-shadow: 0 0 0 2px rgba(31, 70, 136, 0.25);
+    border-color: #285bb2; }
+  .k-radio:focus:not(:checked) ~ .k-radio-label::before {
+    border-color: #1F4688; }
 
 .custom-switch .custom-control-input:disabled:checked ~ .custom-control-label::before {
   border-color: rgba(31, 70, 136, 0.5); }
@@ -1707,6 +1707,101 @@ label {
     display: inline-flex; }
     .grid-theme .k-grouping-row p .standart {
       justify-self: flex-end; }
+
+.kanban-view {
+  height: 600px;
+  overflow: hidden; }
+  .kanban-view .board {
+    background: transparent;
+    border: none;
+    height: 100%; }
+    .kanban-view .board > .k-listview-content {
+      display: flex;
+      margin-right: -15px;
+      margin-left: -15px;
+      height: 100%;
+      padding-bottom: 20px;
+      padding-right: 10px; }
+      .kanban-view .board > .k-listview-content .col {
+        min-width: 300px;
+        height: 100%; }
+      .kanban-view .board > .k-listview-content .list-wrapper {
+        background-color: white;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        -ms-border-radius: 5px;
+        -o-border-radius: 5px;
+        border-radius: 5px;
+        position: relative;
+        margin-bottom: 20px;
+        height: 100%; }
+        .kanban-view .board > .k-listview-content .list-wrapper .list-header {
+          padding: 0.75rem;
+          background: #d2dae7;
+          border-top-right-radius: 0.25rem;
+          border-top-left-radius: 0.25rem;
+          font-weight: bold; }
+        .kanban-view .board > .k-listview-content .list-wrapper .k-listview {
+          padding: 20px 0px;
+          height: calc(100% - 45px); }
+          .kanban-view .board > .k-listview-content .list-wrapper .k-listview .k-listview-content .kanban-card {
+            -webkit-transition: all 0.3s ease;
+            -moz-transition: all 0.3s ease;
+            -ms-transition: all 0.3s ease;
+            -o-transition: all 0.3s ease;
+            transition: all 0.3s ease; }
+            .kanban-view .board > .k-listview-content .list-wrapper .k-listview .k-listview-content .kanban-card:hover {
+              background: white;
+              border-color: #e4e9f1;
+              box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); }
+
+.kanban-card {
+  padding: 0.5rem 0.75rem;
+  display: block;
+  margin: 0px 20px 10px 20px;
+  border: none;
+  background: #f6f8fa;
+  border: 1px solid transparent;
+  cursor: pointer; }
+  .kanban-card .primary {
+    font-weight: bold;
+    color: #1F4688; }
+    .kanban-card .primary i {
+      color: rgba(0, 0, 0, 0.25);
+      margin-right: 10px; }
+  .kanban-card .others {
+    display: block;
+    color: rgba(0, 0, 0, 0.75);
+    margin-bottom: 5px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center; }
+    .kanban-card .others span {
+      white-space: nowrap;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis; }
+      .kanban-card .others span.label-data {
+        -webkit-transition: all 0.3s ease;
+        -moz-transition: all 0.3s ease;
+        -ms-transition: all 0.3s ease;
+        -o-transition: all 0.3s ease;
+        transition: all 0.3s ease;
+        margin-left: 5px;
+        background: white;
+        border-radius: 0.25rem;
+        padding: 0.25rem 0.375rem;
+        font-weight: bold; }
+  .kanban-card:hover .others {
+    color: rgba(0, 0, 0, 0.75); }
+    .kanban-card:hover .others span.label-data {
+      background: #f6f8fa; }
+
+body > .kanban-card {
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+  background: #d2dae7;
+  border-color: #d2dae7; }
 
 .group-asc {
   font-size: 1.5rem;

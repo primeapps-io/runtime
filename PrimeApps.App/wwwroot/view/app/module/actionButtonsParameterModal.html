@@ -2,7 +2,8 @@
     <form ng-if="showMicroflowParameters" kendo-validator="actionButtonsParameterMicroflowModalForm" ng-submit="runMicroflowParameters(actionButtonsParameterMicroflowModalForm)" class="disable-validation-msg" autocomplete="off" novalidate>
         <md-toolbar>
             <div class="md-toolbar-tools">
-                <h2>{{'Setup.Modules.ActionButtonParameter' | translate}}</h2>
+                <h2 ng-show="buttonParameterNameTitle">{{buttonParameterNameTitle}}</h2>
+                <h2 ng-show="!buttonParameterNameTitle">{{'Setup.Modules.ActionButtonParameter' | translate}}</h2>
                 <span flex></span>
                 <md-button class="md-icon-button" ng-click="closeLightBox()"><i class="fas fa-times"></i></md-button>
             </div>
@@ -32,7 +33,8 @@
     <form ng-if="showScriptParameters" kendo-validator="actionButtonsParameterScriptModalForm" ng-submit="runScriptParameters(actionButtonsParameterScriptModalForm)" class="disable-validation-msg" autocomplete="off" novalidate>
         <md-toolbar>
             <div class="md-toolbar-tools">
-                <h2>{{'Setup.Modules.ActionButtonParameter' | translate}}</h2>
+                <h2 ng-show="buttonParameterNameTitle">{{buttonParameterNameTitle}}</h2>
+                <h2 ng-show="!buttonParameterNameTitle">{{'Setup.Modules.ActionButtonParameter' | translate}}</h2>
                 <span flex></span>
                 <md-button class="md-icon-button" ng-click="closeLightBox()"><i class="fas fa-times"></i></md-button>
             </div>

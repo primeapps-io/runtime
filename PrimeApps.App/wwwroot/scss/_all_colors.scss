@@ -303,15 +303,58 @@ header{
     }
   }
 }
-
-.k-dropdown,.k-dropdowntree,.k-multiselect{
-  .k-dropdown-wrap {
-    &.k-state-hover,&.k-state-focused {
-      border-color: lighten($primary, 25%);
+.ng-submitted{
+  .image-preview{
+    &.required{
+      .image-holder{
+        background: theme-color-level(danger, -12) !important;
+      }
     }
   }
 }
 
+
+
+.kanban-view{
+  .board{
+    > .k-listview-content{
+      .list-wrapper{
+        .list-header{
+          background: theme-color-level(primary, -10);
+        }
+        .k-listview{
+          .k-listview-content{
+            .kanban-card{
+              &:hover{
+                border-color: theme-color-level(primary, -11);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+.kanban-card{
+  background: theme-color-level(primary, -12);
+  .primary{
+    color: $primary;
+  }
+
+  &:hover{
+    .others{
+      span{
+        &.label-data{
+          background: theme-color-level(primary, -12);
+        }
+      }
+    }
+  }
+}
+body>.kanban-card{
+  background: theme-color-level(primary, -10);
+  border-color: theme-color-level(primary, -10);
+}
 
 .grid-buttons2{
   .md-fab-toolbar-wrapper{
@@ -321,7 +364,7 @@ header{
       }
     }
   }
-}
+} 
 .grid-buttons3{
   background: theme-color-level(primary, -12);
 }

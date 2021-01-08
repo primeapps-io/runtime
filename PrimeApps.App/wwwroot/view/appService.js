@@ -258,18 +258,6 @@ angular.module('primeapps')
                                             return false;
                                         }
 
-                                        //TODO  Matrial design  modalı kullanılacak
-                                        // $rootScope.helpModal = $rootScope.helpModal || $modal({
-                                        //     scope: $rootScope,
-                                        //     templateUrl: 'view/setup/help/helpPageModal.html',
-                                        //     animation: '',
-                                        //     backdrop: 'static',
-                                        //     show: false,
-                                        //     tag: 'createModal'
-                                        // });
-                                        //
-                                        // $rootScope.helpModal.$promise.then($rootScope.helpModal.show);
-
                                     };
 
                                     $rootScope.closeDialog = function (route, moduleId, dontShow) {

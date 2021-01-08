@@ -20,7 +20,7 @@
                         </span>
                     </label>
                     <input type="text" name="view_name"
-                           ng-value="activeView.languages[globalization.Label]['label'] || activeView.languages[globalization.Label]['name']" 
+                           ng-value="activeView.languages[globalization.Label]['label'] || activeView.languages[globalization.Label]['name']"
                            ng-model="viewName"
                            ng-change="viewNameMax()"
                            required
@@ -49,19 +49,19 @@
                                    ng-model="activeView.sharing_type" value="me">
                             <label class="k-radio-label" for="me">{{'View.ShareMe' | translate}}</label>
                         </li>
-                        <li>
+                        <li  ng-if="user.profile.has_admin_rights">
                             <input type="radio"  name="sharingType" id="everybody"
                                    class="k-radio"
                                    ng-model="activeView.sharing_type" value="everybody">
                             <label class="k-radio-label" for="everybody"> {{'View.ShareEveryone' | translate}}</label>
                         </li>
-                        <li ng-if="!preview">
-                            <input type="radio"  name="sharingType" id="custom"
-                                   class="k-radio"
-                                   ng-model="activeView.sharing_type" value="custom">
-                            <label class="k-radio-label" for="custom"> {{'View.ShareCustom' | translate}}</label>
-                        </li>
-                        <li>
+<!--                        <li ng-if="!preview">-->
+<!--                            <input type="radio"  name="sharingType" id="custom"-->
+<!--                                   class="k-radio"-->
+<!--                                   ng-model="activeView.sharing_type" value="custom">-->
+<!--                            <label class="k-radio-label" for="custom"> {{'View.ShareCustom' | translate}}</label>-->
+<!--                        </li>-->
+                        <li ng-if="user.profile.has_admin_rights">
                             <input type="radio"  name="profile" id="profile"
                                    class="k-radio"
                                    ng-model="activeView.sharing_type" value="profile">
@@ -84,16 +84,16 @@
             </div>
         </md-dialog-content>
         <md-dialog-actions layout="row" >
-            <md-button ng-if="(activeView.system_type !='system' || preview)  && activeView.id" ng-show="viewPermissions.modify && (activeView.created_by_id === user.id || user.profile.has_admin_rights)" ng-click="SaveView('edit')" class="btn btn-primary" type="button" md-autofocus><i
+            <md-button ng-if="(activeView.system_type !='system' || preview)  && activeView.id" ng-show="(activeView.created_by_id === user.id || user.profile.has_admin_rights)" ng-click="SaveView('edit')" class="btn btn-primary" type="button" md-autofocus><i
                     class="fas fa-save"></i>
                 {{'Common.Save' | translate}}
             </md-button>
-            <md-button ng-if="activeView.isNew" ng-show="viewPermissions.write" ng-click="SaveView('add')" class="btn btn-primary" type="button" md-autofocus><i
+            <md-button ng-if="activeView.isNew" ng-show="user.profile.has_admin_rights && (activeView.created_by_id === user.id)" ng-click="SaveView('add')" class="btn btn-primary" type="button" md-autofocus><i
                     class="fas fa-save"></i>
                 {{'Common.Save' | translate}}
             </md-button>
 
-            <md-button ng-if="!activeView.isNew" ng-show="viewPermissions.write" ng-disabled="viewIsSaveing" ng-click="SaveView('add')" class="btn btn-primary" type="button" md-autofocus><i
+            <md-button ng-if="!activeView.isNew" ng-disabled="viewIsSaveing" ng-click="SaveView('add')" class="btn btn-primary" type="button" md-autofocus><i
                     class="fas fa-save"></i>
                 {{'Common.SaveAsNew' | translate}}
             </md-button>

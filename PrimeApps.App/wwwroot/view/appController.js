@@ -280,9 +280,6 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             }
         });
 
-        Popper.Defaults.modifiers.computeStyle.enabled = false;
-
-
         $rootScope.isMobile = function () {
             var check = false;
             (function (a) {
@@ -422,21 +419,6 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                 angular.element('#wrapper').toggleClass('hide-sidebar');
             }
         };
-
-        // KENDO UI FUNCTIONS START
-
-        // $(".accountbar").kendoTooltip({
-        //     showOn: 'mouseenter',
-        //     animation: {
-        //         open: {
-        //           effects: "fade:in"
-        //         }
-        //     },
-        //     autoHide: false,
-        //     content: 'abacssdsd',
-        //     position: "bottom"
-        // });
-
 
         $scope.toggleAppMenu = function ($timeout) {
             angular.element($scope.appLauncher).toggleClass('toggled');
@@ -738,7 +720,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             return kendo.toString(kendo.parseDate(time), "g");
         };
 
-        $scope.notificationShowModal = function () { 
+        $scope.notificationShowModal = function () {
                 $rootScope.notificationModalOpen = $mdSidenav('sideModal').isOpen();
 
             if (!$rootScope.notificationModalOpen) {
@@ -846,5 +828,6 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
         getNotifications();
         //#endregion Notification
+
     }
 ]);

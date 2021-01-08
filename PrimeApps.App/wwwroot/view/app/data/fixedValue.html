@@ -150,13 +150,13 @@
                             ng-required="{{fixedField.validation.required}}"
                             ng-if="fixedField.data_type === 'multiselect'"></select>
 
-                    <input kendo-auto-complete
-                           name="{{fixedField.name}}"
-                           id="{{fixedField.name}}"
-                           k-options="fixedLookupOptions(fixedField)"
-                           k-ng-model="fixedValue[fixedField.name]"
-                           ng-required="{{fixedField.validation.required}}"
-                           ng-if="fixedField.data_type === 'lookup'" />
+                    <select kendo-drop-down-list
+                            name="{{fixedField.name}}"
+                            id="{{fixedField.name}}"
+                            k-options="fixedLookupOptions(fixedField)"
+                            k-ng-model="fixedValue[fixedField.name]"
+                            ng-required="{{fixedField.validation.required}}"
+                            ng-if="fixedField.data_type === 'lookup'"></select>
 
                 </div>
             </div>

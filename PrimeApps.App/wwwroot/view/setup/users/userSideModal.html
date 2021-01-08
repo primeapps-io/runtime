@@ -169,14 +169,14 @@
                 </div>
                 <div class="whitebox">
                     <div class="form-group">
-                        <label for="password" class="required">
+                        <label for="password-data" class="required">
                             <span>{{'Setup.Users.UserPassword' | translate}}</span>
-                            <md-button type="button" class="btn btn-sm btn-secondary md-icon-button" ngclipboard data-clipboard-target="#password" ng-click="copySuccess()">
+                            <md-button type="button" class="btn btn-sm btn-secondary md-icon-button" ngclipboard data-clipboard-target="#password-data" ng-click="copySuccess()">
                                 <i class="fas fa-copy"></i>
                                 <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Copy' | translate}}</md-tooltip>
                             </md-button>
                         </label>
-                        <input type="text" id="password" name="password" class="form-control" ng-model="userPassword" value="{{userPassword}}" ng-readonly="true" required />
+                        <input type="text" id="password-data" name="password" class="form-control" ng-model="userPassword" value="{{userPassword}}" ng-readonly="true" required />
                     </div>
                     <md-button type="submit" class="btn btn-primary" ng-disabled="hideSendEmailToUser" ng-if="!preview">{{'Setup.Office.SendEmail' | translate}} <i class="fas fa-paper-plane"></i></md-button>
                 </div>

@@ -36,7 +36,7 @@
                         </md-button>
                         <md-button class="md-button btn btn-warning filter-button md-icon-button" style="position: relative;overflow: inherit;" aria-label="{{'Setup.Nav.Notifications' | translate}}" ng-click="notificationShowModal()">
                             <i class="fas fa-bell"></i>
-                            <span ng-if="unReadNotificationCount > 0" class="filter-badge" >{{unReadNotificationCount}}</span>
+                            <span ng-if="unReadNotificationCount > 0" class="filter-badge">{{unReadNotificationCount}}</span>
                             <md-tooltip md-autohide="true" md-direction="bottom">{{'Setup.Nav.Notifications' | translate}}</md-tooltip>
                         </md-button>
                     </div>
@@ -54,17 +54,17 @@
                             <md-menu-content class="md-dense account-dropdown-box">
                                 <div class="accountbar-in layout-padding"
                                      ng-include="'view/common/account-box.html'"></div>
-                                <md-menu-divider></md-menu-divider>
-                                <md-menu-item>
-                                    <md-button ng-click="gotoSetup('#/app/setup/settings?tab=general');MenuItemHideMenu();" aria-label="{{'Setup.Nav.Tabs.General' | translate}}">
-                                        <span>{{'Setup.Nav.Tabs.General' | translate}}</span>
-                                    </md-button>
-                                </md-menu-item>
-                                <md-menu-item ng-if="!disablePasswordChange">
-                                    <md-button ng-click="gotoSetup('#/app/setup/settings?tab=security');MenuItemHideMenu();" aria-label="{{'Setup.Nav.Security' | translate}}">
-                                        {{'Setup.Nav.Security' | translate}}
-                                    </md-button>
-                                </md-menu-item>
+                                <md-menu-divider ng-if="(user.profile.has_admin_rights || user.profile.smtp_settings) && !preview"></md-menu-divider>
+                                <!--                                <md-menu-item>-->
+                                <!--                                    <md-button ng-click="gotoSetup('#/app/setup/settings?tab=general');MenuItemHideMenu();" aria-label="{{'Setup.Nav.Tabs.General' | translate}}">-->
+                                <!--                                        <span>{{'Setup.Nav.Tabs.General' | translate}}</span>-->
+                                <!--                                    </md-button>-->
+                                <!--                                </md-menu-item>-->
+                                <!--                                <md-menu-item ng-if="!disablePasswordChange">-->
+                                <!--                                    <md-button ng-click="gotoSetup('#/app/setup/settings?tab=security');MenuItemHideMenu();" aria-label="{{'Setup.Nav.Security' | translate}}">-->
+                                <!--                                        {{'Setup.Nav.Security' | translate}}-->
+                                <!--                                    </md-button>-->
+                                <!--                                </md-menu-item>-->
                                 <md-menu-item ng-if="(user.profile.has_admin_rights || user.profile.smtp_settings) && !preview">
                                     <md-button ng-click="gotoSetup('#/app/setup/settings?tab=email');MenuItemHideMenu();" aria-label="{{ 'Setup.Messaging.EMail.Title' | translate}}">
                                         {{ 'Setup.Messaging.EMail.Title' | translate}}
@@ -105,5 +105,5 @@
         </div>
     </div>
 </header>
-<ng-include src="'view/common/appMenu.html'"></ng-include> 
+<ng-include src="'view/common/appMenu.html'"></ng-include>
 

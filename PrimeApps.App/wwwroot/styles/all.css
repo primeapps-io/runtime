@@ -26996,7 +26996,8 @@ div.k-grid-norecords {
   -webkit-tap-highlight-color: transparent; }
 
 .k-listview-bordered {
-  border-width: 1px; }
+  border-width: 1px;
+  }
 
 .k-listview-header {
   border-width: 0;

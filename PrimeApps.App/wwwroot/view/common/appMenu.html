@@ -19,7 +19,7 @@
                             <a ng-if="item.is_dynamic && item.route"
                                ng-click="openSubMenu(item, menu);"
                                href="#/app/modules/{{item.route}}"
-                               ng-class="{'active': currentPath === '/app/modules/{{item.route}}'}"
+                               ng-class="{'active': currentPath === '/app/modules/{{item.route}}' || currentPath === '/app/record/{{item.route}}'}"
                                title="{{item.languages[globalization.Label]['label']}}">
                                 <i class="fas {{item.menu_icon}}"></i> <span>{{item.languages[globalization.Label]['label']}}</span>
                                 <i ng-if="!item.route" class="fas fa-angle-down"></i>
@@ -54,7 +54,7 @@
                             </a>
                             <ul ng-if="!item.route" class="list-unstyled submenu">
                                 <li id="menuItem"
-                                    ng-class="{'active': currentPath === '/app/modules/{{subMenu.route}}'}"
+                                    ng-class="{'active': currentPath === '/app/modules/{{subMenu.route}} || currentPath === '/app/record/{{item.route}}''}"
                                     ng-repeat="subMenu in menu[$index].menu_items | orderBy:'order'">
                                     <a ng-hide="subMenu.hide || subMenu.deleted" ng-if="subMenu.is_dynamic"
                                        href="#/app/modules/{{subMenu.route}}" ng-click="closeMobileMenu(item, menu)" title="{{subMenu.languages[globalization.Label]['label']}}">

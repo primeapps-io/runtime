@@ -1,7 +1,7 @@
 <div class="form-group"
      ng-if="field.data_type === 'text_single' && field.data_type != 'number_auto' && !field.combination && field.show_label && !field.show_lock && !field.hidden">
     <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}" for="{{field.name +'_'+ module.id}}"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly}">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field)}">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -26,7 +26,7 @@
 <div class="form-group" ng-if="field.data_type === 'text_multi' && !field.multiline_type_use_html && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -53,7 +53,7 @@
      ng-if="field.data_type === 'text_multi'  && field.multiline_type_use_html && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -68,7 +68,7 @@
 
 <div class="form-group"
      ng-if="field.data_type === 'location' && !field.hidden">
-    <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+    <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -96,7 +96,7 @@
      ng-if="field.data_type === 'number' && !field.show_lock && !field.hidden">
     <label for="{{field.name +'_'+ module.id}}"
            ng-show="!field.custom_label && field.show_label"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -123,7 +123,7 @@
      ng-if="field.data_type === 'number_decimal' && !field.show_lock && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -149,7 +149,7 @@
      ng-if="field.data_type === 'currency' && !field.show_lock && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -175,7 +175,7 @@
      ng-if="field.data_type === 'email' && !field.show_lock && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <md-button ng-if="id && record[field.name]" class="btn btn-secondary label-btn"
@@ -206,7 +206,7 @@
      ng-if="field.data_type === 'date' && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -231,7 +231,7 @@
      ng-if="field.data_type === 'date_time' && !field.hidden && (id || (!id && (field.name !== 'created_at' && field.name !== 'updated_at')))">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -256,7 +256,7 @@
      ng-if="field.data_type === 'time' && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -290,7 +290,7 @@
      ng-if="field.data_type === 'picklist' && ( field.view_type === 'dropdown' || field.view_type === '' || field.view_type === undefined) && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -315,14 +315,13 @@
         <input type="checkbox"
                id="{{field.name+'-'+formUniqKey}}"
                name="{{field.name}}"
-               ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
+               ng-disabled="field.validation.readonly || (record.freeze && !isAdmin) || setReadonly(field)"
                ng-model="record[field.name]"
                tabindex="{{field.order}}"
                class="k-checkbox"
-               ng-readonly="{{setReadonly(field)}}"
                ng-required="field.validation.required"
                ng-change="fieldValueChange(field);">
-        <label ng-show="field.show_label" class="k-checkbox-label" for="{{field.name+'-'+formUniqKey}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+        <label ng-show="field.show_label" class="k-checkbox-label" for="{{field.name+'-'+formUniqKey}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
             <span ng-if="!field.custom_label">{{ field.languages[globalization.Label]['label'] }}</span>
             <span ng-if="field.custom_label">{{ field.custom_label }}</span>
 
@@ -334,7 +333,7 @@
 <div class="form-group" ng-if="field.data_type === 'text_single' && field.combination && !field.show_lock && !field.hidden && id">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -355,7 +354,7 @@
 <div class="form-group" ng-if="field.data_type === 'multiselect' && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -374,7 +373,7 @@
 
 <div class="form-group "
      ng-if="field.data_type === 'image' && !field.hidden">
-    <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+    <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -409,7 +408,7 @@
      ng-if="field.data_type === 'document' && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <md-button class="btn btn-secondary label-btn" ng-show="record[field.name] && fileLoadingCounter<1  && isFinishUpload" title="{{record[field.name]}}"
@@ -443,7 +442,7 @@
 
 <div class="form-group rating-fields"
      ng-if="field.data_type === 'rating' && !field.hidden">
-    <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+    <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -464,7 +463,7 @@
      ng-if="field.data_type === 'url'  && !field.show_lock && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <md-button ng-if="record[field.name]" class="btn btn-secondary label-btn"
@@ -493,7 +492,7 @@
 
 <div class="form-group"
      ng-if="field.data_type === 'lookup' && !field.hidden && (id || (!id && (field.name !== 'created_by' && field.name !== 'updated_by')))" ng-mouseover="setCurrentLookupField(field)">
-    <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+    <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <md-button class="btn btn-secondary label-btn" ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name] && !field.external_link && record[field.name].id"
@@ -540,7 +539,7 @@
 
 <div class="form-group" ng-if="field.data_type === 'picklist' &&  field.view_type ==='radio' && !field.hidden">
     <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}" for="{{field.name}}"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -568,7 +567,7 @@
 
 <div class="form-group" ng-if="field.data_type === 'picklist' &&  field.view_type ==='checkbox' && !field.hidden">
     <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}" for="{{field.name}}"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -596,13 +595,13 @@
 
 <div class="form-group"
      ng-if="field.data_type === 'tag' && !field.hidden" ng-mouseover="setId(field, false)">
-    <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+    <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <select kendo-multi-select="{{field.name}}" ng-class="{'readonly': field.validation.readonly || (record.freeze && !isAdmin)}"
+    <select kendo-multi-select="{{field.name}}" ng-class="{'readonly': field.validation.readonly || (record.freeze && !isAdmin) || setReadonly(field)}"
             id="{{field.name}}"
             name="{{field.name}}"
             k-options="{{'tagOptions'+field.id}}"
@@ -670,7 +669,7 @@
 
 <div class="form-group" ng-if="field.data_type === 'number_auto' && !field.hidden && id">
     <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}" for="{{field.name}}"
-           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly }">
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>

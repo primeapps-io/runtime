@@ -14,11 +14,11 @@
         </md-button>
         <md-button
                 ng-if="activeView.system_type !='system'"
-                ng-show="views.length > 1  && viewPermissions.remove && (activeView.created_by_id === user.id || user.profile.has_admin_rights)"
+                ng-show="views.length > 1 && (activeView.created_by_id === user.id || user.profile.has_admin_rights)"
                 class="md-icon-button btn btn-secondary" aria-label="Delete" ng-click="deleteView($event)"><i class="fas fa-trash"></i>
             <md-tooltip md-autohide="true" md-directtion="bottom"> {{'Common.Delete' | translate}}</md-tooltip>
         </md-button>
-        <md-button ng-if="(viewPermissions.write || viewPermissions.modify)" class="md-icon-button btn " ng-class="viewChangeStatus ? 'btn-primary' :'btn-secondary'" ng-disabled="isDirty" ng-click="saveModal(filterForm)" aria-label="Save"><i
+        <md-button  class="md-icon-button btn " ng-class="viewChangeStatus ? 'btn-primary' :'btn-secondary'" ng-disabled="isDirty" ng-click="saveModal(filterForm)" aria-label="Save"><i
                 class="fas fa-save"></i>
             <md-tooltip md-autohide="true" md-directtion="bottom">{{'Common.Save' | translate}} </md-tooltip>
         </md-button>
@@ -63,20 +63,23 @@
                                 class="fas fa-check"></i></span>
                         <small>Gallery</small>
                     </a>
-                </div>
-                <div class="col-4 col-md-3 col-lg-3 col-xl-2">
-                    <a href ng-class="activeView.viewType ==='kanban' ? 'active':''" title="Kanban View">
-                        <span class="view-img-holder"><img src="images/views/kanban.svg" alt="Kanban View"/><i
-                                class="fas fa-check"></i></span>
-                        <small>Kanban</small>
-                    </a>
                 </div>-->
+
                 <div class="col-4 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('report');">
                     <a href ng-class="activeView.view_type ==='report' ? 'active':''"
                        title="{{'View.ReportView' | translate}}">
                         <span class="view-img-holder"><img src="images/views/report.svg" alt="{{'View.ReportView' | translate}}"/><i
                                 class="fas fa-check"></i></span>
                         <small> {{'View.Report' | translate}}</small>
+                    </a>
+                </div>
+
+                <div class="col-4 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('kanban');">
+                    <a href ng-class="activeView.view_type ==='kanban' ? 'active':''"
+                       title="{{'View.Kanban' | translate}}">
+                        <span class="view-img-holder"><img src="images/views/kanban.svg" alt="{{'View.Kanban' | translate}}"/><i
+                                class="fas fa-check"></i></span>
+                        <small> {{'View.Kanban' | translate}} </small>
                     </a>
                 </div>
                 <!--<div class="col-4 col-md-3 col-lg-3 col-xl-2">
@@ -290,6 +293,30 @@
 
         </section>
 
+        <!--  Kanban Settings -->
+
+        <div class="title" ng-if="activeView.view_type ==='kanban'">
+            <h5> {{'View.KanbanSettings' | translate}} </h5>
+        </div>
+        <section class="whitebox padding20" ng-if="activeView.view_type ==='kanban'">
+
+            <div class="form-group">
+                <label>
+                    <span>{{ 'View.GroupArea' | translate}}</span>
+                </label>
+                <select
+                        id="kanbanPicklist"
+                        k-option-label="'{{'Module.SelectField' | translate}}'"
+                        k-data-text-field="'label'"
+                        k-data-value-field="'picklist_id'"
+                        k-data-source="picklistFields"
+                        ng-required="true"
+                        k-on-change="setViewKanban()"
+                        kendo-drop-down-list ng-model="activeView.settings.kanbanPicklist">
+                </select>
+            </div>
+        </section>
+
         <!--  Widget Settings -->
         <div class="title" ng-if="activeView.report_type ==='single'">
             <h5> {{'Report.Widget.Name' | translate}} </h5>
@@ -353,12 +380,22 @@
                         </div>
                         <div class="col">
                             <div class="form-group">
-                            <select k-data-text-field="'label'" 
+                            <select k-data-text-field="'label'"
                                 k-data-value-field="'name'"
                                 k-data-source="viewFields.selectedFields"
                                 k-on-change="changeGridGroupField(group)"
                                 ng-model="group.fieldArea"
                                 kendo-drop-down-list></select>
+                            </div>
+                        </div>
+                        <div  ng-show="group.data_type === 'date' || group.data_type === 'date_time' || group.data_type === 'time'" class="col-3">
+                            <div class="form-group">
+                                <select k-data-text-field="'label'"
+                                        k-data-value-field="'type'"
+                                        k-data-source="gruopsForDateArea"
+                                        k-on-change="groupsForDate(group)"
+                                        ng-model="group.dateTypeArea"
+                                        kendo-drop-down-list></select>
                             </div>
                         </div>
                         <div class="col-auto">
@@ -369,8 +406,8 @@
                                     <span ng-show="group.dir === 'asc'">{{'View.From1to9' | translate}}</span>
                                     <span ng-show="group.dir === 'desc'">{{'View.From9to1' | translate}}</span>
                                 </md-tooltip>
-                                <md-tooltip md-autohide="true" md-direction="bottom" ng-show="group.data_type === 'text_single' || group.data_type === 'text_multi' || group.data_type === 'email' || group.data_type === 'date' 
-                                    || group.data_type === 'url' || group.data_type === 'tag' || group.data_type === 'date_time' || group.data_type === 'time' 
+                                <md-tooltip md-autohide="true" md-direction="bottom" ng-show="group.data_type === 'text_single' || group.data_type === 'text_multi' || group.data_type === 'email' || group.data_type === 'date'
+                                    || group.data_type === 'url' || group.data_type === 'tag' || group.data_type === 'date_time' || group.data_type === 'time'
                                     || group.data_type === 'picklist' || group.data_type === 'rating' || group.data_type === 'lookup' ">
                                     <span ng-show="group.dir === 'asc'">{{'View.FromAtoZ' | translate}}</span>
                                     <span ng-show="group.dir === 'desc'">{{'View.FromZtoA' | translate}}</span>
@@ -380,15 +417,15 @@
                     </div>
                 </div>
             </div>
-            <md-button  class="btn btn-secondary newGroupButton" ng-show="gridGroupBy.length < 2" ng-click="addGridGroup()" aria-label="{{ 'Setup.UserGroups.NewUserGroup' | translate}}">
+            <md-button  class="btn btn-secondary" ng-show="gridGroupBy.length < 2" ng-click="addGridGroup()" aria-label="{{ 'Setup.UserGroups.NewUserGroup' | translate}}">
                 <i class="fas fa-plus"></i> {{ 'Setup.UserGroups.NewUserGroup' | translate}}
             </md-button>
         </section>
-        
-        <div class="title" ng-if="activeView.view_type==='grid' ||  activeView.report_type==='tabular'">
+
+        <div class="title" ng-if="activeView.view_type==='grid' ||  activeView.report_type==='tabular' || activeView.view_type ==='kanban'">
             <h5> {{'View.Columns' | translate}}  </h5>
         </div>
-        <div class="whitebox padding20" ng-if="activeView.view_type==='grid' || activeView.report_type==='tabular'">
+        <div class="whitebox padding20" ng-if="activeView.view_type==='grid' || activeView.report_type==='tabular' || activeView.view_type ==='kanban'">
             <div class="form-group">
                 <div class="row draglistbox">
                     <div class="col-6">
@@ -445,7 +482,6 @@
                         <div class="col" ng-if="aggregation.aggregation_type !== 'count'">
                             <div class="form-group">
                                 <select
-                                        k-option-label="'{{'Module.AggregationType' | translate}}'"
                                         k-data-text-field="'label'"
                                         k-data-value-field="'value'"
                                         k-data-source="aggregationTypes"
@@ -459,13 +495,12 @@
                 </div>
             </div>
         </section>
-        
+
         <!--    Calculation Fields Tabular -->
-        <div ng-if="activeView.view_type==='report' && activeView.report_type==='tabular' && activeView.aggregations.length > 0" class="whitebox padding20 gridByGroup">
-            <section class="row marginBottom10" ng-repeat="aggregation in activeView.aggregations">
+        <div ng-if="activeView.view_type==='report' && activeView.report_type==='tabular' && activeView.aggregations.length > 0" class="whitebox padding20">
+            <section class="row" ng-repeat="aggregation in activeView.aggregations">
                 <div class="col-12 col-sm-6">
-                    <input type="text" ng-disabled="true" value="{{fieldskey[aggregation.field].label }}"
-                           class="k-textbox"/>
+                    <input type="text" ng-disabled="true" value="{{fieldskey[aggregation.field].label }}" class="k-textbox"/>
                 </div>
                 <div class="col-12 col-sm-6">
                     <select
@@ -479,6 +514,5 @@
                 </div>
             </section>
         </div>
-        
     </form>
 </md-content>

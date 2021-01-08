@@ -140,8 +140,25 @@ header .accountbar > md-menu > button {
   .dropdown-menu > .btn:hover, .k-popup > .btn:hover {
     background: #fffbf5; }
 
-.k-dropdown .k-dropdown-wrap.k-state-hover, .k-dropdown .k-dropdown-wrap.k-state-focused, .k-dropdowntree .k-dropdown-wrap.k-state-hover, .k-dropdowntree .k-dropdown-wrap.k-state-focused, .k-multiselect .k-dropdown-wrap.k-state-hover, .k-multiselect .k-dropdown-wrap.k-state-focused {
-  border-color: #ffce80; }
+.ng-submitted .image-preview.required .image-holder {
+  background: #fef7f8 !important; }
+
+.kanban-view .board > .k-listview-content .list-wrapper .list-header {
+  background: #ffebcc; }
+
+.kanban-view .board > .k-listview-content .list-wrapper .k-listview .k-listview-content .kanban-card:hover {
+  border-color: #fff3e0; }
+
+.kanban-card {
+  background: #fffbf5; }
+  .kanban-card .primary {
+    color: #FF9D00; }
+  .kanban-card:hover .others span.label-data {
+    background: #fffbf5; }
+
+body > .kanban-card {
+  background: #ffebcc;
+  border-color: #ffebcc; }
 
 .grid-buttons2 .md-fab-toolbar-wrapper .md-fab-toolbar-content .md-toolbar-tools {
   background: #fffbf5; }

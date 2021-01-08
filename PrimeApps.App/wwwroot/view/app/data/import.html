@@ -215,7 +215,7 @@
                                         <div class="row">
                                             <div ng-class="{'col-sm-6': section.column_count === 2, 'col-sm-12': section.column_count === 1}"
                                                  ng-repeat="column in section.columns track by $index">
-                                                <div class="form-group text-center" ng-repeat="field in module.fields | filter:{section: section.name, section_column: column.no, deleted: false, data_type: '!number_auto'}: true | filter:combinationFilter | orderBy:'order'">
+                                                <div class="form-group text-center" ng-repeat="field in getFields(section.name,  column.no)">
                                                     <label for="{{field.name}}" style="{{field.style_label}}">
                                                         <span>{{field.languages[globalization.Label]['label']}}  {{field.validation.required ? '*':''}}</span>
                                                         <md-button type="button" class="md-icon-button btn btn-sm" ng-click="openFixedValueModal(field,$event)" ng-if="getColumnName(field.name) === 'fixed'"><i class="fas fa-cog"></i></md-button>

@@ -153,7 +153,7 @@
                                 </label>
                                 <input kendo-drop-down-list
                                        id="language" name="language"
-                                       required
+                                       ng-required="formType === 'template'"
                                        k-options="languageOptions"
                                        ng-model="newtemplate.language" />
                             </div>

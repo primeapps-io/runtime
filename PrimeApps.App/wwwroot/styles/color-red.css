@@ -140,8 +140,25 @@ header .accountbar > md-menu > button {
   .dropdown-menu > .btn:hover, .k-popup > .btn:hover {
     background: #fef7f6; }
 
-.k-dropdown .k-dropdown-wrap.k-state-hover, .k-dropdown .k-dropdown-wrap.k-state-focused, .k-dropdowntree .k-dropdown-wrap.k-state-hover, .k-dropdowntree .k-dropdown-wrap.k-state-focused, .k-multiselect .k-dropdown-wrap.k-state-hover, .k-multiselect .k-dropdown-wrap.k-state-focused {
-  border-color: #ee9891; }
+.ng-submitted .image-preview.required .image-holder {
+  background: #fef7f8 !important; }
+
+.kanban-view .board > .k-listview-content .list-wrapper .list-header {
+  background: #f8d6d3; }
+
+.kanban-view .board > .k-listview-content .list-wrapper .k-listview .k-listview-content .kanban-card:hover {
+  border-color: #fbe6e5; }
+
+.kanban-card {
+  background: #fef7f6; }
+  .kanban-card .primary {
+    color: #DC3023; }
+  .kanban-card:hover .others span.label-data {
+    background: #fef7f6; }
+
+body > .kanban-card {
+  background: #f8d6d3;
+  border-color: #f8d6d3; }
 
 .grid-buttons2 .md-fab-toolbar-wrapper .md-fab-toolbar-content .md-toolbar-tools {
   background: #fef7f6; }
