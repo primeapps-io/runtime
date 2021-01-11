@@ -82,7 +82,7 @@
                 <img ng-src="{{'https://maps.googleapis.com/maps/api/staticmap?zoom=10&size=300x150&maptype=roadmap&markers=color:red|' + record[field.name] + '&key=' + googleMapsApiKey}}" />
             </a>
         </div>
-        <md-button ng-if="!record[field.name]" ng-disabled="field.validation.readonly || (id && !field.editable) || (record.freeze && !isAdmin)" ng-click="openLocationModal(field.name)" class="upload-btn btn btn-primary md-icon-button">
+        <md-button ng-if="!record[field.name]" ng-disabled="field.validation.readonly || (id && !field.editable) || (record.freeze && !isAdmin) || setReadonly(field)" ng-click="openLocationModal(field.name)" class="upload-btn btn btn-primary md-icon-button">
             <i class="fas fa-map-marked"></i>
             <md-tooltip md-autohide="true" md-direction="bottom">{{'Module.ChooseLocation' | translate}}</md-tooltip>
         </md-button>
@@ -216,10 +216,9 @@
            name="{{field.name}}"
            id="{{field.name}}"
            class="width100"
-           ng-readonly="{{setReadonly(field)}}"
            tabindex="{{field.order}}"
            ng-model="record[field.name+'str']"
-           ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
+           ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin) || setReadonly(field)"
            k-ng-model="record[field.name]"
            ng-required="field.validation.required"
            ng-click="openCalendar(field)"
@@ -242,13 +241,12 @@
            id="{{field.name}}"
            class="width100"
            tabindex="{{field.order}}"
-           ng-readonly="{{setReadonly(field)}}"
            ng-model="record[field.name+'str']"
            k-ng-model="record[field.name]"
            ng-click="openCalendar(field)"
            k-on-change="fieldValueChange(field);"
            ng-required="field.validation.required"
-           ng-disabled="field.name === 'created_at' ||field.name === 'updated_at' || field.validation.readonly || (record.freeze && !isAdmin)"
+           ng-disabled="field.name === 'created_at' ||field.name === 'updated_at' || field.validation.readonly || (record.freeze && !isAdmin) || setReadonly(field)"
            placeholder="{{'Common.DateTime' | translate}}" />
 </div>
 
@@ -268,10 +266,9 @@
            class="width100"
            tabindex="{{field.order}}"
            ng-model="record[field.name+'str']"
-           ng-readonly="{{setReadonly(field)}}"
            k-ng-model="record[field.name]"
            k-on-change="fieldValueChange(field);"
-           ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
+           ng-disabled="field.validation.readonly || (record.freeze && !isAdmin) || setReadonly(field)"
            ng-click="openCalendar(field)"
            ng-required="field.validation.required"
            placeholder="{{'Common.Time' | translate}}" />
@@ -387,15 +384,14 @@
             <img id="{{'croppedImage'+field.id}}" ng-src="{{croppedImage[field.id]}}"
                  ng-show="croppedImage[field.id]" />
         </a>
-        <md-button ng-if="!record[field.name]" ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)" class="upload-btn btn btn-primary md-icon-button">
+        <md-button ng-if="!record[field.name]" ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin) || setReadonly(field)" class="upload-btn btn btn-primary md-icon-button">
             <i class="fas fa-upload"></i>
             <md-tooltip md-autohide="true" md-direction="bottom">{{'Module.UploadImage' | translate}}</md-tooltip>
             <input name="files"
                    type="file"
-                   ng-readonly="{{setReadonly(field)}}"
                    nv-file-select uploader="uploaderImage(field)"
                    ng-required="field.validation.required"
-                   ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
+                   ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin) || setReadonly(field)"
                    ng-model='record[field.name]' />
         </md-button>
         <md-button ng-if="record[field.name]" ng-hide="field.validation.readonly || (record.freeze && !isAdmin)" ng-click="removeDocument(field)" class="delete-btn btn btn-danger md-icon-button btn-sm">

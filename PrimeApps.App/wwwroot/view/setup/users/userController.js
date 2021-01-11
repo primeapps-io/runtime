@@ -214,7 +214,7 @@ angular.module('primeapps')
 
                     if (inviteModel.id) { //For edit mode
                         $scope.edit(inviteModel);
-                        if(inviteModel.phone.toString() !== $scope.editModelState.phone.toString())
+                        if(inviteModel.phone && $scope.editModelState.phone && inviteModel.phone.toString() !== $scope.editModelState.phone.toString())
                             UserService.updateUserPhone(inviteModel).then(function () {
                                 UserService.getAllUser().then(function (users) {
                                     $rootScope.users = users.data;
