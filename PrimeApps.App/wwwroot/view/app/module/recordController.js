@@ -1559,9 +1559,9 @@ angular.module('primeapps')
 
             $scope.setReadonly = function (field) {
                 if (profileConfigs.config[$scope.module.name]) {
-                    if (profileConfigs.config[$scope.module.name].fields.readonly && profileConfigs.config[$scope.module.name].fields.readonly.includes(field.name)) {
+                    if (profileConfigs.config[$scope.module.name].fields && profileConfigs.config[$scope.module.name].fields.readonly && profileConfigs.config[$scope.module.name].fields.readonly.includes(field.name)) {
                         return true;
-                    } else if (profileConfigs.config[$scope.module.name].sections.readonly && profileConfigs.config[$scope.module.name].sections.readonly.includes(field.section)) {
+                    } else if (profileConfigs.config[$scope.module.name].sections && profileConfigs.config[$scope.module.name].sections.readonly && profileConfigs.config[$scope.module.name].sections.readonly.includes(field.section)) {
                         return true;
                     } else {
                         return false;

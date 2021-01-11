@@ -1508,7 +1508,7 @@ angular.module('primeapps')
                             var resutlLength = result.length;
                             for (var i = 0; i < resutlLength; i++) {
                                 var value = $filter('filter')(currentPicklist, { id: result[i] }, true)[0];
-                                resData +=  $rootScope.getLanguageValue(value.languages, 'label')
+                                resData += $rootScope.getLanguageValue(value.languages, 'label')
                                 if (i + 1 !== resutlLength)
                                     resData += ", ";
                             }
@@ -1958,7 +1958,7 @@ angular.module('primeapps')
                                 }
                             })
                         }
-                        
+
                         var resultLastArrRun = addRunAnyExp.length > 0 ? resultLastArr.concat(addRunAnyExp) : resultLastArr;
                         this.expressionRecursiveRunValue(resultLastArrRun, resultArr, record, currentField, module.fields, false);
                     }
@@ -3097,10 +3097,11 @@ angular.module('primeapps')
 
                             if (field.name !== primaryField.name) {
                                 fields.availableFields.push(newField);
-                            } else {
+                            }
+                            /*else {
                                 newField.primary = true;
                                 fields.selectedFields.push(newField);
-                            }
+                            }*/
                         }
                     });
 
@@ -3546,14 +3547,14 @@ angular.module('primeapps')
                                         result = recordValue.toString().endsWith(filterValue.toString());
                                         break;
                                 }
-                            }else{
+                            } else {
                                 switch (data.operator.name) {
                                     case "empty":
                                         result = recordValue === "" || recordValue === null || recordValue === undefined;
                                         break;
                                 }
                             }
-                            
+
                             $rootScope.filterLogicButtons = $rootScope.filterLogicButtons.replace(index, result.toString().toLocaleLowerCase());
                         }
                     })
