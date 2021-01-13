@@ -552,6 +552,9 @@ angular.module('primeapps')
                             editor.on("init", function () {
                                 $scope.loadingModal = false;
                             });
+                            editor.on('FullscreenStateChanged', function (e) {
+                               $('#mceu_52').hide();
+                            });
                         },
                         onChange: function (e) {
                             

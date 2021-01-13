@@ -53,8 +53,8 @@ angular.module('primeapps')
                         user_name: "",
                         password: "",
                         senders: [],
-                        enable_ssl: false,
-                        dont_send_bulk_email_result: false
+                        enable_ssl: true,
+                        dont_send_bulk_email_result: false,
                     };
                 }
 
