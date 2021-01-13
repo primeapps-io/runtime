@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('AppService', ['$rootScope', '$http', '$localStorage', '$cache', '$q', '$filter', '$timeout', '$state', 'config', 'helper', 'dataTypes', 'operators', 'systemRequiredFields', 'systemReadonlyFields', '$window', '$sce', 'AuthService', '$cookies', 'blockUI',
-        function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, dataTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $sce, AuthService, $cookies, blockUI) {
+    .factory('AppService', ['$rootScope', '$http', '$localStorage', '$cache', '$q', '$filter', '$timeout', '$state', 'config', 'helper', 'dataTypes', 'operators', 'systemRequiredFields', 'systemReadonlyFields', '$sce', 'AuthService', '$cookies', 'blockUI',
+        function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, dataTypes, operators, systemRequiredFields, systemReadonlyFields, $sce, AuthService, $cookies, blockUI) {
             return {
 
                 getMyAccount: function (refresh) {
@@ -96,7 +96,9 @@ angular.module('primeapps')
                                     }, true);
 
                                     var moduleSettings = response[3].data;
+                                    //TODO REMOVE
                                     var phoneSettings = response[4].data;
+
                                     var userSettings = response[9].data;
                                     $rootScope.defaultSystemFields = response[13].data;
                                     $rootScope.yesNo = response[14].data;
@@ -251,7 +253,6 @@ angular.module('primeapps')
                                         })(navigator.userAgent || navigator.vendor || window.opera);
                                         return check;
                                     };
-
 
                                     $rootScope.openFirtScreenHelpModal = function () {
                                         if ($rootScope.isMobile()) {
@@ -471,9 +472,6 @@ angular.module('primeapps')
                                         var module = $rootScope.modules[i];
                                         module = that.processModule(module);
 
-                                        if (!module.menu_icon) {
-                                            // that.setModuleMenuIcon(module); //Cannot found function
-                                        }
                                     }
 
                                     $rootScope.helpIconHide = $filter('filter')($rootScope.moduleSettings, {key: 'help_icon_hide'}, true)[0];
@@ -498,53 +496,54 @@ angular.module('primeapps')
 
                                     //  $rootScope.showAttachments = $filter('filter')($rootScope.moduleSettings, {key: 'show_attachments'}, true)[0];
                                     // $rootScope.showAttachments = $rootScope.showAttachments ? $rootScope.showAttachments.value : true;
-
-                                    $rootScope.newEpostaFieldName = $filter('filter')($rootScope.moduleSettings, {key: 'e_posta'}, true)[0];
-                                    $rootScope.newEpostaFieldName = $rootScope.newEpostaFieldName ? $rootScope.newEpostaFieldName.value : undefined;
-                                    $rootScope.newAdFieldName = $filter('filter')($rootScope.moduleSettings, {key: 'ad'}, true)[0];
-                                    $rootScope.newAdFieldName = $rootScope.newAdFieldName ? $rootScope.newAdFieldName.value : undefined;
-                                    $rootScope.newSoyadFieldName = $filter('filter')($rootScope.moduleSettings, {key: 'soyad'}, true)[0];
-                                    $rootScope.newSoyadFieldName = $rootScope.newSoyadFieldName ? $rootScope.newSoyadFieldName.value : undefined;
+                                    //TODO REMOVE
+                                    // $rootScope.newEpostaFieldName = $filter('filter')($rootScope.moduleSettings, {key: 'e_posta'}, true)[0];
+                                    // $rootScope.newEpostaFieldName = $rootScope.newEpostaFieldName ? $rootScope.newEpostaFieldName.value : undefined;
+                                    // $rootScope.newAdFieldName = $filter('filter')($rootScope.moduleSettings, {key: 'ad'}, true)[0];
+                                    // $rootScope.newAdFieldName = $rootScope.newAdFieldName ? $rootScope.newAdFieldName.value : undefined;
+                                    // $rootScope.newSoyadFieldName = $filter('filter')($rootScope.moduleSettings, {key: 'soyad'}, true)[0];
+                                    // $rootScope.newSoyadFieldName = $rootScope.newSoyadFieldName ? $rootScope.newSoyadFieldName.value : undefined;
 
                                     if (customSettings) {
 
                                         $rootScope.showAccountOwner = $filter('filter')(customSettings, {key: 'show_admin'}, true)[0];
                                         $rootScope.showSubscriber = $filter('filter')(customSettings, {key: 'show_subscriber'}, true)[0];
 
-                                        var employeeSettings = $filter('filter')(customSettings, {key: 'employee'}, true)[0];
-                                        $rootScope.isEmployee = employeeSettings ? employeeSettings.value : undefined;
+                                        //var employeeSettings = $filter('filter')(customSettings, {key: 'employee'}, true)[0];
+                                       // $rootScope.isEmployee = employeeSettings ? employeeSettings.value : undefined;
 
                                         /*
 										* Check branch mode is available.
 										* */
-                                        var branchSettings = $filter('filter')(response[10].data, {key: 'branch'}, true)[0];
-                                        $rootScope.branchAvailable = branchSettings ? branchSettings.value === 't' : undefined;
-
-                                        if ($rootScope.branchAvailable && $rootScope.isEmployee) {
-                                            var calisanRequest = {
-                                                filters: [
-                                                    {
-                                                        field: $rootScope.newEpostaFieldName ? $rootScope.newEpostaFieldName : 'e_posta',
-                                                        operator: 'is',
-                                                        value: myAccount.user.email,
-                                                        no: 1
-                                                    },
-                                                    {field: 'deleted', operator: 'equals', value: false, no: 2}
-                                                ],
-                                                limit: 1
-                                            };
-
-                                            $http.post(config.apiUrl + 'record/find/' + $rootScope.isEmployee, calisanRequest)
-                                                .then(function (response) {
-                                                    var calisan = response.data;
-                                                    if (calisan.length > 0) {
-                                                        $rootScope.user.calisanId = calisan[0]['id'];
-                                                        $rootScope.user.branchId = calisan[0]['branch'];
-                                                    } else if (myAccount.user.profile.has_admin_rights) {
-                                                        $rootScope.user.branchId = 1;
-                                                    }
-                                                });
-                                        }
+                                        // var branchSettings = $filter('filter')(response[10].data, {key: 'branch'}, true)[0];
+                                        // $rootScope.branchAvailable = branchSettings ? branchSettings.value === 't' : undefined;
+                                        //
+                                        // if ($rootScope.branchAvailable && $rootScope.isEmployee) {
+                                        //     var calisanRequest = {
+                                        //         filters: [
+                                        //             {
+                                        //                 field: $rootScope.newEpostaFieldName ? $rootScope.newEpostaFieldName : 'e_posta',
+                                        //                 operator: 'is',
+                                        //                 value: myAccount.user.email,
+                                        //                 no: 1
+                                        //             },
+                                        //             {field: 'deleted', operator: 'equals', value: false, no: 2}
+                                        //         ],
+                                        //         limit: 1
+                                        //     };
+                                        //
+                                        //     $http.post(config.apiUrl + 'record/find/' + $rootScope.isEmployee, calisanRequest)
+                                        //         .then(function (response) {
+                                        //             var calisan = response.data;
+                                        //             if (calisan.length > 0) {
+                                        //                 $rootScope.user.calisanId = calisan[0]['id'];
+                                        //                 $rootScope.user.branchId = calisan[0]['branch'];
+                                        //             } else if (myAccount.user.profile.has_admin_rights) {
+                                        //                 $rootScope.user.branchId = 1;
+                                        //             }
+                                        //         });
+                                        // }
+                                        //
                                     }
 
                                     helper.hideLoader();

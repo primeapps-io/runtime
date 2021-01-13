@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('UserController', ['$rootScope', '$cookies', 'AuthService', '$scope', '$filter', '$state', 'guidEmpty', 'helper', 'UserService', 'WorkgroupService', 'AppService', 'ProfileService', 'RoleService', '$q', 'officeHelper', '$localStorage', 'mdToast', '$mdDialog',
-        function ($rootScope, $cookies, AuthService, $scope, $filter, $state, guidEmpty, helper, UserService, WorkgroupService, AppService, ProfileService, RoleService, $q, officeHelper, $localStorage, mdToast, $mdDialog) {
+    .controller('UserController', ['$rootScope', '$cookies', 'AuthService', '$scope', '$filter', '$state', 'guidEmpty', 'helper', 'UserService', 'AppService', 'ProfileService', '$q', 'officeHelper', '$localStorage', 'mdToast', '$mdDialog',
+        function ($rootScope, $cookies, AuthService, $scope, $filter, $state, guidEmpty, helper, UserService, AppService, ProfileService,  $q, officeHelper, $localStorage, mdToast, $mdDialog) {
             $scope.loading = true;
             AppService.checkPermission().then(function (res) {
 
@@ -12,16 +12,6 @@ angular.module('primeapps')
                     var customProfilePermissions = undefined;
                     if (res.data["customProfilePermissions"])
                         customProfilePermissions = JSON.parse(res.data["customProfilePermissions"]);
-
-                    if (!profile.HasAdminRights) {
-                        var usersIsExist = undefined;
-                        if (customProfilePermissions)
-                            usersIsExist = customProfilePermissions.permissions.indexOf('users') > -1;
-
-                        if (!usersIsExist) {
-                            $state.go('app.setup.usergroups');
-                        }
-                    }
                 }
 
                 $rootScope.breadcrumblist = [
@@ -152,14 +142,13 @@ angular.module('primeapps')
 
                     //promises.push(UserService.getAllUser());
                     promises.push(ProfileService.getAll());
-                    promises.push(RoleService.getAll());
                     //var profiles = ProfileService.getAll();
                     //$scope.roles = RoleService.getAll();
                     $q.all(promises).then(function (data) {
                         // var users = data[0].data,
                         var responseProfiles = data[0].data;
-                        $scope.roles = angular.copy(data[1].data);
-                        $rootScope.processLanguages($scope.roles);
+
+
                         //        license = data[3].data;
 
                         //    //var workgroup = $filter('filter')($rootScope.workgroups, { tenant_id: $rootScope.user.tenant_id }, true)[0];
@@ -167,6 +156,7 @@ angular.module('primeapps')
 
                         $scope.profiles = ProfileService.getProfiles(responseProfiles, $rootScope.workgroup.tenant_id, true);
                         $rootScope.processLanguages($scope.profiles);
+
                         if (!$rootScope.user.profile.has_admin_rights)
                             $scope.profiles = $filter('filter')($scope.profiles, { has_admin_rights: !true }, true);
 
@@ -329,19 +319,7 @@ angular.module('primeapps')
                     UserService.updateUserStatus({ email: $scope.editModel.email, is_active: $scope.addUserModel.is_active });
                     ProfileService.changeUserProfile($scope.selectedUser.id, $rootScope.workgroup.tenant_id, $scope.editModel.profile.id)
                         .then(function onSuccess() {
-                            RoleService.updateUserRole($scope.selectedUser.id, $scope.editModel.role.id)
-                                .then(function onSuccess() {
-                                    if (($scope.editModel.activeDirectoryEmail !== null || $scope.editModel.activeDirectoryEmail !== "") &&
-                                        $scope.editModel.activeDirectoryEmail !== $scope.editModelState.activeDirectoryEmail) {
-                                        updateActiveDirectoryEmail();
-                                    } else {
-                                        success();
-                                    }
-                                })
-                                .catch(function onError() {
-                                    $scope.loadingModal = false;
-                                    $scope.userEditing = false;
-                                });
+
                         })
                         .catch(function onError() {
                             $scope.loadingModal = false;
@@ -687,18 +665,6 @@ angular.module('primeapps')
                     return status ? $filter('translate')('Common.Active') : $filter('translate')('Common.Deactivated');
                 };
 
-                $scope.roleOptions = {
-                    dataSource: {
-                        transport: {
-                            read: function (o) {
-                                o.success($filter("orderBy")($scope.roles, "languages." + $rootScope.globalization.Label + ".label"))
-                            }
-                        }
-                    },
-                    filter: "contains",
-                    dataTextField: "languages." + $rootScope.globalization.Label + ".label",
-                    dataValueField: "id"
-                };
             });
         }
     ]);

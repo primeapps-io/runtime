@@ -68,7 +68,6 @@ angular.module('primeapps')
                     }
                 });
 
-            //app.crm
             $stateProvider
                 .state('app.dashboard', {
                     url: '/dashboard',
@@ -303,24 +302,6 @@ angular.module('primeapps')
 
                 })
 
-                .state('app.analytics', {
-                    url: '/analytics?id',
-                    views: {
-                        'app': {
-                            templateUrl: 'view/app/analytics/analytics.html',
-                            controller: 'AnalyticsController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                'view/app/analytics/analyticsService.js',
-                                'view/app/analytics/analyticsController.js'
-                            ]);
-                        }]
-                    }
-                })
-
             //app.setup
             $stateProvider
                 .state('app.setup', {
@@ -348,8 +329,7 @@ angular.module('primeapps')
                             return $ocLazyLoad.load([
                                 'view/setup/settings/settingController.js',
                                 'view/setup/settings/settingService.js',
-                                'view/setup/email/emailService.js',
-                                //'view/setup/roles/roleService.js'
+                                'view/setup/email/emailService.js'
                             ]);
                         }]
                     }
@@ -422,10 +402,7 @@ angular.module('primeapps')
                             return $ocLazyLoad.load([
                                 'view/setup/users/userController.js',
                                 'view/setup/users/userService.js',
-                                'view/setup/workgroups/workgroupService.js',
-                                'view/setup/profiles/profileService.js',
-                                'view/setup/roles/roleService.js',
-                                'view/setup/usercustomshares/userCustomShareService.js',
+                                'view/setup/profiles/profileService.js'
                             ]);
                         }]
                     }
@@ -462,61 +439,6 @@ angular.module('primeapps')
                             return $ocLazyLoad.load([
                                 'view/setup/profiles/profileFormController.js',
                                 'view/setup/profiles/profileService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('app.setup.roles', {
-                    url: '/roles',
-                    views: {
-                        'app': {
-                            templateUrl: 'view/setup/roles/roles.html',
-                            controller: 'RoleController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                'view/setup/roles/roleController.js',
-                                'view/setup/roles/roleFormController.js',
-                                'view/setup/roles/roleService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('app.setup.role', {
-                    url: '/role?id&reportsTo',
-                    views: {
-                        'app': {
-                            templateUrl: 'view/setup/roles/roleForm.html',
-                            controller: 'RoleFormController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                'view/setup/roles/roleFormController.js',
-                                'view/setup/roles/roleService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('app.setup.candidateconvertmap', {
-                    url: '/candidateconvertmap',
-                    views: {
-                        'app': {
-                            templateUrl: 'view/setup/convert/candidateConvertMap.html',
-                            controller: 'CandidateConvertMapController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                'view/setup/convert/candidateConvertMapController.js',
-                                'view/setup/convert/convertMapService.js'
                             ]);
                         }]
                     }
@@ -576,42 +498,6 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.office', {
-                    url: '/office',
-                    views: {
-                        'app': {
-                            templateUrl: 'view/setup/office/office.html',
-                            controller: 'OfficeController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                'view/setup/office/officeController.js',
-                                'view/setup/office/officeService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('app.setup.auditlog', {
-                    url: '/auditlog',
-                    views: {
-                        'app': {
-                            templateUrl: 'view/setup/auditlog/auditlogs.html',
-                            controller: 'AuditLogController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                'view/setup/auditlog/auditLogController.js',
-                                'view/setup/auditlog/auditLogService.js'
-                            ]);
-                        }]
-                    }
-                })
-
                 .state('app.setup.templates', {
                     url: '/templates?tab',
                     views: {
@@ -643,100 +529,6 @@ angular.module('primeapps')
                             return $ocLazyLoad.load([
                                 'view/setup/templates/templateService.js',
                                 'view/setup/templates/templateFormController.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('app.setup.usergroups', {
-                    url: '/usergroups',
-                    views: {
-                        'app': {
-                            templateUrl: 'view/setup/usergroups/userGroups.html',
-                            controller: 'UserGroupController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                'view/setup/usergroups/userGroupController.js',
-                                'view/setup/usergroups/userGroupFormController.js',
-                                'view/setup/usergroups/userGroupService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('app.setup.usercustomshares', {
-                    url: '/usercustomshares',
-                    views: {
-                        'app': {
-                            templateUrl: 'view/setup/usercustomshares/userCustomShares.html',
-                            controller: 'UserCustomShareController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                'view/setup/usercustomshares/userCustomShareController.js',
-                                'view/setup/usercustomshares/userCustomShareFormController.js',
-                                'view/setup/usercustomshares/userCustomShareService.js',
-                                'view/setup/users/userService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('app.setup.usercustomshare', {
-                    url: '/usercustomshare?id&clone',
-                    views: {
-                        'app': {
-                            templateUrl: 'view/setup/usercustomshares/userCustomShareForm.html',
-                            controller: 'UserCustomShareFormController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                'view/setup/usercustomshares/userCustomShareFormController.js',
-                                'view/setup/usercustomshares/userCustomShareService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('app.setup.outlook', {
-                    url: '/outlook',
-                    views: {
-                        'app': {
-                            templateUrl: 'view/setup/outlook/outlook.html',
-                            controller: 'OutlookController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                'view/setup/outlook/outlookController.js',
-                                'view/setup/outlook/outlookService.js'
-
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('app.setup.usergroup', {
-                    url: '/usergroup?id&clone',
-                    views: {
-                        'app': {
-                            templateUrl: 'view/setup/usergroups/userGroupForm.html',
-                            controller: 'UserGroupFormController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                'view/setup/usergroups/userGroupFormController.js',
-                                'view/setup/usergroups/userGroupService.js'
                             ]);
                         }]
                     }

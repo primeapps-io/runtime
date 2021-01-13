@@ -281,8 +281,11 @@ angular.module('primeapps')
 
                     else if (operation === 'read') {
 
-                        if(config.actions.read === undefined)
+                        if(config.actions.read === undefined && $rootScope.user.profile.has_admin_rights)
                             return true;
+
+                        if(config.actions.read === undefined)
+                            return false;
 
                         return config['actions']['read']['enable'];
                     }

@@ -15,10 +15,6 @@ angular.module('primeapps')
                     if (accessToken && config.url.indexOf('/token') < 0 && (blobUrl === '' || config.url.indexOf(blobUrl) < 0))
                         config.headers['Authorization'] = 'Bearer ' + accessToken;
 
-                    if ($rootScope.branchAvailable) {
-                        config.headers['branch_id'] = $rootScope.user.branchId;
-                    }
-
                     var appId = $cookies.get(preview ? 'preview_app_id' : 'app_id');
                     var tenantId = $cookies.get(preview ? 'preview_tenant_id' : 'tenant_id');
 
@@ -29,7 +25,7 @@ angular.module('primeapps')
                     if (trustedUrls.length > 0) {
                         var getValue = function (key) {
                             switch (key) {
-                                
+
                                 case 'X-Auth-Key':
                                 case 'x-auth-key':
                                     return encryptedUserId;
@@ -38,7 +34,7 @@ angular.module('primeapps')
                                 case 'branch_id':
                                     return $rootScope.branchAvailable ? $rootScope.user.branchId : '';
                                 case 'X-Tenant-Language':
-                                case 'x-tenant-language':                                    
+                                case 'x-tenant-language':
                                     return tenantLanguage;
                                 case 'X-User-Id':
                                 case 'x-user-id':

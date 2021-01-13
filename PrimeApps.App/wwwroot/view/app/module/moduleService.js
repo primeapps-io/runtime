@@ -41,31 +41,6 @@ angular.module('primeapps')
                 delete: function (id) {
                     return $http.delete(config.apiUrl + 'module/delete/' + id);
                 },
-
-                createModuleRelation: function (relation, moduleId) {
-                    return $http.post(config.apiUrl + 'module/create_relation/' + moduleId, relation);
-                },
-
-                updateModuleRelation: function (relation, moduleId) {
-                    return $http.put(config.apiUrl + 'module/update_relation/' + moduleId + '/' + relation.id, relation);
-                },
-
-                deleteModuleRelation: function (id) {
-                    return $http.delete(config.apiUrl + 'module/delete_relation/' + id);
-                },
-
-                createModuleDependency: function (dependency, moduleId) {
-                    return $http.post(config.apiUrl + 'module/create_dependency/' + moduleId, dependency);
-                },
-
-                updateModuleDependency: function (dependency, moduleId) {
-                    return $http.put(config.apiUrl + 'module/update_dependency/' + moduleId + '/' + dependency.id, dependency);
-                },
-
-                deleteModuleDependency: function (id) {
-                    return $http.delete(config.apiUrl + 'module/delete_dependency/' + id);
-                },
-
                 getRecord: function (module, id, ignoreNotFound) {
                     return $http.get(config.apiUrl + 'record/get/' + module + '/' + id, { ignoreNotFound: ignoreNotFound });
                 },
@@ -102,28 +77,7 @@ angular.module('primeapps')
                 },
 
                 deleteRecord: function (module, id) {
-                    if ($rootScope.branchAvailable && module === 'calisanlar') {
-                        var deferred = $q.defer();
-
-                        var that = this;
-                        this.getRecord(module, id)
-                            .then(function (response) {
-                                if (response.data) {
-                                    var user = $filter('filter')($rootScope.workgroup.users, { email: response.data['e_posta'] }, true)[0];
-                                    if (user) {
-                                        that.deleteUser(user, $rootScope.workgroup.tenant_id);
-                                    }
-                                    $http.delete(config.apiUrl + 'record/delete/' + module + '/' + id)
-                                        .then(function (response) {
-                                            deferred.resolve(response);
-                                            return deferred.promise;
-                                        });
-                                }
-                            });
-                        return deferred.promise;
-                    } else {
-                        return $http.delete(config.apiUrl + 'record/delete/' + module + '/' + id);
-                    }
+                    return $http.delete(config.apiUrl + 'record/delete/' + module + '/' + id);
                 },
 
                 addRelations: function (module, relatedModule, relations) {
@@ -173,64 +127,15 @@ angular.module('primeapps')
                 findPicklist: function (ids) {
                     return $http.post(config.apiUrl + 'picklist/find', ids);
                 },
-
-                setViewState: function (viewState, moduleId, id) {
-                    if (id)
-                        viewState.id = id;
-
-                    viewState.module_id = moduleId;
-
-                    return $http.put(config.apiUrl + 'view/set_view_state', viewState);
-                },
-
                 deleteView: function (id) {
                     return $http.delete(config.apiUrl + 'view/delete/' + id);
                 },
-
                 approveMultipleProcessRequest: function (record_ids, moduleName) {
                     return $http.put(config.apiUrl + 'process_request/approve_multiple_request', {
                         record_ids: record_ids,
                         module_name: moduleName
                     });
                 },
-
-                approveProcessRequest: function (operation_type, moduleName, id) {
-                    return $http.put(config.apiUrl + 'process_request/approve', {
-                        record_id: id,
-                        module_name: moduleName,
-                        operation_type: operation_type
-                    });
-                },
-
-                rejectProcessRequest: function (operation_type, moduleName, message, id) {
-                    return $http.put(config.apiUrl + 'process_request/reject', {
-                        record_id: id,
-                        module_name: moduleName,
-                        operation_type: operation_type,
-                        message: message
-                    });
-                },
-
-                deleteProcessRequest: function (moduleId, id) {
-                    return $http.put(config.apiUrl + 'process_request/delete', { record_id: id, module_id: moduleId });
-                },
-
-                send_approval: function (operation_type, moduleName, id) {
-                    return $http.put(config.apiUrl + 'process_request/send_approval', {
-                        record_id: id,
-                        module_name: moduleName,
-                        operation_type: operation_type
-                    });
-                },
-
-                sendApprovalManuel: function (request) {
-                    return $http.post(config.apiUrl + 'process_request/send_approval_manuel', request);
-                },
-
-                getProcess: function (id) {
-                    return $http.get(config.apiUrl + 'process/get/' + id);
-                },
-
                 sendSMS: function (moduleId, ids, query, isAllSelected, message, phoneField, template) {
                     return $http.post(config.apiUrl + 'messaging/send_sms', {
                         "module_id": moduleId,
@@ -905,6 +810,7 @@ angular.module('primeapps')
 
                     return deferred.promise;
                 },
+
                 moduleFieldsConvertByKey: function (fields) {
                     var newFields = [];
                     for (var i = 0; i < fields.length; i++) {
@@ -912,6 +818,7 @@ angular.module('primeapps')
                     }
                     return newFields;
                 },
+
                 lookup: function (searchTerm, field, record, additionalFields, exactMatch, customFilters) {
                     var deferred = $q.defer();
                     var lookupType = field.lookup_type;
@@ -1243,6 +1150,7 @@ angular.module('primeapps')
                         return filters;
                     }
                 },
+
                 prepareRecord: function (record, module, currentRecord) {
                     var newRecord = angular.copy(record);
                     var newCurrentRecord = angular.copy(currentRecord);
@@ -1487,7 +1395,6 @@ angular.module('primeapps')
 
                     record[resultField] = result || 0;
 
-                    this.setCustomCalculations(module, record);
                 },
 
                 setExpressionValueElementType: function (result, element, record) {
@@ -1728,11 +1635,21 @@ angular.module('primeapps')
                                 expressionResult += '('
                             break;
                         case 'input':
-                            var parseIntData = parseInt(element.dataValue);
-                            if (!isNaN(parseIntData))
-                                expressionResult += element.dataValue;
-                            else
-                                expressionResult += "\"" + element.dataValue + "\"";
+                            if(resultArr.data_type === "number" || resultArr.data_type === "number_decimal" || resultArr.data_type === "currency" || resultArr.data_type === "number_auto"){
+                                var parseIntData = parseInt(element.dataValue);
+                                if (!isNaN(parseIntData)) {
+                                    expressionResult += element.dataValue;
+                                } else {
+                                    expressionResult += null;
+                                }
+                            }else{
+                                var parseIntData = parseInt(element.dataValue);
+                                if (!isNaN(parseIntData)) {
+                                    expressionResult += element.dataValue;
+                                } else {
+                                    expressionResult += "\"" + element.dataValue + "\"";
+                                }
+                            }
                             break;
                     }
                     return expressionResult;
@@ -2352,6 +2269,8 @@ angular.module('primeapps')
                                         lookupField.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { name: dependency.field_map_child }, true)[0];
                                         var additionalFields = [childField.lookupModulePrimaryField.name];
 
+                                        //TODO REMOVE
+                                        //Eski lookup yapısını kalma functionu  tamam olarak kullandığından emin değilim
                                         that.lookup(parentValue, lookupField, record, additionalFields, true)
                                             .then(function (data) {
                                                 if (data[0]) {
@@ -2359,9 +2278,6 @@ angular.module('primeapps')
                                                     lookupRecord.primary_value = lookupRecord[childField.lookupModulePrimaryField.name];
                                                     record[dependency.child_field] = lookupRecord;
                                                     childField.valueChangeDontRun = true;
-
-                                                    that.customActions(module, record, scope.moduleForm);
-                                                    scope.$broadcast('angucomplete-alt:changeInput', dependency.child_field, lookupRecord);
                                                 }
                                             });
                                     }
@@ -2384,7 +2300,6 @@ angular.module('primeapps')
                             }
                         } else {
                             record[dependency.child_field] = undefined;
-                            scope.$broadcast('angucomplete-alt:clearInput', dependency.child_field);
                         }
 
                         this.calculate(childField, module, record);
@@ -2531,21 +2446,6 @@ angular.module('primeapps')
                     }
                 },
 
-                customActions: function (module, record, moduleForm, picklists, scope) {
-
-                },
-
-                customValidations: function (module, record, checkUsed) {
-
-                },
-
-                setCustomCalculations: function (module, record, picklists, scope) {
-
-                },
-
-                updateView: function (view, id) {
-                    return $http.put(config.apiUrl + 'view/update/' + id, view);
-                },
                 generatTd: function (item) {
                     var tmpl = {
                         mobileContent: "",
@@ -2687,6 +2587,7 @@ angular.module('primeapps')
                     }
                     return tmpl;
                 },
+
                 generatoptionsItem: function (moduleName, itemType, dataItemId) {
                     var modulename = "'" + moduleName + "'";
                     switch (itemType) {
@@ -2734,6 +2635,7 @@ angular.module('primeapps')
                                 ' </md-menu-item>\n';
                     }
                 },
+
                 generatRowtmpl: function (selectedFields, isSubTable, config) {
                     var that = this;
                     var table = {
@@ -2870,17 +2772,11 @@ angular.module('primeapps')
 
                     return table;
                 },
-                createView: function (view) {
-                    return $http.post(config.apiUrl + 'view/create', view);
-                },
-
-                updateView: function (view, id) {
-                    return $http.put(config.apiUrl + 'view/update/' + id, view);
-                },
 
                 deleteView: function (id) {
                     return $http.delete(config.apiUrl + 'view/delete/' + id);
                 },
+
                 getViews: function (module, displayFields, cache) {
                     var that = this;
                     var deferred = $q.defer();
@@ -3111,59 +3007,6 @@ angular.module('primeapps')
                     return fields;
                 },
 
-                setFilters: function (filters, field, fieldName, value, operator, no, isView) {
-                    if (field.data_type === 'lookup' && field.lookup_type === 'users' && value === '[me]')
-                        value = $rootScope.user.id;
-
-                    if (field.data_type === 'email' && value === '[me.email]')
-                        value = $rootScope.user.email;
-
-                    if (field.data_type === 'date' && value) {
-                        var valueFormatted = moment(value).format('YYYY-MM-DD');
-
-                        if (moment(value).isValid())
-                            value = moment(value).format('YYYY-MM-DD');
-                    }
-
-                    if (!filters)
-                        filters = [];
-
-                    if (operator === 'empty' || operator === 'not_empty')
-                        value = '-';
-
-                    var currentFilter = $filter('filter')(filters, {
-                        field: fieldName,
-                        operator: operator,
-                        no: parseInt(no)
-                    }, true)[0];
-
-                    if (!currentFilter) {
-                        no = !no ? filters.length + 1 : parseInt(no);
-
-                        var filter = {};
-                        filter.field = fieldName;
-                        filter.operator = operator;
-                        filter.value = value;
-                        filter.no = no;
-                        filter.isView = isView;
-
-                        if (field.data_type === 'document') {
-                            filter.document_search = field.document_search;
-                        }
-
-                        filters.push(filter);
-                    } else {
-                        currentFilter.operator = operator;
-                        currentFilter.value = value;
-
-                        if (field.data_type === 'document') {
-                            currentFilter.document_search = field.document_search;
-                        }
-                    }
-
-                    return filters;
-                },
-
                 getCSVData: function (scope, relatedModule, module) {
                     var that = this;
                     var deferred = $q.defer();
@@ -3220,14 +3063,6 @@ angular.module('primeapps')
                         });
 
                     return deferred.promise;
-                },
-
-                getYesNo: function (yesNoPickist) {
-                    var yesNo = {};
-                    yesNo.yes = $filter('filter')(yesNoPickist, { system_code: 'true' })[0].label[$rootScope.language];
-                    yesNo.no = $filter('filter')(yesNoPickist, { system_code: 'false' })[0].label[$rootScope.language];
-
-                    return yesNo;
                 },
 
                 getIcons: function () {
@@ -3392,7 +3227,6 @@ angular.module('primeapps')
                         return permission.type !== 'none';
                     }
                 },
-
 
                 convertRecordValue: function (filter) {
                     var value = null;
@@ -3620,20 +3454,6 @@ angular.module('primeapps')
                     }
                 },
 
-                getDailyRates: function () {
-                    return $http.get(config.apiUrl + 'exchange_rates/get_daily_rates');
-                },
-
-                getAllTenantSettingsByType: function (settingType, userId) {
-                    return $http.get(config.apiUrl + 'settings/get_all/' + settingType + (userId ? '?user_id=' + userId : ''));
-                },
-
-                tenantSettingUpdate: function (setting) {
-                    return $http.put(config.apiUrl + 'settings/update/' + setting.id, setting);
-                },
-                getReportByModule: function (moduleId) {
-                    return $http.get(config.apiUrl + 'report/get_report_by_module/' + moduleId);
-                },
                 getChartsTypes: function () {
                     var types = [
                         {
@@ -3697,24 +3517,9 @@ angular.module('primeapps')
                     return types;
 
                 },
+
                 chartFilter: function (filter) {
                     return $http.post(config.apiUrl + 'view/chart_filter', filter);
-                },
-                getUsersLookupData: function (data) {
-                    var users = [];
-                    for (var i = 0; i < data.dataSource.length; i++) {
-                        users.push({
-                            id: data.dataSource[i].id,
-                            full_name: data.dataSource[i].full_name
-                        })
-                    }
-                    users.push({
-                        id: "[me]",
-                        full_name: $filter('translate')('Common.LoggedInUser')
-                    });
-
-                    data.dataSource = users;
-                    return data;
                 },
                 getChart: function (viewId) {
                     return $http.get(config.apiUrl + 'view/get_chart/' + viewId);
@@ -3728,6 +3533,7 @@ angular.module('primeapps')
 
                     return $http.post(config.apiUrl + "view/create", data);
                 },
+
                 goToRecord: function (item, lookupType, showAnchor, dataItem, externalLink) {
                     if (item) {
                         var generateLookupId = item.split('.');
@@ -3743,10 +3549,9 @@ angular.module('primeapps')
                             }
 
                         }
-
-
                     }
                 },
+
                 getTagAndMultiDatas: function (dataItem, arrayList) {
 
                     if (arrayList && arrayList.length > 3) {
@@ -3757,6 +3562,7 @@ angular.module('primeapps')
 
                     return arrayList;
                 },
+
                 getImageStyle: function (fieldName, moduleName) {
                     var module = $rootScope.modulus[moduleName];
                     if (module) {
@@ -3771,6 +3577,7 @@ angular.module('primeapps')
                         }
                     }
                 },
+
                 getRatingCount: function (fieldName, moduleName) {
                     var module = $rootScope.modulus[moduleName];
                     if (module) {
@@ -3784,6 +3591,7 @@ angular.module('primeapps')
                 getLocationUrl: function (coordinates) {
                     return "https://maps.googleapis.com/maps/api/staticmap?zoom=10&size=300x150&maptype=roadmap&markers=color:red|" + coordinates + "&key=" + googleMapsApiKey;
                 },
+
                 openCalendar: function (field) {
                     var data = undefined;
                     switch (field.data_type) {
@@ -3805,6 +3613,7 @@ angular.module('primeapps')
                         }
                     }
                 },
+
                 rangeRuleForForms: function () {
                     return function (input) {
                         const min = parseInt(input[0]['ariaValueMin'], 10);
@@ -3843,6 +3652,7 @@ angular.module('primeapps')
                         return min <= value && value <= max && minLength <= valueAsString.length && valueAsString.length <= maxLength;
                     };
                 },
+
                 setMinMaxValueForField: function (field) {
                     field.validation.min = field.validation.min || Number.MIN_SAFE_INTEGER;
                     field.validation.max = field.validation.max || Number.MAX_SAFE_INTEGER;
@@ -3920,12 +3730,15 @@ angular.module('primeapps')
                             return item.languages[$rootScope.globalization.Label]['label'];
                     }
                 },
+
                 getMenuList: function () {
                     return $http.get(config.apiUrl + 'menu/get_all');
                 },
+
                 getMenuItemsByMenuId: function (menuId) {
                     return $http.get(config.apiUrl + 'menu/get_menu_items/' + menuId);
                 },
+
                 proccesMenuItems: function (menuItems) {
                     var items = [];
                     for (var i = 0; i < menuItems.length; i++) {
@@ -3943,8 +3756,12 @@ angular.module('primeapps')
                     items = $filter('orderBy')(items, 'order', false);
                     return items;
                 },
+
                 moduleFilterById: function (moduleId) {
                     return $filter('filter')($rootScope.modules, { id: moduleId }, true);
+                },
+                getAllTenantSettingsByType: function (settingType, userId) {
+                    return $http.get(config.apiUrl + 'settings/get_all/' + settingType + (userId ? '?user_id=' + userId : ''));
                 }
             };
         }]);

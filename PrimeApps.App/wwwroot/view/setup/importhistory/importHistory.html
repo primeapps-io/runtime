@@ -30,13 +30,6 @@
                             </div>
                         </md-tab-label>
                     </md-tab>
-                    <md-tab ui-sref="app.setup.auditlog">
-                        <md-tab-label id="tab2" aria-controls="{{'Setup.Nav.Tabs.AuditLog' | translate}}">
-                            <div class="tab-container">
-                                <span>{{'Setup.Nav.Tabs.AuditLog'  | translate}}</span>
-                            </div>
-                        </md-tab-label>
-                    </md-tab> 
                 </md-tabs>
             </md-subheader>
             <div class="container-fluid paddingua20">
@@ -46,7 +39,7 @@
             </div>
         </md-content>
     </section>
-</md-content> 
+</md-content>
 <md-sidenav ng-show="sideinclude" id="sideModal" class="md-sidenav-right md-whiteframe-2dp" md-component-id="sideModal" md-is-locked-open="isDocked &&  $mdMedia('gt-lg')">
     <div data-ng-if="sideLoad" data-ng-include="url" layout="column" style="height: 100%;" ng-cloak></div>
 </md-sidenav>

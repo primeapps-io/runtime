@@ -149,6 +149,7 @@ angular.module('primeapps',
             //mentio inside div element
             $provide.decorator('mentioMenuDirective', mentionMenuDecorator);
             mentionMenuDecorator.$inject = ['$delegate'];
+
             function mentionMenuDecorator($delegate) {
                 var directive = $delegate[0];
                 var link = directive.link;
@@ -172,16 +173,21 @@ angular.module('primeapps',
 
         }])
 
-    .run(['$rootScope', '$location', '$state', '$q', '$window', 'AuthService', 'AppService', '$localStorage', '$translate', '$cache', 'helper', '$mdSidenav', '$cookies', '$http', 'config',
-        function ($rootScope, $location, $state, $q, $window, AuthService, AppService, $localStorage, $translate, $cache, helper, $mdSidenav, $cookies, $http, config) {
-            var pending = false;
+    .run(['$rootScope', '$location', '$state', '$q', '$window', 'AuthService', 'AppService', '$localStorage', '$translate', '$cache', 'helper', '$mdSidenav',
+        function ($rootScope, $location, $state, $q, $window, AuthService, AppService, $localStorage, $translate, $cache, helper, $mdSidenav) {
+            var isAuthenticated = AuthService.isAuthenticated();
+
+            if (!isAuthenticated) {
+                $window.location.href = '/';
+                return;
+            }
+
             $rootScope.appTheme = appTheme;
             $rootScope.globalization = globalization;
             $rootScope.globalizations = globalizations;
 
             var queryString = helper.parseQueryString($window.location.hash.substr(2));
             var lang = queryString.lang;
-            var isAuthenticated = AuthService.isAuthenticated();
 
             $rootScope.preview = preview;
             $rootScope.sideLoad = false;
@@ -238,11 +244,6 @@ angular.module('primeapps',
                 $localStorage.write('NG_TRANSLATE_LANG_KEY', lang);
                 $translate.use(lang);
                 $rootScope.language = lang;
-            }
-
-            if (!isAuthenticated) {
-                $window.location.href = '/';
-                return;
             }
 
             $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {

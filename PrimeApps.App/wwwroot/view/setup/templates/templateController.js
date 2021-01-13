@@ -353,36 +353,15 @@ angular.module('primeapps')
                                 $scope.current.content = tempInfo.unique_name;
                                 $scope.current.subject = "Word";
 
-                                if ($scope.current.id) {
-                                    TemplateService.update($scope.current)
-                                        .then(function (response) {
-                                            $scope.grid.dataSource.read();
-                                            mdToast.success($filter('translate')('Template.SuccessMessage'));
-                                            $scope.closeSide('sideModal');
-                                        });
-                                } else {
-                                    TemplateService.create($scope.current).then(function (response) {
-                                        $scope.grid.dataSource.read();
-                                        mdToast.success($filter('translate')('Template.SuccessMessage'));
-                                        $scope.closeSide('sideModal');
-                                    });
-                                }
+                                updateOrCreate();
                             }
                             else {
                                 mdToast.error($filter('translate')('Common.Error'));
                             }
                         };
                     } else {
-                        TemplateService.create($scope.current)
-                            .then(function (response) {
-                                mdToast.success($filter('translate')('Template.SuccessMessage'));
-
-                                $scope.grid.dataSource.read();
-                                $scope.closeSide('sideModal');
-
-                            });
+                        updateOrCreate();
                     }
-                    //}
                 };
 
                 $scope.current = {};
@@ -1045,6 +1024,23 @@ angular.module('primeapps')
                     return $rootScope.getLanguageValue($scope.modulus[module].languages, 'label', 'plural');
                 }
                 return '';
+            }
+
+            function updateOrCreate() {
+                if ($scope.current.id) {
+                    TemplateService.update($scope.current)
+                        .then(function () {
+                            $scope.grid.dataSource.read();
+                            mdToast.success($filter('translate')('Template.SuccessMessage'));
+                            $scope.closeSide('sideModal');
+                        });
+                } else {
+                    TemplateService.create($scope.current).then(function (response) {
+                        $scope.grid.dataSource.read();
+                        mdToast.success($filter('translate')('Template.SuccessMessage'));
+                        $scope.closeSide('sideModal');
+                    });
+                }
             }
         }
     ]);

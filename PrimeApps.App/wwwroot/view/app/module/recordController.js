@@ -861,8 +861,6 @@ angular.module('primeapps')
                                 if ($scope.record.currency)
                                     $scope.currencySymbol = $scope.record.currency.value || $rootScope.currencySymbol;
 
-                                ModuleService.customActions($scope.module, $scope.record);
-
                                 components.run('FieldChange', 'Script', $scope, $scope.record, ownerField);
 
                                 components.run('AfterFormRecordLoaded', 'Script', $scope);
@@ -1281,6 +1279,7 @@ angular.module('primeapps')
                     }
                 }
 
+                //TODO REMOVE branch yapısı kaldırlacak
                 if ($rootScope.branchAvailable && $scope.branchManager) {
                     for (var i = 0; i < $scope.record.Authorities.length; i++) {
                         var authority = $scope.record.Authorities[i];
@@ -1585,8 +1584,6 @@ angular.module('primeapps')
                     mdToast.error(validation);
                 }
 
-                ModuleService.setCustomCalculations($scope.module, $scope.record, $scope.picklistsModule, $scope);
-                ModuleService.customActions($scope.module, $scope.record, $scope.moduleForm, $scope.picklistsModule, $scope);
                 components.run('FieldChange', 'Script', $scope, $scope.record, field);
 
                 if ($scope.record.currency)
@@ -2466,14 +2463,12 @@ angular.module('primeapps')
 
                 if ($scope.currentLookupField.lookup_type === 'relation') {
                     if (!$scope.record.related_module) {
-                        $scope.$broadcast('angucomplete-alt:clearInput', $scope.currentLookupField.name);
                         return $q.defer().promise;
                     }
 
                     const relationModule = $filter('filter')($rootScope.modules, { name: $scope.record.related_module.value }, true)[0];
 
                     if (!relationModule) {
-                        $scope.$broadcast('angucomplete-alt:clearInput', $scope.currentLookupField.name);
                         return $q.defer().promise;
                     }
 

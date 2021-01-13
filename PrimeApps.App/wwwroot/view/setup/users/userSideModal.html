@@ -11,8 +11,6 @@
                 <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close"><i class="fas fa-thumbtack"></i></md-button>
                 <span flex></span>
 
-                <md-button type="submit" ng-if="addUserForm" class="md-icon-button btn btn-primary" ng-disabled="userInviting"><i class="fas fa-save"></i> <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Save' | translate}}</md-tooltip></md-button>
-
             </div>
         </md-toolbar>
         <md-content flex>
@@ -33,7 +31,7 @@
                                          alt="" style="border-radius: 15px;"/>
                                 </div>
                             </div>
-                            
+
                         </div>
                         <div class="form-group text-center" ng-if="user.profile.has_admin_rights === true && !preview && !addNewUser">
                             <button class="btn" type="button" ng-click="sendResetPassword()" style="padding-bottom: 20px;">
@@ -43,7 +41,7 @@
                             </button>
                         </div>
                         <div class="form-group" style="display: flex" ng-if="!isMobile()">
-                            <div class="col-sm-6 col-xs-6 col-md-6"  style="padding-left: 0px !important;"> 
+                            <div class="col-sm-6 col-xs-6 col-md-6"  style="padding-left: 0px !important;">
                             <label for="firstName" class="required col-sm-12 col-xs-12 col-md-12" style="padding-right: 0px !important;padding-left: 0px !important;">
                                 <span>{{'Setup.Users.NewUserName' | translate}}</span>
                                 <span class="label-right">
@@ -130,27 +128,10 @@
                             <span class="k-invalid-msg" data-for="profile"></span>
                         </div>
                         <div class="form-group">
-                            <label for="role" class="required">
-                                <span>{{'Setup.Users.NewUserRole' | translate}}</span>
-                                <span class="label-right">
-                                    <span class="required-label">{{'Common.Required' | translate}}</span>
-                                </span>
-                            </label>
-                            <select kendo-drop-down-list
-                                    id="role"
-                                    name="role"
-                                    k-options="roleOptions"
-                                    k-ng-model="addUserModel.role"
-                                    k-option-label="'{{'Common.Select' | translate}}'"
-                                    validationMessage="{{'Module.Required' | translate}}"
-                                    required></select>
-                            <span class="k-invalid-msg" data-for="role"></span>
-                        </div>
-                        <div class="form-group">
                             <label for="phone">
                                 <span>{{'Setup.Users.Phone' | translate}}</span>
                             </label>
-                            <input kendo-numeric-text-box 
+                            <input kendo-numeric-text-box
                                    name="phone"
                                    id="phone"
                                    ng-placeholder="{{'Setup.Users.Phone' | translate}}"
