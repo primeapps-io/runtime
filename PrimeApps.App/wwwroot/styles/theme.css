@@ -186,6 +186,12 @@ md-content.iefix {
     height: 36px;
     width: 36px;
     min-width: 36px; }
+  .btn.btn-no-color, .k-button.btn-no-color {
+    background-color: transparent !important;
+    border-color: transparent !important; }
+    .btn.btn-no-color:hover, .btn.btn-no-color:visited, .btn.btn-no-color:focus, .btn.btn-no-color.md-focused, .k-button.btn-no-color:hover, .k-button.btn-no-color:visited, .k-button.btn-no-color:focus, .k-button.btn-no-color.md-focused {
+      background-color: transparent !important;
+      border-color: transparent !important; }
 
 .grid-list-button {
   margin: 5px; }
@@ -288,9 +294,11 @@ md-menu-item > a.md-button {
 
 .notification-button {
   position: relative;
-  margin-bottom: 10px; }
+  margin: 10px 20px;
+  /* min-height: 50px; */
+  }
   .notification-button .notification-button-inside {
-    padding: 15px 40px 15px 15px;
+    padding: 15px 50px 15px 15px;
     background: white;
     box-shadow: 0 0rem 0rem rgba(0, 0, 0, 0.05);
     border-radius: 0.25rem;
@@ -329,7 +337,7 @@ md-menu-item > a.md-button {
       background: rgba(0, 0, 0, 0.25); }
   .notification-button .notification-hide {
     position: absolute;
-    right: 0px;
+    right: 10px;
     top: 50%;
     margin-top: -17px; }
     .notification-button .notification-hide .md-button {
@@ -339,6 +347,10 @@ md-menu-item > a.md-button {
       .notification-button .notification-hide .md-button:hover {
         background: transparent !important;
         color: rgba(0, 0, 0, 0.75); }
+
+.notification-box {
+  background: transparent;
+  border: none; }
 
 .whitebox {
   background-color: white;
@@ -883,10 +895,10 @@ md-menu-content.account-dropdown-box {
         min-height: 0;
         width: 100%;
         margin: 0;
-        padding: 5px 0;
+        padding: 7px 0;
         border-radius: 0; }
         .mobile-menu ul li button span, .mobile-menu ul li a span {
-          font-size: 10px;
+          font-size: 11px;
           line-height: 15px;
           white-space: nowrap;
           overflow: hidden;
@@ -2100,7 +2112,7 @@ li.sortable-list-placeholder {
     right: 10px;
     top: 10px;
     text-align: right;
-    z-index: 2;
+    z-index: 1;
     padding: 0;
     margin: 0;
     opacity: 0;
@@ -3913,7 +3925,7 @@ md-dialog .md-actions, md-dialog md-dialog-actions {
     .draglistbox .k-listbox .k-item {
       padding: 5px 10px; }
   md-content .container-fluid.paddingua20 {
-    padding: 5px 0px 60px 0px !important; }
+    padding: 5px 0px 30px 0px !important; }
     md-content .container-fluid.paddingua20 > .row {
       margin: 0; }
     md-content .container-fluid.paddingua20 .whitebox {

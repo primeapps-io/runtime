@@ -1,6 +1,6 @@
 'use strict';
-angular.module('primeapps').controller('AppController', ['$rootScope', '$scope', 'mdToast', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', 'entityTypes', 'guidEmpty', 'component', 'helper', 'operations', 'blockUI', '$cache', 'AppService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$mdSidenav', '$mdDialog', '$mdMedia', 'icons2', 'GeneralSettingsService', 'SignalNotificationService', 'NotificationService',
-    function ($rootScope, $scope, mdToast, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, entityTypes, guidEmpty, component, helper, operations, blockUI, $cache, AppService, AuthService, $sessionStorage, HelpService, $sce, $mdSidenav, $mdDialog, $mdMedia, icons2, GeneralSettingsService, SignalNotificationService, NotificationService) {
+angular.module('primeapps').controller('AppController', ['$rootScope', '$scope', 'mdToast', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', 'entityTypes', 'guidEmpty', 'component', 'helper', 'operations', 'blockUI', '$cache', 'AppService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$mdSidenav', '$mdDialog', '$mdMedia', 'icons2', 'GeneralSettingsService', 'SignalNotificationService', 'NotificationService', '$timeout',
+    function ($rootScope, $scope, mdToast, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, entityTypes, guidEmpty, component, helper, operations, blockUI, $cache, AppService, AuthService, $sessionStorage, HelpService, $sce, $mdSidenav, $mdDialog, $mdMedia, icons2, GeneralSettingsService, SignalNotificationService, NotificationService, $timeout) {
 
         $scope.disablePasswordChange = disablePasswordChange;
         $rootScope.expressionRunOrderData = { Value: [], Validation: [] }
@@ -728,6 +728,22 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                 $rootScope.notificationModalOpen = true;
                 $rootScope.buildToggler('sideModal', 'view/notificationModal.html');
                 $scope.notificationLoading = false;
+                $timeout(function () {
+
+                    var area = $('.md-sidenav-right').innerHeight() - $('.md-sidenav-right md-toolbar').innerHeight();
+                    //$('.notification-box').height();
+                    $scope.notificationListViewOptions = {
+                        scrollable: "endless",
+                        height: area,
+                        remove: function(e) {
+                            if(e.model)
+                            {
+                                $scope.notificationRead(e.model,null,true)
+                            }
+                        }
+                    }
+                }, 500)
+
             }
             else {
                 $scope.closeSide('sideModal');
@@ -740,19 +756,20 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                 id = notification.id;
 
             if (clear) {
+
                 SignalNotificationService.hide(id)
                     .then(function (response) {
-                        if (response) {
-                            getNotifications();
-                        }
+                        $scope.unReadNotificationCount = $scope.unReadNotificationCount-1;
                     });
             }
             else {
+              if(notification.status === "Read")
+                  return  false;
+
                 SignalNotificationService.read(id)
                     .then(function (response) {
                         if (response) {
-                            getNotifications();
-
+                            $scope.unReadNotificationCount = $scope.unReadNotificationCount-1;
                             if (notification) {
                                 notification.status = "Read";
 
@@ -780,6 +797,10 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     if (response.data) {
                         $rootScope.processLanguages(response.data);
                         $scope.signalNotifications = response.data;
+                        $scope.source = new kendo.data.DataSource({
+                            data: response.data,
+                            pageSize: 15
+                        });
                         $scope.unReadNotificationCount = $filter('filter')(response.data, { status: 'Unread' }, true).length;
                     }
                 });
@@ -827,7 +848,20 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         });
 
         getNotifications();
+
         //#endregion Notification
+
+        $scope.allRead=function (){
+            $scope.unReadNotificationCount =0;
+            SignalNotificationService.allRead().then(function () {
+                getNotifications();
+            });
+        }
+
+        $scope.allHide=function (){
+            $scope.signalNotifications=[];
+            SignalNotificationService.allHide();
+        }
 
     }
 ]);

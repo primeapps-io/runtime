@@ -2710,7 +2710,8 @@ angular.module('primeapps')
                                 title: item.labelExt ? item.label + ' ' + item.labelExt : item.label,
                                 field: item.name,
                                 media: "(min-width: 575px)",
-                                groupable: false
+                                groupable: false,
+                                groupHeaderTemplate: "#= aggregates.groupSelect #" + (item.labelExt ? item.label + ' ' + item.labelExt : item.label) + ": #= value #  #= aggregates.template #"
                             });
 
 
@@ -2989,12 +2990,11 @@ angular.module('primeapps')
                             newField.parent_id = selectedField.parent_id;
                             fields.selectedFields.push(newField);
                         } else {
-                            var primaryField = $filter('filter')(module.fields, { primary: true }, true)[0];
-
-                            if (field.name !== primaryField.name) {
+                           // var primaryField = $filter('filter')(module.fields, { primary: true }, true)[0];
+                            //if (field.name !== primaryField.name) {
                                 fields.availableFields.push(newField);
-                            }
-                            /*else {
+                            //}
+                           /* else {
                                 newField.primary = true;
                                 fields.selectedFields.push(newField);
                             }*/

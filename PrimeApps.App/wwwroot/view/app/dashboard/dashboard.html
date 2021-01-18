@@ -29,11 +29,11 @@
                 </md-button>
             </div>
         </md-toolbar>
-        
+
         <md-content flex>
             <md-subheader class="own-tab">
                 <md-tabs md-dynamic-height md-swipe-content>
-                    <md-tab ng-repeat="dashboard in dashboards" ng-click="changeDashboard(dashboard);">
+                    <md-tab ng-repeat="dashboard in dashboards | orderBy:'id'" ng-click="changeDashboard(dashboard);"  md-active="activeDashboard.id === dashboard.id">
                         <md-tab-label id="tab{{dashboard.id}}" aria-controls="{{dashboard.languages[globalization.Label]['name']}}" >
                             <div class="tab-container">
                                 <span>{{dashboard.languages[globalization.Label]['name']}}</span>
@@ -51,9 +51,9 @@
                             </div>
                         </md-tab-label>
                     </md-tab>
-        
+
                 </md-tabs>
-            </md-subheader> 
+            </md-subheader>
             <div class="container-fluid paddingua20">
                 <help-page route="currentPath"></help-page>
                 <div class="help-page align-items-center" ng-if="show">
@@ -102,10 +102,10 @@
                                         </md-menu>
                                     </div>
                                     <div class="chart-container" style="{{'height:'+dashlet.x_tile_height+'px'}}"   ng-if="dashlet.dashlet_type === 'chart'">
-                                        <div class="dashlet-chart">                                            
+                                        <div class="dashlet-chart">
                                             <fusioncharts
                                                          id="chart-{{dashlet.id}}"
-                                                          width="100%" 
+                                                          width="100%"
                                                           height="{{dashlet.x_tile_height}}"
                                                           type="{{dashlet.chart_item.chart.chart_type}}"
                                                           datasource="{{dashlet.chart_item.data}}"
@@ -116,7 +116,7 @@
                                     <div class="widget-container" ng-if="dashlet.dashlet_type === 'widget'"
                                          ng-click="goDetail(dashlet.widget.view_id,dashlet.widget.widget_data.modulename)" style="cursor: pointer"
                                          ng-style="{'height':dashlet.x_tile_height+'px','background-color':dashlet.widget.color ? dashlet.widget.color: '#555' }">
-                                       
+
                                         <i class="{{dashlet.widget.icon}}"></i>
                                         <div class="description"> <small>{{dashlet.widget.languages[globalization.Label]['name']}}</small> {{dashlet.widget.widget_data.value}}
                                         </div>

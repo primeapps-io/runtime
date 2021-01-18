@@ -464,8 +464,8 @@
         <span class="label-right">
             <md-button ng-if="record[field.name]" class="btn btn-secondary label-btn"
                        target="_blank"
-                       href="{{record[field.name]}}"
-                       title="{{record[field.name]}}">
+                       href="{{field.validation.pattern ? record[field.name] : 'http://'+record[field.name]}}"
+                       title="{{field.validation.pattern ? record[field.name] : 'http://'+record[field.name]}}">
                 <i class="fas fa-external-link-alt"></i>
             </md-button>
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
@@ -484,7 +484,7 @@
            ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
            minlength="{{field.validation.min_length || 0}}"
            maxlength="{{field.validation.max_length || 400}}"
-           pattern="{{field.validation.pattern}}" />
+           pattern="{{field.validation.pattern || '(www\.)+(.+?)'}}" />
 </div>
 
 <div class="form-group"

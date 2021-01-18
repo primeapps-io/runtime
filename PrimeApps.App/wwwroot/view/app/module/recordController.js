@@ -76,7 +76,8 @@ angular.module('primeapps')
                 $scope.tab = 'document';
 
             $scope.module = angular.copy($rootScope.modulus[$scope.type]);
-
+            //filter detail_view_type !none
+            $scope.module.relations = $filter('filter')($scope.module.relations, { detail_view_type: '!none' }, true);
             $scope.manyToManyRelation = undefined;
             if ($scope.module.relations && $scope.parentType) {
                 $scope.manyToManyRelation = $filter('filter')($scope.module.relations, {
@@ -3247,27 +3248,27 @@ angular.module('primeapps')
                                             dont_show: []
                                         },
                                         actions:
+                                        {
+                                            create:
                                             {
-                                                create:
-                                                    {
-                                                        enable: module.name === 'p_profiles',
-                                                        filters: []
-                                                    },
-                                                update:
-                                                    {
-                                                        enable: module.name === 'p_profiles',
-                                                        filters: []
-                                                    },
-                                                delete:
-                                                    {
-                                                        enable: module.name === 'p_profiles',
-                                                        filters: []
-                                                    },
-                                                read:
-                                                    {
-                                                        enable: module.name === 'p_profiles'
-                                                    }
+                                                enable: module.name === 'p_profiles',
+                                                filters: []
+                                            },
+                                            update:
+                                            {
+                                                enable: module.name === 'p_profiles',
+                                                filters: []
+                                            },
+                                            delete:
+                                            {
+                                                enable: module.name === 'p_profiles',
+                                                filters: []
+                                            },
+                                            read:
+                                            {
+                                                enable: module.name === 'p_profiles'
                                             }
+                                        }
                                     };
                                 });
 
@@ -3290,24 +3291,24 @@ angular.module('primeapps')
                                 },
                                 actions: {
                                     create:
-                                        {
-                                            enable: module.name === 'p_profiles',
-                                            filters: []
-                                        },
+                                    {
+                                        enable: module.name === 'p_profiles',
+                                        filters: []
+                                    },
                                     update:
-                                        {
-                                            enable: module.name === 'p_profiles',
-                                            filters: []
-                                        },
+                                    {
+                                        enable: module.name === 'p_profiles',
+                                        filters: []
+                                    },
                                     delete:
-                                        {
-                                            enable: module.name === 'p_profiles',
-                                            filters: []
-                                        },
+                                    {
+                                        enable: module.name === 'p_profiles',
+                                        filters: []
+                                    },
                                     read:
-                                        {
-                                            enable: module.name === 'p_profiles'
-                                        }
+                                    {
+                                        enable: module.name === 'p_profiles'
+                                    }
                                 }
                             };
                         }

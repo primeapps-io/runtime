@@ -375,7 +375,8 @@ angular.module('primeapps')
                         return item.name !== 'roles' && item.name !== 'users' && item.name !== 'profiles';
                     }),
                     dataTextField: 'languages.' + $rootScope.globalization.Label + '.label.plural',
-                    dataValueField: "name"
+                    dataValueField: "name",
+                    filter: "contains",
                 };
 
                 var profiles = [];
@@ -553,7 +554,7 @@ angular.module('primeapps')
                                 $scope.loadingModal = false;
                             });
                             editor.on('FullscreenStateChanged', function (e) {
-                               $('#mceu_52').hide();
+                                $('#mceu_52').hide();
                             });
                         },
                         onChange: function (e) {
@@ -855,6 +856,7 @@ angular.module('primeapps')
             $scope.subModuleOptions = {
                 dataTextField: 'languages.' + $rootScope.globalization.Label + '.label.plural',
                 dataValueField: "name",
+                filter: "contains"
             };
             $scope.subModuleChanged = function (moduleName) {
                 $scope.selectedSubModule = $filter('filter')($scope.selectedModule.relatedModules, { name: moduleName }, true)[0];

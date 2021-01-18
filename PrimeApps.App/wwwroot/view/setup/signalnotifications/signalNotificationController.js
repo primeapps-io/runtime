@@ -43,9 +43,9 @@ angular.module('primeapps')
                     $rootScope.processLanguage(e.module);
                     moduleMessage = $rootScope.getLanguageValue(e.module.languages, 'label', 'plural');
                 }
-                //$rootScope.getLanguageValue(e.languages, 'message')
+
                 return '<td class="hide-on-m2"><span>' + $rootScope.getLanguageValue(e.languages, 'message') + '</span></td>'
-                    + '<td class="hide-on-m2"><span>' + e.user.full_name + '</span></td>'
+                    + '<td class="hide-on-m2"><span>' + (e.user ? e.user.full_name : '') + '</span></td>'
                     + '<td class="hide-on-m2"><span>' + moduleMessage + '</span></td>'
                     + '<td class="hide-on-m2">' + (!e.record_id ? '-' : '<div class="grid-list-button"> <span>' + $filter('translate')('Setup.SignalNotification.RecordDetail') + '</span><a href="#/app/record/' + e.module.name + '?id=' + e.record_id + '"><i class= "fas fa-external-link-alt"></i></a> </div>') + '</td>'
                     + '<td class="hide-on-m2"><span>' + $filter('translate')('Setup.SignalNotification.TypeEnum.' + e.type) + '</span></td>'
@@ -54,7 +54,7 @@ angular.module('primeapps')
                     + '<td class="hide-on-m2"><span>' + (!e.updated_at && e.status === 'Unread' ? '-' : $scope.getTime(e.updated_at)) + '</td>'
                     + '<td class="show-on-m2">'
                     + '<div>' + $filter('translate')('Setup.SignalNotification.Message') + ': <strong>' + $rootScope.getLanguageValue(e.languages, 'message') + '</strong></div>'
-                    + '<div>' + $filter('translate')('Setup.SignalNotification.User') + ': <strong>' + e.user.full_name + '</strong></div>'
+                    + '<div>' + $filter('translate')('Setup.SignalNotification.User') + ': <strong>' + (e.user ? e.user.full_name : '') + '</strong></div>'
                     + '<div>' + $filter('translate')('Setup.SignalNotification.Module') + ': ' + moduleMessage + '</div>'
                     + '<div>' + $filter('translate')('Setup.SignalNotification.Record') + ': ' + (!e.record_id ? '-' : '</span><a href="#/app/record/' + e.module.name + '?id=' + e.record_id + '"><i class= "fas fa-external-link-alt"></i></a>') + '</div>'
                     + '<div>' + $filter('translate')('Setup.SignalNotification.Status') + ': ' + $filter('translate')('Setup.SignalNotification.TypeEnum.' + e.type) + '</div>'

@@ -4,34 +4,48 @@
         <h3 md-truncate>{{'Setup.Nav.Notifications' | translate}}</h3>
         <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close"><i class="fas fa-thumbtack"></i></md-button>
         <span flex></span>
+        <md-button ng-if="signalNotifications.length>1"  class="md-icon-button btn btn-secondary" ng-click="allRead()" >
+            <i class="fas fa-check"></i>
+            <md-tooltip md-autohide="true" md-direction="bottom">  {{'Common.AllRead' | translate}} </md-tooltip>
+        </md-button>
+        <md-button ng-if="signalNotifications.length>1" class="md-icon-button btn btn-secondary" ng-click="allHide()">
+            <i class="fas fa-trash"></i>
+            <md-tooltip md-autohide="true" md-direction="bottom">    {{'Common.AllClean' | translate}} </md-tooltip>
+        </md-button>
     </div>
 </md-toolbar>
 <md-content flex>
     <div ng-show="notificationLoading" class="spin">
         <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
     </div>
-    <div  ng-show="!notificationLoading" class="container-fluid paddingua20">
+    <div  ng-show="!notificationLoading">
         <div class="col-12 text-center" ng-if="signalNotifications.length<1">
             <div class="text-center"><img style="width:200px; max-width: 100%;" src="images/notifications.svg"></div>
             <strong>{{'Common.HaventAnyNotification' | translate}}</strong>
         </div>
-        <div class="notification-button" ng-repeat="notification in signalNotifications" >
-            <div class="notification-button-inside d-flex align-items-center" ng-click="notificationRead(notification)" ng-class="notification.status === 'Read' ? 'disabled':''">
-                <div ng-if="notification.type ==='Warning'" class="notification-icon col-auto"><i class="fas fa-bell"></i></div>
-                <div ng-if="notification.type ==='Information'" class="notification-icon col-auto info"><i class="fas fa-info"></i></div>
-                <div ng-if="notification.type ==='Success'" class="notification-icon col-auto success"><i class="fas fa-check"></i></div>
-                <div ng-if="notification.type ==='Error'" class="notification-icon col-auto error"><i class="fas fa-times"></i></div>
-                <div class="col notification-text">
-                    <div>{{ getLanguageValue (notification.languages, 'message')}}</div>
-                    <div class="notification-date"><i class="fas fa-clock"></i> <small>{{getTime(notification.created_at)}}</small></div>
+        <div kendo-list-view class="notification-box"  id="listView" ng-if="signalNotifications.length>1"  k-options="notificationListViewOptions"  k-scrollable="'endless'" k-data-source="source">
+
+            <div class="notification-button" k-template>
+                <div ng-if="dataItem">
+                    <div class="notification-button-inside d-flex align-items-center" ng-click="notificationRead(dataItem)" ng-class="dataItem.status === 'Read' ? 'disabled':''">
+                        <div ng-if="dataItem.type ==='Warning'" class="notification-icon col-auto"><i class="fas fa-bell"></i></div>
+                        <div ng-if="dataItem.type ==='Information'" class="notification-icon col-auto info"><i class="fas fa-info"></i></div>
+                        <div ng-if="dataItem.type ==='Success'" class="notification-icon col-auto success"><i class="fas fa-check"></i></div>
+                        <div ng-if="dataItem.type ==='Error'" class="notification-icon col-auto error"><i class="fas fa-times"></i></div>
+                        <div class="col notification-text">
+                            <div>{{ getLanguageValue (dataItem.languages, 'message')}}</div>
+                            <div class="notification-date"><i class="fas fa-clock"></i> <small>{{getTime(dataItem.created_at)}}</small></div>
+                        </div>
+
+                    </div>
+                    <div class="notification-hide">
+                        <button type="button" class="btn btn-secondary btn-no-color md-icon-button"  aria-label="{{'Common.Hide' | translate}}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="notification-hide">
-                <md-button class="btn btn-secondary md-icon-button" ng-click="notificationRead(notification,null,true)" aria-label="{{'Common.Hide' | translate}}">
-                    <i class="fas fa-times"></i>
-                    <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Hide' | translate}}</md-tooltip>
-                </md-button>
-            </div>  
         </div>
+
     </div>
 </md-content>

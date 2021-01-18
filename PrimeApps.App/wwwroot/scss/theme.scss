@@ -193,6 +193,7 @@ md-content{
 				color: $white;
 			}
 		}
+		
 
 		&.label-btn{
 			font-size: $font-size-base * .7;
@@ -205,6 +206,14 @@ md-content{
 		height: 36px;
 		width: 36px;
 		min-width: 36px; 
+	}
+	&.btn-no-color{
+		background-color: transparent !important;
+		border-color: transparent !important;
+		&:hover,&:visited,&:focus,&.md-focused{
+			background-color: transparent !important;
+			border-color: transparent !important;
+		}
 	}
 }
 
@@ -335,9 +344,9 @@ md-menu-item>a.md-button{
 ///////// Notification Button //////////////
 .notification-button{
 	position: relative;
-	margin-bottom: 10px;
+	margin: 10px 20px;
 	.notification-button-inside{
-		padding: 15px 40px 15px 15px;
+		padding: 15px 50px 15px 15px;
 		background: $white;
 		box-shadow: 0 .0rem 0rem rgba($black, .05);
 		border-radius: $border-radius;
@@ -378,7 +387,7 @@ md-menu-item>a.md-button{
 	}
 	.notification-hide{
 		position: absolute;
-		right: 0px;
+		right: 10px;
 		top: 50%;
 		margin-top: -17px;
 		.md-button{
@@ -393,6 +402,13 @@ md-menu-item>a.md-button{
 		}
 	}
 	
+}
+.notification-box{
+	background: transparent;
+	border: none;
+	.k-listview-content{
+		
+	}
 }
 
 ////////////////////////// Boxes //////////////////////////
@@ -989,10 +1005,10 @@ md-menu-content.account-dropdown-box{
 				min-height: 0;
 				width: 100%;
 				margin: 0;
-				padding: 5px 0;
+				padding: 7px 0;
 				border-radius: 0;
 				span{
-					font-size: 10px;
+					font-size: 11px;
 					line-height: 15px;
 					white-space: nowrap;
 					overflow: hidden;
@@ -1349,6 +1365,8 @@ label{
 	margin-bottom: 0;
 	padding-bottom: .5rem;
 }
+
+
 .form-control,.k-textbox,.k-textarea,.custom-file-label,.k-autocomplete {
 	border-left: none;
 	border-right: none; 
@@ -2417,7 +2435,7 @@ li.sortable-list-placeholder{
 			right:10px;
 			top: 10px;
 			text-align: right;
-			z-index: 2;
+			z-index: 1;
 			padding: 0;
 			margin: 0;
 			opacity: 0;
@@ -4150,7 +4168,7 @@ md-dialog{
 	}
 	md-content{
 		.container-fluid.paddingua20{
-			padding: 5px 0px 60px 0px !important;
+			padding: 5px 0px 30px 0px !important;
 			>.row{
 				margin: 0;
 			}

@@ -123,7 +123,7 @@
                 </div>
 
 
-                <div class="whitebox table-view" ng-if="activeView.view_type ==='grid'">
+                <div class="whitebox table-view" ng-if="activeView.view_type ==='grid' || activeView.report_type==='tabular'">
                     <!--<div class="grid-top">
                         <div class="search-box">
 
@@ -146,14 +146,6 @@
                     <kendo-grid class="grid-theme table-responsive" k-scope-field="grid"
                                 id="kendo-grid" k-rebind="mainGridOptions"
                                 k-options="mainGridOptions">
-                    </kendo-grid>
-
-                </div>
-                <div class="whitebox table-view" ng-if="activeView.report_type==='tabular'">
-  
-                    <kendo-grid class="grid-theme table-responsive" k-scope-field="grid"
-                                id="kendo-grid" k-rebind="mainGridTabularOptions"
-                                k-options="mainGridTabularOptions">
                     </kendo-grid>
 
                 </div>

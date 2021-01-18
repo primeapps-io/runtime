@@ -34,6 +34,7 @@
           "Hangfire.Dashboard.BasicAuthorization": "1.0.2",
           "Hangfire.PostgreSql": "1.7.1",
           "Hangfire.Redis.StackExchange": "1.8.4",
+          "HttpMultipartParser": "5.0.0",
           "Humanizer.Core": "2.8.26",
           "IdentityServer4.AccessTokenValidation": "3.0.1",
           "Microsoft.AspNetCore.Authentication": "2.2.0",
@@ -571,6 +572,22 @@
           "lib/netstandard2.0/Hangfire.SqlServer.dll": {}
         }
       },
+      "HttpMultipartParser/5.0.0": {
+        "dependencies": {
+          "Microsoft.CSharp": "4.7.0",
+          "Microsoft.IO.RecyclableMemoryStream": "1.3.6",
+          "System.Buffers": "4.5.1"
+        },
+        "runtime": {
+          "lib/netstandard2.0/HttpMultipartParser.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.0.0.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/HttpMultipartParser.dll": {}
+        }
+      },
       "Humanizer.Core/2.8.26": {
         "runtime": {
           "lib/netstandard2.0/Humanizer.dll": {
@@ -808,7 +825,7 @@
           "Microsoft.AspNetCore.Http.Abstractions": "2.2.0",
           "Microsoft.Extensions.FileProviders.Abstractions": "3.1.6",
           "Microsoft.Net.Http.Headers": "2.2.0",
-          "System.Buffers": "4.5.0"
+          "System.Buffers": "4.5.1"
         }
       },
       "Microsoft.AspNetCore.Http.Features/2.2.0": {
@@ -1681,10 +1698,21 @@
           "lib/netstandard2.0/Microsoft.IdentityModel.Tokens.dll": {}
         }
       },
+      "Microsoft.IO.RecyclableMemoryStream/1.3.6": {
+        "runtime": {
+          "lib/netcoreapp2.1/Microsoft.IO.RecyclableMemoryStream.dll": {
+            "assemblyVersion": "1.3.6.0",
+            "fileVersion": "1.3.6.0"
+          }
+        },
+        "compile": {
+          "lib/netcoreapp2.1/Microsoft.IO.RecyclableMemoryStream.dll": {}
+        }
+      },
       "Microsoft.Net.Http.Headers/2.2.0": {
         "dependencies": {
           "Microsoft.Extensions.Primitives": "3.1.10",
-          "System.Buffers": "4.5.0"
+          "System.Buffers": "4.5.1"
         }
       },
       "Microsoft.NETCore.Platforms/3.1.0": {},
@@ -2213,7 +2241,7 @@
       },
       "Pipelines.Sockets.Unofficial/2.1.6": {
         "dependencies": {
-          "System.Buffers": "4.5.0",
+          "System.Buffers": "4.5.1",
           "System.IO.Pipelines": "4.7.0",
           "System.Runtime.CompilerServices.Unsafe": "4.7.0"
         },
@@ -2448,7 +2476,7 @@
           "lib/netstandard2.0/StackExchange.Redis.dll": {}
         }
       },
-      "System.Buffers/4.5.0": {},
+      "System.Buffers/4.5.1": {},
       "System.Collections/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "3.1.0",
@@ -5079,6 +5107,13 @@
       "path": "hangfire.sqlserver/1.7.12",
       "hashPath": "hangfire.sqlserver.1.7.12.nupkg.sha512"
     },
+    "HttpMultipartParser/5.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RpeEdapnMpYUPiVK9uD0nPM8ITmqqJ9dgpMMmrlRRRDqQWVF66T4VE7mvJUCsbjOceKc88ddzD9e3NPCUQSrNQ==",
+      "path": "httpmultipartparser/5.0.0",
+      "hashPath": "httpmultipartparser.5.0.0.nupkg.sha512"
+    },
     "Humanizer.Core/2.8.26": {
       "type": "package",
       "serviceable": true,
@@ -5604,6 +5639,13 @@
       "path": "microsoft.identitymodel.tokens/6.8.0",
       "hashPath": "microsoft.identitymodel.tokens.6.8.0.nupkg.sha512"
     },
+    "Microsoft.IO.RecyclableMemoryStream/1.3.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-yIQcWha/0D5Y4ylTW41cpAWTa7xyH2FcHgsDGbw3IemhP6gwfDtn3Bn/dqNp8fLq26TZ+A+98oj9lAeqa7r9nA==",
+      "path": "microsoft.io.recyclablememorystream/1.3.6",
+      "hashPath": "microsoft.io.recyclablememorystream.1.3.6.nupkg.sha512"
+    },
     "Microsoft.Net.Http.Headers/2.2.0": {
       "type": "package",
       "serviceable": true,
@@ -5933,12 +5975,12 @@
       "path": "stackexchange.redis/2.1.30",
       "hashPath": "stackexchange.redis.2.1.30.nupkg.sha512"
     },
-    "System.Buffers/4.5.0": {
+    "System.Buffers/4.5.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-pL2ChpaRRWI/p4LXyy4RgeWlYF2sgfj/pnVMvBqwNFr5cXg7CXNnWZWxrOONLg8VGdFB8oB+EG2Qw4MLgTOe+A==",
-      "path": "system.buffers/4.5.0",
-      "hashPath": "system.buffers.4.5.0.nupkg.sha512"
+      "sha512": "sha512-Rw7ijyl1qqRS0YQD/WycNst8hUUMgrMH4FCn1nNm27M4VxchZ1js3fVjQaANHO5f3sN4isvP4a+Met9Y4YomAg==",
+      "path": "system.buffers/4.5.1",
+      "hashPath": "system.buffers.4.5.1.nupkg.sha512"
     },
     "System.Collections/4.3.0": {
       "type": "package",

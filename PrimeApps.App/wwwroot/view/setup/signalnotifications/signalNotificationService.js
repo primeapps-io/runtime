@@ -19,6 +19,13 @@ angular.module('primeapps')
 
                 hide: function (id) {
                     return $http.put(config.apiUrl + 'signal_notification/hide/' + id);
+                },
+                allRead:function () {
+                    return $http.put(config.apiUrl + 'signal_notification/all_read');
+                },
+                allHide:function () {
+                    return $http.put(config.apiUrl + 'signal_notification/all_hide');
                 }
+
             };
         }]);

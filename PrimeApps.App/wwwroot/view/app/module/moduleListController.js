@@ -184,6 +184,8 @@ angular.module('primeapps')
             $scope.fields = [];
             $scope.fieldskey = {};
             $scope.selectedRows = [];
+            $scope.selectedGroups = [];
+            $scope.groupLastIdsArray = [];
             $scope.selectedRecords = [];
             $scope.isAllSelected = false;
             $scope.currentUser = ModuleService.processUser($rootScope.user);
@@ -1144,6 +1146,7 @@ angular.module('primeapps')
                 if ($scope.selectedRows.length > 0) {
                     $scope.isAllSelected = false;
                     $scope.selectedRows = [];
+                    $scope.selectedGroups = [];
                 }
 
                 if (!filter) {
@@ -1281,7 +1284,8 @@ angular.module('primeapps')
                 };
 
                 checkFiltersExistLookup();
-
+                checkFindRequestExistPrimaryField();
+                
                 $scope.freezeDependencies = getFreezeDependencies($scope.module.dependencies);
                 if ($scope.freezeDependencies) {
                     $scope.freezeFields = getFreezeFields($scope.freezeDependencies, undefined, true);
@@ -1301,9 +1305,71 @@ angular.module('primeapps')
                 if ($scope.executeCode)
                     return;
 
-                if ($rootScope.activeView.report_type === 'tabular') {
-                    $scope.mainGridTabularOptions = {
-                        dataSource: {
+                if ($rootScope.activeView.report_type === 'tabular' || $rootScope.activeView.view_type === 'grid') {
+                    var dataSource = null;
+                    if ($rootScope.activeView.view_type === 'grid'){
+                        $scope.groupFieldChecked();
+                        $scope.gridGroupAggregationFields($scope.viewFields.selectedFields);
+                        $scope.aggregationsOrder();
+                        $scope.findRequest.aggregations = $filter('filter')($rootScope.activeView.aggregations, { active: true });
+                        $scope.findRequest.type = "grid";
+                        $scope.findRequest.groupDate = $scope.gridGroupBy.length > 0 ? $scope.gridGroupBy : undefined;
+                        
+                        dataSource = {
+                            serverPaging: true,
+                            serverFiltering: true,
+                            serverSorting: true,
+                            serverGrouping: true,
+                            serverAggregates: true,
+                            group: $scope.gridGroupBy.length > 0 ? $scope.gridGroupBy : undefined,
+                            transport: {
+                                read: function (options) {
+                                    $.ajax({
+                                        url: '/api/record/find_custom?locale=' + locale,
+                                        contentType: 'application/json',
+                                        dataType: 'json',
+                                        type: 'POST',
+                                        data: JSON.stringify(Object.assign($scope.findRequest, options.data)),
+                                        success: function (result) {
+                                            if (result.data && result.data.length > 0) {
+                                                isFreeze(result.data);
+                                            }
+
+                                            options.success(result);
+                                           
+                                            if (!$rootScope.isMobile())
+                                                $(".k-pager-wrap").removeClass("k-pager-sm");
+
+                                            $(".k-grid-footer").hide();
+                                            if ($scope.gridGroupBy.length === 0)
+                                                $(".k-grouping-header").hide();
+                                            else{
+                                                $(".k-grouping-header").show();
+                                                var groupHeaders = $("tbody tr td:only-child p.k-reset").each(function () {
+                                                    var childElement = $(this).children();
+                                                    $(childElement).insertAfter($(childElement).next('input'));
+                                                });
+                                            }
+                                        },
+                                        beforeSend: $rootScope.beforeSend()
+                                    })
+                                }
+                            },
+                            schema: {
+                                data: "data",
+                                total: "total",
+                                model: { id: "id" },
+                                groups: "groups",
+                                aggregates: "aggregates",
+                                parse: function (result) {
+                                    result.groups = $scope.parseGridData(result);
+                                    $scope.loading = false;
+                                    return result;
+                                }
+                            }
+                        };
+                    }else {// tabular
+                        dataSource = {
                             serverPaging: true,
                             serverFiltering: true,
                             serverSorting: true,
@@ -1347,88 +1413,16 @@ angular.module('primeapps')
                                 total: "total",
                                 model: { id: "id" }
                             }
-                        },
-                        rowTemplate: '<tr ng-click="goUrl2(dataItem.id)">' + table.rowtempl + '</tr>',
-                        altRowTemplate: '<tr class="k-alt" ng-click="goUrl2(dataItem.id)">' + table.rowtempl + '</tr>',
-                        scrollable: false,
-                        sortable: true,
-                        noRecords: true,
-                        pageable: {
-                            refresh: true,
-                            pageSize: 10,
-                            pageSizes: [10, 25, 50, 100, 500],
-                            buttonCount: 5,
-                            info: true,
-                        },
-                        columns: table.columns,
-                    };
-                }
-                else if ($rootScope.activeView.view_type === 'grid') {
-                    $scope.gridGroupAggregationFields($scope.viewFields.selectedFields)
-                    $scope.aggregationsOrder();
-                    $scope.findRequest.aggregations = $filter('filter')($rootScope.activeView.aggregations, { active: true });
-                    $scope.findRequest.type = "grid";
-                    $scope.findRequest.groupDate = $scope.gridGroupBy.length > 0 ? $scope.gridGroupBy : undefined;
+                        }
+                    }
+                    
                     $scope.mainGridOptions = {
-                        dataSource: {
-                            serverPaging: true,
-                            serverFiltering: true,
-                            serverSorting: true,
-                            serverGrouping: true,
-                            serverAggregates: true,
-                            group: $scope.gridGroupBy.length > 0 ? $scope.gridGroupBy : undefined,
-                            transport: {
-                                read: function (options) {
-                                    $.ajax({
-                                        url: '/api/record/find_custom?locale=' + locale,
-                                        contentType: 'application/json',
-                                        dataType: 'json',
-                                        type: 'POST',
-                                        data: JSON.stringify(Object.assign($scope.findRequest, options.data)),
-                                        success: function (result) {
-                                            if (result.data && result.data.length > 0) {
-                                                isFreeze(result.data);
-                                            }
-
-                                            options.success(result);
-                                            $scope.loading = false;
-
-                                            if (!$rootScope.isMobile())
-                                                $(".k-pager-wrap").removeClass("k-pager-sm");
-
-                                            if ($scope.gridGroupBy.length === 0)
-                                                $(".k-grouping-header").hide();
-                                            else
-                                                $(".k-grouping-header").show();
-
-                                        },
-                                        beforeSend: $rootScope.beforeSend()
-                                    })
-                                }
-                            },
-                            schema: {
-                                data: "data",
-                                total: "total",
-                                model: { id: "id" },
-                                groups: "groups",
-                                parse: function (result) {
-                                    result.groups = $scope.parseGridData(result);
-                                    $scope.gridData = result;
-                                    return result;
-                                }
-                            }
-                        },
-                        // dataBound: function (e) {
-                        //     var grid = this;
-                        //     $(".k-grouping-row").each(function (e) {
-                        //         grid.collapseGroup(this);
-                        //     });
-                        // },
+                        dataSource: dataSource,
                         rowTemplate: '<tr ng-click="goUrl2(dataItem.id)">' + table.rowtempl + '</tr>',
                         altRowTemplate: '<tr class="k-alt" ng-click="goUrl2(dataItem.id)">' + table.rowtempl + '</tr>',
                         scrollable: false,
-                        groupable: true,
-                        sortable: $scope.gridGroupBy.length > 0 ? 0 : 1,
+                        groupable: $rootScope.activeView.report_type === 'tabular' ? false : $scope.gridGroupBy.length > 0 ? 0 : 1,
+                        sortable: $rootScope.activeView.report_type === 'tabular' ? true :$scope.gridGroupBy.length > 0 ? 0 : 1,
                         noRecords: true,
                         pageable: {
                             refresh: true,
@@ -1444,6 +1438,10 @@ angular.module('primeapps')
                     $scope.kanbanBoards();
 
                     $scope.kanbanSelectPicklist = $filter('filter')($scope.picklistFields, { picklist_id: parseInt($rootScope.activeView.settings.kanbanPicklist) }, true)[0];
+                    
+                    if (!$scope.kanbanSelectPicklist)
+                        return;
+                    
                     if (table.requestFields.indexOf($scope.kanbanSelectPicklist.name) === -1)
                         table.requestFields.push($scope.kanbanSelectPicklist.name)
 
@@ -1561,6 +1559,17 @@ angular.module('primeapps')
                 }
             };
 
+            $scope.groupFieldChecked = function () {
+                if ($scope.gridGroupBy && $scope.gridGroupBy.length > 0){
+                    for (var i = 0; i < $scope.gridGroupBy.length; i++){
+                        var checkField = $filter('filter')($scope.module.fields, {name: $scope.gridGroupBy[i].field}, true)[0];
+                        if (!checkField){
+                            $scope.gridGroupBy[i].field =  $scope.viewFields.selectedFields[i].name;                           ;
+                        }
+                    }
+                }
+            };
+            
             ModuleService.getViews($scope.module).then(function (result) {
 
                 $rootScope.processLanguages(result);
@@ -1653,7 +1662,7 @@ angular.module('primeapps')
                                 items: [result.data[s]],
                                 hasSubgroups: false
                             }
-                            groups.push(groupOne);
+                        
                             var field = $filter('filter')($scope.module.fields, { name: first.split('.')[0] }, true)[0];
 
                             var firstFieldData = first.split('.');
@@ -1664,6 +1673,9 @@ angular.module('primeapps')
                                 value = value.slice(1);
 
                             $scope.gruopFilters.push({ field: first.split('.')[0], value: value, operator: field.operators[0].name, no: 1 })
+                            
+                            groupOne.aggregates = $scope.aggregateParse(result, result.data[s][first], field);
+                            groups.push(groupOne);
                         }
                     }
                 } else if (result.data && result.data.length > 0 && $scope.gridGroupBy.length === 2) {
@@ -1685,7 +1697,7 @@ angular.module('primeapps')
                                 items: [],
                                 hasSubgroups: true
                             }
-                            groups.push(group);
+                            
                             var field2 = $filter('filter')($scope.module.fields, { name: firstField.split('.')[0] }, true)[0];
 
                             var firstFieldData = firstField.split('.');
@@ -1695,8 +1707,10 @@ angular.module('primeapps')
                             if (field2.data_type === 'currency')
                                 value = value.slice(1);
 
-
                             $scope.gruopFilters.push({ field: firstField.split('.')[0], value: value, operator: field2.operators[0].name, no: 1 })
+
+                            group.aggregates = $scope.aggregateParse(result, result.data[h][firstField], field2);
+                            groups.push(group);
                         }
                     }
                     var secondField = $scope.gridGroupBy[1].field;
@@ -1723,7 +1737,11 @@ angular.module('primeapps')
                                     field: secondField,
                                     value: groupName2alt,
                                     items: [result.data[k]],
-                                    hasSubgroups: false
+                                    hasSubgroups: false,
+                                    aggregates: {
+                                        template: "",
+                                        groupSelect: ""
+                                    }
                                 }
                                 firstFilter.items.push(secondGroup);
                             } else {
@@ -1732,41 +1750,65 @@ angular.module('primeapps')
                         }
                     }
                 }
-
-                //fix agg yokken
-                if ($rootScope.activeView.aggregations && $scope.gruopFilters.length > 0 && $rootScope.activeView.view_type === 'grid' && result.aggregations && result.aggregations.length > 0) {
-                    $timeout(function () {
-                        var groupHeaders = $("tbody tr td:only-child p.k-reset");
-
-                        if (groupHeaders.length > 0 && groupHeaders.length === result.aggregations.length) {
-                            for (var i = 0; i < result.aggregations.length; i++) {
-                                for (var j = 0; j < result.aggregations[i].fields.length; j++) {
-
-                                    if (i === result.aggregations[i].group_value) {
-                                        var fieldAndType = result.aggregations[i].fields[j].split("::")[0];
-                                        var type = fieldAndType.split("(")[0];
-                                        var fieldName = fieldAndType.split("(")[1];
-                                        fieldName = fieldName.slice(0, fieldName.length - 1)
-                                        var field = $filter('filter')($scope.module.fields, { name: fieldName }, true)[0];
-                                        var label = result.aggregations[i].label[j];
-                                        groupHeaders[i].innerHTML += $scope.aggregationsParseText(type, label, result.aggregations[i].data[fieldAndType], field, result.data);
-                                    }
-                                }
-                            }
-                            //Grup secimleri için selectBox ..
-                            // for (var f = 0; f < groupHeaders.length; f++){
-                            //     if(f < groupHeaders.length - 1)
-                            //         groupHeaders[f].innerHTML ="<input type='checkbox' ng-checked='isGroupSelected' ng-click='selectGroups($event,"+'"'+result.aggregations[f].group_name+'",'+'"'+result.aggregations[f].group_value+'"'+"); $event.stopPropagation();' class='k-checkbox header-checkbox mr-3'>" + groupHeaders[f].innerHTML;
-                            //     else
-                            //         groupHeaders[f].innerHTML ="<input type='checkbox' ng-checked='isGroupSelected' ng-click='selectGroups($event,"+'"'+result.aggregations[f].group_name+'",'+'"'+result.aggregations[f].group_value+'",'+'"'+true+'"'+"); $event.stopPropagation();' class='k-checkbox header-checkbox mr-3'>" + groupHeaders[f].innerHTML;
-                            // }
-                            // $compile(groupHeaders)($scope);
-                        }
-                    }, 100)
-                }
-
+                
                 return groups;
             };
+            
+            $scope.aggregateParse = function (result, groupValue, currentField) {
+                var aggregatesObj = {}
+                if ($scope.gruopFilters.length > 0 && $rootScope.activeView.view_type === 'grid' && $rootScope.activeView.aggregations &&  result.aggregations && result.aggregations.length > 0){
+                    var groupAggregates = $filter('filter')(result.aggregations, {group_value: groupValue.toString()}, true)[0];
+                    if (!groupAggregates)
+                        return;
+                    
+                    for (var i = 0; i < groupAggregates.fields.length; i++){
+                        var fieldFull = groupAggregates.fields[i].split('::')[0]
+                        var field = fieldFull.split(')')[0].split('(');
+                        var resultData = groupAggregates.data[fieldFull];
+                            if (resultData === null)
+                                resultData = 0;
+                            if (!Number.isInteger(resultData))
+                                resultData = parseFloat(resultData).toFixed(2);
+
+                            if (currentField && currentField.data_type && currentField.data_type === "currency") {
+                                var symbol = currentField.currency_symbol ? currentField.currency_symbol : null;
+                                if (!symbol)
+                                    symbol = "$";
+
+                                if (symbol === "₺") {
+                                    resultData += symbol;
+                                } else {
+                                    resultData = symbol + resultData;
+                                }
+                            }
+                            
+                            if (aggregatesObj.template)
+                                aggregatesObj.template += $scope.aggregationsParseText(field[0], groupAggregates.label[i], resultData);
+                            else
+                                aggregatesObj.template = $scope.aggregationsParseText(field[0], groupAggregates.label[i], resultData);
+                    }
+                    
+                }else
+                    aggregatesObj.template = "";
+
+                
+                var groupData= $filter('filter')(result.groups_data, {group_value: groupValue.toString()}, true)[0];
+                if (!groupData)
+                    return;
+                
+                var index = groupData.group_index;
+                var idsData = $filter('filter')($scope.groupLastIdsArray, {value: groupValue.toString()}, true)[0];
+                if (!idsData){
+                    var groupIds = result.groups_data[index].group_ids;
+                    $scope.groupLastIdsArray.push({value: groupValue.toString(), ids: groupIds});
+                }
+
+                aggregatesObj.groupSelect = "<input type='checkbox' ng-checked='isGroupSelected("+'"'+groupValue+'"'+");' " +
+                    "ng-click='selectGroups($event,"+'"'+groupValue+'",'+'"'+index+'"'+'); ' +
+                    "$event.stopPropagation();' class='k-checkbox header-checkbox mr-3'>";
+                
+                return aggregatesObj;
+            }
 
             $scope.groupDateSortName = function (type, date) {
                 var groupName = "";
@@ -1823,24 +1865,7 @@ angular.module('primeapps')
                 return groupName;
             }
 
-            $scope.aggregationsParseText = function (type, label, resultData, field) {
-                if (resultData === null)
-                    resultData = 0;
-                if (!Number.isInteger(resultData))
-                    resultData = parseFloat(resultData).toFixed(2);
-
-                if (field && field.data_type && field.data_type === "currency") {
-                    var symbol = field.currency_symbol ? field.currency_symbol : null;
-                    if (!symbol)
-                        symbol = "$";
-
-                    if (symbol === "₺") {
-                        resultData += symbol;
-                    } else {
-                        resultData = symbol + resultData;
-                    }
-                }
-
+            $scope.aggregationsParseText = function (type, label, resultData) {
                 var template = "";
                 switch (type) {
                     case "sum":
@@ -1953,6 +1978,7 @@ angular.module('primeapps')
             }
 
             $scope.addGridGroup = function () {
+                $scope.groupLastIdsArray = [];
                 var newGroup = {};
                 if ($scope.gridGroupBy.length === 0) {
                     newGroup.fieldArea = $scope.viewFields.selectedFields[0].name;
@@ -1997,6 +2023,7 @@ angular.module('primeapps')
             };
 
             $scope.gridGroupDelete = function (index, gridGroupBy) {
+                $scope.groupLastIdsArray = [];
                 gridGroupBy.splice(index, 1);
                 if (gridGroupBy.length === 0) {
                     $scope.gridGroupBy = [];
@@ -2078,6 +2105,12 @@ angular.module('primeapps')
                     });
 
                 $scope.boards = [];
+                
+                if (!$scope.kanbanSelectPicklist){
+                    $scope.kanbanSelectPicklist = $filter('filter')($scope.picklistFields, { picklist_id: parseInt($rootScope.activeView.settings.kanbanPicklist) }, true)[0];
+                    if (!$scope.kanbanSelectPicklist)
+                        return;
+                }
 
                 if (!$rootScope.activeView.settings || !$rootScope.activeView.settings.kanbanPicklist) {
                     $scope.kanbanMainOptions = null;
@@ -2749,47 +2782,72 @@ angular.module('primeapps')
                 }).length > 0;
             };
 
-            $scope.selectGroups = function ($event, groupsName, groupValue, isLastGroup) {
-                //$scope.isGroupSelected = true;
-                //console.log(isLastGroup)
+            $scope.isGroupSelected = function (groupValue) {
+                if ($scope.isAllSelected)
+                    return false;
+
+                return $scope.selectedGroups.filter(function (selectedGroup) {
+                    return selectedGroup.value === groupValue;
+                }).length > 0;
+            };
+            
+            $scope.selectGroups = function ($event, groupName, groupIndex){
+                groupIndex = parseInt(groupIndex);
                 $scope.isAllSelected = false;
                 var dataGr = $('#kendo-grid').data("kendoGrid").dataSource.data();
 
-                for (var i = 0; i < dataGr.length; i++) {
-                    if (!dataGr[i].hasSubgroups) {
-                        for (var j = 0; j < dataGr[i].items.length; j++) {
-                            if (dataGr[i].items[j][groupsName] === groupValue) {
-                                if ($event.target.checked) {
+                for (var y = 0; y < dataGr.length; y++){
+                    if (y === groupIndex){
+                        var group = $filter('filter')($scope.groupLastIdsArray, {value: groupName.toString()}, true)[0];
+                        if ($event.target.checked){
+                            $scope.selectedGroups.push({value:groupName, groupIds:group.ids});
+                            for (var t = 0; t < group.ids.length; t++){
+                                if (!$scope.selectedRows.includes(group.ids[t].id))
+                                $scope.selectRow($event, group.ids[t]);
+                            }
+                        }
+                        else{
+                            for (var g = 0; g < group.ids.length; g++){
+                                var index = $scope.selectedRows.indexOf(group.ids[g].id);
+                                $scope.selectedRows.splice(index, 1);
+                            }
+
+                            $scope.selectedGroups = $scope.selectedGroups.filter(function (selectedGroup) {
+                                return selectedGroup.value !== groupName;
+                            });
+                        }
+                    }
+                }
+                
+                for (var i = 0; i<  dataGr.length; i++){
+                    if (!dataGr[i].hasSubgroups){
+                        for (var j = 0; j < dataGr[i].items.length; j++){
+                            if (i === groupIndex){
+                                if ($event.target.checked){
                                     if (!dataGr[i].items[j].freeze || $scope.user.profile.has_admin_rights) {
                                         if (!$scope.selectedRows.includes(dataGr[i].items[j].id)) {
                                             dataGr[i].items[j].selected = true;
-                                            $scope.selectRow($event, dataGr[i].items[j]);
                                         }
                                     }
                                 }
-                                else {
-                                    var index = $scope.selectedRows.indexOf(dataGr[i].items[j].id);
-                                    $scope.selectedRows.splice(index, 1);
+                                else{
                                     dataGr[i].items[j].selected = false;
                                 }
                             }
                         }
                     }
-                    else {//alt group
-                        for (var j = 0; j < dataGr[i].items.length; j++) {
-                            for (var k = 0; k < dataGr[i].items[j].items.length; k++) {
-                                if (dataGr[i].items[j].items[k][groupsName] === groupValue) {
-                                    if ($event.target.checked) {
+                    else{//alt group
+                        for (var j = 0; j < dataGr[i].items.length; j++){
+                            for (var k = 0; k < dataGr[i].items[j].items.length; k++){
+                                if (i === groupIndex){
+                                    if ($event.target.checked){
                                         if (!dataGr[i].items[j].items[k].freeze || $scope.user.profile.has_admin_rights) {
-                                            if (!$scope.selectedRows.includes(dataGr[i].items[j].items[k].id)) {
+                                            if (!$scope.selectedRows.includes(dataGr[i].items[j].items[k].id)){
                                                 dataGr[i].items[j].items[k].selected = true;
-                                                $scope.selectRow($event, dataGr[i].items[j].items[k]);
                                             }
                                         }
                                     }
-                                    else {
-                                        var index = $scope.selectedRows.indexOf(dataGr[i].items[j].items[k].id);
-                                        $scope.selectedRows.splice(index, 1);
+                                    else{
                                         dataGr[i].items[j].items[k].selected = false;
                                     }
                                 }
@@ -2797,15 +2855,11 @@ angular.module('primeapps')
                         }
                     }
                 }
-
-                if (isLastGroup) {
-                    //TODO grubun sonraki sonrafalarında elemanlarının secim işlemleri yapılacak, suan grup secimleri pasif...
-                }
             };
 
             $scope.selectAll = function ($event, data) {
                 $scope.selectedRows = [];
-                $scope.isGroupSelected = false;
+                $scope.selectedGroups = [];
 
                 if ($scope.isAllSelected) {
                     $scope.isAllSelected = false;
@@ -2880,6 +2934,7 @@ angular.module('primeapps')
 
                             mdToast.success($filter('translate')('Module.DeleteMessage'));
                             $scope.selectedRows = [];
+                            $scope.selectedGroups = [];
                             $scope.isAllSelected = false;
                             $scope.refreshGrid();
                         });
@@ -3202,6 +3257,7 @@ angular.module('primeapps')
                         $scope.refreshGrid();
                         $scope.isAllSelected = false;
                         $scope.selectedRows = [];
+                        $scope.selectedGroups = [];
                         $scope.selectedRecords = [];
                         $scope.bulkUpdate.value = null;
                         $scope.field = null;
@@ -3972,6 +4028,17 @@ angular.module('primeapps')
                                 }
                             }
                         }
+                    }
+                }
+            }
+            
+            function checkFindRequestExistPrimaryField(){
+                if ($scope.findRequest && $scope.findRequest.fields){
+                    const field = $filter('filter')($scope.module.fields, { primary: true}, true)[0];
+                    if (field){
+                      const index = $scope.findRequest.fields.indexOf(field.name);
+                      if (index < 0)
+                          $scope.findRequest.fields.push(field.name);
                     }
                 }
             }
