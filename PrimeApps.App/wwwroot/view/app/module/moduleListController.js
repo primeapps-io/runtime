@@ -1562,9 +1562,10 @@ angular.module('primeapps')
             $scope.groupFieldChecked = function () {
                 if ($scope.gridGroupBy && $scope.gridGroupBy.length > 0){
                     for (var i = 0; i < $scope.gridGroupBy.length; i++){
-                        var checkField = $filter('filter')($scope.module.fields, {name: $scope.gridGroupBy[i].field}, true)[0];
+                        var fields = $scope.viewFields.availableFields.concat($scope.viewFields.selectedFields);
+                        var checkField = $filter('filter')(fields, {name: $scope.gridGroupBy[i].field}, true)[0];
                         if (!checkField){
-                            $scope.gridGroupBy[i].field =  $scope.viewFields.selectedFields[i].name;                           ;
+                            $scope.gridGroupBy[i].field =  $scope.viewFields.selectedFields[i].name;
                         }
                     }
                 }

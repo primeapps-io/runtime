@@ -1218,46 +1218,89 @@ angular.module('primeapps')
 
                 if ($scope.module.name === 'p_profiles' && $scope.profileConfig) {
 
-                    angular.forEach($scope.profileConfig['config'], function (moduleConfig) {
-                        if (!moduleConfig.actions.read || !moduleConfig.actions.read.enable) {
+                    if (!$scope.profileConfig["config"]) {
+                        $scope.generateAllProfileConfig();
+                    }
 
-                            moduleConfig.fields.dont_show = [];
-                            moduleConfig.fields.readonly = [];
+                    angular.forEach($scope.menuItems, function (item) {
 
-                            moduleConfig.sections.dont_show = [];
-                            moduleConfig.sections.readonly = [];
+                        if (!item.module_id)
+                            return;
 
-                            moduleConfig.records.type = "all";
-                            moduleConfig.records.filters = [];
+                        var module = $filter('filter')($rootScope.modules, { id: item.module_id }, true)[0];
 
-                            if (!moduleConfig.actions.read) {
-                                moduleConfig.actions.read = {};
-                                moduleConfig.actions.read.enable = false;
-                            }
+                        if (!module)
+                            return;
 
-                            if (!moduleConfig.actions.create) {
-                                moduleConfig.actions.create = {};
-                                moduleConfig.actions.create.enable = false;
-                            } else {
-                                moduleConfig.actions.create.enable = false;
-                            }
+                        if (module.name === 'users' || module.name === 'profiles' || module.name === 'roles')
+                            return;
 
-                            if (!moduleConfig.actions.delete) {
-                                moduleConfig.actions.delete = {};
-                                moduleConfig.actions.delete.enable = false;
-                            } else {
-                                moduleConfig.actions.delete.enable = false;
-                            }
+                        if (!$scope.profileConfig["config"][module.name]) {
+                            $scope.profileConfig["config"][module.name] = $scope.getProfileDefaultModel(module.name);
+                        } else {
+                            
+                            if (!$scope.profileConfig["config"][module.name].actions.read || !$scope.profileConfig["config"][module.name].actions.read.enable) {
 
-                            if (!moduleConfig.actions.update) {
-                                moduleConfig.actions.update = {};
-                                moduleConfig.actions.update.enable = false;
-                            } else {
-                                moduleConfig.actions.update.enable = false;
+                                if (!$scope.profileConfig["config"][module.name].actions.read && $scope.profileConfig["config"][module.name].actions.create.enable) {
+                                    $scope.profileConfig["config"][module.name].actions.read = {};
+                                    $scope.profileConfig["config"][module.name].actions.read.enable = true;
+                                    $scope.profileConfig["config"][module.name].actions.read.filters = [];
+                                } else {
+                                    if (!$scope.profileConfig["config"][module.name].fields) {
+                                        $scope.profileConfig["config"][module.name].fields = {};
+                                    }
+
+                                    $scope.profileConfig["config"][module.name].fields.dont_show = [];
+                                    $scope.profileConfig["config"][module.name].fields.readonly = [];
+
+                                    if (!$scope.profileConfig["config"][module.name].sections) {
+                                        $scope.profileConfig["config"][module.name].sections = {};
+                                    }
+
+                                    $scope.profileConfig["config"][module.name].sections.dont_show = [];
+                                    $scope.profileConfig["config"][module.name].sections.readonly = [];
+
+                                    if (!$scope.profileConfig["config"][module.name].records) {
+                                        $scope.profileConfig["config"][module.name].records = {};
+                                    }
+
+                                    $scope.profileConfig["config"][module.name].records.type = "all";
+                                    $scope.profileConfig["config"][module.name].records.filters = [];
+
+                                    if (!$scope.profileConfig["config"][module.name].actions.read) {
+                                        $scope.profileConfig["config"][module.name].actions.read = {};
+                                        $scope.profileConfig["config"][module.name].actions.read.enable = false;
+                                        $scope.profileConfig["config"][module.name].actions.read.filters = [];
+                                    }
+
+                                    if (!$scope.profileConfig["config"][module.name].actions.create) {
+                                        $scope.profileConfig["config"][module.name].actions.create = {};
+                                        $scope.profileConfig["config"][module.name].actions.create.enable = false;
+                                        $scope.profileConfig["config"][module.name].actions.create.filters = [];
+                                    } else {
+                                        $scope.profileConfig["config"][module.name].actions.create.enable = false;
+                                    }
+
+                                    if (!$scope.profileConfig["config"][module.name].actions.delete) {
+                                        $scope.profileConfig["config"][module.name].actions.delete = {};
+                                        $scope.profileConfig["config"][module.name].actions.delete.enable = false;
+                                        $scope.profileConfig["config"][module.name].actions.delete.filters = [];
+                                    } else {
+                                        $scope.profileConfig["config"][module.name].actions.delete.enable = false;
+                                    }
+
+                                    if (!$scope.profileConfig["config"][module.name].actions.update) {
+                                        $scope.profileConfig["config"][module.name].actions.update = {};
+                                        $scope.profileConfig["config"][module.name].actions.update.enable = false;
+                                        $scope.profileConfig["config"][module.name].actions.update.filters = [];
+                                    } else {
+                                        $scope.profileConfig["config"][module.name].actions.update.enable = false;
+                                    }
+                                }
                             }
                         }
                     });
-
+                    
                     record["configs"] = JSON.stringify($scope.profileConfig);
                 }
 
@@ -3212,6 +3255,64 @@ angular.module('primeapps')
                             $scope.setProfileConfig();
                         });
                     }
+                    
+                    $scope.generateAllProfileConfig = function() {
+                        $scope.profileConfig["config"] = {};
+                        angular.forEach($scope.menuItems, function (item) {
+
+                            if (!item.module_id)
+                                return;
+
+                            var module = $filter('filter')($rootScope.modules, { id: item.module_id }, true)[0];
+
+                            if (!module)
+                                return;
+
+                            if (module.name === 'users' || module.name === 'profiles' || module.name === 'roles')
+                                return;
+
+                            $scope.profileConfig["config"][module.name] = $scope.getProfileDefaultModel(module.name);
+                        });
+                    };
+                    
+                    $scope.getProfileDefaultModel = function(moduleName){
+                        return {
+                            records: {
+                                type: "all",
+                                filters: [],
+                            },
+                            fields: {
+                                readonly: [],
+                                dont_show: []
+                            },
+                            sections: {
+                                readonly: [],
+                                dont_show: []
+                            },
+                            actions:
+                                {
+                                    create:
+                                        {
+                                            enable: moduleName === 'p_profiles',
+                                            filters: []
+                                        },
+                                    update:
+                                        {
+                                            enable: moduleName === 'p_profiles',
+                                            filters: []
+                                        },
+                                    delete:
+                                        {
+                                            enable: moduleName === 'p_profiles',
+                                            filters: []
+                                        },
+                                    read:
+                                        {
+                                            enable: moduleName === 'p_profiles'
+                                        }
+                                }
+                        };
+                    }
 
                     $scope.selectModul = function (moduleId) {
 
@@ -3226,91 +3327,11 @@ angular.module('primeapps')
                         }
 
                         if (!$scope.profileConfig["config"]) {
-                            $scope.profileConfig["config"] = {};
-
-                            angular.forEach($scope.menuItems, function (item) {
-                                angular.forEach($rootScope.modules, function (module) {
-
-                                    if (module.name === 'users' || module.name === 'profiles' || module.name === 'roles')
-                                        return;
-
-                                    $scope.profileConfig["config"][module.name] = {
-                                        records: {
-                                            type: "all",
-                                            filters: [],
-                                        },
-                                        fields: {
-                                            readonly: [],
-                                            dont_show: []
-                                        },
-                                        sections: {
-                                            readonly: [],
-                                            dont_show: []
-                                        },
-                                        actions:
-                                        {
-                                            create:
-                                            {
-                                                enable: module.name === 'p_profiles',
-                                                filters: []
-                                            },
-                                            update:
-                                            {
-                                                enable: module.name === 'p_profiles',
-                                                filters: []
-                                            },
-                                            delete:
-                                            {
-                                                enable: module.name === 'p_profiles',
-                                                filters: []
-                                            },
-                                            read:
-                                            {
-                                                enable: module.name === 'p_profiles'
-                                            }
-                                        }
-                                    };
-                                });
-
-                            });
+                            $scope.generateAllProfileConfig();
                         }
 
                         if (!$scope.profileConfig["config"][$scope.menuSelectedModul.name]) {
-                            $scope.profileConfig["config"][$scope.menuSelectedModul.name] = {
-                                records: {
-                                    type: "all",
-                                    filters: [],
-                                },
-                                fields: {
-                                    readonly: [],
-                                    dont_show: []
-                                },
-                                sections: {
-                                    readonly: [],
-                                    dont_show: []
-                                },
-                                actions: {
-                                    create:
-                                    {
-                                        enable: module.name === 'p_profiles',
-                                        filters: []
-                                    },
-                                    update:
-                                    {
-                                        enable: module.name === 'p_profiles',
-                                        filters: []
-                                    },
-                                    delete:
-                                    {
-                                        enable: module.name === 'p_profiles',
-                                        filters: []
-                                    },
-                                    read:
-                                    {
-                                        enable: module.name === 'p_profiles'
-                                    }
-                                }
-                            };
+                            $scope.profileConfig["config"][$scope.menuSelectedModul.name] = $scope.getProfileDefaultModel($scope.menuSelectedModul.name);
                         }
                         $scope.setProfileConfig();
                     }
