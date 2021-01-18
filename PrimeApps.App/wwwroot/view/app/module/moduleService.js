@@ -3744,6 +3744,12 @@ angular.module('primeapps')
                     for (var i = 0; i < menuItems.length; i++) {
                         var item = menuItems[i];
                         item.expanded = true;
+                        item.enabled=true;
+                        if(!item.menu_items && !item.module_id){
+                            item.enabled=false;
+                        }
+
+
                         if (item.parent)
                             continue;
 

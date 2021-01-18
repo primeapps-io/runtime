@@ -1238,7 +1238,7 @@ angular.module('primeapps')
                         if (!$scope.profileConfig["config"][module.name]) {
                             $scope.profileConfig["config"][module.name] = $scope.getProfileDefaultModel(module.name);
                         } else {
-                            
+
                             if (!$scope.profileConfig["config"][module.name].actions.read || !$scope.profileConfig["config"][module.name].actions.read.enable) {
 
                                 if (!$scope.profileConfig["config"][module.name].actions.read && $scope.profileConfig["config"][module.name].actions.create.enable) {
@@ -1300,7 +1300,7 @@ angular.module('primeapps')
                             }
                         }
                     });
-                    
+
                     record["configs"] = JSON.stringify($scope.profileConfig);
                 }
 
@@ -3240,11 +3240,16 @@ angular.module('primeapps')
                         ModuleService.getMenuItemsByMenuId($scope.profileConfig.menu).then(function (resp) {
                             $scope.menuItems = ModuleService.proccesMenuItems(resp.data);
                             setStartPage(0);
+
                             $scope.menuTreeOptions = {
                                 dataSource: new kendo.data.HierarchicalDataSource({ data: $scope.menuItems }),
                                 template: function (data) {
                                     data.item.languages = JSON.parse(data.item.languages);
-                                    return '<strong style="cursor:pointer;" ng-click="selectModul(' + data.item.module_id + ')" flex md-truncate>' + $rootScope.getLanguageValue(data.item.languages, 'label') + '</strong > '
+                                   if( !data.item.module_id){
+                                       return '<strong  ng-disabled="true"  flex md-truncate>' + $rootScope.getLanguageValue(data.item.languages, 'label') + '</strong > ';
+                                   }
+
+                                   return '<strong style="cursor:pointer" ng-click="selectModul(' + data.item.module_id + ')" flex md-truncate>' + $rootScope.getLanguageValue(data.item.languages, 'label') + '</strong > '
                                 },
                                 dragAndDrop: false,
                                 autoBind: true,
@@ -3255,7 +3260,7 @@ angular.module('primeapps')
                             $scope.setProfileConfig();
                         });
                     }
-                    
+
                     $scope.generateAllProfileConfig = function() {
                         $scope.profileConfig["config"] = {};
                         angular.forEach($scope.menuItems, function (item) {
@@ -3274,7 +3279,7 @@ angular.module('primeapps')
                             $scope.profileConfig["config"][module.name] = $scope.getProfileDefaultModel(module.name);
                         });
                     };
-                    
+
                     $scope.getProfileDefaultModel = function(moduleName){
                         return {
                             records: {
