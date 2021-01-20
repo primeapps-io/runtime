@@ -775,7 +775,13 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
                                 if (notification.module && notification.record_id) {
                                     $scope.closeSide('sideModal');
-                                    var newUrl = '#/app/record/' + notification.module.name + '?id=' + notification.record_id;
+                                    // var newUrl = '#/app/record/' + notification.module.name + '?id=' + notification.record_id;
+                                    var newUrl = '#/app/';
+                                    if (notification.module.system_type === 'component')
+                                        newUrl += notification.module.name + '?id=' + notification.record_id;
+                                    else
+                                        newUrl += 'record/'+notification.module.name + '?id=' + notification.record_id;
+                                    
                                     if (newUrl === window.location.hash)
                                         $state.reload();
                                     window.location = newUrl;

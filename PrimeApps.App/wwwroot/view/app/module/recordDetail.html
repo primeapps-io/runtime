@@ -1,15 +1,10 @@
-<md-content flex style="height: 100%;" ng-if="true">
-    <div ng-show="loading">
-        <div class="spin">
-            <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
-        </div>
-    </div>
-    <section ng-show="!loading" layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
+<md-content flex style="height: 100%;">
+    <section layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
         <md-toolbar md-scroll-shrink ng-if="!fastRecordModal && id " class="with-subheader">
             <div class="md-toolbar-tools">
                 <div class="own-tab own-tab2"  flex>
                     <md-tabs md-dynamic-height="" md-swipe-content>
-                        <md-tab ng-click="$parent.tab = 'general'">
+                        <md-tab ng-click="$parent.tab = 'general';changeTab('general')">
                             <md-tab-label id="record-general" aria-controls="{{'Common.General' | translate}}">
                                 <div class="tab-container">
                                     <span>{{'Common.General' | translate}}</span>
@@ -54,6 +49,7 @@
                                 </div>
                             </md-tab-label>
                         </md-tab>
+
                     </md-tabs>
                 </div>
             </div>
@@ -178,7 +174,20 @@
                             </div>
                         </md-toolbar>
                     </md-subheader>
-                    <div class="container-fluid paddingua20">
+                    <div class="container-fluid paddingua20 loadingform"  ng-if="generalTabLoading">
+                        <section class="whitebox collapsible">
+                            <div class="collapsible-head" >
+                                <h4>Loading</h4>
+                            </div>
+                            <div class="collapsible-body collapse show">
+                                <div class="row">
+                                    <div class="col-sm-6"><div class="loadfield"></div></div>
+                                    <div class="col-sm-6"><div class="loadfield"></div></div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="container-fluid paddingua20" ng-show="!generalTabLoading">
                         <div ng-repeat="section in module.sections | orderBy:'order'"
                              ng-if="!section.hidden && (id && (hasPermission(type, operations.modify, record) || hasPermission(type, operations.read, record)) || (!id && hasPermission(type, operations.write, record))) && hasSectionDisplayPermission(section) && (tab === 'general' || !tabconfig)">
                             <section class="whitebox collapsible" ng-if="!section.type">
@@ -199,7 +208,7 @@
                                          ng-class="{'k-state-disabled' : hasSectionReadOnlyPermission(section)}">
                                         <div ng-class="{'col-sm-6': section.column_count === 2}" class="col-12"
                                              ng-repeat="column in section.columns track by $index">
-                                            <div ng-repeat="field in getModuleFields() | filter:{section: section.name, section_column: column.no, deleted: false}:true | orderBy:'order'"
+                                            <div ng-repeat="field in displayFields | filter:{section: section.name, section_column: column.no, deleted: false}:true | orderBy:'order'"
                                                  ng-if="!id || field.display_detail">
                                                 <div ng-include="'view/app/module/fields.html'"
                                                      ng-class="{'k-state-disabled' : hasFieldReadOnlyPermission(field)}"></div>
@@ -214,6 +223,8 @@
                             </section>
 
                         </div>
+
+
 
                         <section class="whitebox collapsible" ng-if="module.options.advanced_sharing_show">
                             <div class="collapsible-head" id="headingshare">
@@ -527,10 +538,17 @@
                 <div class="container-fluid paddingua20">
                     <div class="whitebox table-view">
                         <div class="whitebox table-view">
-                            <kendo-grid class="grid-theme grid-theme-center"
+                            <kendo-grid ng-show="!loading" class="grid-theme grid-theme-center"
                                         k-scope-field="grid[relatedModule.related_module]"
                                         k-options="relationsGridOptions[relatedModule.id]">
                             </kendo-grid>
+                            <div ng-show="loading" class="loading-list grid-theme table-responsive k-grid k-widget k-grid-display-block">
+                                <table>
+                                    <thead><tr><th width="50"></th><th></th><th width="50"></th></tr></thead>
+                                    <tbody><tr><td></td><td></td><td></td></tr> </tbody>
+                                    <tfoot><tr><th></th><th></th><th></th></tr></tfoot>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

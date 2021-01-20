@@ -1,5 +1,4 @@
-<div class="form-group"
-     ng-if="field.data_type === 'text_single' && field.data_type != 'number_auto' && !field.combination && field.show_label && !field.show_lock && !field.hidden">
+<div class="form-group" ng-if="field.data_type === 'text_single' && field.data_type != 'number_auto' && !field.combination && field.show_label && !field.show_lock && !field.hidden">
     <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}" for="{{field.name +'_'+ module.id}}"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field)}">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
@@ -49,8 +48,7 @@
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
-<div class="form-group"
-     ng-if="field.data_type === 'text_multi'  && field.multiline_type_use_html && !field.hidden">
+<div class="form-group" ng-if="field.data_type === 'text_multi'  && field.multiline_type_use_html && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
@@ -66,8 +64,7 @@
               ng-required="field.validation.required"></textarea>
 </div>
 
-<div class="form-group"
-     ng-if="field.data_type === 'location' && !field.hidden">
+<div class="form-group" ng-if="field.data_type === 'location' && !field.hidden">
     <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
@@ -92,8 +89,7 @@
     </div>
 </div>
 
-<div class="form-group"
-     ng-if="field.data_type === 'number' && !field.show_lock && !field.hidden">
+<div class="form-group" ng-if="field.data_type === 'number' && !field.show_lock && !field.hidden">
     <label for="{{field.name +'_'+ module.id}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
@@ -102,8 +98,7 @@
             <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <input kendo-numeric-text-box
-           ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
+    <input kendo-numeric-text-box ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
            name="{{field.name +'_'+ module.id}}"
            id="{{field.name +'_'+ module.id}}"
            tabindex="{{field.order}}"
@@ -119,8 +114,7 @@
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
-<div class="form-group"
-     ng-if="field.data_type === 'number_decimal' && !field.show_lock && !field.hidden">
+<div class="form-group" ng-if="field.data_type === 'number_decimal' && !field.show_lock && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
@@ -145,8 +139,7 @@
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
-<div class="form-group"
-     ng-if="field.data_type === 'currency' && !field.show_lock && !field.hidden">
+<div class="form-group" ng-if="field.data_type === 'currency' && !field.show_lock && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
@@ -171,8 +164,7 @@
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
-<div class="form-group"
-     ng-if="field.data_type === 'email' && !field.show_lock && !field.hidden">
+<div class="form-group" ng-if="field.data_type === 'email' && !field.show_lock && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
@@ -202,8 +194,7 @@
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
-<div class="form-group"
-     ng-if="field.data_type === 'date' && !field.hidden">
+<div class="form-group" ng-if="field.data_type === 'date' && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
@@ -226,8 +217,7 @@
            placeholder="{{'Common.Date' | translate}}" />
 </div>
 
-<div class="form-group"
-     ng-if="field.data_type === 'date_time' && !field.hidden && (id || (!id && (field.name !== 'created_at' && field.name !== 'updated_at')))">
+<div class="form-group" ng-if="field.data_type === 'date_time' && !field.hidden && (id || (!id && (field.name !== 'created_at' && field.name !== 'updated_at')))">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
@@ -250,8 +240,7 @@
            placeholder="{{'Common.DateTime' | translate}}" />
 </div>
 
-<div class="form-group"
-     ng-if="field.data_type === 'time' && !field.hidden">
+<div class="form-group" ng-if="field.data_type === 'time' && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
@@ -274,17 +263,14 @@
            placeholder="{{'Common.Time' | translate}}" />
 </div>
 
-<div class="form-group"
-     ng-if="(field.data_type === 'picklist' || field.data_type === 'rating') && field.custom_label && !field.hidden">
+<div class="form-group" ng-if="(field.data_type === 'picklist' || field.data_type === 'rating') && field.custom_label && !field.hidden">
     <div tabindex="{{cell.field.order}}"
          ng-model="field.custom_label">
         {{field.custom_label}}
     </div>
 </div>
 
-<div class="form-group"
-     ng-mouseover=" setId(field, true)"
-     ng-if="field.data_type === 'picklist' && ( field.view_type === 'dropdown' || field.view_type === '' || field.view_type === undefined) && !field.hidden">
+<div class="form-group" ng-mouseover=" setId(field, true)" ng-if="field.data_type === 'picklist' && ( field.view_type === 'dropdown' || field.view_type === '' || field.view_type === undefined) && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
@@ -348,7 +334,7 @@
            ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)" />
 </div>
 
-<div class="form-group" ng-if="field.data_type === 'multiselect' && !field.hidden">
+<div class="form-group" ng-mouseover=" setId(field, true)" ng-if="field.data_type === 'multiselect' && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
@@ -368,8 +354,7 @@
     </select>
 </div>
 
-<div class="form-group "
-     ng-if="field.data_type === 'image' && !field.hidden">
+<div class="form-group" ng-if="field.data_type === 'image' && !field.hidden">
     <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
@@ -400,8 +385,7 @@
     </div>
 </div>
 
-<div class="form-group"
-     ng-if="field.data_type === 'document' && !field.hidden">
+<div class="form-group" ng-if="field.data_type === 'document' && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
@@ -436,8 +420,7 @@
     </div>
 </div>
 
-<div class="form-group rating-fields"
-     ng-if="field.data_type === 'rating' && !field.hidden">
+<div class="form-group rating-fields" ng-if="field.data_type === 'rating' && !field.hidden">
     <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
@@ -455,8 +438,7 @@
            k-ng-model="record[field.name]" />
 </div>
 
-<div class="form-group"
-     ng-if="field.data_type === 'url'  && !field.show_lock && !field.hidden">
+<div class="form-group" ng-if="field.data_type === 'url'  && !field.show_lock && !field.hidden">
     <label for="{{field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
@@ -487,8 +469,7 @@
            pattern="{{field.validation.pattern || '(www\.)+(.+?)'}}" />
 </div>
 
-<div class="form-group"
-     ng-if="field.data_type === 'lookup' && !field.hidden && (id || (!id && (field.name !== 'created_by' && field.name !== 'updated_by')))" ng-mouseover="setCurrentLookupField(field)">
+<div class="form-group" ng-if="field.data_type === 'lookup' && !field.hidden && (id || (!id && (field.name !== 'created_by' && field.name !== 'updated_by')))" ng-mouseover="setCurrentLookupField(field)">
     <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
@@ -518,8 +499,7 @@
             k-on-change="fieldValueChange(field);"></select>
 </div>
 
-<div class="form-group"
-     ng-if="field.data_type === 'text_single' && !field.show_label  && !field.show_lock && !field.hidden">
+<div class="form-group" ng-if="field.data_type === 'text_single' && !field.show_label  && !field.show_lock && !field.hidden">
     <input type="text"
            id="{{field.name}}"
            class="k-textbox"
@@ -590,8 +570,7 @@
     </div>
 </div>
 
-<div class="form-group"
-     ng-if="field.data_type === 'tag' && !field.hidden" ng-mouseover="setId(field, false)">
+<div class="form-group" ng-if="field.data_type === 'tag' && !field.hidden" ng-mouseover="setId(field, false)">
     <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
@@ -609,30 +588,6 @@
 </div>
 
 <div style="visibility: hidden">
-    <!--    <div class="md-dialog-container" id="mdLightbox">-->
-    <!--        <md-dialog aria-label="{{ showImageData.title }}">-->
-    <!--            <md-toolbar>-->
-    <!--                <div class="md-toolbar-tools">-->
-    <!--                    <h2>{{ showImageData.title }}</h2>-->
-    <!--                    <span flex></span>-->
-    <!--                    <md-button class="md-icon-button" id="close-lightbox" aria-label="{{'Common.Close' | translate}}"-->
-    <!--                               ng-click="closeLightBox()"><i-->
-    <!--                            class="fas fa-times"></i></md-button>-->
-    <!--                </div>-->
-    <!--            </md-toolbar>-->
-    <!--            <md-dialog-content>-->
-    <!--                <div class="md-dialog-content">-->
-    <!--                    <img class="width100" ng-src="{{ showImageData.url }}"/>-->
-    <!--                </div>-->
-    <!--            </md-dialog-content>-->
-    <!--            <md-dialog-actions layout="row">-->
-    <!--                <md-button class="btn btn-secondary" ng-click="imageDownload(showImageData.url,showImageData.title)"  -->
-    <!--                           aria-label="{{'Common.Download' | translate}}"><i-->
-    <!--                        class="fas fa-download"></i> {{'Common.Download' | translate}}-->
-    <!--                </md-button>-->
-    <!--            </md-dialog-actions>-->
-    <!--        </md-dialog>-->
-    <!--    </div>-->
     <div class="md-dialog-container" id="mdLightbox">
         <md-dialog flex="45" tabindex="-1" role="dialog" aria-label="{{ showImageData.title ? showImageData.title  : multiSelectAndTagDatas.title }}">
             <md-toolbar>

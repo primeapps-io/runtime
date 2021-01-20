@@ -88,7 +88,7 @@
                     class="fas fa-save"></i>
                 {{'Common.Save' | translate}}
             </md-button>
-            <md-button ng-if="activeView.isNew" ng-show="user.profile.has_admin_rights && (activeView.created_by_id === user.id)" ng-click="SaveView('add')" class="btn btn-primary" type="button" md-autofocus><i
+            <md-button ng-if="activeView.isNew" ng-show="user.profile.has_admin_rights || (activeView.created_by_id === user.id)" ng-click="SaveView('add')" class="btn btn-primary" type="button" md-autofocus><i
                     class="fas fa-save"></i>
                 {{'Common.Save' | translate}}
             </md-button>

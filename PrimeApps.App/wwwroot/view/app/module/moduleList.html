@@ -85,8 +85,8 @@
 
                 </md-tabs>
             </md-subheader>
-            <div ng-if="loading" id="inside-loader" ><div class="spin"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div></div>
-            <div ng-show="!loading" class="container-fluid paddingua20 position-relative pr-view-settings">
+<!--            <div ng-if="loading" id="inside-loader" ><div class="spin"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div></div>-->
+            <div class="container-fluid paddingua20 position-relative pr-view-settings">
                 <help-page module-id="module.id"></help-page>
                 <div class="help-page align-items-center" ng-if="show">
                     <div class="alert alert-secondary" role="alert" ng-bind-html="helpTemplatesModal.template"></div>
@@ -103,12 +103,15 @@
                     </div>
                 </div>
 
-                <div class="col-12 text-center" ng-if="views.length<1">
+                <div class="col-12 text-center" ng-show="!loading" ng-if="views.length<1">
                     <img style="width:100%; max-width: 500px;" src="images/dashboard.svg">
                     <h1 class="paddingua20"></h1>
-                    <md-button ng-if="viewPermissions.write" class="btn btn-white" ng-click="openNewDashlet($event)"   title=" New Views"><i class="fas fa-plus"></i>
-                        <span>New Views</span></md-button>
+                    <md-button ng-if="viewPermissions.write" class="btn btn-white" ng-click="openNewDashlet($event)" title=" New Views">
+                        <i class="fas fa-plus"></i>
+                        <span>New Views</span>
+                    </md-button>
                 </div>
+                <!-- TODO Remove
                 <div class="alert alert-warning shadow-sm" role="alert" ng-if="views.length<1 && !viewPermissions.write">
                     <div class="row align-items-center">
                         <div class="col">
@@ -120,32 +123,24 @@
                             </div>
                         </div>
                     </div>
+                </div> -->
+
+
+                <div class="whitebox table-view" ng-if="activeView.view_type ==='grid'">
+                    <kendo-grid ng-show="!loading" class="grid-theme table-responsive" k-scope-field="grid"
+                        id="kendo-grid" k-rebind="mainGridOptions" k-options="mainGridOptions"> </kendo-grid>
+                    <div ng-show="loading" class="loading-list grid-theme table-responsive k-grid k-widget k-grid-display-block">
+                        <table>
+                            <thead><tr><th width="50"></th><th></th><th width="50"></th></tr></thead>
+                            <tbody><tr><td></td><td></td><td></td></tr> </tbody>
+                            <tfoot><tr><th></th><th></th><th></th></tr></tfoot>
+                        </table>
+                    </div>
                 </div>
-
-
-                <div class="whitebox table-view" ng-if="activeView.view_type ==='grid' || activeView.report_type==='tabular'">
-                    <!--<div class="grid-top">
-                        <div class="search-box">
-
-                                <div class="search-box-input">
-                                    <input type="text" id="grid-search{{relatedModule.id}}" class="form-control" placeholder="Search..."
-                                           aria-label="Search" aria-describedby="grid-search">
-                                    <i class="fas fa-search"></i>
-                                </div>
-                                <i class="info-icon fas fa-info-circle"><md-tooltip md-autohide="true" md-direction="right">You can search in these fields:  First Name, Company Name</md-tooltip></i>
-
-                        </div>
-                        <div>
-                            <md-button class="btn btn-secondary md-icon-button" ng-click="refreshGrid()"><i
-                                    class="fas fa-sync-alt"></i>
-                                <md-tooltip md-autohide="true" md-direction="bottom">Refresh</md-tooltip>
-                            </md-button>
-                        </div>
-                    </div>-->
-
+                <div class="whitebox table-view" ng-if="activeView.report_type==='tabular'">
                     <kendo-grid class="grid-theme table-responsive" k-scope-field="grid"
-                                id="kendo-grid" k-rebind="mainGridOptions"
-                                k-options="mainGridOptions">
+                                id="kendo-grid" k-rebind="mainGridTabularOptions"
+                                k-options="mainGridTabularOptions">
                     </kendo-grid>
 
                 </div>
@@ -153,7 +148,7 @@
                 <div id="kanban-view" class="kanban-view" ng-if="activeView.view_type==='kanban'">
                     <div class="board" name="board" id="board" k-scope-field="board" kendo-list-view k-rebind="kanbanMainOptions" k-options="kanbanMainOptions"></div>
                 </div>
-                
+
                 <div ng-if="activeView.view_type==='report'&& activeView.report_type==='summary' || activeView.report_type==='single'">
                     <div ng-if="activeView.report_type==='summary'" >
                         <div class="whitebox p-2">
@@ -220,10 +215,6 @@
                         </div>
                     </div>
                 </div>
-                <md-button ng-mouseover="filterModalOpen()" ng-if="activeView && views.length>0" class="btn btn-primary filter-button filter-button2 hide-on-m" aria-label="Filter">
-                    <i class="fas fa-sliders-h"></i>
-                    <span>{{'View.ViewSettings' | translate }} <span ng-if="activeView.filters.length>0"> ({{activeView.filters.length}})</span></span>
-                </md-button>
                 <div  ng-if="activeView.view_type==='calendar'">
                     <div class="row">
                         <div kendo-scheduler k-options="calendarOptions" k-rebind="calendarOptions" id="viewCalendar">
@@ -232,6 +223,10 @@
                         </div>
                     </div>
                 </div>
+                <md-button ng-mouseover="filterModalOpen()" ng-if="activeView && views.length>0" class="btn btn-primary filter-button filter-button2 hide-on-m" aria-label="Filter">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>{{'View.ViewSettings' | translate }} <span ng-if="activeView.filters.length>0"> ({{activeView.filters.length}})</span></span>
+                </md-button>
             </div>
         </md-content>
         <md-fab-speed-dial class="md-fab-bottom-right" ng-show="selectedRows.length > 0" md-direction="up">

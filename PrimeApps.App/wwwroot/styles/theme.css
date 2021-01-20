@@ -294,9 +294,7 @@ md-menu-item > a.md-button {
 
 .notification-button {
   position: relative;
-  margin: 10px 20px;
-  /* min-height: 50px; */
-  }
+  margin: 10px 20px; }
   .notification-button .notification-button-inside {
     padding: 15px 50px 15px 15px;
     background: white;
@@ -1830,6 +1828,64 @@ body > .kanban-card {
 .badge.badge-pink {
   background-color: #E6225B;
   color: white; }
+
+.loadingform .loadfield, .loadingform .collapsible-head {
+  overflow: hidden;
+  position: relative; }
+  .loadingform .loadfield:before, .loadingform .collapsible-head:before {
+    content: '';
+    -webkit-animation-duration: 1s;
+    -webkit-animation-fill-mode: forwards;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-name: placeHolderShimmer;
+    -webkit-animation-timing-function: linear;
+    background: #f6f7f9;
+    background-image: linear-gradient(to right, #f6f7f9 0%, #e9ebee 20%, #f6f7f9 40%, #f6f7f9 100%);
+    background-repeat: no-repeat;
+    background-size: 1000px 200px;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    color: rgba(0, 0, 0, 0);
+    border-radius: 5px;
+    display: block;
+    top: 0px;
+    left: 0px;
+    z-index: 1; }
+
+.loadingform .loadfield {
+  min-height: 40px; }
+
+.loading-list table td {
+  border-bottom: 1px solid #dee2e6;
+  border-top: 1px solid #dee2e6; }
+
+.loading-list table td, .loading-list table th {
+  position: relative;
+  padding: 30px 10px; }
+  .loading-list table td:before, .loading-list table th:before {
+    content: '';
+    -webkit-animation-duration: 1s;
+    -webkit-animation-fill-mode: forwards;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-name: placeHolderShimmer;
+    -webkit-animation-timing-function: linear;
+    background: #f6f7f9;
+    background-image: linear-gradient(to right, #f6f7f9 0%, #e9ebee 20%, #f6f7f9 40%, #f6f7f9 100%);
+    background-repeat: no-repeat;
+    background-size: 1000px 200px;
+    height: calc(100% - 10px);
+    width: calc(100% - 10px);
+    position: absolute;
+    color: rgba(0, 0, 0, 0);
+    border-radius: 5px;
+    display: block;
+    top: 5px;
+    left: 5px;
+    z-index: 1; }
+
+.loading-list table th {
+  padding: 20px 10px; }
 
 .table-theme thead th {
   border: none; }

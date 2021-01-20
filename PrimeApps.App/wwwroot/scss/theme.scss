@@ -2179,6 +2179,71 @@ body>.kanban-card{
 		color: $white;
 	}
 }
+.loadingform{
+	.loadfield, .collapsible-head{
+		overflow: hidden;
+		position: relative;
+		&:before {
+			content: '';
+			-webkit-animation-duration: 1s;
+			-webkit-animation-fill-mode: forwards;
+			-webkit-animation-iteration-count: infinite;
+			-webkit-animation-name: placeHolderShimmer;
+			-webkit-animation-timing-function: linear;
+			background: #f6f7f9;
+			background-image: linear-gradient(to right, #f6f7f9 0%, #e9ebee 20%, #f6f7f9 40%, #f6f7f9 100%);
+			background-repeat: no-repeat;
+			background-size: 1000px 200px;
+			height:100%;
+			width: 100%;
+			position: absolute;
+			color: rgba(0,0,0,0);
+			border-radius: 5px;
+			display: block;
+			top: 0px;
+			left: 0px;
+			z-index: 1;
+		}
+	}
+	.loadfield{
+		min-height: 40px;
+	}
+}
+
+.loading-list{
+	table td {
+		border-bottom: 1px solid #dee2e6;
+		border-top: 1px solid #dee2e6;
+	}
+	table td, table th{
+		position: relative;
+		padding: 30px 10px;
+		&:before {
+			content: '';
+			-webkit-animation-duration: 1s;
+			-webkit-animation-fill-mode: forwards;
+			-webkit-animation-iteration-count: infinite;
+			-webkit-animation-name: placeHolderShimmer;
+			-webkit-animation-timing-function: linear;
+			background: #f6f7f9;
+			background-image: linear-gradient(to right, #f6f7f9 0%, #e9ebee 20%, #f6f7f9 40%, #f6f7f9 100%);
+			background-repeat: no-repeat;
+			background-size: 1000px 200px;
+			height:calc(100% - 10px);
+			width: calc(100% - 10px);
+			position: absolute;
+			color: rgba(0,0,0,0);
+			border-radius: 5px;
+			display: block;
+			top: 5px;
+			left: 5px;
+			z-index: 1;
+		}
+	}
+	table th{
+		padding: 20px 10px;
+	}
+}
 
 .table-theme{
 	thead{
