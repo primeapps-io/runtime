@@ -23,7 +23,7 @@
             <div class="text-center"><img style="width:200px; max-width: 100%;" src="images/notifications.svg"></div>
             <strong>{{'Common.HaventAnyNotification' | translate}}</strong>
         </div>
-        <div kendo-list-view class="notification-box"  id="listView" ng-if="signalNotifications.length>1"  k-options="notificationListViewOptions"  k-scrollable="'endless'" k-data-source="source">
+        <div kendo-list-view class="notification-box"  id="listView" ng-if="signalNotifications.length>0"  k-options="notificationListViewOptions"  k-scrollable="'endless'" k-data-source="source">
 
             <div class="notification-button" k-template>
                 <div ng-if="dataItem">
@@ -38,7 +38,7 @@
                         </div>
 
                     </div>
-                    <div class="notification-hide">
+                    <div class="notification-hide  k-delete-button">
                         <button type="button" class="btn btn-secondary btn-no-color md-icon-button"  aria-label="{{'Common.Hide' | translate}}">
                             <i class="fas fa-times"></i>
                         </button>
