@@ -126,7 +126,7 @@
                 </div> -->
 
 
-                <div class="whitebox table-view" ng-if="activeView.view_type ==='grid'">
+                <div class="whitebox table-view" ng-if="activeView.view_type ==='grid' || activeView.report_type==='tabular'">
                     <kendo-grid ng-show="!loading" class="grid-theme table-responsive" k-scope-field="grid"
                         id="kendo-grid" k-rebind="mainGridOptions" k-options="mainGridOptions"> </kendo-grid>
                     <div ng-show="loading" class="loading-list grid-theme table-responsive k-grid k-widget k-grid-display-block">
@@ -136,13 +136,6 @@
                             <tfoot><tr><th></th><th></th><th></th></tr></tfoot>
                         </table>
                     </div>
-                </div>
-                <div class="whitebox table-view" ng-if="activeView.report_type==='tabular'">
-                    <kendo-grid class="grid-theme table-responsive" k-scope-field="grid"
-                                id="kendo-grid" k-rebind="mainGridTabularOptions"
-                                k-options="mainGridTabularOptions">
-                    </kendo-grid>
-
                 </div>
 
                 <div id="kanban-view" class="kanban-view" ng-if="activeView.view_type==='kanban'">
