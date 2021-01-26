@@ -46,8 +46,8 @@
 
                                         <select kendo-drop-down-list
                                                 k-options="filterFieldsOption"
-                                                ng-change="filter.value = null; filter.operator = null; filter.disabled = false; filter.costumeDate =null"
-                                                ng-model="filter.field">
+                                                k-on-change="fieldChange(filter)"
+                                                k-ng-model="filter.field">
                                         </select>
 
                                     </div>
@@ -55,8 +55,8 @@
                                 <div class="col-auto">
                                     <div class="form-group">
                                         <select k-options="filterOperatorsOption"
-                                                k-data-source="fieldskey[filter.field].operators"
-                                                ng-model="filter.operator"
+                                                k-data-source="fieldskey[filter.field.name].operators"
+                                                k-ng-model="filter.operator"
                                                 k-on-change="changeOpertor(filter)"
                                                 kendo-drop-down-list>
                                             <option>is</option>

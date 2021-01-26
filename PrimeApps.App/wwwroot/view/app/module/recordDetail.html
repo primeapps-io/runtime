@@ -68,7 +68,7 @@
                                     <i class="fas fa-angle-left"></i>
                                     <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
                                 </md-button>
-                                <h2 md-truncate>{{title}} - <small>{{'Common.General' | translate}}</small></h2>
+                                <h2 md-truncate>{{title}}</h2>
                                 <div class="helpbuttons hide-on-m" ng-if="true && !fastRecordModal">
                                     <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()"
                                                aria-label="{{'Common.Help' | translate}}">
@@ -181,8 +181,8 @@
                             </div>
                             <div class="collapsible-body collapse show">
                                 <div class="row">
-                                    <div class="col-sm-6"><div class="loadfield"></div></div>
-                                    <div class="col-sm-6"><div class="loadfield"></div></div>
+                                    <div class="col-sm-6"><div class="loadlabel"></div><div class="loadfield"></div></div>
+                                    <div class="col-sm-6"><div class="loadlabel"></div><div class="loadfield"></div></div>
                                 </div>
                             </div>
                         </section>
@@ -465,8 +465,7 @@
                                 <i class="fas fa-angle-left"></i>
                                 <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
                             </md-button>
-                            <h2 md-truncate>{{title}} -
-                                <small>{{relatedModule.languages[globalization.Label]['label']['plural']}}</small></h2>
+                            <h2 md-truncate>{{title}}</h2>
                             <div class="helpbuttons hide-on-m">
                                 <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()"
                                            aria-label="{{'Common.Help' | translate}}">
@@ -677,7 +676,7 @@
                                 <i class="fas fa-angle-left"></i>
                                 <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
                             </md-button>
-                            <h2 md-truncate>{{title}} - <small>{{('Common.Location' | translate)}}</small></h2>
+                            <h2 md-truncate>{{title}}</h2>
                             <div class="helpbuttons hide-on-m">
                                 <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()"
                                            aria-label="{{'Common.Help' | translate}}">

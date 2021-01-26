@@ -2180,7 +2180,7 @@ body>.kanban-card{
 	}
 }
 .loadingform{
-	.loadfield, .collapsible-head{
+	.loadfield, .collapsible-head, .loadlabel{
 		overflow: hidden;
 		position: relative;
 		&:before {
@@ -2207,6 +2207,12 @@ body>.kanban-card{
 	}
 	.loadfield{
 		min-height: 40px;
+		margin: 5px 0px;
+	}
+	.loadlabel{
+		min-height: 20px;
+		margin: 5px 0px;
+		width: 100px;
 	}
 }
 

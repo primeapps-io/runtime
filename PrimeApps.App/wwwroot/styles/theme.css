@@ -1829,10 +1829,10 @@ body > .kanban-card {
   background-color: #E6225B;
   color: white; }
 
-.loadingform .loadfield, .loadingform .collapsible-head {
+.loadingform .loadfield, .loadingform .collapsible-head, .loadingform .loadlabel {
   overflow: hidden;
   position: relative; }
-  .loadingform .loadfield:before, .loadingform .collapsible-head:before {
+  .loadingform .loadfield:before, .loadingform .collapsible-head:before, .loadingform .loadlabel:before {
     content: '';
     -webkit-animation-duration: 1s;
     -webkit-animation-fill-mode: forwards;
@@ -1854,7 +1854,13 @@ body > .kanban-card {
     z-index: 1; }
 
 .loadingform .loadfield {
-  min-height: 40px; }
+  min-height: 40px;
+  margin: 5px 0px; }
+
+.loadingform .loadlabel {
+  min-height: 20px;
+  margin: 5px 0px;
+  width: 100px; }
 
 .loading-list table td {
   border-bottom: 1px solid #dee2e6;
