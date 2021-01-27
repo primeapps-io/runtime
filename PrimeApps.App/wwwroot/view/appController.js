@@ -4,6 +4,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
         $scope.disablePasswordChange = disablePasswordChange;
         $rootScope.expressionRunOrderData = { Value: [], Validation: [] }
+        $rootScope.globalLoading = false;
 
         $rootScope.fastRecordAddModal = function (moduleName, fastAddRecord, lookupValue, lookupName, id, customScope) {
             $scope.modalCustomScopeRecord = customScope.record;

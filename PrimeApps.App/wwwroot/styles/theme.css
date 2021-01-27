@@ -3682,6 +3682,29 @@ md-dialog .md-actions, md-dialog md-dialog-actions {
   -o-border-radius: 25px;
   border-radius: 25px; }
 
+.progress-big {
+  background: #e4e7eb;
+  justify-content: flex-start;
+  align-items: center;
+  position: absolute;
+  padding: 0px;
+  display: flex;
+  height: 2px;
+  width: 100%;
+  border-radius: 0;
+  z-index: 100; }
+  .progress-big .progress-value {
+    animation: load 5s normal infinite;
+    background: #1F4688;
+    height: 100%;
+    width: 0; }
+
+@keyframes load {
+  0% {
+    width: 0; }
+  100% {
+    width: 100%; } }
+
 @media (max-width: 1599.98px) {
   .card-columns4 {
     -webkit-column-count: 3;

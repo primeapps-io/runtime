@@ -3748,6 +3748,31 @@ md-dialog{
 	} 
 }
 
+
+.progress-big {
+	background: $secondary;
+	justify-content: flex-start;
+	align-items: center;
+	position: absolute;
+	padding: 0px;
+	display: flex;
+	height: 2px;
+	width: 100%;
+	border-radius: 0;
+	z-index: 100;
+	.progress-value{
+		animation: load 5s normal infinite;
+		background: $primary;
+		height: 100%;
+		width: 0;
+	}
+}
+
+@keyframes load {
+	0% { width: 0; }
+	100% { width: 100%; }
+}
+
 //////////////////////////Responsive//////////////////////////
 
 @media (max-width: 1599.98px) {

@@ -248,6 +248,9 @@ li.sortable-list-hint {
   md-toolbar .k-widget .k-numeric-wrap:hover, md-toolbar .k-widget .k-numeric-wrap:focus, md-toolbar .k-widget .k-numeric-wrap.k-state-hover, md-toolbar .k-widget .k-numeric-wrap.k-state-focused, md-toolbar .k-widget .k-picker-wrap:hover, md-toolbar .k-widget .k-picker-wrap:focus, md-toolbar .k-widget .k-picker-wrap.k-state-hover, md-toolbar .k-widget .k-picker-wrap.k-state-focused, md-toolbar .k-widget .k-multiselect-wrap:hover, md-toolbar .k-widget .k-multiselect-wrap:focus, md-toolbar .k-widget .k-multiselect-wrap.k-state-hover, md-toolbar .k-widget .k-multiselect-wrap.k-state-focused, md-toolbar .k-widget .k-dropdown-wrap:hover, md-toolbar .k-widget .k-dropdown-wrap:focus, md-toolbar .k-widget .k-dropdown-wrap.k-state-hover, md-toolbar .k-widget .k-dropdown-wrap.k-state-focused {
     border-color: #6cde9c; } }
 
+.progress-big .progress-value {
+  background: #25A65B; }
+
 @media (max-width: 767.98px) {
   .wrapper > section > .main-menu-wrapper .main-menu li {
     border-bottom: 1px solid #f6fbf8; }
