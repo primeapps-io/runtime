@@ -866,8 +866,11 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         }
 
         $scope.allHide=function (){
+            
+            $scope.unReadNotificationCount = 0;
             $scope.signalNotifications=[];
             SignalNotificationService.allHide();
+           
         }
 
     }
