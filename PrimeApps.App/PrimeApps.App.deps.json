@@ -60,6 +60,7 @@
           "PrimeApps.Model": "1.0.0",
           "Sentry": "2.1.5",
           "Sentry.AspNetCore": "2.1.5",
+          "SkiaSharp.NativeAssets.Linux.NoDependencies": "2.80.2",
           "System.Linq.Dynamic.Core": "1.2.1",
           "WorkflowCore": "3.3.4",
           "WorkflowCore.DSL": "3.3.0",
@@ -347,7 +348,7 @@
       "Aspose.Words/20.12.0": {
         "dependencies": {
           "Microsoft.Win32.Registry": "4.7.0",
-          "SkiaSharp": "2.80.1",
+          "SkiaSharp": "2.80.2",
           "System.Reflection.Emit": "4.6.0",
           "System.Reflection.Emit.ILGeneration": "4.3.0",
           "System.Text.Encoding.CodePages": "4.7.0"
@@ -2422,14 +2423,14 @@
           "lib/netstandard2.0/SharpYaml.dll": {}
         }
       },
-      "SkiaSharp/2.80.1": {
+      "SkiaSharp/2.80.2": {
         "dependencies": {
           "System.Memory": "4.5.3"
         },
         "runtime": {
           "lib/netstandard2.0/SkiaSharp.dll": {
             "assemblyVersion": "2.80.0.0",
-            "fileVersion": "2.80.1.0"
+            "fileVersion": "2.80.2.0"
           }
         },
         "runtimeTargets": {
@@ -2456,6 +2457,33 @@
         },
         "compile": {
           "lib/netstandard2.0/SkiaSharp.dll": {}
+        }
+      },
+      "SkiaSharp.NativeAssets.Linux.NoDependencies/2.80.2": {
+        "dependencies": {
+          "SkiaSharp": "2.80.2"
+        },
+        "runtimeTargets": {
+          "runtimes/linux-arm/native/libSkiaSharp.so": {
+            "rid": "linux-arm",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-arm64/native/libSkiaSharp.so": {
+            "rid": "linux-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-musl-x64/native/libSkiaSharp.so": {
+            "rid": "linux-musl-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/linux-x64/native/libSkiaSharp.so": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
         }
       },
       "StackExchange.Redis/2.1.30": {
@@ -5961,12 +5989,19 @@
       "path": "sharpyaml/1.6.5",
       "hashPath": "sharpyaml.1.6.5.nupkg.sha512"
     },
-    "SkiaSharp/2.80.1": {
+    "SkiaSharp/2.80.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-CiQwnDzG+1JNGzjAN9G/9n/lJgUVA/NPOFgSlEtu6c7qQ0O7P1tMjrXp/+PtWfX0xyyY9ABsFAZK2kW34U7r/A==",
-      "path": "skiasharp/2.80.1",
-      "hashPath": "skiasharp.2.80.1.nupkg.sha512"
+      "sha512": "sha512-D25rzdCwh+3L+XyXqpNa+H/yiLJbE3/R3K/XexwHyQjGdzZvSufFW3oqf3En7hhqSIsxsJ8f5NEZ0J5W5wlGBg==",
+      "path": "skiasharp/2.80.2",
+      "hashPath": "skiasharp.2.80.2.nupkg.sha512"
+    },
+    "SkiaSharp.NativeAssets.Linux.NoDependencies/2.80.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-kPSlqbBkV7IilBwLqe3Kje5yq7lv5Emc5z34Um3ge5shQxkyVlJEDSQ5elpqk47TijeHBchmZa1YcU1weD8SZA==",
+      "path": "skiasharp.nativeassets.linux.nodependencies/2.80.2",
+      "hashPath": "skiasharp.nativeassets.linux.nodependencies.2.80.2.nupkg.sha512"
     },
     "StackExchange.Redis/2.1.30": {
       "type": "package",
