@@ -125,7 +125,8 @@
            id="{{field.name}}"
            class="width100"
            tabindex="{{field.order}}"
-           ng-model="bulkUpdate.value"
+           k-ng-model="bulkUpdate.value"
+           ng-model="bulkUpdate.valueStr"
            required="{{field.validation.required}}"
            ng-click="openCalendar(field)"
            placeholder="{{'Common.Date' | translate}}" />
@@ -140,6 +141,7 @@
            class="width100"
            tabindex="{{field.order}}"
            k-ng-model="bulkUpdate.value"
+           ng-model="bulkUpdate.valueStr"
            ng-click="openCalendar(field)"
            required="{{field.validation.required}}"
            ng-disabled="field.name === 'created_at' ||field.name === 'updated_at'"
@@ -155,6 +157,7 @@
            class="width100"
            tabindex="{{field.order}}"
            k-ng-model="bulkUpdate.value"
+           ng-model="bulkUpdate.valueStr"
            ng-readonly="field.validation.readonly || (id && !field.editable)"
            ng-click="openCalendar(field)"
            required="{{field.validation.required}}"
@@ -322,7 +325,7 @@
                ng-model="bulkUpdate.value"
                ng-value="checkbox">
         <label class="k-checkbox-label" for="{{field.name+checkbox.id}}">
-           {{checkbox.languages[globalization.Label]['label']}}
+            {{checkbox.languages[globalization.Label]['label']}}
         </label>
     </div>
 </div>
