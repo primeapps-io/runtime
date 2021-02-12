@@ -210,10 +210,10 @@
            tabindex="{{field.order}}"
            ng-model="record[field.name+'str']"
            ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin) || setReadonly(field)"
-           ng-readonly="!field.validation.readonly && !setReadonly(field)"
            k-ng-model="record[field.name]"
            ng-required="field.validation.required"
            ng-click="openCalendar(field)"
+           ng-keydown="setDateManualDisable(field.name+'str')"
            k-on-change="fieldValueChange(field);"
            placeholder="{{'Common.Date' | translate}}" />
 </div>
@@ -235,10 +235,10 @@
            ng-model="record[field.name+'str']"
            k-ng-model="record[field.name]"
            ng-click="openCalendar(field)"
+           ng-keydown="setDateManualDisable(field.name+'str')"
            k-on-change="fieldValueChange(field);"
            ng-required="field.validation.required"
            ng-disabled="field.name === 'created_at' ||field.name === 'updated_at' || field.validation.readonly || (record.freeze && !isAdmin) || setReadonly(field)"
-           ng-readonly="!field.validation.readonly && !setReadonly(field)"
            placeholder="{{'Common.DateTime' | translate}}" />
 </div>
 
@@ -260,8 +260,8 @@
            k-ng-model="record[field.name]"
            k-on-change="fieldValueChange(field);"
            ng-disabled="field.validation.readonly || (record.freeze && !isAdmin) || setReadonly(field)"
-           ng-readonly="!field.validation.readonly && !setReadonly(field)"
            ng-click="openCalendar(field)"
+           ng-keydown="setDateManualDisable(field.name+'str')"
            ng-required="field.validation.required"
            placeholder="{{'Common.Time' | translate}}" />
 </div>
