@@ -109,6 +109,7 @@
      ng-if="filter.value.value==='costumeN' || filter.value.value==='costumeW' || filter.value.value==='costumeM' || filter.value.value==='costumeY'">
     <input kendo-numeric-text-box
            k-ng-model="filter.valueX"
+           k-options="{{'numberOptionsFilter'}}"
            k-on-change="viewFiltere(filter);"
            ng-show="filter.operator.name ==='is' || filter.operator.name ==='is_not' || filter.operator.name ==='contains' || filter.operator.name ==='not_contain' ||
             filter.operator.name ==='starts_with' || filter.operator.name ==='ends_with' || filter.operator.name ==='equals' || filter.operator.name ==='not_equal' ||

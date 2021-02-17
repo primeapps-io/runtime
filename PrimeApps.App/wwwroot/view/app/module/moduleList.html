@@ -56,7 +56,7 @@
                         </md-menu-content>
                     </md-menu>
 
-                    <md-button ng-mouseover="filterModalOpen()" ng-if="activeView && views.length>0" class="show-on-m md-icon-button btn btn-secondary filter-button" aria-label="Filter">
+                    <md-button ng-mouseover="filterModalOpen()" ng-if="showFilterModal()" class="show-on-m md-icon-button btn btn-secondary filter-button" aria-label="Filter">
                         <i class="fas fa-sliders-h"></i>
                         <span class="filter-badge" ng-if="activeView.filters.length>0">{{activeView.filters.length}}</span>
                         <md-tooltip md-autohide="true" md-direction="bottom"> {{'View.ViewSettings' | translate }}</md-tooltip>
@@ -216,7 +216,7 @@
                         </div>
                     </div>
                 </div>
-                <md-button ng-mouseover="filterModalOpen()" ng-if="activeView && views.length>0" class="btn btn-primary filter-button filter-button2 hide-on-m" aria-label="Filter">
+                <md-button ng-mouseover="filterModalOpen()" ng-if="showFilterModal()" class="btn btn-primary filter-button filter-button2 hide-on-m" aria-label="Filter">
                     <i class="fas fa-sliders-h"></i>
                     <span>{{'View.ViewSettings' | translate }} <span ng-if="activeView.filters.length>0"> ({{activeView.filters.length}})</span></span>
                 </md-button>

@@ -3,7 +3,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
     function ($rootScope, $scope, mdToast, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, entityTypes, guidEmpty, component, helper, operations, blockUI, $cache, AppService, AuthService, $sessionStorage, HelpService, $sce, $mdSidenav, $mdDialog, $mdMedia, icons2, GeneralSettingsService, SignalNotificationService, NotificationService, $timeout) {
 
         $scope.disablePasswordChange = disablePasswordChange;
-        $rootScope.expressionRunOrderData = { Value: [], Validation: [] }
+        $rootScope.expressionRunOrderData = {Value: [], Validation: []}
         $rootScope.globalLoading = false;
 
         $rootScope.fastRecordAddModal = function (moduleName, fastAddRecord, lookupValue, lookupName, id, customScope) {
@@ -19,7 +19,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
             if (fastAddRecord) {
                 $scope.recordModal = {};
-                $scope.moduleModal = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0];
+                $scope.moduleModal = $filter('filter')($rootScope.modules, {name: moduleName}, true)[0];
 
                 if (!$scope.moduleModal) {
                     mdToast.warning($filter('translate')('Common.NotFound'));
@@ -56,10 +56,10 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     return;
                 }
 
-                $scope.primaryFieldModal = $filter('filter')($scope.moduleModal.fields, { primary_lookup: true })[0];
+                $scope.primaryFieldModal = $filter('filter')($scope.moduleModal.fields, {primary_lookup: true})[0];
 
                 if (!$scope.primaryFieldModal)
-                    $scope.primaryFieldModal = $filter('filter')($scope.moduleModal.fields, { primary: true })[0];
+                    $scope.primaryFieldModal = $filter('filter')($scope.moduleModal.fields, {primary: true})[0];
 
                 if (lookupValue) {
                     if ($scope.primaryFieldModal.combination) {
@@ -218,10 +218,10 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.appLogo = $rootScope.workgroup.logo_url ? blobUrl + '/' + $rootScope.workgroup.logo_url : appLogo;
         $scope.addingApp = false;
         $scope.tenants = $rootScope.multiTenant;
-        $scope.componentModules = $filter('filter')($rootScope.modules, { system_type: 'component' }, true);
+        $scope.componentModules = $filter('filter')($rootScope.modules, {system_type: 'component'}, true);
 
         if ($rootScope.customProfilePermissions) {
-            var customProfilePermissionsForLoggedUser = $filter('filter')($rootScope.customProfilePermissions, { profileId: $scope.user.profile.id }, true)[0];
+            var customProfilePermissionsForLoggedUser = $filter('filter')($rootScope.customProfilePermissions, {profileId: $scope.user.profile.id}, true)[0];
             if (customProfilePermissionsForLoggedUser) {
                 var permissions = customProfilePermissionsForLoggedUser.permissions;
                 for (var j = 0; j < permissions.length; j++) {
@@ -316,11 +316,10 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                             $scope.mobileMenus[i].active = false;
                         }
                     }
-                    var item = $filter('filter')($scope.mobileMenus, { route: 'dashboard' })[0];
+                    var item = $filter('filter')($scope.mobileMenus, {route: 'dashboard'})[0];
                     item.active = true;
                 }
-            }
-            else {
+            } else {
                 $mdDialog.hide();
                 window.history.back();
             }
@@ -548,7 +547,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     moduleName = hash.split('/')[3].split('?')[0];
                 }
 
-                var module = moduleName ? $filter('filter')($rootScope.modules, { name: moduleName }, true)[0] : undefined;
+                var module = moduleName ? $filter('filter')($rootScope.modules, {name: moduleName}, true)[0] : undefined;
 
                 if (module) {
                     if (isModuleList) {
@@ -583,7 +582,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                          * if That has module_ type = module_form we will set it.
                          * But if old customers have added on studio  module_type = module_detail and  module_ type = module_form we will accept module_detail because we will deprecated  module_form on studio**/
                         else if (helps.length === 2) {
-                            help = $filter('filter')(helps, { module_type: 'module_detail' }, true)[0];
+                            help = $filter('filter')(helps, {module_type: 'module_detail'}, true)[0];
                             $scope.helpTemplatesSide = help;
                         }
 
@@ -591,15 +590,13 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                             $scope.noneHelpTemplate = false;
                             $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
 
-                        }
-                        else {
+                        } else {
                             $scope.helpTemplateSideModal = null;
                             $scope.noneHelpTemplate = true;
                         }
                         $rootScope.buildToggler('sideModal', 'view/common/help.html');
                     }
-                }
-                else {
+                } else {
                     $scope.helpTemplatesSide = $rootScope.dashboardHelpSide;
                     if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
                         $scope.noneHelpTemplate = false;
@@ -649,26 +646,26 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             }
 
             if (moduleName) {
-                var module = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0];
+                var module = $filter('filter')($rootScope.modules, {name: moduleName}, true)[0];
                 if (module != null) {
                     if (isModuleList) {
                         HelpService.getModuleType('modal', 'modulelist', module.id)
                             .then(function (response) {
-                                $scope.helpTemplatesSide = response.data;
-                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                    $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
-                                }
+                                    $scope.helpTemplatesSide = response.data;
+                                    if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                        $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    }
 
-                            }
+                                }
                             );
                     } else {
                         HelpService.getModuleType('modal', 'modulelist', module.id)
                             .then(function (response) {
-                                $scope.helpTemplatesSide = response.data;
-                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                    $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    $scope.helpTemplatesSide = response.data;
+                                    if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                        $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    }
                                 }
-                            }
                             );
                     }
                 }
@@ -693,7 +690,12 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             $("#theme-css").attr("href", "/styles/color-" + theme + ".css");
             GeneralSettingsService.getByKey("custom", "ui_theme", $rootScope.user.id).then(function (response) {
                 if (!response.data) {
-                    GeneralSettingsService.create({ setting_type: "custom", key: "ui_theme", value: color, user_id: $rootScope.user.id });
+                    GeneralSettingsService.create({
+                        setting_type: "custom",
+                        key: "ui_theme",
+                        value: color,
+                        user_id: $rootScope.user.id
+                    });
                 } else {
                     response.data.value = color;
                     GeneralSettingsService.update(response.data);
@@ -722,7 +724,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         };
 
         $scope.notificationShowModal = function () {
-                $rootScope.notificationModalOpen = $mdSidenav('sideModal').isOpen();
+            $rootScope.notificationModalOpen = $mdSidenav('sideModal').isOpen();
 
             if (!$rootScope.notificationModalOpen) {
                 $rootScope.closeSide("menuModal");
@@ -736,17 +738,15 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     $scope.notificationListViewOptions = {
                         scrollable: "endless",
                         height: area,
-                        remove: function(e) {
-                            if(e.model)
-                            {
-                                $scope.notificationRead(e.model,null,true)
+                        remove: function (e) {
+                            if (e.model) {
+                                $scope.notificationRead(e.model, null, true)
                             }
                         }
                     }
                 }, 500)
 
-            }
-            else {
+            } else {
                 $scope.closeSide('sideModal');
                 $rootScope.notificationModalOpen = false;
             }
@@ -760,17 +760,16 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
                 SignalNotificationService.hide(id)
                     .then(function (response) {
-                        $scope.unReadNotificationCount = $scope.unReadNotificationCount-1;
+                        $scope.unReadNotificationCount = $scope.unReadNotificationCount - 1;
                     });
-            }
-            else {
-              if(notification.status === "Read")
-                  return  false;
+            } else {
+                if (notification.status === "Read")
+                    return false;
 
                 SignalNotificationService.read(id)
                     .then(function (response) {
                         if (response) {
-                            $scope.unReadNotificationCount = $scope.unReadNotificationCount-1;
+                            $scope.unReadNotificationCount = $scope.unReadNotificationCount - 1;
                             if (notification) {
                                 notification.status = "Read";
 
@@ -781,14 +780,13 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                                     if (notification.module.system_type === 'component')
                                         newUrl += notification.module.name + '?id=' + notification.record_id;
                                     else
-                                        newUrl += 'record/'+notification.module.name + '?id=' + notification.record_id;
-                                    
+                                        newUrl += 'record/' + notification.module.name + '?id=' + notification.record_id;
+
                                     if (newUrl === window.location.hash)
                                         $state.reload();
                                     window.location = newUrl;
                                 }
-                            }
-                            else if (url) {
+                            } else if (url) {
                                 if (url === window.location.hash)
                                     $state.reload();
                                 window.location = url;
@@ -798,6 +796,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             }
 
         };
+
         function getNotifications() {
             SignalNotificationService.getAll()
                 .then(function (response) {
@@ -808,10 +807,11 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                             data: response.data,
                             pageSize: 15
                         });
-                        $scope.unReadNotificationCount = $filter('filter')(response.data, { status: 'Unread' }, true).length;
+                        $scope.unReadNotificationCount = $filter('filter')(response.data, {status: 'Unread'}, true).length;
                     }
                 });
         }
+
         // Here we get function call from server-side. If there is a data sent from server-side, we can get it from "data" parameter.
         NotificationService.Event('notification_step', function (data) {
 
@@ -858,19 +858,46 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
         //#endregion Notification
 
-        $scope.allRead=function (){
-            $scope.unReadNotificationCount =0;
+        $scope.allRead = function () {
+            $scope.unReadNotificationCount = 0;
             SignalNotificationService.allRead().then(function () {
                 getNotifications();
             });
         }
 
-        $scope.allHide=function (){
-            
+        $scope.allHide = function () {
+
             $scope.unReadNotificationCount = 0;
-            $scope.signalNotifications=[];
+            $scope.signalNotifications = [];
             SignalNotificationService.allHide();
-           
+
+        }
+
+
+        if ($scope.menu && $rootScope.currentPath !== '/app/dashboard') {
+            for (var i = 0; i < $scope.menu.length; i++) {
+                if ('/app/modules/' + $scope.menu[i].route === $rootScope.currentPath ||
+                    '/app/record/' + $scope.menu[i].route === $rootScope.currentPath ||
+                    '/app/' + $scope.menu[i].route === $rootScope.currentPath) {
+                    $scope.menu[i].active = true;
+                } else {
+                    $scope.menu[i].active = false;
+                }
+                if ($scope.menu[i].menu_items && $scope.menu[i].menu_items.length > 0) {
+                    for (var j = 0; j < $scope.menu[i].menu_items.length; j++) {
+                        var subMenu = $scope.menu[i].menu_items[j];
+                        if ('/app/modules/' + subMenu.route === $rootScope.currentPath ||
+                            '/app/record/' + subMenu.route === $rootScope.currentPath ||
+                            '/app/' +  subMenu.route === $rootScope.currentPath) {
+                            $scope.menu[i].active = true;
+                            subMenu.active = true;
+                        } else {
+                            $scope.menu[i].active = false;
+                            subMenu.active = false;
+                        }
+                    }
+                }
+            }
         }
 
     }

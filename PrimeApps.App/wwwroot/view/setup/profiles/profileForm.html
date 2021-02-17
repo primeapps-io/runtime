@@ -72,7 +72,7 @@
                         <tr ng-repeat="permission in profile.permissions">
                             <td>{{permission.EntityTypeName}}</td>
                             <td class="text-center">
-                                <input type="checkbox" id="read{{$index}}" class="k-checkbox" ng-model="permission.read" ng-disabled="profile.is_persistent || profile.system_type === 'system' || permission.type === 2" ng-change="!permission.read ? permission.modify = false : ''; !permission.read ? permission.write = false : ''; !permission.read ? permission.remove = false : '';">
+                                <input type="checkbox" id="read{{$index}}" class="k-checkbox" ng-model="permission.read" ng-disabled="profile.is_persistent || profile.system_type === 'system'" >
                                 <label class="k-checkbox-label" for="read{{$index}}"></label>
                             </td>
                             <td class="text-center">
