@@ -873,7 +873,7 @@ angular.module('primeapps')
                         field.operators = [];
                         field.sectionObj = $filter('filter')(module.sections, {name: field.section}, true)[0];
 
-                        if (field.data_type === 'lookup') {
+                        if (field.data_type === 'lookup' || field.data_type === 'multiselect_lookup') {
                             if (field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles' && field.lookup_type !== 'relation') {
                                 var lookupModule = $filter('filter')($rootScope.modules, {name: field.lookup_type}, true)[0];
 

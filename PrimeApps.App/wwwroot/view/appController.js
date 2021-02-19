@@ -116,6 +116,12 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             itemsPerPage: $filter('translate')('Common.ItemsPerPage')
         });
 
+        if(profileConfigs && profileConfigs.start_page){
+            $rootScope.start_page = '#/app/'+ profileConfigs.start_page;
+        }else{
+            $rootScope.start_page = '#/app/dashboard';
+        }
+        
         $scope.adminMenuActive = function () {
             if ($scope.administrationMenuActive)
                 $scope.administrationMenuActive = false;
@@ -307,7 +313,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
         $scope.goBack = function () {
             if ($state.current.name === "app.moduleList" || $state.current.name.includes("app.setup")) {
-                window.location = "#/app/dashboard";
+                window.location = $rootScope.start_page;
 
                 if ($rootScope.customMenu && this.isMobile()) {
 
@@ -357,7 +363,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     $mdToast.success($filter('translate')('Layout.SampleDataRemoveSuccess'));
 
                     $rootScope.$broadcast('sample-data-removed');
-                    $window.location.href = '#/app/dashboard';
+                    $window.location.href = $rootScope.start_page;
                 });
         };
 

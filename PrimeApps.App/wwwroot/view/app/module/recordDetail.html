@@ -1,6 +1,6 @@
 <md-content flex style="height: 100%;">
     <section layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
-        <md-toolbar md-scroll-shrink ng-if="!fastRecordModal && id " class="with-subheader">
+        <md-toolbar md-scroll-shrink ng-if="!fastRecordModal && id && showTabs" class="with-subheader">
             <div class="md-toolbar-tools">
                 <div class="own-tab own-tab2"  flex>
                     <md-tabs md-dynamic-height="" md-swipe-content>
@@ -188,7 +188,7 @@
                         </section>
                     </div>
                     <div class="container-fluid paddingua20" ng-show="!generalTabLoading">
-                        <div ng-repeat="section in module.sections | orderBy:'order'"
+                        <div ng-repeat="section in module.sections | orderBy:'order' track by $index"
                              ng-if="!section.hidden && (id && (hasPermission(type, operations.modify, record) || hasPermission(type, operations.read, record)) || (!id && hasPermission(type, operations.write, record))) && hasSectionDisplayPermission(section) && (tab === 'general' || !tabconfig)">
                             <section class="whitebox collapsible" ng-if="!section.type">
                                 <div class="collapsible-head" id="{{'heading'+section.id}}">
@@ -345,15 +345,15 @@
                                                             </li>
                                                         </ul>
                                                     </div>
-                                                    <!--<div class="form-group">
+                                                    <div class="form-group">
                                                         <div class="custom-control custom-checkbox custom-control-inline">
-                                                            <input class="custom-control-input" type="checkbox" id="inlineCheckbox1t" value="option1">
-                                                            <label class="custom-control-label" for="inlineCheckbox1t">Bu kayıtlara Ek olarak uygulanması istenilen filtreler var mı ? </label>
+                                                            <input class="custom-control-input" ng-change="profileEnableFilterChange()" type="checkbox" id="profile-enbale-filter" ng-model="profileConfig.config[menuSelectedModul.name].enable_filter">
+                                                            <label class="custom-control-label" for="profile-enbale-filter">Bu kayıtlara Ek olarak uygulanması istenilen filtreler var mı ? </label>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group">
-                                                        <query-builder viewfilter="viewFilter" fieldskey="fieldskey" module="menuSelectedModul"  group="filterJson.group"></query-builder>
-                                                    </div>-->
+                                                    <div class="form-group" ng-if="profileConfig.config[menuSelectedModul.name].enable_filter">
+                                                        <query-builder allfields="allFields"  viewfilter="viewFilter" fieldskey="fieldskey" module="menuSelectedModul"  group="profileConfig.config[menuSelectedModul.name].filters"></query-builder>
+                                                    </div>
                                                     <div class="row">
                                                         <div class="col-xl-6">
                                                             <div class="form-group">
@@ -725,4 +725,5 @@
             md-is-locked-open="isDocked &&  $mdMedia('gt-lg')">
     <div data-ng-if="sideLoad" data-ng-include="url" layout="column" style="height: 100%;" ng-cloak></div>
 </md-sidenav>
+
 

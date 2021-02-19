@@ -124,7 +124,7 @@
         </div>
 
         <!--  Calculation Fields-->
-       
+
         <div class="title" ng-if="activeView.report_type==='report' || activeView.report_type==='single'">
             <h5>{{ 'Report.CalculationFields' | translate}}</h5>
         </div>
@@ -144,7 +144,7 @@
                             kendo-drop-down-list></select>
 
                 </div>
-                
+
                 <div class="col-12 col-sm-6">
                     <select id="aggregation_type"
                             k-option-label="'{{'Module.AggregationType' | translate}}'"
@@ -232,11 +232,11 @@
             <small class="modified">{{activeView.filter_logic}}</small>
         </div>
         <div class="whitebox padding20">
-            <query-builder viewfilter="viewFilter" fieldskey="fieldskey" module="module"  group="filtera.group"></query-builder>
+            <query-builder allfields="allFields" viewfilter="viewFilter" fieldskey="fieldskey" module="module"  group="filtera.group"></query-builder>
         </div>
-        
+
         <!--{{filtera}}-->
-       
+
         <!--  Calculation Fields Tabular-->
 
         <div class="title" ng-if="activeView.report_type==='tabular'">

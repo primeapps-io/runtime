@@ -127,8 +127,9 @@
 
 
                 <div class="whitebox table-view" ng-if="activeView.view_type ==='grid' || activeView.report_type==='tabular'">
-                    <kendo-grid ng-show="!loading" class="grid-theme table-responsive" k-scope-field="grid"
-                        id="kendo-grid" k-rebind="mainGridOptions" k-options="mainGridOptions"> </kendo-grid>
+                    <div ng-show="!loading">
+                        <kendo-grid id="kendo-grid"  class="grid-theme table-responsive" k-scope-field="grid" k-rebind="mainGridOptions" k-options="mainGridOptions"> </kendo-grid>
+                    </div>
                     <div ng-show="loading" class="loading-list grid-theme table-responsive k-grid k-widget k-grid-display-block">
                         <table>
                             <thead><tr><th width="50"></th><th></th><th width="50"></th></tr></thead>

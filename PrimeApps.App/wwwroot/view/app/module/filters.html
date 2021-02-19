@@ -25,8 +25,9 @@
         <div ng-repeat="filter in group.filters | orderBy:'index'" class="condition">
             <div ng-switch="filter.hasOwnProperty('group')">
                 <div ng-switch-when="true">
-                    <query-builder viewfilter="viewfilter" fieldskey="fieldskey" module="module"
+                    <query-builder allfields="allfields" viewfilter="viewfilter" fieldskey="fieldskey" module="module"
                                    group="filter.group"></query-builder>
+
                 </div>
 
                 <div ng-switch-default="ng-switch-default">

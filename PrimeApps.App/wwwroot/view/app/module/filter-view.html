@@ -355,7 +355,7 @@
             <small class="modified">{{activeView.filter_logic}}</small>
         </div>
         <section class="whitebox padding20">
-            <query-builder viewfilter="viewFilter" fieldskey="fieldskey" module="module"  group="filtera.group"></query-builder>
+            <query-builder allfields="allFields" viewfilter="viewFilter" fieldskey="fieldskey" module="module"  group="filtera.group"></query-builder>
         </section>
 
         <!--{{filtera}}-->
@@ -382,17 +382,18 @@
                             <div class="form-group">
                             <select k-data-text-field="'label'"
                                 k-data-value-field="'name'"
-                                k-data-source="viewFields.selectedFields"
+                                k-data-source="groupByFields"
                                 k-on-change="changeGridGroupField(group)"
                                 ng-model="group.fieldArea"
                                 kendo-drop-down-list></select>
                             </div>
+
                         </div>
                         <div  ng-show="group.data_type === 'date' || group.data_type === 'date_time' || group.data_type === 'time'" class="col-3">
                             <div class="form-group">
                                 <select k-data-text-field="'label'"
                                         k-data-value-field="'type'"
-                                        k-data-source="gruopsForDateArea"
+                                        k-data-source="gruopsForDateType"
                                         k-on-change="groupsForDate(group)"
                                         ng-model="group.dateTypeArea"
                                         kendo-drop-down-list></select>

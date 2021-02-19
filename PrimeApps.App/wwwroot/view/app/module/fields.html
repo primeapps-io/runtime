@@ -1,41 +1,51 @@
-<div class="form-group" ng-if="field.data_type === 'text_single' && field.data_type != 'number_auto' && !field.combination && field.show_label && !field.show_lock && !field.hidden">
-    <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}" for="{{field.name +'_'+ module.id}}"
+<div class="form-group"
+     ng-if="field.data_type === 'text_single' && field.data_type != 'number_auto' && !field.combination && field.show_label && !field.show_lock && !field.hidden">
+    <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}"
+           for="{{fastRecordModal ? field.name +'_'+ module.id+'_m' : field.name +'_'+ module.id}}"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field)}">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <input ng-if="field.mask" kendo-masked-text-box name="{{field.name +'_'+ module.id}}" id="{{field.name +'_'+ module.id}}" tabindex="{{field.order}}" ng-required="field.validation.required"
-           placeholder="{{field.languages[globalization.Label].placeholder}}" ng-model="record[field.name]" ng-change="fieldValueChange(field)"
+    <input ng-if="field.mask" kendo-masked-text-box name="{{field.name +'_'+ module.id}}"
+           id="{{fastRecordModal ? field.name +'_'+ module.id+'_m' : field.name +'_'+ module.id}}"
+           tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}" ng-required="field.validation.required"
+           placeholder="{{field.languages[globalization.Label].placeholder}}" ng-model="record[field.name]"
+           ng-change="fieldValueChange(field)"
            ng-readonly="field.validation.readonly || (record.freeze && !isAdmin) || setReadonly(field)"
            minlength="{{field.validation.min_length || 0}}" maxlength="{{field.validation.max_length || 50}}"
            data-range-field="{{field.name +'_'+ module.id}}"
-           pattern="{{field.validation.pattern || '[^=]*'}}" k-mask="'{{field.mask}}'" />
-    <input ng-if="!field.mask" type="text" name="{{field.name +'_'+ module.id}}" id="{{field.name +'_'+ module.id}}" class="k-textbox" tabindex="{{field.order}}" ng-required="field.validation.required"
-           placeholder="{{field.languages[globalization.Label].placeholder}}" ng-model="record[field.name]" ng-change="fieldValueChange(field)"
+           pattern="{{field.validation.pattern || '[^=]*'}}" k-mask="'{{field.mask}}'"/>
+    <input ng-if="!field.mask" type="text" name="{{field.name +'_'+ module.id}}"
+           id="{{fastRecordModal ? field.name +'_'+ module.id+'_m' : field.name +'_'+ module.id}}" class="k-textbox"
+           tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}" ng-required="field.validation.required"
+           placeholder="{{field.languages[globalization.Label].placeholder}}" ng-model="record[field.name]"
+           ng-change="fieldValueChange(field)"
            ng-readonly="field.validation.readonly || (record.freeze && !isAdmin) || setReadonly(field)"
            minlength="{{field.validation.min_length || 0}}" maxlength="{{field.validation.max_length || 50}}"
            data-range-field="{{field.name +'_'+ module.id}}"
-           pattern="{{field.validation.pattern || '[^=]*'}}" />
+           pattern="{{field.validation.pattern || '[^=]*'}}"/>
 
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'text_multi' && !field.multiline_type_use_html && !field.hidden">
-    <label for="{{field.name}}"
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
     <textarea name="{{field.name}}"
-              id="{{field.name}}"
+              id="{{fastRecordModal ? field.name + '_m' : field.name}}"
               class="k-textarea"
               style="{{'overflow-x: hidden;' + field.style.input}}"
-              tabindex="{{field.order}}"
+              tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
               placeholder="{{field.languages[globalization.Label].placeholder}}"
               ng-model="record[field.name]"
               ng-change="fieldValueChange(field);"
@@ -45,63 +55,73 @@
               ng-readonly="field.validation.readonly  || (record.freeze && !isAdmin) || setReadonly(field)"
               pattern="{{field.validation.pattern}}"
               ng-attr-rows="{{field.multiline_type === 'large' ? 8 : 2}}"></textarea>
-    <span class="k-invalid-msg" data-for="{{field.name}}"></span>
+    <span class="k-invalid-msg" data-for="{{fastRecordModal ? field.name+'_m' : field.name}}"></span>
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'text_multi'  && field.multiline_type_use_html && !field.hidden">
-    <label for="{{field.name}}"
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
     <textarea class="k-textarea"
               ng-model="record[field.name]"
               ui-tinymce="tinymceOptions"
               ng-readonly="{{setReadonly(field)}}"
-              ng-required="field.validation.required"></textarea>
+              ng-required="field.validation.required"
+              tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"></textarea>
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'location' && !field.hidden">
-    <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <div class="image-preview" ng-class="{'required':field.validation.required}" ng-disabled="field.validation.readonly || (id && !field.editable) || (record.freeze && !isAdmin)" style="width: 100%;">
+    <div class="image-preview" ng-class="{'required':field.validation.required}"
+         ng-disabled="field.validation.readonly || (id && !field.editable) || (record.freeze && !isAdmin)"
+         style="width: 100%;">
         <div class="image-holder">
-            <img ng-if="!record[field.name]" src="images/no-location.png" class="no-image" alt="" />
+            <img ng-if="!record[field.name]" src="images/no-location.png" class="no-image" alt=""/>
             <a ng-if="record[field.name]" ng-click="showLightBox($event, record, true, field.name)"
                target="_blank">
-                <img ng-src="{{'https://maps.googleapis.com/maps/api/staticmap?zoom=10&size=300x150&maptype=roadmap&markers=color:red|' + record[field.name] + '&key=' + googleMapsApiKey}}" />
+                <img ng-src="{{'https://maps.googleapis.com/maps/api/staticmap?zoom=10&size=300x150&maptype=roadmap&markers=color:red|' + record[field.name] + '&key=' + googleMapsApiKey}}"/>
             </a>
         </div>
-        <md-button ng-if="!record[field.name]" ng-disabled="field.validation.readonly || (id && !field.editable) || (record.freeze && !isAdmin) || setReadonly(field)" ng-click="openLocationModal(field.name)" class="upload-btn btn btn-primary md-icon-button">
+        <md-button ng-if="!record[field.name]"
+                   ng-disabled="field.validation.readonly || (id && !field.editable) || (record.freeze && !isAdmin) || setReadonly(field)"
+                   ng-click="openLocationModal(field.name)" class="upload-btn btn btn-primary md-icon-button">
             <i class="fas fa-map-marked"></i>
             <md-tooltip md-autohide="true" md-direction="bottom">{{'Module.ChooseLocation' | translate}}</md-tooltip>
         </md-button>
-        <md-button ng-if="record[field.name]" ng-hide="field.validation.readonly ||  (record.freeze && !isAdmin)" ng-click="record[field.name]= null" class="delete-btn btn btn-danger md-icon-button ">
+        <md-button ng-if="record[field.name]" ng-hide="field.validation.readonly ||  (record.freeze && !isAdmin)"
+                   ng-click="record[field.name]= null" class="delete-btn btn btn-danger md-icon-button ">
             <i class="fas fa-trash"></i>
         </md-button>
     </div>
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'number' && !field.show_lock && !field.hidden">
-    <label for="{{field.name +'_'+ module.id}}"
+    <label for="{{fastRecordModal ? field.name +'_'+ module.id+'_m' : field.name +'_'+ module.id}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
     <input kendo-numeric-text-box ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
            name="{{field.name +'_'+ module.id}}"
-           id="{{field.name +'_'+ module.id}}"
-           tabindex="{{field.order}}"
+           id="{{fastRecordModal ? field.name +'_'+ module.id+'_m' : field.name +'_'+ module.id}}"
+           tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
            ng-readonly="{{setReadonly(field)}}"
            ng-placeholder="{{field.languages[globalization.Label].placeholder}}"
            k-options="{{'numberOptions'+field.id}}"
@@ -110,24 +130,25 @@
            maxlength="{{field.validation.max_length || 16}}"
            minlength="{{field.validation.min_length || 0}}"
            k-on-change="fieldValueChange(field); calculate(field);"
-           ng-required="field.validation.required" />
+           ng-required="field.validation.required"/>
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'number_decimal' && !field.show_lock && !field.hidden">
-    <label for="{{field.name}}"
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
     <input kendo-numeric-text-box
            name="{{field.name}}"
-           id="{{field.name}}"
+           id="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-readonly="{{setReadonly(field)}}"
-           tabindex="{{field.order}}"
+           tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
            ng-placeholder="{{field.languages[globalization.Label].placeholder}}"
            k-options="{{'numberDecimalOptions'+field.id}}"
            maxlength="{{field.validation.max_length || 16}}"
@@ -135,23 +156,24 @@
            k-ng-model="record[field.name]"
            k-on-change="fieldValueChange(field); calculate(field);"
            ng-required="field.validation.required"
-           ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)" />
+           ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"/>
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'currency' && !field.show_lock && !field.hidden">
-    <label for="{{field.name}}"
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
     <input kendo-numeric-text-box
            name="{{field.name}}"
-           id="{{field.name}}"
-           tabindex="{{field.order}}"
+           id="{{fastRecordModal ? field.name + '_m' : field.name}}"
+           tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
            ng-readonly="{{setReadonly(field)}}"
            ng-placeholder="{{field.languages[globalization.Label].placeholder}}"
            maxlength="{{field.validation.max_length || 16}}"
@@ -160,12 +182,12 @@
            k-ng-model="record[field.name]"
            k-on-change="fieldValueChange(field); calculate(field);"
            ng-required="field.validation.required"
-           ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)" />
+           ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"/>
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'email' && !field.show_lock && !field.hidden">
-    <label for="{{field.name}}"
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
@@ -175,39 +197,41 @@
                        title="{{record[field.name]}}">
                 {{record[field.name]}} <i class="fas fa-envelope"></i>
             </md-button>
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
     <input type="email"
            name="{{field.name}}"
-           id="{{field.name}}"
+           id="{{fastRecordModal ? field.name + '_m' : field.name}}"
            class="k-textbox"
            ng-readonly="{{setReadonly(field)}}"
            placeholder="e.g. myname@example.net"
-           tabindex="{{field.order}}"
+           tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
            ng-model="record[field.name]"
            ng-change="fieldValueChange(field);"
            ng-required="field.validation.required"
            ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
            minlength="{{field.validation.min_length || 0}}"
-           maxlength="{{field.validation.max_length || 100}}" />
+           maxlength="{{field.validation.max_length || 100}}"/>
     <span class="k-invalid-msg" data-for="{{field.name}}"></span>
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'date' && !field.hidden">
-    <label for="{{field.name}}"
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
     <input kendo-date-picker="{{'date'+field.id}}"
            name="{{field.name}}"
-           id="{{field.name}}"
+           id="{{fastRecordModal ? field.name + '_m' : field.name}}"
            class="width100"
-           tabindex="{{field.order}}"
+           tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
            ng-model="record[field.name+'str']"
            ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin) || setReadonly(field)"
            k-ng-model="record[field.name]"
@@ -215,23 +239,25 @@
            ng-click="openCalendar(field)"
            ng-keydown="setDateManualDisable(field.name+'str')"
            k-on-change="fieldValueChange(field);"
-           placeholder="{{'Common.Date' | translate}}" />
+           placeholder="{{'Common.Date' | translate}}"/>
 </div>
 
-<div class="form-group" ng-if="field.data_type === 'date_time' && !field.hidden && (id || (!id && (field.name !== 'created_at' && field.name !== 'updated_at')))">
-    <label for="{{field.name}}"
+<div class="form-group"
+     ng-if="field.data_type === 'date_time' && !field.hidden && (id || (!id && (field.name !== 'created_at' && field.name !== 'updated_at')))">
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
     <input kendo-date-time-picker="{{'date_time'+field.id}}"
            name="{{field.name}}"
-           id="{{field.name}}"
+           id="{{fastRecordModal ? field.name + '_m' : field.name}}"
            class="width100"
-           tabindex="{{field.order}}"
+           tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
            ng-model="record[field.name+'str']"
            k-ng-model="record[field.name]"
            ng-click="openCalendar(field)"
@@ -243,19 +269,20 @@
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'time' && !field.hidden">
-    <label for="{{field.name}}"
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
     <input kendo-time-picker="{{'time'+field.id}}"
            name="{{field.name}}"
-           id="{{field.name}}"
+           id="{{fastRecordModal ? field.name + '_m' : field.name}}"
            class="width100"
-           tabindex="{{field.order}}"
+           tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
            ng-model="record[field.name+'str']"
            k-ng-model="record[field.name]"
            k-on-change="fieldValueChange(field);"
@@ -263,31 +290,34 @@
            ng-click="openCalendar(field)"
            ng-keydown="setDateManualDisable(field.name+'str')"
            ng-required="field.validation.required"
-           placeholder="{{'Common.Time' | translate}}" />
+           placeholder="{{'Common.Time' | translate}}"/>
 </div>
 
-<div class="form-group" ng-if="(field.data_type === 'picklist' || field.data_type === 'rating') && field.custom_label && !field.hidden">
+<div class="form-group"
+     ng-if="(field.data_type === 'picklist' || field.data_type === 'rating') && field.custom_label && !field.hidden">
     <div tabindex="{{cell.field.order}}"
          ng-model="field.custom_label">
         {{field.custom_label}}
     </div>
 </div>
 
-<div class="form-group" ng-mouseover=" setId(field, true)" ng-if="field.data_type === 'picklist' && ( field.view_type === 'dropdown' || field.view_type === '' || field.view_type === undefined) && !field.hidden">
-    <label for="{{field.name}}"
+<div class="form-group" ng-mouseover=" setId(field, true)"
+     ng-if="field.data_type === 'picklist' && ( field.view_type === 'dropdown' || field.view_type === '' || field.view_type === undefined) && !field.hidden">
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
 
-    <select id="{{field.name}}"
+    <select id="{{fastRecordModal ? field.name + '_m' : field.name}}"
             name="{{field.name}}"
             kendo-drop-down-list
             ng-required="field.validation.required"
-            tabindex="{{field.order}}"
+            tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
             ng-readonly="{{setReadonly(field)}}"
             k-options="{{'customOptions'+ field.picklist_id}}"
             k-ng-model="record[field.name]"
@@ -296,83 +326,98 @@
     </select>
 </div>
 
-<div class="form-group d-flex justify-content-between align-items-center" ng-if="field.data_type === 'checkbox' && !field.hidden && (preview ? true : field.name === 'is_sample'? false : true )">
+<div class="form-group d-flex justify-content-between align-items-center"
+     ng-if="field.data_type === 'checkbox' && !field.hidden && (preview ? true : field.name === 'is_sample'? false : true )">
     <div class="d-flex align-items-center ">
         <input type="checkbox"
                id="{{field.name+'-'+formUniqKey}}"
                name="{{field.name}}"
                ng-disabled="field.validation.readonly || (record.freeze && !isAdmin) || setReadonly(field)"
                ng-model="record[field.name]"
-               tabindex="{{field.order}}"
+               tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
                class="k-checkbox"
                ng-required="field.validation.required"
                ng-change="fieldValueChange(field);">
-        <label ng-show="field.show_label" class="k-checkbox-label" for="{{field.name+'-'+formUniqKey}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
+        <label ng-show="field.show_label" class="k-checkbox-label" for="{{field.name+'-'+formUniqKey}}"
+               ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
             <span ng-if="!field.custom_label">{{ field.languages[globalization.Label]['label'] }}</span>
             <span ng-if="field.custom_label">{{ field.custom_label }}</span>
 
         </label>
-        <div class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</div>
+        <div class="required-label" ng-show="field.validation.required && field.show_label">
+            {{'Common.Required' | translate}}
+        </div>
     </div>
 </div>
 
-<div class="form-group" ng-if="field.data_type === 'text_single' && field.combination && !field.show_lock && !field.hidden && id">
-    <label for="{{field.name}}"
+<div class="form-group"
+     ng-if="field.data_type === 'text_single' && field.combination && !field.show_lock && !field.hidden && id">
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
     <input type="text"
-           id="{{field.name}}"
+           id="{{fastRecordModal ? field.name + '_m' : field.name}}"
            class="k-textbox"
            ng-readonly="{{setReadonly(field)}}"
            name="{{field.name}}"
            style="{{field.style.input}}"
-           tabindex="{{field.order}}"
+           tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
            ng-value="record[field.name]"
            ng-required="field.validation.required"
-           ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)" />
+           ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"/>
 </div>
 
 <div class="form-group" ng-mouseover=" setId(field, true)" ng-if="field.data_type === 'multiselect' && !field.hidden">
-    <label for="{{field.name}}"
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <select id="{{field.name}}"
+    <select id="{{fastRecordModal ? field.name + '_m' : field.name}}"
             name="{{field.name}}"
             kendo-multi-select
             ng-readonly="{{setReadonly(field)}}"
             ng-required="field.validation.required"
             k-ng-model="record[field.name]"
             ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
-            k-options="{{'customOptions'+ field.picklist_id}}">
+            k-options="{{'customOptions'+ field.picklist_id}}"
+            tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}">
     </select>
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'image' && !field.hidden">
-    <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <div class="image-preview" ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)" ng-class="{'required':field.validation.required}" ng-style="field.image_size_detail > 0 ? {'width':field.image_size_detail+'px'}  : {'width':'100%'}">
-        <a class="image-holder" ng-click="showLightBox($event, record[field.name] && !croppedImage[field.id ] ? record : croppedImage[field.id], true)">
-            <img id="{{field.name}}" src="images/no-image.png" class="no-image"
+    <div class="image-preview" ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
+         ng-class="{'required':field.validation.required}"
+         ng-style="field.image_size_detail > 0 ? {'width':field.image_size_detail+'px'}  : {'width':'100%'}">
+        <a class="image-holder"
+           ng-click="showLightBox($event, record[field.name] && !croppedImage[field.id ] ? record : croppedImage[field.id], true)">
+            <img id="{{fastRecordModal ? field.name + '_m' : field.name}}" src="images/no-image.png" class="no-image"
                  ng-src="{{record[field.name] && !croppedImage[field.id ]? (config.imageUrl+record[field.name]) : 'images/no-image.png'}}"
-                 ng-show="!croppedImage[field.id]" />
+                 ng-show="!croppedImage[field.id]"/>
             <img id="{{'croppedImage'+field.id}}" ng-src="{{croppedImage[field.id]}}"
-                 ng-show="croppedImage[field.id]" />
+                 ng-show="croppedImage[field.id]"/>
         </a>
-        <md-button ng-if="!record[field.name]" ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin) || setReadonly(field)" class="upload-btn btn btn-primary md-icon-button">
+        <md-button ng-if="!record[field.name]"
+                   ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin) || setReadonly(field)"
+                   class="upload-btn btn btn-primary md-icon-button">
             <i class="fas fa-upload"></i>
             <md-tooltip md-autohide="true" md-direction="bottom">{{'Module.UploadImage' | translate}}</md-tooltip>
             <input name="files"
@@ -380,69 +425,82 @@
                    nv-file-select uploader="uploaderImage(field)"
                    ng-required="field.validation.required"
                    ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin) || setReadonly(field)"
-                   ng-model='record[field.name]' />
+                   ng-model='record[field.name]'
+                   tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"/>
         </md-button>
-        <md-button ng-if="record[field.name]" ng-hide="field.validation.readonly || (record.freeze && !isAdmin)" ng-click="removeDocument(field)" class="delete-btn btn btn-danger md-icon-button btn-sm">
+        <md-button ng-if="record[field.name]" ng-hide="field.validation.readonly || (record.freeze && !isAdmin)"
+                   ng-click="removeDocument(field)" class="delete-btn btn btn-danger md-icon-button btn-sm">
             <i class="fas fa-trash"></i>
         </md-button>
     </div>
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'document' && !field.hidden">
-    <label for="{{field.name}}"
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <md-button class="btn btn-secondary label-btn" ng-show="record[field.name] && fileLoadingCounter<1  && isFinishUpload" title="{{record[field.name]}}"
-                       target="_blank" ng-click="getFileDownload(record[field.name],document[field.name]['UniqueName'])">
+            <md-button class="btn btn-secondary label-btn"
+                       ng-show="record[field.name] && fileLoadingCounter<1  && isFinishUpload"
+                       title="{{record[field.name]}}"
+                       target="_blank"
+                       ng-click="getFileDownload(record[field.name],document[field.name]['UniqueName'])">
                 <i class="fas fa-download"></i>
                 <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Download' | translate}}</md-tooltip>
             </md-button>
-            <md-button ng-show="record[field.name]" ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)" class="btn btn-secondary label-btn" ng-click="removeDocument(field)">
+            <md-button ng-show="record[field.name]"
+                       ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
+                       class="btn btn-secondary label-btn" ng-click="removeDocument(field)">
                 <i class="fas fa-minus-circle"></i>
                 <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Clear' | translate}}</md-tooltip>
             </md-button>
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
 
     </label>
     <div class="custom-file">
         <input type="file" class="custom-file-input form-control"
-               id="{{field.name}}"
+               id="{{fastRecordModal ? field.name + '_m' : field.name}}"
                ng-readonly="{{setReadonly(field)}}"
                name="{{field.name}}"
-               tabindex="{{field.order}}"
+               tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
                nv-file-select uploader="uploaderBasic(field)"
                ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
                ng-required="field.validation.required"
                ng-model='record[field.name]'>
-        <label class="custom-file-label" for="{{field.name}}" ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)" ng-show="field.data_type === 'document'" ng-value='record[field.name]'>
+        <label class="custom-file-label" for="{{fastRecordModal ? field.name + '_m' : field.name}}"
+               ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
+               ng-show="field.data_type === 'document'" ng-value='record[field.name]'>
             <span>{{record[field.name] ? record[field.name] : 'Module.ChooseFile' | translate}}</span>
         </label>
     </div>
 </div>
 
 <div class="form-group rating-fields" ng-if="field.data_type === 'rating' && !field.hidden">
-    <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
     <input kendo-rating="{{'rating_'+field.id}}"
            class="form-control"
-           id="{{field.name}}"
+           id="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-readonly="{{setReadonly(field)}}"
            name="{{field.name}}"
            ng-required="field.validation.required"
            ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
            k-options="{{'ratingOption'+ field.id}}"
-           k-ng-model="record[field.name]" />
+           k-ng-model="record[field.name]"
+           tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"/>
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'url'  && !field.show_lock && !field.hidden">
-    <label for="{{field.name}}"
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-show="!field.custom_label && field.show_label"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
@@ -453,15 +511,16 @@
                        title="{{field.validation.pattern ? record[field.name] : 'http://'+record[field.name]}}">
                 <i class="fas fa-external-link-alt"></i>
             </md-button>
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
     <input class="k-textbox" type="text"
            name="{{field.name}}"
-           id="{{field.name}}"
+           id="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-readonly="{{setReadonly(field)}}"
            style="{{field.style.input}}"
-           tabindex="{{field.order}}"
+           tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
            placeholder="{{field.languages[globalization.Label].placeholder}}"
            ng-model="record[field.name]"
            ng-change="fieldValueChange(field);"
@@ -469,28 +528,34 @@
            ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
            minlength="{{field.validation.min_length || 0}}"
            maxlength="{{field.validation.max_length || 400}}"
-           pattern="{{field.validation.pattern || '(www\.)+(.+?)'}}" />
+           pattern="{{field.validation.pattern || '(www\.)+(.+?)'}}"/>
 </div>
 
-<div class="form-group" ng-if="field.data_type === 'lookup' && !field.hidden && (id || (!id && (field.name !== 'created_by' && field.name !== 'updated_by')))" ng-mouseover="setCurrentLookupField(field)">
-    <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
+<div class="form-group"
+     ng-if="field.data_type === 'lookup' && !field.hidden && (id || (!id && (field.name !== 'created_by' && field.name !== 'updated_by')))"
+     ng-mouseover="setCurrentLookupField(field)">
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <md-button class="btn btn-secondary label-btn" ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name] && !field.external_link && record[field.name].id"
+            <md-button class="btn btn-secondary label-btn"
+                       ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name] && !field.external_link && record[field.name].id"
                        href="#/app/record/{{field.lookup_type != 'relation' ? field.lookup_type : record.related_module.value}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
                        title="{{record[field.name][field.lookupModulePrimaryField.name]}}">
                 {{record[field.name][field.lookupModulePrimaryField.name]}} <i class="fas fa-external-link-alt"></i>
             </md-button>
-            <md-button class="btn btn-secondary label-btn" ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name].id && field.external_link"
+            <md-button class="btn btn-secondary label-btn"
+                       ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name].id && field.external_link"
                        href="{{field.external_link}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
                        title="{{record[field.name][field.lookupModulePrimaryField.name]}}">
                 {{record[field.name][field.lookupModulePrimaryField.name]}} <i class="fas fa-external-link-alt"></i>
             </md-button>
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
     <select kendo-drop-down-list="{{'lookup'+field.id}}"
-            id="{{field.name}}"
+            id="{{fastRecordModal ? field.name + '_m' : field.name}}"
             name="{{field.name}}"
             ng-readonly="{{setReadonly(field)}}"
             k-options="{{'lookupOptions'+field.id}}"
@@ -499,12 +564,33 @@
             ng-required="field.validation.required"
             ng-disabled="field.name === 'created_by' ||field.name === 'updated_by' || field.validation.readonly  || (record.freeze && !isAdmin)"
             k-on-open="setCurrentLookupField(field, {{'lookup'+field.id}});"
-            k-on-change="fieldValueChange(field);"></select>
+            k-on-change="fieldValueChange(field);"
+            tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"></select>
+</div>
+<div class="form-group" ng-if="field.data_type === 'multiselect_lookup' && !field.hidden"
+     ng-mouseover="setCurrentLookupField(field)">
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
+        <span>{{ field.languages[globalization.Label]['label'] }}</span>
+    </label>
+    <select kendo-multi-select="{{'multiselect_lookup'+field.id}}"
+            id="{{fastRecordModal ? field.name + '_m' : field.name}}"
+            name="{{field.name}}"
+            ng-readonly="{{setReadonly(field)}}"
+            k-options="{{'lookupOptions'+field.id}}"
+            k-ng-model="record[field.name]"
+            k-filter="'{{field.lookup_search_type ? field.lookup_search_type : 'startswith' }}'"
+            ng-required="field.validation.required"
+            ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
+            k-on-open="setCurrentLookupField(field, {{'multiselect_lookup'+field.id}});"
+            k-on-change="fieldValueChange(field);"
+            tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"></select>
 </div>
 
-<div class="form-group" ng-if="field.data_type === 'text_single' && !field.show_label  && !field.show_lock && !field.hidden">
+<div class="form-group"
+     ng-if="field.data_type === 'text_single' && !field.show_label  && !field.show_lock && !field.hidden">
     <input type="text"
-           id="{{field.name}}"
+           id="{{fastRecordModal ? field.name + '_m' : field.name}}"
            class="k-textbox"
            ng-readonly="{{setReadonly(field)}}"
            name="{{field.name}}"
@@ -512,24 +598,26 @@
            ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
            ng-required="field.validation.required"
            style="{{field.style.input}}"
-           tabindex="{{field.order}}"
-           ng-model="record[field.name]" />
+           tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
+           ng-model="record[field.name]"/>
 
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'picklist' &&  field.view_type ==='radio' && !field.hidden">
-    <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}" for="{{field.name}}"
+    <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}"
+           for="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
     <ul class="list-unstyled">
         <li ng-repeat="radio in picklistsModule[field.picklist_id] | filter:{inactive:'!true', hidden:'!true'}">
             <input id="{{field.name+radio.id}}"
                    class="k-radio"
-                   tabindex="{{field.order}}"
+                   tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
                    ng-readonly="{{setReadonly(field)}}"
                    ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
                    ng-required="field.validation.required"
@@ -546,11 +634,13 @@
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'picklist' &&  field.view_type ==='checkbox' && !field.hidden">
-    <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}" for="{{field.name}}"
+    <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}"
+           for="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
     <div ng-class="{'drop-down-checkbox':field.view_type ==='checkbox'}"
@@ -558,7 +648,7 @@
          ng-repeat="checkbox in picklistsModule[field.picklist_id] | filter:{inactive:'!true', hidden:'!true'}">
         <input id="{{field.name+checkbox.id}}"
                class="k-checkbox"
-               tabindex="{{field.order}}"
+               tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
                ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
                ng-required="field.validation.required"
                name="{{field.name}}"
@@ -574,28 +664,33 @@
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'tag' && !field.hidden" ng-mouseover="setId(field, false)">
-    <label for="{{field.name}}" ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
+    <label for="{{fastRecordModal ? field.name + '_m' : field.name}}"
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
-    <select kendo-multi-select="{{field.name}}" ng-class="{'readonly': field.validation.readonly || (record.freeze && !isAdmin) || setReadonly(field)}"
-            id="{{field.name}}"
+    <select kendo-multi-select="{{field.name}}"
+            ng-class="{'readonly': field.validation.readonly || (record.freeze && !isAdmin) || setReadonly(field)}"
+            id="{{fastRecordModal ? field.name + '_m' : field.name}}"
             name="{{field.name}}"
             k-options="{{'tagOptions'+field.id}}"
             ng-readonly="{{setReadonly(field)}}"
             k-ng-model="record[field.name]"
             ng-required="field.validation.required"
-            ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"></select>
+            ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
+            tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"></select>
 </div>
 
 <div style="visibility: hidden">
     <div class="md-dialog-container" id="mdLightbox">
-        <md-dialog flex="45" tabindex="-1" role="dialog" aria-label="{{ showImageData.title ? showImageData.title  : multiSelectAndTagDatas.title }}">
+        <md-dialog flex="45" tabindex="-1" role="dialog"
+                   aria-label="{{ showImageData.title ? showImageData.title  : multiSelectAndTagDatas.title }}">
             <md-toolbar>
                 <div class="md-toolbar-tools">
-                    <h2>{{ showImageData.title ? showImageData.title  : multiSelectAndTagDatas.title }}</h2>
+                    <h2>{{ showImageData.title ? showImageData.title : multiSelectAndTagDatas.title }}</h2>
                     <span flex></span>
                     <md-button class="md-icon-button" aria-label="{{'Common.Close' | translate}}"
                                ng-click="closeLightBox()"><i class="fas fa-times"></i></md-button>
@@ -603,7 +698,7 @@
             </md-toolbar>
             <md-dialog-content>
                 <div ng-if="showImageData.url" class="md-dialog-content">
-                    <img class="width100" style="max-width: 500px;" ng-src="{{ showImageData.url }}" />
+                    <img class="width100" style="max-width: 500px;" ng-src="{{ showImageData.url }}"/>
                 </div>
                 <ul class="top20 bottom20" ng-if="multiSelectAndTagDatas && multiSelectAndTagDatas.array.length > 0">
                     <li ng-repeat="item in multiSelectAndTagDatas.array">{{item}}</li>
@@ -611,11 +706,13 @@
             </md-dialog-content>
             <md-dialog-actions layout="row" ng-if="showImageData.url">
                 <span flex></span>
-                <a ng-if="showImageData.type ==='location'" class="btn btn-secondary" href="{{showImageData.map_url}}" target="_blank">
+                <a ng-if="showImageData.type ==='location'" class="btn btn-secondary" href="{{showImageData.map_url}}"
+                   target="_blank">
                     <i ng-class="'fas fa-external-link-alt'"></i> {{('Common.ViewOnMap' | translate)}}
                 </a>
-                <a ng-if="showImageData.type === 'image'" class="btn btn-secondary" ng-click="downloadImg(showImageData.url)">
-                    <i ng-class="'fas fa-download'"></i> {{('Common.Download'| translate)}}
+                <a ng-if="showImageData.type === 'image'" class="btn btn-secondary"
+                   ng-click="downloadImg(showImageData.url)">
+                    <i ng-class="'fas fa-download'"></i> {{('Common.Download' | translate)}}
                 </a>
             </md-dialog-actions>
         </md-dialog>
@@ -623,18 +720,20 @@
 </div>
 
 <div class="form-group" ng-if="field.data_type === 'number_auto' && !field.hidden && id">
-    <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}" for="{{field.name}}"
+    <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}"
+           for="{{fastRecordModal ? field.name + '_m' : field.name}}"
            ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
         <span class="label-right">
-            <span class="required-label" ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
         </span>
     </label>
     <input type="text"
            name="{{field.name}}"
-           id="{{field.name}}"
+           id="{{fastRecordModal ? field.name + '_m' : field.name}}"
            class="k-textbox"
-           tabindex="{{field.order}}"
+           tabindex="{{fastRecordModal ? (10000+field.order) : field.order}}"
            ng-readonly="{{setReadonly(field)}}"
            ng-required="field.validation.required"
            placeholder="{{field.languages[globalization.Label].placeholder}}"
