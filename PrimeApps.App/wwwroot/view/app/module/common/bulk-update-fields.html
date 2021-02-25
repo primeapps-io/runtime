@@ -197,10 +197,9 @@
            class="k-checkbox"
            ng-disabled="field.validation.readonly || (id && !field.editable)"
            ng-model="bulkUpdate.value"
-           tabindex="{{field.order}}"
-           required="{{field.validation.required}}">
+           tabindex="{{field.order}}">
     <label ng-show="!field.custom_label && field.show_label"
-           class="k-checkbox-label" for="{{field.name}}" class="required"><span>{{ field.languages[globalization.Label]['label'] }}</span></label>
+           class="k-checkbox-label" for="{{field.name}}"><span>{{ field.languages[globalization.Label]['label'] }}</span></label>
 </div>
 
 <div class="form-group"
