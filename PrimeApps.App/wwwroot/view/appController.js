@@ -714,7 +714,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.unReadNotificationCount = 0;
         $scope.signalNotifications = [];
         $rootScope.notificationModalOpen = false;
-
+        $scope.notificationsLock = false;
 
         // $mdSidenav("sideModal2", true).then(function (instance) {
         //     // On close callback to handle close, backdrop click, or escape key pressed.
@@ -728,33 +728,41 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.getTime = function (time) {
             return kendo.toString(kendo.parseDate(time), "g");
         };
-
+        
         $scope.notificationShowModal = function () {
-            $rootScope.notificationModalOpen = $mdSidenav('sideModal').isOpen();
+            if (!$scope.notificationsLock){
+                $scope.notificationsLock = true;
+                
+                $rootScope.notificationModalOpen = $mdSidenav('sideModal').isOpen();
+                    
+                if (!$rootScope.notificationModalOpen) {
+                    $rootScope.closeSide("menuModal");
+                    $rootScope.notificationModalOpen = true;
+                    $rootScope.buildToggler('sideModal', 'view/notificationModal.html');
+                    $scope.notificationLoading = false;
+                    $timeout(function () {
 
-            if (!$rootScope.notificationModalOpen) {
-                $rootScope.closeSide("menuModal");
-                $rootScope.notificationModalOpen = true;
-                $rootScope.buildToggler('sideModal', 'view/notificationModal.html');
-                $scope.notificationLoading = false;
-                $timeout(function () {
-
-                    var area = $('.md-sidenav-right').innerHeight() - $('.md-sidenav-right md-toolbar').innerHeight();
-                    //$('.notification-box').height();
-                    $scope.notificationListViewOptions = {
-                        scrollable: "endless",
-                        height: area,
-                        remove: function (e) {
-                            if (e.model) {
-                                $scope.notificationRead(e.model, null, true)
+                        var area = $('.md-sidenav-right').innerHeight() - $('.md-sidenav-right md-toolbar').innerHeight();
+                        //$('.notification-box').height();
+                        $scope.notificationListViewOptions = {
+                            scrollable: "endless",
+                            height: area,
+                            remove: function (e) {
+                                if (e.model) {
+                                    $scope.notificationRead(e.model, null, true)
+                                }
                             }
                         }
-                    }
-                }, 500)
+                    }, 500)
 
-            } else {
-                $scope.closeSide('sideModal');
-                $rootScope.notificationModalOpen = false;
+                } else {
+                    $scope.closeSide('sideModal');
+                    $rootScope.notificationModalOpen = false;
+                }
+                
+                $timeout(function () {
+                    $scope.notificationsLock = false;
+                }, 700)
             }
         };
 
