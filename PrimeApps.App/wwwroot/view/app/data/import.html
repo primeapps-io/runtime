@@ -243,8 +243,14 @@
                             </form>
                         </div>
                         <div ng-if="wizardStep === 2">
-                            <div ng-show="preparing" class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
-                            <div ng-show="!preparing">
+                            <div ng-show="saving" class="d-flex text-center align-items-center justify-content-center">
+                                <div>
+                                    <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
+                                    <div class="paddingua10">{{'Data.Import.LoadingMessage' | translate}}</div>
+                                </div>
+                            </div>
+                            
+                            <div ng-show="!saving">
                                 <div class="alert alert-success shadow-sm" ng-show="!error && !errorUnique && !trying">
                                     <div class="row align-items-center">
                                         <div class="col">
