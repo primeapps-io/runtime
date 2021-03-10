@@ -193,10 +193,10 @@
                                                 <select ng-show="mappingArray.length" name="selectedMapping2" k-ng-model="$parent.selectedMapping" kendo-drop-down-list="$parent.mappingDropDown2" k-options="mappingOptions" k-on-change="mappingSelectedChange($parent.selectedMapping)" k-option-label="'{{'Common.Select' | translate}}'"></select>
                                             </div>
                                             <div class="col-auto bottom5" ng-if="!selectedMapping.id">
-                                                <md-button type="submit" class="md-icon-button btn btn-primary" ng-show="user.profile.has_admin_rights" ng-click="openMappingModal()"><i class="fas fa-plus"></i> <md-tooltip md-autohide="true" md-direction="left">{{'Data.Import.AddMapping' | translate}}</md-tooltip></md-button>
+                                                <md-button type="button" class="md-icon-button btn btn-primary" ng-show="user.profile.has_admin_rights" ng-click="openMappingModal()"><i class="fas fa-plus"></i> <md-tooltip md-autohide="true" md-direction="left">{{'Data.Import.AddMapping' | translate}}</md-tooltip></md-button>
                                             </div>
                                             <div class="col-auto bottom5" ng-if="selectedMapping.id">
-                                                <md-button type="submit" class="md-icon-button btn btn-primary" ng-show="user.profile.has_admin_rights" ng-click="openMappingModal()"><i class="fas fa-sync-alt"></i> <md-tooltip md-autohide="true" md-direction="left"> {{ 'Data.Import.UpdateMapping' | translate}}</md-tooltip> </md-button>
+                                                <md-button type="button" class="md-icon-button btn btn-primary" ng-show="user.profile.has_admin_rights" ng-click="openMappingModal()"><i class="fas fa-sync-alt"></i> <md-tooltip md-autohide="true" md-direction="left"> {{ 'Data.Import.UpdateMapping' | translate}}</md-tooltip> </md-button>
                                                 <md-button type="button" class="md-icon-button btn btn-danger" ng-show="user.profile.has_admin_rights && selectedMapping.id>0" ng-click="showConfirm(selectedMapping)"><i class="fas fa-trash"></i> <md-tooltip md-autohide="true" md-direction="left"> {{ 'Data.Import.DeleteMapping' | translate}} </md-tooltip></md-button>
                                             </div>
                                         </div>
