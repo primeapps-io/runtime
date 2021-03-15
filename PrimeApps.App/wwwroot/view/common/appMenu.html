@@ -149,27 +149,28 @@
                                 </md-tooltip>
                             </a>
                             <ul class="list-unstyled submenu" ng-click="adminMenuItemHideMenu(menu);">
-                                <li ng-if="user.profile.has_admin_rights || showUsers"
-                                    ng-class="{'active':currentPath == '/app/setup/users' || currentPath == '/app/setup/usergroups'}">
-                                    <a href="#/app/setup/users">
-                                        <i class="fas fa-users"></i>
-                                        <span>{{'Setup.Nav.Users' | translate}}</span>
-                                        <md-tooltip md-autohide="true" ng-if="showTooltip" md-direction="right">
-                                            {{'Setup.Nav.Users' | translate}}
-                                        </md-tooltip>
-                                    </a>
-                                </li>
-
-                                <li ng-if="user.profile.has_admin_rights || showAccessControl"
-                                    ng-class="{'active':currentPath == '/app/setup/profiles' || currentPath == '/app/setup/roles' ||  currentPath == '/app/setup/usercustomshares' }">
-                                    <a href="#/app/setup/profiles">
-                                        <i class="fas fa-shield-alt"></i>
-                                        <span>{{'Setup.Nav.AccessControl' | translate}}</span>
-                                        <md-tooltip md-autohide="true" ng-if="showTooltip" md-direction="right">
-                                            {{'Setup.Nav.AccessControl' | translate}}
-                                        </md-tooltip>
-                                    </a>
-                                </li>
+<!--                                TODO REMOVE-->
+<!--                                <li ng-if="user.profile.has_admin_rights || showUsers"-->
+<!--                                    ng-class="{'active':currentPath == '/app/setup/users' || currentPath == '/app/setup/usergroups'}">-->
+<!--                                    <a href="#/app/setup/users">-->
+<!--                                        <i class="fas fa-users"></i>-->
+<!--                                        <span>{{'Setup.Nav.Users' | translate}}</span>-->
+<!--                                        <md-tooltip md-autohide="true" ng-if="showTooltip" md-direction="right">-->
+<!--                                            {{'Setup.Nav.Users' | translate}}-->
+<!--                                        </md-tooltip>-->
+<!--                                    </a>-->
+<!--                                </li>-->
+<!--                               -->
+<!--                                <li ng-if="user.profile.has_admin_rights || showAccessControl"-->
+<!--                                    ng-class="{'active':currentPath == '/app/setup/profiles' || currentPath == '/app/setup/roles' ||  currentPath == '/app/setup/usercustomshares' }">-->
+<!--                                    <a href="#/app/setup/profiles">-->
+<!--                                        <i class="fas fa-shield-alt"></i>-->
+<!--                                        <span>{{'Setup.Nav.AccessControl' | translate}}</span>-->
+<!--                                        <md-tooltip md-autohide="true" ng-if="showTooltip" md-direction="right">-->
+<!--                                            {{'Setup.Nav.AccessControl' | translate}}-->
+<!--                                        </md-tooltip>-->
+<!--                                    </a>-->
+<!--                                </li>-->
                                 <li ng-if="user.profile.has_admin_rights || showTemplates"
                                     ng-class="{'active': currentPath === '/app/setup/templates'}">
                                     <a href="#/app/setup/templates">

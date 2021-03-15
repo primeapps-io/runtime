@@ -1,6 +1,6 @@
 'use strict';
-angular.module('primeapps').controller('AppController', ['$rootScope', '$scope', 'mdToast', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', 'entityTypes', 'guidEmpty', 'component', 'helper', 'operations', 'blockUI', '$cache', 'AppService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$mdSidenav', '$mdDialog', '$mdMedia', 'icons2', 'GeneralSettingsService', 'SignalNotificationService', 'NotificationService', '$timeout',
-    function ($rootScope, $scope, mdToast, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, entityTypes, guidEmpty, component, helper, operations, blockUI, $cache, AppService, AuthService, $sessionStorage, HelpService, $sce, $mdSidenav, $mdDialog, $mdMedia, icons2, GeneralSettingsService, SignalNotificationService, NotificationService, $timeout) {
+angular.module('primeapps').controller('AppController', ['$rootScope', '$scope', '$mdToast', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', 'entityTypes', 'guidEmpty', 'component', 'helper', 'operations', 'blockUI', '$cache', 'AppService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$mdSidenav', '$mdDialog', '$mdMedia', 'icons2', 'GeneralSettingsService', 'SignalNotificationService', 'NotificationService', '$timeout',
+    function ($rootScope, $scope, $mdToast, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, entityTypes, guidEmpty, component, helper, operations, blockUI, $cache, AppService, AuthService, $sessionStorage, HelpService, $sce, $mdSidenav, $mdDialog, $mdMedia, icons2, GeneralSettingsService, SignalNotificationService, NotificationService, $timeout) {
 
         $scope.disablePasswordChange = disablePasswordChange;
         $rootScope.expressionRunOrderData = {Value: [], Validation: []}
@@ -113,7 +113,8 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         });
         $.extend(true, kendo.ui.Pager.prototype.options.messages, {
             empty: $filter('translate')('Common.NoItemDisplay'),
-            itemsPerPage: $filter('translate')('Common.ItemsPerPage')
+            itemsPerPage: $filter('translate')('Common.ItemsPerPage'),
+            display: $filter('translate')('Common.ItemDisplayCount')
         });
 
         if(profileConfigs && profileConfigs.start_page){
@@ -121,7 +122,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         }else{
             $rootScope.start_page = '#/app/dashboard';
         }
-        
+
         $scope.adminMenuActive = function () {
             if ($scope.administrationMenuActive)
                 $scope.administrationMenuActive = false;
@@ -180,8 +181,9 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             }
         }
 
-        $scope.$on('new-version-available', function (event, args) {
-            mdToast.show({
+        window.newVersion = function () {
+            console.log("New version is available");
+            $mdToast.show({
                 hideDelay: 0,
                 toastClass: 'new-version',
                 controller: 'AppController',
@@ -195,23 +197,9 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     ' Cancel' +
                     '</md-button>' +
                     '</md-toast>'
-            }).then(function (result) {
-                /*if (result === ACTION_RESOLVE) {
-                    $log.log('Undo action triggered by button.');
-                }
-                else if (result === 'key') {
-                    $log.log('Undo action triggered by hot key: Control-' + UNDO_KEY + '.');
-                }
-                else if (result === false) {
-                    $log.log('Custom toast dismissed by Escape key.');
-                }
-                else {
-                    $log.log('Custom toast hidden automatically.');
-                }*/
-            }).catch(function (error) {
-                //$log.error('Custom toast failure:', error);
             });
-        });
+        }
+
 
         $scope.hasPermission = helper.hasPermission;
         $scope.entityTypes = entityTypes;
@@ -400,8 +388,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         };
 
         $scope.openSubMenu = function (item, arrayData) {
-
-            if (item.active) {
+            if (item.active && item.route === "") {
                 item.active = false;
                 return false;
             }

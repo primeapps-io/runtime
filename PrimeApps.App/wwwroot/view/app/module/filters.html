@@ -4,7 +4,7 @@
             <i class="fas fa-trash"></i>
             <md-tooltip md-autohide="true" md-directtion="bottom"> {{'View.DeleteGroup' | translate}}  </md-tooltip>
         </md-button>
-        <select ng-model="group.logic" class="form-control" style="margin-left: 5px;">
+        <select ng-model="group.logic" ng-change="viewFiltere()" class="form-control" style="margin-left: 5px;">
             <option value="and" selected>{{'Filter.And' | translate}}</option>
             <option value="or">{{'Filter.Or' | translate}}</option>
         </select>

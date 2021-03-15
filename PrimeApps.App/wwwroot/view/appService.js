@@ -9,7 +9,7 @@ angular.module('primeapps')
                 getMyAccount: function (refresh) {
                     if (!refresh && $rootScope.config && $rootScope.user && $rootScope.workgroups && $rootScope.modules && $rootScope.users)
                         return null;
-
+                    $rootScope.menu = [];
                     var that = this;
                     var deferred = $q.defer();
 
@@ -348,9 +348,7 @@ angular.module('primeapps')
 
                                     //custom menü
                                     $rootScope.customMenu = false;
-                                    // var menu = response[10].data;
                                     var menu = $filter('filter')(response[8].data, {deleted: false}, true);
-
                                     if (menu.length > 0) {
                                         $rootScope.processLanguages(menu);
                                         $rootScope.customMenu = true;
