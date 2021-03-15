@@ -25,9 +25,9 @@
         <div class="title">
             <h5>{{'View.ViewType' | translate}}</h5>
         </div>
-        <div class="whitebox padding20">
+        <div class="whitebox padding10">
             <div class="row row5 view-type">
-                <div class="col-4 col-md-3 col-lg-3 col-xl-2">
+                <div class="col-3 col-md-3 col-lg-3 col-xl-2">
                     <a ng-class="activeView.viewType ==='grid' && !activeView.report_type  ? 'active':''" href
                        title="{{'View.GridView' | translate}}">
                         <span class="view-img-holder"><img src="images/views/grid.svg" alt="{{'View.GridView' | translate}}"/><i
@@ -35,28 +35,28 @@
                         <small>{{'View.Grid' | translate}}</small>
                     </a>
                 </div>
-                <!--<div class="col-4 col-md-3 col-lg-3 col-xl-2">
+                <!--<div class="col-3 col-md-3 col-lg-3 col-xl-2">
                     <a href ng-class="activeView.viewType ==='calendar' ? 'active':''" title="Calendar View">
                         <span class="view-img-holder"><img src="images/views/calendar.svg" alt="Calendar View"/><i
                                 class="fas fa-check"></i></span>
                         <small>Calendar</small>
                     </a>
                 </div>
-                <div class="col-4 col-md-3 col-lg-3 col-xl-2">
+                <div class="col-3 col-md-3 col-lg-3 col-xl-2">
                     <a href ng-class="activeView.viewType ==='gallery' ? 'active':''" title="Gallery View">
                         <span class="view-img-holder"><img src="images/views/gallery.svg" alt="Gallery View"/><i
                                 class="fas fa-check"></i></span>
                         <small>Gallery</small>
                     </a>
                 </div>
-                <div class="col-4 col-md-3 col-lg-3 col-xl-2">
+                <div class="col-3 col-md-3 col-lg-3 col-xl-2">
                     <a href ng-class="activeView.viewType ==='kanban' ? 'active':''" title="Kanban View">
                         <span class="view-img-holder"><img src="images/views/kanban.svg" alt="Kanban View"/><i
                                 class="fas fa-check"></i></span>
                         <small>Kanban</small>
                     </a>
                 </div>-->
-                <div class="col-4 col-md-3 col-lg-3 col-xl-2">
+                <div class="col-3 col-md-3 col-lg-3 col-xl-2">
                     <a href ng-class="activeView.viewType ==='report' || activeView.report_type ? 'active':''"
                        title="{{'View.ReportView' | translate}}">
                         <span class="view-img-holder"><img src="images/views/report.svg" alt="{{'View.ReportView' | translate}}"/><i
@@ -64,7 +64,7 @@
                         <small>{{'View.Report' | translate}}</small>
                     </a>
                 </div>
-                <!--<div class="col-4 col-md-3 col-lg-3 col-xl-2">
+                <!--<div class="col-3 col-md-3 col-lg-3 col-xl-2">
                     <a href ng-class="activeView.viewType ==='maps' ? 'active':''" title="Maps View">
                         <span class="view-img-holder"><img src="images/views/maps.svg" alt="Maps View"/><i
                                 class="fas fa-check"></i></span>
@@ -78,7 +78,7 @@
         <div class="title" ng-if="activeView.viewType=='report'">
             <h5>{{'View.ReportSettings' | translate}}</h5>
         </div>
-        <div ng-if="activeView.viewType=='report' || activeView.report_type" class="whitebox padding20">
+        <div ng-if="activeView.viewType=='report' || activeView.report_type" class="whitebox padding10">
             <section>
                 <div class="form-group">
                     <label for="reporttype">
@@ -131,7 +131,7 @@
 
         <!--    Calculation Fields-->
         <div ng-if="activeView.report_type==='summary' || activeView.report_type==='single'"
-             class="whitebox padding20">
+             class="whitebox padding10">
             <section class="row">
                 <div class="col-12 col-sm-6">
                     <select id="calculationfields"
@@ -165,7 +165,7 @@
         <div class="title" ng-if="activeView.report_type ==='summary'">
             <h5> {{'View.ChartSettings' | translate}} </h5>
         </div>
-        <section class="whitebox padding20"
+        <section class="whitebox padding10"
                  ng-if="activeView.report_type ==='summary'">
 
             <div class="form-group">
@@ -201,7 +201,7 @@
         <div class="title" ng-if="activeView.report_type ==='single'">
             <h5> {{'Report.Widget.Name' | translate}} </h5>
         </div>
-        <section class="whitebox padding20"
+        <section class="whitebox padding10"
                  ng-if="activeView.viewType==='report' && activeView.report_type ==='single'">
 
             <div class="form-group">
@@ -231,7 +231,7 @@
             <h5>{{ 'View.ChooseYourCriterion' | translate }}</h5>
             <small class="modified">{{activeView.filter_logic}}</small>
         </div>
-        <div class="whitebox padding20">
+        <div class="whitebox padding10">
             <query-builder allfields="allFields" viewfilter="viewFilter" fieldskey="fieldskey" module="module"  group="filtera.group"></query-builder>
         </div>
 
@@ -245,7 +245,7 @@
 
         <!--    Calculation Fields Tabular -->
 
-        <div ng-if="activeView.report_type==='tabular'" class="whitebox padding20">
+        <div ng-if="activeView.report_type==='tabular'" class="whitebox padding10">
             <section class="row" ng-repeat="aggregation in activeView.aggregations">
                 <div class="col-12 col-sm-6">
                     <input type="text" ng-disabled="true" value="{{fieldskey[aggregation.field].label }}"
@@ -270,7 +270,7 @@
         <div class="title" ng-if="activeView.view_type==='grid' ||  activeView.report_type==='tabular'">
             <h5>{{'View.Columns' | translate}}</h5>
         </div>
-        <div class="whitebox padding20" ng-show="activeView.view_type==='grid' || activeView.report_type==='tabular'">
+        <div class="whitebox padding10" ng-show="activeView.view_type==='grid' || activeView.report_type==='tabular'">
             <div class="form-group">
                 <div class="row draglistbox">
                     <div class="col-6">

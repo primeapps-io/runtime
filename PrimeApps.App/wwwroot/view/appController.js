@@ -103,7 +103,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.administrationMenuActive = $scope.administrationMenuActive ? $scope.administrationMenuActive : false;
 
         $.extend(true, kendo.ui.Grid.prototype.options.messages, {
-            noRecords: $filter('translate')('Common.NoRecord'),
+            noRecords: $filter('translate')('Common.NoItemDisplay'),
         });
         $.extend(true, kendo.ui.DropDownList.prototype.options.messages, {
             noData: $filter('translate')('Common.NoDataFound')
@@ -112,7 +112,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             noData: $filter('translate')('Common.NoDataFound')
         });
         $.extend(true, kendo.ui.Pager.prototype.options.messages, {
-            empty: $filter('translate')('Common.NoItemDisplay'),
+            empty: '',
             itemsPerPage: $filter('translate')('Common.ItemsPerPage'),
             display: $filter('translate')('Common.ItemDisplayCount')
         });
@@ -701,7 +701,6 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.unReadNotificationCount = 0;
         $scope.signalNotifications = [];
         $rootScope.notificationModalOpen = false;
-        $scope.notificationsLock = false;
 
         // $mdSidenav("sideModal2", true).then(function (instance) {
         //     // On close callback to handle close, backdrop click, or escape key pressed.
@@ -717,8 +716,6 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         };
         
         $scope.notificationShowModal = function () {
-            if (!$scope.notificationsLock){
-                $scope.notificationsLock = true;
                 
                 $rootScope.notificationModalOpen = $mdSidenav('sideModal').isOpen();
                     
@@ -741,16 +738,13 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                             }
                         }
                     }, 500)
-
+                    $rootScope.isViewFilterOpen = true;
+                    $localStorage.write('is_view_open', $rootScope.isViewFilterOpen);
                 } else {
                     $scope.closeSide('sideModal');
                     $rootScope.notificationModalOpen = false;
+                    $scope.notificationShowModal();
                 }
-                
-                $timeout(function () {
-                    $scope.notificationsLock = false;
-                }, 700)
-            }
         };
 
         $scope.notificationRead = function (notification, id, clear, url) {

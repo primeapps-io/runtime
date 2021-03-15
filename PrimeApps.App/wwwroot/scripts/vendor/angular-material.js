@@ -17995,13 +17995,13 @@ function MdDialogProvider($$interimElementProvider) {
         '    </md-input-container>',
         '  </md-dialog-content>',
         '  <md-dialog-actions>',
-        '    <md-button ng-if="dialog.$type === \'confirm\' || dialog.$type === \'prompt\'"' +
-        '               ng-click="dialog.abort()" class="md-primary md-cancel-button">',
-        '      {{ dialog.cancel }}',
-        '    </md-button>',
-        '    <md-button ng-click="dialog.hide()" class="md-primary md-confirm-button" md-autofocus="dialog.$type===\'alert\'"' +
+        '    <md-button ng-click="dialog.hide()" class="btn btn-primary" md-autofocus="dialog.$type===\'alert\'"' +
         '               ng-disabled="dialog.required && !dialog.result">',
         '      {{ dialog.ok }}',
+        '    </md-button><span flex></span>',
+        '    <md-button ng-if="dialog.$type === \'confirm\' || dialog.$type === \'prompt\'"' +
+        '               ng-click="dialog.abort()" class="btn btn-secondary">',
+        '      {{ dialog.cancel }}',
         '    </md-button>',
         '  </md-dialog-actions>',
         '</md-dialog>'

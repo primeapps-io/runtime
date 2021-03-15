@@ -52,8 +52,8 @@ button{
 }
 
 .container-fluid,.md-toolbar-tools,.md-subheader-inner,md-dialog .md-dialog-content,md-fab-toolbar md-toolbar .md-toolbar-tools{
-	padding-left: 30px !important;
-	padding-right: 30px !important;
+	padding-left: 10px !important;
+	padding-right: 10px !important;
 }
 
 ////////////////////////// Reset //////////////////////////
@@ -126,12 +126,12 @@ md-content{
 		background-color: $primary;
 	}
 
-
+ 
 	&.md-button{
 		background-color: $primary;
 		color: $white;
 		padding: $input-btn-padding-y $input-btn-padding-x;
-		margin: 0px 5px;
+		margin: 0px 2px;
 		box-shadow: 3px 3px 3px 0px rgba(0,0,0,0.05) !important;
 		min-width: inherit;
 		font-size: $font-size-base;
@@ -215,10 +215,10 @@ md-content{
 			border-color: transparent !important;
 		}
 	}
-}
+}   
 
 .grid-list-button{
-	margin: 5px;
+	margin: 0px 5px;
 	.btn{
 		padding: $input-btn-padding-y-sm $input-btn-padding-x-sm;
 		white-space: nowrap;
@@ -269,8 +269,22 @@ md-menu-item>a.md-button{
 		box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.10);
 	}
 }
-
-
+.k-pager-nav, .k-pager-numbers .k-link, .k-pager-refresh{
+	min-width: 30px;
+	height: 30px;
+}
+.k-pager-sm .k-pager-numbers-wrap{
+	height: 30px;
+	margin: 0px;
+	select{
+		padding: 0px $table-cell-padding;
+		border-radius: 0;
+		width: auto !important;
+	}
+}
+.k-grid-header .k-header{ 
+	padding: $table-cell-padding;
+}
 .btn-circle-icon{
 	padding: 5px;
 	background: $white;
@@ -427,6 +441,7 @@ md-menu-item>a.md-button{
 		box-shadow: none;
 	}
 }
+
 .greybox{
 	background-color: $body-bg2;
 	padding: $input-padding-y $input-padding-x;
@@ -470,12 +485,15 @@ md-menu-item>a.md-button{
 
 ////////////////////////// Header ////////////////////////// 
 
-.logo{
-	height: 40px;
-	display: inline-block;
+.logo{   
+	height: 60px;
+	max-width: 200px;
+	display: inline-flex;
+	align-items: center;
 	img{
-		width: auto;
-		height: 100%;
+		max-width: 100%;
+		max-height: 100%;
+		
 	}
 	svg{
 		width: auto;
@@ -503,7 +521,7 @@ md-menu-item>a.md-button{
 header{
 	background: $white;
 	box-shadow: $box-shadow-sm;
-	padding: 20px 0px;
+	padding: 10px 0px;
 	position: relative;
 	z-index: 70;
 	max-height: 80px;
@@ -677,8 +695,8 @@ md-menu-content.account-dropdown-box{
 		> .main-menu-wrapper{
 			background: $primary;
 			@include move(.3s);
-			width: 220px;
-			max-width: 220px;
+			width: 200px;
+			max-width: 200px;
 			z-index: 62;
 			&:before{
 				content:'';
@@ -690,7 +708,7 @@ md-menu-content.account-dropdown-box{
 				@include gradient-x($start-color: $black25, $end-color: $black0, $start-percent: 0%, $end-percent: 100%);
 				z-index: -1;
 			}
-			.main-menu{
+			.main-menu{   
 				li{
 					@include move(.3s);
 					a{
@@ -699,7 +717,7 @@ md-menu-content.account-dropdown-box{
 						@include align-items(center);
 						font-weight: bold;
 						position: relative;
-						padding: 15px 40px;
+						padding: 12px 40px;
 						font-size: $font-size-base * 1.1;
 						>span{
 							white-space: nowrap;
@@ -1713,12 +1731,12 @@ label{
 	border-radius: $border-radius;
 	font-size: $font-size-base * .9;
 	span{
-		padding: $input-btn-padding-y $input-btn-padding-x/2;
+		padding: $input-btn-padding-y/2 $input-btn-padding-x/2;
 		display: inline-block;
 
 	}
 	a,button{
-		padding: $input-btn-padding-y $input-btn-padding-x/2;
+		padding: $input-btn-padding-y/2 $input-btn-padding-x/2;
 		border: none;
 		background: $black5;
 		min-width: 30px;
@@ -1873,10 +1891,10 @@ label{
 		width: 150px;
 		height: 150px;
 	}
-	&.image-preview-60{
+	&.image-preview-40{
 		cursor: pointer;
-		width: 60px;
-		height: 60px;
+		width: 40px !important;
+		height: 40px !important; 
 		.image-holder{
 			border-radius: 50%;
 		}
@@ -2056,11 +2074,10 @@ label{
 		height: 100%;
 		> .k-listview-content{
 			display: flex;
-			margin-right: -15px;
-			margin-left: -15px;
+			margin-right: -10px;
+			margin-left: -10px;
 			height: 100%;
 			padding-bottom: 20px;
-			padding-right: 10px;
 			.col{
 				min-width: 300px;
 				height: 100%;
@@ -2423,13 +2440,16 @@ body>.kanban-card{
 		bottom: 0;
 		background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAATCAYAAAAH3YpvAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTExIDc5LjE1ODMyNSwgMjAxNS8wOS8xMC0wMToxMDoyMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKFdpbmRvd3MpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkZBMDQwQzQ0MkIzNjExRTdBNkYyOUYzREJFM0NCMkQxIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkZBMDQwQzQ1MkIzNjExRTdBNkYyOUYzREJFM0NCMkQxIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6RkEwNDBDNDIyQjM2MTFFN0E2RjI5RjNEQkUzQ0IyRDEiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6RkEwNDBDNDMyQjM2MTFFN0E2RjI5RjNEQkUzQ0IyRDEiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5UABoZAAADCElEQVR42uyYy08TURTGB2wrVAWKBkRFEanxraBEo8YYdeGOjf6BLti6IEY36soYJcYgGh9RAXkoVF4iLU+t3zG/m9yMraIICuUkv0xmpnM78813zj13ilpbWyNBEJwTvaJPzARrseAw8Q6IBsiKD+I925T4sibTD1GEVt8F3Bg6sQ0CxPsoBhF0SMwWuHgl4oq4L7oiXsq2i1KxS5RxbJ3YCsdQPUW6GyMF6LzzIi4uiTYTcJKTc6JDPBYbRJXYjhtLvQGqoVkMixsF5MpTYqeXnUMRz0Xmsm5xVcyLB+IO5zYhqGMz6b9FnMDOqz0sAw97+9ctI52AlsY1IibWw0VxUDyk9n0Wbz0nViBgaQGI10jGubAsHXOTSJZ6lmS/S9R7rmwRPVw0zPEsA4ytcuGKxRmx3zv2Ujzy25gAgUzA3eI2F5izEmKPqIMe6mSqAFxn3ckFTOTiWbhcOQHfiQwimrovQnZtpE90Qg4ymAn6dRWKl8R5MS/jrJR15mqkA0QwazaJWlLahaXpXfFEnBQ7vNYmw3WvqJErPSzjTtN9uJji+QfyrURcPBdHxfGQgC5ssrnJ4M3MxnFEb8KVb3BlZoUJV06W7Q0dt/ngnpj+2VLORYbUPSSO5LIrMQDWD+1jW+y58iyzdjdiTvzHTXENz1sXOveJWte3kLVwEKp3SRrGeuphf55r3WqkhDdnVHLONds2zjjLwEHW2Ol/LFwVgjWElrEBi4oOytKCantYQLPqLVqXKhrH/l+MMY1bO+kL65nNyzlfAa4VmMChVhJG2U4tocsqeJlujR/P8bsUk2LX706KkTyDXROX/yD9hqGdG6/1Jp0ovymDZKhQj+GANExSVmZYKs66LyBeRJkpYwgTx1Xl/H9lnmd0brOa/Xox/Wy+we1m2xb59sfhKU5IeKld7Tk0oOdc6hXNvFdGenH/X/keuByR5YZHvR4zhksSOCXBfpxJaTH/lfZe4Aif5MaXomddLgHzuTyVY1VT5KVjCUS516gn0qzHHKRJ++xyPcQ3AQYAqG/LfwFsaokAAAAASUVORK5CYII=');
 	}
-	.k-listbox .k-item{
-		cursor: move;
+	.k-listbox{
+		width: 100%;
+		.k-item{
+			cursor: move;
 
-		&.k-state-disabled{
-			background: $secondary;
-			opacity: 1;
-		}
+			&.k-state-disabled{
+				background: $secondary;
+				opacity: 1;
+			}
+		} 
 	}
 }
 //////// Kendo Sortable List //////// 
@@ -2707,14 +2727,19 @@ li.sortable-list-placeholder{
 	-webkit-column-count: 4;
 	-moz-column-count: 4;
 	column-count: 4;
-	-webkit-column-gap: 2rem;
-	-moz-column-gap: 2rem;
-	column-gap: 2rem;
+	-webkit-column-gap: 1rem;
+	-moz-column-gap: 1rem;
+	column-gap: 1rem;
 	width: 100%;
 	.cart-column-box{
 		display: inline-block;
 		width: 100%;
 	}
+}
+md-backdrop.md-locked-open ~ md-content .card-columns4{
+	-webkit-column-count: 3;
+	-moz-column-count: 3;
+	column-count: 3;
 }
 
 
@@ -3333,8 +3358,6 @@ md-toolbar{
 .view-type{
 	a{
 		text-align: center;
-		margin-top: 10px;
-		margin-bottom: 10px;
 		display: block;
 		small{
 			font-weight: bold;
@@ -3762,7 +3785,7 @@ md-dialog{
 	z-index: 100;
 	.progress-value{
 		animation: load 5s normal infinite;
-		background: $primary;
+		background: $primary; 
 		height: 100%;
 		width: 0;
 	}
@@ -3781,6 +3804,18 @@ md-dialog{
 		-moz-column-count: 3;
 		column-count: 3;
 	}
+	md-backdrop.md-locked-open ~ md-content .card-columns4{
+		-webkit-column-count: 2;
+		-moz-column-count: 2;
+		column-count: 2;
+	}
+}
+@media (max-width: 1300px) {
+	md-backdrop.md-locked-open ~ md-content .card-columns4{
+		-webkit-column-count: 1;
+		-moz-column-count: 1;
+		column-count: 1;
+	}
 }
 
 //////// < 1200 ////////
@@ -3789,8 +3824,8 @@ md-dialog{
 		font-size: $font-size-base * 0.9;
 	}
 	.container-fluid,.md-toolbar-tools,.md-subheader-inner,md-dialog .md-dialog-content,md-fab-toolbar md-toolbar .md-toolbar-tools{
-		padding-left: 20px !important;;
-		padding-right: 20px !important;;
+		padding-left: 10px !important;;
+		padding-right: 10px !important;;
 	}
 	.row {
 		margin-left: -10px;
@@ -3822,8 +3857,8 @@ md-dialog{
 @include media-breakpoint-down(md) {
 
 	.container-fluid,.md-toolbar-tools,.md-subheader-inner,md-dialog .md-dialog-content,md-fab-toolbar md-toolbar .md-toolbar-tools{
-		padding-left: 15px !important;;
-		padding-right: 15px !important;;
+		padding-left: 10px !important;;
+		padding-right: 10px !important;;
 	}
 	h1{font-size: $font-size-base * 1.3 !important}
 	h2{font-size: $font-size-base * 1.3 !important}
@@ -3966,7 +4001,7 @@ md-dialog{
 		}
 	}
 	.pr-view-settings{
-		padding-right: 50px !important;
+		padding-right: 40px !important;
 	}
 }
 
@@ -4138,7 +4173,7 @@ md-dialog{
 			margin: 0;
 		}
 		.md-tab{
-			max-width: 220px !important;
+			max-width: 200px !important;
 			color: $white;
 			opacity: .8;
 			font-size: $font-size-base;

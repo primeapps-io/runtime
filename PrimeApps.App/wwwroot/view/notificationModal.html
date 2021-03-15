@@ -1,6 +1,6 @@
 ﻿<md-toolbar md-scroll-shrink ng-if="true">
     <div class="md-toolbar-tools">
-        <md-button class="md-icon-button" ng-click="closeSide('sideModal')" aria-label="{{'Common.Close' | translate}}"><i class="fas fa-angle-left"></i></md-button>
+        <md-button class="md-icon-button" ng-click="closeSide('sideModal'); isViewOpenCheck();" aria-label="{{'Common.Close' | translate}}"><i class="fas fa-angle-left"></i></md-button>
         <h3 md-truncate>{{'Setup.Nav.Notifications' | translate}}</h3>
         <md-button class="md-icon-button dockside" ng-class="isDocked ? 'active': ''" ng-click="sideModaldock()" aria-label="Close"><i class="fas fa-thumbtack"></i></md-button>
         <span flex></span>

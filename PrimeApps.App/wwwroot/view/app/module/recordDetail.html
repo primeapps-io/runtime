@@ -466,7 +466,7 @@
                                 <i class="fas fa-angle-left"></i>
                                 <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Back' | translate}}</md-tooltip>
                             </md-button>
-                            <h2 md-truncate>{{title}}</h2>
+                            <h2 md-truncate><span ng-if="relatedModule.detail_view_type !== 'flat'">{{title}}</span> <span ng-if="relatedModule.detail_view_type === 'flat'">{{relatedModule.languages[globalization.Label]['label']['plural']}}</span></h2>
                             <div class="helpbuttons hide-on-m">
                                 <md-button class="md-icon-button" ng-if="showHelp" ng-click="helpSide()"
                                            aria-label="{{'Common.Help' | translate}}">

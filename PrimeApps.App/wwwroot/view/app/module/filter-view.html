@@ -1,6 +1,6 @@
 <md-toolbar class="add-view" md-scroll-shrink ng-if="true">
     <div class="md-toolbar-tools">
-        <md-button class="md-icon-button" ng-click="closeSide('sideModal')" aria-label="{{'Common.Close' | translate}}"><i
+        <md-button class="md-icon-button" ng-click="closeSide('sideModal'); isViewOpenCheck();" aria-label="{{'Common.Close' | translate}}"><i
                 class="fas fa-angle-left"></i>
             <md-tooltip md-autohide="true" md-direction="bottom" >{{'Common.Close' | translate}}</md-tooltip>
         </md-button>
@@ -32,16 +32,16 @@
         <div class="title">
             <h5>{{'View.ViewType' | translate}}</h5>
         </div>
-        <div class="whitebox padding20">
+        <div class="whitebox padding10">
             <div class="row row5 view-type">
-<!--                <div class="col-4 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('list');">-->
+<!--                <div class="col-3 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('list');">-->
 <!--                    <a href ng-class="activeView.view_type ==='list'  ? 'active':''" title="{{'View.List' | translate}}">-->
 <!--                        <span class="view-img-holder"><img src="images/views/calendar.svg" alt="{{'View.List' | translate}}"/><i-->
 <!--                                class="fas fa-check"></i></span>-->
 <!--                        <small>{{'View.List' | translate}}</small>-->
 <!--                    </a>-->
 <!--                </div>-->
-                <div class="col-4 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('grid');">
+                <div class="col-3 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('grid');">
                     <a ng-class="activeView.view_type ==='grid'  ? 'active':''" href
                        title="{{'View.GridView' | translate}}">
                         <span class="view-img-holder"><img src="images/views/grid.svg" alt="{{'View.GridView' | translate}}"/><i
@@ -49,7 +49,7 @@
                         <small>{{'View.Grid' | translate}}</small>
                     </a>
                 </div>
-                <div class="col-4 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('calendar');">
+                <div class="col-3 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('calendar');">
                     <a href ng-class="activeView.view_type ==='calendar'  ? 'active':''" title="{{'View.CalendarView' | translate}}">
                         <span class="view-img-holder"><img src="images/views/calendar.svg" alt="{{'View.CalendarView' | translate}}"/><i
                                 class="fas fa-check"></i></span>
@@ -57,7 +57,7 @@
                     </a>
                 </div>
                 <!--
-                <div class="col-4 col-md-3 col-lg-3 col-xl-2">
+                <div class="col-3 col-md-3 col-lg-3 col-xl-2">
                     <a href ng-class="activeView.viewType ==='gallery' ? 'active':''" title="Gallery View">
                         <span class="view-img-holder"><img src="images/views/gallery.svg" alt="Gallery View"/><i
                                 class="fas fa-check"></i></span>
@@ -65,7 +65,7 @@
                     </a>
                 </div>-->
 
-                <div class="col-4 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('report');">
+                <div class="col-3 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('report');">
                     <a href ng-class="activeView.view_type ==='report' ? 'active':''"
                        title="{{'View.ReportView' | translate}}">
                         <span class="view-img-holder"><img src="images/views/report.svg" alt="{{'View.ReportView' | translate}}"/><i
@@ -74,7 +74,7 @@
                     </a>
                 </div>
 
-                <div class="col-4 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('kanban');">
+                <div class="col-3 col-md-3 col-lg-3 col-xl-2" ng-click="changeViewType('kanban');">
                     <a href ng-class="activeView.view_type ==='kanban' ? 'active':''"
                        title="{{'View.Kanban' | translate}}">
                         <span class="view-img-holder"><img src="images/views/kanban.svg" alt="{{'View.Kanban' | translate}}"/><i
@@ -82,7 +82,7 @@
                         <small> {{'View.Kanban' | translate}} </small>
                     </a>
                 </div>
-                <!--<div class="col-4 col-md-3 col-lg-3 col-xl-2">
+                <!--<div class="col-3 col-md-3 col-lg-3 col-xl-2">
                     <a href ng-class="activeView.viewType ==='maps' ? 'active':''" title="Maps View">
                         <span class="view-img-holder"><img src="images/views/maps.svg" alt="Maps View"/><i
                                 class="fas fa-check"></i></span>
@@ -97,7 +97,7 @@
             <h5>{{'View.ReportSettings' | translate}}</h5>
         </div>
 
-        <section ng-if="activeView.view_type=='report'" class="whitebox padding20">
+        <section ng-if="activeView.view_type=='report'" class="whitebox padding10">
                 <div class="form-group">
                     <label for="reporttype">
                         <span>   {{'Report.ReportType' | translate}} </span>
@@ -154,7 +154,7 @@
         <!--    Calculation Fields-->
         <div ng-if="(activeView.report_type==='summary' || activeView.report_type==='single')"
              ng-class="totalCount ? 'k-state-disabled' :''"
-             class="whitebox padding20">
+             class="whitebox padding10">
             <section class="row">
                 <div class="col-12 col-sm-6">
                     <select id="calculationfields"
@@ -189,7 +189,7 @@
             <h5> {{'View.ChartSettings' | translate}}  </h5>
         </div>
 
-        <section class="whitebox padding20"  ng-if="activeView.report_type ==='summary'">
+        <section class="whitebox padding10"  ng-if="activeView.report_type ==='summary'">
             <div class="form-group">
                 <label>
                     <span>   {{'Report.Chart.Type' | translate}} </span>
@@ -230,7 +230,7 @@
         <div class="title" ng-if="activeView.view_type ==='calendar'">
             <h5> {{'View.CalendarSettings' | translate}}  </h5>
         </div>
-        <section class="whitebox padding20"  ng-if="activeView.view_type ==='calendar'">
+        <section class="whitebox padding10"  ng-if="activeView.view_type ==='calendar'">
 <!--            <div class="form-group">-->
 <!--                <label>-->
 <!--                    <span>   {{'View.VisibleField' | translate}} </span>-->
@@ -298,7 +298,7 @@
         <div class="title" ng-if="activeView.view_type ==='kanban'">
             <h5> {{'View.KanbanSettings' | translate}} </h5>
         </div>
-        <section class="whitebox padding20" ng-if="activeView.view_type ==='kanban'">
+        <section class="whitebox padding10" ng-if="activeView.view_type ==='kanban'">
 
             <div class="form-group">
                 <label>
@@ -321,7 +321,7 @@
         <div class="title" ng-if="activeView.report_type ==='single'">
             <h5> {{'Report.Widget.Name' | translate}} </h5>
         </div>
-        <section class="whitebox padding20" ng-if="activeView.view_type==='report' && activeView.report_type ==='single'">
+        <section class="whitebox padding10" ng-if="activeView.view_type==='report' && activeView.report_type ==='single'">
 
             <div class="form-group">
                 <label>
@@ -354,7 +354,7 @@
             <h5> {{'View.ChooseYourCriterion' | translate}}   </h5>
             <small class="modified">{{activeView.filter_logic}}</small>
         </div>
-        <section class="whitebox padding20">
+        <section class="whitebox padding10">
             <query-builder allfields="allFields" viewfilter="viewFilter" fieldskey="fieldskey" module="module"  group="filtera.group"></query-builder>
         </section>
 
@@ -365,7 +365,7 @@
             <h5>{{ 'View.GroupArea' | translate}}</h5>
         </div>
         <!--    Groups Fields -->
-        <section ng-if="activeView.view_type==='grid'" class="whitebox padding20">
+        <section ng-if="activeView.view_type==='grid'" class="whitebox padding10">
             <div class="row row0 align-items-center" ng-repeat="group in gridGroupBy">
                 <div class="col-auto">
                     <button class="md-icon-button md-button" type="button" ng-click="gridGroupDelete($index, gridGroupBy)" > <i class="fas fa-trash"></i></button>
@@ -426,7 +426,7 @@
         <div class="title" ng-if="activeView.view_type==='grid' ||  activeView.report_type==='tabular' || activeView.view_type ==='kanban'">
             <h5> {{'View.Columns' | translate}}  </h5>
         </div>
-        <div class="whitebox padding20" ng-if="activeView.view_type==='grid' || activeView.report_type==='tabular' || activeView.view_type ==='kanban'">
+        <div class="whitebox padding10" ng-if="activeView.view_type==='grid' || activeView.report_type==='tabular' || activeView.view_type ==='kanban'">
             <div class="form-group">
                 <div class="row draglistbox">
                     <div class="col-6">
@@ -463,7 +463,7 @@
         </div>
 
         <!--    Calculation Fields Grid -->
-        <section ng-if="activeView.view_type==='grid' && activeView.aggregations.length > 0 && gridGroupBy.length > 0" class="whitebox padding20">
+        <section ng-if="activeView.view_type==='grid' && activeView.aggregations.length > 0 && gridGroupBy.length > 0" class="whitebox padding10">
             <div class="row row5 align-items-center" ng-repeat="aggregation in activeView.aggregations">
                 <div class="col-auto">
                     <kendo-switch name="aggregation.name" ng-change="switchChange(aggregation)" ng-model="aggregation.active"></kendo-switch>
@@ -498,7 +498,7 @@
         </section>
 
         <!--    Calculation Fields Tabular -->
-        <div ng-if="activeView.view_type==='report' && activeView.report_type==='tabular' && activeView.aggregations.length > 0" class="whitebox padding20">
+        <div ng-if="activeView.view_type==='report' && activeView.report_type==='tabular' && activeView.aggregations.length > 0" class="whitebox padding10">
             <section class="row" ng-repeat="aggregation in activeView.aggregations">
                 <div class="col-12 col-sm-6">
                     <input type="text" ng-disabled="true" value="{{fieldskey[aggregation.field].label }}" class="k-textbox"/>
