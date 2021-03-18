@@ -67,6 +67,7 @@
             k-ng-model="filter.value"
             k-on-change="viewFiltere(filter);"
             k-auto-width="true"
+            k-filter="'contains'"
             ng-show="filter.operator.name ==='is' || filter.operator.name ==='is_not' || filter.operator.name ==='contains' || filter.operator.name ==='not_contain' ||
             filter.operator.name ==='starts_with' || filter.operator.name ==='ends_with' || filter.operator.name ==='equals' || filter.operator.name ==='not_equal' ||
             filter.operator.name ==='greater' || filter.operator.name ==='greater_equal' || filter.operator.name ==='less' || filter.operator.name ==='less_equal'"
@@ -77,7 +78,7 @@
 <div class="form-group" ng-if="fieldskey[filter.field.name].data_type === 'date' && filter.value.value==='costume'">
     <input kendo-date-picker
            class="width100"
-           ng-model="filter.costumeDate"
+           k-ng-model="filter.costumeDate"
            k-on-change="viewFiltere(filter);"
            ng-show="filter.operator.name ==='is' || filter.operator.name ==='is_not' || filter.operator.name ==='contains' || filter.operator.name ==='not_contain' ||
             filter.operator.name ==='starts_with' || filter.operator.name ==='ends_with' || filter.operator.name ==='equals' || filter.operator.name ==='not_equal' ||
@@ -99,6 +100,7 @@
     <input kendo-time-picker
            class="width100"
            k-ng-model="filter.value"
+           ng-model="filterTime"
            k-on-change="viewFiltere(filter);"
            ng-show="filter.operator.name ==='is' || filter.operator.name ==='is_not' || filter.operator.name ==='contains' || filter.operator.name ==='not_contain' ||
             filter.operator.name ==='starts_with' || filter.operator.name ==='ends_with' || filter.operator.name ==='equals' || filter.operator.name ==='not_equal' ||

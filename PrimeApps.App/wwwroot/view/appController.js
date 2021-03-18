@@ -1,6 +1,6 @@
 'use strict';
-angular.module('primeapps').controller('AppController', ['$rootScope', '$scope', '$mdToast', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', 'entityTypes', 'guidEmpty', 'component', 'helper', 'operations', 'blockUI', '$cache', 'AppService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$mdSidenav', '$mdDialog', '$mdMedia', 'icons2', 'GeneralSettingsService', 'SignalNotificationService', 'NotificationService', '$timeout',
-    function ($rootScope, $scope, $mdToast, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, entityTypes, guidEmpty, component, helper, operations, blockUI, $cache, AppService, AuthService, $sessionStorage, HelpService, $sce, $mdSidenav, $mdDialog, $mdMedia, icons2, GeneralSettingsService, SignalNotificationService, NotificationService, $timeout) {
+angular.module('primeapps').controller('AppController', ['$rootScope', '$scope', 'mdToast', '$mdToast', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', 'entityTypes', 'guidEmpty', 'component', 'helper', 'operations', 'blockUI', '$cache', 'AppService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$mdSidenav', '$mdDialog', '$mdMedia', 'icons2', 'GeneralSettingsService', 'SignalNotificationService', 'NotificationService', '$timeout',
+    function ($rootScope, $scope, mdToast, $mdToast, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, entityTypes, guidEmpty, component, helper, operations, blockUI, $cache, AppService, AuthService, $sessionStorage, HelpService, $sce, $mdSidenav, $mdDialog, $mdMedia, icons2, GeneralSettingsService, SignalNotificationService, NotificationService, $timeout) {
 
         $scope.disablePasswordChange = disablePasswordChange;
         $rootScope.expressionRunOrderData = {Value: [], Validation: []}
@@ -180,24 +180,33 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     req.setRequestHeader('X-Tenant-Id', $rootScope.user.tenant_id);
             }
         }
+        if (!$rootScope.lastRunUpdateNotification)
+            $rootScope.lastRunUpdateNotification = 0;
+        $scope.delay = 600000;
 
         window.newVersion = function () {
-            console.log("New version is available");
-            $mdToast.show({
-                hideDelay: 0,
-                toastClass: 'new-version',
-                controller: 'AppController',
-                position: 'bottom right',
-                template: '<md-toast role="alert" aria-relevant="all">' +
-                    '<span class="md-toast-text" flex>New version is available !</span>' +
-                    '<md-button class="md-highlight" ng-click="refreshPage();" style="color: white;background: #25A65B;">' +
-                    ' Refresh' +
-                    '</md-button>' +
-                    '<md-button ng-click="ctrl.closeToast()">' +
-                    ' Cancel' +
-                    '</md-button>' +
-                    '</md-toast>'
-            });
+            if ($rootScope.lastRunUpdateNotification <= (Date.now() - $scope.delay)){
+                $mdToast.show({
+                    hideDelay: 0,
+                    toastClass: 'new-version',
+                    controller: 'AppController',
+                    position: 'bottom right',
+                    template: '<md-toast role="alert" aria-relevant="all">' +
+                        '<span class="md-toast-text" flex>New version is available !</span>' +
+                        '<md-button class="md-highlight" ng-click="refreshPage();" style="color: white;background: #25A65B;">' +
+                        ' Refresh' +
+                        '</md-button>' +
+                        '<md-button ng-click="closeToast()">' +
+                        ' Cancel' +
+                        '</md-button>' +
+                        '</md-toast>'
+                });
+                $rootScope.lastRunUpdateNotification = Date.now();
+            }
+        }
+
+        $scope.closeToast = function () {
+            $mdToast.hide();
         }
 
 
@@ -348,7 +357,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
                     $scope.sampleRemoving = false;
 
-                    $mdToast.success($filter('translate')('Layout.SampleDataRemoveSuccess'));
+                    mdToast.success($filter('translate')('Layout.SampleDataRemoveSuccess'));
 
                     $rootScope.$broadcast('sample-data-removed');
                     $window.location.href = $rootScope.start_page;

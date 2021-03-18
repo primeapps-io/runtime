@@ -11,7 +11,7 @@
                                 </div>
                             </md-tab-label>
                         </md-tab>
-                        <md-tab ng-repeat="relatedModule in module.relations  | filter:{deleted:'false',detail_view_type:'tab'}"
+                        <md-tab ng-repeat="relatedModule in module.relations  | filter:getRelationsTabFilter"
                                 ng-click="changeTab(relatedModule); $parent.$parent.tab = relatedModule.id.toString();"
                                 md-active="relatedModule.id == tab">
                             <md-tab-label id="tab{{relatedModule.id}}" aria-controls="Tab{{relatedModule.id}}">
@@ -196,7 +196,7 @@
                                     <h4>
                                         {{!section.languages[globalization.Label]["custom_label"] ? section.languages[globalization.Label]['label'] : section.languages[globalization.Label]['custom_label']}}
                                     </h4>
-                                    <button class="btn btn-link" type="button" data-toggle="collapse"
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" tabindex="-1"
                                             data-target="{{'#collapse'+section.id}}" aria-expanded="true"
                                             aria-controls="{{'collapse'+section.id}}">
                                         <i class="fas fa-plus"></i>
@@ -456,7 +456,7 @@
                 </form>
 
             </section>
-            <section ng-if="id" ng-show="(hasPermission(relatedModule.related_module, operations.read) && tab === relatedModule.id.toString() || !tabconfig || (relatedModule.detail_view_type === 'flat' && tab === 'general' && id)) && ((tab === 'general' && relatedModule.detail_view_type === 'flat') || (tab === relatedModule.id.toString() && relatedModule.detail_view_type === 'tab'))"
+            <section ng-if="id" ng-show="hasPermission(relatedModule.related_module, operations.read) && (tab === relatedModule.id.toString() || !tabconfig || (relatedModule.detail_view_type === 'flat' && tab === 'general' && id)) && ((tab === 'general' && relatedModule.detail_view_type === 'flat') || (tab === relatedModule.id.toString() && relatedModule.detail_view_type === 'tab'))"
                      ng-repeat="relatedModule in module.relations | filter:{deleted:'false'} | orderBy:'order'">
                 <md-subheader class="insetp0">
                     <md-toolbar md-scroll-shrink ng-if="true">
@@ -499,14 +499,14 @@
                                 </md-tooltip>
                             </md-button>
                             <md-button class="md-icon-button btn btn-secondary" ng-click="export(relatedModule)"
-                                       ng-show="user.profile.word_pdf_download">
+                                       ng-show="hasPermission(relatedModule.related_module, operations.read)">
                                 <i class="fas fa-upload"></i>
                                 <md-tooltip md-autohide="true" md-direction="bottom">{{'Module.Export' | translate}}</md-tooltip>
                             </md-button>
                             <md-button
                                     ng-click="openAddModal($event,relatedModule)"
-                                    ng-if=" relatedModule.related_module != 'mails' && !relatedModule.readonly  && !record.freeze && !hiddenNewButton && relatedModule.relation_type ==='many_to_many'"
-                                    ng-show="hasPermission(relatedModule.related_module, operations.read)"
+                                    ng-if="relatedModule.related_module != 'mails' && !relatedModule.readonly && !record.freeze && !hiddenNewButton && relatedModule.relation_type ==='many_to_many'"
+                                    ng-show="hasPermission(relatedModule.related_module, operations.write)"
                                     class="md-icon-button btn btn-primary" aria-label="{{'Common.Add' | translate}}">
                                 <i class="fas fa-plus"></i>
                                 <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Add' | translate}}</md-tooltip>

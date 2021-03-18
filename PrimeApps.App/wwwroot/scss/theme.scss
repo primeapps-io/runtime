@@ -882,6 +882,17 @@ md-menu-content.account-dropdown-box{
 	//}
 
 }
+md-toolbar{
+	min-height:50px;
+}
+.md-toolbar-tools{
+	max-height: 50px;
+	height: 50px;
+	padding: 0 7px;
+}
+.md-tabs-canvas,md-pagination-wrapper{
+	height: 36px;
+}
 
 .md-toolbar-tools{
 	h1,h2,h3,h4,h5{
@@ -911,7 +922,7 @@ md-menu-content.account-dropdown-box{
 }
 
 
-//////// Tabs //////// 
+//////// Tabs ////////
 .own-tab{
 	background: $white;
 	&.own-tab2{
@@ -1733,7 +1744,10 @@ label{
 	span{
 		padding: $input-btn-padding-y/2 $input-btn-padding-x/2;
 		display: inline-block;
-
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 150px;
 	}
 	a,button{
 		padding: $input-btn-padding-y/2 $input-btn-padding-x/2;
