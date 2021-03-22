@@ -180,12 +180,12 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     req.setRequestHeader('X-Tenant-Id', $rootScope.user.tenant_id);
             }
         }
-        if (!$rootScope.lastRunUpdateNotification)
-            $rootScope.lastRunUpdateNotification = 0;
-        $scope.delay = 600000;
+        if (!$scope.lastRunUpdateNotification)
+            $scope.lastRunUpdateNotification = $localStorage.read('update_time') ? parseInt($localStorage.read('update_time')) : 0;
 
+        
         window.newVersion = function () {
-            if ($rootScope.lastRunUpdateNotification <= (Date.now() - $scope.delay)){
+            if ($scope.lastRunUpdateNotification <= (Date.now() - 600000)){
                 $mdToast.show({
                     hideDelay: 0,
                     toastClass: 'new-version',
@@ -201,7 +201,8 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                         '</md-button>' +
                         '</md-toast>'
                 });
-                $rootScope.lastRunUpdateNotification = Date.now();
+                $scope.lastRunUpdateNotification = Date.now();
+                $localStorage.write('update_time', $scope.lastRunUpdateNotification)
             }
         }
 

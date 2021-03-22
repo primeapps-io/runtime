@@ -790,7 +790,7 @@ md-toolbar {
   height: 50px;
   padding: 0 7px; }
 
-.md-tabs-canvas, md-pagination-wrapper {
+md-tabs-canvas, md-pagination-wrapper {
   height: 36px; }
 
 .md-toolbar-tools h1, .md-toolbar-tools h2, .md-toolbar-tools h3, .md-toolbar-tools h4, .md-toolbar-tools h5 {
@@ -1752,7 +1752,8 @@ label {
 
 .kanban-view {
   height: 600px;
-  overflow: hidden; }
+  overflow: hidden;
+  min-height: 400px; }
   .kanban-view .board {
     background: transparent;
     border: none;
