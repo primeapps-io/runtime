@@ -57,7 +57,7 @@
             name="{{field.name}}"
             class="form-control"
             ng-model="buttonsParametersData[field.key]"
-            ng-options="o.languages[globalization.Label]['label'] as o.languages[globalization.Label]['label'] for o in picklistItems[field.key]['items']">
+            ng-options="o.languages[picklistLang.Label]['label'] as o.languages[globalization.Label]['label'] for o in picklistItems[field.key]['items']">
         <option value="">{{'Common.Select' | translate}}</option>
     </select>
 </div>

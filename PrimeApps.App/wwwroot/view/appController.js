@@ -412,7 +412,9 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             item.active = true;
             $scope.administrationMenuActive = false;
 
-            if (item.route != "") {
+            if (item.route === "" || item.route === undefined) {
+                //open sub menu
+            }else {
                 $rootScope.closeSide("menuModal");
             }
         };
