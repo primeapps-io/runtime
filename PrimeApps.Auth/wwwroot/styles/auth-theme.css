@@ -11981,7 +11981,7 @@ p {
       display: block;
       text-align: center; }
       .auth-page .auth-box .logo-img img {
-        width: 300px;
+        width: 200px;
         max-width: 100%; }
     .auth-page .auth-box .login-form {
       width: 100%; }
@@ -12266,6 +12266,8 @@ p {
     font-size: 0.875rem; } }
 
 @media (max-width: 991.98px) {
+  .auth-page .auth-box > div.img-box {
+    min-height: 250px; }
   .auth-page .container-fluid {
     padding-left: 30px;
     padding-right: 30px; }
