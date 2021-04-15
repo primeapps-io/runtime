@@ -355,6 +355,12 @@ md-menu-item>a.md-button{
 .action-dropdown-item{
 	margin: 0;
 }
+
+.action-button-loading {
+	display: inline;
+	padding-left: 22px;
+}
+
 ///////// Notification Button //////////////
 .notification-button{
 	position: relative;
