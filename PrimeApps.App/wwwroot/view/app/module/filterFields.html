@@ -1,5 +1,5 @@
 <div class="form-group"
-     ng-if="fieldskey[filter.field.name].data_type === 'text_single' ||  fieldskey[filter.field.name].data_type === 'text_multi' ||  fieldskey[filter.field.name].data_type === 'url' || fieldskey[filter.field.name].combination || fieldskey[filter.field.name].data_type === 'email'">
+     ng-if="fieldskey[filter.field.name].data_type === 'text_single' || fieldskey[filter.field.name].data_type === 'document'  ||  fieldskey[filter.field.name].data_type === 'image' || fieldskey[filter.field.name].data_type === 'text_multi' ||  fieldskey[filter.field.name].data_type === 'url' || fieldskey[filter.field.name].combination || fieldskey[filter.field.name].data_type === 'email'">
     <input type="text"
            class="k-textbox"
            ng-model="filter.value"

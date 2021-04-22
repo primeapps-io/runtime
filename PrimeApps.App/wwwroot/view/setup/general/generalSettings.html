@@ -77,3 +77,7 @@
         </section>
     </form>
 </md-content>
+
+<md-sidenav ng-show="sideinclude" id="sideModal" class="md-sidenav-right md-whiteframe-2dp" md-component-id="sideModal" md-is-locked-open="isDocked &&  $mdMedia('gt-lg')">
+    <div data-ng-if="sideLoad" data-ng-include="url" layout="column" style="height: 100%;" ng-cloak></div>
+</md-sidenav>

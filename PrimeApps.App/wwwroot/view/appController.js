@@ -398,7 +398,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         };
 
         $scope.openSubMenu = function (item, arrayData) {
-            if (item.active && item.route === "") {
+            if (item.active && (item.route === "" || item.route === undefined)) {
                 item.active = false;
                 return false;
             }
