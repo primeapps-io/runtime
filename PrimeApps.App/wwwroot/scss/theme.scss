@@ -1361,10 +1361,16 @@ md-tabs-canvas,md-pagination-wrapper{
 	.k-textbox,.k-textarea{
 		font-weight: bold;
 		width: 100%;
+		&:focus,&.k-state-focused{
+			box-shadow: $box-shadow-sm;
+		}
 	}
 	.k-checkbox{
 		width: $icon-size;
 		min-width: $icon-size;
+		&:focus,&.k-state-focused{
+			box-shadow: $box-shadow;
+		}
 	}
 	label{
 		@include flexbox();
@@ -1414,16 +1420,26 @@ label{
 		transition: none;
 		border-color: lighten($primary, 25%);
 	}
+	
 	&.k-state-disabled,&.k-state-invalid,&[readonly="true"],&[disabled="disabled"],&[disabled="true"],&.disabled,&:disabled,&[readonly="readOnly"],&[readonly="readonly"]{
 		opacity: $btn-disabled-opacity;
 		cursor: default !important;
 		pointer-events: all !important;
+		&:focus,&.k-state-focused{
+			box-shadow: $box-shadow-sm;
+		}
+	}
+	&:focus,&.k-state-focused{
+		box-shadow: $box-shadow-sm;
 	}
 }
 .k-state-disabled{
 	opacity: $btn-disabled-opacity;
 	cursor: default !important;
 	pointer-events: all !important;
+	&:focus,&.k-state-focused{
+		box-shadow: $box-shadow-sm;
+	}
 }
 .k-widget{
 	.k-numeric-wrap,.k-picker-wrap,.k-dropdown-wrap,.k-multiselect-wrap{
@@ -1437,6 +1453,9 @@ label{
 			background: $secondary;
 			transition: none;
 			border-color: lighten($primary, 25%);
+		}
+		&:focus,&.k-state-focused{
+			box-shadow: $box-shadow-sm;
 		}
 	}
 	&.readonly{
@@ -1528,6 +1547,12 @@ label{
 			opacity: $btn-disabled-opacity;
 			cursor: default !important;
 			pointer-events: all !important;
+			&:focus,&.k-state-focused{
+				box-shadow: $box-shadow-sm;
+			}
+		}
+		&:focus,&.k-state-focused{
+			box-shadow: $box-shadow-sm;
 		}
 	}
 	
@@ -1536,6 +1561,9 @@ label{
 			background: $body-bg2;
 			&:hover,&:focus,&.k-state-hover,&.k-state-focused{
 				background: $secondary;
+			}
+			&:focus,&.k-state-focused{
+				box-shadow: $box-shadow-sm;
 			}
 		}
 	}
@@ -2217,6 +2245,49 @@ body>.kanban-card{
 		color: $white;
 	}
 }
+
+.k-i-loading::before,
+.k-i-loading::after,
+.k-loading-image::before,
+.k-loading-image::after{
+	display: inline-block;
+	width: $spinner-width !important;
+	height: $spinner-height !important;
+	vertical-align: text-bottom;
+	border: $spinner-border-width solid $primary;
+	border-right-color: transparent;
+	border-radius: 50%;
+	animation: spinner-border .75s linear infinite;
+	font-size: inherit;
+	margin-top: $spinner-width/-2;
+	margin-left: $spinner-width/-2; 
+}
+.k-widget .k-i-loading::before,
+.k-widget .k-i-loading::after,
+.k-widget .k-loading-image::before,
+.k-widget .k-loading-image::after{
+	display: inline-block;
+	width: $spinner-width*.75 !important;
+	height: $spinner-height*.75 !important;
+	margin-top: $spinner-width*.75/-2;
+	margin-left: $spinner-width*.75/-2;
+	border: $spinner-border-width*.8 solid $primary;
+}
+
+.k-loading-image::after,
+.k-i-loading::after{
+	display: none; 
+}
+.k-loading-color{
+	opacity: .4; 
+}
+.spinner-border{
+	border-color: $primary;
+	border-right-color: transparent;
+}
+
+
+
 .loadingform{
 	.loadfield, .collapsible-head, .loadlabel{
 		overflow: hidden;

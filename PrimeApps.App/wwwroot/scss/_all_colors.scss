@@ -424,6 +424,14 @@ li.sortable-list-hint{
     }
   }
 }
+.k-i-loading::before,
+.k-i-loading::after,
+.k-loading-image::before,
+.k-loading-image::after,
+.spinner-border{
+  border-color: $primary;
+  border-right-color: transparent;
+}
 
 
 ////////////////////////// Rest //////////////////////////

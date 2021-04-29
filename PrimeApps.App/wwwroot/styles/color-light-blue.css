@@ -189,6 +189,14 @@ li.sortable-list-hint {
 .file-upload-item-box .file-icon-wrapper > span {
   background: #19B5FE; }
 
+.k-i-loading::before,
+.k-i-loading::after,
+.k-loading-image::before,
+.k-loading-image::after,
+.spinner-border {
+  border-color: #19B5FE;
+  border-right-color: transparent; }
+
 .dockside.active i {
   color: #19B5FE; }
 

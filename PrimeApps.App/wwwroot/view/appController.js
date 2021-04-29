@@ -879,6 +879,11 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             SignalNotificationService.allHide();
 
         }
+        
+        $scope.closeSideModal = function () {
+            if ($rootScope.isViewFilterOpen && $rootScope.isDocked)
+                $rootScope.closeSide('sideModal');
+        }
 
 
         if ($scope.menu && $rootScope.currentPath !== '/app/dashboard') {
