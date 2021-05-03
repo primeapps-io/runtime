@@ -2272,6 +2272,7 @@ body>.kanban-card{
 	margin-top: $spinner-width*.75/-2;
 	margin-left: $spinner-width*.75/-2;
 	border: $spinner-border-width*.8 solid $primary;
+	border-right-color: transparent;
 }
 
 .k-loading-image::after,

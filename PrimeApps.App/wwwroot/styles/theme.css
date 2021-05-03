@@ -1908,7 +1908,8 @@ body > .kanban-card {
   height: 1.5rem !important;
   margin-top: -0.75rem;
   margin-left: -0.75rem;
-  border: 0.2em solid #1F4688; }
+  border: 0.2em solid #1F4688;
+  border-right-color: transparent; }
 
 .k-loading-image::after,
 .k-i-loading::after {
