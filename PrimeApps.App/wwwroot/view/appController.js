@@ -3,7 +3,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
     function ($rootScope, $scope, mdToast, $mdToast, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, entityTypes, guidEmpty, component, helper, operations, blockUI, $cache, AppService, AuthService, $sessionStorage, HelpService, $sce, $mdSidenav, $mdDialog, $mdMedia, icons2, GeneralSettingsService, SignalNotificationService, NotificationService, $timeout) {
 
         $scope.disablePasswordChange = disablePasswordChange;
-        $rootScope.expressionRunOrderData = {Value: [], Validation: []}
+        $rootScope.expressionRunOrderData = {Value: [], Validation: [], ValidateTime: []}
         $rootScope.globalLoading = false;
 
         $rootScope.fastRecordAddModal = function (moduleName, fastAddRecord, lookupValue, lookupName, id, customScope) {
