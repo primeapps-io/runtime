@@ -349,7 +349,7 @@
                                                     <div class="form-group">
                                                         <div class="custom-control custom-checkbox custom-control-inline">
                                                             <input class="custom-control-input" ng-change="profileEnableFilterChange()" type="checkbox" id="profile-enbale-filter" ng-model="profileConfig.config[menuSelectedModul.name].enable_filter">
-                                                            <label class="custom-control-label" for="profile-enbale-filter">Bu kayıtlara Ek olarak uygulanması istenilen filtreler var mı ? </label>
+                                                            <label class="custom-control-label" for="profile-enbale-filter">{{ 'Setup.Profiles.DataFilter' | translate}}</label>
                                                         </div>
                                                     </div>
                                                     <div class="form-group" ng-if="profileConfig.config[menuSelectedModul.name].enable_filter">
@@ -449,7 +449,7 @@
                                                             <kendo-switch ng-model="profileConfig.config[menuSelectedModul.name].actions.export.enable"></kendo-switch>
                                                         </div>
                                                         <div class="col padding5">
-                                                                <span >Dışa Aktarma</span>
+                                                                <span >{{ 'Setup.Profiles.DataExport' | translate}}</span>
                                                         </div>
                                                         <div class="col-auto padding5" ng-show="profileConfig.config[menuSelectedModul.name].actions.export.enable">
                                                                                   </div>
@@ -458,7 +458,7 @@
                                                             <kendo-switch ng-model="profileConfig.config[menuSelectedModul.name].actions.download.enable"></kendo-switch>
                                                         </div>
                                                         <div class="col padding5">
-                                                                <span >İndirme</span>
+                                                                <span >{{ 'Setup.Profiles.DataDownload' | translate}}</span>
                                                         </div>
                                                         <div class="col-auto padding5" ng-show="profileConfig.config[menuSelectedModul.name].actions.download.enable">
                                                         </div>
