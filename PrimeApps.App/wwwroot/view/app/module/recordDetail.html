@@ -165,7 +165,7 @@
                                     </div>
                                     <md-button class="md-icon-button btn btn-primary"
                                                type="submit"
-                                               ng-show="hasPermission(type, null, record)"
+                                               ng-show="hasPermission(type, null, record, clone)"
                                                ng-disabled="submitting || fileLoadingCounter>0 || loading || (record.freeze && !isAdmin)"
                                                aria-label="Save">
                                         <i class="fas fa-save"></i>
