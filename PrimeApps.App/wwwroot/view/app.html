@@ -1,5 +1,5 @@
-
-<header class="hide-on-m">
+<div ng-if="userExist()" class="onbehalfoftext">{{getPreviewUser()}} <md-button ng-click="switchBack()">{{'Auth.SwitchBack' | translate}}</md-button></div>
+<header class="hide-on-m" ng-class="userExist() ? 'onbehalfof': ''">
     <div class="container-fluid">
         <div class="row justify-content-between align-items-center">
             <div class="col-auto">
@@ -48,27 +48,140 @@
                                 </span>
                             </md-button>
                             <md-menu-content class="md-dense account-dropdown-box">
-                                <div class="accountbar-in layout-padding"
-                                     ng-include="'view/common/account-box.html'"></div>
-                                <!--<md-menu-divider ng-if="(user.profile.has_admin_rights || user.profile.smtp_settings) && !preview"></md-menu-divider>-->
-                                <!--                                <md-menu-item>-->
-                                <!--                                    <md-button ng-click="gotoSetup('#/app/setup/settings?tab=general');MenuItemHideMenu();" aria-label="{{'Setup.Nav.Tabs.General' | translate}}">-->
-                                <!--                                        <span>{{'Setup.Nav.Tabs.General' | translate}}</span>-->
-                                <!--                                    </md-button>-->
-                                <!--                                </md-menu-item>-->
-                                <!--                                <md-menu-item ng-if="!disablePasswordChange">-->
-                                <!--                                    <md-button ng-click="gotoSetup('#/app/setup/settings?tab=security');MenuItemHideMenu();" aria-label="{{'Setup.Nav.Security' | translate}}">-->
-                                <!--                                        {{'Setup.Nav.Security' | translate}}-->
-                                <!--                                    </md-button>-->
-                                <!--                                </md-menu-item>-->
-                                <!--                                <md-menu-item ng-if="(user.profile.has_admin_rights || user.profile.smtp_settings) && !preview">-->
-                                <!--                                    <md-button ng-click="gotoSetup('#/app/setup/settings?tab=email');MenuItemHideMenu();" aria-label="{{ 'Setup.Messaging.EMail.Title' | translate}}">-->
-                                <!--                                        {{ 'Setup.Messaging.EMail.Title' | translate}}-->
-                                <!--                                    </md-button>-->
-                                <!--                                </md-menu-item>-->
+                                <div class="accountbar-in layout-padding" ng-include="'view/common/account-box.html'"></div>
+                                <md-menu-divider style="margin: 0;"></md-menu-divider>
+                                <div ng-if="getResult() && !preview">
+                                    <div class="blackbg5">
+                                        <div ng-if="useUserSettings" class="usermodalboxes whitebox">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h5><i class="fas fa-globe"></i>  {{'Setup.Settings.Language' | translate}}</h5>
+                                                <div>
+                                                    <select kendo-drop-down-list
+                                                            id="language"
+                                                            name="language"
+                                                            k-options="languageOptions"
+                                                            k-on-change="changeLanguage(selectedLanguage.value)"
+                                                            k-ng-model="selectedLanguage"></select>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                <md-menu-divider></md-menu-divider>
+                                        <section class="collapsible">
+                                            <div class="usermodalboxes whitebox">
+                                                <button md-prevent-menu-close="false" class="btn collapsed d-flex justify-content-between align-items-center" type="button" data-toggle="collapse"
+                                                        data-target="{{'#change_password'}}" aria-expanded="false" ng-click="clear()"
+                                                        aria-controls="{{'change_password'}}">
+                                                    <h5><i class="fas fa-lock"></i> {{'Setup.Settings.Title2' | translate}}</h5>
+                                                    <span classs="collapsed_arrows">
+                                                        <i class="fas fa-plus"></i>
+                                                        <i class="fas fa-minus"></i>
+                                                    </span>
+                                                </button>
+                                            </div>
+                                            <div id="change_password" class="collapsible-body collapse" aria-labelledby="change_password">
+                                                <form kendo-validator="passwordForm" ng-submit="changePassword(passwordModel, passwordForm)" autocomplete="off" novalidate ng-cloak class="disable-validation-msg">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <label for="current">
+                                                                    <span>{{'Setup.Settings.CurrentPassword' | translate}}</span>
+                                                                </label>
+                                                                <input type="password" id="current" name="current" minlength="6" maxlength="20" class="form-control k-textbox"
+                                                                       required ng-model="passwordModel.current" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="new_password">
+                                                                    <span>{{'Setup.Settings.Password' | translate}}</span>
+                                                                </label>
+                                                                <input type="password" id="new_password" name="new_password" class="k-textbox" maxlength="20"
+                                                                       minlength="6" required
+                                                                       ng-model="passwordModel.password"
+                                                                       ng-blur="checkLength(passwordModel.password)" />
 
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label for="confirm">
+                                                                    <span>{{'Setup.Settings.PasswordAgain' | translate}}</span>
+                                                                </label>
+                                                                <input type="password" id="confirm" name="confirm" class="k-textbox"
+                                                                       required ng-model="passwordModel.confirm"
+                                                                       ng-blur="passwordNotMatch(passwordModel.password,passwordModel.confirm)" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <md-dialog-actions layout="row">
+                                                        <md-button md-prevent-menu-close="false" class="btn btn-primary" type="submit" md-autofocus>
+                                                            <i class="fas fa-save"></i>
+                                                            {{'Common.Save' | translate}}
+                                                        </md-button>
+                                                        <span flex></span>
+                                                    </md-dialog-actions>
+                                                </form>
+                                            </div>
+                                        </section>
+                                        <section class="collapsible">
+                                            <div class="usermodalboxes whitebox">
+                                                <button md-prevent-menu-close="false" class="btn collapsed d-flex justify-content-between align-items-center" type="button" data-toggle="collapse"
+                                                        data-target="{{'#auth'}}" aria-expanded="false" ng-click="generateList($event)"
+                                                        aria-controls="{{'auth'}}">
+                                                    <h5><i class="fas fa-shield-alt"></i> {{'Auth.Authorizations' | translate}}</h5>
+                                                    <span classs="collapsed_arrows">
+                                                        <i class="fas fa-plus"></i>
+                                                        <i class="fas fa-minus"></i>
+                                                    </span>
+                                                </button>
+                                            </div>
+
+                                            <div id="auth" class="collapsible-body collapse" aria-labelledby="auth">
+                                                <div ng-if="authorizedList.length >0">
+                                                    <span>{{'Auth.Authorized' | translate}}:</span>
+                                                    <div ng-repeat="authorizedUser in authorizedList" class="account-dropdown-box account-dropdown-box2">
+                                                        <div class="accountbar-in">
+                                                            <div class="account-link d-flex">
+                                                                <span>
+                                                                    <img ng-if="authorizedUser.picture" ng-src="{{authorizedUser.picture}}" class="img-circle" />
+                                                                    <i ng-if="!authorizedUser.picture" class="fas fa-user"></i>
+                                                                </span>
+                                                                <span class="md-truncate">{{authorizedUser.full_name}}<small class="md-truncate">{{authorizedUser.email}}</small> </span>
+                                                            </div>
+                                                            <div class="d-inline-flex padding0 onbehalfofbutton">
+                                                                <md-button class="md-icon-button btn btn-primary" ng-click="login(authorizedUser)" aria-label="">
+                                                                    <i class="fas fa-sign-in-alt"></i>
+                                                                </md-button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div ng-if="authorizeList.length >0">
+                                                    <span>{{'Auth.Authorize' | translate}}:</span>
+                                                    <div ng-repeat="authorizeUser in authorizeList" class="account-dropdown-box account-dropdown-box2">
+                                                        <div class="accountbar-in">
+                                                            <div class="account-link d-flex">
+                                                                <span>
+                                                                    <img ng-if="authorizeUser.picture" ng-src="{{authorizeUser.picture}}" class="img-circle" />
+                                                                    <i ng-if="!authorizeUser.picture" class="fas fa-user"></i>
+                                                                </span>
+                                                                <span class="md-truncate">{{authorizeUser.full_name}}<small class="md-truncate">{{authorizeUser.email}}</small> </span>
+                                                            </div>
+                                                            <div class="d-inline-flex padding0 onbehalfofbutton">
+                                                                <md-button md-prevent-menu-close="false" class="md-icon-button btn btn-secondary" ng-click="removeAuthorizeUser(authorizeUser)" aria-label=" {{'Common.Delete' | translate}}">
+                                                                    <i class="fa fa-trash"></i><md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Delete' | translate}}</md-tooltip>
+                                                                </md-button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <select id="users" name="users" kendo-drop-down-list k-options="authorizationUserOptions" k-ng-model="authorizationUser"></select>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
                                 <div class="appcolor">
                                     <div class="title"><h5>{{'Common.ThemeColor' | translate}}: </h5></div>
                                     <span ng-click="changeTheme('#1F4688','blue')"

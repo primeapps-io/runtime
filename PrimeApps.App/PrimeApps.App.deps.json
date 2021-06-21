@@ -27,6 +27,7 @@
         "dependencies": {
           "AWSSDK.Extensions.NETCore.Setup": "3.3.101",
           "AWSSDK.S3": "3.5.7.6",
+          "AspNetCoreRateLimit": "3.2.2",
           "Aspose.Cells": "20.11.0",
           "Aspose.Words": "20.12.0",
           "DynamicExpresso.Core": "2.3.3",
@@ -64,9 +65,9 @@
           "Sentry.AspNetCore": "2.1.8",
           "SkiaSharp.NativeAssets.Linux.NoDependencies": "2.80.2",
           "System.Linq.Dynamic.Core": "1.2.7",
-          "WorkflowCore": "3.3.5",
-          "WorkflowCore.DSL": "3.3.1",
-          "WorkflowCore.Providers.Redis": "3.0.2",
+          "WorkflowCore": "3.5.0",
+          "WorkflowCore.DSL": "3.5.0",
+          "WorkflowCore.Providers.Redis": "3.5.0",
           "Microsoft.AspNetCore.Antiforgery": "5.0.0.0",
           "Microsoft.AspNetCore.Authentication.Abstractions.Reference": "5.0.0.0",
           "Microsoft.AspNetCore.Authentication.Cookies": "5.0.0.0",
@@ -348,6 +349,23 @@
         },
         "compile": {
           "PrimeApps.App.dll": {}
+        }
+      },
+      "AspNetCoreRateLimit/3.2.2": {
+        "dependencies": {
+          "Microsoft.Extensions.Caching.Abstractions": "5.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "5.0.0",
+          "Microsoft.Extensions.Options": "5.0.0",
+          "Newtonsoft.Json": "12.0.3"
+        },
+        "runtime": {
+          "lib/net5.0/AspNetCoreRateLimit.dll": {
+            "assemblyVersion": "3.2.2.0",
+            "fileVersion": "3.2.2.0"
+          }
+        },
+        "compile": {
+          "lib/net5.0/AspNetCoreRateLimit.dll": {}
         }
       },
       "Aspose.Cells/20.11.0": {
@@ -3214,7 +3232,7 @@
           "System.Xml.ReaderWriter": "4.3.0"
         }
       },
-      "WorkflowCore/3.3.5": {
+      "WorkflowCore/3.5.0": {
         "dependencies": {
           "ConcurrentHashSet": "1.1.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "5.0.0",
@@ -3231,43 +3249,43 @@
         },
         "runtime": {
           "lib/netstandard2.0/WorkflowCore.dll": {
-            "assemblyVersion": "3.3.5.0",
-            "fileVersion": "3.3.5.0"
+            "assemblyVersion": "3.5.0.0",
+            "fileVersion": "3.5.0.0"
           }
         },
         "compile": {
           "lib/netstandard2.0/WorkflowCore.dll": {}
         }
       },
-      "WorkflowCore.DSL/3.3.1": {
+      "WorkflowCore.DSL/3.5.0": {
         "dependencies": {
           "Newtonsoft.Json": "12.0.3",
           "SharpYaml": "1.6.5",
           "System.Linq.Dynamic.Core": "1.2.7",
-          "WorkflowCore": "3.3.5"
+          "WorkflowCore": "3.5.0"
         },
         "runtime": {
           "lib/netstandard2.0/WorkflowCore.DSL.dll": {
-            "assemblyVersion": "3.3.1.0",
-            "fileVersion": "3.3.1.0"
+            "assemblyVersion": "3.5.0.0",
+            "fileVersion": "3.5.0.0"
           }
         },
         "compile": {
           "lib/netstandard2.0/WorkflowCore.DSL.dll": {}
         }
       },
-      "WorkflowCore.Providers.Redis/3.0.2": {
+      "WorkflowCore.Providers.Redis/3.5.0": {
         "dependencies": {
           "Microsoft.Extensions.Logging.Abstractions": "5.0.0",
           "Newtonsoft.Json": "12.0.3",
           "RedLock.net": "2.2.0",
           "StackExchange.Redis": "2.1.30",
-          "WorkflowCore": "3.3.5"
+          "WorkflowCore": "3.5.0"
         },
         "runtime": {
           "lib/netstandard2.0/WorkflowCore.Providers.Redis.dll": {
-            "assemblyVersion": "3.0.2.0",
-            "fileVersion": "3.0.2.0"
+            "assemblyVersion": "3.5.0.0",
+            "fileVersion": "3.5.0.0"
           }
         },
         "compile": {
@@ -5024,6 +5042,13 @@
       "serviceable": false,
       "sha512": ""
     },
+    "AspNetCoreRateLimit/3.2.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ayEDHsR0d+c1UZx3c8EjmEw+WCskTjhAyAz4BF3eB2AyRJRzhIHiWbFwJ/hTUmwNs8kt0VigyKnwPonfnmR1JQ==",
+      "path": "aspnetcoreratelimit/3.2.2",
+      "hashPath": "aspnetcoreratelimit.3.2.2.nupkg.sha512"
+    },
     "Aspose.Cells/20.11.0": {
       "type": "package",
       "serviceable": true,
@@ -6042,7 +6067,7 @@
     "System.Collections.NonGeneric/4.3.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-LE/oChpRvkSi3U25u0KnJcI44JeDZ1QJCyN4qFDx2uusEypdqR24w7lKYw21eYe5esuCBuc862wRmpF63Yy1KQ==",
+      "sha512": "sha512-prtjIEMhGUnQq6RnPEYLpFt8AtLbp9yq2zxOSrY7KJJZrw25Fi97IzBqY7iqssbM61Ek5b8f3MG/sG1N2sN5KA==",
       "path": "system.collections.nongeneric/4.3.0",
       "hashPath": "system.collections.nongeneric.4.3.0.nupkg.sha512"
     },
@@ -6560,7 +6585,7 @@
     "System.Threading.ThreadPool/4.3.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-SrCOmTvvOOCmJT4BBxdZcwhz6XEMsjBGZvGSVorOxdCznaUNeVotEjDfXGIZ8gcGo00qgPbTV6puHDgcFYl6Iw==",
+      "sha512": "sha512-k/+g4b7vjdd4aix83sTgC9VG6oXYKAktSfNIJUNGxPEj7ryEOfzHHhfnmsZvjxawwcD9HyWXKCXmPjX8U4zeSw==",
       "path": "system.threading.threadpool/4.3.0",
       "hashPath": "system.threading.threadpool.4.3.0.nupkg.sha512"
     },
@@ -6585,26 +6610,26 @@
       "path": "system.xml.xpath/4.3.0",
       "hashPath": "system.xml.xpath.4.3.0.nupkg.sha512"
     },
-    "WorkflowCore/3.3.5": {
+    "WorkflowCore/3.5.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-p+FkBVbFTebYT9gFEL8prjmWZst1ZQwTwgL6i1LF357ES6XtRRvJk72RLO1CywHHGeW5jO+zvDucZ6IXaeBFfQ==",
-      "path": "workflowcore/3.3.5",
-      "hashPath": "workflowcore.3.3.5.nupkg.sha512"
+      "sha512": "sha512-q55S2ZHr24e21AJoj5KLJtvD0xTVm8emDPSQny312Bp6OKwosablG4y+3GIs9fH2JFgJApA28+3U2X2yn544UA==",
+      "path": "workflowcore/3.5.0",
+      "hashPath": "workflowcore.3.5.0.nupkg.sha512"
     },
-    "WorkflowCore.DSL/3.3.1": {
+    "WorkflowCore.DSL/3.5.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-d9ukybibAgd/2KnPd8SzlakRlqet8QHmUvTrkRNX+0+bE33gPiqklHFOuRQmI+D/dtyijP9attD3r4+N9nz0iQ==",
-      "path": "workflowcore.dsl/3.3.1",
-      "hashPath": "workflowcore.dsl.3.3.1.nupkg.sha512"
+      "sha512": "sha512-R10eJF+TcpR+bNMLmi5jBE99/lAPmlROqYcbPYJy8el55BxelD+A6dUNVnx0X/g1O6TIG99J1vgDpJ5JpXCtQQ==",
+      "path": "workflowcore.dsl/3.5.0",
+      "hashPath": "workflowcore.dsl.3.5.0.nupkg.sha512"
     },
-    "WorkflowCore.Providers.Redis/3.0.2": {
+    "WorkflowCore.Providers.Redis/3.5.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-kVqGrVSsesjISLFl0QVTdC/Ree7lfyIELyHd1wmzZ5rgkLe6r7TjeKIvgOVU7gepwd4HiGDzAXJ+Z5VAQT8I/w==",
-      "path": "workflowcore.providers.redis/3.0.2",
-      "hashPath": "workflowcore.providers.redis.3.0.2.nupkg.sha512"
+      "sha512": "sha512-nDe5eaMouvnEhtS8N+qyRr+6oa0qM4riDpWWKw9EGYX74P1aN70KjZBJxyLqs4YMQpbvGGZaGoJUh2Cb4uqWQw==",
+      "path": "workflowcore.providers.redis/3.5.0",
+      "hashPath": "workflowcore.providers.redis.3.5.0.nupkg.sha512"
     },
     "Z.EntityFramework.Extensions.EFCore/5.1.13": {
       "type": "package",

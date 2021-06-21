@@ -297,9 +297,33 @@
             name="{{field.name}}"
             kendo-drop-down-list
             ng-required="field.validation.required"
-            ng-readonly="{{setReadonly(field) || field.validation.readonly || (record.freeze && !isAdmin)}}"
+            ng-readonly="{{setReadonly(field)}}"
+            ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
             k-options="{{'customOptions'+ field.picklist_id}}"
             k-ng-model="record[field.name]"
+            k-on-change="fieldValueChange(field);">
+    </select>
+</div>
+
+<div class="form-group" ng-mouseover="setId(field, true)"
+     ng-if="field.data_type === 'droplist' && ( field.view_type === 'dropdown' || field.view_type === '' || field.view_type === undefined) && !field.hidden">
+    <label ng-show="!field.custom_label && field.show_label"
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
+        <span>{{ field.languages[globalization.Label]['label'] }}</span>
+        <span class="label-right">
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+        </span>
+    </label>
+
+    <select
+            name="{{field.name}}"
+            kendo-drop-down-list
+            ng-required="field.validation.required"
+            ng-readonly="{{setReadonly(field)}}"
+            k-options="{{'customOptionsDropList'+field.id}}"
+            k-ng-model="record[field.name]"
+            ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
             k-on-change="fieldValueChange(field);">
     </select>
 </div>
@@ -365,6 +389,25 @@
             k-ng-model="record[field.name]"
             ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
             k-options="{{'customOptions'+ field.picklist_id}}">
+    </select>
+</div>
+<div class="form-group" ng-mouseover=" setId(field, true)" ng-if="field.data_type === 'multiselect_droplist' && field.view_type !='checkbox' && !field.hidden">
+    <label ng-show="!field.custom_label && field.show_label"
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
+        <span>{{ field.languages[globalization.Label]['label'] }}</span>
+        <span class="label-right">
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+        </span>
+    </label>
+    <select id="{{fastRecordModal ? field.name + '_m' : field.name}}"
+            name="{{field.name}}"
+            kendo-multi-select
+            ng-readonly="{{setReadonly(field)}}"
+            ng-required="field.validation.required"
+            k-ng-model="record[field.name]"
+            ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
+            k-options="{{'customOptionsDropList'+ field.id}}">
     </select>
 </div>
 
@@ -438,8 +481,8 @@
                name="{{field.name}}"
                nv-file-select uploader="uploaderBasic(field)"
                ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
-               ng-required="field.validation.required"
-               ng-model='record[field.name]'>
+               ng-required="field.validation.required && !record[field.name]"
+               ng-model="record[field.name]">
         <label class="custom-file-label" for="{{fastRecordModal ? field.name + '_m' : field.name}}"
                ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
                ng-show="field.data_type === 'document'" ng-value='record[field.name]'>
@@ -535,6 +578,10 @@
      ng-mouseover="setCurrentLookupField(field)">
     <label ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
         <span>{{ field.languages[globalization.Label]['label'] }}</span>
+        <span class="label-right">
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+        </span>
     </label>
     <select kendo-multi-select="{{'multiselect_lookup'+field.id}}"
             id="{{fastRecordModal ? field.name + '_m' : field.name}}"
@@ -591,6 +638,31 @@
         </li>
     </ul>
 </div>
+<div class="form-group" ng-if="field.data_type === 'droplist' &&  field.view_type ==='radio' && !field.hidden">
+    <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}"
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
+        <span>{{ field.languages[globalization.Label]['label'] }}</span>
+        <span class="label-right">
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+        </span>
+    </label>
+    <ul class="list-unstyled">
+        <li ng-repeat="radio in droplistsModule[field.droplist_id].items | filter:{inactive:'!true', hidden:'!true'}">
+            <input id="{{field.name+radio.name}}"
+                   class="k-radio"
+                   ng-readonly="{{setReadonly(field)}}"
+                   ng-disabled="field.validation.readonly  || (record.freeze && !isAdmin)"
+                   ng-required="field.validation.required"
+                   name="{{field.name}}"
+                   type="radio"
+                   ng-model="record[field.name]"
+                   ng-change="fieldValueChange(field);"
+                   ng-value="radio">
+            <label class="k-radio-label" for="{{field.name+radio.name}}">{{radio.label}}</label>
+        </li>
+    </ul>
+</div>
 
 <div class="form-group" ng-if="field.data_type === 'picklist' &&  field.view_type ==='checkbox' && !field.hidden">
     <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}"
@@ -617,6 +689,37 @@
                ng-value="checkbox">
         <label class="k-checkbox-label" for="{{field.name+checkbox.id}}">
             {{checkbox.languages[globalization.Label]['label']}}
+        </label>
+    </div>
+</div>
+
+<div class="form-group" ng-if="field.data_type === 'multiselect_droplist' &&  field.view_type ==='checkbox' && !field.hidden">
+    <label ng-show="!field.custom_label && field.show_label" style="{{field.style_label}}"
+           for="{{fastRecordModal ? field.name + '_m' : field.name}}"
+           ng-class="{'required':field.validation.required, 'readonly':field.validation.readonly || setReadonly(field) }">
+        <span>{{ field.languages[globalization.Label]['label'] }}</span>
+        <span class="label-right">
+            <span class="required-label"
+                  ng-show="field.validation.required && field.show_label">{{'Common.Required' | translate}}</span>
+        </span>
+    </label>
+
+    <div ng-class="{'drop-down-checkbox':field.view_type ==='checkbox'}"
+         class="d-inline-block pr-4"
+         ng-repeat="checkbox in droplistsModule[field.droplist_id].items | filter:{inactive:'!true', hidden:'!true'}">
+
+        <input id="{{field.name+checkbox.id}}"
+               class="k-checkbox"
+               ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
+               ng-required="field.validation.required"
+               name="{{field.name}}"
+               ng-readonly="{{setReadonly(field)}}"
+               ng-model="record[field.name][checkbox.name]"
+               ng-change="fieldValueChange(field);"
+               type="checkbox"
+               ng-value="checkbox.name">
+        <label class="k-checkbox-label" for="{{field.name+checkbox.id}}">
+            {{checkbox.label}}
         </label>
     </div>
 </div>

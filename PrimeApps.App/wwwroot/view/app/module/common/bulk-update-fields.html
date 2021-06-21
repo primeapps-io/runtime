@@ -188,6 +188,22 @@
     </select>
 
 </div>
+<div class="form-group"
+     ng-if="field.data_type === 'droplist' && ( field.view_type === 'dropdown' || field.view_type === 'radio' || field.view_type === '' || field.view_type === undefined) && !field.hidden">
+
+    <select id="{{field.name}}"
+            name="{{field.name}}"
+            kendo-drop-down-list
+            required="{{field.validation.required}}"
+            tabindex="{{field.order}}"
+            k-data-source="field.droplist"
+            k-data-text-field="'label'"
+            k-data-value-field="'name'"
+            k-ng-model="bulkUpdate.value"
+            ng-disabled="field.validation.readonly || (id && !field.editable)">
+    </select>
+
+</div>
 
 <div class="form-group accept"
      ng-if="field.data_type === 'checkbox' && !field.custom_label && !field.hidden && (preview ? true : field.name === 'is_sample'? false : true )">
@@ -206,7 +222,7 @@
      ng-if="field.data_type === 'checkbox' && field.custom_label && !field.hidden">
     <span class="ng-animate-disabled"
           tabindex="{{cell.field.order}}"
-          id="{{field.name}}" 
+          id="{{field.name}}"
           ng-model="field.custom_label">{{field.custom_label}}</span>
 </div>
 
@@ -223,7 +239,7 @@
            ng-readonly="true" />
 </div>
 
-<div class="form-group" ng-if="field.data_type === 'multiselect' && !field.hidden">
+<div class="form-group" ng-if="(field.data_type === 'multiselect' || field.data_type === 'multiselect_droplist')  && !field.hidden">
 
     <select id="{{field.name}}"
             name="{{field.name}}"

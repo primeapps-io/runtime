@@ -527,10 +527,10 @@ md-menu-item>a.md-button{
 header{
 	background: $white;
 	box-shadow: $box-shadow-sm;
-	padding: 10px 0px;
+	padding: 0px;
 	position: relative;
 	z-index: 70;
-	max-height: 80px;
+	max-height: 70px;
 	.helpbar{
 		li{
 			a{
@@ -543,6 +543,10 @@ header{
 				}
 			}
 		}
+	}
+	> .container-fluid{
+		padding-top: 5px;
+		padding-bottom: 5px;
 	}
 	.accountbar{
 		margin-left: 10px;
@@ -582,6 +586,12 @@ header{
 		}
 	}
 }
+header.onbehalfof{
+	~ng-include .wrapper{
+		height: calc(100vh - 100px);
+	}
+}
+
 md-menu-content.account-dropdown-box{
 	max-height: inherit;
 	max-width: 300px;
@@ -634,6 +644,57 @@ md-menu-content.account-dropdown-box{
 		&:hover{
 			color: $primary;
 		}
+	}
+}
+.account-dropdown-box2{
+	.accountbar-in{
+		border-bottom: 2px solid white;
+		padding-bottom: 10px;
+		margin: 10px 0;
+		.account-link{
+			padding: 0;
+			span {
+				line-height: 15px;
+				&:first-child {
+					width: 30px;
+					height: 30px;
+					line-height: 30px;
+				}
+			}
+			&:hover{
+				color: inherit;
+			}
+		}
+		.onbehalfofbutton{
+			.md-icon-button{
+				width: 30px;
+				min-width: 30px;
+				min-height: 30px;
+				height: 30px;
+			}
+		}
+	}
+}
+.onbehalfoftext{
+	background: $warning;
+	text-align:center;
+	padding: 5px;
+	//position: absolute;
+	//top: 0;
+	//width: 100%;
+	//z-index: 99;
+	box-shadow: $box-shadow;
+	font-size: $font-size-sm;
+	min-height: 30px;
+	.md-button{
+		min-height: 15px;
+		line-height: 15px;
+		background: transparent !important;
+		border-bottom: 1px solid;
+		display: inline-block;
+		margin: 0;
+		border-radius: 0;
+		font-size: $font-size-sm;
 	}
 }
 
@@ -690,7 +751,7 @@ md-menu-content.account-dropdown-box{
 
 ////////////////////////// Layout //////////////////////////
 .wrapper{
-	height: calc(100vh - 80px);
+	height: calc(100vh - 70px);
 	position: relative;
 	> section{
 		position: relative;
@@ -1534,6 +1595,36 @@ label{
 }
 .k-pager-numbers{
 	z-index: 1;
+}
+.usermodalboxes{
+	margin-bottom: 1px;
+	border-radius: 0;
+	padding: 10px 15px;
+	h5{
+		display: inline-block;
+	}
+	button{
+		padding: 5px 0px;
+		text-decoration: none;
+		width: 100%;
+		
+		.fa-plus{
+			display: none;
+		}
+		&.collapsed{
+			.fa-plus{
+				display: inline-block;
+			}
+			.fa-minus{
+				display: none;
+			}
+		}
+	}
+	.md-icon-button{
+		.fa-plus{
+			display: block;
+		}
+	}
 }
 
 .whitebox,.md-subheader,.k-popup{
@@ -2825,7 +2916,6 @@ li.sortable-list-placeholder{
 	column-gap: 1rem;
 	width: 100%;
 	.cart-column-box{
-		display: inline-block;
 		width: 100%;
 	}
 }
@@ -3537,6 +3627,14 @@ md-toolbar{
 		padding: 20px 30px;
 	}
 }
+.usermodalboxes{
+	~ .collapsible-body{
+		margin-top: 0px;
+		padding: 10px 20px;
+	}
+}
+
+
 .filter-list{
 	padding-left: 10px;
 	position: relative;
@@ -3636,7 +3734,14 @@ md-toolbar{
 	}
 }
 
-
+.card-columns4 {
+	.cart-column-box {
+		.collapsible {
+			width: 100%;
+			display: inline-block;
+		}
+	}
+}
 
 .newupload {
 	.uploadlink {
@@ -4185,6 +4290,11 @@ md-dialog{
 			}
 		}
 	}
+	header.onbehalfof{
+		~ng-include .wrapper{
+			height: calc(100vh - 80px);
+		}
+	}
 	.accountbar-in{
 		.md-button{
 			&:hover{
@@ -4631,6 +4741,19 @@ md-dialog{
 		color: black;
 	}
 }
+
+.k-scheduler-timelineview {
+	.k-event {
+		width: 60px !important;
+		margin-top: 3px;
+		padding-top: 2px;
+		padding-right: 10px;
+		text-align: center;
+		color: #ffffff;
+		background-color: #43649b;
+	}
+}
+
 @media (max-width: 768px) {
 	.gridByGroup {
 		.sortGroupBy {

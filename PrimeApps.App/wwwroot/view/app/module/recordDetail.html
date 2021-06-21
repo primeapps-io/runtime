@@ -219,7 +219,7 @@
                                 </div>
                             </section>
 
-                            <section ng-repeat="sectionTemplate in currentSectionComponentsTemplate" class="whitebox collapsible" ng-if="section.type">
+                            <section ng-repeat="sectionTemplate in currentSectionComponentsTemplate" class="whitebox collapsible" ng-if="section.type && !fastRecordModal">
                                 <ng-include src="sectionTemplate"></ng-include>
                             </section>
 

@@ -147,17 +147,36 @@
             filter.operator.name ==='greater' || filter.operator.name ==='greater_equal' || filter.operator.name ==='less' || filter.operator.name ==='less_equal'">
     </select>
 </div>
+<div class="form-group" ng-if="fieldskey[filter.field.name].data_type === 'droplist'">
+    <select kendo-drop-down-list
+            k-data-text-field="'label'"
+            k-data-value-field="'name'"
+            k-data-source="fieldskey[filter.field.name].droplist"
+            ng-model="filter.value"
+            k-on-change="viewFiltere(filter);"
+            k-option-label="'{{'Common.Select' | translate}}'"
+            k-auto-width="true"
+            ng-show="filter.operator.name ==='is' || filter.operator.name ==='is_not' || filter.operator.name ==='contains' || filter.operator.name ==='not_contain' ||
+            filter.operator.name ==='starts_with' || filter.operator.name ==='ends_with' || filter.operator.name ==='equals' || filter.operator.name ==='not_equal' ||
+            filter.operator.name ==='greater' || filter.operator.name ==='greater_equal' || filter.operator.name ==='less' || filter.operator.name ==='less_equal'">
+    </select>
+</div>
 
 <div class="form-group accept" ng-if="fieldskey[filter.field.name].data_type === 'checkbox'">
-    <input type="checkbox"
-           id="{{filter.key}}"
-           class="k-checkbox"
-           ng-model="filter.value"
-           ng-change="viewFiltere(filter);">
+<!--    <input type="checkbox"-->
+<!--           id="{{filter.key}}"-->
+<!--           class="k-checkbox"-->
+<!--           ng-model="filter.value"-->
+<!--           ng-change="viewFiltere(filter);">-->
+    <select kendo-drop-down-list
+            k-ng-model="filter.value"
+            k-on-change="viewFiltere(filter);"
+            k-options="fieldskey[filter.field.name].options">
+    </select>
 
 </div>
 
-<div class="form-group" ng-if="fieldskey[filter.field.name].data_type === 'multiselect'">
+<div class="form-group" ng-if="fieldskey[filter.field.name].data_type === 'multiselect' || fieldskey[filter.field.name].data_type === 'multiselect_droplist'">
 
     <select kendo-multi-select
             k-ng-model="filter.value"

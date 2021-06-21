@@ -132,6 +132,15 @@
                             k-options="fixedSelectListOption(fixedField)"
                             k-option-label="'{{'Common.Select' | translate}}'"
                             ng-if="fixedField.data_type === 'picklist'"></select>
+                    <select kendo-drop-down-list
+                            name="{{fixedField.name}}"
+                            id="{{fixedField.name}}"
+                            k-ng-model="fixedValue[fixedField.name]"
+                            ng-required="{{fixedField.validation.required}}"
+                            k-on-change="fixedValueChanged(fixedField)"
+                            k-options="fixedSelectListOption(fixedField)"
+                            k-option-label="'{{'Common.Select' | translate}}'"
+                            ng-if="fixedField.data_type === 'droplist'"></select>
 
                     <div class="custom-control custom-checkbox custom-control-inline" ng-if="fixedField.data_type === 'checkbox'">
                         <input type="checkbox"

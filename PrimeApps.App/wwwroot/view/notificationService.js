@@ -8,7 +8,7 @@ angular.module('primeapps')
             var notificationHub = new signalR.HubConnectionBuilder()
                 .withUrl("/notification?X-App-Id=" + $rootScope.user.app_id + "&X-Tenant-Id=" + $rootScope.user.tenant_id, {
                     accessTokenFactory: function () {
-                      return  $localStorage.read('access_token');
+                        return $localStorage.read('access_token');
                     }
                 })
                 .configureLogging(function (logging) {
@@ -25,10 +25,10 @@ angular.module('primeapps')
                     console.log(err);
                     setTimeout(function () { return start(); }, 5000);
                 }
-            };
+            }
 
             notificationHub.onclose(function () {
-                return start(); 
+                return start();
             });
 
             // Start the connection.

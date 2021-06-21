@@ -1,10 +1,72 @@
 'use strict';
-angular.module('primeapps').controller('AppController', ['$rootScope', '$scope', 'mdToast', '$mdToast', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', 'entityTypes', 'guidEmpty', 'component', 'helper', 'operations', 'blockUI', '$cache', 'AppService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$mdSidenav', '$mdDialog', '$mdMedia', 'icons2', 'GeneralSettingsService', 'SignalNotificationService', 'NotificationService', '$timeout',
-    function ($rootScope, $scope, mdToast, $mdToast, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, entityTypes, guidEmpty, component, helper, operations, blockUI, $cache, AppService, AuthService, $sessionStorage, HelpService, $sce, $mdSidenav, $mdDialog, $mdMedia, icons2, GeneralSettingsService, SignalNotificationService, NotificationService, $timeout) {
+angular.module('primeapps').controller('AppController', ['$rootScope', '$scope', 'mdToast', '$mdToast', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', 'entityTypes', 'guidEmpty', 'component', 'helper', 'operations', 'blockUI', '$cache', 'AppService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$mdSidenav', '$mdDialog', '$mdMedia', 'icons2', 'GeneralSettingsService', 'SignalNotificationService', 'NotificationService', '$timeout', 'SettingService',
+    function ($rootScope, $scope, mdToast, $mdToast, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, entityTypes, guidEmpty, component, helper, operations, blockUI, $cache, AppService, AuthService, $sessionStorage, HelpService, $sce, $mdSidenav, $mdDialog, $mdMedia, icons2, GeneralSettingsService, SignalNotificationService, NotificationService, $timeout, SettingService) {
 
         $scope.disablePasswordChange = disablePasswordChange;
-        $rootScope.expressionRunOrderData = {Value: [], Validation: [], ValidateTime: []}
+        $scope.useUserSettings = useUserSettings;
+        $rootScope.expressionRunOrderData = { Value: [], Validation: [], ValidateTime: [] }
         $rootScope.globalLoading = false;
+        $rootScope.authorizeList = [];
+        $rootScope.authorizedList = [];
+        $rootScope.usersList = $filter('filter')(angular.copy($rootScope.users), function (user) {
+            return user.id !== $rootScope.user.id;
+        }, true);
+        $rootScope.usersList = $filter('orderBy')($rootScope.usersList, 'full_name');
+        $scope.selectedLanguage = $filter('filter')(languages, { label: globalization.Label, value: globalization.Culture }, true)[0];
+
+        $scope.languageOptions = {
+            dataSource: languages,
+            dataTextField: 'text',
+            dataValueField: "value",
+            ingoreCase: true,
+            filter: languages.length > 5 ? 'contains' : null,
+            autoBind: false,
+        };
+
+        $rootScope.authorizationUserOptions = {
+            dataSource: new kendo.data.DataSource({
+                transport: {
+                    read: function (o) {
+                        o.success($rootScope.usersList)
+                    }
+                }
+            }),
+            dataTextField: 'full_name',
+            dataValueField: "id",
+            ingoreCase: true,
+            filter: 'contains',
+            autoBind: false,
+            optionLabel: $filter('translate')('Auth.AddUser'),
+            select: function (e) {
+                if (!e || !e.dataItem || !e.dataItem.id) return;
+                const authorizationUser = $filter('filter')($rootScope.authorizeList, { id: e.dataItem.id }, true)[0];
+                if (authorizationUser) return;
+
+                const authorizeUser = {
+                    full_name: e.dataItem.full_name,
+                    id: e.dataItem.id,
+                    picture: e.dataItem.picture,
+                    email: e.dataItem.email
+                };
+                $rootScope.authorizeList.push(authorizeUser);
+
+                var user = $filter('filter')($rootScope.usersList, { id: e.dataItem.id }, true)[0];
+                if (user) {
+                    const index = $rootScope.usersList.indexOf(user);
+                    if (index > -1) {
+                        SettingService.updateAuthorize({ id: $rootScope.user.id, authorize: user.id }).then(function () {
+                            $rootScope.usersList.splice(index, 1);
+                            $rootScope.authorizationUserOptions.dataSource.read();
+                        }).catch(function () {
+                            mdToast.error($filter('translate')('Common.Error'));
+                            const authorizeIndex = $rootScope.authorizeList.indexOf(authorizeUser);
+                            if (authorizeIndex > -1)
+                                $rootScope.authorizeList.splice(authorizeIndex, 1);
+                        });
+                    }
+                }
+            }
+        };
 
         $rootScope.fastRecordAddModal = function (moduleName, fastAddRecord, lookupValue, lookupName, id, customScope) {
             $scope.modalCustomScopeRecord = customScope.record;
@@ -19,7 +81,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
             if (fastAddRecord) {
                 $scope.recordModal = {};
-                $scope.moduleModal = $filter('filter')($rootScope.modules, {name: moduleName}, true)[0];
+                $scope.moduleModal = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0];
 
                 if (!$scope.moduleModal) {
                     mdToast.warning($filter('translate')('Common.NotFound'));
@@ -56,10 +118,10 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     return;
                 }
 
-                $scope.primaryFieldModal = $filter('filter')($scope.moduleModal.fields, {primary_lookup: true})[0];
+                $scope.primaryFieldModal = $filter('filter')($scope.moduleModal.fields, { primary_lookup: true })[0];
 
                 if (!$scope.primaryFieldModal)
-                    $scope.primaryFieldModal = $filter('filter')($scope.moduleModal.fields, {primary: true})[0];
+                    $scope.primaryFieldModal = $filter('filter')($scope.moduleModal.fields, { primary: true })[0];
 
                 if (lookupValue) {
                     if ($scope.primaryFieldModal.combination) {
@@ -100,7 +162,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             });
         };
 
-        $scope.administrationMenuActive = $scope.administrationMenuActive ? $scope.administrationMenuActive : false;
+        $scope.administrationMenuActive = $scope.administrationMenuActive || false;
 
         $.extend(true, kendo.ui.Grid.prototype.options.messages, {
             noRecords: $filter('translate')('Common.NoItemDisplay'),
@@ -117,9 +179,9 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             display: $filter('translate')('Common.ItemDisplayCount')
         });
 
-        if(profileConfigs && profileConfigs.start_page){
-            $rootScope.start_page = '#/app/'+ profileConfigs.start_page;
-        }else{
+        if (profileConfigs && profileConfigs.start_page) {
+            $rootScope.start_page = '#/app/' + profileConfigs.start_page;
+        } else {
             $rootScope.start_page = '#/app/dashboard';
         }
 
@@ -183,9 +245,9 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         if (!$scope.lastRunUpdateNotification)
             $scope.lastRunUpdateNotification = $localStorage.read('update_time') ? parseInt($localStorage.read('update_time')) : 0;
 
-        
+
         window.newVersion = function () {
-            if ($scope.lastRunUpdateNotification <= (Date.now() - 600000)){
+            if ($scope.lastRunUpdateNotification <= (Date.now() - 600000)) {
                 $mdToast.show({
                     hideDelay: 0,
                     toastClass: 'new-version',
@@ -210,7 +272,6 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             $mdToast.hide();
         }
 
-
         $scope.hasPermission = helper.hasPermission;
         $scope.entityTypes = entityTypes;
         $scope.operations = operations;
@@ -222,10 +283,10 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.appLogo = $rootScope.workgroup.logo_url ? blobUrl + '/' + $rootScope.workgroup.logo_url : appLogo;
         $scope.addingApp = false;
         $scope.tenants = $rootScope.multiTenant;
-        $scope.componentModules = $filter('filter')($rootScope.modules, {system_type: 'component'}, true);
+        $scope.componentModules = $filter('filter')($rootScope.modules, { system_type: 'component' }, true);
 
         if ($rootScope.customProfilePermissions) {
-            var customProfilePermissionsForLoggedUser = $filter('filter')($rootScope.customProfilePermissions, {profileId: $scope.user.profile.id}, true)[0];
+            var customProfilePermissionsForLoggedUser = $filter('filter')($rootScope.customProfilePermissions, { profileId: $scope.user.profile.id }, true)[0];
             if (customProfilePermissionsForLoggedUser) {
                 var permissions = customProfilePermissionsForLoggedUser.permissions;
                 for (var j = 0; j < permissions.length; j++) {
@@ -320,7 +381,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                             $scope.mobileMenus[i].active = false;
                         }
                     }
-                    var item = $filter('filter')($scope.mobileMenus, {route: 'dashboard'})[0];
+                    var item = $filter('filter')($scope.mobileMenus, { route: 'dashboard' })[0];
                     item.active = true;
                 }
             } else {
@@ -414,7 +475,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
             if (item.route === "" || item.route === undefined) {
                 //open sub menu
-            }else {
+            } else {
                 $rootScope.closeSide("menuModal");
             }
         };
@@ -552,7 +613,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     moduleName = hash.split('/')[3].split('?')[0];
                 }
 
-                var module = moduleName ? $filter('filter')($rootScope.modules, {name: moduleName}, true)[0] : undefined;
+                var module = moduleName ? $filter('filter')($rootScope.modules, { name: moduleName }, true)[0] : undefined;
 
                 if (module) {
                     if (isModuleList) {
@@ -587,7 +648,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                          * if That has module_ type = module_form we will set it.
                          * But if old customers have added on studio  module_type = module_detail and  module_ type = module_form we will accept module_detail because we will deprecated  module_form on studio**/
                         else if (helps.length === 2) {
-                            help = $filter('filter')(helps, {module_type: 'module_detail'}, true)[0];
+                            help = $filter('filter')(helps, { module_type: 'module_detail' }, true)[0];
                             $scope.helpTemplatesSide = help;
                         }
 
@@ -651,26 +712,26 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             }
 
             if (moduleName) {
-                var module = $filter('filter')($rootScope.modules, {name: moduleName}, true)[0];
+                var module = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0];
                 if (module != null) {
                     if (isModuleList) {
                         HelpService.getModuleType('modal', 'modulelist', module.id)
                             .then(function (response) {
-                                    $scope.helpTemplatesSide = response.data;
-                                    if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                        $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
-                                    }
-
+                                $scope.helpTemplatesSide = response.data;
+                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                    $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
                                 }
+
+                            }
                             );
                     } else {
                         HelpService.getModuleType('modal', 'modulelist', module.id)
                             .then(function (response) {
-                                    $scope.helpTemplatesSide = response.data;
-                                    if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                        $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
-                                    }
+                                $scope.helpTemplatesSide = response.data;
+                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                    $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
                                 }
+                            }
                             );
                     }
                 }
@@ -726,37 +787,37 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.getTime = function (time) {
             return kendo.toString(kendo.parseDate(time), "g");
         };
-        
-        $scope.notificationShowModal = function () {
-                
-                $rootScope.notificationModalOpen = $mdSidenav('sideModal').isOpen();
-                    
-                if (!$rootScope.notificationModalOpen) {
-                    $rootScope.closeSide("menuModal");
-                    $rootScope.notificationModalOpen = true;
-                    $rootScope.buildToggler('sideModal', 'view/notificationModal.html');
-                    $scope.notificationLoading = false;
-                    $timeout(function () {
 
-                        var area = $('.md-sidenav-right').innerHeight() - $('.md-sidenav-right md-toolbar').innerHeight();
-                        //$('.notification-box').height();
-                        $scope.notificationListViewOptions = {
-                            scrollable: "endless",
-                            height: area,
-                            remove: function (e) {
-                                if (e.model) {
-                                    $scope.notificationRead(e.model, null, true)
-                                }
+        $scope.notificationShowModal = function () {
+
+            $rootScope.notificationModalOpen = $mdSidenav('sideModal').isOpen();
+
+            if (!$rootScope.notificationModalOpen) {
+                $rootScope.closeSide("menuModal");
+                $rootScope.notificationModalOpen = true;
+                $rootScope.buildToggler('sideModal', 'view/notificationModal.html');
+                $scope.notificationLoading = false;
+                $timeout(function () {
+
+                    var area = $('.md-sidenav-right').innerHeight() - $('.md-sidenav-right md-toolbar').innerHeight();
+                    //$('.notification-box').height();
+                    $scope.notificationListViewOptions = {
+                        scrollable: "endless",
+                        height: area,
+                        remove: function (e) {
+                            if (e.model) {
+                                $scope.notificationRead(e.model, null, true)
                             }
                         }
-                    }, 500)
-                    $rootScope.isViewFilterOpen = true;
-                    $localStorage.write('is_view_open', $rootScope.isViewFilterOpen);
-                } else {
-                    $scope.closeSide('sideModal');
-                    $rootScope.notificationModalOpen = false;
-                    $scope.notificationShowModal();
-                }
+                    }
+                }, 500)
+                $rootScope.isViewFilterOpen = true;
+                $localStorage.write('is_view_open', $rootScope.isViewFilterOpen);
+            } else {
+                $scope.closeSide('sideModal');
+                $rootScope.notificationModalOpen = false;
+                $scope.notificationShowModal();
+            }
         };
 
         $scope.notificationRead = function (notification, id, clear, url) {
@@ -814,7 +875,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                             data: response.data,
                             pageSize: 15
                         });
-                        $scope.unReadNotificationCount = $filter('filter')(response.data, {status: 'Unread'}, true).length;
+                        $scope.unReadNotificationCount = $filter('filter')(response.data, { status: 'Unread' }, true).length;
                     }
                 });
         }
@@ -879,7 +940,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             SignalNotificationService.allHide();
 
         }
-        
+
         $scope.closeSideModal = function () {
             if ($rootScope.isViewFilterOpen && $rootScope.isDocked)
                 $rootScope.closeSide('sideModal');
@@ -900,7 +961,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                         var subMenu = $scope.menu[i].menu_items[j];
                         if ('/app/modules/' + subMenu.route === $rootScope.currentPath ||
                             '/app/record/' + subMenu.route === $rootScope.currentPath ||
-                            '/app/' +  subMenu.route === $rootScope.currentPath) {
+                            '/app/' + subMenu.route === $rootScope.currentPath) {
                             $scope.menu[i].active = true;
                             subMenu.active = true;
                         } else {
@@ -912,5 +973,220 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             }
         }
 
+        $scope.passwordNotMatch = function (password, passwordAgain) {
+            if (password !== passwordAgain)
+                $scope.showError('compareTo')
+        };
+
+        $scope.showError = function (error) {
+            switch (error) {
+                case 'compareTo':
+                    mdToast.error($filter('translate')('Setup.Settings.PasswordNotMatch'));
+                    break;
+                case 'minlength':
+                    mdToast.error($filter('translate')('Setup.Settings.PasswordMinimum'));
+                    break;
+                case 'wrongPassword':
+                    mdToast.error($filter('translate')('Setup.Settings.PasswordWrong'));
+                    break;
+            }
+        };
+
+        $scope.changePassword = function (passwordModel, passwordForm) {
+
+            passwordForm.options.rules['range'] = getRangeRule();
+            if (passwordForm.validate()) {
+                SettingService.changePassword(passwordModel.current, passwordModel.password, passwordModel.confirm)
+                    .then(function () {
+                        mdToast.success($filter('translate')('Setup.Settings.PasswordSuccess'));
+                    })
+                    .catch(function (response) {
+                        if (response.status === 400) {
+                            mdToast.error($filter('translate')('Setup.Settings.InvalidPassword'))
+                        }
+                        else
+                            mdToast.error($filter('translate')('Common.Error'));
+                    });
+            } else
+                mdToast.error($filter('translate')('Module.RequiredError'));
+
+        };
+
+        function getRangeRule() {
+            return function (input) {
+                const min = parseInt(input[0]['ariaValueMin'], 10) || 6;
+                const max = parseInt(input[0]["ariaValueMax"], 10) || 20;
+                const minLength = parseInt(input[0]['minLength'], 10) || 6;
+                const maxLength = parseInt(input[0]['maxLength'], 10) || 20;
+                const valueAsString = input.val();
+                const value = parseInt(valueAsString, 10);
+
+                if (!isNaN(minLength) && !isNaN(maxLength) && valueAsString && minLength > -1 && maxLength > -1) {
+                    return minLength <= valueAsString.length && valueAsString.length <= maxLength;
+                }
+
+                if (isNaN(min) || isNaN(max) || isNaN(minLength) || isNaN(maxLength) || minLength === -1 || maxLength === -1) {
+                    return true;
+                }
+
+                if (isNaN(value)) {
+                    return true;
+                }
+                return min <= value && value <= max && minLength <= valueAsString.length && valueAsString.length <= maxLength;
+            }
+        }
+
+        $scope.checkLength = function (value) {
+            if (value && value.length < 6) {
+                $scope.showError('minlength');
+            }
+        };
+
+        $scope.removeAuthorizeUser = function (user) {
+            if (!user) return;
+            const index = $rootScope.authorizeList.indexOf(user);
+            if (index < 0) return;
+            $rootScope.authorizeList.splice(index, 1);
+
+            const result = $filter('filter')($rootScope.users, { id: user.id }, true)[0];
+            if (result) {
+                SettingService.removeAuthorize({ id: $rootScope.user.id, authorize: result.id }).then(function () {
+                    $rootScope.usersList.push(result);
+                    $rootScope.usersList = $filter('orderBy')($rootScope.usersList, 'full_name');
+                    $rootScope.authorizationUserOptions.dataSource.read();
+                }).catch(function () {
+                    mdToast.error($filter('translate')('Common.Error'));
+                    $rootScope.authorizeList.push(user);
+                });
+            }
+        };
+
+        $scope.login = function (authorizedUser) {
+            if (!authorizedUser) return;
+            SettingService.isAuthorized({ id: authorizedUser.id, authorize: $scope.user.id }).then(function (response) {
+                const data = response.data;
+                if (data === true) {
+                    $cookies.put('x-accessed-user', authorizedUser.email);
+                    $window.location.hash = '';
+                    $window.location.reload();
+                }
+            }).catch(function () {
+                $cookies.remove('x-accessed-user');
+            });
+        };
+
+        $scope.generateList = function (event) {
+            if (event.target.className !== "fas fa-plus" && !event.delegateTarget.className.contains("collapsed")) return;
+            SettingService.getUserAsSimple().then(function (response) {
+                if (!response.data) return;
+                const result = response.data;
+                if (!result) return;
+                loop(result);
+            });
+        };
+
+        function loop(obj) {
+
+            for (var key in obj) {
+                if (obj.hasOwnProperty(key) && (key === 'authorized' || key === 'authorize')) {
+
+                    var array = obj[key];
+
+                    //refresh list if anyone remove authorized for logged user
+                    if (key === 'authorized' && $rootScope[key + "List"].length > 0) {
+                        var addedArray = angular.copy(array);
+                        $rootScope[key + "List"] = $filter('filter')($rootScope[key + "List"], function (item) {
+
+                            if (array.indexOf(item.id) < 0) {
+                                var index = $rootScope.authorizedList.indexOf(item);
+                                if (index > -1) $rootScope.authorizedList.splice(index, 1)
+                            }
+
+                            var addedIndex = addedArray.indexOf(item.id);
+                            if (addedIndex > -1) {
+                                addedArray.splice(addedIndex, 1);
+                            }
+
+                            return array.indexOf(item.id) > -1;
+                        }, true);
+
+                        array = angular.copy(addedArray);
+                    }
+
+                    $rootScope[key + "List"] = $filter('orderBy')($rootScope[key + "List"], 'full_name');
+                    if (key === 'authorize' && $rootScope[key + "List"].length > 0) continue;
+                    for (var o = 0; o < array.length; o++) {
+                        const user = $filter('filter')($rootScope.users, { id: array[o] }, true)[0];
+                        if (!user) continue;
+
+                        var result = $filter('filter')($rootScope[key + "List"], { id: user.id }, true)[0];
+                        if (!result) {
+                            $rootScope[key + "List"].push({
+                                full_name: user.full_name,
+                                id: user.id,
+                                picture: user.picture,
+                                email: user.email
+                            });
+                        }
+
+                        if (key === 'authorize') {
+                            //We have to remove this user from list
+                            $rootScope.usersList = $filter('filter')($rootScope.usersList, function (userItem) {
+                                return userItem.id !== user.id;
+                            }, true);
+                        }
+                    }
+                }
+            }
+
+        }
+
+        $scope.clear = function () {
+            $rootScope.passwordModel = {}
+        };
+
+        $scope.getPreviewUser = function () {
+            const user = $scope.userExist();
+            if (!user) return;
+            return $filter('translate')('Auth.Message', { onbehalfof_user: user.full_name });
+        };
+
+        $scope.userExist = function () {
+            const email = $cookies.get('x-accessed-user');
+            if (!email) return false;
+            return $filter('filter')($rootScope.users, { email: email }, true)[0];
+        };
+
+        $scope.switchBack = function () {
+            $cookies.remove('x-accessed-user');
+            $window.location.hash = '';
+            $window.location.reload();
+        };
+
+        $scope.getResult = function () {
+            const email = $cookies.get('x-accessed-user');
+            return !email;
+        };
+
+        $scope.changeLanguage = function (culture) {
+            if (!culture) return;
+            const language = culture.split('-')[0];
+            SettingService.changeLanguage(culture).then(function (response) {
+                $localStorage.write('NG_TRANSLATE_LANG_KEY', language);
+                $localStorage.write('locale_key', language);
+                const currentCoreCulture = $cookies.get('.AspNetCore.Culture') || "c=en-US|uic=en-US";
+                if (currentCoreCulture) {
+                    const authCulture = currentCoreCulture.split('uic=')[1];
+                    if (authCulture && authCulture !== response.data)
+                        document.cookie = ".AspNetCore.Culture=" + encodeURIComponent(currentCoreCulture.replaceAll(authCulture, culture));
+                } else {
+                    document.cookie = ".AspNetCore.Culture=" + encodeURIComponent(currentCoreCulture);
+                }
+                $window.location.reload();
+            }).catch(function () {
+                mdToast.error($filter('translate')('Common.Error'));
+                $window.location.reload();
+            });
+        };
     }
 ]);

@@ -64,6 +64,7 @@ angular.module('primeapps')
                             promises.push($http.get(config.apiUrl + 'module/get_all'));
                             promises.push($http.get(config.apiUrl + 'module/get_default_system_fields?label=' + $rootScope.globalization.Label));
                             promises.push($http.get(config.apiUrl + 'picklist/get_yes_no'));
+                            promises.push($http.get(config.apiUrl + 'droplist/get_all_with_items'));
 
                             $q.all(promises)
                                 .then(function (response) {
@@ -77,6 +78,7 @@ angular.module('primeapps')
 
                                     var isDemo = responseAccount.data.user.isDemo || false;
                                     var myAccount = responseAccount.data;
+
 
                                     if (response[12] && response[12].data)
                                         account.modules = response[12].data;
@@ -222,6 +224,18 @@ angular.module('primeapps')
                                         }
                                         return '';
                                     };
+                                    //Drop List
+                                    if (response[15] && response[15].data){
+                                        window.droplist = {};
+                                        for (var p = 0; p < response[15].data.length; p++) {
+                                            var dropItem = response[15].data[p];
+                                            $rootScope.processLanguage(dropItem);
+                                            dropItem.label = dropItem.languages[globalization.Label].label;
+                                            dropItem.items = that.proccesDropListItems(dropItem.items);
+                                            window.droplist[dropItem.id] = dropItem;
+
+                                        }
+                                    }
 
                                     $rootScope.config = config;
                                     $rootScope.users = users;
@@ -994,10 +1008,13 @@ angular.module('primeapps')
 
                                 if (dependency.values && !angular.isArray(dependency.values)) {
                                     var values = dependency.values.split(',');
-
                                     for (var ji = 0; ji < values.length; ji++) {
                                         var value = values[ji];
-                                        displayDependency.values.push(parseInt(value));
+                                        displayDependency.values.push(value);
+                                    }
+
+                                    if(dependency.values_array && angular.isArray(dependency.values_array)){
+                                        displayDependency.values  = dependency.values_array;
                                     }
                                 }
 
@@ -1080,7 +1097,29 @@ angular.module('primeapps')
                     }
 
                     module.options = defaultOptions;
-                }
+                },
+
+                proccesDropListItems:function (items) {
+                    var lists= [];
+                    for(var i = 0; i < items.length; i++) {
+                        var item = items[i];
+                        var label = "";
+                        if(item.languages[globalization.Label] && item.languages[globalization.Label]["label"])
+                            label = item.languages[globalization.Label]["label"];
+
+                        lists.push(
+                            {
+                                "id":item.id,
+                                "name":item.name,
+                                "order":item.order,
+                                "inactive":item.inactive,
+                                "label":label
+                            }
+                        );
+                    }
+                   return lists;
+                },
+
             };
         }]);
 

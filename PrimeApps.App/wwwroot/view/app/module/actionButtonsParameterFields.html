@@ -34,7 +34,7 @@
     <label for="{{field.key}}">
         <span style="text-transform: capitalize;">{{ field.key}}</span>
         <span class="label-right">
-           
+
         </span>
     </label>
     <input kendo-numeric-text-box
@@ -49,7 +49,7 @@
     <label for="{{field.key}}">
         <span style="text-transform: capitalize;">{{ field.key}}</span>
         <span class="label-right">
-           
+
         </span>
     </label>
 
@@ -61,12 +61,28 @@
         <option value="">{{'Common.Select' | translate}}</option>
     </select>
 </div>
+<div class="form-group" ng-if="field.type === 6">
+    <label for="{{field.key}}">
+        <span style="text-transform: capitalize;">{{ field.key}}</span>
+        <span class="label-right">
+
+        </span>
+    </label>
+
+    <select id="{{field.name}}"
+            name="{{field.name}}"
+            class="form-control"
+            ng-model="buttonsParametersData[field.key]"
+            ng-options="o.name as o.label for o in droplistItems[field.key]">
+        <option value="">{{'Common.Select' | translate}}</option>
+    </select>
+</div>
 
 <div class="form-group" ng-if="field.type === 4">
     <label for="{{field.key}}">
         <span style="text-transform: capitalize;">{{ field.key}}</span>
         <span class="label-right">
-            
+
         </span>
     </label>
     <ul class="list-unstyled">
