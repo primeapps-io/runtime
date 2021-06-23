@@ -28,7 +28,7 @@
                 <span class="show-on-m" flex></span>
                 <div ng-if="toolbarOptions.items.length > 0" flex class="action-btn" kendo-toolbar
                      k-options="toolbarOptions"></div>
-                <div class="ml-auto d-inline-flex">
+                <div class="ml-auto d-inline-flex"  ng-show="hasPermission(type, 'export') || (user.profile.import_data && hasPermission(type, operations.write))">
                     <md-menu md-position-mode="target-right target">
                         <md-button class="md-icon-button btn btn-secondary"
                                    aria-label="{{'Module.Export' | translate }} - {{'Module.Import' | translate }}"
@@ -48,7 +48,7 @@
                                     <i class="fas fa-download"></i> <span>{{'Module.Import' | translate }}</span>
                                 </md-button>
                             </md-menu-item>
-                            <md-menu-item ng-if="user.profile.export_data" ng-show="hasPermission(type, operations.read)">
+                            <md-menu-item   ng-show="hasPermission(type, 'export')">
                                 <md-button ng-click="openExcelTemplate()">
                                     <i class="fas fa-upload"></i> <span>{{'Module.ExportExcel' | translate }}</span>
                                 </md-button>

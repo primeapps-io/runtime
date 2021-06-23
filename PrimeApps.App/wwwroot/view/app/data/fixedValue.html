@@ -159,6 +159,14 @@
                             ng-required="{{fixedField.validation.required}}"
                             ng-if="fixedField.data_type === 'multiselect'"></select>
 
+                    <select kendo-multi-select
+                            name="{{fixedField.name}}"
+                            id="{{fixedField.name}}"
+                            k-options="fixedMultiSelectDroplist(fixedField)"
+                            k-ng-model="fixedValue[fixedField.name]"
+                            ng-required="{{fixedField.validation.required}}"
+                            ng-if="fixedField.data_type === 'multiselect_droplist'"></select>
+
                     <select kendo-drop-down-list
                             name="{{fixedField.name}}"
                             id="{{fixedField.name}}"

@@ -37,20 +37,22 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             filter: 'contains',
             autoBind: false,
             optionLabel: $filter('translate')('Auth.AddUser'),
-            select: function (e) {
-                if (!e || !e.dataItem || !e.dataItem.id) return;
-                const authorizationUser = $filter('filter')($rootScope.authorizeList, { id: e.dataItem.id }, true)[0];
+            change: function (e) {
+                if (!e || !e.sender || !e.sender.$angular_scope || !e.sender.$angular_scope.authorizationUser ||  !e.sender.$angular_scope.authorizationUser.id) return;
+
+                var selectUser=  e.sender.$angular_scope.authorizationUser;
+                const authorizationUser = $filter('filter')($rootScope.authorizeList, { id: selectUser.id }, true)[0];
                 if (authorizationUser) return;
 
                 const authorizeUser = {
-                    full_name: e.dataItem.full_name,
-                    id: e.dataItem.id,
-                    picture: e.dataItem.picture,
-                    email: e.dataItem.email
+                    full_name:selectUser.full_name,
+                    id: selectUser.id,
+                    picture: selectUser.picture,
+                    email: selectUser.email
                 };
                 $rootScope.authorizeList.push(authorizeUser);
 
-                var user = $filter('filter')($rootScope.usersList, { id: e.dataItem.id }, true)[0];
+                var user = $filter('filter')($rootScope.usersList, { id: selectUser.id }, true)[0];
                 if (user) {
                     const index = $rootScope.usersList.indexOf(user);
                     if (index > -1) {
