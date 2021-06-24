@@ -276,9 +276,9 @@
 </div>
 
 <div class="form-group"
-     ng-if="(field.data_type === 'picklist' || field.data_type === 'rating') && field.custom_label && !field.hidden">
+     ng-if="(field.data_type === 'picklist' || field.data_type === 'rating') && field.languages[globalization.Label]['custom_label'] && !field.hidden">
     <div ng-model="field.custom_label">
-        {{field.custom_label}}
+        {{field.languages[globalization.Label]['custom_label']}}
     </div>
 </div>
 
