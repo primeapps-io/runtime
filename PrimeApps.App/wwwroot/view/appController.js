@@ -1001,10 +1001,12 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                 SettingService.changePassword(passwordModel.current, passwordModel.password, passwordModel.confirm)
                     .then(function () {
                         mdToast.success($filter('translate')('Setup.Settings.PasswordSuccess'));
+                        $scope.clear();
                     })
                     .catch(function (response) {
                         if (response.status === 400) {
                             mdToast.error($filter('translate')('Setup.Settings.InvalidPassword'))
+                            passwordModel.current = null;
                         }
                         else
                             mdToast.error($filter('translate')('Common.Error'));
