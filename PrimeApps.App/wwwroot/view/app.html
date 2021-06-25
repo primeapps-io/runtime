@@ -47,12 +47,12 @@
                                     <small>{{'Common.Welcome' | translate}}</small> {{user.first_name}} {{user.last_name}} <i class="fas fa-angle-down"></i>
                                 </span>
                             </md-button>
-                            <md-menu-content class="md-dense account-dropdown-box">
+                            <md-menu-content class="account-dropdown-box">
                                 <div class="accountbar-in layout-padding" ng-include="'view/common/account-box.html'"></div>
                                 <md-menu-divider style="margin: 0;"></md-menu-divider>
                                 <div ng-if="getResult() && !preview">
                                     <div class="blackbg5">
-                                        <div ng-if="useUserSettings" class="usermodalboxes whitebox">
+                                        <div ng-if="useUserSettings && globalizations.length > 1" class="usermodalboxes whitebox">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <h5><i class="fas fa-globe"></i>  {{'Setup.Settings.Language' | translate}}</h5>
                                                 <div>
@@ -83,8 +83,8 @@
                                                     <div class="row">
                                                         <div class="col-md-12">
                                                             <div class="form-group">
-                                                                <label for="current" md-truncate>
-                                                                    <span>{{'Setup.Settings.CurrentPassword' | translate}}</span>
+                                                                <label for="current">
+                                                                    <span md-truncate>{{'Setup.Settings.CurrentPassword' | translate}}</span>
                                                                 </label>
                                                                 <input type="password" id="current" name="current" minlength="6" maxlength="20" class="form-control k-textbox"
                                                                        required ng-model="passwordModel.current" />
@@ -94,8 +94,8 @@
                                                     <div class="row">
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="new_password" md-truncate>
-                                                                    <span>{{'Setup.Settings.Password' | translate}}</span>
+                                                                <label for="new_password">
+                                                                    <span md-truncate>{{'Setup.Settings.Password' | translate}}</span>
                                                                 </label>
                                                                 <input type="password" id="new_password" name="new_password" class="k-textbox" maxlength="20"
                                                                        minlength="6" required
@@ -106,22 +106,27 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <div class="form-group">
-                                                                <label for="confirm" md-truncate>
-                                                                    <span>{{'Setup.Settings.PasswordAgain' | translate}}</span>
+                                                                <label for="confirm">
+                                                                    <span md-truncate>{{'Setup.Settings.PasswordAgain' | translate}}</span>
                                                                 </label>
                                                                 <input type="password" id="confirm" name="confirm" class="k-textbox"
                                                                        required ng-model="passwordModel.confirm"
                                                                        ng-blur="passwordNotMatch(passwordModel.password,passwordModel.confirm)" />
                                                             </div>
                                                         </div>
+                                                        <div class="col-12">
+                                                            <div class="form-group">
+                                                                <md-dialog-actions layout="row">
+                                                                    <md-button md-prevent-menu-close="false" class="btn btn-primary" type="submit" md-autofocus>
+                                                                        <i class="fas fa-save"></i>
+                                                                        {{'Common.Save' | translate}}
+                                                                    </md-button>
+                                                                    <span flex></span>
+                                                                </md-dialog-actions>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <md-dialog-actions layout="row">
-                                                        <md-button md-prevent-menu-close="false" class="btn btn-primary" type="submit" md-autofocus>
-                                                            <i class="fas fa-save"></i>
-                                                            {{'Common.Save' | translate}}
-                                                        </md-button>
-                                                        <span flex></span>
-                                                    </md-dialog-actions>
+                                                    
                                                 </form>
                                             </div>
                                         </section>

@@ -28,8 +28,8 @@
                 <span class="show-on-m" flex></span>
                 <div ng-if="toolbarOptions.items.length > 0" flex class="action-btn" kendo-toolbar
                      k-options="toolbarOptions"></div>
-                <div class="ml-auto d-inline-flex"  ng-show="hasPermission(type, 'export') || (user.profile.import_data && hasPermission(type, operations.write))">
-                    <md-menu md-position-mode="target-right target">
+                <div class="ml-auto d-inline-flex">
+                    <md-menu md-position-mode="target-right target" ng-show="hasPermission(type, 'export') || (user.profile.import_data && hasPermission(type, operations.write))">
                         <md-button class="md-icon-button btn btn-secondary"
                                    aria-label="{{'Module.Export' | translate }} - {{'Module.Import' | translate }}"
                                    ng-click="$mdMenu.open()">
