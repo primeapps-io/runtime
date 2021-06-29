@@ -852,9 +852,18 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                                     else
                                         newUrl += 'record/' + notification.module.name + '?id=' + notification.record_id;
 
-                                    if (newUrl === window.location.hash)
+                                    if (newUrl === window.location.hash && notification.module.system_type !== 'component'){
                                         $state.reload();
-                                    window.location = newUrl;
+                                        window.location = newUrl;
+                                    }else if(newUrl.split('?')[0] === window.location.hash.split('?')[0] && notification.module.system_type === 'component'){
+                                        //aynı component içindeyken, aynı componente giden notificationlarda yeni idye göre state yenilenmiyordu.
+                                        $state.go("app."+notification.module.name, {time:Date.now()}, {reload: true});
+                                        $timeout(function () {
+                                            window.location = newUrl;
+                                        },100)
+                                    }else{
+                                        window.location = newUrl;
+                                    }
                                 }
                             } else if (url) {
                                 if (url === window.location.hash)
