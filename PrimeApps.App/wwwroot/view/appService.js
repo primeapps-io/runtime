@@ -151,7 +151,7 @@ angular.module('primeapps')
                                     $rootScope.workgroup = myAccount.instances[0];
 
                                     if (workgroupId) {
-                                        var workgroup = $filter('filter')(myAccount.instances, {instanceID: workgroupId}, true)[0];
+                                        var workgroup = $filter('filter')(myAccount.instances, { instanceID: workgroupId }, true)[0];
 
                                         if (workgroup)
                                             $rootScope.workgroup = workgroup;
@@ -216,16 +216,17 @@ angular.module('primeapps')
                                     };
 
                                     $rootScope.getLanguageValue = function (language, firstProperty, secondProperty) {
-                                        if (language && language[$rootScope.globalization.Label]) {
-                                            if (!secondProperty)
-                                                return language[$rootScope.globalization.Label][firstProperty] || '';
 
-                                            return language[$rootScope.globalization.Label][firstProperty][secondProperty] || '';
+                                        if (language && language[$rootScope.globalization.Label]) {
+                                            return !secondProperty ? language[$rootScope.globalization.Label][firstProperty] : language[$rootScope.globalization.Label][firstProperty][secondProperty] || '';
                                         }
-                                        return '';
+
+                                        const defaultLanguage = $filter('filter')($rootScope.globalizations, { DefaultLanguage: true })[0];
+                                        return defaultLanguage ? !secondProperty ? language[defaultLanguage.Label][firstProperty] : language[defaultLanguage.Label][firstProperty][secondProperty] : '';
                                     };
+
                                     //Drop List
-                                    if (response[15] && response[15].data){
+                                    if (response[15] && response[15].data) {
                                         window.droplist = {};
                                         for (var p = 0; p < response[15].data.length; p++) {
                                             var dropItem = response[15].data[p];
@@ -288,7 +289,7 @@ angular.module('primeapps')
                                                     name: moduleId,
                                                     value: false
                                                 };
-                                                var sameModal = $filter('filter')(modalModules, {name: modulShowArray.name})[0];
+                                                var sameModal = $filter('filter')(modalModules, { name: modulShowArray.name })[0];
                                                 if (!sameModal) {
                                                     modalModules.push(modulShowArray);
                                                     $localStorage.write("moduleShow", JSON.stringify(modalModules));
@@ -362,7 +363,7 @@ angular.module('primeapps')
 
                                     //custom menü
                                     $rootScope.customMenu = false;
-                                    var menu = $filter('filter')(response[8].data, {deleted: false}, true);
+                                    var menu = $filter('filter')(response[8].data, { deleted: false }, true);
                                     if (menu.length > 0) {
                                         $rootScope.processLanguages(menu);
                                         $rootScope.customMenu = true;
@@ -383,16 +384,16 @@ angular.module('primeapps')
                                             for (var k = 0; k < profileSetting.profile_list.length; k++) {
                                                 var profile = profileSetting.profile_list[k];
                                                 if (parseInt(profile) === $rootScope.user.profile.id) {
-                                                    var moduleSetting = $filter('filter')($rootScope.modules, {id: profileSetting.module_id}, true)[0];
+                                                    var moduleSetting = $filter('filter')($rootScope.modules, { id: profileSetting.module_id }, true)[0];
                                                     if (moduleSetting) {
                                                         if ($rootScope.customMenu) {
                                                             var customMenuItem;
-                                                            customMenuItem = $filter('filter')($rootScope.menu, {route: moduleSetting.name}, true)[0];
+                                                            customMenuItem = $filter('filter')($rootScope.menu, { route: moduleSetting.name }, true)[0];
                                                             if (!customMenuItem) {
                                                                 for (var z = 0; z < $rootScope.menu.length; z++) {
                                                                     if (!customMenuItem) {
                                                                         var menuItem = $rootScope.menu[z];
-                                                                        customMenuItem = $filter('filter')(menuItem.menu_items, {route: moduleSetting.name}, true)[0];
+                                                                        customMenuItem = $filter('filter')(menuItem.menu_items, { route: moduleSetting.name }, true)[0];
                                                                     }
                                                                 }
                                                             }
@@ -424,12 +425,12 @@ angular.module('primeapps')
                                     if ($rootScope.customMenu) {
                                         for (var a = 0; a < $rootScope.menu.length; a++) {
                                             var mainMenuItem = $rootScope.menu[a];
-                                            if ($filter('filter')(mainMenuItem.menu_items, {hide: true}, true).length === mainMenuItem.menu_items.length)
+                                            if ($filter('filter')(mainMenuItem.menu_items, { hide: true }, true).length === mainMenuItem.menu_items.length)
                                                 mainMenuItem.hide = true;
 
                                             //display values are taken according to module IDs.
                                             if (mainMenuItem.module_id) {
-                                                var result_module = $filter('filter')($rootScope.modules, {id: mainMenuItem.module_id}, true)[0];
+                                                var result_module = $filter('filter')($rootScope.modules, { id: mainMenuItem.module_id }, true)[0];
 
                                                 if (result_module)
                                                     mainMenuItem.display = result_module.display;
@@ -445,7 +446,7 @@ angular.module('primeapps')
                                                 for (var o = 0; o < mainMenuItem.menu_items.length; o++) {
                                                     //Components don't have module_id
                                                     if (mainMenuItem.menu_items[o].module_id) {
-                                                        var result_mainMenuItem_module = $filter('filter')($rootScope.modules, {id: mainMenuItem.menu_items[o].module_id}, true)[0];
+                                                        var result_mainMenuItem_module = $filter('filter')($rootScope.modules, { id: mainMenuItem.menu_items[o].module_id }, true)[0];
                                                         mainMenuItem.menu_items[o].display = result_mainMenuItem_module ? result_mainMenuItem_module.display : false;
                                                     } else
                                                         mainMenuItem.menu_items[o].display = true;
@@ -486,24 +487,24 @@ angular.module('primeapps')
 
                                     }
 
-                                    $rootScope.helpIconHide = $filter('filter')($rootScope.moduleSettings, {key: 'help_icon_hide'}, true)[0];
+                                    $rootScope.helpIconHide = $filter('filter')($rootScope.moduleSettings, { key: 'help_icon_hide' }, true)[0];
                                     $rootScope.helpIconHide = $rootScope.helpIconHide && $rootScope.helpIconHide.value === 'true';
 
 
-                                    $rootScope.taskReminderAuto = $filter('filter')($rootScope.moduleSettings, {key: 'task_reminder_auto'}, true)[0];
+                                    $rootScope.taskReminderAuto = $filter('filter')($rootScope.moduleSettings, { key: 'task_reminder_auto' }, true)[0];
                                     $rootScope.taskReminderAuto = $rootScope.taskReminderAuto && $rootScope.taskReminderAuto.value === 'true';
-                                    $rootScope.detailViewType = $filter('filter')($rootScope.moduleSettings, {key: 'detail_view_type'}, true)[0];
+                                    $rootScope.detailViewType = $filter('filter')($rootScope.moduleSettings, { key: 'detail_view_type' }, true)[0];
                                     $rootScope.detailViewType = $rootScope.detailViewType ? $rootScope.detailViewType.value : 'tab';
 
                                     // $rootScope.showNotes = $filter('filter')($rootScope.moduleSettings, {key: 'show_notes'}, true)[0];
                                     //  $rootScope.showNotes = $rootScope.showNotes ? $rootScope.showNotes.value : true;
 
-                                    $rootScope.showSaveAndNew = $filter('filter')($rootScope.moduleSettings, {key: 'show_save_and_new'}, true)[0];
+                                    $rootScope.showSaveAndNew = $filter('filter')($rootScope.moduleSettings, { key: 'show_save_and_new' }, true)[0];
                                     $rootScope.showSaveAndNew = $rootScope.showSaveAndNew ? $rootScope.showSaveAndNew.value : true;
 
-                                    $rootScope.viewPermissions = $filter('filter')($rootScope.user.profile.permissions, {type: 2}, true)[0];
+                                    $rootScope.viewPermissions = $filter('filter')($rootScope.user.profile.permissions, { type: 2 }, true)[0];
 
-                                    $rootScope.deleteAllHiddenModules = $filter('filter')($rootScope.moduleSettings, {key: 'delete_all_hidden_modules'}, true)[0];
+                                    $rootScope.deleteAllHiddenModules = $filter('filter')($rootScope.moduleSettings, { key: 'delete_all_hidden_modules' }, true)[0];
                                     $rootScope.deleteAllHiddenModules = $rootScope.deleteAllHiddenModules ? $rootScope.deleteAllHiddenModules.value.split(',') : [];
 
                                     //  $rootScope.showAttachments = $filter('filter')($rootScope.moduleSettings, {key: 'show_attachments'}, true)[0];
@@ -518,15 +519,15 @@ angular.module('primeapps')
 
                                     if (customSettings) {
 
-                                        $rootScope.showAccountOwner = $filter('filter')(customSettings, {key: 'show_admin'}, true)[0];
-                                        $rootScope.showSubscriber = $filter('filter')(customSettings, {key: 'show_subscriber'}, true)[0];
+                                        $rootScope.showAccountOwner = $filter('filter')(customSettings, { key: 'show_admin' }, true)[0];
+                                        $rootScope.showSubscriber = $filter('filter')(customSettings, { key: 'show_subscriber' }, true)[0];
 
                                         //var employeeSettings = $filter('filter')(customSettings, {key: 'employee'}, true)[0];
-                                       // $rootScope.isEmployee = employeeSettings ? employeeSettings.value : undefined;
+                                        // $rootScope.isEmployee = employeeSettings ? employeeSettings.value : undefined;
 
                                         /*
-										* Check branch mode is available.
-										* */
+                                        * Check branch mode is available.
+                                        * */
                                         // var branchSettings = $filter('filter')(response[10].data, {key: 'branch'}, true)[0];
                                         // $rootScope.branchAvailable = branchSettings ? branchSettings.value === 't' : undefined;
                                         //
@@ -849,7 +850,7 @@ angular.module('primeapps')
                             if (profile.is_persistent && !profile.has_admin_rights)
                                 profile.name = $filter('translate')('Setup.Profiles.Standard');
 
-                            var sectionPermission = $filter('filter')(sectionPermissions, {profile_id: profile.id}, true)[0];
+                            var sectionPermission = $filter('filter')(sectionPermissions, { profile_id: profile.id }, true)[0];
 
                             if (!sectionPermission) {
                                 section.permissions.push({
@@ -883,19 +884,19 @@ angular.module('primeapps')
                         field.label = $rootScope.getLanguageValue(field.languages, 'label');
                         field.dataType = dataTypes[field.data_type];
                         field.operators = [];
-                        field.sectionObj = $filter('filter')(module.sections, {name: field.section}, true)[0];
+                        field.sectionObj = $filter('filter')(module.sections, { name: field.section }, true)[0];
 
                         if (field.data_type === 'lookup' || field.data_type === 'multiselect_lookup') {
                             if (field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles' && field.lookup_type !== 'relation') {
-                                var lookupModule = $filter('filter')($rootScope.modules, {name: field.lookup_type}, true)[0];
+                                var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
 
                                 if (!lookupModule)
                                     continue;
 
-                                field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary_lookup: true}, true)[0];
+                                field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary_lookup: true }, true)[0];
 
                                 if (!field.lookupModulePrimaryField)
-                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
 
                                 var lookupModulePrimaryFieldDataType = dataTypes[field.lookupModulePrimaryField.data_type];
 
@@ -911,14 +912,14 @@ angular.module('primeapps')
                                 field.operators.push($rootScope.operators.not_empty);
 
                                 if (field.lookup_type === 'users') {
-                                    lookupModule = $filter('filter')($rootScope.modules, {name: 'users'}, true)[0];
-                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
+                                    lookupModule = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                                 } else if (field.lookup_type === 'profiles') {
-                                    lookupModule = $filter('filter')($rootScope.modules, {name: 'profiles'}, true)[0];
-                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
+                                    lookupModule = $filter('filter')($rootScope.modules, { name: 'profiles' }, true)[0];
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                                 } else if (field.lookup_type === 'roles') {
-                                    lookupModule = $filter('filter')($rootScope.modules, {name: 'roles'}, true)[0];
-                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {primary: true}, true)[0];
+                                    lookupModule = $filter('filter')($rootScope.modules, { name: 'roles' }, true)[0];
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                                 }
                             }
 
@@ -957,7 +958,7 @@ angular.module('primeapps')
                             if (profileItem.is_persistent && !profileItem.has_admin_rights)
                                 profileItem.name = $filter('translate')('Setup.Profiles.Standard');
 
-                            var fieldPermission = $filter('filter')(fieldPermissions, {profile_id: profileItem.id}, true)[0];
+                            var fieldPermission = $filter('filter')(fieldPermissions, { profile_id: profileItem.id }, true)[0];
 
                             if (!fieldPermission)
                                 field.permissions.push({
@@ -1013,8 +1014,8 @@ angular.module('primeapps')
                                         displayDependency.values.push(value);
                                     }
 
-                                    if(dependency.values_array && angular.isArray(dependency.values_array)){
-                                        displayDependency.values  = dependency.values_array;
+                                    if (dependency.values_array && angular.isArray(dependency.values_array)) {
+                                        displayDependency.values = dependency.values_array;
                                     }
                                 }
 
@@ -1099,25 +1100,25 @@ angular.module('primeapps')
                     module.options = defaultOptions;
                 },
 
-                proccesDropListItems:function (items) {
-                    var lists= [];
-                    for(var i = 0; i < items.length; i++) {
+                proccesDropListItems: function (items) {
+                    var lists = [];
+                    for (var i = 0; i < items.length; i++) {
                         var item = items[i];
                         var label = "";
-                        if(item.languages[globalization.Label] && item.languages[globalization.Label]["label"])
+                        if (item.languages[globalization.Label] && item.languages[globalization.Label]["label"])
                             label = item.languages[globalization.Label]["label"];
 
                         lists.push(
                             {
-                                "id":item.id,
-                                "name":item.name,
-                                "order":item.order,
-                                "inactive":item.inactive,
-                                "label":label
+                                "id": item.id,
+                                "name": item.name,
+                                "order": item.order,
+                                "inactive": item.inactive,
+                                "label": label
                             }
                         );
                     }
-                   return lists;
+                    return lists;
                 },
 
             };

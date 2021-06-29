@@ -2,13 +2,14 @@
     <div layout="column" style="height: 100%; overflow-y: hidden;" ng-cloak>
         <md-toolbar md-scroll-shrink ng-class="views.length >0 ?  'with-subheader' :''">
             <div class="md-toolbar-tools">
-                <md-button class="md-icon-button show-on-m" ng-click="goBack()" aria-label="{{'Common.Back' | translate}}"><i class="fas fa-angle-left"></i>
+                <md-button class="md-icon-button show-on-m" ng-click="goBack()" aria-label="{{'Common.Back' | translate}}">
+                    <i class="fas fa-angle-left"></i>
                     <md-tooltip md-autohide="true" md-direction="right">{{'Common.Back' | translate}}</md-tooltip>
                 </md-button>
                 <h2 md-truncate>{{module.languages[globalization.Label]['label']['plural']}}</h2>
                 <div class="helpbuttons">
-                    <md-button class="md-icon-button" aria-label="{{'Common.Help' | translate}}" ng-if="showHelp" ng-click="helpSide()"><i
-                            class="fas fa-question-circle"></i>
+                    <md-button class="md-icon-button" aria-label="{{'Common.Help' | translate}}" ng-if="showHelp" ng-click="helpSide()">
+                        <i class="fas fa-question-circle"></i>
                         <md-tooltip md-autohide="true" md-direction="bottom">{{'Common.Help' | translate}}</md-tooltip>
                     </md-button>
                     <!--<md-button class="md-icon-button enlarge d-none d-lg-inline-block hide-on-m" ng-click="toggleFullLeftMenu()"
@@ -37,7 +38,7 @@
                             <md-tooltip md-autohide="true" md-direction="bottom"> {{'Module.DataTransfer' | translate }}</md-tooltip>
                         </md-button>
                         <md-menu-content width="2" class="md-dense">
-                            <md-menu-item   ng-disabled="$parent.$parent.$parent.isEmpty"
+                            <md-menu-item ng-disabled="$parent.$parent.$parent.isEmpty"
                                           ng-show="hasPermission(type, 'export')">
                                 <md-button ng-click="showExportDataModal()">
                                     <i class="fas fa-upload"></i> <span>{{'Module.Export' | translate }}</span>
@@ -48,7 +49,7 @@
                                     <i class="fas fa-download"></i> <span>{{'Module.Import' | translate }}</span>
                                 </md-button>
                             </md-menu-item>
-                            <md-menu-item   ng-show="hasPermission(type, 'export')">
+                            <md-menu-item ng-show="hasPermission(type, 'export')">
                                 <md-button ng-click="openExcelTemplate()">
                                     <i class="fas fa-upload"></i> <span>{{'Module.ExportExcel' | translate }}</span>
                                 </md-button>
@@ -76,23 +77,24 @@
             <md-subheader id="modul-area-app-menu" class="own-tab" ng-show="views.length>0">
                 <md-tabs md-dynamic-height md-swipe-content md-no-select-click="true">
                     <md-tab ng-repeat='item in views track by $index' ng-click="setView(item)" md-active="activeView.id === item.id">
-                        <md-tab-label aria-controls="{{item.languages[globalization.Label]['label']}}">
+                        <md-tab-label aria-controls="{{getLanguageValue(item.languages, 'label')}}">
                             <div class="tab-container">
-                                <span>{{item.languages[globalization.Label]['label']}}</span>
+                                <span>{{getLanguageValue(item.languages, 'label')}}</span>
                             </div>
                         </md-tab-label>
                     </md-tab>
 
                 </md-tabs>
             </md-subheader>
-<!--            <div ng-if="loading" id="inside-loader" ><div class="spin"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div></div>-->
+            <!--            <div ng-if="loading" id="inside-loader" ><div class="spin"><div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div></div></div>-->
             <div class="container-fluid paddingua20 position-relative pr-view-settings">
                 <help-page module-id="module.id"></help-page>
                 <div class="help-page align-items-center" ng-if="show">
                     <div class="alert alert-secondary" role="alert" ng-bind-html="helpTemplatesModal.template"></div>
                     <md-button type="button"
                                ng-click="selectedClose = !selectedClose; closeDialog(currentPath, module.id, showModalCheck);"
-                               class="md-icon-button help-page-close"><i class="fas fa-times"></i>
+                               class="md-icon-button help-page-close">
+                        <i class="fas fa-times"></i>
                         <md-tooltip md-autohide="true" md-diretion="bottom">{{'Common.Close' | translate}}</md-tooltip>
                     </md-button>
                     <div>
@@ -114,7 +116,7 @@
 
                 <div class="whitebox table-view" ng-if="activeView.view_type ==='grid' || activeView.report_type==='tabular'">
                     <div ng-show="!loading">
-                        <kendo-grid id="kendo-grid"  class="grid-theme table-responsive" k-scope-field="grid" k-rebind="mainGridOptions" k-options="mainGridOptions"> </kendo-grid>
+                        <kendo-grid id="kendo-grid" class="grid-theme table-responsive" k-scope-field="grid" k-rebind="mainGridOptions" k-options="mainGridOptions"> </kendo-grid>
                     </div>
                     <div ng-show="loading" class="loading-list grid-theme table-responsive k-grid k-widget k-grid-display-block">
                         <table>
@@ -134,7 +136,7 @@
                 </div>
 
                 <div ng-if="activeView.view_type==='report'&& activeView.report_type==='summary' || activeView.report_type==='single'">
-                    <div ng-if="activeView.report_type==='summary'" >
+                    <div ng-if="activeView.report_type==='summary'">
                         <div class="whitebox p-2">
                             <div class="chart-wrapper">
                                 <div ng-if="reportSummary.chart" class="fusion-chart">
@@ -152,30 +154,29 @@
                         <div class="whitebox table-view top20 bottom20" ng-if="reportSummary.chart && reportSummary.data.length >0">
                             <table class="table table-theme">
                                 <thead>
-                                <tr class="table-head ">
-                                    <th class="table-th sortable "
-                                        ng-click="shortChange('label',reportSummary.reverse==false ? true:false)"
-                                        ng-class="reportSummary.field =='label' && reportSummary.reverse==true ? 'sort-asc':''  + reportSummary.field =='label' && reportSummary.reverse==false ? 'sort-desc':'' ">
-                                        <div>{{   reportSummary.chart.xaxisname }}</div>
-                                    </th>
-                                    <th
-                                            class="table-th sortable"
+                                    <tr class="table-head ">
+                                        <th class="table-th sortable "
+                                            ng-click="shortChange('label',reportSummary.reverse==false ? true:false)"
+                                            ng-class="reportSummary.field =='label' && reportSummary.reverse==true ? 'sort-asc':''  + reportSummary.field =='label' && reportSummary.reverse==false ? 'sort-desc':'' ">
+                                            <div>{{   reportSummary.chart.xaxisname }}</div>
+                                        </th>
+                                        <th class="table-th sortable"
                                             ng-click="shortChange('value',reportSummary.reverse==false ? true:false)"
                                             ng-class="reportSummary.field =='value' && reportSummary.reverse==true ? 'sort-asc':''  + reportSummary.field =='value' && reportSummary.reverse==false ? 'sort-desc':'' ">
-                                        <div>
-                                            <span>{{ reportSummary.chart.yaxisname }}</span>
-                                        </div>
-                                    </th>
-                                </tr>
+                                            <div>
+                                                <span>{{ reportSummary.chart.yaxisname }}</span>
+                                            </div>
+                                        </th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="item in reportSummary.data">
-                                <tr ng-repeat="item in reportSummary.data">
-                                    <td style="text-align: left;" ng-bind-html="item.label"></td>
-                                    <td style="text-align: right;">
-                                        {{activeView.aggregations[0].field===activeView.group_field ? item.value : item.valueFormatted }}
-                                    </td>
-                                </tr>
+                                    <tr ng-repeat="item in reportSummary.data">
+                                    <tr ng-repeat="item in reportSummary.data">
+                                        <td style="text-align: left;" ng-bind-html="item.label"></td>
+                                        <td style="text-align: right;">
+                                            {{activeView.aggregations[0].field===activeView.group_field ? item.value : item.valueFormatted }}
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -190,7 +191,8 @@
                                      tabindex="0">
                                     <div>
                                         <i class="{{activeView.icon}}"></i>
-                                        <div class="description">{{activeView.value}}
+                                        <div class="description">
+                                            {{activeView.value}}
                                             <small>{{activeView.languages[globalization.Label]['name']}}</small>
                                         </div>
                                     </div>
@@ -199,7 +201,7 @@
                         </div>
                     </div>
                 </div>
-                <div  ng-if="activeView.view_type==='calendar'">
+                <div ng-if="activeView.view_type==='calendar'">
                     <div class="row">
                         <div kendo-scheduler k-options="calendarOptions" k-rebind="calendarOptions" id="viewCalendar">
                             <span k-event-template class='custom-event'>{{dataItem[primaryField]}}</span>
@@ -215,7 +217,8 @@
         </md-content>
         <md-fab-speed-dial class="md-fab-bottom-right" ng-show="selectedRows.length > 0" md-direction="up">
             <md-fab-trigger>
-                <md-button aria-label="menu" class="md-fab md-primary"><strong>{{selectedRows.length}}</strong>
+                <md-button aria-label="menu" class="md-fab md-primary">
+                    <strong>{{selectedRows.length}}</strong>
                 </md-button>
                 <md-tooltip md-autohide="true" md-direction="left">{{selectedRows.length}} {{'Common.SelectedRow'| translate}}</md-tooltip>
             </md-fab-trigger>
@@ -223,23 +226,26 @@
             <md-fab-actions>
                 <md-button ng-if="user.profile.send_email" ng-show="hasPermission(type, operations.read)"
                            class="md-fab md-raised md-mini" aria-label="{{'Module.SendEMail' | translate }}"
-                           ng-click="showEMailModal();"><i class="fas fa-envelope"></i>
+                           ng-click="showEMailModal();">
+                    <i class="fas fa-envelope"></i>
                     <md-tooltip md-autohide="true" md-direction="left">{{'Module.SendEMail' | translate }}</md-tooltip>
                 </md-button>
                 <md-button ng-if="user.profile.send_sms" ng-show="hasPermission(type, operations.read)"
                            class="md-fab md-raised md-mini" aria-label="{{'Module.SendSMS' | translate }}"
-                           ng-click="showSMSModal()"><i class="fas fa-sms"></i>
+                           ng-click="showSMSModal()">
+                    <i class="fas fa-sms"></i>
                     <md-tooltip md-autohide="true" md-direction="left">{{'Module.SendSMS' | translate }}</md-tooltip>
                 </md-button>
                 <md-button ng-if="hasPermission(type, operations.modify) || hasBulkUpdatePermission" ng-click="showUpdateModal($event)"
                            class="md-fab md-raised md-mini"
-                           aria-label=" {{'Module.UpdateSelecteds' | translate }}"><i
-                        class="fas fa-pen"></i>
+                           aria-label=" {{'Module.UpdateSelecteds' | translate }}">
+                    <i class="fas fa-pen"></i>
                     <md-tooltip md-autohide="true" md-direction="left"> {{'Module.UpdateSelecteds' | translate }}</md-tooltip>
                 </md-button>
                 <md-button ng-if="hasPermission(type, operations.remove)" ng-click="deleteSelecteds($event);"
                            class="md-fab md-raised md-mini"
-                           aria-label="{{'Module.DeleteSelecteds' | translate}}"><i class="fas fa-trash"></i>
+                           aria-label="{{'Module.DeleteSelecteds' | translate}}">
+                    <i class="fas fa-trash"></i>
                     <md-tooltip md-autohide="true" md-direction="left">{{'Module.DeleteSelecteds' | translate}}</md-tooltip>
                 </md-button>
             </md-fab-actions>
@@ -266,7 +272,7 @@
             </md-toolbar>
             <md-dialog-content>
                 <div ng-if="showImageData.url" class="md-dialog-content">
-                    <img class="width100" style="max-width: 500px;" ng-src="{{ showImageData.url }}"/>
+                    <img class="width100" style="max-width: 500px;" ng-src="{{ showImageData.url }}" />
                 </div>
                 <ul class="top20 bottom20" ng-if="multiSelectAndTagDatas && multiSelectAndTagDatas.array.length > 0">
                     <li ng-repeat="item in multiSelectAndTagDatas.array">{{item}}</li>
