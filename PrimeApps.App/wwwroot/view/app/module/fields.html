@@ -297,10 +297,9 @@
             name="{{field.name}}"
             kendo-drop-down-list
             ng-required="field.validation.required"
-            ng-readonly="{{setReadonly(field)}}"
-            ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
             k-options="{{'customOptions'+ field.picklist_id}}"
             k-ng-model="record[field.name]"
+            ng-disabled="setReadonly(field) || (field.validation.readonly || (record.freeze && !isAdmin))"
             k-on-change="fieldValueChange(field);">
     </select>
 </div>
@@ -320,10 +319,9 @@
             name="{{field.name}}"
             kendo-drop-down-list
             ng-required="field.validation.required"
-            ng-readonly="{{setReadonly(field)}}"
             k-options="{{'customOptionsDropList'+field.id}}"
             k-ng-model="record[field.name]"
-            ng-disabled="field.validation.readonly || (record.freeze && !isAdmin)"
+            ng-disabled="setReadonly(field) || (field.validation.readonly || (record.freeze && !isAdmin))"
             k-on-change="fieldValueChange(field);">
     </select>
 </div>

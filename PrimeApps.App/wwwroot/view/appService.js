@@ -951,6 +951,7 @@ angular.module('primeapps')
 
                         for (var o = 0; o < $rootScope.profiles.length; o++) {
                             var profileItem = $rootScope.profiles[o];
+                            profileItem.label = $rootScope.getLanguageValue(profileItem.languages,"name");
 
                             if (profileItem.is_persistent && profileItem.has_admin_rights)
                                 profileItem.name = $filter('translate')('Setup.Profiles.Administrator');
