@@ -1,22 +1,22 @@
 ﻿<div class="form-group" ng-if="field.type === 1">
-    <label for="{{field.key}}">
-        <span style="text-transform: capitalize;">{{ field.key}}</span>
+    <label for="{{buttonsLanguages[globalization.Label]['key-'+field.keyId] ? buttonsLanguages[globalization.Label]['key-'+field.keyId] : field.key}}">
+        <span style="text-transform: capitalize;">{{buttonsLanguages[globalization.Label]['key-'+field.keyId] ? buttonsLanguages[globalization.Label]['key-'+field.keyId] : field.key}}</span>
         <span class="label-right">
 <!--            <span class="required-label">{{'Common.Required' | translate}}</span>-->
         </span>
     </label>
     <input type="text"
-           name="{{field.key}}"
-           id="{{field.key}}"
+           name="{{buttonsLanguages[globalization.Label]['key-'+field.keyId] ? buttonsLanguages[globalization.Label]['key-'+field.keyId] : field.key}}"
+           id="{{buttonsLanguages[globalization.Label]['key-'+field.keyId] ? buttonsLanguages[globalization.Label]['key-'+field.keyId] : field.key}}"
            class="k-textbox"
            ng-model="buttonsParametersData[field.key]"
            maxlength="256"/>
-    <span class="k-invalid-msg" data-for="{{field.key}}"></span>
+    <span class="k-invalid-msg" data-for="{{buttonsLanguages[globalization.Label]['key-'+field.keyId] ? buttonsLanguages[globalization.Label]['key-'+field.keyId] : field.key}}"></span>
 </div>
 
 <div class="form-group" ng-if="field.type === 2">
-    <label for="{{field.key}}">
-        <span style="text-transform: capitalize;">{{ field.key}}</span>
+    <label for="{{buttonsLanguages[globalization.Label]['key-'+field.keyId] ? buttonsLanguages[globalization.Label]['key-'+field.keyId] : field.key}}">
+        <span style="text-transform: capitalize;">{{buttonsLanguages[globalization.Label]['key-'+field.keyId] ? buttonsLanguages[globalization.Label]['key-'+field.keyId] : field.key}}</span>
         <span class="label-right">
         </span>
     </label>
@@ -31,8 +31,8 @@
 </div>
 
 <div class="form-group" ng-if="field.type === 5">
-    <label for="{{field.key}}">
-        <span style="text-transform: capitalize;">{{ field.key}}</span>
+    <label for="{{buttonsLanguages[globalization.Label]['key-'+field.keyId] ? buttonsLanguages[globalization.Label]['key-'+field.keyId] : field.key}}">
+        <span style="text-transform: capitalize;">{{buttonsLanguages[globalization.Label]['key-'+field.keyId] ? buttonsLanguages[globalization.Label]['key-'+field.keyId] : field.key}}</span>
         <span class="label-right">
 
         </span>
@@ -46,8 +46,8 @@
 </div>
 
 <div class="form-group" ng-if="field.type === 3">
-    <label for="{{field.key}}">
-        <span style="text-transform: capitalize;">{{ field.key}}</span>
+    <label for="{{buttonsLanguages[globalization.Label]['key-'+field.keyId] ? buttonsLanguages[globalization.Label]['key-'+field.keyId] : field.key}}">
+        <span style="text-transform: capitalize;">{{buttonsLanguages[globalization.Label]['key-'+field.keyId] ? buttonsLanguages[globalization.Label]['key-'+field.keyId] : field.key}}</span>
         <span class="label-right">
 
         </span>
@@ -62,8 +62,8 @@
     </select>
 </div>
 <div class="form-group" ng-if="field.type === 6">
-    <label for="{{field.key}}">
-        <span style="text-transform: capitalize;">{{ field.key}}</span>
+    <label for="{{buttonsLanguages[globalization.Label]['key-'+field.keyId] ? buttonsLanguages[globalization.Label]['key-'+field.keyId] : field.key}}">
+        <span style="text-transform: capitalize;">{{buttonsLanguages[globalization.Label]['key-'+field.keyId] ? buttonsLanguages[globalization.Label]['key-'+field.keyId] : field.key}}</span>
         <span class="label-right">
 
         </span>
@@ -79,8 +79,8 @@
 </div>
 
 <div class="form-group" ng-if="field.type === 4">
-    <label for="{{field.key}}">
-        <span style="text-transform: capitalize;">{{ field.key}}</span>
+    <label for="{{buttonsLanguages[globalization.Label]['key-'+field.keyId] ? buttonsLanguages[globalization.Label]['key-'+field.keyId] : field.key}}">
+        <span style="text-transform: capitalize;">{{buttonsLanguages[globalization.Label]['key-'+field.keyId] ? buttonsLanguages[globalization.Label]['key-'+field.keyId] : field.key}}</span>
         <span class="label-right">
 
         </span>
