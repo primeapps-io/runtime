@@ -316,9 +316,10 @@
 
     <select
             name="{{field.name}}"
+            id="{{fastRecordModal ? field.name + '_m' : field.name}}"
             kendo-drop-down-list
             ng-required="field.validation.required"
-            k-options="{{'customOptionsDropList'+field.id}}"
+            k-options="{{'customOptionsDropList'+field.droplist_id}}"
             k-ng-model="record[field.name]"
             ng-disabled="setReadonly(field) || (field.validation.readonly || (record.freeze && !isAdmin))"
             k-on-change="fieldValueChange(field);">

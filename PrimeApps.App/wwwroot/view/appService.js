@@ -1115,6 +1115,9 @@ angular.module('primeapps')
                                 "name": item.name,
                                 "order": item.order,
                                 "inactive": item.inactive,
+                                "value":item.value,
+                                "value2":item.value2,
+                                "value3":item.value3,
                                 "label": label
                             }
                         );
