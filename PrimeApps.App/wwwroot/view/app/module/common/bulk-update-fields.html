@@ -281,15 +281,14 @@
 
 <div class="form-group" ng-if="field.data_type === 'lookup' && !field.hidden && (id || (!id && (field.name !== 'created_by' && field.name !== 'updated_by')))">
 
-    <select kendo-drop-down-list="{{'lookup'+field.id}}"
+    <select kendo-drop-down-list
             id="{{field.name}}"
             name="{{field.name}}"
             k-options="{{'lookupOptions'+field.id}}"
             ng-model="bulkUpdate.value"
             k-filter="'{{field.lookup_search_type ? field.lookup_search_type : 'startswith' }}'"
             required="{{field.validation.required}}"
-            ng-disabled="field.name === 'created_by' ||field.name === 'updated_by'"
-            k-on-open="setCurrentLookupField(field, {{'lookup'+field.id}});">
+            ng-disabled="field.name === 'created_by' ||field.name === 'updated_by'">
     </select>
 </div>
 <div class="form-group" ng-if="field.data_type === 'text_single' && !field.editable && !field.show_label  && !field.show_lock && !field.hidden">
